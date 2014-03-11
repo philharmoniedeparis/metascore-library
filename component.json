@@ -1,0 +1,5 @@
+{
+  "name": "metaScore",
+  "version": "0.0.1",
+  "main": "./dist/metaScore.min.js"
+}

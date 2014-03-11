@@ -1,0 +1,2 @@
+CALL grunt build
+PAUSE
