@@ -2,63 +2,44 @@
 module.exports = function(grunt) {
 
   // Helper methods
-  function sub (str) {
+  function sub(str) {
     return str.replace(/%s/g, LIBRARY_NAME);
   }
 
-  function wrapModules (head, tail) {
-    return head.concat(MODULE_LIST).concat(tail);
-  }
+  // Helper variables
+  var LIBRARY_NAME = 'metaScore',  
+      MODULE_LIST = [
+        sub('src/helpers/%s.var.js'),
+        sub('src/helpers/%s.string.js'),
+        sub('src/helpers/%s.object.js'),
+        sub('src/helpers/%s.array.js'),
+        sub('src/helpers/%s.function.js'),
+        sub('src/helpers/%s.ajax.js'),
+        sub('src/helpers/%s.class.js'),
+        sub('src/helpers/%s.dom.js')
+      ],
+      DIST_HEAD_LIST = [
+        sub('src/%s.intro.js'),
+        sub('src/%s.const.js'),
+        sub('src/%s.core.js')
+      ],
+      DEV_HEAD_LIST = [
+        sub('src/%s.intro.js'),
+        sub('src/%s.core.js')
+      ],
+      TAIL_LIST = [
+        sub('src/%s.outro.js')
+      ],
+      BANNER = '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n';
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // You will want to chage the value of this constant to whatever your library
-  // is called.
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  var LIBRARY_NAME = 'metaScore';
-
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // Add your modules to this list
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  var MODULE_LIST = [
-      sub('src/helpers/%s.var.js'),
-      sub('src/helpers/%s.string.js'),
-      sub('src/helpers/%s.object.js'),
-      sub('src/helpers/%s.array.js'),
-      sub('src/helpers/%s.function.js'),
-      sub('src/helpers/%s.ajax.js'),
-      sub('src/helpers/%s.class.js'),
-      sub('src/helpers/%s.dom.js')
-    ];
-
-  var DIST_HEAD_LIST = [
-      sub('src/%s.intro.js'),
-      sub('src/%s.const.js'),
-      sub('src/%s.core.js')
-    ];
-
-  // This is the same as DIST_HEAD_LIST, just without *.const.js (which is just
-  // there UglifyJS conditional compilation).
-  var DEV_HEAD_LIST = [
-      sub('src/%s.intro.js'),
-      sub('src/%s.core.js')
-    ];
-
-  var TAIL_LIST = [
-      sub('src/%s.outro.js')
-    ];
-
-  // Gets inserted at the top of the generated files in dist/.
-  var BANNER = [
-      '/*! <%= pkg.name %> - v<%= pkg.version %> - ',
-      '<%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n'
-    ].join('');
-
+  // Load plugins
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-text-replace');
 
+  // Configure grunt
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
@@ -66,23 +47,23 @@ module.exports = function(grunt) {
         options: {
           banner: BANNER
         },
-        src: wrapModules(DIST_HEAD_LIST, TAIL_LIST),
+        src: DIST_HEAD_LIST.concat(MODULE_LIST, TAIL_LIST),
         dest: sub('dist/%s.js')
       },
       dev: {
         options: {
           banner: BANNER
         },
-        src: wrapModules(DEV_HEAD_LIST, TAIL_LIST),
+        src: DEV_HEAD_LIST.concat(MODULE_LIST, TAIL_LIST),
         dest: sub('dist/%s.js')
       }
     },
     replace: {
       all: {
-        src: sub('dist/%s.js'),
+        src: sub('dist/*.js'),
         overwrite: true,
         replacements: [{
-          from: "[[VERSION]}",
+          from: "[[VERSION]]",
           to: "<%= pkg.version %>"
         }]
       }
@@ -114,19 +95,22 @@ module.exports = function(grunt) {
       }
     }
   });
+  
+  // Register tasks
   grunt.registerTask('default', [
-      'build',
-      'qunit'
-    ]);
-  grunt.registerTask('test', [
-      'qunit'
-    ]);
+    'build',
+    'test'
+  ]);
+  
   grunt.registerTask('build', [
-      'jshint',
-      'concat:dist',
-      'replace',
-      'uglify:dist',
-      'concat:dev',
-      'replace'
-    ]);
+    'jshint',
+    'concat:dist',
+    'uglify:dist',
+    'concat:dev',
+    'replace'
+  ]);
+  
+  grunt.registerTask('test', [
+    'qunit'
+  ]);
 };

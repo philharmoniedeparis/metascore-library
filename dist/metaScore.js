@@ -1,6 +1,10 @@
 /*! metaScore - v0.0.1 - 2014-03-12 - Oussama Mubarak */
 ;(function (global) {
 
+  if (typeof DEBUG === 'undefined') {
+    DEBUG = true;
+  }
+  
 /*global global*/
 
 /**
@@ -309,18 +313,7 @@
   metaScore.Ajax = {
   
     /**
-    * ActiveX XMLHttp versions
-    */
-    activeX: [
-      "MSXML2.XMLHttp.5.0",
-      "MSXML2.XMLHttp.4.0",
-      "MSXML2.XMLHttp.3.0",
-      "MSXML2.XMLHttp",
-      "Microsoft.XMLHttp"
-    ],
-  
-    /**
-    * ActiveX XMLHttp versions
+    * Default options
     */
     defaults: {
       'method': 'GET',
@@ -331,6 +324,17 @@
       'success': null,
       'error': null
     },
+  
+    /**
+    * ActiveX XMLHttp versions
+    */
+    activeX: [
+      "MSXML2.XMLHttp.5.0",
+      "MSXML2.XMLHttp.4.0",
+      "MSXML2.XMLHttp.3.0",
+      "MSXML2.XMLHttp",
+      "Microsoft.XMLHttp"
+    ],
 
     /**
     * Create an XMLHttp object

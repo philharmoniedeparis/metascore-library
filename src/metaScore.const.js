@@ -15,16 +15,16 @@
 //   const MY_AWESOME_FEATURE_IS_ENABLED = true;
 //
 // ...Then the compiler leaves the if (and everything in it) alone.
-
-const DEBUG = false;
-
-// If you add more consts here, you need to initialize them in library.core.js
+//
+// If you add more consts here, you need to initialize them in metaScore.core.js
 // to true.  So if you add:
 //
 //   const MY_AWESOME_FEATURE_IS_ENABLED = /* any value */;
 //
-// Then in library.core.js you need to add:
+// Then in metaScore.core.js you need to add:
 //
 //   if (typeof MY_AWESOME_FEATURE_IS_ENABLED === 'undefined') {
 //     MY_AWESOME_FEATURE_IS_ENABLED = true;
 //   }
+
+const DEBUG = false;

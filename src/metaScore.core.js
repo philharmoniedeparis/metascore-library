@@ -6,7 +6,7 @@
 (function (context) {
     
     context.metaScore = {
-      version: "[[VERSION]}"
+      version: "[[VERSION]]"
     };
   
 }(global));
