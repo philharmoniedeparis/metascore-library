@@ -5,15 +5,35 @@
 */
 (function (context) {
 
-  context.metaScore.Array = {
+  var metaScore = context.metaScore;
+
+  metaScore.Array = {
 
     /**
-    * Checks if an object is an array
-    * @param {array} the object
-    * @returns {boolean} true if the object is an array, false otherwise
+    * Checks if a value is in an array
+    * @param {mixed} the value to check
+    * @param {array} the array
+    * @returns {number} the index of the value if found, -1 otherwise
     */
-    isArray: function(arr) {  
-      return Object.prototype.toString.call(arr) === '[object Array]';
+    inArray: function (value, arr) {
+      var len, i = 0;
+
+      if(arr) {
+        if(arr.indexOf){
+          return arr.indexOf(value);
+        }
+
+        len = arr.length;
+
+        for ( ; i < len; i++ ) {
+          // Skip accessing in sparse arrays
+          if ( i in arr && arr[i] === value ) {
+            return i;
+          }
+        }
+      }
+
+      return -1;
     },
 
     /**
@@ -32,7 +52,7 @@
     */
     shuffle: function(arr) {
 
-      var shuffled = context.metaScore.Array.copy(arr);
+      var shuffled = metaScore.Array.copy(arr);
 
       shuffled.sort(function(){
         return ((Math.random() * 3) | 0) - 1;
@@ -72,15 +92,22 @@
     * @param {function} the function to call
     * @returns {void}
     */
-    each: function(arr, fn, scope) {
+    each: function(arr, callback, scope) {
     
-      if(!scope){
-        scope = context;
-      }
+      var i = 0,
+        l = arr.length,
+        value,
+        scope_provided = scope !== undefined;
 
-      for(var i = 0, l = arr.length; i < l; i++) {
-        fn.call(scope, arr[i]);
+      for(; i < l; i++) {
+        value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
+        
+        if (value === false) {
+          break;
+        }
       }
+      
+      return arr;
 
     }
   };

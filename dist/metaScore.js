@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-03-11 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-03-12 - Oussama Mubarak */
 ;(function (global) {
 
 /*global global*/
@@ -16,86 +16,46 @@
 /*global global*/
 
 /**
-* Defines the Class object
-*/
-(function (context) {
-  
-  context.metaScore.Class = function(configs){
-    
-    for (var key in configs) {
-      if(configs.hasOwnProperty(key)){
-        this.createGetter(configs, key);
-        this.createSetter(configs, key);
-      }
-    }
-    
-  };
-  
-  context.metaScore.Class.prototype.createGetter = function(object, prop){
-    this['get'+ context.metaScore.String.capitaliseFirstLetter(prop)] = function(){
-      return object[prop];
-    };
-  };
-  
-  context.metaScore.Class.prototype.createSetter = function(object, prop){
-    this['set'+ context.metaScore.String.capitaliseFirstLetter(prop)] = function(value){
-      object[prop] = value;
-    };
-  };
-  
-  context.metaScore.Class.extend = function (constructor, static_properties, prototype_properties) {
-  
-    var cls, key;
-  
-    // set the class's constructor
-    if(context.metaScore.Function.isFunction(constructor)){
-      cls = constructor;
-    }
-    else{
-      cls = this.prototype.constructor;
-    }
-  
-    cls.prototype = new context.metaScore.Class();
-    cls.prototype.constructor =  cls;
-    cls.superClass = this;
-    
-    // set the class's static properties
-    for (key in static_properties) {
-      if(static_properties.hasOwnProperty(key)){
-        cls[key] = static_properties[key];
-      }
-    }
-    
-    // set the class's prototype properties
-    for (key in prototype_properties) {
-      if(prototype_properties.hasOwnProperty(key)){
-        cls.prototype[key] = prototype_properties[key];
-      }
-    }
-    
-    return cls;
-    
-  };
-    
-}(global));
-/*global global*/
-
-/**
-* Function helper functions
+* Variable helper functions
 */
 (function (context) {
 
-  context.metaScore.Function = {
+  var metaScore = context.metaScore;
+
+  metaScore.Var = {
 
     /**
-    * Checks if an object is a function
-    * @param {function} the object
-    * @returns {boolean} true if the object is a function, false otherwise
+    * Helper object used by the type function
     */
-    isFunction: function(fn) {  
-      return Object.prototype.toString.call(fn) === '[object Function]';
+    classes2types: {
+      "[object Boolean]": "boolean",
+      "[object Number]": "number",
+      "[object String]": "string",
+      "[object Function]": "function",
+      "[object Array]": "array",
+      "[object Date]": "date",
+      "[object RegExp]": "regexp",
+      "[object Object]": "object"
+    },
+
+    /**
+    * Get the type of a variable
+    * @param {mixed} the variable
+    * @returns {string} the type
+    */
+    type: function(obj) {
+      return obj == null ? String(obj) : metaScore.Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
+    },
+
+    /**
+    * Checks if a variable is of a certain type
+    * @param {mixed} the variable
+    * @param {string} the type to check against
+    * @returns {boolean} true if the variable is of the specified type, false otherwise
+    */
+    is: function(obj, type) {
+      return metaScore.Var.type(obj) === type.toLowerCase();
     }
-    
   };
   
 }(global));
@@ -106,24 +66,84 @@
 */
 (function (context) {
 
-  context.metaScore.String = {
+  var metaScore = context.metaScore;
+
+  metaScore.String = {
 
     /**
-    * Checks if an object is a string
-    * @param {string} the object
-    * @returns {boolean} true if the object is a string, false otherwise
+    * Capitalize a string
+    * @param {string} the original string
+    * @returns {string} the capitalized string
     */
-    isString: function(str) {  
-      return Object.prototype.toString.call(str) === '[object String]';
+    capitalize: function(str){
+      return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+    }
+  };
+  
+}(global));
+/*global global*/
+
+/**
+* Object helper functions
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+
+  metaScore.Object = {
+
+    /**
+    * Merge the contents of two or more objects together into the first object.
+    * @returns {object} the target object extended with the properties of the other objects
+    */
+    extend: function() {
+    
+      var target = arguments[0] || {},
+        options,
+        i = 1,
+        length = arguments.length,
+        key, src, copy;
+        
+      for (; i < length; i++ ) {
+        if ((options = arguments[i]) != null) {
+          for ( key in options ) {            
+            src = target[key];
+            copy = options[key];
+            
+            if(src !== copy && copy !== undefined ) {
+              target[key] = copy;
+            }
+          }
+        }
+      }
+        
+      return target;
+
     },
 
     /**
-    * Capitalize the first letter of string
-    * @param {string} the original string
-    * @returns {string} the string with the first lettre capitalized
+    * Call a function on each element of an array
+    * @param {array} the array
+    * @param {function} the function to call
+    * @returns {void}
     */
-    capitaliseFirstLetter: function(str){
-      return str.charAt(0).toUpperCase() + str.slice(1);
+    each: function(obj, callback, scope) {
+    
+      var key, value,
+        scope_provided = scope !== undefined;
+      
+      for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
+        
+          if (value === false) {
+            break;
+          }
+        }
+      }
+      
+      return obj;
+
     }
   };
   
@@ -135,15 +155,35 @@
 */
 (function (context) {
 
-  context.metaScore.Array = {
+  var metaScore = context.metaScore;
+
+  metaScore.Array = {
 
     /**
-    * Checks if an object is an array
-    * @param {array} the object
-    * @returns {boolean} true if the object is an array, false otherwise
+    * Checks if a value is in an array
+    * @param {mixed} the value to check
+    * @param {array} the array
+    * @returns {number} the index of the value if found, -1 otherwise
     */
-    isArray: function(arr) {  
-      return Object.prototype.toString.call(arr) === '[object Array]';
+    inArray: function (value, arr) {
+      var len, i = 0;
+
+      if(arr) {
+        if(arr.indexOf){
+          return arr.indexOf(value);
+        }
+
+        len = arr.length;
+
+        for ( ; i < len; i++ ) {
+          // Skip accessing in sparse arrays
+          if ( i in arr && arr[i] === value ) {
+            return i;
+          }
+        }
+      }
+
+      return -1;
     },
 
     /**
@@ -162,7 +202,7 @@
     */
     shuffle: function(arr) {
 
-      var shuffled = context.metaScore.Array.copy(arr);
+      var shuffled = metaScore.Array.copy(arr);
 
       shuffled.sort(function(){
         return ((Math.random() * 3) | 0) - 1;
@@ -202,15 +242,22 @@
     * @param {function} the function to call
     * @returns {void}
     */
-    each: function(arr, fn, scope) {
+    each: function(arr, callback, scope) {
     
-      if(!scope){
-        scope = context;
-      }
+      var i = 0,
+        l = arr.length,
+        value,
+        scope_provided = scope !== undefined;
 
-      for(var i = 0, l = arr.length; i < l; i++) {
-        fn.call(scope, arr[i]);
+      for(; i < l; i++) {
+        value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
+        
+        if (value === false) {
+          break;
+        }
       }
+      
+      return arr;
 
     }
   };
@@ -219,13 +266,258 @@
 /*global global*/
 
 /**
+* Function helper functions
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+
+  metaScore.Function = {
+
+    /**
+    * Checks if a variable is of a certain type
+    * @param {mixed} the variable
+    * @param {string} the type to check against
+    * @returns {boolean} true if the variable is of the specified type, false otherwise
+    */
+    proxy: function(fn, scope) {
+    
+      var args;
+      
+      if (!metaScore.Var.type(fn, 'function')) {
+        return undefined;
+      }
+      
+      args = Array.prototype.slice.call(arguments, 2);
+      
+      return function () {
+        return fn.apply(scope || this, args);
+      };
+    }
+  };
+  
+}(global));
+/*global global console ActiveXObject*/
+
+/**
+* Ajax helper functions
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+
+  metaScore.Ajax = {
+  
+    /**
+    * ActiveX XMLHttp versions
+    */
+    activeX: [
+      "MSXML2.XMLHttp.5.0",
+      "MSXML2.XMLHttp.4.0",
+      "MSXML2.XMLHttp.3.0",
+      "MSXML2.XMLHttp",
+      "Microsoft.XMLHttp"
+    ],
+  
+    /**
+    * ActiveX XMLHttp versions
+    */
+    defaults: {
+      'method': 'GET',
+      'headers': [],
+      'async': true,
+      'data': {},
+      'complete': null,
+      'success': null,
+      'error': null
+    },
+
+    /**
+    * Create an XMLHttp object
+    * @returns {object} the XMLHttp object
+    */
+    createXHR: function() {
+    
+      var xhr, i, l;
+    
+      if (typeof XMLHttpRequest !== "undefined") {
+        xhr = new XMLHttpRequest();
+        return xhr;
+      }
+      else if (window.ActiveXObject) {
+        for (i = 0, l = metaScore.Ajax.activeX.length; i < l; i++) {
+          try {
+            xhr = new ActiveXObject(metaScore.Ajax.activeX[i]);
+            return xhr;
+          }
+          catch (e) {}
+        }
+      }
+      
+      throw new Error("XMLHttp object could be created.");
+      
+    },
+
+    /**
+    * Send an XMLHttp request
+    * @param {string} the url of the request
+    * @param {object} options to set for the request; see the defaults variable
+    * @returns {object} the XMLHttp object
+    */
+    send: function(url, options) {
+    
+      var key,
+        xhr = metaScore.Ajax.createXHR(),
+        data, query = [];
+      
+      options = metaScore.Object.extend({}, metaScore.Ajax.defaults, options);
+      
+      metaScore.Object.each(options.data, function(key, value){
+        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+      });
+      
+      if(options.method === 'POST'){
+        data = query.join('&');
+        options.headers['Content-type'] = 'application/x-www-form-urlencoded';
+      }
+      else{
+        url += '?'+ query.join('&');
+      }
+      
+      xhr.open(options.method, url, options.async);
+      
+      metaScore.Object.each(options.headers, function(key, value){
+        xhr.setRequestHeader(key, value);
+      });
+      
+      xhr.onreadystatechange = function() {
+        console.log(xhr.readyState);
+      
+        if (xhr.readyState === 4) {
+          if(metaScore.Var.is(options.complete, 'function')){
+            options.complete(xhr);
+          }
+          if(xhr.status >= 200 && status < 300 || status === 304){
+            if(metaScore.Var.is(options.success, 'function')){
+              options.success(xhr);
+            }
+          }
+          else if(metaScore.Var.is(options.error, 'function')){
+            options.error(xhr);
+          }
+        }
+      };
+      
+      xhr.send(data);
+      
+      return xhr;
+      
+    },
+
+    /**
+    * Send an XMLHttp GET request
+    * @param {string} the url of the request
+    * @param {object} options to set for the request; see the defaults variable
+    * @returns {object} the XMLHttp object
+    */
+    get: function(url, options) {
+      
+      metaScore.Object.extend(options, {'method': 'GET'});
+      
+      return metaScore.Ajax.send(url, options);
+      
+    },
+
+    /**
+    * Send an XMLHttp POST request
+    * @param {string} the url of the request
+    * @param {object} options to set for the request; see the defaults variable
+    * @returns {object} the XMLHttp object
+    */
+    post: function(url, options) {
+      
+      metaScore.Object.extend(options, {'method': 'POST'});
+      
+      return metaScore.Ajax.send(url, options);
+      
+    }
+
+  };
+  
+}(global));
+/*global global*/
+
+/**
+* Defines the Class object
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+  
+  metaScore.Class = function(configs){
+  
+    var _this = this;
+          
+    metaScore.Object.each(configs, function(key, value){
+      this.createGetter(configs, key);
+      this.createSetter(configs, key);
+    }, this);
+    
+  };
+  
+  metaScore.Class.prototype.createGetter = function(object, prop){
+    this['get'+ metaScore.String.capitalize(prop)] = function(){
+      return object[prop];
+    };
+  };
+  
+  metaScore.Class.prototype.createSetter = function(object, prop){
+    this['set'+ metaScore.String.capitalize(prop)] = function(value){
+      object[prop] = value;
+    };
+  };
+  
+  metaScore.Class.extend = function (constructor, static_properties, prototype_properties) {
+  
+    var cls, key;
+  
+    // set the class's constructor
+    if(constructor){
+      cls = constructor;
+    }
+    else{
+      cls = this.prototype.constructor;
+    }
+  
+    cls.prototype = new metaScore.Class();
+    cls.prototype.constructor =  cls;
+    cls.superClass = this;
+    
+    // set the class's static properties
+    metaScore.Object.each(static_properties, function(key, value){
+      cls[key] = value;
+    });
+    
+    // set the class's prototype properties
+    metaScore.Object.each(prototype_properties, function(key, value){
+      cls.prototype[key] = value;
+    });
+    
+    return cls;
+    
+  };
+    
+}(global));
+/*global global*/
+
+/**
 * Dom helper functions
 */
 (function (context) {
 
-  context.metaScore.Dom = context.metaScore.Class.extend(
-  
-  
+  var metaScore = context.metaScore;
+
+  metaScore.Dom = metaScore.Class.extend(  
   
     // constructor
     function(els) {
@@ -234,9 +526,7 @@
       for(var i = 0; i < els.length; i++ ) {
         this.els[i] = els[i];
       }
-    },
-    
-    
+    },    
     
     // static properties
     {
@@ -274,7 +564,7 @@
           parent = document;
         }
 
-        if (context.metaScore.String.isString(selector)) {
+        if (metaScore.Var.is(selector, 'string')) {
           els = parent.querySelectorAll(selector);
         }
         else if (selector.length) { 
@@ -284,7 +574,7 @@
           els = [selector];
         }
 
-        return new context.metaScore.Dom(els);
+        return new metaScore.Dom(els);
       },
 
       /**
@@ -295,22 +585,22 @@
       */         
       create: function (tag, attrs) {
 
-        var dom = new context.metaScore.Dom([document.createElement(tag)]);
+        var dom = new metaScore.Dom([document.createElement(tag)]);
         
         if (attrs) {
           if (attrs.hasOwnProperty('class')) {
             dom.addClass(attrs['class']);
             delete attrs['class'];
           }
+          
           if (attrs.hasOwnProperty('text')) {
             dom.text(attrs['text']);
             delete attrs['text'];
           }
-          for (var key in attrs) {
-            if (attrs.hasOwnProperty(key)) {
-              dom.attr(key, attrs[key]);
-            }
-          }
+          
+          metaScore.Object.each(attrs, function(key, value){
+            dom.attr(key, value);
+          });
         }
 
         return dom;
@@ -425,11 +715,11 @@
       * @returns {void}
       */
       append: function(el, children){
-        if (!context.metaScore.Array.isArray(children)) {
+        if (!metaScore.Var.is(children, 'array')) {
           children = [children];
         }
         
-        context.metaScore.Array.each(children, function(child){
+        metaScore.Array.each(children, function(child){
           el.appendChild(child);
         }, this);
       },
@@ -444,45 +734,43 @@
       }
     },
     
-    
-    
     // prototype properties
     {
       get: function(index){
         return this.els[index];
       },
       addClass: function(className) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.addClass(el, className);
         }, this);
         return this;        
       },      
       removeClass: function(className) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.removeClass(el, className);
         }, this);        
         return this;        
       },
       toggleClass: function(className) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.toggleClass(el, className);
         }, this);        
         return this;        
       },
       text: function(value) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.text(el, value);
         }, this);        
         return this;        
       },
       attr: function(name, value) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.attr(el, name, value);
         }, this);
         return this;
       },
       css: function(name, value) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.css(el, name, value);
         }, this);
         return this;
@@ -492,17 +780,17 @@
         return this;
       },
       appendTo: function(parent){
-        if(parent instanceof context.metaScore.Dom){
+        if(parent instanceof metaScore.Dom){
           parent = parent.get(0);
         }
         
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.append(parent, el);
         }, this);
         return this;
       },
       remove: function(){
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.remove(el);
         }, this);
         return this;

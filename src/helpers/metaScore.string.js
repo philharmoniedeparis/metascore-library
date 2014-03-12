@@ -5,24 +5,17 @@
 */
 (function (context) {
 
-  context.metaScore.String = {
+  var metaScore = context.metaScore;
+
+  metaScore.String = {
 
     /**
-    * Checks if an object is a string
-    * @param {string} the object
-    * @returns {boolean} true if the object is a string, false otherwise
-    */
-    isString: function(str) {  
-      return Object.prototype.toString.call(str) === '[object String]';
-    },
-
-    /**
-    * Capitalize the first letter of string
+    * Capitalize a string
     * @param {string} the original string
-    * @returns {string} the string with the first lettre capitalized
+    * @returns {string} the capitalized string
     */
-    capitaliseFirstLetter: function(str){
-      return str.charAt(0).toUpperCase() + str.slice(1);
+    capitalize: function(str){
+      return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     }
   };
   

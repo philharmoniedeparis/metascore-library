@@ -5,9 +5,9 @@
 */
 (function (context) {
 
-  context.metaScore.Dom = context.metaScore.Class.extend(
-  
-  
+  var metaScore = context.metaScore;
+
+  metaScore.Dom = metaScore.Class.extend(  
   
     // constructor
     function(els) {
@@ -16,9 +16,7 @@
       for(var i = 0; i < els.length; i++ ) {
         this.els[i] = els[i];
       }
-    },
-    
-    
+    },    
     
     // static properties
     {
@@ -56,7 +54,7 @@
           parent = document;
         }
 
-        if (context.metaScore.String.isString(selector)) {
+        if (metaScore.Var.is(selector, 'string')) {
           els = parent.querySelectorAll(selector);
         }
         else if (selector.length) { 
@@ -66,7 +64,7 @@
           els = [selector];
         }
 
-        return new context.metaScore.Dom(els);
+        return new metaScore.Dom(els);
       },
 
       /**
@@ -77,22 +75,22 @@
       */         
       create: function (tag, attrs) {
 
-        var dom = new context.metaScore.Dom([document.createElement(tag)]);
+        var dom = new metaScore.Dom([document.createElement(tag)]);
         
         if (attrs) {
           if (attrs.hasOwnProperty('class')) {
             dom.addClass(attrs['class']);
             delete attrs['class'];
           }
+          
           if (attrs.hasOwnProperty('text')) {
             dom.text(attrs['text']);
             delete attrs['text'];
           }
-          for (var key in attrs) {
-            if (attrs.hasOwnProperty(key)) {
-              dom.attr(key, attrs[key]);
-            }
-          }
+          
+          metaScore.Object.each(attrs, function(key, value){
+            dom.attr(key, value);
+          });
         }
 
         return dom;
@@ -207,11 +205,11 @@
       * @returns {void}
       */
       append: function(el, children){
-        if (!context.metaScore.Array.isArray(children)) {
+        if (!metaScore.Var.is(children, 'array')) {
           children = [children];
         }
         
-        context.metaScore.Array.each(children, function(child){
+        metaScore.Array.each(children, function(child){
           el.appendChild(child);
         }, this);
       },
@@ -226,45 +224,43 @@
       }
     },
     
-    
-    
     // prototype properties
     {
       get: function(index){
         return this.els[index];
       },
       addClass: function(className) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.addClass(el, className);
         }, this);
         return this;        
       },      
       removeClass: function(className) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.removeClass(el, className);
         }, this);        
         return this;        
       },
       toggleClass: function(className) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.toggleClass(el, className);
         }, this);        
         return this;        
       },
       text: function(value) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.text(el, value);
         }, this);        
         return this;        
       },
       attr: function(name, value) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.attr(el, name, value);
         }, this);
         return this;
       },
       css: function(name, value) {  
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.css(el, name, value);
         }, this);
         return this;
@@ -274,17 +270,17 @@
         return this;
       },
       appendTo: function(parent){
-        if(parent instanceof context.metaScore.Dom){
+        if(parent instanceof metaScore.Dom){
           parent = parent.get(0);
         }
         
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.append(parent, el);
         }, this);
         return this;
       },
       remove: function(){
-        context.metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(el) {
           this.constructor.remove(el);
         }, this);
         return this;

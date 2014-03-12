@@ -20,10 +20,13 @@ module.exports = function(grunt) {
   // Add your modules to this list
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   var MODULE_LIST = [
-      sub('src/%s.class.js'),
-      sub('src/helpers/%s.function.js'),
+      sub('src/helpers/%s.var.js'),
       sub('src/helpers/%s.string.js'),
+      sub('src/helpers/%s.object.js'),
       sub('src/helpers/%s.array.js'),
+      sub('src/helpers/%s.function.js'),
+      sub('src/helpers/%s.ajax.js'),
+      sub('src/helpers/%s.class.js'),
       sub('src/helpers/%s.dom.js')
     ];
 
@@ -99,7 +102,7 @@ module.exports = function(grunt) {
       }
     },
     qunit: {
-      files: ['test/qunit*.html']
+      all: ['test/index.html']
     },
     jshint: {
       all: [
@@ -111,9 +114,11 @@ module.exports = function(grunt) {
       }
     }
   });
-
   grunt.registerTask('default', [
       'build',
+      'qunit'
+    ]);
+  grunt.registerTask('test', [
       'qunit'
     ]);
   grunt.registerTask('build', [

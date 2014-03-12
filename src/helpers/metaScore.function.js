@@ -5,17 +5,30 @@
 */
 (function (context) {
 
-  context.metaScore.Function = {
+  var metaScore = context.metaScore;
+
+  metaScore.Function = {
 
     /**
-    * Checks if an object is a function
-    * @param {function} the object
-    * @returns {boolean} true if the object is a function, false otherwise
+    * Checks if a variable is of a certain type
+    * @param {mixed} the variable
+    * @param {string} the type to check against
+    * @returns {boolean} true if the variable is of the specified type, false otherwise
     */
-    isFunction: function(fn) {  
-      return Object.prototype.toString.call(fn) === '[object Function]';
-    }
+    proxy: function(fn, scope) {
     
+      var args;
+      
+      if (!metaScore.Var.type(fn, 'function')) {
+        return undefined;
+      }
+      
+      args = Array.prototype.slice.call(arguments, 2);
+      
+      return function () {
+        return fn.apply(scope || this, args);
+      };
+    }
   };
   
 }(global));
