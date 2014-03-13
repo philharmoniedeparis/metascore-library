@@ -9,14 +9,8 @@ module.exports = function(grunt) {
   // Helper variables
   var LIBRARY_NAME = 'metaScore',  
       MODULE_LIST = [
-        sub('src/helpers/%s.var.js'),
-        sub('src/helpers/%s.string.js'),
-        sub('src/helpers/%s.object.js'),
-        sub('src/helpers/%s.array.js'),
-        sub('src/helpers/%s.function.js'),
-        sub('src/helpers/%s.ajax.js'),
-        sub('src/helpers/%s.class.js'),
-        sub('src/helpers/%s.dom.js')
+        sub('src/%s.base.js'),
+        sub('src/helpers/%s.*.js')
       ],
       DIST_HEAD_LIST = [
         sub('src/%s.intro.js'),

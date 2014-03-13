@@ -1,4 +1,4 @@
-/*global global*/
+/*global global console*/
 
 /**
 * Dom helper functions
@@ -7,19 +7,15 @@
 
   var metaScore = context.metaScore;
 
-  metaScore.Dom = metaScore.Class.extend(  
-  
-    // constructor
-    function(els) {
+  metaScore.Dom = metaScore.Base.extend({
+    constructor: function(els) {
       this.els = [];
 
       for(var i = 0; i < els.length; i++ ) {
         this.els[i] = els[i];
       }
-    },    
-    
-    // static properties
-    {
+    },
+    statics: {
       /**
       * Regular expression that matches dashed string for camelizing
       */
@@ -209,7 +205,7 @@
           children = [children];
         }
         
-        metaScore.Array.each(children, function(child){
+        metaScore.Array.each(children, function(index, child){
           el.appendChild(child);
         }, this);
       },
@@ -223,44 +219,42 @@
         el.parentElement.removeChild(el);
       }
     },
-    
-    // prototype properties
-    {
+    prototypes: {
       get: function(index){
         return this.els[index];
       },
       addClass: function(className) {  
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.addClass(el, className);
         }, this);
         return this;        
       },      
       removeClass: function(className) {  
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.removeClass(el, className);
         }, this);        
         return this;        
       },
       toggleClass: function(className) {  
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.toggleClass(el, className);
         }, this);        
         return this;        
       },
       text: function(value) {  
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.text(el, value);
         }, this);        
         return this;        
       },
       attr: function(name, value) {  
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.attr(el, name, value);
         }, this);
         return this;
       },
       css: function(name, value) {  
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.css(el, name, value);
         }, this);
         return this;
@@ -274,18 +268,18 @@
           parent = parent.get(0);
         }
         
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.append(parent, el);
         }, this);
         return this;
       },
       remove: function(){
-        metaScore.Array.each(this.els, function(el) {
+        metaScore.Array.each(this.els, function(index, el) {
           this.constructor.remove(el);
         }, this);
         return this;
       }
     }
-  );
+  });
   
 }(global));
