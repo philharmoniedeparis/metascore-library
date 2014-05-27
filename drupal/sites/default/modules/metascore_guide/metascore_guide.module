@@ -1,0 +1,18 @@
+<?php
+/**
+ * @file
+ * Code for the metaScore Guide feature.
+ */
+
+include_once 'metascore_guide.features.inc';
+
+/**
+ * Implements hook_services_resources().
+ */
+function metascore_guide_services_resources() {
+
+   module_load_include('inc', 'metascore_guide', 'metascore_guide.services');
+   
+   return _metascore_guide_services_definition();
+   
+}

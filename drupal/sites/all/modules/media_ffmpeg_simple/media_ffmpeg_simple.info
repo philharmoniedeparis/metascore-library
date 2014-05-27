@@ -1,0 +1,17 @@
+name = Simple ffmpeg engine
+description = Media derivatives api simple ffmpeg engine.
+package = Media
+core = 7.x
+
+files[] = media_ffmpeg_simple.module
+
+dependencies[] = media_derivatives
+
+testing_api = 2.x
+
+; Information added by drupal.org packaging script on 2012-04-11
+version = "7.x-1.0-beta2"
+core = "7.x"
+project = "media_ffmpeg_simple"
+datestamp = "1334174149"
+

@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function services_api_menu() {
+
+  $items['admin/structure/services/list/%/api'] = array(
+    'title' => 'API',
+    'page callback' => '_services_api_endpoint_api',
+    'page arguments' => array(4),
+    'access arguments' => array('administer services'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 99,
+  );
+  
+  return $items;
+
+}
+
+function _services_api_endpoint_api($endpoint_name){
+
+  module_load_include('resource_runtime.inc', 'services');
+  
+  function filter_resources($element) {
+    return is_array($element);
+  }
+
+  // Get all installed resources
+  $resources = module_invoke_all('services_resources');
+  $resources = array_filter($resources, 'filter_resources');
+
+  // Load the endpoint
+  $endpoint = NULL;
+  if (!empty($endpoint_name)) {
+    $endpoint = services_endpoint_load($endpoint_name);
+    // Apply the endpoint on the services
+    _services_apply_endpoint($resources, $endpoint, TRUE);
+  }
+
+  drupal_alter('services_resources', $resources, $endpoint);
+  
+  drupal_alter('services_resources_post_processing', $resources, $endpoint);
+
+  // Do some endpoint-dependent processing
+  if ($endpoint) {
+    // Apply any aliases from endpoint
+    if (!empty($endpoint)) {
+      $aliased = array();
+    }
+    foreach ($resources as $key => $def) {
+      if (!empty($def['endpoint']['alias'])) {
+        $aliased[$def['endpoint']['alias']] = $def;
+      }
+      else {
+        $aliased[$key] = $def;
+      }
+    }
+    $resources = $aliased;
+  }
+  
+  return theme('service_api_endpoint_api', array('endpoint' => (array) $endpoint, 'resources' => $resources));
+
+}
+
+function services_api_theme($existing, $type, $theme, $path){
+
+  return array(
+    'service_api_endpoint_api' => array(
+      'template' => 'service_endpoint_api',
+      'path' => "{$path}/tpl",
+      'variables' => array(
+        'endpoint' => NULL,
+        'resources' => NULL,
+      ),
+    ),
+  );
+    
+}
