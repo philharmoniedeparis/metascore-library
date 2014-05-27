@@ -10,7 +10,10 @@ module.exports = function(grunt) {
   var LIBRARY_NAME = 'metaScore',  
       MODULE_LIST = [
         sub('src/%s.base.js'),
-        sub('src/helpers/%s.*.js')
+        sub('src/helpers/%s.*.js'),
+        sub('src/forms/%s.*.js'),
+        sub('src/media/%s.*.js'),
+        sub('src/editor/%s.*.js')
       ],
       DIST_HEAD_LIST = [
         sub('src/%s.intro.js'),
@@ -31,6 +34,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-text-replace');
 
   // Configure grunt
@@ -60,6 +64,17 @@ module.exports = function(grunt) {
           from: "[[VERSION]]",
           to: "<%= pkg.version %>"
         }]
+      }
+    },
+    less: {
+      editor: {
+        options: {
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          "dist/metaScore-editor.css": "src/editor/metaScore.editor.less"
+        }
       }
     },
     uglify: {
@@ -101,7 +116,8 @@ module.exports = function(grunt) {
     'concat:dist',
     'uglify:dist',
     'concat:dev',
-    'replace'
+    'replace',
+    'less'
   ]);
   
   grunt.registerTask('test', [

@@ -8,14 +8,12 @@
   var metaScore = context.metaScore;
 
   metaScore.Dom = metaScore.Base.extend({
-    constructor: function(els) {
-      this.els = [];
-
-      for(var i = 0; i < els.length; i++ ) {
-        this.els[i] = els[i];
-      }
-    },
     statics: {
+      /**
+      * Regular expression that matches an element's string
+      */
+      stringRe: /^<(.)+>$/,
+      
       /**
       * Regular expression that matches dashed string for camelizing
       */
@@ -41,56 +39,51 @@
       * Select elements by selecor
       * @param {string} the selector
       * @param {object} an optional parent to constrain the matched elements 
-      * @returns {object} a metaScore.Dom instance
+      * @returns {array} an array of HTML elements
       */
-      select: function (selector, parent) {    
-        var els;
+      selectElements: function (selector, parent) {      
+        var elements;
         
         if(!parent){
           parent = document;
         }
 
         if (metaScore.Var.is(selector, 'string')) {
-          els = parent.querySelectorAll(selector);
+          elements = parent.querySelectorAll(selector);
         }
         else if (selector.length) { 
-          els = selector;
+          elements = selector;
         }
         else {
-          els = [selector];
+          elements = [selector];
         }
 
-        return new metaScore.Dom(els);
+        return elements;
       },
 
       /**
-      * Creates an element
-      * @param {string} the tag of the element to create
-      * @param {attrs} an optional object of attributes to assign
-      * @returns {object} a metaScore.Dom instance
-      */         
-      create: function (tag, attrs) {
-
-        var dom = new metaScore.Dom([document.createElement(tag)]);
+      * Creates an element from an HTML string
+      * @param {string} the HTML string
+      * @returns {object} an HTML element
+      */
+      elementFromString: function(str){
+      
+        var parser, doc, errors;
         
-        if (attrs) {
-          if (attrs.hasOwnProperty('class')) {
-            dom.addClass(attrs['class']);
-            delete attrs['class'];
-          }
-          
-          if (attrs.hasOwnProperty('text')) {
-            dom.text(attrs['text']);
-            delete attrs['text'];
-          }
-          
-          metaScore.Object.each(attrs, function(key, value){
-            dom.attr(key, value);
-          });
+        if(!str.match(/^<(.)+>$/)){
+          return null;
         }
-
-        return dom;
-
+      
+        parser = new DOMParser();
+        doc = parser.parseFromString(str, 'text/xml');
+        errors = doc.getElementsByTagName('parsererror');
+        
+        if(errors.length > 0){
+          throw new Error('A parsing error has occured.');
+        }
+        
+        return doc.firstChild;
+        
       },
 
       /**
@@ -99,8 +92,8 @@
       * @param {string} the class to check
       * @returns {boolean} true if the element has the given class, false otherwise
       */     
-      hasClass: function(el, className){
-        return el.classList.contains(className);
+      hasClass: function(element, className){
+        return element.classList.contains(className);
       },
 
       /**
@@ -109,12 +102,12 @@
       * @param {string} the class(es) to add; separated by a space
       * @returns {void}
       */
-      addClass: function(el, className){
+      addClass: function(element, className){
         var classNames = className.split(" "),
           i = 0, l = classNames.length;
         
         for(; i<l; i++){
-          el.classList.add(classNames[i]);
+          element.classList.add(classNames[i]);
         }
       },
 
@@ -124,12 +117,12 @@
       * @param {string} the class(es) to remove; separated by a space
       * @returns {void}
       */
-      removeClass: function(el, className){
+      removeClass: function(element, className){
         var classNames = className.split(" "),
           i = 0, l = classNames.length;
         
         for(; i<l; i++){
-          el.classList.remove(classNames[i]);
+          element.classList.remove(classNames[i]);
         }
       },
 
@@ -139,12 +132,12 @@
       * @param {string} the class(es) to toggle; separated by a space
       * @returns {void}
       */
-      toggleClass: function(el, className){
+      toggleClass: function(element, className){
         var classNames = className.split(" "),
           i = 0, l = classNames.length;
         
         for(; i<l; i++){
-          el.classList.toggle(classNames[i]);
+          element.classList.toggle(classNames[i]);
         }
       },
 
@@ -154,12 +147,12 @@
       * @param {string} an optional text to set
       * @returns {string} the value of the innerHTML
       */
-      text: function(el, value){
+      text: function(element, value){
         if(value !== undefined){
-          el.innerHTML = value;
+          element.innerHTML = value;
         }
         
-        return el.innerHTML;
+        return element.innerHTML;
       },
 
       /**
@@ -169,12 +162,35 @@
       * @param {string} an optional value to set
       * @returns {string} the value of the attribute
       */
-      attr: function(el, name, value){
-        if(value !== undefined){
-          el.setAttribute(name, value);
-        }
+      attr: function(element, name, value){
         
-        return el.getAttribute(name);
+        if(metaScore.Var.is(name, 'object')){
+          metaScore.Object.each(name, function(key, value){
+            metaScore.Dom.attr(element, key, value);
+          }, this);
+        }
+        else{
+          switch(name){
+            case 'class':
+              this.addClass(element, value);
+              break;
+              
+            case 'text':
+              this.text(element, value);
+              break;
+              
+            default:      
+              if(value !== undefined){
+                element.setAttribute(name, value);
+              }
+              else{
+                element.removeAttribute(name);
+              }
+              break;
+          }
+        }
+
+        return this;
       },
 
       /**
@@ -184,14 +200,14 @@
       * @param {string} an optional value to set
       * @returns {string} the value of the property
       */
-      css: function(el, name, value){
+      css: function(element, name, value){
         name = this.camel(name);
       
         if(value !== undefined){
-          el.style[name] = value;
+          element.style[name] = value;
         }
         
-        return el.style[name];
+        return element.style[name];
       },
 
       /**
@@ -200,13 +216,13 @@
       * @param {object/array} the child(ren) to append
       * @returns {void}
       */
-      append: function(el, children){
+      append: function(element, children){
         if (!metaScore.Var.is(children, 'array')) {
           children = [children];
         }
         
         metaScore.Array.each(children, function(index, child){
-          el.appendChild(child);
+          element.appendChild(child);
         }, this);
       },
 
@@ -215,70 +231,101 @@
       * @param {object} the dom element
       * @returns {void}
       */
-      remove: function(el){
-        el.parentElement.removeChild(el);
+      remove: function(element){
+        element.parentElement.removeChild(element);
       }
     },
-    prototypes: {
-      get: function(index){
-        return this.els[index];
-      },
-      addClass: function(className) {  
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.addClass(el, className);
-        }, this);
-        return this;        
-      },      
-      removeClass: function(className) {  
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.removeClass(el, className);
-        }, this);        
-        return this;        
-      },
-      toggleClass: function(className) {  
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.toggleClass(el, className);
-        }, this);        
-        return this;        
-      },
-      text: function(value) {  
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.text(el, value);
-        }, this);        
-        return this;        
-      },
-      attr: function(name, value) {  
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.attr(el, name, value);
-        }, this);
-        return this;
-      },
-      css: function(name, value) {  
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.css(el, name, value);
-        }, this);
-        return this;
-      },
-      append: function(children){
-        this.constructor.append(this.get(0), children);
-        return this;
-      },
-      appendTo: function(parent){
-        if(parent instanceof metaScore.Dom){
-          parent = parent.get(0);
+    init: function() {
+      var element, elements;
+    
+      this.elements = [];
+      
+      if(arguments.length > 0){
+        try{
+          element = metaScore.Dom.elementFromString(arguments[0]);
         }
+        catch(e){}
         
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.append(parent, el);
-        }, this);
-        return this;
-      },
-      remove: function(){
-        metaScore.Array.each(this.els, function(index, el) {
-          this.constructor.remove(el);
-        }, this);
-        return this;
+        if(element){
+          if(arguments.length > 1){
+            metaScore.Dom.attr(element, arguments[1]);
+          }
+          
+          elements = [element];
+        }
+        else{
+          elements = metaScore.Dom.selectElements.apply(this, arguments);
+        }
       }
+      
+      if(elements){
+        for(var i = 0; i < elements.length; i++ ) {
+          this.elements[i] = elements[i];
+        }
+      }
+    },
+    get: function(index){
+      return this.elements[index];
+    },
+    addClass: function(className) {  
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.addClass(element, className);
+      }, this);
+      return this;        
+    },      
+    removeClass: function(className) {  
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.removeClass(element, className);
+      }, this);        
+      return this;        
+    },
+    toggleClass: function(className) {  
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.toggleClass(element, className);
+      }, this);        
+      return this;        
+    },
+    text: function(value) {  
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.text(element, value);
+      }, this);        
+      return this;        
+    },
+    attr: function(name, value) {
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.attr(element, name, value);
+      }, this);
+    },
+    css: function(name, value) {
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.css(element, name, value);
+      }, this);
+      return this;
+    },
+    append: function(children){
+      if(children instanceof metaScore.Dom){
+        children = children.elements;
+      }
+      
+      metaScore.Dom.append(this.get(0), children);
+      
+      return this;
+    },
+    appendTo: function(parent){
+      if(parent instanceof metaScore.Dom){
+        parent = parent.get(0);
+      }
+      
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.append(parent, element);
+      }, this);
+      return this;
+    },
+    remove: function(){
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.remove(element);
+      }, this);
+      return this;
     }
   });
   

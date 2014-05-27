@@ -13,13 +13,12 @@
       'extend',
       'create'
     ],
-    extend: function(options) {  
+    extend: function(options) {
       var cls, i, l, key;
       
-      cls = options.hasOwnProperty('constructor') ? options.constructor : function(){};
+      cls = function(){};
       
       cls.prototype = Object.create(this.prototype);
-      cls.prototype.constructor = cls;
       cls.prototype.$super = this;
         
       // inherit statics
@@ -31,22 +30,30 @@
           }
         }
       }
-        
-      // set the class's static properties
-      if(options.hasOwnProperty('statics')){
-        metaScore.Base.addStatics.call(cls, options.statics);
-      }
       
-      // set the class's prototype properties
-      if(options.hasOwnProperty('prototypes')){
-        metaScore.Base.addPrototypes.call(cls, options.prototypes);
+      // set the class's properties
+      for(key in options){
+        if(options.hasOwnProperty(key)){
+          if(key === 'statics'){
+            metaScore.Base.addStatics.call(cls, options.statics);
+          }
+          else{
+            metaScore.Base.addPrototype.call(cls, key, options[key]);
+          }
+        }
       }
       
       return cls;
       
     },
     create: function(){
-    
+      var obj = Object.create(this.prototype);
+      
+      if(typeof obj.init === 'function'){
+        obj.init.apply(obj, arguments);
+      }
+      
+      return obj;
     },
     addStatics: function(statics){
       var key, value;
@@ -63,7 +70,7 @@
       if (typeof value === 'function') {
         this[key].$name = key;
       }
-    },  
+    },
     addPrototypes: function(prototypes){
       var key, value;
       
