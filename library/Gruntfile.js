@@ -9,23 +9,23 @@ module.exports = function(grunt) {
   // Helper variables
   var LIBRARY_NAME = 'metaScore',  
       MODULE_LIST = [
-        sub('src/%s.base.js'),
-        sub('src/helpers/%s.*.js'),
-        sub('src/forms/%s.*.js'),
-        sub('src/media/%s.*.js'),
-        sub('src/editor/%s.*.js')
+        sub('src/js/%s.base.js'),
+        sub('src/js/helpers/%s.*.js'),
+        sub('src/js/form/%s.*.js'),
+        sub('src/js/media/%s.*.js'),
+        sub('src/js/editor/%s.*.js')
       ],
       DIST_HEAD_LIST = [
-        sub('src/%s.intro.js'),
-        sub('src/%s.const.js'),
-        sub('src/%s.core.js')
+        sub('src/js/%s.intro.js'),
+        sub('src/js/%s.const.js'),
+        sub('src/js/%s.core.js')
       ],
       DEV_HEAD_LIST = [
-        sub('src/%s.intro.js'),
-        sub('src/%s.core.js')
+        sub('src/js/%s.intro.js'),
+        sub('src/js/%s.core.js')
       ],
       TAIL_LIST = [
-        sub('src/%s.outro.js')
+        sub('src/js/%s.outro.js')
       ],
       BANNER = '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n';
 
@@ -35,11 +35,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-text-replace');
 
   // Configure grunt
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    clean: {
+      dist: ['dist']
+    },
     concat: {
       dist: {
         options: {
@@ -73,7 +79,7 @@ module.exports = function(grunt) {
           optimization: 2
         },
         files: {
-          "dist/metaScore-editor.css": "src/editor/metaScore.editor.less"
+          "dist/metaScore-editor.css": "src/css/metaScore.editor.less"
         }
       }
     },
@@ -91,6 +97,18 @@ module.exports = function(grunt) {
         banner: BANNER
       }
     },
+    copy: {
+      imges: {
+        files: [
+          {
+            expand: true,
+            cwd:'src/',
+            src: ['img/**'],
+            dest: 'dist/'
+          }
+        ]
+      }
+    },
     qunit: {
       all: ['test/index.html']
     },
@@ -101,6 +119,15 @@ module.exports = function(grunt) {
       ],
       options: {
         jshintrc: '.jshintrc'
+      }
+    },
+    watch: {
+      scripts: {
+        files: ['src/**'],
+        tasks: ['build'],
+        options: {
+          interrupt: true
+        }
       }
     }
   });
@@ -113,11 +140,13 @@ module.exports = function(grunt) {
   
   grunt.registerTask('build', [
     'jshint',
+    'clean:dist',
     'concat:dist',
     'uglify:dist',
     'concat:dev',
     'replace',
-    'less'
+    'less',
+    'copy'
   ]);
   
   grunt.registerTask('test', [

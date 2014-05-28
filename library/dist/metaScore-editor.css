@@ -75,14 +75,49 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
+body {
+  margin: 0;
+}
 .metaScore-editor {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
 }
+.metaScore-editor .clearfix {
+  overflow: auto;
+  zoom: 1;
+}
+.metaScore-editor button {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.metaScore-editor button:hover {
+  opacity: 0.75;
+  filter: alpha(opacity=(75));
+}
+.metaScore-editor button:active {
+  opacity: 0.5;
+  filter: alpha(opacity=(50));
+}
+.metaScore-editor button.disabled {
+  opacity: 0.25;
+  filter: alpha(opacity=(25));
+  cursor: default;
+}
+.metaScore-editor .timefield {
+  display: inline-block;
+}
+.metaScore-editor .timefield input {
+  border: none;
+  background: none;
+}
 .metaScore-editor .main-menu {
-  padding: 15px 20px;
+  padding: 5px 10px;
   background-color: #dadada;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
   background-image: -webkit-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
@@ -91,4 +126,41 @@
   background-image: -o-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
   background-image: linear-gradient(top, #dadada 0%, #c8c8c8 100%);
   border-bottom: 2px solid #B2B2B2;
+}
+.metaScore-editor .main-menu .left {
+  float: left;
+}
+.metaScore-editor .main-menu .right {
+  float: right;
+}
+.metaScore-editor .main-menu button {
+  width: 20px;
+  height: 18px;
+  margin: 10px;
+}
+.metaScore-editor .main-menu button.new {
+  background-image: url('img/editor/main-menu/new.png');
+}
+.metaScore-editor .main-menu button.open {
+  background-image: url('img/editor/main-menu/open.png');
+}
+.metaScore-editor .main-menu button.save {
+  background-image: url('img/editor/main-menu/save.png');
+}
+.metaScore-editor .main-menu button.download {
+  background-image: url('img/editor/main-menu/download.png');
+}
+.metaScore-editor .main-menu button.delete {
+  margin-right: 30px;
+  background-image: url('img/editor/main-menu/delete.png');
+}
+.metaScore-editor .main-menu button.revert {
+  background-image: url('img/editor/main-menu/revert.png');
+}
+.metaScore-editor .main-menu button.undo {
+  background-image: url('img/editor/main-menu/undo.png');
+}
+.metaScore-editor .main-menu button.redo {
+  margin-right: 30px;
+  background-image: url('img/editor/main-menu/redo.png');
 }

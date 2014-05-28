@@ -28,7 +28,11 @@
         return function () {
           return fn.apply(scope || this, args);
         };
-      }
+      },
+      /**
+      * A reusable empty function
+      */
+      emptyFn: function(){}
     }
   });
   

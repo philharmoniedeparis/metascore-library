@@ -36,6 +36,20 @@
       },
 
       /**
+      * List of event that should generaly bubble up
+      */
+      bubbleEvents: {
+        'click': true,
+        'submit': true,
+        'mousedown': true,
+        'mousemove': true,
+        'mouseup': true,
+        'mouseover': true,
+        'mouseout': true,
+        'transitionend': true
+      },
+
+      /**
       * Select elements by selecor
       * @param {string} the selector
       * @param {object} an optional parent to constrain the matched elements 
@@ -51,7 +65,7 @@
         if (metaScore.Var.is(selector, 'string')) {
           elements = parent.querySelectorAll(selector);
         }
-        else if (selector.length) { 
+        else if (selector.length) {
           elements = selector;
         }
         else {
@@ -62,27 +76,21 @@
       },
 
       /**
-      * Creates an element from an HTML string
+      * Creates elements from an HTML string
       * @param {string} the HTML string
       * @returns {object} an HTML element
       */
-      elementFromString: function(str){
-      
-        var parser, doc, errors;
+      elementsFromString: function(str){      
+        var div;
         
         if(!str.match(/^<(.)+>$/)){
           return null;
         }
-      
-        parser = new DOMParser();
-        doc = parser.parseFromString(str, 'text/xml');
-        errors = doc.getElementsByTagName('parsererror');
         
-        if(errors.length > 0){
-          throw new Error('A parsing error has occured.');
-        }
+        div = document.createElement('div');
+        div.innerHTML = str;
         
-        return doc.firstChild;
+        return div.childNodes;
         
       },
 
@@ -142,6 +150,38 @@
       },
 
       /**
+      * Add an event listener on an element
+      * @param {object} the dom element
+      * @param {string} the event type to register
+      * @param {function} the callback function
+      * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
+      * @returns {void}
+      */
+      addListener: function(element, type, callback, useCapture){
+        if(useCapture === undefined){
+          useCapture = metaScore.Dom.bubbleEvents.hasOwnProperty('type') ? metaScore.Dom.bubbleEvents[type] : false;
+        }
+      
+        return element.addEventListener(type, callback, useCapture);
+      },
+
+      /**
+      * Remove an event listener from an element
+      * @param {object} the dom element
+      * @param {string} the event type to remove
+      * @param {function} the callback function
+      * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
+      * @returns {void}
+      */
+      removeListener: function(element, type, callback, useCapture){
+        if(useCapture === undefined){
+          useCapture = metaScore.Dom.bubbleEvents.hasOwnProperty('type') ? metaScore.Dom.bubbleEvents[type] : false;
+        }
+        
+        return element.removeEventListener(type, callback, useCapture);
+      },
+
+      /**
       * Sets or gets the innerHTML of an element
       * @param {object} the dom element
       * @param {string} an optional text to set
@@ -160,7 +200,7 @@
       * @param {object} the dom element
       * @param {string} the attribute's name
       * @param {string} an optional value to set
-      * @returns {string} the value of the attribute
+      * @returns {void}
       */
       attr: function(element, name, value){
         
@@ -189,8 +229,6 @@
               break;
           }
         }
-
-        return this;
       },
 
       /**
@@ -236,31 +274,22 @@
       }
     },
     init: function() {
-      var element, elements;
+    
+      var elements;
     
       this.elements = [];
       
       if(arguments.length > 0){
-        try{
-          element = metaScore.Dom.elementFromString(arguments[0]);
-        }
-        catch(e){}
+        elements = metaScore.Dom.elementsFromString(arguments[0]) || metaScore.Dom.selectElements.apply(this, arguments);
         
-        if(element){
-          if(arguments.length > 1){
-            metaScore.Dom.attr(element, arguments[1]);
+        if(elements){
+          for(var i = 0; i < elements.length; i++ ) {
+            this.elements[i] = elements[i];
           }
-          
-          elements = [element];
-        }
-        else{
-          elements = metaScore.Dom.selectElements.apply(this, arguments);
-        }
-      }
       
-      if(elements){
-        for(var i = 0; i < elements.length; i++ ) {
-          this.elements[i] = elements[i];
+          if(arguments.length > 1){
+            this.attr(arguments[1]);
+          }
         }
       }
     },
@@ -285,6 +314,12 @@
       }, this);        
       return this;        
     },
+    addListener: function(type, callback, useCapture) {  
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.addListener(element, type, callback, useCapture);
+      }, this);        
+      return this;        
+    },
     text: function(value) {  
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.text(element, value);
@@ -295,6 +330,8 @@
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.attr(element, name, value);
       }, this);
+      
+      return this;
     },
     css: function(name, value) {
       metaScore.Array.each(this.elements, function(index, element) {
@@ -311,14 +348,17 @@
       
       return this;
     },
-    appendTo: function(parent){
-      if(parent instanceof metaScore.Dom){
-        parent = parent.get(0);
+    appendTo: function(parent){    
+      if(!(parent instanceof metaScore.Dom)){
+        parent = metaScore.Dom.create(parent);
       }
+      
+      parent = parent.get(0);
       
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.append(parent, element);
       }, this);
+      
       return this;
     },
     remove: function(){

@@ -101,8 +101,8 @@
       caller = this.callSuper.caller;
       caller_name = caller.$name;
       
-      if(caller_name && this.$super.hasOwnProperty(caller_name)){
-        method = this.$super[caller_name];
+      if(caller_name && this.$super.prototype.hasOwnProperty(caller_name)){
+        method = this.$super.prototype[caller_name];
       }
       else if(!caller_name && caller === this.constructor){ // it must be the constructor method
         method = this.$super.constructor;
@@ -112,6 +112,16 @@
         method.apply(this, arguments);
       }
     
+    },
+    initConfig: function(configs){
+      configs = configs || {};
+    
+      if(this.hasOwnProperty('defaults')){
+        this.configs = metaScore.Object.extend({}, this.configs, this.defaults);
+      }
+      else{
+        this.configs = configs;
+      }
     }
   };
     

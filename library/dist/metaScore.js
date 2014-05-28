@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-04-07 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-05-29 - Oussama Mubarak */
 ;(function (global) {
 
   if (typeof DEBUG === 'undefined') {
@@ -133,8 +133,8 @@
       caller = this.callSuper.caller;
       caller_name = caller.$name;
       
-      if(caller_name && this.$super.hasOwnProperty(caller_name)){
-        method = this.$super[caller_name];
+      if(caller_name && this.$super.prototype.hasOwnProperty(caller_name)){
+        method = this.$super.prototype[caller_name];
       }
       else if(!caller_name && caller === this.constructor){ // it must be the constructor method
         method = this.$super.constructor;
@@ -144,6 +144,16 @@
         method.apply(this, arguments);
       }
     
+    },
+    initConfig: function(configs){
+      configs = configs || {};
+    
+      if(this.hasOwnProperty('defaults')){
+        this.configs = metaScore.Object.extend({}, this.configs, this.defaults);
+      }
+      else{
+        this.configs = configs;
+      }
     }
   };
     
@@ -449,6 +459,20 @@
       },
 
       /**
+      * List of event that should generaly bubble up
+      */
+      bubbleEvents: {
+        'click': true,
+        'submit': true,
+        'mousedown': true,
+        'mousemove': true,
+        'mouseup': true,
+        'mouseover': true,
+        'mouseout': true,
+        'transitionend': true
+      },
+
+      /**
       * Select elements by selecor
       * @param {string} the selector
       * @param {object} an optional parent to constrain the matched elements 
@@ -464,7 +488,7 @@
         if (metaScore.Var.is(selector, 'string')) {
           elements = parent.querySelectorAll(selector);
         }
-        else if (selector.length) { 
+        else if (selector.length) {
           elements = selector;
         }
         else {
@@ -475,27 +499,21 @@
       },
 
       /**
-      * Creates an element from an HTML string
+      * Creates elements from an HTML string
       * @param {string} the HTML string
       * @returns {object} an HTML element
       */
-      elementFromString: function(str){
-      
-        var parser, doc, errors;
+      elementsFromString: function(str){      
+        var div;
         
         if(!str.match(/^<(.)+>$/)){
           return null;
         }
-      
-        parser = new DOMParser();
-        doc = parser.parseFromString(str, 'text/xml');
-        errors = doc.getElementsByTagName('parsererror');
         
-        if(errors.length > 0){
-          throw new Error('A parsing error has occured.');
-        }
+        div = document.createElement('div');
+        div.innerHTML = str;
         
-        return doc.firstChild;
+        return div.childNodes;
         
       },
 
@@ -555,6 +573,38 @@
       },
 
       /**
+      * Add an event listener on an element
+      * @param {object} the dom element
+      * @param {string} the event type to register
+      * @param {function} the callback function
+      * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
+      * @returns {void}
+      */
+      addListener: function(element, type, callback, useCapture){
+        if(useCapture === undefined){
+          useCapture = metaScore.Dom.bubbleEvents.hasOwnProperty('type') ? metaScore.Dom.bubbleEvents[type] : false;
+        }
+      
+        return element.addEventListener(type, callback, useCapture);
+      },
+
+      /**
+      * Remove an event listener from an element
+      * @param {object} the dom element
+      * @param {string} the event type to remove
+      * @param {function} the callback function
+      * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
+      * @returns {void}
+      */
+      removeListener: function(element, type, callback, useCapture){
+        if(useCapture === undefined){
+          useCapture = metaScore.Dom.bubbleEvents.hasOwnProperty('type') ? metaScore.Dom.bubbleEvents[type] : false;
+        }
+        
+        return element.removeEventListener(type, callback, useCapture);
+      },
+
+      /**
       * Sets or gets the innerHTML of an element
       * @param {object} the dom element
       * @param {string} an optional text to set
@@ -573,7 +623,7 @@
       * @param {object} the dom element
       * @param {string} the attribute's name
       * @param {string} an optional value to set
-      * @returns {string} the value of the attribute
+      * @returns {void}
       */
       attr: function(element, name, value){
         
@@ -602,8 +652,6 @@
               break;
           }
         }
-
-        return this;
       },
 
       /**
@@ -649,31 +697,22 @@
       }
     },
     init: function() {
-      var element, elements;
+    
+      var elements;
     
       this.elements = [];
       
       if(arguments.length > 0){
-        try{
-          element = metaScore.Dom.elementFromString(arguments[0]);
-        }
-        catch(e){}
+        elements = metaScore.Dom.elementsFromString(arguments[0]) || metaScore.Dom.selectElements.apply(this, arguments);
         
-        if(element){
-          if(arguments.length > 1){
-            metaScore.Dom.attr(element, arguments[1]);
+        if(elements){
+          for(var i = 0; i < elements.length; i++ ) {
+            this.elements[i] = elements[i];
           }
-          
-          elements = [element];
-        }
-        else{
-          elements = metaScore.Dom.selectElements.apply(this, arguments);
-        }
-      }
       
-      if(elements){
-        for(var i = 0; i < elements.length; i++ ) {
-          this.elements[i] = elements[i];
+          if(arguments.length > 1){
+            this.attr(arguments[1]);
+          }
         }
       }
     },
@@ -698,6 +737,12 @@
       }, this);        
       return this;        
     },
+    addListener: function(type, callback, useCapture) {  
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.addListener(element, type, callback, useCapture);
+      }, this);        
+      return this;        
+    },
     text: function(value) {  
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.text(element, value);
@@ -708,6 +753,8 @@
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.attr(element, name, value);
       }, this);
+      
+      return this;
     },
     css: function(name, value) {
       metaScore.Array.each(this.elements, function(index, element) {
@@ -724,14 +771,17 @@
       
       return this;
     },
-    appendTo: function(parent){
-      if(parent instanceof metaScore.Dom){
-        parent = parent.get(0);
+    appendTo: function(parent){    
+      if(!(parent instanceof metaScore.Dom)){
+        parent = metaScore.Dom.create(parent);
       }
+      
+      parent = parent.get(0);
       
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.append(parent, element);
       }, this);
+      
       return this;
     },
     remove: function(){
@@ -773,7 +823,11 @@
         return function () {
           return fn.apply(scope || this, args);
         };
-      }
+      },
+      /**
+      * A reusable empty function
+      */
+      emptyFn: function(){}
     }
   });
   
@@ -864,6 +918,16 @@
       */
       capitalize: function(str){
         return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+      },
+
+      /**
+      * Translate a string
+      * @param {string} the original string
+      * @param {object} string replacements
+      * @returns {string} the translated string
+      */
+      t: function(str){
+        return str;
       }
     }
   });
@@ -912,6 +976,168 @@
       is: function(obj, type) {
         return metaScore.Var.type(obj) === type.toLowerCase();
       }
+    }
+  });
+  
+}(global));
+/*global global console*/
+
+/**
+* Button
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+  
+  metaScore.Form = metaScore.Form || {};
+
+  metaScore.Form.Button = metaScore.Dom.extend({
+    /**
+    * Keep track of the current state
+    */
+    disabled: false,
+    
+    defaults: {    
+      /**
+      * The handler function to call when clicked
+      */
+      handler: metaScore.Function.emptyFn
+    },
+
+    /**
+    * Initialize
+    * @param {object} a configuration object
+    * @returns {void}
+    */
+    init: function(configs) {
+      var btn = this;
+    
+      this.initConfig(configs);
+      
+      this.callSuper('<button/>');
+      
+      if(this.configs.hasOwnProperty('label')){
+        this.label = metaScore.Dom.create('<span/>', {'class': 'label', 'text': this.configs.label});
+        this.append(this.label);
+      }
+      
+      this.addListener('click', function(){
+        if(!btn.disabled){
+          btn.configs.handler.call(btn);
+        }
+      });
+    },
+
+    /**
+    * Disable the button
+    * @returns {object} the XMLHttp object
+    */
+    disable: function(){
+      this.addClass('disabled');
+      this.disabled = true;
+      
+      return this;
+    },
+
+    /**
+    * Enable the button
+    * @param {string} the url of the request
+    * @param {object} options to set for the request; see the defaults variable
+    * @returns {object} the XMLHttp object
+    */
+    enable: function(){
+      this.removeClass('disabled');
+      this.disabled = false;
+      
+      return this;
+    }
+  });
+  
+}(global));
+/*global global console*/
+
+/**
+* TimeField
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+  
+  metaScore.Form = metaScore.Form || {};
+
+  metaScore.Form.TimeField = metaScore.Dom.extend({
+    /**
+    * Keep track of the current state
+    */
+    disabled: false,
+    
+    defaults: {    
+      /**
+      * The handler function to call when clicked
+      */
+      handler: metaScore.Function.emptyFn
+    },
+
+    /**
+    * Initialize
+    * @param {object} a configuration object
+    * @returns {void}
+    */
+    init: function(configs) {
+      var field = this;
+    
+      this.initConfig(configs);
+      
+      this.callSuper('<div/>', {'class': 'timefield'});
+      
+      this.hours = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'hours', 'maxlength': 2})
+        .appendTo(this);
+      
+      this.minutes = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'minutes', 'maxlength': 2})
+        .addListener('change', function(){
+          var value = parseInt(this.value, 10),
+            hours;
+          
+          if(value > 59){
+            hours = field.hours.get(0);
+            hours.value = parseInt(hours.value, 10) + (value % 59);
+          }
+          else if(value < 0){
+            hours = field.hours.get(0);
+            hours.value = parseInt(hours.value, 10) - (value % 59);
+          }
+        })
+        .appendTo(this);
+      
+      this.seconds = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'seconds', 'maxlength': 2})
+        .appendTo(this);
+      
+      this.milliseconds = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'milliseconds', 'maxlength': 2})
+        .appendTo(this);
+    },
+
+    /**
+    * Disable the button
+    * @returns {object} the XMLHttp object
+    */
+    disable: function(){
+      this.addClass('disabled');
+      this.disabled = true;
+      
+      return this;
+    },
+
+    /**
+    * Enable the button
+    * @param {string} the url of the request
+    * @param {object} options to set for the request; see the defaults variable
+    * @returns {object} the XMLHttp object
+    */
+    enable: function(){
+      this.removeClass('disabled');
+      this.disabled = false;
+      
+      return this;
     }
   });
   
@@ -1005,14 +1231,11 @@
 
   var metaScore = context.metaScore;
 
-  metaScore.Editor = metaScore.Base.extend({
-    statics: {
-    },
+  metaScore.Editor = metaScore.Dom.extend({
     init: function(selector) {
     
-      this.element = metaScore.Dom.create(selector);
-      
-      this.element.addClass('metaScore-editor');
+      this.callSuper('<div/>', {'class': 'metaScore-editor'});    
+      this.appendTo(selector);
       
       this.setupUI();
       
@@ -1020,7 +1243,7 @@
     setupUI: function(){
     
       this.mainmenu = metaScore.Editor.MainMenu.create();
-      this.mainmenu.getElement().appendTo(this.element);
+      this.append(this.mainmenu);
       
     }
   });
@@ -1037,17 +1260,105 @@
   
   metaScore.Editor = metaScore.Editor || {};
 
-  metaScore.Editor.MainMenu = metaScore.Base.extend({
-    statics: {
-    },
+  metaScore.Editor.MainMenu = metaScore.Dom.extend({
     init: function() {
     
-      this.element = metaScore.Dom.create('<div/>', {'class': 'main-menu'});
-      
-    },
-    getElement: function(){
+      var left, right;
     
-      return this.element;
+      this.callSuper('<div/>', {'class': 'main-menu clearfix'});
+      
+      this.buttons = {};
+      
+      left = metaScore.Dom.create('<div/>', {'class': 'left'}).appendTo(this);
+      right = metaScore.Dom.create('<div/>', {'class': 'right'}).appendTo(this);
+      
+      this.buttons['new'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'new',
+          'title': metaScore.String.t('New')
+        })
+        .appendTo(left);
+      
+      this.buttons['open'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'open',
+          'title': metaScore.String.t('Open')
+        })
+        .appendTo(left);
+      
+      this.buttons['save'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'save',
+          'title': metaScore.String.t('save')
+        })
+        .appendTo(left);
+      
+      this.buttons['download'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'download',
+          'title': metaScore.String.t('download')
+        })
+        .appendTo(left);
+      
+      this.buttons['delete'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'delete',
+          'title': metaScore.String.t('delete')
+        })
+        .appendTo(left);
+      
+      this.buttons['time'] = metaScore.Form.TimeField.create()
+        .attr({
+          'class': 'time',
+          'title': metaScore.String.t('time')
+        })
+        .appendTo(left);
+      
+      this.buttons['revert'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'revert',
+          'title': metaScore.String.t('revert')
+        })
+        .appendTo(left);
+      
+      this.buttons['undo'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'undo',
+          'title': metaScore.String.t('undo')
+        })
+        .appendTo(left);
+      
+      this.buttons['redo'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'redo',
+          'title': metaScore.String.t('redo')
+        })
+        .disable()
+        .appendTo(left);
       
     }
   });

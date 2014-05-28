@@ -7,14 +7,11 @@
 
   var metaScore = context.metaScore;
 
-  metaScore.Editor = metaScore.Base.extend({
-    statics: {
-    },
+  metaScore.Editor = metaScore.Dom.extend({
     init: function(selector) {
     
-      this.element = metaScore.Dom.create(selector);
-      
-      this.element.addClass('metaScore-editor');
+      this.callSuper('<div/>', {'class': 'metaScore-editor'});    
+      this.appendTo(selector);
       
       this.setupUI();
       
@@ -22,7 +19,7 @@
     setupUI: function(){
     
       this.mainmenu = metaScore.Editor.MainMenu.create();
-      this.mainmenu.getElement().appendTo(this.element);
+      this.append(this.mainmenu);
       
     }
   });
