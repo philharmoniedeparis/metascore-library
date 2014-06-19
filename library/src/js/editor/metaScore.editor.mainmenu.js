@@ -108,6 +108,47 @@
         })
         .disable()
         .appendTo(left);
+        
+      
+      this.buttons['edit'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'edit',
+          'title': metaScore.String.t('edit')
+        })
+        .appendTo(right);
+      
+      this.buttons['grid'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'grid',
+          'title': metaScore.String.t('grid')
+        })
+        .appendTo(right);
+      
+      this.buttons['settings'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'settings',
+          'title': metaScore.String.t('settings')
+        })
+        .appendTo(right);
+      
+      this.buttons['help'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'help',
+          'title': metaScore.String.t('help')
+        })
+        .appendTo(right);
       
     }
   });

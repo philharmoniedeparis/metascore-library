@@ -37,10 +37,16 @@ body{
   
   .timefield{
     display: inline-block;
+    vertical-align: top;
     
     input{
+      width: 2.5em;
+      height: 100%;
+      margin: 0;
       border: none;
       background: none;
+      text-align: right;
+      font-family: Tahoma, Geneva, sans-serif;
     }
   }
 
@@ -74,18 +80,44 @@ body{
         background-image: url('img/editor/main-menu/download.png');
       }
       &.delete{
-        margin-right: 30px;
+        margin-right: 50px;
         background-image: url('img/editor/main-menu/delete.png');
       }
       &.revert{
+        margin-left: 50px;
         background-image: url('img/editor/main-menu/revert.png');
       }
       &.undo{
         background-image: url('img/editor/main-menu/undo.png');
       }
       &.redo{
-        margin-right: 30px;
+        margin-right: 50px;
         background-image: url('img/editor/main-menu/redo.png');
+      }
+      
+      &.edit{
+        background-image: url('img/editor/main-menu/edit.png');
+      }
+      &.grid{
+        background-image: url('img/editor/main-menu/grid.png');
+      }
+      &.settings{
+        background-image: url('img/editor/main-menu/settings.png');
+      }
+      &.help{
+        background-image: url('img/editor/main-menu/help.png');
+      }
+    }
+    
+    .timefield{
+      height: 18px;
+      margin: 10px;
+      padding-left: 18px; 
+      background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
+      
+      input{
+        color: #505050;
+        font-size: 0.7em;
       }
     }
   }

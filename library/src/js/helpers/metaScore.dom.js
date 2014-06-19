@@ -166,6 +166,21 @@
       },
 
       /**
+      * Trigger an event from an element
+      * @param {object} the dom element
+      * @param {string} the event type to trigger
+      * @param {boolean} whether the event should bubble
+      * @param {boolean} whether the event is cancelable
+      * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
+      */
+      triggerEvent: function(element, type, bubbling, cancelable){
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent(type, bubbling, cancelable);
+        
+        return element.dispatchEvent(event);
+      },
+
+      /**
       * Remove an event listener from an element
       * @param {object} the dom element
       * @param {string} the event type to remove
@@ -193,6 +208,20 @@
         }
         
         return element.innerHTML;
+      },
+
+      /**
+      * Sets or gets the value of an element
+      * @param {object} the dom element
+      * @param {string} an optional value to set
+      * @returns {string} the value
+      */
+      val: function(element, value){
+        if(value !== undefined){
+          element.value = value;
+        }
+        
+        return element.value;
       },
 
       /**
@@ -320,11 +349,30 @@
       }, this);        
       return this;        
     },
-    text: function(value) {  
+    triggerEvent: function(type, bubbling, cancelable){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.text(element, value);
-      }, this);        
-      return this;        
+        metaScore.Dom.triggerEvent(element, type, bubbling, cancelable);
+      }, this);
+    },
+    text: function(value) {  
+      if(value !== undefined){
+        metaScore.Array.each(this.elements, function(index, element) {
+          metaScore.Dom.text(element, value);
+        }, this);
+      }
+      else{
+        return metaScore.Dom.text(this.get(0));
+      }
+    },
+    val: function(value) {
+      if(value !== undefined){
+        metaScore.Array.each(this.elements, function(index, element) {
+          metaScore.Dom.val(element, value);
+        }, this);
+      }
+      else{
+        return metaScore.Dom.val(this.get(0));
+      }
     },
     attr: function(name, value) {
       metaScore.Array.each(this.elements, function(index, element) {

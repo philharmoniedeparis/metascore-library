@@ -111,10 +111,16 @@ body {
 }
 .metaScore-editor .timefield {
   display: inline-block;
+  vertical-align: top;
 }
 .metaScore-editor .timefield input {
+  width: 2.5em;
+  height: 100%;
+  margin: 0;
   border: none;
   background: none;
+  text-align: right;
+  font-family: Tahoma, Geneva, sans-serif;
 }
 .metaScore-editor .main-menu {
   padding: 5px 10px;
@@ -151,16 +157,39 @@ body {
   background-image: url('img/editor/main-menu/download.png');
 }
 .metaScore-editor .main-menu button.delete {
-  margin-right: 30px;
+  margin-right: 50px;
   background-image: url('img/editor/main-menu/delete.png');
 }
 .metaScore-editor .main-menu button.revert {
+  margin-left: 50px;
   background-image: url('img/editor/main-menu/revert.png');
 }
 .metaScore-editor .main-menu button.undo {
   background-image: url('img/editor/main-menu/undo.png');
 }
 .metaScore-editor .main-menu button.redo {
-  margin-right: 30px;
+  margin-right: 50px;
   background-image: url('img/editor/main-menu/redo.png');
+}
+.metaScore-editor .main-menu button.edit {
+  background-image: url('img/editor/main-menu/edit.png');
+}
+.metaScore-editor .main-menu button.grid {
+  background-image: url('img/editor/main-menu/grid.png');
+}
+.metaScore-editor .main-menu button.settings {
+  background-image: url('img/editor/main-menu/settings.png');
+}
+.metaScore-editor .main-menu button.help {
+  background-image: url('img/editor/main-menu/help.png');
+}
+.metaScore-editor .main-menu .timefield {
+  height: 18px;
+  margin: 10px;
+  padding-left: 18px;
+  background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
+}
+.metaScore-editor .main-menu .timefield input {
+  color: #505050;
+  font-size: 0.7em;
 }

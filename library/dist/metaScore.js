@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-05-29 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-06-19 - Oussama Mubarak */
 ;(function (global) {
 
   if (typeof DEBUG === 'undefined') {
@@ -589,6 +589,21 @@
       },
 
       /**
+      * Trigger an event from an element
+      * @param {object} the dom element
+      * @param {string} the event type to trigger
+      * @param {boolean} whether the event should bubble
+      * @param {boolean} whether the event is cancelable
+      * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
+      */
+      triggerEvent: function(element, type, bubbling, cancelable){
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent(type, bubbling, cancelable);
+        
+        return element.dispatchEvent(event);
+      },
+
+      /**
       * Remove an event listener from an element
       * @param {object} the dom element
       * @param {string} the event type to remove
@@ -616,6 +631,20 @@
         }
         
         return element.innerHTML;
+      },
+
+      /**
+      * Sets or gets the value of an element
+      * @param {object} the dom element
+      * @param {string} an optional value to set
+      * @returns {string} the value
+      */
+      val: function(element, value){
+        if(value !== undefined){
+          element.value = value;
+        }
+        
+        return element.value;
       },
 
       /**
@@ -743,11 +772,30 @@
       }, this);        
       return this;        
     },
-    text: function(value) {  
+    triggerEvent: function(type, bubbling, cancelable){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.text(element, value);
-      }, this);        
-      return this;        
+        metaScore.Dom.triggerEvent(element, type, bubbling, cancelable);
+      }, this);
+    },
+    text: function(value) {  
+      if(value !== undefined){
+        metaScore.Array.each(this.elements, function(index, element) {
+          metaScore.Dom.text(element, value);
+        }, this);
+      }
+      else{
+        return metaScore.Dom.text(this.get(0));
+      }
+    },
+    val: function(value) {
+      if(value !== undefined){
+        metaScore.Array.each(this.elements, function(index, element) {
+          metaScore.Dom.val(element, value);
+        }, this);
+      }
+      else{
+        return metaScore.Dom.val(this.get(0));
+      }
     },
     attr: function(name, value) {
       metaScore.Array.each(this.elements, function(index, element) {
@@ -793,7 +841,7 @@
   });
   
 }(global));
-/*global global*/
+/*global global console*/
 
 /**
 * Function helper functions
@@ -811,17 +859,13 @@
       * @returns {boolean} true if the variable is of the specified type, false otherwise
       */
       proxy: function(fn, scope) {
-      
-        var args;
         
         if (!metaScore.Var.type(fn, 'function')) {
           return undefined;
         }
         
-        args = Array.prototype.slice.call(arguments, 2);
-        
         return function () {
-          return fn.apply(scope || this, args);
+          return fn.apply(scope || this, arguments);
         };
       },
       /**
@@ -1070,12 +1114,26 @@
     * Keep track of the current state
     */
     disabled: false,
+    /**
+    * Keep track of the current value
+    */
+    value: 0,
     
     defaults: {    
       /**
       * The handler function to call when clicked
       */
-      handler: metaScore.Function.emptyFn
+      handler: metaScore.Function.emptyFn,
+      
+      /**
+      * Defines the minimum value allowed
+      */
+      min: 0,
+      
+      /**
+      * Defines the maximum value allowed
+      */
+      max: null
     },
 
     /**
@@ -1084,36 +1142,94 @@
     * @returns {void}
     */
     init: function(configs) {
-      var field = this;
+      var changeCallback = metaScore.Function.proxy(this.onChange, this);
     
       this.initConfig(configs);
       
       this.callSuper('<div/>', {'class': 'timefield'});
       
-      this.hours = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'hours', 'maxlength': 2})
+      this.el = this.get(0);
+      
+      this.hours = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'hours', 'size': 2, 'maxlength': 3, 'value': 0})
+        .addListener('change', changeCallback)
         .appendTo(this);
       
-      this.minutes = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'minutes', 'maxlength': 2})
-        .addListener('change', function(){
-          var value = parseInt(this.value, 10),
-            hours;
-          
-          if(value > 59){
-            hours = field.hours.get(0);
-            hours.value = parseInt(hours.value, 10) + (value % 59);
-          }
-          else if(value < 0){
-            hours = field.hours.get(0);
-            hours.value = parseInt(hours.value, 10) - (value % 59);
-          }
-        })
+      metaScore.Dom.create('<span/>', {'text': ':', 'class': 'separator'})
         .appendTo(this);
       
-      this.seconds = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'seconds', 'maxlength': 2})
+      this.minutes = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'minutes', 'size': 2, 'maxlength': 3, 'value': 0})
+        .addListener('change', changeCallback)
         .appendTo(this);
       
-      this.milliseconds = metaScore.Dom.create('<input/>', {'type': 'text', 'class': 'milliseconds', 'maxlength': 2})
+      metaScore.Dom.create('<span/>', {'text': ':', 'class': 'separator'})
         .appendTo(this);
+      
+      this.seconds = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'seconds', 'size': 2, 'maxlength': 3, 'value': 0})
+        .addListener('change', changeCallback)
+        .appendTo(this);
+      
+      metaScore.Dom.create('<span/>', {'text': '.', 'class': 'separator'})
+        .appendTo(this);
+      
+      this.centiseconds = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'centiseconds', 'size': 2, 'maxlength': 2, 'value': 0})
+        .addListener('change', changeCallback)
+        .appendTo(this);
+    },
+    
+    onChange: function(evt){    
+      var milliseconds_value,
+        centiseconds_value = parseInt(this.centiseconds.val(), 10),
+        seconds_value = parseInt(this.seconds.val(), 10),
+        minutes_value = parseInt(this.minutes.val(), 10),
+        hours_value = parseInt(this.hours.val(), 10),
+        event;
+        
+      evt.stopPropagation();
+              
+      if(centiseconds_value >= 100){
+        seconds_value += Math.floor(centiseconds_value / 100);
+        centiseconds_value = centiseconds_value % 100;
+      }
+      else if(centiseconds_value < 0){
+        seconds_value += Math.floor(centiseconds_value / 100);
+        centiseconds_value = 100 + (centiseconds_value % 100);
+      }
+              
+      if(seconds_value >= 60){
+        minutes_value += Math.floor(seconds_value / 60);
+        seconds_value = seconds_value % 60;
+      }
+      else if(seconds_value < 0){
+        minutes_value += Math.floor(seconds_value / 60);
+        seconds_value = 60 + (seconds_value % 60);
+      }
+      
+      if(minutes_value >= 60){
+        hours_value += Math.floor(minutes_value / 60);
+        minutes_value = minutes_value % 60;
+      }
+      else if(minutes_value < 0){
+        hours_value += Math.floor(minutes_value / 60);
+        minutes_value = 60 + (minutes_value % 60);
+      }
+      
+      this.value = (centiseconds_value * 10) + (seconds_value * 1000) + (minutes_value * 60 * 1000) + (hours_value * 60 * 60 * 1000);
+      
+      if(this.value < 0){
+        this.value = 0;
+        
+        centiseconds_value = 0;
+        seconds_value = 0;
+        minutes_value = 0;
+        hours_value = 0;
+      }
+      
+      this.centiseconds.val(centiseconds_value);
+      this.seconds.val(seconds_value);
+      this.minutes.val(minutes_value);
+      this.hours.val(hours_value);
+      
+      this.triggerEvent('change', true, false);
     },
 
     /**
@@ -1359,6 +1475,47 @@
         })
         .disable()
         .appendTo(left);
+        
+      
+      this.buttons['edit'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'edit',
+          'title': metaScore.String.t('edit')
+        })
+        .appendTo(right);
+      
+      this.buttons['grid'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'grid',
+          'title': metaScore.String.t('grid')
+        })
+        .appendTo(right);
+      
+      this.buttons['settings'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'settings',
+          'title': metaScore.String.t('settings')
+        })
+        .appendTo(right);
+      
+      this.buttons['help'] = metaScore.Form.Button.create({
+          handler: function(){
+          }
+        })
+        .attr({
+          'class': 'help',
+          'title': metaScore.String.t('help')
+        })
+        .appendTo(right);
       
     }
   });

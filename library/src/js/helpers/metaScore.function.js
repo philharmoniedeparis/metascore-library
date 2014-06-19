@@ -1,4 +1,4 @@
-/*global global*/
+/*global global console*/
 
 /**
 * Function helper functions
@@ -16,17 +16,13 @@
       * @returns {boolean} true if the variable is of the specified type, false otherwise
       */
       proxy: function(fn, scope) {
-      
-        var args;
         
         if (!metaScore.Var.type(fn, 'function')) {
           return undefined;
         }
         
-        args = Array.prototype.slice.call(arguments, 2);
-        
         return function () {
-          return fn.apply(scope || this, args);
+          return fn.apply(scope || this, arguments);
         };
       },
       /**
