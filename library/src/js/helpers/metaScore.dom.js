@@ -80,10 +80,10 @@
       * @param {string} the HTML string
       * @returns {object} an HTML element
       */
-      elementsFromString: function(str){      
+      elementsFromString: function(str){
         var div;
         
-        if(!str.match(/^<(.)+>$/)){
+        if(!metaScore.Var.is(str, 'string') || !str.match(/^<(.)+>$/)) {
           return null;
         }
         

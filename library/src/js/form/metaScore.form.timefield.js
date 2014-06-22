@@ -19,11 +19,7 @@
     */
     value: 0,
     
-    defaults: {    
-      /**
-      * The handler function to call when clicked
-      */
-      handler: metaScore.Function.emptyFn,
+    defaults: {
       
       /**
       * Defines the minimum value allowed
@@ -42,94 +38,84 @@
     * @returns {void}
     */
     init: function(configs) {
-      var changeCallback = metaScore.Function.proxy(this.onChange, this);
+      var inputCallback = metaScore.Function.proxy(this.onInput, this);
     
       this.initConfig(configs);
       
-      this.callSuper('<div/>', {'class': 'timefield'});
+      this.callSuper('<div/>', {'class': 'field timefield'});
       
       this.el = this.get(0);
       
       this.hours = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'hours', 'size': 2, 'maxlength': 3, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
       
       metaScore.Dom.create('<span/>', {'text': ':', 'class': 'separator'})
         .appendTo(this);
       
       this.minutes = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'minutes', 'size': 2, 'maxlength': 3, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
       
       metaScore.Dom.create('<span/>', {'text': ':', 'class': 'separator'})
         .appendTo(this);
       
       this.seconds = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'seconds', 'size': 2, 'maxlength': 3, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
       
       metaScore.Dom.create('<span/>', {'text': '.', 'class': 'separator'})
         .appendTo(this);
       
       this.centiseconds = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'centiseconds', 'size': 2, 'maxlength': 2, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
     },
     
-    onChange: function(evt){    
-      var milliseconds_value,
-        centiseconds_value = parseInt(this.centiseconds.val(), 10),
-        seconds_value = parseInt(this.seconds.val(), 10),
-        minutes_value = parseInt(this.minutes.val(), 10),
-        hours_value = parseInt(this.hours.val(), 10),
+    onInput: function(evt){   
+    
+      var centiseconds = parseInt(this.centiseconds.val(), 10),
+        seconds = parseInt(this.seconds.val(), 10),
+        minutes = parseInt(this.minutes.val(), 10),
+        hours = parseInt(this.hours.val(), 10),
         event;
         
       evt.stopPropagation();
-              
-      if(centiseconds_value >= 100){
-        seconds_value += Math.floor(centiseconds_value / 100);
-        centiseconds_value = centiseconds_value % 100;
-      }
-      else if(centiseconds_value < 0){
-        seconds_value += Math.floor(centiseconds_value / 100);
-        centiseconds_value = 100 + (centiseconds_value % 100);
-      }
-              
-      if(seconds_value >= 60){
-        minutes_value += Math.floor(seconds_value / 60);
-        seconds_value = seconds_value % 60;
-      }
-      else if(seconds_value < 0){
-        minutes_value += Math.floor(seconds_value / 60);
-        seconds_value = 60 + (seconds_value % 60);
-      }
       
-      if(minutes_value >= 60){
-        hours_value += Math.floor(minutes_value / 60);
-        minutes_value = minutes_value % 60;
-      }
-      else if(minutes_value < 0){
-        hours_value += Math.floor(minutes_value / 60);
-        minutes_value = 60 + (minutes_value % 60);
-      }
-      
-      this.value = (centiseconds_value * 10) + (seconds_value * 1000) + (minutes_value * 60 * 1000) + (hours_value * 60 * 60 * 1000);
-      
-      if(this.value < 0){
-        this.value = 0;
+      this.setValue((centiseconds * 10) + (seconds * 1000) + (minutes * 60000) + (hours * 3600000));
+    },
+    
+    setValue: function(milliseconds){
         
-        centiseconds_value = 0;
-        seconds_value = 0;
-        minutes_value = 0;
-        hours_value = 0;
-      }
+      var centiseconds, seconds, minutes, hours;
       
-      this.centiseconds.val(centiseconds_value);
-      this.seconds.val(seconds_value);
-      this.minutes.val(minutes_value);
-      this.hours.val(hours_value);
+      this.value = milliseconds;
+      
+      if(this.configs.min !== null){
+        this.value = Math.max(this.value, this.configs.min);
+      }
+      if(this.configs.max !== null){
+        this.value = Math.min(this.value, this.configs.max);
+      }
+        
+      centiseconds = parseInt((this.value / 10) % 100, 10);
+      seconds = parseInt((this.value / 1000) % 60, 10);
+      minutes = parseInt((this.value / 60000) % 60, 10);
+      hours = parseInt((this.value / 3600000), 10);
+      
+      this.centiseconds.val(centiseconds);
+      this.seconds.val(seconds);
+      this.minutes.val(minutes);
+      this.hours.val(hours);
       
       this.triggerEvent('change', true, false);
+    
+    },
+    
+    getValue: function(){
+    
+      return this.value;
+    
     },
 
     /**

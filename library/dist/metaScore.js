@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-06-19 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-06-20 - Oussama Mubarak */
 ;(function (global) {
 
   if (typeof DEBUG === 'undefined') {
@@ -148,8 +148,8 @@
     initConfig: function(configs){
       configs = configs || {};
     
-      if(this.hasOwnProperty('defaults')){
-        this.configs = metaScore.Object.extend({}, this.configs, this.defaults);
+      if(this.defaults){
+        this.configs = metaScore.Object.extend({}, this.defaults, configs);
       }
       else{
         this.configs = configs;
@@ -503,10 +503,10 @@
       * @param {string} the HTML string
       * @returns {object} an HTML element
       */
-      elementsFromString: function(str){      
+      elementsFromString: function(str){
         var div;
         
-        if(!str.match(/^<(.)+>$/)){
+        if(!metaScore.Var.is(str, 'string') || !str.match(/^<(.)+>$/)) {
           return null;
         }
         
@@ -972,6 +972,45 @@
       */
       t: function(str){
         return str;
+      },
+      
+      /**
+      * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+      * @param {number} the desired number of characters
+      * @param {number} the number of allowable values for each character
+      * @returns {string} a random uuid
+      */
+      uuid: function (len, radix) {
+        var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
+          uuid = [], i;
+        
+        radix = radix || chars.length;
+
+        if (len) {
+          // Compact form
+          for (i = 0; i < len; i++){
+            uuid[i] = chars[0 | Math.random() * radix];
+          }
+        }
+        else {
+          // rfc4122, version 4 form
+          var r;
+
+          // rfc4122 requires these characters
+          uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+          uuid[14] = '4';
+
+          // Fill in random data.  At i==19 set the high bits of clock sequence as
+          // per rfc4122, sec. 4.1.5
+          for (i = 0; i < 36; i++) {
+            if (!uuid[i]) {
+              r = 0 | Math.random()*16;
+              uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+            }
+          }
+        }
+
+        return uuid.join('');
       }
     }
   });
@@ -1043,9 +1082,9 @@
     
     defaults: {    
       /**
-      * The handler function to call when clicked
+      * A text to add as a label
       */
-      handler: metaScore.Function.emptyFn
+      label: null
     },
 
     /**
@@ -1060,16 +1099,99 @@
       
       this.callSuper('<button/>');
       
-      if(this.configs.hasOwnProperty('label')){
+      if(this.configs.label){
         this.label = metaScore.Dom.create('<span/>', {'class': 'label', 'text': this.configs.label});
         this.append(this.label);
       }
       
-      this.addListener('click', function(){
-        if(!btn.disabled){
-          btn.configs.handler.call(btn);
+      this.addListener('click', function(evt){
+        if(btn.disabled){
+          evt.stopPropagation();
         }
       });
+    },
+
+    /**
+    * Disable the button
+    * @returns {object} the XMLHttp object
+    */
+    disable: function(){
+      this.addClass('disabled');
+      this.disabled = true;
+      
+      return this;
+    },
+
+    /**
+    * Enable the button
+    * @param {string} the url of the request
+    * @param {object} options to set for the request; see the defaults variable
+    * @returns {object} the XMLHttp object
+    */
+    enable: function(){
+      this.removeClass('disabled');
+      this.disabled = false;
+      
+      return this;
+    }
+  });
+  
+}(global));
+/*global global console*/
+
+/**
+* TimeField
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+  
+  metaScore.Form = metaScore.Form || {};
+
+  metaScore.Form.IntegerField = metaScore.Dom.extend({
+    /**
+    * Keep track of the current state
+    */
+    disabled: false,
+    /**
+    * Keep track of the current value
+    */
+    value: 0,
+    
+    defaults: {
+      
+      /**
+      * Defines the minimum value allowed
+      */
+      min: null,
+      
+      /**
+      * Defines the maximum value allowed
+      */
+      max: null
+    },
+
+    /**
+    * Initialize
+    * @param {object} a configuration object
+    * @returns {void}
+    */
+    init: function(configs) {
+      var inputCallback = metaScore.Function.proxy(this.onInput, this);
+    
+      this.initConfig(configs);
+      
+      this.callSuper('<input/>', {'type': 'number', 'class': 'field integerfield', 'size': 2, 'value': 0});
+      this.addListener('input', inputCallback);
+      
+      this.el = this.get(0);
+    },
+    
+    onInput: function(evt){
+        
+      evt.stopPropagation();
+      
+      this.triggerEvent('change', true, false);
     },
 
     /**
@@ -1119,11 +1241,7 @@
     */
     value: 0,
     
-    defaults: {    
-      /**
-      * The handler function to call when clicked
-      */
-      handler: metaScore.Function.emptyFn,
+    defaults: {
       
       /**
       * Defines the minimum value allowed
@@ -1142,94 +1260,84 @@
     * @returns {void}
     */
     init: function(configs) {
-      var changeCallback = metaScore.Function.proxy(this.onChange, this);
+      var inputCallback = metaScore.Function.proxy(this.onInput, this);
     
       this.initConfig(configs);
       
-      this.callSuper('<div/>', {'class': 'timefield'});
+      this.callSuper('<div/>', {'class': 'field timefield'});
       
       this.el = this.get(0);
       
       this.hours = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'hours', 'size': 2, 'maxlength': 3, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
       
       metaScore.Dom.create('<span/>', {'text': ':', 'class': 'separator'})
         .appendTo(this);
       
       this.minutes = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'minutes', 'size': 2, 'maxlength': 3, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
       
       metaScore.Dom.create('<span/>', {'text': ':', 'class': 'separator'})
         .appendTo(this);
       
       this.seconds = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'seconds', 'size': 2, 'maxlength': 3, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
       
       metaScore.Dom.create('<span/>', {'text': '.', 'class': 'separator'})
         .appendTo(this);
       
       this.centiseconds = metaScore.Dom.create('<input/>', {'type': 'number', 'class': 'centiseconds', 'size': 2, 'maxlength': 2, 'value': 0})
-        .addListener('change', changeCallback)
+        .addListener('input', inputCallback)
         .appendTo(this);
     },
     
-    onChange: function(evt){    
-      var milliseconds_value,
-        centiseconds_value = parseInt(this.centiseconds.val(), 10),
-        seconds_value = parseInt(this.seconds.val(), 10),
-        minutes_value = parseInt(this.minutes.val(), 10),
-        hours_value = parseInt(this.hours.val(), 10),
+    onInput: function(evt){   
+    
+      var centiseconds = parseInt(this.centiseconds.val(), 10),
+        seconds = parseInt(this.seconds.val(), 10),
+        minutes = parseInt(this.minutes.val(), 10),
+        hours = parseInt(this.hours.val(), 10),
         event;
         
       evt.stopPropagation();
-              
-      if(centiseconds_value >= 100){
-        seconds_value += Math.floor(centiseconds_value / 100);
-        centiseconds_value = centiseconds_value % 100;
-      }
-      else if(centiseconds_value < 0){
-        seconds_value += Math.floor(centiseconds_value / 100);
-        centiseconds_value = 100 + (centiseconds_value % 100);
-      }
-              
-      if(seconds_value >= 60){
-        minutes_value += Math.floor(seconds_value / 60);
-        seconds_value = seconds_value % 60;
-      }
-      else if(seconds_value < 0){
-        minutes_value += Math.floor(seconds_value / 60);
-        seconds_value = 60 + (seconds_value % 60);
-      }
       
-      if(minutes_value >= 60){
-        hours_value += Math.floor(minutes_value / 60);
-        minutes_value = minutes_value % 60;
-      }
-      else if(minutes_value < 0){
-        hours_value += Math.floor(minutes_value / 60);
-        minutes_value = 60 + (minutes_value % 60);
-      }
-      
-      this.value = (centiseconds_value * 10) + (seconds_value * 1000) + (minutes_value * 60 * 1000) + (hours_value * 60 * 60 * 1000);
-      
-      if(this.value < 0){
-        this.value = 0;
+      this.setValue((centiseconds * 10) + (seconds * 1000) + (minutes * 60000) + (hours * 3600000));
+    },
+    
+    setValue: function(milliseconds){
         
-        centiseconds_value = 0;
-        seconds_value = 0;
-        minutes_value = 0;
-        hours_value = 0;
-      }
+      var centiseconds, seconds, minutes, hours;
       
-      this.centiseconds.val(centiseconds_value);
-      this.seconds.val(seconds_value);
-      this.minutes.val(minutes_value);
-      this.hours.val(hours_value);
+      this.value = milliseconds;
+      
+      if(this.configs.min !== null){
+        this.value = Math.max(this.value, this.configs.min);
+      }
+      if(this.configs.max !== null){
+        this.value = Math.min(this.value, this.configs.max);
+      }
+        
+      centiseconds = parseInt((this.value / 10) % 100, 10);
+      seconds = parseInt((this.value / 1000) % 60, 10);
+      minutes = parseInt((this.value / 60000) % 60, 10);
+      hours = parseInt((this.value / 3600000), 10);
+      
+      this.centiseconds.val(centiseconds);
+      this.seconds.val(seconds);
+      this.minutes.val(minutes);
+      this.hours.val(hours);
       
       this.triggerEvent('change', true, false);
+    
+    },
+    
+    getValue: function(){
+    
+      return this.value;
+    
     },
 
     /**
@@ -1341,6 +1449,28 @@
 /*global global console*/
 
 /**
+* Player
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+
+  metaScore.Player = metaScore.Dom.extend({
+    init: function(selector) {
+    
+      this.callSuper('<div/>', {'class': 'metaScore-player'});
+      
+      if(selector !== undefined){
+        this.appendTo(selector);
+      }
+      
+    }
+  });
+  
+}(global));
+/*global global console*/
+
+/**
 * Editor
 */
 (function (context) {
@@ -1350,16 +1480,36 @@
   metaScore.Editor = metaScore.Dom.extend({
     init: function(selector) {
     
-      this.callSuper('<div/>', {'class': 'metaScore-editor'});    
-      this.appendTo(selector);
+      this.callSuper('<div/>', {'class': 'metaScore-editor'});
+      
+      if(selector !== undefined){
+        this.appendTo(selector);
+      }
       
       this.setupUI();
       
     },
     setupUI: function(){
     
-      this.mainmenu = metaScore.Editor.MainMenu.create();
-      this.append(this.mainmenu);
+      var bottom, workspace, grid;
+    
+      this.mainmenu = metaScore.Editor.MainMenu.create()
+        .appendTo(this);
+      
+      bottom = metaScore.Dom.create('<div/>', {'class': 'bottom'})
+        .appendTo(this);
+    
+      workspace = metaScore.Dom.create('<div/>', {'class': 'workspace'})
+        .appendTo(bottom);
+    
+      grid = metaScore.Dom.create('<div/>', {'class': 'grid'})
+        .appendTo(workspace);
+        
+      this.player = metaScore.Player.create()
+        .appendTo(workspace);
+    
+      this.sidebar = metaScore.Editor.Sidebar.create()
+        .appendTo(bottom);
       
     }
   });
@@ -1379,59 +1529,49 @@
   metaScore.Editor.MainMenu = metaScore.Dom.extend({
     init: function() {
     
-      var left, right;
-    
       this.callSuper('<div/>', {'class': 'main-menu clearfix'});
+      
+      this.setupUI();
+      
+    },    
+    setupUI: function(){
+    
+      var left, right;
       
       this.buttons = {};
       
       left = metaScore.Dom.create('<div/>', {'class': 'left'}).appendTo(this);
       right = metaScore.Dom.create('<div/>', {'class': 'right'}).appendTo(this);
       
-      this.buttons['new'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['new'] = metaScore.Form.Button.create()
         .attr({
           'class': 'new',
           'title': metaScore.String.t('New')
         })
         .appendTo(left);
       
-      this.buttons['open'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['open'] = metaScore.Form.Button.create()
         .attr({
           'class': 'open',
           'title': metaScore.String.t('Open')
         })
         .appendTo(left);
       
-      this.buttons['save'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['save'] = metaScore.Form.Button.create()
         .attr({
           'class': 'save',
           'title': metaScore.String.t('save')
         })
         .appendTo(left);
       
-      this.buttons['download'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['download'] = metaScore.Form.Button.create()
         .attr({
           'class': 'download',
           'title': metaScore.String.t('download')
         })
         .appendTo(left);
       
-      this.buttons['delete'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['delete'] = metaScore.Form.Button.create()
         .attr({
           'class': 'delete',
           'title': metaScore.String.t('delete')
@@ -1445,30 +1585,21 @@
         })
         .appendTo(left);
       
-      this.buttons['revert'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['revert'] = metaScore.Form.Button.create()
         .attr({
           'class': 'revert',
           'title': metaScore.String.t('revert')
         })
         .appendTo(left);
       
-      this.buttons['undo'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['undo'] = metaScore.Form.Button.create()
         .attr({
           'class': 'undo',
           'title': metaScore.String.t('undo')
         })
         .appendTo(left);
       
-      this.buttons['redo'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['redo'] = metaScore.Form.Button.create()
         .attr({
           'class': 'redo',
           'title': metaScore.String.t('redo')
@@ -1477,46 +1608,174 @@
         .appendTo(left);
         
       
-      this.buttons['edit'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['edit'] = metaScore.Form.Button.create()
         .attr({
           'class': 'edit',
           'title': metaScore.String.t('edit')
         })
         .appendTo(right);
       
-      this.buttons['grid'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['grid'] = metaScore.Form.Button.create()
         .attr({
           'class': 'grid',
           'title': metaScore.String.t('grid')
         })
         .appendTo(right);
       
-      this.buttons['settings'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['settings'] = metaScore.Form.Button.create()
         .attr({
           'class': 'settings',
           'title': metaScore.String.t('settings')
         })
         .appendTo(right);
       
-      this.buttons['help'] = metaScore.Form.Button.create({
-          handler: function(){
-          }
-        })
+      this.buttons['help'] = metaScore.Form.Button.create()
         .attr({
           'class': 'help',
           'title': metaScore.String.t('help')
         })
         .appendTo(right);
       
+    }
+  });
+  
+}(global));
+/*global global console*/
+
+/**
+* Editor panel
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+  
+  metaScore.Editor = metaScore.Editor || {};
+
+  metaScore.Editor.Panel = metaScore.Dom.extend({
+    defaults: {
+      /**
+      * The panel's title
+      */
+      title: '',
+      
+      /**
+      * The panel's fields
+      */
+      fields: {}
+    },
+    init: function(configs) {
+    
+      this.initConfig(configs);
+    
+      this.callSuper('<div/>', {'class': 'panel'});
+      
+      this.setupUI();
+      
+    },    
+    setupUI: function(){
+    
+      this.toolbar = metaScore.Dom.create('<div/>', {'class': 'toolbar'}).appendTo(this);
+      
+      this.toolbar.title = metaScore.Dom.create('<div/>', {'class': 'title'})
+        .appendTo(this.toolbar)
+        .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+      
+      this.toolbar.buttons = metaScore.Dom.create('<div/>', {'class': 'buttons'}).appendTo(this.toolbar);
+      
+      this.setTitle(this.configs.title);
+      
+      this.contents = metaScore.Dom.create('<div/>', {'class': 'contents'})
+        .appendTo(this);
+        
+      this.setupFields();
+      
+    },
+    setupFields: function(){
+    
+      var table = metaScore.Dom.create('<table/>').appendTo(this.contents),
+        row, field_uuid, field;
+      
+      this.fields = {};
+    
+      metaScore.Object.each(this.configs.fields, function(key, value){
+        
+        row = metaScore.Dom.create(document.createElement('tr'), {'class': 'field-wrapper'}).appendTo(table);
+      
+        field_uuid = 'field-'+ metaScore.String.uuid(5);
+        
+        this.fields[key] = field = value.type.create().attr('id', field_uuid);
+        
+        metaScore.Dom.create(document.createElement('td')).appendTo(row).append(metaScore.Dom.create('<label/>', {'text': value.label, 'for': field_uuid}));
+        metaScore.Dom.create(document.createElement('td')).appendTo(row).append(field);
+        
+      }, this);
+    
+    },
+    setTitle: function(title){
+    
+      this.toolbar.title.text(title);
+      
+    },
+    toggleState: function(){
+      
+      this.toggleClass('collapsed');
+      
+    }
+  });
+  
+}(global));
+/*global global console*/
+
+/**
+* Editor sidebar
+*/
+(function (context) {
+
+  var metaScore = context.metaScore;
+  
+  metaScore.Editor = metaScore.Editor || {};
+
+  metaScore.Editor.Sidebar = metaScore.Dom.extend({
+    init: function() {
+    
+      this.callSuper('<div/>', {'class': 'sidebar'});
+     
+      this.addPanels();
+     
+    },
+    
+    addPanels: function(){
+    
+      this.panels = {};
+    
+      this.panels.block = metaScore.Editor.Panel.create({
+          'title': 'Block',
+          'fields': {
+            'x': {
+              'type': metaScore.Form.IntegerField,
+              'label': 'X'
+            },
+            'y': {
+              'type': metaScore.Form.IntegerField,
+              'label': 'Y'
+            },
+            'endtime': {
+              'type': metaScore.Form.TimeField,
+              'label': 'End time'
+            }
+          }
+        })
+        .appendTo(this);
+    
+      this.panels.page = metaScore.Editor.Panel.create({'title': 'Page'})
+        .appendTo(this);
+    
+      this.panels.element = metaScore.Editor.Panel.create({'title': 'Element'})
+        .appendTo(this);
+    
+      this.panels.text = metaScore.Editor.Panel.create({'title': 'Text'})
+        .appendTo(this);
+    
     }
   });
   

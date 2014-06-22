@@ -83,10 +83,16 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
 }
 .metaScore-editor .clearfix {
   overflow: auto;
   zoom: 1;
+}
+.metaScore-editor table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 .metaScore-editor button {
   border: none;
@@ -123,7 +129,8 @@ body {
   font-family: Tahoma, Geneva, sans-serif;
 }
 .metaScore-editor .main-menu {
-  padding: 5px 10px;
+  height: 40px;
+  padding: 0 10px;
   background-color: #dadada;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
   background-image: -webkit-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
@@ -143,6 +150,7 @@ body {
   width: 20px;
   height: 18px;
   margin: 10px;
+  vertical-align: middle;
 }
 .metaScore-editor .main-menu button.new {
   background-image: url('img/editor/main-menu/new.png');
@@ -186,10 +194,89 @@ body {
 .metaScore-editor .main-menu .timefield {
   height: 18px;
   margin: 10px;
+  font-size: 1.3em;
   padding-left: 18px;
   background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
 }
 .metaScore-editor .main-menu .timefield input {
   color: #505050;
   font-size: 0.7em;
+}
+.metaScore-editor .bottom {
+  position: absolute;
+  top: 42px;
+  bottom: 0;
+  width: 100%;
+}
+.metaScore-editor .bottom .workspace {
+  margin-right: 285px;
+  height: 100%;
+  overflow: auto;
+  background: #fff;
+}
+.metaScore-editor .bottom .workspace .grid {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-color: transparent;
+  background-image: linear-gradient(0deg, rgba(0, 255, 216, 0.25) 0%, rgba(0, 255, 216, 0.25) 6%, rgba(0, 255, 216, 0) 7%, rgba(0, 255, 216, 0) 100%), linear-gradient(90deg, rgba(0, 255, 216, 0.25) 0%, rgba(0, 255, 216, 0.25) 1%, rgba(0, 255, 216, 0) 7%, rgba(0, 255, 216, 0) 100%);
+  background-size: 20px 20px;
+}
+.metaScore-editor .bottom .sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 285px;
+  height: 100%;
+  background: #f2f2f2;
+  border-left: 1px solid #b2b2b2;
+}
+.metaScore-editor .bottom .sidebar .panel .toolbar {
+  padding: 8px;
+  border-bottom: 1px solid #d7d7d7;
+  background-color: #fefefe;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fefefe), color-stop(32% #fcfcfc), color-stop(36% #fafafa), color-stop(100% #f3f3f3));
+  background-image: -webkit-linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
+  background-image: -moz-linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
+  background-image: -ms-linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
+  background-image: -o-linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
+  background-image: linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
+}
+.metaScore-editor .bottom .sidebar .panel .toolbar .title {
+  padding-left: 18px;
+  font-weight: bold;
+  background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
+  cursor: pointer;
+  opacity: 0.8;
+  filter: alpha(opacity=(80));
+}
+.metaScore-editor .bottom .sidebar .panel .contents {
+  background: #fff;
+}
+.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper {
+  border-bottom: 1px solid #b2b2b2;
+}
+.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper td {
+  width: 50%;
+}
+.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper td label {
+  display: block;
+  padding: 5px;
+  color: #7b7b7b;
+  border-right: 1px solid #d7d7d7;
+}
+.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper td .field {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
+}
+.metaScore-editor .bottom .sidebar .panel.collapsed .toolbar .title {
+  background-image: url('img/editor/panel/collapsed.png');
+}
+.metaScore-editor .bottom .sidebar .panel.collapsed .contents {
+  display: none;
 }

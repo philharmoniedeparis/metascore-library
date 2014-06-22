@@ -116,8 +116,8 @@
     initConfig: function(configs){
       configs = configs || {};
     
-      if(this.hasOwnProperty('defaults')){
-        this.configs = metaScore.Object.extend({}, this.configs, this.defaults);
+      if(this.defaults){
+        this.configs = metaScore.Object.extend({}, this.defaults, configs);
       }
       else{
         this.configs = configs;

@@ -10,16 +10,36 @@
   metaScore.Editor = metaScore.Dom.extend({
     init: function(selector) {
     
-      this.callSuper('<div/>', {'class': 'metaScore-editor'});    
-      this.appendTo(selector);
+      this.callSuper('<div/>', {'class': 'metaScore-editor'});
+      
+      if(selector !== undefined){
+        this.appendTo(selector);
+      }
       
       this.setupUI();
       
     },
     setupUI: function(){
     
-      this.mainmenu = metaScore.Editor.MainMenu.create();
-      this.append(this.mainmenu);
+      var bottom, workspace, grid;
+    
+      this.mainmenu = metaScore.Editor.MainMenu.create()
+        .appendTo(this);
+      
+      bottom = metaScore.Dom.create('<div/>', {'class': 'bottom'})
+        .appendTo(this);
+    
+      workspace = metaScore.Dom.create('<div/>', {'class': 'workspace'})
+        .appendTo(bottom);
+    
+      grid = metaScore.Dom.create('<div/>', {'class': 'grid'})
+        .appendTo(workspace);
+        
+      this.player = metaScore.Player.create()
+        .appendTo(workspace);
+    
+      this.sidebar = metaScore.Editor.Sidebar.create()
+        .appendTo(bottom);
       
     }
   });

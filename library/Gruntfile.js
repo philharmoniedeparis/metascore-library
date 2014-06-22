@@ -13,6 +13,7 @@ module.exports = function(grunt) {
         sub('src/js/helpers/%s.*.js'),
         sub('src/js/form/%s.*.js'),
         sub('src/js/media/%s.*.js'),
+        sub('src/js/player/%s.*.js'),
         sub('src/js/editor/%s.*.js')
       ],
       DIST_HEAD_LIST = [

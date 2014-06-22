@@ -1,7 +1,7 @@
 /*global global console*/
 
 /**
-* Button
+* TimeField
 */
 (function (context) {
 
@@ -9,17 +9,27 @@
   
   metaScore.Form = metaScore.Form || {};
 
-  metaScore.Form.Button = metaScore.Dom.extend({
+  metaScore.Form.IntegerField = metaScore.Dom.extend({
     /**
     * Keep track of the current state
     */
     disabled: false,
+    /**
+    * Keep track of the current value
+    */
+    value: 0,
     
-    defaults: {    
+    defaults: {
+      
       /**
-      * A text to add as a label
+      * Defines the minimum value allowed
       */
-      label: null
+      min: null,
+      
+      /**
+      * Defines the maximum value allowed
+      */
+      max: null
     },
 
     /**
@@ -28,22 +38,21 @@
     * @returns {void}
     */
     init: function(configs) {
-      var btn = this;
+      var inputCallback = metaScore.Function.proxy(this.onInput, this);
     
       this.initConfig(configs);
       
-      this.callSuper('<button/>');
+      this.callSuper('<input/>', {'type': 'number', 'class': 'field integerfield', 'size': 2, 'value': 0});
+      this.addListener('input', inputCallback);
       
-      if(this.configs.label){
-        this.label = metaScore.Dom.create('<span/>', {'class': 'label', 'text': this.configs.label});
-        this.append(this.label);
-      }
+      this.el = this.get(0);
+    },
+    
+    onInput: function(evt){
+        
+      evt.stopPropagation();
       
-      this.addListener('click', function(evt){
-        if(btn.disabled){
-          evt.stopPropagation();
-        }
-      });
+      this.triggerEvent('change', true, false);
     },
 
     /**
