@@ -1,84 +1,81 @@
-/*global global console*/
+/*global metaScore console*/
 
 /**
 * Editor panel
 */
-(function (context) {
+metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
-  var metaScore = context.metaScore;
+  this.defaults = {
+    /**
+    * The panel's title
+    */
+    title: '',
+    
+    /**
+    * The panel's fields
+    */
+    fields: {}
+  };
   
-  metaScore.Editor = metaScore.Editor || {};
-
-  metaScore.Editor.Panel = metaScore.Dom.extend({
-    defaults: {
-      /**
-      * The panel's title
-      */
-      title: '',
-      
-      /**
-      * The panel's fields
-      */
-      fields: {}
-    },
-    init: function(configs) {
-    
-      this.initConfig(configs);
-    
-      this.callSuper('<div/>', {'class': 'panel'});
-      
-      this.setupUI();
-      
-    },    
-    setupUI: function(){
-    
-      this.toolbar = metaScore.Dom.create('<div/>', {'class': 'toolbar'}).appendTo(this);
-      
-      this.toolbar.title = metaScore.Dom.create('<div/>', {'class': 'title'})
-        .appendTo(this.toolbar)
-        .addListener('click', metaScore.Function.proxy(this.toggleState, this));
-      
-      this.toolbar.buttons = metaScore.Dom.create('<div/>', {'class': 'buttons'}).appendTo(this.toolbar);
-      
-      this.setTitle(this.configs.title);
-      
-      this.contents = metaScore.Dom.create('<div/>', {'class': 'contents'})
-        .appendTo(this);
-        
-      this.setupFields();
-      
-    },
-    setupFields: function(){
-    
-      var table = metaScore.Dom.create('<table/>').appendTo(this.contents),
-        row, field_uuid, field;
-      
-      this.fields = {};
-    
-      metaScore.Object.each(this.configs.fields, function(key, value){
-        
-        row = metaScore.Dom.create(document.createElement('tr'), {'class': 'field-wrapper'}).appendTo(table);
-      
-        field_uuid = 'field-'+ metaScore.String.uuid(5);
-        
-        this.fields[key] = field = value.type.create().attr('id', field_uuid);
-        
-        metaScore.Dom.create(document.createElement('td')).appendTo(row).append(metaScore.Dom.create('<label/>', {'text': value.label, 'for': field_uuid}));
-        metaScore.Dom.create(document.createElement('td')).appendTo(row).append(field);
-        
-      }, this);
-    
-    },
-    setTitle: function(title){
-    
-      this.toolbar.title.text(title);
-      
-    },
-    toggleState: function(){
-      
-      this.toggleClass('collapsed');
-      
-    }
-  });
+  this.constructor = function(configs) {
   
-}(global));
+    this.super('<div/>', {'class': 'panel'});
+  
+    this.initConfig(configs);
+    
+    this.setupUI();
+    
+  };
+  
+  this.setupUI = function(){
+  
+    this.toolbar = new metaScore.Dom('<div/>', {'class': 'toolbar'}).appendTo(this);
+    
+    this.toolbar.title = new metaScore.Dom('<div/>', {'class': 'title'})
+      .appendTo(this.toolbar)
+      .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+    
+    this.toolbar.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this.toolbar);
+    
+    this.setTitle(this.configs.title);
+    
+    this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
+      .appendTo(this);
+      
+    this.setupFields();
+    
+  };
+  
+  this.setupFields = function(){
+  
+    var row, field_uuid, field;
+    
+    this.fields = {};
+  
+    metaScore.Object.each(this.configs.fields, function(key, value){
+      
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(this.contents);
+    
+      field_uuid = 'field-'+ metaScore.String.uuid(5);
+      
+      this.fields[key] = field = new value.type().attr('id', field_uuid);
+      
+      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
+      new metaScore.Dom('<td/>').appendTo(row).append(field);
+      
+    }, this);
+  
+  };
+  
+  this.setTitle = function(title){
+  
+    this.toolbar.title.text(title);
+    
+  };
+  
+  this.toggleState = function(){
+    
+    this.toggleClass('collapsed');
+    
+  };
+});

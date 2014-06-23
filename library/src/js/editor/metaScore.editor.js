@@ -1,47 +1,38 @@
-/*global global console*/
+/*global metaScore console*/
 
 /**
 * Editor
 */
-(function (context) {
+metaScore.Editor = metaScore.Dom.extend(function(){
 
-  var metaScore = context.metaScore;
-
-  metaScore.Editor = metaScore.Dom.extend({
-    init: function(selector) {
-    
-      this.callSuper('<div/>', {'class': 'metaScore-editor'});
-      
-      if(selector !== undefined){
-        this.appendTo(selector);
-      }
-      
-      this.setupUI();
-      
-    },
-    setupUI: function(){
-    
-      var bottom, workspace, grid;
-    
-      this.mainmenu = metaScore.Editor.MainMenu.create()
-        .appendTo(this);
-      
-      bottom = metaScore.Dom.create('<div/>', {'class': 'bottom'})
-        .appendTo(this);
-    
-      workspace = metaScore.Dom.create('<div/>', {'class': 'workspace'})
-        .appendTo(bottom);
-    
-      grid = metaScore.Dom.create('<div/>', {'class': 'grid'})
-        .appendTo(workspace);
-        
-      this.player = metaScore.Player.create()
-        .appendTo(workspace);
-    
-      this.sidebar = metaScore.Editor.Sidebar.create()
-        .appendTo(bottom);
-      
-    }
-  });
+  this.constructor = function(selector) {
   
-}(global));
+    this.super('<div/>', {'class': 'metaScore-editor'});
+    
+    if(selector !== undefined){
+      this.appendTo(selector);
+    }
+    
+    this.setupUI();
+    
+  };
+  
+  this.setupUI = function(){
+  
+    this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'})
+      .appendTo(this);
+  
+    this.mainmenu = new metaScore.Editor.MainMenu()
+      .appendTo(this);
+  
+    this.sidebar = new metaScore.Editor.Sidebar()
+      .appendTo(this);
+      
+    this.player = new metaScore.Player()
+      .appendTo(this.workspace);
+  
+    this.grid = new metaScore.Dom('<div/>', {'class': 'grid'})
+      .appendTo(this.workspace);
+    
+  };
+});

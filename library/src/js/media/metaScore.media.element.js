@@ -1,15 +1,9 @@
-/*global global console*/
+/*global metaScore console*/
 
 /**
 * Media Element
-*/
-(function (context) {
+*/  
+metaScore.Media = metaScore.Media || {};
 
-  var metaScore = context.metaScore;
-  
-  metaScore.Media = metaScore.Media || {};
-
-  metaScore.Media.Element = metaScore.Base.extend({
-  });
-  
-}(global));
+metaScore.Media.Element = metaScore.Base.extend(function(){
+});

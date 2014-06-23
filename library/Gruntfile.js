@@ -11,10 +11,11 @@ module.exports = function(grunt) {
       MODULE_LIST = [
         sub('src/js/%s.base.js'),
         sub('src/js/helpers/%s.*.js'),
-        sub('src/js/form/%s.*.js'),
         sub('src/js/media/%s.*.js'),
         sub('src/js/player/%s.*.js'),
-        sub('src/js/editor/%s.*.js')
+        sub('src/js/editor/%s.editor.js'),
+        sub('src/js/editor/%s.editor.*.js'),
+        sub('src/js/editor/*/%s.*.js')
       ],
       DIST_HEAD_LIST = [
         sub('src/js/%s.intro.js'),
@@ -114,10 +115,7 @@ module.exports = function(grunt) {
       all: ['test/index.html']
     },
     jshint: {
-      all: [
-        'Gruntfile.js',
-        sub('src/**/%s.!(intro|outro|const)*.js')
-      ],
+      all: ['Gruntfile.js'].concat(MODULE_LIST),
       options: {
         jshintrc: '.jshintrc'
       }

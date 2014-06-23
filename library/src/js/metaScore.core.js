@@ -3,10 +3,8 @@
 /**
 * Core functions
 */
-(function (context) {
     
-    context.metaScore = {
-      version: "[[VERSION]]"
-    };
+var metaScore = {
+  version: "[[VERSION]]"
+};
   
-}(global));

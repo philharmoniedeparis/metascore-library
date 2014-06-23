@@ -120,16 +120,96 @@ body {
   vertical-align: top;
 }
 .metaScore-editor .timefield input {
-  width: 2.5em;
+  width: 1em;
   height: 100%;
   margin: 0;
   border: none;
   background: none;
   text-align: right;
   font-family: Tahoma, Geneva, sans-serif;
+  -moz-appearance: textfield;
+}
+.metaScore-editor .timefield input::-webkit-outer-spin-button,
+.metaScore-editor .timefield input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+.metaScore-editor .timefield .separator {
+  font-size: 0.8em;
+}
+.metaScore-editor .overlay {
+  position: absolute;
+  background: #fff;
+  z-index: 9999;
+}
+.metaScore-editor .colorfield-overlay .gradient {
+  position: relative;
+  float: left;
+  cursor: pointer;
+}
+.metaScore-editor .colorfield-overlay .gradient .position {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  margin: -6px 0 0 -6px;
+  border: 2px solid #000;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+  pointer-events: none;
+}
+.metaScore-editor .colorfield-overlay .alpha {
+  position: relative;
+  float: left;
+  background: url('img/editor/transparency-grid.png') repeat left top;
+}
+.metaScore-editor .colorfield-overlay .alpha .position {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 2px;
+  margin-top: -1px;
+  background: #000;
+}
+.metaScore-editor .colorfield-overlay .controls {
+  float: left;
+}
+.metaScore-editor .colorfield-overlay .controls canvas {
+  display: block;
+  background: url('img/editor/transparency-grid.png') repeat left top;
+}
+.metaScore-editor .workspace {
+  position: absolute;
+  left: 0;
+  right: 285px;
+  top: 42px;
+  bottom: 0;
+  min-width: 700px;
+  overflow: auto;
+  background: #fff;
+}
+.metaScore-editor .workspace .grid {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-color: transparent;
+  background-image: linear-gradient(0deg, rgba(0, 255, 216, 0.25) 0%, rgba(0, 255, 216, 0.25) 6%, rgba(0, 255, 216, 0) 7%, rgba(0, 255, 216, 0) 100%), linear-gradient(90deg, rgba(0, 255, 216, 0.25) 0%, rgba(0, 255, 216, 0.25) 1%, rgba(0, 255, 216, 0) 7%, rgba(0, 255, 216, 0) 100%);
+  background-size: 20px 20px;
 }
 .metaScore-editor .main-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-width: 900px;
   height: 40px;
+  z-index: 9999;
   padding: 0 10px;
   background-color: #dadada;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
@@ -200,41 +280,18 @@ body {
 }
 .metaScore-editor .main-menu .timefield input {
   color: #505050;
-  font-size: 0.7em;
 }
-.metaScore-editor .bottom {
-  position: absolute;
+.metaScore-editor .sidebar {
+  position: fixed;
+  right: 0;
   top: 42px;
   bottom: 0;
-  width: 100%;
-}
-.metaScore-editor .bottom .workspace {
-  margin-right: 285px;
-  height: 100%;
-  overflow: auto;
-  background: #fff;
-}
-.metaScore-editor .bottom .workspace .grid {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background-color: transparent;
-  background-image: linear-gradient(0deg, rgba(0, 255, 216, 0.25) 0%, rgba(0, 255, 216, 0.25) 6%, rgba(0, 255, 216, 0) 7%, rgba(0, 255, 216, 0) 100%), linear-gradient(90deg, rgba(0, 255, 216, 0.25) 0%, rgba(0, 255, 216, 0.25) 1%, rgba(0, 255, 216, 0) 7%, rgba(0, 255, 216, 0) 100%);
-  background-size: 20px 20px;
-}
-.metaScore-editor .bottom .sidebar {
-  position: absolute;
-  right: 0;
-  top: 0;
   width: 285px;
-  height: 100%;
+  overflow: auto;
   background: #f2f2f2;
   border-left: 1px solid #b2b2b2;
 }
-.metaScore-editor .bottom .sidebar .panel .toolbar {
+.metaScore-editor .sidebar .panel .toolbar {
   padding: 8px;
   border-bottom: 1px solid #d7d7d7;
   background-color: #fefefe;
@@ -245,7 +302,7 @@ body {
   background-image: -o-linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
   background-image: linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
 }
-.metaScore-editor .bottom .sidebar .panel .toolbar .title {
+.metaScore-editor .sidebar .panel .toolbar .title {
   padding-left: 18px;
   font-weight: bold;
   background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
@@ -253,30 +310,38 @@ body {
   opacity: 0.8;
   filter: alpha(opacity=(80));
 }
-.metaScore-editor .bottom .sidebar .panel .contents {
+.metaScore-editor .sidebar .panel .fields {
+  width: 100%;
+  font-size: 0.9em;
   background: #fff;
 }
-.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper {
+.metaScore-editor .sidebar .panel .fields .field-wrapper {
   border-bottom: 1px solid #b2b2b2;
 }
-.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper td {
+.metaScore-editor .sidebar .panel .fields .field-wrapper td {
   width: 50%;
+  height: 1px;
+  white-space: nowrap;
 }
-.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper td label {
+.metaScore-editor .sidebar .panel .fields .field-wrapper td label {
   display: block;
   padding: 5px;
   color: #7b7b7b;
   border-right: 1px solid #d7d7d7;
 }
-.metaScore-editor .bottom .sidebar .panel .contents .field-wrapper td .field {
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field {
   width: 100%;
   height: 100%;
   margin: 0;
   border: none;
 }
-.metaScore-editor .bottom .sidebar .panel.collapsed .toolbar .title {
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.booleanfield {
+  width: auto;
+  height: auto;
+}
+.metaScore-editor .sidebar .panel.collapsed .toolbar .title {
   background-image: url('img/editor/panel/collapsed.png');
 }
-.metaScore-editor .bottom .sidebar .panel.collapsed .contents {
+.metaScore-editor .sidebar .panel.collapsed .fields {
   display: none;
 }

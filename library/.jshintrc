@@ -15,11 +15,12 @@
   "latedef": true,
   "laxbreak": true,
   "laxcomma": true,
-  "newcap": true,
+  "newcap": false,
   "noarg": true,
   "nomen": false,
   "plusplus": false,
   "sub": true,
   "undef": true,
-  "white": false
+  "white": false,
+  "es5": true
 }
