@@ -4,8 +4,6 @@
 * TimeField
 */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
-
-  var mask;
   
   this.defaults = {
     /**
@@ -26,7 +24,12 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     /**
     * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
     */
-    modal: true
+    modal: true,
+    
+    /**
+    * True to make this draggable
+    */
+    draggable: true
   };
 
   /**
@@ -36,21 +39,35 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   */
   this.constructor = function(configs) {
   
-    this.super('<div/>', {'class': 'overlay clearfix'});
+    this.super('<div/>', {'class': 'metaScore-overlay clearfix'});
   
     this.initConfig(configs);
     
     if(this.configs.modal){
-      mask = new metaScore.Dom('<div/>', {'class': 'mask'}).appendTo(this);
+      this.mask = new metaScore.Dom('<div/>', {'class': 'metaScore-overlay-mask'});
     }
+    
+    this.setDraggable(this.configs.draggable);
     
   };
   
   this.show = function(){
+    
+    if(this.configs.modal){
+      this.mask.appendTo(this.configs.parent);
+    }
+  
     this.appendTo(this.configs.parent);
+    
   };
   
   this.hide = function(){
+    
+    if(this.configs.modal){
+      this.mask.remove();
+    }
+  
     this.remove();
+    
   };
 });

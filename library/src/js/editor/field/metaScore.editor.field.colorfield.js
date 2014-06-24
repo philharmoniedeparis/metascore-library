@@ -3,7 +3,8 @@
 metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
 
   // private vars
-  var overlay;
+  var button, overlay,
+    previous_value;
   
   this.defaults = {
     /**
@@ -34,11 +35,12 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   * @returns {void}
   */
   this.constructor = function(configs) {
+  
+    button = new metaScore.Editor.Button()
+      .addListener('click', this.onClick);
     
-    overlay = new metaScore.Editor.Overlay({
-      'parent': '.metaScore-editor',
-      'modal': false
-    }).addClass('colorfield-overlay');
+    overlay = new metaScore.Editor.Overlay()
+      .addClass('colorfield-overlay');
     
     overlay.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(overlay);
     overlay.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
@@ -58,71 +60,115 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     
     overlay.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(overlay);
     
-    overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'});
+    overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
       .append(overlay.controls.r)
       .appendTo(overlay.controls);
       
-    overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'});
+    overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
       .append(overlay.controls.g)
       .appendTo(overlay.controls);
       
-    overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'});
+    overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
       .append(overlay.controls.b)
       .appendTo(overlay.controls);
       
-    overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'a'});
+    overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
       .append(overlay.controls.a)
       .appendTo(overlay.controls);
       
-    overlay.controls.current = new metaScore.Dom('<canvas/>', {'width': '100', 'height': '50'})
+    overlay.controls.current = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
+      .append(overlay.controls.current)
       .appendTo(overlay.controls);
     
-    overlay.controls.previous = new metaScore.Dom('<canvas/>', {'width': '100', 'height': '25'})
+    overlay.controls.previous = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
+      .append(overlay.controls.previous)
       .appendTo(overlay.controls);
       
     overlay.controls.cancel = new metaScore.Editor.Button({'label': 'Cancel'})
+      .addListener('click', this.onCancelClick)
       .appendTo(overlay.controls);
       
     overlay.controls.apply = new metaScore.Editor.Button({'label': 'Apply'})
+      .addListener('click', this.onApplyClick)
       .appendTo(overlay.controls);
-      
+          
+    overlay.mask.addListener('click', this.onOverlayMaskClick);
     
     this.super(configs);
     
-    this.fillGradient();
+    new metaScore.Dom('<div/>', {'class': 'icon'})
+      .appendTo(this);
     
-    this.addListener('click', this.onClick);
+    button.appendTo(this);
+    
+    this.fillGradient();
     
   };
   
-  this.setValue = function(val, refillAlpha){
+  this.setValue = function(val, refillAlpha, updatePositions, updateInputs){
   
-    this.value = val;
-    
-    overlay.controls.r.val(this.value.r);
-    overlay.controls.g.val(this.value.g);
-    overlay.controls.b.val(this.value.b);
-    overlay.controls.a.val(this.value.a);
+    var hsv;
+  
+    if(!this.hasOwnProperty('value')){
+      this.value = {};
+    }
+  
+    if(val.hasOwnProperty('r')){
+      this.value.r = parseInt(val.r, 10);
+    }
+    if(val.hasOwnProperty('g')){
+      this.value.g = parseInt(val.g, 10);
+    }
+    if(val.hasOwnProperty('b')){
+      this.value.b = parseInt(val.b, 10);
+    }
+    if(val.hasOwnProperty('a')){
+      this.value.a = parseFloat(val.a);
+    }
     
     if(refillAlpha !== false){
       this.fillAlpha();
     }
     
+    if(updateInputs !== false){
+      overlay.controls.r.val(this.value.r);
+      overlay.controls.g.val(this.value.g);
+      overlay.controls.b.val(this.value.b);
+      overlay.controls.a.val(this.value.a);
+    }
+    
+    if(updatePositions !== false){
+      hsv = this.rgb2hsv(this.value);
+      
+      overlay.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
+      overlay.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
+      
+      overlay.alpha.position.css('top', ((1 - this.value.a) * 255) +'px');
+    }
+    
     this.fillCurrent();
+    
+    button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
   
   };
   
   this.onClick = function(evt){
   
-    this.previous_value = this.value;
+    previous_value = metaScore.Object.copy(this.value);
     
     this.fillPrevious();
   
@@ -130,11 +176,46 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
   };
   
+  this.onControlInput = function(evt){
+  
+    var rgba, hsv;
+    
+    this.setValue({
+      'r': overlay.controls.r.val(),
+      'g': overlay.controls.g.val(),
+      'b': overlay.controls.b.val(),
+      'a': overlay.controls.a.val()
+    }, true, true, false);
+  
+  };
+  
+  this.onCancelClick = function(evt){
+  
+    this.setValue(previous_value);
+    overlay.hide();
+  
+    evt.preventDefault();
+  };
+  
+  this.onApplyClick = function(evt){
+  
+    overlay.hide();
+  
+    evt.preventDefault();
+  };
+  
+  this.onOverlayMaskClick = function(evt){
+  
+    overlay.hide();
+  
+    evt.preventDefault();
+  };
+  
   this.fillPrevious = function(){
   
     var context = overlay.controls.previous.get(0).getContext('2d');
     
-    context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
+    context.fillStyle = "rgba("+ previous_value.r +","+ previous_value.g +","+ previous_value.b +","+ previous_value.a +")";
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   
@@ -222,7 +303,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     value.g = imageData.data[1];
     value.b =  imageData.data[2];
     
-    this.setValue(value);
+    this.setValue(value, true, false);
   };
   
   this.onAlphaMousedown = function(evt){   
@@ -244,6 +325,45 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     
     value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
     
-    this.setValue(value, false);
+    this.setValue(value, false, false);
+  };
+  
+  this.rgb2hsv = function (rgb){
+    
+    var r = rgb.r, g = rgb.g, b = rgb.b,
+      max = Math.max(r, g, b),
+      min = Math.min(r, g, b),
+      d = max - min,
+      h, s, v;
+      
+    s = max === 0 ? 0 : d / max,
+    v = max;
+
+    if(max === min) {
+      h = 0; // achromatic
+    }
+    else {
+      switch(max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+          
+        case g:
+          h = (b - r) / d + 2;
+          break;
+          
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      
+      h /= 6;
+    }
+    
+    return {
+      'h': h,
+      's': s,
+      'v': v
+    };
   };
 });

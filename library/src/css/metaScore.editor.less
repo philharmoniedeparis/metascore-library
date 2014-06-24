@@ -2,6 +2,8 @@
 
 body{
   margin: 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
 }
 
 .metaScore-editor{
@@ -9,8 +11,6 @@ body{
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 12px;
   
   .clearfix{
     overflow: auto;
@@ -67,51 +67,18 @@ body{
     }
   }
   
-  .overlay{
-    position: absolute;
-    background: #fff;
-    z-index: 9999;
-  }
+  .colorfield{
+    background: url('img/editor/transparency-grid.png') repeat left top;
   
-  .colorfield-overlay{
-    .gradient{
-      position: relative;
-      float: left;
-      cursor: pointer;
+    button{
+      width: 100%;
+      height: 100%;
+      background-image: url('img/editor/colorfield-picker.png');
+      background-position: left center;
+      background-size: contain;
       
-      .position{
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 8px;
-        height: 8px;
-        margin: -6px 0 0 -6px;
-        border: 2px solid #000;
-        .border-radius(50%);
-        pointer-events: none;
-      }
-    }
-    .alpha{
-      position: relative;
-      float: left;
-      background: url('img/editor/transparency-grid.png') repeat left top;
-      
-      .position{
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 10px;
-        height: 2px;
-        margin-top: -1px;
-        background: #000;
-      }
-    }
-    .controls{
-      float: left;
-      
-      canvas{
-        display: block;
-        background: url('img/editor/transparency-grid.png') repeat left top;
+      &:hover{
+        opacity: 1;
       }
     }
   }
@@ -192,9 +159,6 @@ body{
       
       &.edit{
         background-image: url('img/editor/main-menu/edit.png');
-      }
-      &.grid{
-        background-image: url('img/editor/main-menu/grid.png');
       }
       &.settings{
         background-image: url('img/editor/main-menu/settings.png');
@@ -290,4 +254,109 @@ body{
       }
     }
   }
+}
+
+.metaScore-overlay{
+  position: absolute;
+  background: #fff;
+  z-index: 99999;
+  left: 50%;
+  top: 50%;
+  .transform(translate(-50%, -50%));
+  
+  &.colorfield-overlay{
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
+    .border-radius(10px);
+    
+   -moz-user-select: none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   user-select: none;
+    
+    canvas{
+      display: block;
+    }
+
+    .gradient{
+      position: relative;
+      float: left;
+      cursor: crosshair;
+      
+      .position{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 8px;
+        height: 8px;
+        margin: -6px 0 0 -6px;
+        border: 2px solid #000;
+        .border-radius(50%);
+        pointer-events: none;
+      }
+    }
+    .alpha{
+      position: relative;
+      float: left;
+      background: url('img/editor/transparency-grid.png') repeat left top;
+      
+      .position{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 2px;
+        margin-top: -1px;
+        background: #000;
+        pointer-events: none;
+      }
+    }
+    .controls{
+      width: 80px;
+      float: left;
+      margin-left: 10px;
+      pointer-events: none;
+      
+      input[type=number]{
+        width: 3em;
+        margin-left: 0.5em;
+        pointer-events: auto;
+      }
+      
+      button{
+        width: 100%;
+        pointer-events: auto;
+      }
+      
+      .canvas-wrapper{
+        height: 40px;
+        background: url('img/editor/transparency-grid.png') repeat left top;
+        
+        &.current{
+          margin-top: 5px;
+        }
+        
+        &.previous{
+          height: 20px;
+          margin-bottom: 5px;
+        }
+        
+        canvas{
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.metaScore-overlay-mask{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99999;
 }

@@ -19,7 +19,7 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines the minimum value allowed
     */
-    min: null,
+    min: 0,
     
     /**
     * Defines the maximum value allowed

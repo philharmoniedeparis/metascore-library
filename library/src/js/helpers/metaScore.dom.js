@@ -137,6 +137,47 @@ metaScore.Dom = metaScore.Base.extend(function(){
     }, this);
     return this;
   };
+  
+  this.setDraggable = function(draggable){    
+    if(draggable){
+      this.addListener('mousedown', this.startDrag);
+    }
+    else{
+      this.removeListener('mousedown', this.startDrag);
+    }  
+  };
+  
+  this.startDrag = function(evt){
+    var style = window.getComputedStyle(evt.target, null);
+      
+    this.dragOffset = {
+      'left': parseInt(style.getPropertyValue("left"), 10) - evt.clientX,
+      'top': parseInt(style.getPropertyValue("top"), 10) - evt.clientY
+    };
+    
+    this.dragParent = new metaScore.Dom('body')
+      .addListener('mouseup', this.stopDrag)
+      .addListener('mousemove', this.drag);
+    
+    this.addClass('dragging');
+  };
+  
+  this.drag = function(evt){  
+    var left = evt.clientX + parseInt(this.dragOffset.left, 10),
+      top = evt.clientY + parseInt(this.dragOffset.top, 10);
+    
+    this.css('left', left + 'px');
+    this.css('top', top + 'px');
+  };
+  
+  this.stopDrag = function(evt){  
+    this.dragParent.removeListener('mousemove', this.drag).removeListener('mouseup', this.stopDrag);
+    
+    delete this.dragOffset;
+    delete this.dragParent;
+    
+    this.removeClass('dragging');  
+  };
 });
 
 

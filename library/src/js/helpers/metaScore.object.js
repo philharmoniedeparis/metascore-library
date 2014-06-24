@@ -35,9 +35,21 @@ metaScore.Object.extend = function() {
 };
 
 /**
-* Call a function on each element of an array
-* @param {array} the array
+* Return a copy of an object
+* @param {object} the original object
+* @returns {object} a copy of the original object
+*/
+metaScore.Object.copy = function(obj) {
+    
+  return metaScore.Object.extend({}, obj);
+
+};
+
+/**
+* Call a function on each property of an object
+* @param {object} the object
 * @param {function} the function to call
+* @param {object} the scope of the function
 * @returns {void}
 */
 metaScore.Object.each = function(obj, callback, scope) {

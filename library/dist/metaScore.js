@@ -498,6 +498,47 @@ metaScore.Dom = metaScore.Base.extend(function(){
     }, this);
     return this;
   };
+  
+  this.setDraggable = function(draggable){    
+    if(draggable){
+      this.addListener('mousedown', this.startDrag);
+    }
+    else{
+      this.removeListener('mousedown', this.startDrag);
+    }  
+  };
+  
+  this.startDrag = function(evt){
+    var style = window.getComputedStyle(evt.target, null);
+      
+    this.dragOffset = {
+      'left': parseInt(style.getPropertyValue("left"), 10) - evt.clientX,
+      'top': parseInt(style.getPropertyValue("top"), 10) - evt.clientY
+    };
+    
+    this.dragParent = new metaScore.Dom('body')
+      .addListener('mouseup', this.stopDrag)
+      .addListener('mousemove', this.drag);
+    
+    this.addClass('dragging');
+  };
+  
+  this.drag = function(evt){  
+    var left = evt.clientX + parseInt(this.dragOffset.left, 10),
+      top = evt.clientY + parseInt(this.dragOffset.top, 10);
+    
+    this.css('left', left + 'px');
+    this.css('top', top + 'px');
+  };
+  
+  this.stopDrag = function(evt){  
+    this.dragParent.removeListener('mousemove', this.drag).removeListener('mouseup', this.stopDrag);
+    
+    delete this.dragOffset;
+    delete this.dragParent;
+    
+    this.removeClass('dragging');  
+  };
 });
 
 
@@ -889,9 +930,21 @@ metaScore.Object.extend = function() {
 };
 
 /**
-* Call a function on each element of an array
-* @param {array} the array
+* Return a copy of an object
+* @param {object} the original object
+* @returns {object} a copy of the original object
+*/
+metaScore.Object.copy = function(obj) {
+    
+  return metaScore.Object.extend({}, obj);
+
+};
+
+/**
+* Call a function on each property of an object
+* @param {object} the object
 * @param {function} the function to call
+* @param {object} the scope of the function
 * @returns {void}
 */
 metaScore.Object.each = function(obj, callback, scope) {
@@ -1329,11 +1382,20 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
       })
       .appendTo(left);
     
+    this.buttons['edit'] = new metaScore.Editor.Button()
+      .attr({
+        'class': 'edit',
+        'title': metaScore.String.t('edit')
+      })
+      .disable()
+      .appendTo(left);
+    
     this.buttons['save'] = new metaScore.Editor.Button()
       .attr({
         'class': 'save',
         'title': metaScore.String.t('save')
       })
+      .disable()
       .appendTo(left);
     
     this.buttons['download'] = new metaScore.Editor.Button()
@@ -1341,6 +1403,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
         'class': 'download',
         'title': metaScore.String.t('download')
       })
+      .disable()
       .appendTo(left);
     
     this.buttons['delete'] = new metaScore.Editor.Button()
@@ -1348,6 +1411,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
         'class': 'delete',
         'title': metaScore.String.t('delete')
       })
+      .disable()
       .appendTo(left);
     
     this.buttons['time'] = new metaScore.Editor.Field.TimeField()
@@ -1380,20 +1444,6 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
       .appendTo(left);
       
     
-    this.buttons['edit'] = new metaScore.Editor.Button()
-      .attr({
-        'class': 'edit',
-        'title': metaScore.String.t('edit')
-      })
-      .appendTo(right);
-    
-    this.buttons['grid'] = new metaScore.Editor.Button()
-      .attr({
-        'class': 'grid',
-        'title': metaScore.String.t('grid')
-      })
-      .appendTo(right);
-    
     this.buttons['settings'] = new metaScore.Editor.Button()
       .attr({
         'class': 'settings',
@@ -1416,8 +1466,6 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
 * TimeField
 */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
-
-  var mask;
   
   this.defaults = {
     /**
@@ -1438,7 +1486,12 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     /**
     * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
     */
-    modal: true
+    modal: true,
+    
+    /**
+    * True to make this draggable
+    */
+    draggable: true
   };
 
   /**
@@ -1448,22 +1501,36 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   */
   this.constructor = function(configs) {
   
-    this.super('<div/>', {'class': 'overlay clearfix'});
+    this.super('<div/>', {'class': 'metaScore-overlay clearfix'});
   
     this.initConfig(configs);
     
     if(this.configs.modal){
-      mask = new metaScore.Dom('<div/>', {'class': 'mask'}).appendTo(this);
+      this.mask = new metaScore.Dom('<div/>', {'class': 'metaScore-overlay-mask'});
     }
+    
+    this.setDraggable(this.configs.draggable);
     
   };
   
   this.show = function(){
+    
+    if(this.configs.modal){
+      this.mask.appendTo(this.configs.parent);
+    }
+  
     this.appendTo(this.configs.parent);
+    
   };
   
   this.hide = function(){
+    
+    if(this.configs.modal){
+      this.mask.remove();
+    }
+  
     this.remove();
+    
   };
 });
 /*global metaScore console*/
@@ -1615,7 +1682,8 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
 metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
 
   // private vars
-  var overlay;
+  var button, overlay,
+    previous_value;
   
   this.defaults = {
     /**
@@ -1646,11 +1714,12 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   * @returns {void}
   */
   this.constructor = function(configs) {
+  
+    button = new metaScore.Editor.Button()
+      .addListener('click', this.onClick);
     
-    overlay = new metaScore.Editor.Overlay({
-      'parent': '.metaScore-editor',
-      'modal': false
-    }).addClass('colorfield-overlay');
+    overlay = new metaScore.Editor.Overlay()
+      .addClass('colorfield-overlay');
     
     overlay.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(overlay);
     overlay.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
@@ -1670,71 +1739,115 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     
     overlay.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(overlay);
     
-    overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'});
+    overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
       .append(overlay.controls.r)
       .appendTo(overlay.controls);
       
-    overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'});
+    overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
       .append(overlay.controls.g)
       .appendTo(overlay.controls);
       
-    overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'});
+    overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
       .append(overlay.controls.b)
       .appendTo(overlay.controls);
       
-    overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'a'});
+    overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
+      .addListener('input', this.onControlInput);
     new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
       .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
       .append(overlay.controls.a)
       .appendTo(overlay.controls);
       
-    overlay.controls.current = new metaScore.Dom('<canvas/>', {'width': '100', 'height': '50'})
+    overlay.controls.current = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
+      .append(overlay.controls.current)
       .appendTo(overlay.controls);
     
-    overlay.controls.previous = new metaScore.Dom('<canvas/>', {'width': '100', 'height': '25'})
+    overlay.controls.previous = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
+      .append(overlay.controls.previous)
       .appendTo(overlay.controls);
       
     overlay.controls.cancel = new metaScore.Editor.Button({'label': 'Cancel'})
+      .addListener('click', this.onCancelClick)
       .appendTo(overlay.controls);
       
     overlay.controls.apply = new metaScore.Editor.Button({'label': 'Apply'})
+      .addListener('click', this.onApplyClick)
       .appendTo(overlay.controls);
-      
+          
+    overlay.mask.addListener('click', this.onOverlayMaskClick);
     
     this.super(configs);
     
-    this.fillGradient();
+    new metaScore.Dom('<div/>', {'class': 'icon'})
+      .appendTo(this);
     
-    this.addListener('click', this.onClick);
+    button.appendTo(this);
+    
+    this.fillGradient();
     
   };
   
-  this.setValue = function(val, refillAlpha){
+  this.setValue = function(val, refillAlpha, updatePositions, updateInputs){
   
-    this.value = val;
-    
-    overlay.controls.r.val(this.value.r);
-    overlay.controls.g.val(this.value.g);
-    overlay.controls.b.val(this.value.b);
-    overlay.controls.a.val(this.value.a);
+    var hsv;
+  
+    if(!this.hasOwnProperty('value')){
+      this.value = {};
+    }
+  
+    if(val.hasOwnProperty('r')){
+      this.value.r = parseInt(val.r, 10);
+    }
+    if(val.hasOwnProperty('g')){
+      this.value.g = parseInt(val.g, 10);
+    }
+    if(val.hasOwnProperty('b')){
+      this.value.b = parseInt(val.b, 10);
+    }
+    if(val.hasOwnProperty('a')){
+      this.value.a = parseFloat(val.a);
+    }
     
     if(refillAlpha !== false){
       this.fillAlpha();
     }
     
+    if(updateInputs !== false){
+      overlay.controls.r.val(this.value.r);
+      overlay.controls.g.val(this.value.g);
+      overlay.controls.b.val(this.value.b);
+      overlay.controls.a.val(this.value.a);
+    }
+    
+    if(updatePositions !== false){
+      hsv = this.rgb2hsv(this.value);
+      
+      overlay.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
+      overlay.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
+      
+      overlay.alpha.position.css('top', ((1 - this.value.a) * 255) +'px');
+    }
+    
     this.fillCurrent();
+    
+    button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
   
   };
   
   this.onClick = function(evt){
   
-    this.previous_value = this.value;
+    previous_value = metaScore.Object.copy(this.value);
     
     this.fillPrevious();
   
@@ -1742,11 +1855,46 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
   };
   
+  this.onControlInput = function(evt){
+  
+    var rgba, hsv;
+    
+    this.setValue({
+      'r': overlay.controls.r.val(),
+      'g': overlay.controls.g.val(),
+      'b': overlay.controls.b.val(),
+      'a': overlay.controls.a.val()
+    }, true, true, false);
+  
+  };
+  
+  this.onCancelClick = function(evt){
+  
+    this.setValue(previous_value);
+    overlay.hide();
+  
+    evt.preventDefault();
+  };
+  
+  this.onApplyClick = function(evt){
+  
+    overlay.hide();
+  
+    evt.preventDefault();
+  };
+  
+  this.onOverlayMaskClick = function(evt){
+  
+    overlay.hide();
+  
+    evt.preventDefault();
+  };
+  
   this.fillPrevious = function(){
   
     var context = overlay.controls.previous.get(0).getContext('2d');
     
-    context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
+    context.fillStyle = "rgba("+ previous_value.r +","+ previous_value.g +","+ previous_value.b +","+ previous_value.a +")";
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   
@@ -1834,7 +1982,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     value.g = imageData.data[1];
     value.b =  imageData.data[2];
     
-    this.setValue(value);
+    this.setValue(value, true, false);
   };
   
   this.onAlphaMousedown = function(evt){   
@@ -1856,7 +2004,46 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     
     value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
     
-    this.setValue(value, false);
+    this.setValue(value, false, false);
+  };
+  
+  this.rgb2hsv = function (rgb){
+    
+    var r = rgb.r, g = rgb.g, b = rgb.b,
+      max = Math.max(r, g, b),
+      min = Math.min(r, g, b),
+      d = max - min,
+      h, s, v;
+      
+    s = max === 0 ? 0 : d / max,
+    v = max;
+
+    if(max === min) {
+      h = 0; // achromatic
+    }
+    else {
+      switch(max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+          
+        case g:
+          h = (b - r) / d + 2;
+          break;
+          
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      
+      h /= 6;
+    }
+    
+    return {
+      'h': h,
+      's': s,
+      'v': v
+    };
   };
 });
 /*global metaScore console*/
@@ -1889,6 +2076,9 @@ metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
 /*global metaScore console*/
 
 metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
+
+  // private vars
+  var file;
   
   this.defaults = {
     /**
@@ -1901,6 +2091,11 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
     */
     disabled: false
   };
+  
+  this.attributes = {
+    'type': 'file',
+    'class': 'field imagefield'
+  };
 
   /**
   * Initialize
@@ -1910,7 +2105,50 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
   this.constructor = function(configs) {
     
     this.super(configs);
+
+    this.addListener('change', this.onFileSelect, false);
     
+  };
+  
+  this.setValue = function(val, triggerChange){
+  
+    this.value = val;
+    
+    if(triggerChange !== false){
+      this.triggerEvent('change', false, true);
+    }
+  
+  };
+  
+  this.onFileSelect = function(evt) {
+  
+    var files = evt.target.files;
+  
+    if(files.length > 0 && files[0].type.match('image.*')){
+      file = files[0];
+    }
+    else{
+      file = null;
+    }
+    
+    this.getBase64(function(result){
+      this.setValue(result);
+    });
+    
+  };
+  
+  this.getBase64 = function(callback){
+  
+    var reader;
+  
+    if(file){
+      reader = new FileReader();
+      reader.onload = metaScore.Function.proxy(function(evt){
+        callback.call(this, evt.target.result, evt);
+      }, this);
+      reader.readAsDataURL(file);
+    }
+  
   };
 });
 /*global metaScore console*/
@@ -1976,7 +2214,7 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines the minimum value allowed
     */
-    min: null,
+    min: 0,
     
     /**
     * Defines the maximum value allowed

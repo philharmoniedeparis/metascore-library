@@ -36,11 +36,20 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
       })
       .appendTo(left);
     
+    this.buttons['edit'] = new metaScore.Editor.Button()
+      .attr({
+        'class': 'edit',
+        'title': metaScore.String.t('edit')
+      })
+      .disable()
+      .appendTo(left);
+    
     this.buttons['save'] = new metaScore.Editor.Button()
       .attr({
         'class': 'save',
         'title': metaScore.String.t('save')
       })
+      .disable()
       .appendTo(left);
     
     this.buttons['download'] = new metaScore.Editor.Button()
@@ -48,6 +57,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
         'class': 'download',
         'title': metaScore.String.t('download')
       })
+      .disable()
       .appendTo(left);
     
     this.buttons['delete'] = new metaScore.Editor.Button()
@@ -55,6 +65,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
         'class': 'delete',
         'title': metaScore.String.t('delete')
       })
+      .disable()
       .appendTo(left);
     
     this.buttons['time'] = new metaScore.Editor.Field.TimeField()
@@ -86,20 +97,6 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
       .disable()
       .appendTo(left);
       
-    
-    this.buttons['edit'] = new metaScore.Editor.Button()
-      .attr({
-        'class': 'edit',
-        'title': metaScore.String.t('edit')
-      })
-      .appendTo(right);
-    
-    this.buttons['grid'] = new metaScore.Editor.Button()
-      .attr({
-        'class': 'grid',
-        'title': metaScore.String.t('grid')
-      })
-      .appendTo(right);
     
     this.buttons['settings'] = new metaScore.Editor.Button()
       .attr({
