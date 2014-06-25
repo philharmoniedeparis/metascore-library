@@ -1,5 +1,6 @@
-/*global metaScore console*/
-
+/**
+* Toolbar
+*/
 metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
 
   var title, buttons;

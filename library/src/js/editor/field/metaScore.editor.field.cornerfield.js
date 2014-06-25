@@ -1,5 +1,6 @@
-/*global metaScore console*/
-
+/**
+* Corner Field
+*/
 metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
   
   this.defaults = {

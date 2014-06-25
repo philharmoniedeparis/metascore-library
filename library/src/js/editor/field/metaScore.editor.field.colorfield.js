@@ -1,5 +1,6 @@
-/*global metaScore console*/
-
+/**
+* Color Field
+*/
 metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
 
   // private vars

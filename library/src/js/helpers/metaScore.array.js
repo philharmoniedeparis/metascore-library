@@ -1,7 +1,5 @@
-/*global metaScore*/
-
 /**
-* Array helper functions
+* Array
 */
 metaScore.Array = metaScore.Base.extend(function(){});
 

@@ -1,5 +1,3 @@
-/*global metaScore console*/
-
 /**
 * Media Element
 */  

@@ -1,7 +1,5 @@
-/*global metaScore console*/
-
 /**
-* TimeField
+* Overlay
 */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   

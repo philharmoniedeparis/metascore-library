@@ -1,10 +1,6 @@
-/*global metaScore console*/
-
-
 /**
-* Defines the Class object
+* Base Class
 */
-
 (function(metaScore){  
 	//Helper method for creating an super copied object clone
 	function initialize(method){

@@ -1,7 +1,10 @@
 {
   "globals": {
     "define": true,
-    "DEBUG": true
+    "DEBUG": true,
+    "metaScore": true,
+    "ActiveXObject": true,
+    "console": true
   },
 
   "asi": false,

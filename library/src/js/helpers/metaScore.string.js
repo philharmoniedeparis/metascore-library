@@ -1,7 +1,5 @@
-/*global metaScore*/
-
 /**
-* String helper functions
+* String
 */
 metaScore.String = metaScore.Base.extend(function(){});
 

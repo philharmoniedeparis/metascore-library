@@ -1,7 +1,5 @@
-/*global metaScore*/
-
 /**
-* Variable helper functions
+* Variable
 */
 metaScore.Var = metaScore.Base.extend(function(){});
 

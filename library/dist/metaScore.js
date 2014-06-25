@@ -1,39 +1,15 @@
 /*! metaScore - v0.0.1 - 2014-06-25 - Oussama Mubarak */
 ;(function (global) {
-
-  "use strict";
-  
-  // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create
-  if (typeof Object.create != 'function') {
-    (function () {
-        var F = function () {};
-        Object.create = function (o) {
-            if (arguments.length > 1) { throw Error('Second argument not supported');}
-            if (o === null) { throw Error('Cannot set a null [[Prototype]]');}
-            if (typeof o != 'object') { throw TypeError('Argument must be an object');}
-            F.prototype = o;
-            return new F;
-        };
-    })();
-  }
-/*global global*/
-
+"use strict";
 /**
-* Core functions
-*/
-    
+* Core
+*/    
 var metaScore = {
   version: "0.0.1"
 };
-  
-
-/*global metaScore console*/
-
-
 /**
-* Defines the Class object
+* Base Class
 */
-
 (function(metaScore){  
 	//Helper method for creating an super copied object clone
 	function initialize(method){
@@ -121,10 +97,8 @@ var metaScore = {
   });
     
 })(metaScore);
-/*global metaScore console ActiveXObject*/
-
 /**
-* Ajax helper functions
+* Ajax
 */
 metaScore.Ajax = metaScore.Base.extend(function(){});
 
@@ -251,10 +225,8 @@ metaScore.Ajax.post = function(url, options) {
   return metaScore.Ajax.send(url, options);
   
 };
-/*global metaScore*/
-
 /**
-* Array helper functions
+* Array
 */
 metaScore.Array = metaScore.Base.extend(function(){});
 
@@ -359,10 +331,8 @@ metaScore.Array.each = function(arr, callback, scope) {
   return arr;
 
 };
-/*global metaScore console*/
-
 /**
-* Dom helper functions
+* Dom
 */
 metaScore.Dom = metaScore.Base.extend(function(){
   this.constructor = function() {
@@ -865,10 +835,8 @@ metaScore.Dom.append = function(element, children){
 metaScore.Dom.remove = function(element){
   element.parentElement.removeChild(element);
 };
-/*global metaScore console*/
-
 /**
-* Function helper functions
+* Function
 */
 metaScore.Function = metaScore.Base.extend(function(){});
 
@@ -893,10 +861,8 @@ metaScore.Function.proxy = function(fn, scope) {
 * A reusable empty function
 */
 metaScore.Function.emptyFn = function(){};
-/*global metaScore*/
-
 /**
-* Object helper functions
+* Object
 */
 metaScore.Object = metaScore.Base.extend(function(){});
 
@@ -965,10 +931,8 @@ metaScore.Object.each = function(obj, callback, scope) {
   return obj;
 
 };
-/*global metaScore*/
-
 /**
-* String helper functions
+* String
 */
 metaScore.String = metaScore.Base.extend(function(){});
 
@@ -1029,10 +993,8 @@ metaScore.String.uuid = function (len, radix) {
 
   return uuid.join('');
 };
-/*global metaScore*/
-
 /**
-* Variable helper functions
+* Variable
 */
 metaScore.Var = metaScore.Base.extend(function(){});
 
@@ -1068,8 +1030,6 @@ metaScore.Var.type = function(obj) {
 metaScore.Var.is = function(obj, type) {
   return metaScore.Var.type(obj) === type.toLowerCase();
 };
-/*global metaScore console*/
-
 /**
 * Media CuePoints
 */
@@ -1134,8 +1094,6 @@ metaScore.Media.CuePoint = metaScore.Base.extend(function(){
     }
   };
 });
-/*global metaScore console*/
-
 /**
 * Media Element
 */  
@@ -1143,8 +1101,6 @@ metaScore.Media = metaScore.Media || {};
 
 metaScore.Media.Element = metaScore.Base.extend(function(){
 });
-/*global metaScore console*/
-
 /**
 * Player
 */
@@ -1159,8 +1115,6 @@ metaScore.Player = metaScore.Dom.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
 /**
 * Editor
 */
@@ -1197,8 +1151,9 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
+/**
+* Button
+*/
 metaScore.Editor.Button = metaScore.Dom.extend(function(){
 
   var label;
@@ -1275,10 +1230,8 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
     return this;
   };
 });
-/*global metaScore console*/
-
 /**
-* TimeField
+* DropDown Menu
 */
 metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
 
@@ -1303,10 +1256,8 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
   
   };
 });
-/*global metaScore console*/
-
 /**
-* TimeField
+* Field
 */
 metaScore.Editor.Field = metaScore.Dom.extend(function(){
   
@@ -1385,10 +1336,8 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
     return this;
   };
 });
-/*global metaScore console*/
-
 /**
-* Editor main menu
+* Main Menu
 */
 metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
 
@@ -1501,10 +1450,8 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
 /**
-* TimeField
+* Overlay
 */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   
@@ -1574,8 +1521,6 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
 /**
 * Editor panel
 */
@@ -1647,10 +1592,8 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
 /**
-* Editor sidebar
+* Sidebar
 */
 metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
 
@@ -1678,8 +1621,9 @@ metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
   
   };
 });
-/*global metaScore console*/
-
+/**
+* Toolbar
+*/
 metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
 
   var title, buttons;
@@ -1725,8 +1669,9 @@ metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
   
   };
 });
-/*global metaScore console*/
-
+/**
+* Boolean Field
+*/
 metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
 
   this.defaults = {
@@ -1757,8 +1702,9 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
+/**
+* Color Field
+*/
 metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
 
   // private vars
@@ -2126,8 +2072,9 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     };
   };
 });
-/*global metaScore console*/
-
+/**
+* Corner Field
+*/
 metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
   
   this.defaults = {
@@ -2153,8 +2100,9 @@ metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
+/**
+* Image Field
+*/
 metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
 
   // private vars
@@ -2231,8 +2179,9 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
   
   };
 });
-/*global metaScore console*/
-
+/**
+* Integer Field
+*/
 metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
   
   this.defaults = {
@@ -2273,8 +2222,9 @@ metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
     
   };
 });
-/*global metaScore console*/
-
+/**
+* Time Field
+*/
 metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   
   // private vars
@@ -2419,10 +2369,8 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     return this;
   };
 });
-/*global metaScore console*/
-
 /**
-* Editor panel
+* Block Panel
 */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
 
@@ -2490,10 +2438,8 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   
 });
-/*global metaScore console*/
-
 /**
-* Editor panel
+* Element Panel
 */
 metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
 
@@ -2567,10 +2513,8 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
   
   
 });
-/*global metaScore console*/
-
 /**
-* Editor panel
+* Page Panel
 */
 metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
 
@@ -2605,10 +2549,8 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
   
   
 });
-/*global metaScore console*/
-
 /**
-* Editor panel
+* Text Panel
 */
 metaScore.Editor.Panel.Text = metaScore.Editor.Panel.extend(function(){
 

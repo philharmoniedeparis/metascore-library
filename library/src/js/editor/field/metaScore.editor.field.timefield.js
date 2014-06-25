@@ -1,5 +1,6 @@
-/*global metaScore console*/
-
+/**
+* Time Field
+*/
 metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   
   // private vars

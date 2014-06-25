@@ -1,5 +1,6 @@
-/*global metaScore console*/
-
+/**
+* Button
+*/
 metaScore.Editor.Button = metaScore.Dom.extend(function(){
 
   var label;

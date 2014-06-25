@@ -1,10 +1,6 @@
-/*global global*/
-
 /**
-* Core functions
-*/
-    
+* Core
+*/    
 var metaScore = {
   version: "[[VERSION]]"
 };
-  

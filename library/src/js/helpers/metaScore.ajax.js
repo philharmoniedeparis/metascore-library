@@ -1,7 +1,5 @@
-/*global metaScore console ActiveXObject*/
-
 /**
-* Ajax helper functions
+* Ajax
 */
 metaScore.Ajax = metaScore.Base.extend(function(){});
 

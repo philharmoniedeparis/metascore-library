@@ -1,7 +1,5 @@
-/*global metaScore console*/
-
 /**
-* Editor panel
+* Page Panel
 */
 metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
 

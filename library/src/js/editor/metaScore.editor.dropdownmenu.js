@@ -1,7 +1,5 @@
-/*global metaScore console*/
-
 /**
-* TimeField
+* DropDown Menu
 */
 metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
 

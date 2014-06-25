@@ -1,7 +1,5 @@
-/*global metaScore console*/
-
 /**
-* Dom helper functions
+* Dom
 */
 metaScore.Dom = metaScore.Base.extend(function(){
   this.constructor = function() {

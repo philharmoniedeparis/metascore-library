@@ -1,7 +1,5 @@
-/*global metaScore console*/
-
 /**
-* Editor sidebar
+* Sidebar
 */
 metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
 

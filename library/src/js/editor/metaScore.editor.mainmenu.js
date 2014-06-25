@@ -1,7 +1,5 @@
-/*global metaScore console*/
-
 /**
-* Editor main menu
+* Main Menu
 */
 metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
 

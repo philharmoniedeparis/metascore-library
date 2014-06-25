@@ -1,5 +1,6 @@
-/*global metaScore console*/
-
+/**
+* Image Field
+*/
 metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
 
   // private vars
