@@ -1,10 +1,4 @@
 @import "../../vendor/prefixer.less";
-
-body{
-  margin: 0;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 12px;
-}
   
 .clearfix:after {
   visibility: hidden;
@@ -22,10 +16,21 @@ body{
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
   
   table{
+    margin: 0;
+    border: none;
     border-collapse: collapse;
     border-spacing: 0;
+  
+    td, th {
+      vertical-align: middle;
+      padding: 0;
+      border: none;
+      color: #000;
+    }
   }
     
   button{

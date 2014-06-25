@@ -75,11 +75,6 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
-body {
-  margin: 0;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 12px;
-}
 .clearfix:after {
   visibility: hidden;
   display: block;
@@ -101,10 +96,21 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
 }
 .metaScore-editor table {
+  margin: 0;
+  border: none;
   border-collapse: collapse;
   border-spacing: 0;
+}
+.metaScore-editor table td,
+.metaScore-editor table th {
+  vertical-align: middle;
+  padding: 0;
+  border: none;
+  color: #000;
 }
 .metaScore-editor button {
   border: none;
