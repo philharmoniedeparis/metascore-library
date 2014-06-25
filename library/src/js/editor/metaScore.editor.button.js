@@ -1,6 +1,9 @@
 /*global metaScore console*/
 
 metaScore.Editor.Button = metaScore.Dom.extend(function(){
+
+  var label;
+  
   /**
   * Keep track of the current state
   */
@@ -26,8 +29,7 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
     this.initConfig(configs);
     
     if(this.configs.label){
-      this.label = new metaScore.Dom('<span/>', {'class': 'label', 'text': this.configs.label});
-      this.append(this.label);
+      this.setLabel(this.configs.label);
     }
     
     this.addListener('click', function(evt){
@@ -35,6 +37,17 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
         evt.stopPropagation();
       }
     });
+  };
+  
+  this.setLabel = function(text){
+  
+    if(label === undefined){
+      label = new metaScore.Dom('<span/>', {'class': 'label'})
+        .appendTo(this);
+    }
+    
+    label.text(text);
+    
   };
 
   /**

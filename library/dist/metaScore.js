@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-06-24 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-06-25 - Oussama Mubarak */
 ;(function (global) {
 
   "use strict";
@@ -1200,6 +1200,9 @@ metaScore.Editor = metaScore.Dom.extend(function(){
 /*global metaScore console*/
 
 metaScore.Editor.Button = metaScore.Dom.extend(function(){
+
+  var label;
+  
   /**
   * Keep track of the current state
   */
@@ -1225,8 +1228,7 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
     this.initConfig(configs);
     
     if(this.configs.label){
-      this.label = new metaScore.Dom('<span/>', {'class': 'label', 'text': this.configs.label});
-      this.append(this.label);
+      this.setLabel(this.configs.label);
     }
     
     this.addListener('click', function(evt){
@@ -1234,6 +1236,17 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
         evt.stopPropagation();
       }
     });
+  };
+  
+  this.setLabel = function(text){
+  
+    if(label === undefined){
+      label = new metaScore.Dom('<span/>', {'class': 'label'})
+        .appendTo(this);
+    }
+    
+    label.text(text);
+    
   };
 
   /**
@@ -1260,6 +1273,34 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
     this.removeClass('disabled');
     
     return this;
+  };
+});
+/*global metaScore console*/
+
+/**
+* TimeField
+*/
+metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    this.super('<ul/>', {'class': 'dropdown-menu'});
+  
+    this.initConfig(configs);
+  };
+  
+  this.addItem = function(text){
+  
+    var item = new metaScore.Dom('<li/>', {'text': text})
+      .appendTo(this);    
+  
+    return item;
+  
   };
 });
 /*global metaScore console*/
@@ -1540,6 +1581,8 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
 */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
+  var toolbar;
+
   this.defaults = {
     /**
     * The panel's title
@@ -1557,22 +1600,12 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     this.super('<div/>', {'class': 'panel'});
   
     this.initConfig(configs);
-    
-    this.setupUI();
-    
-  };
   
-  this.setupUI = function(){
-  
-    this.toolbar = new metaScore.Dom('<div/>', {'class': 'toolbar'}).appendTo(this);
-    
-    this.toolbar.title = new metaScore.Dom('<div/>', {'class': 'title'})
-      .appendTo(this.toolbar)
+    toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
-    
-    this.toolbar.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this.toolbar);
-    
-    this.setTitle(this.configs.title);
     
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
@@ -1602,15 +1635,15 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   };
   
-  this.setTitle = function(title){
-  
-    this.toolbar.title.text(title);
-    
-  };
-  
   this.toggleState = function(){
     
     this.toggleClass('collapsed');
+    
+  };
+  
+  this.getToolbar = function(){
+    
+    return toolbar;
     
   };
 });
@@ -1642,6 +1675,53 @@ metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
   
     new metaScore.Editor.Panel.Text()
       .appendTo(this);
+  
+  };
+});
+/*global metaScore console*/
+
+metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
+
+  var title, buttons;
+  
+  this.defaults = {    
+    /**
+    * A text to add as a title
+    */
+    title: null
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {    
+    this.super('<div/>', {'class': 'toolbar clearfix'});
+  
+    this.initConfig(configs);
+    
+    title = new metaScore.Dom('<div/>', {'class': 'title'})
+      .appendTo(this);
+    
+    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this);
+      
+    if(this.configs.title){
+      title.text(this.configs.title);
+    }
+  };
+  
+  this.getTitle = function(){
+  
+    return title;
+    
+  };
+  
+  this.addButton = function(configs){
+  
+    return new metaScore.Editor.Button(configs)
+      .appendTo(buttons);
   
   };
 });
@@ -2131,9 +2211,9 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
       file = null;
     }
     
-    this.getBase64(function(result){
+    /*this.getBase64(function(result){
       this.setValue(result);
-    });
+    });*/
     
   };
   
@@ -2346,6 +2426,8 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
 */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
 
+  var menu;
+
   this.defaults = {
     /**
     * The panel's title
@@ -2385,6 +2467,25 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         'label': 'Synchronized pages ?'
       }
     }
+  };
+  
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    this.super(configs);
+    
+    menu = new metaScore.Editor.DropDownMenu();
+    menu.addItem('Add a new block');
+    menu.addItem('Delete the active block');
+    
+    this.getToolbar().addButton()
+      .addClass('menu')
+      .append(menu);
+    
   };
   
   

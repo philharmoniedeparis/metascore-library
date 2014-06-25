@@ -56,9 +56,9 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
       file = null;
     }
     
-    this.getBase64(function(result){
+    /*this.getBase64(function(result){
       this.setValue(result);
-    });
+    });*/
     
   };
   

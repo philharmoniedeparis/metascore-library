@@ -5,17 +5,23 @@ body{
   font-family: Verdana, Geneva, sans-serif;
   font-size: 12px;
 }
+  
+.clearfix:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+* html .clearfix   { zoom: 1; } /* IE6 */
+*:first-child+html .clearfix { zoom: 1; } /* IE7 */
 
 .metaScore-editor{
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  
-  .clearfix{
-    overflow: auto;
-    zoom: 1;
-  }
   
   table{
     border-collapse: collapse;
@@ -198,11 +204,80 @@ body{
         .linear-gradient-top(#fefefe, #fefefe, 0%, #fcfcfc, 32%, #fafafa, 36%, #f3f3f3, 100%);
         
         .title{
+          float: left;
           padding-left: 18px;
           font-weight: bold;
           background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
           cursor: pointer;
           .opacity(0.8);
+        }
+        
+        .buttons{
+          float: right;
+          
+          button{
+            width: 16px;
+            height: 16px;
+            background-repeat: no-repeat;
+            background-position: center center;
+          
+            &.menu{
+              position: relative;
+              padding-bottom: 2px;
+              
+              &:after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                background: url('img/editor/panel/button/menu.png') no-repeat center center;
+              }
+              
+              .dropdown-menu{
+                display: none;
+                position: absolute;
+                right: 0;
+                top: 100%;
+                margin: 0px;
+                padding: 0px;
+                padding-top: 2px;
+                list-style-type: none;
+                background: #fff;
+                
+                li{
+                  min-width: 50px;
+                  margin-bottom: -1px;
+                  padding: 3px 4px;
+                  font-size: 0.8em;
+                  border: 1px solid #ccc;
+                  text-align: right;
+                  white-space: nowrap;
+                  
+                  &:hover{
+                    background: #eee;
+                  }
+                  
+                  &:active{
+                    opacity: 0.75;
+                  }
+                }
+              }
+              
+              &:hover{
+                opacity: 1;
+                
+                &:after {
+                  opacity: 0.75;
+                }
+                
+                .dropdown-menu{
+                  display: block;
+                }
+              }
+            }          
+          }
         }
       }
       

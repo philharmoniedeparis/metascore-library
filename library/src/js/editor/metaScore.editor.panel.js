@@ -5,6 +5,8 @@
 */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
+  var toolbar;
+
   this.defaults = {
     /**
     * The panel's title
@@ -22,22 +24,12 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     this.super('<div/>', {'class': 'panel'});
   
     this.initConfig(configs);
-    
-    this.setupUI();
-    
-  };
   
-  this.setupUI = function(){
-  
-    this.toolbar = new metaScore.Dom('<div/>', {'class': 'toolbar'}).appendTo(this);
-    
-    this.toolbar.title = new metaScore.Dom('<div/>', {'class': 'title'})
-      .appendTo(this.toolbar)
+    toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
-    
-    this.toolbar.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this.toolbar);
-    
-    this.setTitle(this.configs.title);
     
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
@@ -67,15 +59,15 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   };
   
-  this.setTitle = function(title){
-  
-    this.toolbar.title.text(title);
-    
-  };
-  
   this.toggleState = function(){
     
     this.toggleClass('collapsed');
+    
+  };
+  
+  this.getToolbar = function(){
+    
+    return toolbar;
     
   };
 });

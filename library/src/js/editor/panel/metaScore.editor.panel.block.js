@@ -5,6 +5,8 @@
 */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
 
+  var menu;
+
   this.defaults = {
     /**
     * The panel's title
@@ -44,6 +46,25 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         'label': 'Synchronized pages ?'
       }
     }
+  };
+  
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    this.super(configs);
+    
+    menu = new metaScore.Editor.DropDownMenu();
+    menu.addItem('Add a new block');
+    menu.addItem('Delete the active block');
+    
+    this.getToolbar().addButton()
+      .addClass('menu')
+      .append(menu);
+    
   };
   
   
