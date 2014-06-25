@@ -1,5 +1,0 @@
-name = metaScore Editor
-description = Generates the editor page
-core = 7.x
-package = metaScore
-dependencies[] = metascore_guide

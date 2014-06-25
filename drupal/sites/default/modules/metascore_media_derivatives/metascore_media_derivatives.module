@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the metaScore media derivatives feature.
- */
-
-include_once('metascore_media_derivatives.features.inc');

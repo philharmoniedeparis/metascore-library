@@ -1,6 +1,0 @@
-name = Services API
-description = Adds an API view for services
-package = Services
-core = 7.x
-
-dependencies[] = services
