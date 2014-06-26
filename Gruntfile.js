@@ -61,12 +61,14 @@ module.exports = function(grunt) {
     concat_in_order: {
       dist: {    
         files: {
-          'dist/metaScore.js': DIST_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, EDITOR_LIST, TAIL_LIST)
+          'dist/metaScore.player.js': DIST_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
+          'dist/metaScore.editor.js': DIST_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, EDITOR_LIST, TAIL_LIST)
         }
       },
       dev: {    
         files: {
-          'dist/metaScore.js': DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, EDITOR_LIST, TAIL_LIST)
+          'dist/metaScore.player.js': DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
+          'dist/metaScore.editor.js': DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, EDITOR_LIST, TAIL_LIST)
         }
       },
       options: {
@@ -93,15 +95,19 @@ module.exports = function(grunt) {
     file_append: {
       dev: {
         files: {
-          'dist/metaScore.js': {
+          'dist/metaScore.player.js': {
             prepend: BANNER,
-            input: 'dist/metaScore.js'
+            input: 'dist/metaScore.player.js'
+          },
+          'dist/metaScore.editor.js': {
+            prepend: BANNER,
+            input: 'dist/metaScore.editor.js'
           }
         }
       }
     },
     replace: {
-      all: {
+      version: {
         src: sub('dist/*.js'),
         overwrite: true,
         replacements: [{
@@ -111,28 +117,36 @@ module.exports = function(grunt) {
       }
     },
     less: {
-      editor: {
-        options: {
-          yuicompress: true,
-          optimization: 2
-        },
+      player: {
         files: {
-          "dist/metaScore-editor.css": "src/css/metaScore.editor.less"
+          "dist/metaScore.player.css": "src/css/metaScore.player.less"
         }
+      },
+      editor: {
+        files: {
+          "dist/metaScore.editor.css": "src/css/metaScore.editor.less"
+        }
+      },
+      options: {
+        yuicompress: true,
+        optimization: 2
       }
     },
     uglify: {
       dist: {
-        files: (function () {
-            // Using an IIFE so that the destination property name can be
-            // created dynamically with sub().
-            var obj = {};
-            obj[sub('dist/%s.min.js')] = [sub('dist/%s.js')];
-            return obj;
-          } ())
+        files: {
+          'dist/metaScore.player.min.js': 'dist/metaScore.player.js',
+          'dist/metaScore.editor.min.js': 'dist/metaScore.editor.js',
+        }
       },
       options: {
-        banner: BANNER
+        banner: BANNER,        
+        compress: {
+          global_defs: {
+            "DEBUG": false
+          },
+          dead_code: true
+        }
       }
     },
     copy: {
@@ -178,8 +192,8 @@ module.exports = function(grunt) {
     'uglify:dist',
     'concat_in_order:dev',
     'file_append:dev',
-    'replace:all',
-    'less:editor',
+    'replace:version',
+    'less',
     'copy:dist'
   ]);
   

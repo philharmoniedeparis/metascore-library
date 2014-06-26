@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-06-26 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-06-27 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -28,7 +28,7 @@
 //     MY_FEATURE_IS_ENABLED = true;
 //   }
 
-const DEBUG = true;
+if (typeof DEBUG === 'undefined') DEBUG = true;
 ;(function (global) {
 "use strict";
 /**
@@ -781,7 +781,7 @@ metaScore.Dom.val = function(element, value){
 };
 
 /**
-* Sets or gets an attribute of an element
+* Sets an attribute on an element
 * @param {object} the dom element
 * @param {string} the attribute's name
 * @param {string} an optional value to set
@@ -804,12 +804,16 @@ metaScore.Dom.attr = function(element, name, value){
         this.text(element, value);
         break;
         
-      default:      
-        if(value !== undefined){
-          element.setAttribute(name, value);
+      default:
+        if(value === null){
+          element.removeAttribute(name);
         }
         else{
-          element.removeAttribute(name);
+          if(value !== undefined){
+            element.setAttribute(name, value);
+          }
+          
+          return element.getAttribute(name);
         }
         break;
     }
@@ -830,7 +834,7 @@ metaScore.Dom.css = function(element, name, value){
     element.style[name] = value;
   }
   
-  return element.style[name];
+  return element.style.hasOwnProperty(name) ? element.style[name] : null;
 };
 
 /**
@@ -871,31 +875,9 @@ metaScore.Player = metaScore.Dom.extend(function(){
       this.appendTo(selector);
     }
     
-  };
-});
-/**
- * Player Block
- *
- * @requires metaScore.player.js
- * @requires ../helpers/metaScore.dom.js
- */
-metaScore.Player.Block = metaScore.Dom.extend(function(){
-  this.constructor = function(selector) {
-  
-    this.super('<div/>', {'class': 'block'});
-    
-  };
-});
-/**
- * Player Element
- *
- * @requires metaScore.player.js
- * @requires ../helpers/metaScore.dom.js
- */
-metaScore.Player.Element = metaScore.Dom.extend(function(){
-  this.constructor = function(selector) {
-  
-    this.super('<div/>', {'class': 'element'});
+    if(DEBUG){
+      metaScore.Player.instance = this;
+    }
     
   };
 });
@@ -905,11 +887,215 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
  * @requires metaScore.player.js
  * @requires ../helpers/metaScore.dom.js
  */
+metaScore.Player.Pager = metaScore.Dom.extend(function(){
+
+  var count, buttons;
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'pager'});
+    
+    count = new metaScore.Dom('<div/>', {'class': 'count'})
+      .appendTo(this);
+    
+    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this);
+      
+    buttons.first = new metaScore.Dom('<div/>', {'class': 'first'})
+      .appendTo(buttons);
+      
+    buttons.previous = new metaScore.Dom('<div/>', {'class': 'previous'})
+      .appendTo(buttons);
+      
+    buttons.next = new metaScore.Dom('<div/>', {'class': 'next'})
+      .appendTo(buttons);
+    
+  };
+  
+});
+/**
+ * Player Element
+ *
+ * @requires metaScore.player.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Element = metaScore.Dom.extend(function(){
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'element'});
+    
+  };
+  
+  this.setProperty = function(name, value){
+  
+    switch(name){
+      case 'x':
+        this.css('left', value +'px');
+        break;
+        
+      case 'y':
+        this.css('top', value +'px');
+        break;
+        
+      case 'width':
+        this.css('width', value +'px');
+        break;
+        
+      case 'height':
+        this.css('height', value +'px');
+        break;
+        
+      case 'reading-index':
+        this.attr('data-r-index', value);
+        break;
+        
+      case 'z-index':
+        this.css('z-index', value);
+        break;
+        
+      case 'bg-color':
+        this.css('background-color', value);
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'border-width':
+        this.css('border-width', value +'px');
+        break;
+        
+      case 'border-color':
+        this.css('border-color', value);
+        break;
+        
+      case 'start':
+        this.attr('data-start', value);
+        break;
+        
+      case 'end':
+        this.attr('data-end', value);
+        break;
+    }
+  
+  };
+});
+/**
+ * Player Page
+ *
+ * @requires metaScore.player.js
+ * @requires metaScore.player.element.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Player.Page = metaScore.Dom.extend(function(){
+  
+  var elements = [];
+
   this.constructor = function(selector) {
   
     this.super('<div/>', {'class': 'page'});
     
+  };
+  
+  this.addElement = function(configs){
+  
+    var element = new metaScore.Player.Element(configs)
+      .appendTo(this);
+  
+    elements.push(element);
+    
+    return element;
+  
+  };
+  
+  this.setProperty = function(name, value){
+  
+    switch(name){        
+      case 'bg-color':
+        this.css('background-color', value);
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'start':
+        this.attr('data-start', value);
+        break;
+        
+      case 'end':
+        this.attr('data-end', value);
+        break;
+    }
+  
+  };
+});
+/**
+ * Player Block
+ *
+ * @requires metaScore.player.js
+ * @requires metaScore.player.pager.js
+ * @requires metaScore.player.page.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Block = metaScore.Dom.extend(function(){
+  
+  var pager,
+    pages = [];
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'block'});
+    
+    pager = new metaScore.Player.Pager()
+      .appendTo(this);
+    
+  };
+  
+  this.addPage = function(configs){
+  
+    var page = new metaScore.Player.Page(configs)
+      .appendTo(this);
+  
+    pages.push(page);
+    
+    return page;
+  
+  };
+  
+  this.setProperty = function(name, value){
+  
+    switch(name){
+      case 'x':
+        this.css('left', value +'px');
+        break;
+        
+      case 'y':
+        this.css('top', value +'px');
+        break;
+        
+      case 'width':
+        this.css('width', value +'px');
+        break;
+        
+      case 'height':
+        this.css('height', value +'px');
+        break;
+        
+      case 'bg-color':
+        this.css('background-color', value);
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'synched':
+        this.attr('data-synched', value);
+        break;
+    }
+  
   };
 });
 /**

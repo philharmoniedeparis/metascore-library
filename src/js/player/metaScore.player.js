@@ -12,5 +12,9 @@ metaScore.Player = metaScore.Dom.extend(function(){
       this.appendTo(selector);
     }
     
+    if(DEBUG){
+      metaScore.Player.instance = this;
+    }
+    
   };
 });

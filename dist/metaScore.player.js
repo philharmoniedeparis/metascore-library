@@ -1,3 +1,353 @@
+/*! metaScore - v0.0.1 - 2014-06-27 - Oussama Mubarak */
+// These constants are used in the build process to enable or disable features in the
+// compiled binary.  Here's how it works:  If you have a const defined like so:
+//
+//   const MY_FEATURE_IS_ENABLED = false;
+//
+// ...And the compiler (UglifyJS) sees this in your code:
+//
+//   if (MY_FEATURE_IS_ENABLED) {
+//     doSomeStuff();
+//   }
+//
+// ...Then the if statement (and everything in it) is removed - it is
+// considered dead code.  If it's set to a truthy value:
+//
+//   const MY_FEATURE_IS_ENABLED = true;
+//
+// ...Then the compiler leaves the if (and everything in it) alone.
+//
+// If you add more consts here, you need to initialize them in metaScore.core.js
+// to true.  So if you add:
+//
+//   const MY_FEATURE_IS_ENABLED = /* any value */;
+//
+// Then in metaScore.core.js you need to add:
+//
+//   if (typeof MY_AWESOME_FEATURE_IS_ENABLED === 'undefined') {
+//     MY_FEATURE_IS_ENABLED = true;
+//   }
+
+if (typeof DEBUG === 'undefined') DEBUG = true;
+;(function (global) {
+"use strict";
+/**
+* Core
+*/
+var metaScore = {
+  version: "0.0.1"
+};
+/**
+ * Base Class
+ *
+ * @requires metaScore.core.js
+ */
+(function(metaScore){  
+	//Helper method for creating an super copied object clone
+	function initialize(method){
+		//Recursivly execute parent methods.
+		if(method.parent instanceof Function){
+			initialize.apply(this,[method.parent]);
+      
+			this.super = cloneCopy(this,
+				superCopy(this,this.constructor)
+			);
+		}
+		method.apply(this, arguments);
+	}
+
+	//Helper method which allows for super referances.
+	function cloneCopy(from, to){
+		for(var x in from){
+			if(x !== "super" && from[x] instanceof Function){
+				//Never create circular super referances.
+				to[x] = from[x].super || superCopy(from, from[x]);
+			}
+		}
+		return to;
+	}
+
+	function superCopy(scope, method){
+		var scopeSuper = scope.super;
+    
+		return method.super = function(){
+			scope.super = scopeSuper;
+			return method.apply(scope, arguments);
+		};
+	}
+
+	//Create Class object
+	metaScore.Base = function(){};
+	metaScore.Base.extend = function ext(to){
+		function child(){
+			//Prevent the prototype scope set executing the constructor.
+			if(initialize !== arguments[0]){
+				//Create inhereted object
+				initialize.apply(this,[to]);
+				//Setup scope for class instance method calls
+				cloneCopy(this,this);
+				if(this.initializer instanceof Function){
+					this.initializer.apply(this);
+        }
+				this.constructor.apply(this,arguments);
+			}
+		}
+
+		//Set prototype and constructor enabeling propper type checking.
+		child.prototype = new this(initialize);
+		child.prototype.constructor = child;
+
+		//Return expected result from toString
+		child.toString = function(){
+			return to.toString();
+		};
+
+		//Allow the child to be extended.
+		child.extend = function(target){
+			//Create parent referance and inherentence path.
+			target.parent = to;
+			return ext.apply(child,arguments);
+		};
+
+		return child;
+	};
+  
+	//Bootstrap Class by inheriting itself with empty constructor.
+  metaScore.Base = metaScore.Base.extend(function() {
+    this.constructor = function(){};
+    
+    this.initConfig = function(configs){
+      configs = configs || {};
+    
+      if(this.defaults){
+        this.configs = metaScore.Object.extend({}, this.defaults, configs);
+      }
+      else{
+        this.configs = configs;
+      }
+    };
+  });
+    
+})(metaScore);
+/**
+ * Array
+ *
+ * @requires ../metaScore.base.js
+ */
+metaScore.Array = metaScore.Base.extend(function(){});
+
+/**
+* Checks if a value is in an array
+* @param {mixed} the value to check
+* @param {array} the array
+* @returns {number} the index of the value if found, -1 otherwise
+*/
+metaScore.Array.inArray = function (value, arr) {
+  var len, i = 0;
+
+  if(arr) {
+    if(arr.indexOf){
+      return arr.indexOf(value);
+    }
+
+    len = arr.length;
+
+    for ( ; i < len; i++ ) {
+      // Skip accessing in sparse arrays
+      if ( i in arr && arr[i] === value ) {
+        return i;
+      }
+    }
+  }
+
+  return -1;
+};
+
+/**
+* Copies an array
+* @param {array} the original array
+* @returns {array} a copy of the array
+*/
+metaScore.Array.copy = function (arr) {
+  return [].concat(arr);
+};
+
+/**
+* Shuffles elements in an array
+* @param {array} the original array
+* @returns {array} a copy of the array with it's elements shuffled
+*/
+metaScore.Array.shuffle = function(arr) {
+
+  var shuffled = metaScore.Array.copy(arr);
+
+  shuffled.sort(function(){
+    return ((Math.random() * 3) | 0) - 1;
+  });
+
+  return shuffled;
+
+};
+
+/**
+* Return new array with duplicate values removed
+* @param {array} the original array
+* @returns {array} a copy of the array with the duplicate values removed
+*/
+metaScore.Array.unique = function(arr) {
+
+  var unique = [];
+  var length = arr.length;
+
+  for(var i=0; i<length; i++) {
+    for(var j=i+1; j<length; j++) {
+      // If this[i] is found later in the array
+      if (arr[i] === arr[j]){
+        j = ++i;
+      }
+    }
+    unique.push(arr[i]);
+  }
+
+  return unique;
+
+};
+
+/**
+* Call a function on each element of an array
+* @param {array} the array
+* @param {function} the function to call
+* @returns {void}
+*/
+metaScore.Array.each = function(arr, callback, scope) {
+
+  var i = 0,
+    l = arr.length,
+    value,
+    scope_provided = scope !== undefined;
+
+  for(; i < l; i++) {
+    value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
+    
+    if (value === false) {
+      break;
+    }
+  }
+  
+  return arr;
+
+};
+/**
+ * Object
+ *
+ * @requires ../metaScore.base.js
+ */
+metaScore.Object = metaScore.Base.extend(function(){});
+
+/**
+* Merge the contents of two or more objects together into the first object.
+* @returns {object} the target object extended with the properties of the other objects
+*/
+metaScore.Object.extend = function() {
+
+  var target = arguments[0] || {},
+    options,
+    i = 1,
+    length = arguments.length,
+    key, src, copy;
+    
+  for (; i < length; i++ ) {
+    if ((options = arguments[i]) != null) {
+      for ( key in options ) {            
+        src = target[key];
+        copy = options[key];
+        
+        if(src !== copy && copy !== undefined ) {
+          target[key] = copy;
+        }
+      }
+    }
+  }
+    
+  return target;
+
+};
+
+/**
+* Return a copy of an object
+* @param {object} the original object
+* @returns {object} a copy of the original object
+*/
+metaScore.Object.copy = function(obj) {
+    
+  return metaScore.Object.extend({}, obj);
+
+};
+
+/**
+* Call a function on each property of an object
+* @param {object} the object
+* @param {function} the function to call
+* @param {object} the scope of the function
+* @returns {void}
+*/
+metaScore.Object.each = function(obj, callback, scope) {
+
+  var key, value,
+    scope_provided = scope !== undefined;
+  
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
+    
+      if (value === false) {
+        break;
+      }
+    }
+  }
+  
+  return obj;
+
+};
+/**
+ * Variable
+ *
+ * @requires ../metaScore.base.js
+ */
+metaScore.Var = metaScore.Base.extend(function(){});
+
+/**
+* Helper object used by the type function
+*/
+metaScore.Var.classes2types = {
+  "[object Boolean]": "boolean",
+  "[object Number]": "number",
+  "[object String]": "string",
+  "[object Function]": "function",
+  "[object Array]": "array",
+  "[object Date]": "date",
+  "[object RegExp]": "regexp",
+  "[object Object]": "object"
+};
+
+/**
+* Get the type of a variable
+* @param {mixed} the variable
+* @returns {string} the type
+*/
+metaScore.Var.type = function(obj) {
+  return obj == null ? String(obj) : metaScore.Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
+};
+
+/**
+* Checks if a variable is of a certain type
+* @param {mixed} the variable
+* @param {string} the type to check against
+* @returns {boolean} true if the variable is of the specified type, false otherwise
+*/
+metaScore.Var.is = function(obj, type) {
+  return metaScore.Var.type(obj) === type.toLowerCase();
+};
 /**
  * Dom
  *
@@ -511,3 +861,244 @@ metaScore.Dom.append = function(element, children){
 metaScore.Dom.remove = function(element){
   element.parentElement.removeChild(element);
 };
+/**
+ * Player
+ *
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player = metaScore.Dom.extend(function(){
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'metaScore-player'});
+    
+    if(selector !== undefined){
+      this.appendTo(selector);
+    }
+    
+    if(DEBUG){
+      metaScore.Player.instance = this;
+    }
+    
+  };
+});
+/**
+ * Player Page
+ *
+ * @requires metaScore.player.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Pager = metaScore.Dom.extend(function(){
+
+  var count, buttons;
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'pager'});
+    
+    count = new metaScore.Dom('<div/>', {'class': 'count'})
+      .appendTo(this);
+    
+    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this);
+      
+    buttons.first = new metaScore.Dom('<div/>', {'class': 'first'})
+      .appendTo(buttons);
+      
+    buttons.previous = new metaScore.Dom('<div/>', {'class': 'previous'})
+      .appendTo(buttons);
+      
+    buttons.next = new metaScore.Dom('<div/>', {'class': 'next'})
+      .appendTo(buttons);
+    
+  };
+  
+});
+/**
+ * Player Element
+ *
+ * @requires metaScore.player.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Element = metaScore.Dom.extend(function(){
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'element'});
+    
+  };
+  
+  this.setProperty = function(name, value){
+  
+    switch(name){
+      case 'x':
+        this.css('left', value +'px');
+        break;
+        
+      case 'y':
+        this.css('top', value +'px');
+        break;
+        
+      case 'width':
+        this.css('width', value +'px');
+        break;
+        
+      case 'height':
+        this.css('height', value +'px');
+        break;
+        
+      case 'reading-index':
+        this.attr('data-r-index', value);
+        break;
+        
+      case 'z-index':
+        this.css('z-index', value);
+        break;
+        
+      case 'bg-color':
+        this.css('background-color', value);
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'border-width':
+        this.css('border-width', value +'px');
+        break;
+        
+      case 'border-color':
+        this.css('border-color', value);
+        break;
+        
+      case 'start':
+        this.attr('data-start', value);
+        break;
+        
+      case 'end':
+        this.attr('data-end', value);
+        break;
+    }
+  
+  };
+});
+/**
+ * Player Page
+ *
+ * @requires metaScore.player.js
+ * @requires metaScore.player.element.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Page = metaScore.Dom.extend(function(){
+  
+  var elements = [];
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'page'});
+    
+  };
+  
+  this.addElement = function(configs){
+  
+    var element = new metaScore.Player.Element(configs)
+      .appendTo(this);
+  
+    elements.push(element);
+    
+    return element;
+  
+  };
+  
+  this.setProperty = function(name, value){
+  
+    switch(name){        
+      case 'bg-color':
+        this.css('background-color', value);
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'start':
+        this.attr('data-start', value);
+        break;
+        
+      case 'end':
+        this.attr('data-end', value);
+        break;
+    }
+  
+  };
+});
+/**
+ * Player Block
+ *
+ * @requires metaScore.player.js
+ * @requires metaScore.player.pager.js
+ * @requires metaScore.player.page.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Block = metaScore.Dom.extend(function(){
+  
+  var pager,
+    pages = [];
+
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'block'});
+    
+    pager = new metaScore.Player.Pager()
+      .appendTo(this);
+    
+  };
+  
+  this.addPage = function(configs){
+  
+    var page = new metaScore.Player.Page(configs)
+      .appendTo(this);
+  
+    pages.push(page);
+    
+    return page;
+  
+  };
+  
+  this.setProperty = function(name, value){
+  
+    switch(name){
+      case 'x':
+        this.css('left', value +'px');
+        break;
+        
+      case 'y':
+        this.css('top', value +'px');
+        break;
+        
+      case 'width':
+        this.css('width', value +'px');
+        break;
+        
+      case 'height':
+        this.css('height', value +'px');
+        break;
+        
+      case 'bg-color':
+        this.css('background-color', value);
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'synched':
+        this.attr('data-synched', value);
+        break;
+    }
+  
+  };
+});
+
+  global.metaScore = metaScore;
+
+} (this));

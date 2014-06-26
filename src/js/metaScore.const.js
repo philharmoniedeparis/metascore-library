@@ -27,4 +27,4 @@
 //     MY_FEATURE_IS_ENABLED = true;
 //   }
 
-const DEBUG = true;
+if (typeof DEBUG === 'undefined') DEBUG = true;

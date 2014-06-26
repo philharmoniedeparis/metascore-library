@@ -1,0 +1,35 @@
+@import "../../vendor/prefixer.less";
+
+.metaScore-player{
+  .block{
+    position: absolute;
+    min-width: 100px;
+    min-height: 100px;
+    overflow: hidden;
+    color: #424242;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: contain;
+    background: #eee;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    
+    .pager{
+      position: absolute;
+      width: 100%;
+      height: 20px;
+      background: rgba(214, 214, 214, 0.6);
+      border-radius: 10px 10px 0 0;
+      text-align: right;
+      z-index: 9999;
+    }
+    
+    .page{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
