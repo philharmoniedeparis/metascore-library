@@ -1,6 +1,8 @@
 /**
-* Integer Field
-*/
+ * IntegerField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
 metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
   
   this.defaults = {

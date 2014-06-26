@@ -1,6 +1,8 @@
 /**
-* Boolean Field
-*/
+ * BooleanField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
 metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
 
   this.defaults = {

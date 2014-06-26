@@ -1,6 +1,8 @@
 /**
-* Player
-*/
+ * Player
+ *
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Player = metaScore.Dom.extend(function(){
   this.constructor = function(selector) {
   

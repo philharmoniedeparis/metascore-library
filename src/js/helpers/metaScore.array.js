@@ -1,6 +1,8 @@
 /**
-* Array
-*/
+ * Array
+ *
+ * @requires ../metaScore.base.js
+ */
 metaScore.Array = metaScore.Base.extend(function(){});
 
 /**

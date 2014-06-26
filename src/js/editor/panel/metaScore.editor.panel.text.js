@@ -1,6 +1,10 @@
 /**
-* Text Panel
-*/
+ * Text
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ */
 metaScore.Editor.Panel.Text = metaScore.Editor.Panel.extend(function(){
 
   this.defaults = {

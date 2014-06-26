@@ -75,29 +75,20 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
-.clearfix:after {
+.metaScore-editor {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font: normal 12px normal Verdana, Geneva, sans-serif;
+}
+.metaScore-editor .clearfix:after {
   visibility: hidden;
   display: block;
   font-size: 0;
   content: " ";
   clear: both;
   height: 0;
-}
-* html .clearfix {
-  zoom: 1;
-}
-/* IE6 */
-*:first-child + html .clearfix {
-  zoom: 1;
-}
-/* IE7 */
-.metaScore-editor {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 12px;
 }
 .metaScore-editor table {
   margin: 0;
@@ -107,10 +98,12 @@
 }
 .metaScore-editor table td,
 .metaScore-editor table th {
-  vertical-align: middle;
   padding: 0;
-  border: none;
-  color: #000;
+  border: 0;
+}
+.metaScore-editor label {
+  display: inline-block;
+  font-weight: normal;
 }
 .metaScore-editor button {
   border: none;
@@ -384,7 +377,7 @@
 .metaScore-editor .sidebar .panel.collapsed .fields {
   display: none;
 }
-.metaScore-overlay {
+.metaScore-editor .overlay {
   position: absolute;
   background: #fff;
   z-index: 99999;
@@ -396,7 +389,7 @@
   -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.metaScore-overlay.colorfield-overlay {
+.metaScore-editor .overlay.colorfield-overlay {
   padding: 10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
@@ -413,15 +406,15 @@
   -webkit-user-select: none;
   user-select: none;
 }
-.metaScore-overlay.colorfield-overlay canvas {
+.metaScore-editor .overlay.colorfield-overlay canvas {
   display: block;
 }
-.metaScore-overlay.colorfield-overlay .gradient {
+.metaScore-editor .overlay.colorfield-overlay .gradient {
   position: relative;
   float: left;
   cursor: crosshair;
 }
-.metaScore-overlay.colorfield-overlay .gradient .position {
+.metaScore-editor .overlay.colorfield-overlay .gradient .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -437,12 +430,12 @@
   background-clip: padding-box;
   pointer-events: none;
 }
-.metaScore-overlay.colorfield-overlay .alpha {
+.metaScore-editor .overlay.colorfield-overlay .alpha {
   position: relative;
   float: left;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-overlay.colorfield-overlay .alpha .position {
+.metaScore-editor .overlay.colorfield-overlay .alpha .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -452,37 +445,45 @@
   background: #000;
   pointer-events: none;
 }
-.metaScore-overlay.colorfield-overlay .controls {
+.metaScore-editor .overlay.colorfield-overlay .controls {
   width: 80px;
   float: left;
   margin-left: 10px;
   pointer-events: none;
 }
-.metaScore-overlay.colorfield-overlay .controls input[type=number] {
+.metaScore-editor .overlay.colorfield-overlay .controls input[type=number] {
   width: 3em;
-  margin-left: 0.5em;
+  margin: 0.25em 0.5em;
+  border: 2px inset;
   pointer-events: auto;
 }
-.metaScore-overlay.colorfield-overlay .controls button {
+.metaScore-editor .overlay.colorfield-overlay .controls button {
   width: 100%;
+  padding: 0.5em;
+  background: #ccc;
   pointer-events: auto;
 }
-.metaScore-overlay.colorfield-overlay .controls .canvas-wrapper {
+.metaScore-editor .overlay.colorfield-overlay .controls button.cancel {
+  background: #eee;
+}
+.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper {
   height: 40px;
+  border: 1px solid #ccc;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-overlay.colorfield-overlay .controls .canvas-wrapper.current {
+.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper.current {
   margin-top: 5px;
 }
-.metaScore-overlay.colorfield-overlay .controls .canvas-wrapper.previous {
-  height: 20px;
+.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper.previous {
+  height: 10px;
   margin-bottom: 5px;
+  margin-top: -1px;
 }
-.metaScore-overlay.colorfield-overlay .controls .canvas-wrapper canvas {
+.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper canvas {
   width: 100%;
   height: 100%;
 }
-.metaScore-overlay-mask {
+.metaScore-editor .overlay-mask {
   position: absolute;
   left: 0;
   top: 0;

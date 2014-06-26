@@ -1,6 +1,12 @@
 /**
-* Block Panel
-*/
+ * Block
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.booleanfield.js
+ */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
 
   var menu;

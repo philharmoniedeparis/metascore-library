@@ -1,6 +1,11 @@
 /**
-* Page Panel
-*/
+ * Page
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ */
 metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
 
   this.defaults = {

@@ -1,6 +1,8 @@
 /**
-* Editor
-*/
+ * Editor
+ *
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor = metaScore.Dom.extend(function(){
 
   this.constructor = function(selector) {

@@ -1,6 +1,9 @@
 /**
-* DropDown Menu
-*/
+ * DropDownMenu
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
 
   /**

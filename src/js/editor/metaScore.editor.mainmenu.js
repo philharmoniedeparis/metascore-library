@@ -1,6 +1,12 @@
 /**
-* Main Menu
-*/
+ * MainMenu
+ *
+ * @requires metaScore.editor.js
+ * @requires metaScore.editor.button.js
+ * @requires field/metaScore.editor.field.timefield.js
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
+ */
 metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
 
   this.constructor = function() {

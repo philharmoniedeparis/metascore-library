@@ -1,6 +1,13 @@
 /**
-* Element Panel
-*/
+ * Element
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.cornerfield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ */
 metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
 
   this.defaults = {

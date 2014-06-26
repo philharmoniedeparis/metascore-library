@@ -1,6 +1,13 @@
 /**
-* Sidebar
-*/
+ * Sidebar
+ *
+ * @requires metaScore.editor.js
+ * @requires panel/metaScore.editor.panel.block.js
+ * @requires panel/metaScore.editor.panel.page.js
+ * @requires panel/metaScore.editor.panel.element.js
+ * @requires panel/metaScore.editor.panel.text.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
 
   this.constructor = function() {

@@ -1,6 +1,8 @@
 /**
-* Variable
-*/
+ * Variable
+ *
+ * @requires ../metaScore.base.js
+ */
 metaScore.Var = metaScore.Base.extend(function(){});
 
 /**

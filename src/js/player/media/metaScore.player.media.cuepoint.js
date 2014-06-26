@@ -1,9 +1,12 @@
 /**
-* Media CuePoints
-*/
-metaScore.Media = metaScore.Media || {};
-
-metaScore.Media.CuePoint = metaScore.Base.extend(function(){
+ * Media CuePoints
+ *
+ * @requires metaScore.player.media.js
+ * @requires ../metaScore.base.js
+ * @requires ../helpers/metaScore.object.js
+ * @requires ../helpers/metaScore.var.js
+ */
+metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
   this.triggers = [];
   
   this.constructor = function(media){

@@ -4,9 +4,10 @@
     "DEBUG": true,
     "metaScore": true,
     "ActiveXObject": true,
-    "console": true
+    "console": true,
+    "require": true,
+    "module": false
   },
-
   "asi": false,
   "boss": true,
   "browser": true,
@@ -24,6 +25,5 @@
   "plusplus": false,
   "sub": true,
   "undef": true,
-  "white": false,
-  "es5": true
+  "white": false
 }

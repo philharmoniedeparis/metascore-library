@@ -1,6 +1,9 @@
 /**
-* Overlay
-*/
+ * Overlay
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   
   this.defaults = {
@@ -17,7 +20,7 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     /**
     * The parent element in which the overlay will be appended
     */
-    parent: 'body',
+    parent: '.metaScore-editor',
     
     /**
     * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
@@ -37,12 +40,12 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   */
   this.constructor = function(configs) {
   
-    this.super('<div/>', {'class': 'metaScore-overlay clearfix'});
+    this.super('<div/>', {'class': 'overlay clearfix'});
   
     this.initConfig(configs);
     
     if(this.configs.modal){
-      this.mask = new metaScore.Dom('<div/>', {'class': 'metaScore-overlay-mask'});
+      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
     }
     
     this.setDraggable(this.configs.draggable);

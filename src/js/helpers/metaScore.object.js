@@ -1,6 +1,8 @@
 /**
-* Object
-*/
+ * Object
+ *
+ * @requires ../metaScore.base.js
+ */
 metaScore.Object = metaScore.Base.extend(function(){});
 
 /**

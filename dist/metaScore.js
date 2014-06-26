@@ -1,15 +1,47 @@
-/*! metaScore - v0.0.1 - 2014-06-25 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-06-26 - Oussama Mubarak */
+// These constants are used in the build process to enable or disable features in the
+// compiled binary.  Here's how it works:  If you have a const defined like so:
+//
+//   const MY_FEATURE_IS_ENABLED = false;
+//
+// ...And the compiler (UglifyJS) sees this in your code:
+//
+//   if (MY_FEATURE_IS_ENABLED) {
+//     doSomeStuff();
+//   }
+//
+// ...Then the if statement (and everything in it) is removed - it is
+// considered dead code.  If it's set to a truthy value:
+//
+//   const MY_FEATURE_IS_ENABLED = true;
+//
+// ...Then the compiler leaves the if (and everything in it) alone.
+//
+// If you add more consts here, you need to initialize them in metaScore.core.js
+// to true.  So if you add:
+//
+//   const MY_FEATURE_IS_ENABLED = /* any value */;
+//
+// Then in metaScore.core.js you need to add:
+//
+//   if (typeof MY_AWESOME_FEATURE_IS_ENABLED === 'undefined') {
+//     MY_FEATURE_IS_ENABLED = true;
+//   }
+
+const DEBUG = true;
 ;(function (global) {
 "use strict";
 /**
 * Core
-*/    
+*/
 var metaScore = {
   version: "0.0.1"
 };
 /**
-* Base Class
-*/
+ * Base Class
+ *
+ * @requires metaScore.core.js
+ */
 (function(metaScore){  
 	//Helper method for creating an super copied object clone
 	function initialize(method){
@@ -98,136 +130,10 @@ var metaScore = {
     
 })(metaScore);
 /**
-* Ajax
-*/
-metaScore.Ajax = metaScore.Base.extend(function(){});
-
-/**
-* Create an XMLHttp object
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.createXHR = function() {
-
-  var xhr, i, l,
-    activeX = [
-      "MSXML2.XMLHttp.5.0",
-      "MSXML2.XMLHttp.4.0",
-      "MSXML2.XMLHttp.3.0",
-      "MSXML2.XMLHttp",
-      "Microsoft.XMLHttp"
-    ];
-
-  if (typeof XMLHttpRequest !== "undefined") {
-    xhr = new XMLHttpRequest();
-    return xhr;
-  }
-  else if (window.ActiveXObject) {
-    for (i = 0, l = activeX.length; i < l; i++) {
-      try {
-        xhr = new ActiveXObject(activeX[i]);
-        return xhr;
-      }
-      catch (e) {}
-    }
-  }
-  
-  throw new Error("XMLHttp object could be created.");
-  
-};
-
-/**
-* Send an XMLHttp request
-* @param {string} the url of the request
-* @param {object} options to set for the request; see the defaults variable
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.send = function(url, options) {
-
-  var key,
-    xhr = metaScore.Ajax.createXHR(),
-    data, query = [],
-    defaults = {
-      'method': 'GET',
-      'headers': [],
-      'async': true,
-      'data': {},
-      'complete': null,
-      'success': null,
-      'error': null
-    };
-  
-  options = metaScore.Object.extend(function(){}, defaults, options);
-  
-  metaScore.Object.each(options.data, function(key, value){
-    query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-  });
-  
-  if(options.method === 'POST'){
-    data = query.join('&');
-    options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-  }
-  else{
-    url += '?'+ query.join('&');
-  }
-  
-  xhr.open(options.method, url, options.async);
-  
-  metaScore.Object.each(options.headers, function(key, value){
-    xhr.setRequestHeader(key, value);
-  });
-  
-  xhr.onreadystatechange = function() {        
-    if (xhr.readyState === 4) {
-      if(metaScore.Var.is(options.complete, 'function')){
-        options.complete(xhr);
-      }
-      if(xhr.status >= 200 && status < 300 || status === 304){
-        if(metaScore.Var.is(options.success, 'function')){
-          options.success(xhr);
-        }
-      }
-      else if(metaScore.Var.is(options.error, 'function')){
-        options.error(xhr);
-      }
-    }
-  };
-  
-  xhr.send(data);
-  
-  return xhr;
-  
-};
-
-/**
-* Send an XMLHttp GET request
-* @param {string} the url of the request
-* @param {object} options to set for the request; see the defaults variable
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.get = function(url, options) {
-  
-  metaScore.Object.extend(options, {'method': 'GET'});
-  
-  return metaScore.Ajax.send(url, options);
-  
-};
-
-/**
-* Send an XMLHttp POST request
-* @param {string} the url of the request
-* @param {object} options to set for the request; see the defaults variable
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.post = function(url, options) {
-  
-  metaScore.Object.extend(options, {'method': 'POST'});
-  
-  return metaScore.Ajax.send(url, options);
-  
-};
-/**
-* Array
-*/
+ * Array
+ *
+ * @requires ../metaScore.base.js
+ */
 metaScore.Array = metaScore.Base.extend(function(){});
 
 /**
@@ -332,8 +238,124 @@ metaScore.Array.each = function(arr, callback, scope) {
 
 };
 /**
-* Dom
+ * Object
+ *
+ * @requires ../metaScore.base.js
+ */
+metaScore.Object = metaScore.Base.extend(function(){});
+
+/**
+* Merge the contents of two or more objects together into the first object.
+* @returns {object} the target object extended with the properties of the other objects
 */
+metaScore.Object.extend = function() {
+
+  var target = arguments[0] || {},
+    options,
+    i = 1,
+    length = arguments.length,
+    key, src, copy;
+    
+  for (; i < length; i++ ) {
+    if ((options = arguments[i]) != null) {
+      for ( key in options ) {            
+        src = target[key];
+        copy = options[key];
+        
+        if(src !== copy && copy !== undefined ) {
+          target[key] = copy;
+        }
+      }
+    }
+  }
+    
+  return target;
+
+};
+
+/**
+* Return a copy of an object
+* @param {object} the original object
+* @returns {object} a copy of the original object
+*/
+metaScore.Object.copy = function(obj) {
+    
+  return metaScore.Object.extend({}, obj);
+
+};
+
+/**
+* Call a function on each property of an object
+* @param {object} the object
+* @param {function} the function to call
+* @param {object} the scope of the function
+* @returns {void}
+*/
+metaScore.Object.each = function(obj, callback, scope) {
+
+  var key, value,
+    scope_provided = scope !== undefined;
+  
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
+    
+      if (value === false) {
+        break;
+      }
+    }
+  }
+  
+  return obj;
+
+};
+/**
+ * Variable
+ *
+ * @requires ../metaScore.base.js
+ */
+metaScore.Var = metaScore.Base.extend(function(){});
+
+/**
+* Helper object used by the type function
+*/
+metaScore.Var.classes2types = {
+  "[object Boolean]": "boolean",
+  "[object Number]": "number",
+  "[object String]": "string",
+  "[object Function]": "function",
+  "[object Array]": "array",
+  "[object Date]": "date",
+  "[object RegExp]": "regexp",
+  "[object Object]": "object"
+};
+
+/**
+* Get the type of a variable
+* @param {mixed} the variable
+* @returns {string} the type
+*/
+metaScore.Var.type = function(obj) {
+  return obj == null ? String(obj) : metaScore.Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
+};
+
+/**
+* Checks if a variable is of a certain type
+* @param {mixed} the variable
+* @param {string} the type to check against
+* @returns {boolean} true if the variable is of the specified type, false otherwise
+*/
+metaScore.Var.is = function(obj, type) {
+  return metaScore.Var.type(obj) === type.toLowerCase();
+};
+/**
+ * Dom
+ *
+ * @requires ../metaScore.base.js
+ * @requires metaScore.array.js
+ * @requires metaScore.object.js
+ * @requires metaScore.var.js
+ */
 metaScore.Dom = metaScore.Base.extend(function(){
   this.constructor = function() {
   
@@ -558,7 +580,7 @@ metaScore.Dom.bubbleEvents = {
 
 /**
 * Select elements by selecor
-* @param {string} the selector
+* @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
 * @param {object} an optional parent to constrain the matched elements 
 * @returns {array} an array of HTML elements
 */
@@ -836,274 +858,10 @@ metaScore.Dom.remove = function(element){
   element.parentElement.removeChild(element);
 };
 /**
-* Function
-*/
-metaScore.Function = metaScore.Base.extend(function(){});
-
-/**
-* Checks if a variable is of a certain type
-* @param {mixed} the variable
-* @param {string} the type to check against
-* @returns {boolean} true if the variable is of the specified type, false otherwise
-*/
-metaScore.Function.proxy = function(fn, scope) {
-  
-  if (!metaScore.Var.type(fn, 'function')) {
-    return undefined;
-  }
-  
-  return function () {
-    return fn.apply(scope || this, arguments);
-  };
-};
-
-/**
-* A reusable empty function
-*/
-metaScore.Function.emptyFn = function(){};
-/**
-* Object
-*/
-metaScore.Object = metaScore.Base.extend(function(){});
-
-/**
-* Merge the contents of two or more objects together into the first object.
-* @returns {object} the target object extended with the properties of the other objects
-*/
-metaScore.Object.extend = function() {
-
-  var target = arguments[0] || {},
-    options,
-    i = 1,
-    length = arguments.length,
-    key, src, copy;
-    
-  for (; i < length; i++ ) {
-    if ((options = arguments[i]) != null) {
-      for ( key in options ) {            
-        src = target[key];
-        copy = options[key];
-        
-        if(src !== copy && copy !== undefined ) {
-          target[key] = copy;
-        }
-      }
-    }
-  }
-    
-  return target;
-
-};
-
-/**
-* Return a copy of an object
-* @param {object} the original object
-* @returns {object} a copy of the original object
-*/
-metaScore.Object.copy = function(obj) {
-    
-  return metaScore.Object.extend({}, obj);
-
-};
-
-/**
-* Call a function on each property of an object
-* @param {object} the object
-* @param {function} the function to call
-* @param {object} the scope of the function
-* @returns {void}
-*/
-metaScore.Object.each = function(obj, callback, scope) {
-
-  var key, value,
-    scope_provided = scope !== undefined;
-  
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
-    
-      if (value === false) {
-        break;
-      }
-    }
-  }
-  
-  return obj;
-
-};
-/**
-* String
-*/
-metaScore.String = metaScore.Base.extend(function(){});
-
-/**
-* Capitalize a string
-* @param {string} the original string
-* @returns {string} the capitalized string
-*/
-metaScore.String.capitalize = function(str){
-  return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-};
-
-/**
-* Translate a string
-* @param {string} the original string
-* @param {object} string replacements
-* @returns {string} the translated string
-*/
-metaScore.String.t = function(str){
-  return str;
-};
-
-/**
-* Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
-* @param {number} the desired number of characters
-* @param {number} the number of allowable values for each character
-* @returns {string} a random uuid
-*/
-metaScore.String.uuid = function (len, radix) {
-  var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
-    uuid = [], i;
-  
-  radix = radix || chars.length;
-
-  if (len) {
-    // Compact form
-    for (i = 0; i < len; i++){
-      uuid[i] = chars[0 | Math.random() * radix];
-    }
-  }
-  else {
-    // rfc4122, version 4 form
-    var r;
-
-    // rfc4122 requires these characters
-    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-    uuid[14] = '4';
-
-    // Fill in random data.  At i==19 set the high bits of clock sequence as
-    // per rfc4122, sec. 4.1.5
-    for (i = 0; i < 36; i++) {
-      if (!uuid[i]) {
-        r = 0 | Math.random()*16;
-        uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
-      }
-    }
-  }
-
-  return uuid.join('');
-};
-/**
-* Variable
-*/
-metaScore.Var = metaScore.Base.extend(function(){});
-
-/**
-* Helper object used by the type function
-*/
-metaScore.Var.classes2types = {
-  "[object Boolean]": "boolean",
-  "[object Number]": "number",
-  "[object String]": "string",
-  "[object Function]": "function",
-  "[object Array]": "array",
-  "[object Date]": "date",
-  "[object RegExp]": "regexp",
-  "[object Object]": "object"
-};
-
-/**
-* Get the type of a variable
-* @param {mixed} the variable
-* @returns {string} the type
-*/
-metaScore.Var.type = function(obj) {
-  return obj == null ? String(obj) : metaScore.Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
-};
-
-/**
-* Checks if a variable is of a certain type
-* @param {mixed} the variable
-* @param {string} the type to check against
-* @returns {boolean} true if the variable is of the specified type, false otherwise
-*/
-metaScore.Var.is = function(obj, type) {
-  return metaScore.Var.type(obj) === type.toLowerCase();
-};
-/**
-* Media CuePoints
-*/
-metaScore.Media = metaScore.Media || {};
-
-metaScore.Media.CuePoint = metaScore.Base.extend(function(){
-  this.triggers = [];
-  
-  this.constructor = function(media){
-    this.media = media;
-    
-    this.media.addEventListener('timeupdate', this.onMediaTimeUpdate);
-  };
-  
-  this.onMediaTimeUpdate = function(e){
-    var media, curTime;
-    
-    media = e.target;
-    curTime = parseFloat(media.currentTime);
-    
-    metaScore.Object.each(this.triggers, function (index, trigger) {
-      if (!trigger.timer && curTime >= trigger.inTime - 0.5 && curTime < trigger.inTime) {
-        this.setupTriggerTimer(trigger, (trigger.inTime - curTime) * 1000);
-      }
-    });
-  };
-  
-  this.addTrigger = function(trigger){
-    return this.triggers.push(trigger) - 1;
-  };
-  
-  this.removeTrigger = function(index){
-    var trigger = this.triggers[index];
-  
-    this.stopTrigger(trigger, false);
-    this.triggers.splice(index, 1);
-  };
-  
-  this.setupTriggerTimer = function(trigger, delay){
-    trigger.timer = setTimeout(metaScore.Function.proxy(this.launchTrigger, this, trigger), delay);
-  };
-  
-  this.launchTrigger = function(trigger){
-    if(trigger.hasOwnProperty('onStart') && metaScore.Var.is(trigger.onStart, 'function')){
-      trigger.onStart(this.media);
-    }    
-  };
-  
-  this.stopTrigger = function(trigger, launchHandler){    
-    if(trigger.hasOwnProperty('timer')){
-      clearTimeout(trigger.timer);
-      delete trigger.timer;
-    }
-    
-    if(trigger.hasOwnProperty('interval')){
-      clearInterval(trigger.interval);
-      delete trigger.interval;
-    }
-    
-    if(launchHandler !== false && trigger.hasOwnProperty('onEnd') && metaScore.Var.is(trigger.onEnd, 'function')){
-      trigger.onEnd(this.media);
-    }
-  };
-});
-/**
-* Media Element
-*/  
-metaScore.Media = metaScore.Media || {};
-
-metaScore.Media.Element = metaScore.Base.extend(function(){
-});
-/**
-* Player
-*/
+ * Player
+ *
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Player = metaScore.Dom.extend(function(){
   this.constructor = function(selector) {
   
@@ -1116,8 +874,49 @@ metaScore.Player = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Editor
-*/
+ * Player Block
+ *
+ * @requires metaScore.player.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Block = metaScore.Dom.extend(function(){
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'block'});
+    
+  };
+});
+/**
+ * Player Element
+ *
+ * @requires metaScore.player.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Element = metaScore.Dom.extend(function(){
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'element'});
+    
+  };
+});
+/**
+ * Player Page
+ *
+ * @requires metaScore.player.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Player.Page = metaScore.Dom.extend(function(){
+  this.constructor = function(selector) {
+  
+    this.super('<div/>', {'class': 'page'});
+    
+  };
+});
+/**
+ * Editor
+ *
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor = metaScore.Dom.extend(function(){
 
   this.constructor = function(selector) {
@@ -1152,8 +951,11 @@ metaScore.Editor = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Button
-*/
+ * Button
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.Button = metaScore.Dom.extend(function(){
 
   var label;
@@ -1231,8 +1033,11 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
   };
 });
 /**
-* DropDown Menu
-*/
+ * DropDownMenu
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
 
   /**
@@ -1257,8 +1062,11 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Field
-*/
+ * Field
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.Field = metaScore.Dom.extend(function(){
   
   this.defaults = {
@@ -1337,8 +1145,227 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Main Menu
+ * TimeField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
+  
+  // private vars
+  var hours, minutes, seconds, centiseconds;
+  
+  this.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: 0,
+    
+    /**
+    * Defines whether the field is disabled by default
+    */
+    disabled: false,
+    
+    /**
+    * Defines the minimum value allowed
+    */
+    min: 0,
+    
+    /**
+    * Defines the maximum value allowed
+    */
+    max: null
+  };
+  
+  this.tag = '<div/>';
+  
+  this.attributes = {
+    'class': 'field timefield'
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+    
+    hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
+    minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
+    seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
+    centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
+  
+    this.super(configs);
+    
+    hours.addListener('input', this.onInput).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
+    
+    minutes.addListener('input', this.onInput).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
+    
+    seconds.addListener('input', this.onInput).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
+    
+    centiseconds.addListener('input', this.onInput).appendTo(this);
+    
+  };
+  
+  this.onInput = function(evt){
+  
+    var centiseconds_val = parseInt(centiseconds.val(), 10),
+      seconds_val = parseInt(seconds.val(), 10),
+      minutes_val = parseInt(minutes.val(), 10),
+      hours_val = parseInt(hours.val(), 10);
+      
+    evt.stopPropagation();
+    
+    this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
+  };
+  
+  this.setValue = function(milliseconds){
+      
+    var centiseconds_val, seconds_val, minutes_val, hours_val;
+    
+    this.value = milliseconds;
+    
+    if(this.configs.min !== null){
+      this.value = Math.max(this.value, this.configs.min);
+    }
+    if(this.configs.max !== null){
+      this.value = Math.min(this.value, this.configs.max);
+    }
+      
+    centiseconds_val = parseInt((this.value / 10) % 100, 10);
+    seconds_val = parseInt((this.value / 1000) % 60, 10);
+    minutes_val = parseInt((this.value / 60000) % 60, 10);
+    hours_val = parseInt((this.value / 3600000), 10);
+    
+    centiseconds.val(centiseconds_val);
+    seconds.val(seconds_val);
+    minutes.val(minutes_val);
+    hours.val(hours_val);
+    
+    this.triggerEvent('change', true, false);
+  
+  };
+  
+  this.getValue = function(){
+  
+    return this.value;
+  
+  };
+
+  /**
+  * Disable the button
+  * @returns {object} the XMLHttp object
+  */
+  this.disable = function(){
+    this.disabled = true;
+    
+    hours.attr('disabled', 'disabled');
+    minutes.attr('disabled', 'disabled');
+    seconds.attr('disabled', 'disabled');
+    centiseconds.attr('disabled', 'disabled');
+    
+    this.addClass('disabled');
+    
+    return this;
+  };
+
+  /**
+  * Enable the button
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  this.enable = function(){
+    this.disabled = false;
+    
+    hours.attr('disabled', null);
+    minutes.attr('disabled', null);
+    seconds.attr('disabled', null);
+    centiseconds.attr('disabled', null);
+    
+    this.removeClass('disabled');
+    
+    return this;
+  };
+});
+/**
+ * String
+ *
+ * @requires ../metaScore.base.js
+ */
+metaScore.String = metaScore.Base.extend(function(){});
+
+/**
+* Capitalize a string
+* @param {string} the original string
+* @returns {string} the capitalized string
 */
+metaScore.String.capitalize = function(str){
+  return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+};
+
+/**
+* Translate a string
+* @param {string} the original string
+* @param {object} string replacements
+* @returns {string} the translated string
+*/
+metaScore.String.t = function(str){
+  return str;
+};
+
+/**
+* Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+* @param {number} the desired number of characters
+* @param {number} the number of allowable values for each character
+* @returns {string} a random uuid
+*/
+metaScore.String.uuid = function (len, radix) {
+  var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
+    uuid = [], i;
+  
+  radix = radix || chars.length;
+
+  if (len) {
+    // Compact form
+    for (i = 0; i < len; i++){
+      uuid[i] = chars[0 | Math.random() * radix];
+    }
+  }
+  else {
+    // rfc4122, version 4 form
+    var r;
+
+    // rfc4122 requires these characters
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+    uuid[14] = '4';
+
+    // Fill in random data.  At i==19 set the high bits of clock sequence as
+    // per rfc4122, sec. 4.1.5
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | Math.random()*16;
+        uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+      }
+    }
+  }
+
+  return uuid.join('');
+};
+/**
+ * MainMenu
+ *
+ * @requires metaScore.editor.js
+ * @requires metaScore.editor.button.js
+ * @requires field/metaScore.editor.field.timefield.js
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
+ */
 metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
 
   this.constructor = function() {
@@ -1451,8 +1478,11 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Overlay
-*/
+ * Overlay
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   
   this.defaults = {
@@ -1469,7 +1499,7 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     /**
     * The parent element in which the overlay will be appended
     */
-    parent: 'body',
+    parent: '.metaScore-editor',
     
     /**
     * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
@@ -1489,12 +1519,12 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   */
   this.constructor = function(configs) {
   
-    this.super('<div/>', {'class': 'metaScore-overlay clearfix'});
+    this.super('<div/>', {'class': 'overlay clearfix'});
   
     this.initConfig(configs);
     
     if(this.configs.modal){
-      this.mask = new metaScore.Dom('<div/>', {'class': 'metaScore-overlay-mask'});
+      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
     }
     
     this.setDraggable(this.configs.draggable);
@@ -1522,8 +1552,43 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Editor panel
+ * Function
+ *
+ * @requires ../metaScore.base.js
+ * @requires metaScore.var.js
+ */
+metaScore.Function = metaScore.Base.extend(function(){});
+
+/**
+* Checks if a variable is of a certain type
+* @param {mixed} the variable
+* @param {string} the type to check against
+* @returns {boolean} true if the variable is of the specified type, false otherwise
 */
+metaScore.Function.proxy = function(fn, scope) {
+  
+  if (!metaScore.Var.type(fn, 'function')) {
+    return undefined;
+  }
+  
+  return function () {
+    return fn.apply(scope || this, arguments);
+  };
+};
+
+/**
+* A reusable empty function
+*/
+metaScore.Function.emptyFn = function(){};
+/**
+ * Panel
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.object.js
+ * @requires ../helpers/metaScore.string.js
+ * @requires ../helpers/metaScore.function.js
+ */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
   var toolbar;
@@ -1593,102 +1658,37 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   };
 });
 /**
-* Sidebar
-*/
-metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
-
-  this.constructor = function() {
+ * IntegerField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
   
-    this.super('<div/>', {'class': 'sidebar'});
-   
-    this.addPanels();
-   
-  };
-  
-  this.addPanels = function(){
-  
-    new metaScore.Editor.Panel.Block()
-      .appendTo(this);
-  
-    new metaScore.Editor.Panel.Page()
-      .appendTo(this);
-  
-    new metaScore.Editor.Panel.Element()
-      .appendTo(this);
-  
-    new metaScore.Editor.Panel.Text()
-      .appendTo(this);
-  
-  };
-});
-/**
-* Toolbar
-*/
-metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
-
-  var title, buttons;
-  
-  this.defaults = {    
-    /**
-    * A text to add as a title
-    */
-    title: null
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {    
-    this.super('<div/>', {'class': 'toolbar clearfix'});
-  
-    this.initConfig(configs);
-    
-    title = new metaScore.Dom('<div/>', {'class': 'title'})
-      .appendTo(this);
-    
-    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-      .appendTo(this);
-      
-    if(this.configs.title){
-      title.text(this.configs.title);
-    }
-  };
-  
-  this.getTitle = function(){
-  
-    return title;
-    
-  };
-  
-  this.addButton = function(configs){
-  
-    return new metaScore.Editor.Button(configs)
-      .appendTo(buttons);
-  
-  };
-});
-/**
-* Boolean Field
-*/
-metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
-
   this.defaults = {
     /**
     * Defines the default value
     */
-    value: true,
+    value: 0,
     
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
+    disabled: false,
+    
+    /**
+    * Defines the minimum value allowed
+    */
+    min: null,
+    
+    /**
+    * Defines the maximum value allowed
+    */
+    max: null
   };
   
   this.attributes = {
-    'type': 'checkbox',
-    'class': 'field booleanfield'
+    'type': 'number',
+    'class': 'field integerfield'
   };
 
   /**
@@ -1703,8 +1703,11 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
   };
 });
 /**
-* Color Field
-*/
+ * ColorField
+ *
+ * @requires ../metaScore.editor.field.js
+ * @requires ../../helpers/metaScore.object.js
+ */
 metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
 
   // private vars
@@ -1804,10 +1807,12 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
       .appendTo(overlay.controls);
       
     overlay.controls.cancel = new metaScore.Editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
       .addListener('click', this.onCancelClick)
       .appendTo(overlay.controls);
       
     overlay.controls.apply = new metaScore.Editor.Button({'label': 'Apply'})
+      .addClass('apply')
       .addListener('click', this.onApplyClick)
       .appendTo(overlay.controls);
           
@@ -2041,7 +2046,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
       d = max - min,
       h, s, v;
       
-    s = max === 0 ? 0 : d / max,
+    s = max === 0 ? 0 : d / max;
     v = max;
 
     if(max === min) {
@@ -2073,36 +2078,10 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   };
 });
 /**
-* Corner Field
-*/
-metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
-  
-  this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    
-    this.super(configs);
-    
-  };
-});
-/**
-* Image Field
-*/
+ * ImageField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
 metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
 
   // private vars
@@ -2180,35 +2159,27 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
   };
 });
 /**
-* Integer Field
-*/
-metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
-  
+ * BooleanField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
+
   this.defaults = {
     /**
     * Defines the default value
     */
-    value: 0,
+    value: true,
     
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
-    
-    /**
-    * Defines the minimum value allowed
-    */
-    min: null,
-    
-    /**
-    * Defines the maximum value allowed
-    */
-    max: null
+    disabled: false
   };
   
   this.attributes = {
-    'type': 'number',
-    'class': 'field integerfield'
+    'type': 'checkbox',
+    'class': 'field booleanfield'
   };
 
   /**
@@ -2223,155 +2194,14 @@ metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
   };
 });
 /**
-* Time Field
-*/
-metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
-  
-  // private vars
-  var hours, minutes, seconds, centiseconds;
-  
-  this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: 0,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    /**
-    * Defines the minimum value allowed
-    */
-    min: 0,
-    
-    /**
-    * Defines the maximum value allowed
-    */
-    max: null
-  };
-  
-  this.tag = '<div/>';
-  
-  this.attributes = {
-    'class': 'field timefield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    
-    hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
-    minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
-    seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
-    centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
-  
-    this.super(configs);
-    
-    hours.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    minutes.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    seconds.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
-    
-    centiseconds.addListener('input', this.onInput).appendTo(this);
-    
-  };
-  
-  this.onInput = function(evt){
-  
-    var centiseconds_val = parseInt(centiseconds.val(), 10),
-      seconds_val = parseInt(seconds.val(), 10),
-      minutes_val = parseInt(minutes.val(), 10),
-      hours_val = parseInt(hours.val(), 10);
-      
-    evt.stopPropagation();
-    
-    this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
-  };
-  
-  this.setValue = function(milliseconds){
-      
-    var centiseconds_val, seconds_val, minutes_val, hours_val;
-    
-    this.value = milliseconds;
-    
-    if(this.configs.min !== null){
-      this.value = Math.max(this.value, this.configs.min);
-    }
-    if(this.configs.max !== null){
-      this.value = Math.min(this.value, this.configs.max);
-    }
-      
-    centiseconds_val = parseInt((this.value / 10) % 100, 10);
-    seconds_val = parseInt((this.value / 1000) % 60, 10);
-    minutes_val = parseInt((this.value / 60000) % 60, 10);
-    hours_val = parseInt((this.value / 3600000), 10);
-    
-    centiseconds.val(centiseconds_val);
-    seconds.val(seconds_val);
-    minutes.val(minutes_val);
-    hours.val(hours_val);
-    
-    this.triggerEvent('change', true, false);
-  
-  };
-  
-  this.getValue = function(){
-  
-    return this.value;
-  
-  };
-
-  /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
-  this.disable = function(){
-    this.disabled = true;
-    
-    hours.attr('disabled', 'disabled');
-    minutes.attr('disabled', 'disabled');
-    seconds.attr('disabled', 'disabled');
-    centiseconds.attr('disabled', 'disabled');
-    
-    this.addClass('disabled');
-    
-    return this;
-  };
-
-  /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
-  this.enable = function(){
-    this.disabled = false;
-    
-    hours.attr('disabled', null);
-    minutes.attr('disabled', null);
-    seconds.attr('disabled', null);
-    centiseconds.attr('disabled', null);
-    
-    this.removeClass('disabled');
-    
-    return this;
-  };
-});
-/**
-* Block Panel
-*/
+ * Block
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.booleanfield.js
+ */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
 
   var menu;
@@ -2439,8 +2269,86 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
 });
 /**
-* Element Panel
-*/
+ * Page
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ */
+metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
+
+  this.defaults = {
+    /**
+    * The panel's title
+    */
+    title: 'Page',
+    
+    /**
+    * The panel's fields
+    */
+    fields: {
+      'bg_color': {
+        'type': metaScore.Editor.Field.ColorField,
+        'label': 'Background color'
+      },
+      'bg_image': {
+        'type': metaScore.Editor.Field.ImageField,
+        'label': 'Background image'
+      },
+      'start_time': {
+        'type': metaScore.Editor.Field.TimeField,
+        'label': 'Start time'
+      },
+      'end_time': {
+        'type': metaScore.Editor.Field.TimeField,
+        'label': 'End time'
+      }
+    }
+  };
+  
+  
+});
+/**
+ * CornerField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
+  
+  this.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: null,
+    
+    /**
+    * Defines whether the field is disabled by default
+    */
+    disabled: false
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+    
+    this.super(configs);
+    
+  };
+});
+/**
+ * Element
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.cornerfield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ */
 metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
 
   this.defaults = {
@@ -2514,44 +2422,12 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
   
 });
 /**
-* Page Panel
-*/
-metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
-
-  this.defaults = {
-    /**
-    * The panel's title
-    */
-    title: 'Page',
-    
-    /**
-    * The panel's fields
-    */
-    fields: {
-      'bg_color': {
-        'type': metaScore.Editor.Field.ColorField,
-        'label': 'Background color'
-      },
-      'bg_image': {
-        'type': metaScore.Editor.Field.ImageField,
-        'label': 'Background image'
-      },
-      'start_time': {
-        'type': metaScore.Editor.Field.TimeField,
-        'label': 'Start time'
-      },
-      'end_time': {
-        'type': metaScore.Editor.Field.TimeField,
-        'label': 'End time'
-      }
-    }
-  };
-  
-  
-});
-/**
-* Text Panel
-*/
+ * Text
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ */
 metaScore.Editor.Panel.Text = metaScore.Editor.Panel.extend(function(){
 
   this.defaults = {
@@ -2580,6 +2456,93 @@ metaScore.Editor.Panel.Text = metaScore.Editor.Panel.extend(function(){
   };
   
   
+});
+/**
+ * Sidebar
+ *
+ * @requires metaScore.editor.js
+ * @requires panel/metaScore.editor.panel.block.js
+ * @requires panel/metaScore.editor.panel.page.js
+ * @requires panel/metaScore.editor.panel.element.js
+ * @requires panel/metaScore.editor.panel.text.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
+
+  this.constructor = function() {
+  
+    this.super('<div/>', {'class': 'sidebar'});
+   
+    this.addPanels();
+   
+  };
+  
+  this.addPanels = function(){
+  
+    new metaScore.Editor.Panel.Block()
+      .appendTo(this);
+  
+    new metaScore.Editor.Panel.Page()
+      .appendTo(this);
+  
+    new metaScore.Editor.Panel.Element()
+      .appendTo(this);
+  
+    new metaScore.Editor.Panel.Text()
+      .appendTo(this);
+  
+  };
+});
+/**
+ * Toolbar
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
+
+  var title, buttons;
+  
+  this.defaults = {    
+    /**
+    * A text to add as a title
+    */
+    title: null
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {    
+    this.super('<div/>', {'class': 'toolbar clearfix'});
+  
+    this.initConfig(configs);
+    
+    title = new metaScore.Dom('<div/>', {'class': 'title'})
+      .appendTo(this);
+    
+    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this);
+      
+    if(this.configs.title){
+      title.text(this.configs.title);
+    }
+  };
+  
+  this.getTitle = function(){
+  
+    return title;
+    
+  };
+  
+  this.addButton = function(configs){
+  
+    return new metaScore.Editor.Button(configs)
+      .appendTo(buttons);
+  
+  };
 });
 
   global.metaScore = metaScore;

@@ -1,6 +1,12 @@
 /**
-* Editor panel
-*/
+ * Panel
+ *
+ * @requires metaScore.editor.js
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.object.js
+ * @requires ../helpers/metaScore.string.js
+ * @requires ../helpers/metaScore.function.js
+ */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
   var toolbar;

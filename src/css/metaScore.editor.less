@@ -1,23 +1,20 @@
 @import "../../vendor/prefixer.less";
-  
-.clearfix:after {
-  visibility: hidden;
-  display: block;
-  font-size: 0;
-  content: " ";
-  clear: both;
-  height: 0;
-}
-* html .clearfix   { zoom: 1; } /* IE6 */
-*:first-child+html .clearfix { zoom: 1; } /* IE7 */
 
 .metaScore-editor{
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 12px;
+  font: normal 12px/normal Verdana, Geneva, sans-serif;
+  
+  .clearfix:after{
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
   
   table{
     margin: 0;
@@ -25,14 +22,17 @@
     border-collapse: collapse;
     border-spacing: 0;
   
-    td, th {
-      vertical-align: middle;
+    td, th{
       padding: 0;
-      border: none;
-      color: #000;
+      border: 0;
     }
   }
-    
+  
+  label{
+    display: inline-block;
+    font-weight: normal;
+  }
+      
   button{
     border: none;
     outline: none;
@@ -334,109 +334,118 @@
       }
     }
   }
-}
 
-.metaScore-overlay{
-  position: absolute;
-  background: #fff;
-  z-index: 99999;
-  left: 50%;
-  top: 50%;
-  .transform(translate(-50%, -50%));
-  
-  &.colorfield-overlay{
-    padding: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
-    .border-radius(10px);
+  .overlay{
+    position: absolute;
+    background: #fff;
+    z-index: 99999;
+    left: 50%;
+    top: 50%;
+    .transform(translate(-50%, -50%));
     
-   -moz-user-select: none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-   user-select: none;
-    
-    canvas{
-      display: block;
-    }
+    &.colorfield-overlay{
+      padding: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
+      .border-radius(10px);
+      
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+      
+      canvas{
+        display: block;
+      }
 
-    .gradient{
-      position: relative;
-      float: left;
-      cursor: crosshair;
-      
-      .position{
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 8px;
-        height: 8px;
-        margin: -6px 0 0 -6px;
-        border: 2px solid #000;
-        .border-radius(50%);
-        pointer-events: none;
+      .gradient{
+        position: relative;
+        float: left;
+        cursor: crosshair;
+        
+        .position{
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 8px;
+          height: 8px;
+          margin: -6px 0 0 -6px;
+          border: 2px solid #000;
+          .border-radius(50%);
+          pointer-events: none;
+        }
       }
-    }
-    .alpha{
-      position: relative;
-      float: left;
-      background: url('img/editor/transparency-grid.png') repeat left top;
-      
-      .position{
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 10px;
-        height: 2px;
-        margin-top: -1px;
-        background: #000;
-        pointer-events: none;
-      }
-    }
-    .controls{
-      width: 80px;
-      float: left;
-      margin-left: 10px;
-      pointer-events: none;
-      
-      input[type=number]{
-        width: 3em;
-        margin-left: 0.5em;
-        pointer-events: auto;
-      }
-      
-      button{
-        width: 100%;
-        pointer-events: auto;
-      }
-      
-      .canvas-wrapper{
-        height: 40px;
+      .alpha{
+        position: relative;
+        float: left;
         background: url('img/editor/transparency-grid.png') repeat left top;
         
-        &.current{
-          margin-top: 5px;
+        .position{
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 10px;
+          height: 2px;
+          margin-top: -1px;
+          background: #000;
+          pointer-events: none;
+        }
+      }
+      .controls{
+        width: 80px;
+        float: left;
+        margin-left: 10px;
+        pointer-events: none;
+        
+        input[type=number]{
+          width: 3em;
+          margin: 0.25em 0.5em;
+          border: 2px inset;
+          pointer-events: auto;
         }
         
-        &.previous{
-          height: 20px;
-          margin-bottom: 5px;
-        }
-        
-        canvas{
+        button{
           width: 100%;
-          height: 100%;
+          padding: 0.5em;
+          background: #ccc;
+          pointer-events: auto;
+          
+          &.cancel{
+            background: #eee;
+          }
+        }
+        
+        .canvas-wrapper{
+          height: 40px;
+          border: 1px solid #ccc;
+          background: url('img/editor/transparency-grid.png') repeat left top;
+          
+          &.current{
+            margin-top: 5px;
+          }
+          
+          &.previous{
+            height: 10px;
+            margin-bottom: 5px;
+            margin-top: -1px;
+          }
+          
+          canvas{
+            width: 100%;
+            height: 100%;
+          }
         }
       }
     }
   }
-}
 
-.metaScore-overlay-mask{
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 99999;
+  .overlay-mask{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+  }
 }

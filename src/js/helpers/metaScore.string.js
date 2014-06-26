@@ -1,6 +1,8 @@
 /**
-* String
-*/
+ * String
+ *
+ * @requires ../metaScore.base.js
+ */
 metaScore.String = metaScore.Base.extend(function(){});
 
 /**

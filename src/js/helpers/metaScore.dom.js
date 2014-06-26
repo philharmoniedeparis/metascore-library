@@ -1,6 +1,11 @@
 /**
-* Dom
-*/
+ * Dom
+ *
+ * @requires ../metaScore.base.js
+ * @requires metaScore.array.js
+ * @requires metaScore.object.js
+ * @requires metaScore.var.js
+ */
 metaScore.Dom = metaScore.Base.extend(function(){
   this.constructor = function() {
   
@@ -225,7 +230,7 @@ metaScore.Dom.bubbleEvents = {
 
 /**
 * Select elements by selecor
-* @param {string} the selector
+* @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
 * @param {object} an optional parent to constrain the matched elements 
 * @returns {array} an array of HTML elements
 */

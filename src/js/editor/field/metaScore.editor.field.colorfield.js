@@ -1,6 +1,9 @@
 /**
-* Color Field
-*/
+ * ColorField
+ *
+ * @requires ../metaScore.editor.field.js
+ * @requires ../../helpers/metaScore.object.js
+ */
 metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
 
   // private vars
@@ -100,10 +103,12 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
       .appendTo(overlay.controls);
       
     overlay.controls.cancel = new metaScore.Editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
       .addListener('click', this.onCancelClick)
       .appendTo(overlay.controls);
       
     overlay.controls.apply = new metaScore.Editor.Button({'label': 'Apply'})
+      .addClass('apply')
       .addListener('click', this.onApplyClick)
       .appendTo(overlay.controls);
           
@@ -337,7 +342,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
       d = max - min,
       h, s, v;
       
-    s = max === 0 ? 0 : d / max,
+    s = max === 0 ? 0 : d / max;
     v = max;
 
     if(max === min) {

@@ -1,6 +1,8 @@
 /**
-* Base Class
-*/
+ * Base Class
+ *
+ * @requires metaScore.core.js
+ */
 (function(metaScore){  
 	//Helper method for creating an super copied object clone
 	function initialize(method){

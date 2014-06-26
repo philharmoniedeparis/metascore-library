@@ -1,6 +1,10 @@
 /**
-* Ajax
-*/
+ * Ajax
+ *
+ * @requires ../metaScore.base.js
+ * @requires metaScore.object.js
+ * @requires metaScore.var.js
+ */
 metaScore.Ajax = metaScore.Base.extend(function(){});
 
 /**
