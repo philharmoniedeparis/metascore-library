@@ -1,7 +1,6 @@
 /**
  * MainMenu
  *
- * @requires metaScore.editor.js
  * @requires metaScore.editor.button.js
  * @requires field/metaScore.editor.field.timefield.js
  * @requires ../helpers/metaScore.dom.js

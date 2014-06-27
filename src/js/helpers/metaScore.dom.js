@@ -2,6 +2,7 @@
  * Dom
  *
  * @requires ../metaScore.base.js
+ * @requires ../metaScore.polyfill.js
  * @requires metaScore.array.js
  * @requires metaScore.object.js
  * @requires metaScore.var.js
@@ -60,6 +61,16 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
+  this.addDelegate = function(selector, type, callback, useCapture) {
+      
+    return this.addListener(type, function(evt){
+      if(metaScore.Dom.is(evt.target, selector)){
+        callback.call(this, evt);
+      }
+    }, useCapture);
+    
+  };
+  
   this.removeListener = function(type, callback, useCapture) {  
     metaScore.Array.each(this.elements, function(index, element) {
       metaScore.Dom.removeListener(element, type, callback, useCapture);
@@ -67,9 +78,9 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.triggerEvent = function(type, bubbling, cancelable){
+  this.triggerEvent = function(type, data, bubbling, cancelable){  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.triggerEvent(element, type, bubbling, cancelable);
+      metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable);
     }, this);
   };
   
@@ -89,6 +100,7 @@ metaScore.Dom = metaScore.Base.extend(function(){
       metaScore.Array.each(this.elements, function(index, element) {
         metaScore.Dom.val(element, value);
       }, this);
+      return this;
     }
     else{
       return metaScore.Dom.val(this.get(0));
@@ -104,10 +116,27 @@ metaScore.Dom = metaScore.Base.extend(function(){
   };
   
   this.css = function(name, value) {
-    metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.css(element, name, value);
-    }, this);
-    return this;
+    if(value !== undefined){
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.css(element, name, value);
+      }, this);
+      return this;
+    }
+    else{
+      return metaScore.Dom.css(this.get(0), name);
+    }
+  };
+  
+  this.data = function(name, value) {
+    if(value !== undefined){
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.data(element, name, value);
+      }, this);
+      return this;
+    }
+    else{
+      return metaScore.Dom.data(this.get(0), name);
+    }
   };
   
   this.append = function(children){
@@ -141,7 +170,7 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;
   };
   
-  this.setDraggable = function(draggable){    
+  this.setDraggable = function(draggable){
     if(draggable){
       this.addListener('mousedown', this.startDrag);
     }
@@ -151,7 +180,7 @@ metaScore.Dom = metaScore.Base.extend(function(){
   };
   
   this.startDrag = function(evt){
-    var style = window.getComputedStyle(evt.target, null);
+    var style = window.getComputedStyle(evt.target);
       
     this.dragOffset = {
       'left': parseInt(style.getPropertyValue("left"), 10) - evt.clientX,
@@ -171,6 +200,8 @@ metaScore.Dom = metaScore.Base.extend(function(){
     
     this.css('left', left + 'px');
     this.css('top', top + 'px');
+    
+    this.triggerEvent('drag', null, false, true);
   };
   
   this.stopDrag = function(evt){  
@@ -211,7 +242,7 @@ metaScore.Dom.camelReplaceFn = function(all, letter) {
 * @returns {string} the normalized string
 */
 metaScore.Dom.camel = function(str){
-  return str.replace(this.camelRe, this.camelReplaceFn);
+  return str.replace(metaScore.Dom.camelRe, metaScore.Dom.camelReplaceFn);
 };
 
 /**
@@ -395,9 +426,12 @@ metaScore.Dom.removeListener = function(element, type, callback, useCapture){
 * @param {boolean} whether the event is cancelable
 * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
 */
-metaScore.Dom.triggerEvent = function(element, type, bubbling, cancelable){
-  var event = document.createEvent("HTMLEvents");
-  event.initEvent(type, bubbling, cancelable);
+metaScore.Dom.triggerEvent = function(element, type, data, bubbling, cancelable){  
+  var event = new CustomEvent(type, {
+    detail: data,
+    bubbles: bubbling,
+    cancelable: cancelable
+  });
   
   return element.dispatchEvent(event);
 };
@@ -478,13 +512,34 @@ metaScore.Dom.attr = function(element, name, value){
 * @returns {string} the value of the property
 */
 metaScore.Dom.css = function(element, name, value){
+  var style;
+
   name = this.camel(name);
 
   if(value !== undefined){
     element.style[name] = value;
   }
   
-  return element.style.hasOwnProperty(name) ? element.style[name] : null;
+  style = window.getComputedStyle(element);
+  
+  return style.getPropertyValue(name);
+};
+
+/**
+* Sets or gets a data string of an element
+* @param {object} the dom element
+* @param {string} the object's name
+* @param {string} an optional value to set
+* @returns {object} the object
+*/
+metaScore.Dom.data = function(element, name, value){
+  name = this.camel(name);
+
+  if(value !== undefined){
+    element.dataset[name] = value;
+  }
+  
+  return element.dataset[name];
 };
 
 /**
@@ -510,4 +565,16 @@ metaScore.Dom.append = function(element, children){
 */
 metaScore.Dom.remove = function(element){
   element.parentElement.removeChild(element);
+};
+
+/**
+* Checks if an element matches a selector
+* @param {object} the dom element
+* @param {string} the selector
+* @returns {boolean} true if the element matches the selector, false otherwise
+*/
+metaScore.Dom.is = function(element, selector){
+  
+  return element.matches(selector);
+  
 };

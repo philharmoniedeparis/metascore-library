@@ -86,7 +86,7 @@ metaScore.Array.unique = function(arr) {
 * Call a function on each element of an array
 * @param {array} the array
 * @param {function} the function to call
-* @returns {void}
+* @returns {array} a copy of the array
 */
 metaScore.Array.each = function(arr, callback, scope) {
 
@@ -105,4 +105,21 @@ metaScore.Array.each = function(arr, callback, scope) {
   
   return arr;
 
+};
+
+/**
+* Remove an element from an array
+* @param {array} the array
+* @param {mixed} the element to remove
+* @returns {array} a copy of the array
+*/
+metaScore.Array.remove = function(arr, element){
+  var index = metaScore.Array.inArray(element, arr);
+
+  while(index > -1){
+    arr.splice(index, 1);    
+    index = metaScore.Array.inArray(element, arr);
+  }
+  
+  return arr;
 };

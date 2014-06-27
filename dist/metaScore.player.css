@@ -77,6 +77,8 @@
 /* Transitions */
 .metaScore-player .block {
   position: absolute;
+  top: 0;
+  left: 0;
   min-width: 100px;
   min-height: 100px;
   overflow: hidden;
@@ -88,8 +90,16 @@
   border-radius: 10px;
   border: 1px solid #ccc;
 }
+.metaScore-player .block.selected {
+  border: 1px solid #0000fe;
+  -webkit-box-shadow: #0000fe 0px 0px 6px 0px;
+  -moz-box-shadow: #0000fe 0px 0px 6px 0px;
+  box-shadow: #0000fe 0px 0px 6px 0px;
+}
 .metaScore-player .block .pager {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 20px;
   background: rgba(214, 214, 214, 0.6);
@@ -99,8 +109,6 @@
 }
 .metaScore-player .block .page {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
 }

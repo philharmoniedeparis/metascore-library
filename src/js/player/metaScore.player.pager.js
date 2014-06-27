@@ -1,7 +1,6 @@
 /**
  * Player Page
  *
- * @requires metaScore.player.js
  * @requires ../helpers/metaScore.dom.js
  */
 metaScore.Player.Pager = metaScore.Dom.extend(function(){

@@ -43,7 +43,7 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
     this.value = val;
     
     if(triggerChange !== false){
-      this.triggerEvent('change', false, true);
+      this.triggerEvent('change', {'field': this, 'value': this.value}, false, true);
     }
   
   };

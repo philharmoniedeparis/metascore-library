@@ -112,7 +112,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
       .addListener('click', this.onApplyClick)
       .appendTo(overlay.controls);
           
-    overlay.mask.addListener('click', this.onOverlayMaskClick);
+    overlay.mask.addListener('click', this.onApplyClick);
     
     this.super(configs);
     
@@ -208,13 +208,8 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     overlay.hide();
   
     evt.preventDefault();
-  };
-  
-  this.onOverlayMaskClick = function(evt){
-  
-    overlay.hide();
-  
-    evt.preventDefault();
+    
+    this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
   };
   
   this.fillPrevious = function(){

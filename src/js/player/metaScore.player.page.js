@@ -1,7 +1,6 @@
 /**
  * Player Page
  *
- * @requires metaScore.player.js
  * @requires metaScore.player.element.js
  * @requires ../helpers/metaScore.dom.js
  */
@@ -38,11 +37,11 @@ metaScore.Player.Page = metaScore.Dom.extend(function(){
         break;
         
       case 'start':
-        this.attr('data-start', value);
+        this.data('start', value);
         break;
         
       case 'end':
-        this.attr('data-end', value);
+        this.data('end', value);
         break;
     }
   

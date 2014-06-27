@@ -8,39 +8,50 @@ module.exports = function(grunt) {
   // Helper variables
   var LIBRARY_NAME = 'metaScore',
       CORE_LIST = [
+        sub('src/js/%s.const.js'),
+        sub('src/js/%s.polyfill.js'),
         sub('src/js/%s.core.js'),
-        sub('src/js/%s.base.js')
+        sub('src/js/%s.base.js'),
+        sub('src/js/helpers/%s.*.js')
       ],
       PLAYER_LIST = [
-        'src/js/player/*.js'
+        sub('src/js/player/%s.player.js'),
+        sub('src/js/player/%s.player.*.js'),
+        sub('src/js/player/media/%s.player.media.js'),
+        sub('src/js/player/media/%s.player.media.*.js'),
       ],
       EDITOR_LIST = [
-        'src/js/editor/*.js'
+        sub('src/js/editor/%s.editor.js'),
+        sub('src/js/editor/%s.editor.*.js'),
+        sub('src/js/editor/field/%s.editor.field.*.js'),
+        sub('src/js/editor/panel/%s.editor.panel.*.js')
       ],
       DEV_HEAD_LIST = [
         sub('src/js/%s.const.js'),
-        sub('src/js/%s.intro.js')
+        sub('src/js/%s.intro.js'),
+        sub('src/js/%s.core.js'),
+        sub('src/js/%s.base.js')
       ],
       DIST_HEAD_LIST = [
-        sub('src/js/%s.intro.js')
+        sub('src/js/%s.intro.js'),
+        sub('src/js/%s.core.js'),
+        sub('src/js/%s.base.js')
       ],
       TAIL_LIST = [
         sub('src/js/%s.outro.js')
       ],
-      BANNER = '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n',
-      path = require('path');
+      BANNER = '/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> - <%= pkg.author %> */\n';
 
   // Load plugins
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-concat-in-order');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-text-replace');
-  grunt.loadNpmTasks('grunt-file-append');
 
   // Configure grunt
   grunt.initConfig({
@@ -58,52 +69,17 @@ module.exports = function(grunt) {
         force: true
       }
     },
-    concat_in_order: {
-      dist: {    
-        files: {
-          'dist/metaScore.player.js': DIST_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
-          'dist/metaScore.editor.js': DIST_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, EDITOR_LIST, TAIL_LIST)
-        }
+    concat: {
+      dist: {
+        src: DIST_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, PLAYER_LIST, TAIL_LIST),
+        dest: sub('dist/%s.editor.js')
       },
-      dev: {    
-        files: {
-          'dist/metaScore.player.js': DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
-          'dist/metaScore.editor.js': DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, EDITOR_LIST, TAIL_LIST)
-        }
+      dev: {
+        src: DEV_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, PLAYER_LIST, TAIL_LIST),
+        dest: sub('dist/%s.editor.js')
       },
       options: {
-        extractRequired: function(filepath, filecontent) {
-          var workingdir, deps, dependency;
-            
-          workingdir = path.normalize(filepath).split(path.sep);                  
-          workingdir.pop();
-
-          deps = this.getMatches(/\*\s*@requires\s(.*\.js)/g, filecontent);
-          deps.forEach(function(dep, i) {
-            dependency = workingdir.concat([dep]);
-            deps[i] = path.join.apply(null, dependency);
-          });
-          
-          return deps;
-        },
-        extractDeclared: function(filepath) {
-          return [path.normalize(filepath)];
-        },
-        onlyConcatRequiredFiles: true
-      }
-    },
-    file_append: {
-      dev: {
-        files: {
-          'dist/metaScore.player.js': {
-            prepend: BANNER,
-            input: 'dist/metaScore.player.js'
-          },
-          'dist/metaScore.editor.js': {
-            prepend: BANNER,
-            input: 'dist/metaScore.editor.js'
-          }
-        }
+        banner: BANNER
       }
     },
     replace: {
@@ -135,7 +111,6 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         files: {
-          'dist/metaScore.player.min.js': 'dist/metaScore.player.js',
           'dist/metaScore.editor.min.js': 'dist/metaScore.editor.js',
         }
       },
@@ -176,7 +151,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['src/**'],
+        files: ['Gruntfile.js'].concat('src/**'),
         tasks: ['build'],
         options: {
           interrupt: true
@@ -188,10 +163,9 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'jshint:all',
     'clean:dist',
-    'concat_in_order:dist',
+    'concat:dist',
     'uglify:dist',
-    'concat_in_order:dev',
-    'file_append:dev',
+    'concat:dev',
     'replace:version',
     'less',
     'copy:dist'

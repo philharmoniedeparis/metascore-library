@@ -1,7 +1,6 @@
 /**
  * Panel
  *
- * @requires metaScore.editor.js
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.object.js
  * @requires ../helpers/metaScore.string.js
@@ -9,7 +8,7 @@
  */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
-  var toolbar;
+  var toolbar, fields = {};
 
   this.defaults = {
     /**
@@ -45,8 +44,6 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   this.setupFields = function(){
   
     var row, field_uuid, field;
-    
-    this.fields = {};
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
@@ -54,7 +51,8 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
       field_uuid = 'field-'+ metaScore.String.uuid(5);
       
-      this.fields[key] = field = new value.type().attr('id', field_uuid);
+      fields[key] = field = new value.type().attr('id', field_uuid);
+      field.data('name', key);      
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
       new metaScore.Dom('<td/>').appendTo(row).append(field);
@@ -63,15 +61,25 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   };
   
-  this.toggleState = function(){
-    
-    this.toggleClass('collapsed');
-    
-  };
-  
   this.getToolbar = function(){
     
     return toolbar;
+    
+  };
+  
+  this.getField = function(key){
+    
+    if(key === undefined){
+      return fields;
+    }
+    
+    return fields[key];
+    
+  };
+  
+  this.toggleState = function(){
+    
+    this.toggleClass('collapsed');
     
   };
 });

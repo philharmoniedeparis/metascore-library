@@ -1,7 +1,6 @@
 /**
  * Sidebar
  *
- * @requires metaScore.editor.js
  * @requires panel/metaScore.editor.panel.block.js
  * @requires panel/metaScore.editor.panel.page.js
  * @requires panel/metaScore.editor.panel.element.js
@@ -10,27 +9,29 @@
  */
 metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
 
+  var panels = {};
+
   this.constructor = function() {
   
     this.super('<div/>', {'class': 'sidebar'});
-   
-    this.addPanels();
+  
+    panels.block = new metaScore.Editor.Panel.Block()
+      .appendTo(this);
+  
+    panels.page = new metaScore.Editor.Panel.Page()
+      .appendTo(this);
+  
+    panels.element = new metaScore.Editor.Panel.Element()
+      .appendTo(this);
+  
+    panels.text = new metaScore.Editor.Panel.Text()
+      .appendTo(this);
    
   };
   
-  this.addPanels = function(){
+  this.getPanel = function(panel){
   
-    new metaScore.Editor.Panel.Block()
-      .appendTo(this);
-  
-    new metaScore.Editor.Panel.Page()
-      .appendTo(this);
-  
-    new metaScore.Editor.Panel.Element()
-      .appendTo(this);
-  
-    new metaScore.Editor.Panel.Text()
-      .appendTo(this);
+    return panels[panel];
   
   };
 });

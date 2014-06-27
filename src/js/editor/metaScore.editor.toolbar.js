@@ -1,9 +1,9 @@
 /**
  * Toolbar
  *
- * @requires metaScore.editor.js
  * @requires ../helpers/metaScore.dom.js
  */
+ 
 metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
 
   var title, buttons;

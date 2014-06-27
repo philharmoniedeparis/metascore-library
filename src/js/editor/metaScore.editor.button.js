@@ -1,7 +1,6 @@
 /**
  * Button
  *
- * @requires metaScore.editor.js
  * @requires ../helpers/metaScore.dom.js
  */
 metaScore.Editor.Button = metaScore.Dom.extend(function(){

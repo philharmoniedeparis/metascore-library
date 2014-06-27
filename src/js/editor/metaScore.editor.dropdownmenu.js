@@ -1,7 +1,6 @@
 /**
  * DropDownMenu
  *
- * @requires metaScore.editor.js
  * @requires ../helpers/metaScore.dom.js
  */
 metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
@@ -18,9 +17,9 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
     this.initConfig(configs);
   };
   
-  this.addItem = function(text){
+  this.addItem = function(attr){
   
-    var item = new metaScore.Dom('<li/>', {'text': text})
+    var item = new metaScore.Dom('<li/>', attr)
       .appendTo(this);    
   
     return item;

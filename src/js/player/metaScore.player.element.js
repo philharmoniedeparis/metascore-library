@@ -1,7 +1,6 @@
 /**
  * Player Element
  *
- * @requires metaScore.player.js
  * @requires ../helpers/metaScore.dom.js
  */
 metaScore.Player.Element = metaScore.Dom.extend(function(){
@@ -32,7 +31,7 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
         break;
         
       case 'reading-index':
-        this.attr('data-r-index', value);
+        this.data('r-index', value);
         break;
         
       case 'z-index':
@@ -56,11 +55,11 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
         break;
         
       case 'start':
-        this.attr('data-start', value);
+        this.data('start', value);
         break;
         
       case 'end':
-        this.attr('data-end', value);
+        this.data('end', value);
         break;
     }
   

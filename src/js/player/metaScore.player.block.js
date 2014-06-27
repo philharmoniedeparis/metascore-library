@@ -1,7 +1,6 @@
 /**
  * Player Block
  *
- * @requires metaScore.player.js
  * @requires metaScore.player.pager.js
  * @requires metaScore.player.page.js
  * @requires ../helpers/metaScore.dom.js
@@ -59,7 +58,7 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
         break;
         
       case 'synched':
-        this.attr('data-synched', value);
+        this.data('synched', value);
         break;
     }
   
