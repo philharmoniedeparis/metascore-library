@@ -6,9 +6,11 @@
  */
 metaScore.Player = metaScore.Dom.extend(function(){
 
-  var blocks = [];
+  var _blocks;
 
   this.constructor = function(selector) {
+  
+    _blocks = {};
   
     this.super('<div/>', {'class': 'metaScore-player'});
     
@@ -24,20 +26,34 @@ metaScore.Player = metaScore.Dom.extend(function(){
   
   this.addBlock = function(configs){
     
-    var block = new metaScore.Player.Block(configs)
-      .appendTo(this);
+    var block, id;
     
-    blocks.push(block);
+    block = new metaScore.Player.Block(configs)
+      .appendTo(this);
+      
+    id = block.attr('id');
+    
+    _blocks[id] = block;
     
     return block;
     
   };
   
+  this.getBlock = function(id){
+    
+    return _blocks[id];
+    
+  };
+  
   this.deleteBlock = function(block){
     
+    var id;
+    
     if(block){
-      block.remove();
-      metaScore.Array.remove(blocks, block);
+      id = block.attr('id');
+    
+      block.remove();      
+      delete _blocks[id];
     }
     
   };

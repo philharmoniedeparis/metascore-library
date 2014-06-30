@@ -6,7 +6,7 @@
 metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   
   // private vars
-  var hours, minutes, seconds, centiseconds;
+  var _hours, _minutes, _seconds, _centiseconds;
   
   this.defaults = {
     /**
@@ -43,35 +43,36 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   */
   this.constructor = function(configs) {
     
-    hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
-    minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
-    seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
-    centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
+    _hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
+    _minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
+    _seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
+    _centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
   
     this.super(configs);
     
-    hours.addListener('input', this.onInput).appendTo(this);
+    
+    _hours.addListener('input', this.onInput).appendTo(this);
     
     new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
     
-    minutes.addListener('input', this.onInput).appendTo(this);
+    _minutes.addListener('input', this.onInput).appendTo(this);
     
     new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
     
-    seconds.addListener('input', this.onInput).appendTo(this);
+    _seconds.addListener('input', this.onInput).appendTo(this);
     
     new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
     
-    centiseconds.addListener('input', this.onInput).appendTo(this);
+    _centiseconds.addListener('input', this.onInput).appendTo(this);
     
   };
   
   this.onInput = function(evt){
   
-    var centiseconds_val = parseInt(centiseconds.val(), 10),
-      seconds_val = parseInt(seconds.val(), 10),
-      minutes_val = parseInt(minutes.val(), 10),
-      hours_val = parseInt(hours.val(), 10);
+    var centiseconds_val = parseInt(_centiseconds.val(), 10),
+      seconds_val = parseInt(_seconds.val(), 10),
+      minutes_val = parseInt(_minutes.val(), 10),
+      hours_val = parseInt(_hours.val(), 10);
       
     evt.stopPropagation();
     
@@ -96,10 +97,10 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     minutes_val = parseInt((this.value / 60000) % 60, 10);
     hours_val = parseInt((this.value / 3600000), 10);
     
-    centiseconds.val(centiseconds_val);
-    seconds.val(seconds_val);
-    minutes.val(minutes_val);
-    hours.val(hours_val);
+    _centiseconds.val(centiseconds_val);
+    _seconds.val(seconds_val);
+    _minutes.val(minutes_val);
+    _hours.val(hours_val);
     
     this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
   
@@ -118,10 +119,10 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   this.disable = function(){
     this.disabled = true;
     
-    hours.attr('disabled', 'disabled');
-    minutes.attr('disabled', 'disabled');
-    seconds.attr('disabled', 'disabled');
-    centiseconds.attr('disabled', 'disabled');
+    _hours.attr('disabled', 'disabled');
+    _minutes.attr('disabled', 'disabled');
+    _seconds.attr('disabled', 'disabled');
+    _centiseconds.attr('disabled', 'disabled');
     
     this.addClass('disabled');
     
@@ -137,10 +138,10 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   this.enable = function(){
     this.disabled = false;
     
-    hours.attr('disabled', null);
-    minutes.attr('disabled', null);
-    seconds.attr('disabled', null);
-    centiseconds.attr('disabled', null);
+    _hours.attr('disabled', null);
+    _minutes.attr('disabled', null);
+    _seconds.attr('disabled', null);
+    _centiseconds.attr('disabled', null);
     
     this.removeClass('disabled');
     

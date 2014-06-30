@@ -6,7 +6,7 @@
  
 metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
 
-  var title, buttons;
+  var _title, _buttons;
   
   this.defaults = {    
     /**
@@ -25,27 +25,27 @@ metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
   
     this.initConfig(configs);
     
-    title = new metaScore.Dom('<div/>', {'class': 'title'})
+    _title = new metaScore.Dom('<div/>', {'class': 'title'})
       .appendTo(this);
     
-    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+    _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
       .appendTo(this);
       
     if(this.configs.title){
-      title.text(this.configs.title);
+      _title.text(this.configs.title);
     }
   };
   
   this.getTitle = function(){
   
-    return title;
+    return _title;
     
   };
   
   this.addButton = function(configs){
   
     return new metaScore.Editor.Button(configs)
-      .appendTo(buttons);
+      .appendTo(_buttons);
   
   };
 });

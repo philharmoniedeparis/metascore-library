@@ -4,17 +4,19 @@
  * @requires metaScore.player.pager.js
  * @requires metaScore.player.page.js
  * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
  */
 metaScore.Player.Block = metaScore.Dom.extend(function(){
   
-  var pager,
-    pages = [];
+  var _pager, _pages;
 
   this.constructor = function(selector) {
   
-    this.super('<div/>', {'class': 'block'});
+    this.super('<div/>', {'class': 'block', 'id': metaScore.String.uuid(5)});
+  
+    _pages = [];
     
-    pager = new metaScore.Player.Pager()
+    _pager = new metaScore.Player.Pager()
       .appendTo(this);
     
   };
@@ -24,7 +26,7 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
     var page = new metaScore.Player.Page(configs)
       .appendTo(this);
   
-    pages.push(page);
+    _pages.push(page);
     
     return page;
   

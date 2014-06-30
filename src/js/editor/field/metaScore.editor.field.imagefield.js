@@ -6,7 +6,7 @@
 metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
 
   // private vars
-  var file;
+  var _file;
   
   this.defaults = {
     /**
@@ -53,10 +53,10 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
     var files = evt.target.files;
   
     if(files.length > 0 && files[0].type.match('image.*')){
-      file = files[0];
+      _file = files[0];
     }
     else{
-      file = null;
+      _file = null;
     }
     
     /*this.getBase64(function(result){
@@ -69,12 +69,12 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
   
     var reader;
   
-    if(file){
+    if(_file){
       reader = new FileReader();
       reader.onload = metaScore.Function.proxy(function(evt){
         callback.call(this, evt.target.result, evt);
       }, this);
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(_file);
     }
   
   };

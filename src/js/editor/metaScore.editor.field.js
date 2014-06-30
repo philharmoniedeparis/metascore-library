@@ -42,13 +42,26 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
     if(this.configs.disabled){
       this.disable();
     }
+    
+    this.addListener('change', this.onChange);
+    
+  };
+  
+  this.onChange = function(evt){
+  
+    if(!evt.hasOwnProperty('detail')){
+      evt.stopPropagation();
+      
+      this.value = this.val();
+      
+      this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
+    }
+  
   };
   
   this.setValue = function(val){
-  
-    this.value = val;
     
-    this.val(this.value);
+    this.val(val);    
   
   };
 

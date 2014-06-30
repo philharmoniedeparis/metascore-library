@@ -18,10 +18,8 @@ metaScore.Dom = metaScore.Base.extend(function(){
       elements = metaScore.Dom.elementsFromString.apply(this, arguments) || metaScore.Dom.selectElements.apply(this, arguments);
       
       if(elements){
-        for(var i = 0; i < elements.length; i++ ) {
-          this.elements[i] = elements[i];
-        }
-    
+        this.add(elements);
+        
         if(arguments.length > 1){
           this.attr(arguments[1]);
         }
@@ -29,8 +27,62 @@ metaScore.Dom = metaScore.Base.extend(function(){
     }
   };
   
+  this.add = function(elements){
+    if(elements.hasOwnProperty('length')){
+      for(var i = 0; i < elements.length; i++ ) {
+        this.elements.push(elements[i]);
+      }
+    }
+    else{
+      this.elements.push(elements);
+    }
+  };
+  
   this.get = function(index){
     return this.elements[index];
+  };
+  
+  this.filter = function(selector){
+  
+    var filtered = [];
+    
+    metaScore.Array.each(this.elements, function(index, element) {
+      if(metaScore.Dom.is(element, selector)){
+        filtered.push(element);
+      }
+    }, this);
+  
+    this.elements = filtered;
+    
+    return this;
+  };
+  
+  this.children = function(selector){
+  
+    var children = new metaScore.Dom();
+  
+    metaScore.Array.each(this.elements, function(index, element) {
+      children.add(metaScore.Dom.selectElements.call(this, selector, element));
+    }, this);
+    
+    return children;
+  
+  };
+  
+  this.parents = function(selector){
+  
+    var parents = new metaScore.Dom();
+  
+    metaScore.Array.each(this.elements, function(index, element) {
+      parents.add(element.parentElement);
+    }, this);
+      
+    if(selector){
+      parents.filter(selector);
+    }
+    
+    return parents;
+  
   };
   
   this.addClass = function(className) {  
@@ -108,11 +160,15 @@ metaScore.Dom = metaScore.Base.extend(function(){
   };
   
   this.attr = function(name, value) {
-    metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.attr(element, name, value);
-    }, this);
-    
-    return this;
+    if(value !== undefined || metaScore.Var.is(name, 'object')){
+      metaScore.Array.each(this.elements, function(index, element) {
+        metaScore.Dom.attr(element, name, value);
+      }, this);
+      return this;
+    }
+    else{
+      return metaScore.Dom.attr(this.get(0), name);
+    }
   };
   
   this.css = function(name, value) {
@@ -170,48 +226,17 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;
   };
   
-  this.setDraggable = function(draggable){
-    if(draggable){
-      this.addListener('mousedown', this.startDrag);
-    }
-    else{
-      this.removeListener('mousedown', this.startDrag);
-    }  
+  this.is = function(selector){
+    var found;
+  
+    metaScore.Array.each(this.elements, function(index, element) {
+      found = metaScore.Dom.is(element, selector);
+      return found;
+    }, this);
+    
+    return found;
   };
   
-  this.startDrag = function(evt){
-    var style = window.getComputedStyle(evt.target);
-      
-    this.dragOffset = {
-      'left': parseInt(style.getPropertyValue("left"), 10) - evt.clientX,
-      'top': parseInt(style.getPropertyValue("top"), 10) - evt.clientY
-    };
-    
-    this.dragParent = new metaScore.Dom('body')
-      .addListener('mouseup', this.stopDrag)
-      .addListener('mousemove', this.drag);
-    
-    this.addClass('dragging');
-  };
-  
-  this.drag = function(evt){  
-    var left = evt.clientX + parseInt(this.dragOffset.left, 10),
-      top = evt.clientY + parseInt(this.dragOffset.top, 10);
-    
-    this.css('left', left + 'px');
-    this.css('top', top + 'px');
-    
-    this.triggerEvent('drag', null, false, true);
-  };
-  
-  this.stopDrag = function(evt){  
-    this.dragParent.removeListener('mousemove', this.drag).removeListener('mouseup', this.stopDrag);
-    
-    delete this.dragOffset;
-    delete this.dragParent;
-    
-    this.removeClass('dragging');  
-  };
 });
 
 
@@ -512,12 +537,12 @@ metaScore.Dom.attr = function(element, name, value){
 * @returns {string} the value of the property
 */
 metaScore.Dom.css = function(element, name, value){
-  var style;
+  var camel, style;
 
-  name = this.camel(name);
+  camel = this.camel(name);
 
   if(value !== undefined){
-    element.style[name] = value;
+    element.style[camel] = value;
   }
   
   style = window.getComputedStyle(element);
@@ -535,7 +560,10 @@ metaScore.Dom.css = function(element, name, value){
 metaScore.Dom.data = function(element, name, value){
   name = this.camel(name);
 
-  if(value !== undefined){
+  if(value === null){
+    delete element.dataset[name];
+  }
+  else if(value !== undefined){
     element.dataset[name] = value;
   }
   

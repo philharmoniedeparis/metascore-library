@@ -8,8 +8,8 @@
  */
 metaScore.Editor = metaScore.Dom.extend(function(){
 
-  var workspace, mainmenu,
-    sidebar, player, grid;
+  var _workspace, _mainmenu,
+    _sidebar, _player, _grid;
 
   this.constructor = function(selector) {
   
@@ -25,35 +25,38 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   
     // add components
-    workspace = new metaScore.Dom('<div/>', {'class': 'workspace'})
+    _workspace = new metaScore.Dom('<div/>', {'class': 'workspace'})
       .appendTo(this);
   
-    mainmenu = new metaScore.Editor.MainMenu()
+    _mainmenu = new metaScore.Editor.MainMenu()
       .appendTo(this);
   
-    sidebar = new metaScore.Editor.Sidebar()
+    _sidebar = new metaScore.Editor.Sidebar()
       .appendTo(this);
       
-    player = new metaScore.Player()
-      .appendTo(workspace);
+    _player = new metaScore.Player()
+      .appendTo(_workspace);
   
-    grid = new metaScore.Dom('<div/>', {'class': 'grid'})
-      .appendTo(workspace);
+    _grid = new metaScore.Dom('<div/>', {'class': 'grid'})
+      .appendTo(_workspace);
       
       
     // add event listeners
-    sidebar.getPanel('block').getToolbar()
+    _sidebar.getPanel('block').getToolbar()
       .addDelegate('.buttons .menu .new', 'click', function(evt){
-        var block = player.addBlock();
-        sidebar.getPanel('block').setBlock(block);
+        var block = _player.addBlock();
+        _sidebar.getPanel('block').selectBlock(block);
       })
       .addDelegate('.buttons .menu .delete', 'click', function(evt){
-        var block = sidebar.getPanel('block').getBlock();
-        player.deleteBlock(block);
+        var block = _sidebar.getPanel('block').getBlock();
+        _player.deleteBlock(block);
       });
       
-    player.addDelegate('.block', 'click', function(evt){
-      //sidebar.getPanel('block').setBlock(block);
+    _player.addDelegate('.block .pager', 'click', function(evt){
+      var id = new metaScore.Dom(evt.target).parents('.block').attr('id'),
+        block = _player.getBlock(id);
+        
+      _sidebar.getPanel('block').selectBlock(block);
     });
     
   };

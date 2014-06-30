@@ -8,7 +8,7 @@
  */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
-  var toolbar, fields = {};
+  var _toolbar, _fields = {};
 
   this.defaults = {
     /**
@@ -28,10 +28,10 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
     this.initConfig(configs);
   
-    toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
+    _toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
       .appendTo(this);
       
-    toolbar.getTitle()
+    _toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
     
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
@@ -51,7 +51,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
       field_uuid = 'field-'+ metaScore.String.uuid(5);
       
-      fields[key] = field = new value.type().attr('id', field_uuid);
+      _fields[key] = field = new value.type().attr('id', field_uuid);
       field.data('name', key);      
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
@@ -63,17 +63,17 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   this.getToolbar = function(){
     
-    return toolbar;
+    return _toolbar;
     
   };
   
   this.getField = function(key){
     
     if(key === undefined){
-      return fields;
+      return _fields;
     }
     
-    return fields[key];
+    return _fields[key];
     
   };
   

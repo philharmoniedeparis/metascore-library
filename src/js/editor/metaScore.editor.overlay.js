@@ -4,6 +4,8 @@
  * @requires ../helpers/metaScore.dom.js
  */
 metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
+
+  var _draggable;
   
   this.defaults = {
     /**
@@ -47,7 +49,9 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
       this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
     }
     
-    this.setDraggable(this.configs.draggable);
+    if(this.configs.draggable){
+      _draggable = new metaScore.Draggable(this, this);
+    }
     
   };
   

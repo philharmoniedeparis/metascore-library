@@ -5,26 +5,26 @@
  */
 metaScore.Player.Pager = metaScore.Dom.extend(function(){
 
-  var count, buttons;
+  var _count, _buttons;
 
   this.constructor = function(selector) {
   
     this.super('<div/>', {'class': 'pager'});
     
-    count = new metaScore.Dom('<div/>', {'class': 'count'})
+    _count = new metaScore.Dom('<div/>', {'class': 'count'})
       .appendTo(this);
     
-    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+    _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
       .appendTo(this);
       
-    buttons.first = new metaScore.Dom('<div/>', {'class': 'first'})
-      .appendTo(buttons);
+    _buttons.first = new metaScore.Dom('<div/>', {'class': 'first'})
+      .appendTo(_buttons);
       
-    buttons.previous = new metaScore.Dom('<div/>', {'class': 'previous'})
-      .appendTo(buttons);
+    _buttons.previous = new metaScore.Dom('<div/>', {'class': 'previous'})
+      .appendTo(_buttons);
       
-    buttons.next = new metaScore.Dom('<div/>', {'class': 'next'})
-      .appendTo(buttons);
+    _buttons.next = new metaScore.Dom('<div/>', {'class': 'next'})
+      .appendTo(_buttons);
     
   };
   

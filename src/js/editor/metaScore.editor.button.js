@@ -5,7 +5,7 @@
  */
 metaScore.Editor.Button = metaScore.Dom.extend(function(){
 
-  var label;
+  var _label;
   
   /**
   * Keep track of the current state
@@ -44,12 +44,12 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
   
   this.setLabel = function(text){
   
-    if(label === undefined){
-      label = new metaScore.Dom('<span/>', {'class': 'label'})
+    if(_label === undefined){
+      _label = new metaScore.Dom('<span/>', {'class': 'label'})
         .appendTo(this);
     }
     
-    label.text(text);
+    _label.text(text);
     
   };
 

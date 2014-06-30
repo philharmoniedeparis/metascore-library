@@ -6,7 +6,7 @@
  */
 metaScore.Player.Page = metaScore.Dom.extend(function(){
   
-  var elements = [];
+  var _elements = [];
 
   this.constructor = function(selector) {
   
@@ -19,7 +19,7 @@ metaScore.Player.Page = metaScore.Dom.extend(function(){
     var element = new metaScore.Player.Element(configs)
       .appendTo(this);
   
-    elements.push(element);
+    _elements.push(element);
     
     return element;
   

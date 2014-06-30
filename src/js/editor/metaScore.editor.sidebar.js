@@ -9,29 +9,29 @@
  */
 metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
 
-  var panels = {};
+  var _panels = {};
 
   this.constructor = function() {
   
     this.super('<div/>', {'class': 'sidebar'});
   
-    panels.block = new metaScore.Editor.Panel.Block()
+    _panels.block = new metaScore.Editor.Panel.Block()
       .appendTo(this);
   
-    panels.page = new metaScore.Editor.Panel.Page()
+    _panels.page = new metaScore.Editor.Panel.Page()
       .appendTo(this);
   
-    panels.element = new metaScore.Editor.Panel.Element()
+    _panels.element = new metaScore.Editor.Panel.Element()
       .appendTo(this);
   
-    panels.text = new metaScore.Editor.Panel.Text()
+    _panels.text = new metaScore.Editor.Panel.Text()
       .appendTo(this);
    
   };
   
   this.getPanel = function(panel){
   
-    return panels[panel];
+    return _panels[panel];
   
   };
 });

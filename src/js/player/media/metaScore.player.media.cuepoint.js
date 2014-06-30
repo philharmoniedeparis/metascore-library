@@ -7,12 +7,17 @@
  * @requires ../helpers/metaScore.var.js
  */
 metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
-  this.triggers = [];
+
+  var _media, _triggers;
   
   this.constructor = function(media){
-    this.media = media;
     
-    this.media.addEventListener('timeupdate', this.onMediaTimeUpdate);
+    _triggers = [];
+  
+    _media = media;
+    
+    _media.addEventListener('timeupdate', this.onMediaTimeUpdate);
+    
   };
   
   this.onMediaTimeUpdate = function(e){
@@ -21,7 +26,7 @@ metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
     media = e.target;
     curTime = parseFloat(media.currentTime);
     
-    metaScore.Object.each(this.triggers, function (index, trigger) {
+    metaScore.Object.each(_triggers, function (index, trigger) {
       if (!trigger.timer && curTime >= trigger.inTime - 0.5 && curTime < trigger.inTime) {
         this.setupTriggerTimer(trigger, (trigger.inTime - curTime) * 1000);
       }
@@ -29,14 +34,14 @@ metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
   };
   
   this.addTrigger = function(trigger){
-    return this.triggers.push(trigger) - 1;
+    return _triggers.push(trigger) - 1;
   };
   
   this.removeTrigger = function(index){
-    var trigger = this.triggers[index];
+    var trigger = _triggers[index];
   
     this.stopTrigger(trigger, false);
-    this.triggers.splice(index, 1);
+    _triggers.splice(index, 1);
   };
   
   this.setupTriggerTimer = function(trigger, delay){
@@ -45,7 +50,7 @@ metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
   
   this.launchTrigger = function(trigger){
     if(trigger.hasOwnProperty('onStart') && metaScore.Var.is(trigger.onStart, 'function')){
-      trigger.onStart(this.media);
+      trigger.onStart(_media);
     }    
   };
   
@@ -61,7 +66,7 @@ metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
     }
     
     if(launchHandler !== false && trigger.hasOwnProperty('onEnd') && metaScore.Var.is(trigger.onEnd, 'function')){
-      trigger.onEnd(this.media);
+      trigger.onEnd(_media);
     }
   };
 });
