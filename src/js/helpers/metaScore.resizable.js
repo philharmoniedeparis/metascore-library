@@ -55,8 +55,8 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       'handle': evt.target,
       'x': evt.clientX,
       'y': evt.clientY,
-      'left': parseInt(_target.css('left'), 10) - evt.clientX,
-      'top': parseInt(_target.css('top'), 10) - evt.clientY,
+      'left': parseInt(_target.css('left'), 10),
+      'top': parseInt(_target.css('top'), 10),
       'w': parseInt(_target.css('width'), 10),
       'h': parseInt(_target.css('height'), 10)
     };
@@ -80,18 +80,18 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       case 'top-left':
         w = _startState.w - evt.clientX + _startState.x;
         h = _startState.h - evt.clientY + _startState.y;
-        top = evt.clientY + _startState.top;
-        left = evt.clientX + _startState.left;
+        top = _startState.top + evt.clientY  - _startState.y;
+        left = _startState.left + evt.clientX - _startState.x;
         break;
       case 'top-right':
         w = _startState.w + evt.clientX - _startState.x;
         h = _startState.h - evt.clientY + _startState.y;
-        top = evt.clientY + _startState.top;
+        top = _startState.top + evt.clientY - _startState.y;
         break;
       case 'bottom-left':
         w = _startState.w - evt.clientX + _startState.x;
         h = _startState.h + evt.clientY - _startState.y;
-        left = evt.clientX + _startState.left;
+        left = _startState.left + evt.clientX - _startState.x;
         break;
       case 'bottom-right':
         w = _startState.w + evt.clientX - _startState.x;

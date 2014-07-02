@@ -8,7 +8,8 @@
  */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
-  var _toolbar, _fields = {};
+  var _toolbar, _contents,
+    _fields = {};
 
   this.defaults = {
     /**
@@ -34,7 +35,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     _toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
     
-    this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
+    _contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
       
     this.setupFields();
@@ -47,7 +48,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(this.contents);
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(_contents);
     
       field_uuid = 'field-'+ metaScore.String.uuid(5);
       
@@ -74,6 +75,22 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     }
     
     return _fields[key];
+    
+  };
+  
+  this.enableFields = function(){
+  
+    metaScore.Object.each(_fields, function(key, field){
+      field.enable();
+    }, this);
+    
+  };
+  
+  this.disableFields = function(){
+  
+    metaScore.Object.each(_fields, function(key, field){
+      field.disable();
+    }, this);
     
   };
   

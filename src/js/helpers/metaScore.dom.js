@@ -8,6 +8,7 @@
  * @requires metaScore.var.js
  */
 metaScore.Dom = metaScore.Base.extend(function(){
+
   this.constructor = function() {
   
     var elements;
@@ -15,13 +16,18 @@ metaScore.Dom = metaScore.Base.extend(function(){
     this.elements = [];
     
     if(arguments.length > 0){
-      elements = metaScore.Dom.elementsFromString.apply(this, arguments) || metaScore.Dom.selectElements.apply(this, arguments);
-      
-      if(elements){
+      if(elements = metaScore.Dom.elementsFromString.apply(this, arguments)){
         this.add(elements);
         
         if(arguments.length > 1){
           this.attr(arguments[1]);
+        }
+      }
+      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){      
+        this.add(elements);
+        
+        if(arguments.length > 2){
+          this.attr(arguments[2]);
         }
       }
     }
@@ -36,6 +42,10 @@ metaScore.Dom = metaScore.Base.extend(function(){
     else{
       this.elements.push(elements);
     }
+  };
+  
+  this.count = function(){
+    return this.elements.length;
   };
   
   this.get = function(index){
@@ -99,9 +109,9 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.toggleClass = function(className) {  
+  this.toggleClass = function(className, force) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.toggleClass(element, className);
+      metaScore.Dom.toggleClass(element, className, force);
     }, this);        
     return this;        
   };
@@ -216,6 +226,20 @@ metaScore.Dom = metaScore.Base.extend(function(){
       metaScore.Dom.append(parent, element);
     }, this);
     
+    return this;
+  };
+  
+  this.show = function(){
+    metaScore.Array.each(this.elements, function(index, element) {
+      this.css('display', 'initial');
+    }, this);
+    return this;
+  };
+  
+  this.hide = function(){
+    metaScore.Array.each(this.elements, function(index, element) {
+      this.css('display', 'none');
+    }, this);
     return this;
   };
   
@@ -400,14 +424,15 @@ metaScore.Dom.removeClass = function(element, className){
 * Toggles a given class on an element
 * @param {object} the dom element
 * @param {string} the class(es) to toggle; separated by a space
+* @param {boolean} optional boolean; If true, the class will be added but not removed. If false, the class will be removed but not added.
 * @returns {void}
 */
-metaScore.Dom.toggleClass = function(element, className){
+metaScore.Dom.toggleClass = function(element, className, force){
   var classNames = className.split(" "),
     i = 0, l = classNames.length;
   
   for(; i<l; i++){
-    element.classList.toggle(classNames[i]);
+    element.classList.toggle(classNames[i], force);
   }
 };
 

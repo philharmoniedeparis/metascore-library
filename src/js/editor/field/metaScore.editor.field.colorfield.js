@@ -178,6 +178,10 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
   this.onClick = function(evt){
   
+    if(this.disabled){
+      return;
+    }
+  
     previous_value = metaScore.Object.copy(this.value);
     
     this.fillPrevious();

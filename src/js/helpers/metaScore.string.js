@@ -20,7 +20,21 @@ metaScore.String.capitalize = function(str){
 * @param {object} string replacements
 * @returns {string} the translated string
 */
-metaScore.String.t = function(str){
+metaScore.String.t = function(str, args){
+  return metaScore.formatString(str, args);
+};
+
+/**
+* Replace placeholders with sanitized values in a string.
+* @param {string} the original string
+* @param {object} string replacements
+* @returns {string} the formatted string
+*/
+metaScore.formatString = function(str, args) {
+  metaScore.Object.each(args, function(key, value){
+    str = str.replace(key, args[key]);
+  }, this);
+  
   return str;
 };
 

@@ -132,41 +132,13 @@
   filter: alpha(opacity=(25));
   cursor: default;
 }
-.metaScore-editor .metaScore-player {
+.metaScore-editor .player-wrapper {
   position: absolute;
   left: 0;
-  right: 0;
   top: 0;
-  bottom: 0;
-}
-.metaScore-editor .draggable.dragging {
-  cursor: move;
-}
-.metaScore-editor .resizable .resize-handle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  z-index: 9999;
-}
-.metaScore-editor .resizable .resize-handle[data-direction="top-left"] {
-  top: 0;
-  left: 0;
-  cursor: nw-resize;
-}
-.metaScore-editor .resizable .resize-handle[data-direction="top-right"] {
-  top: 0;
-  right: 0;
-  cursor: ne-resize;
-}
-.metaScore-editor .resizable .resize-handle[data-direction="bottom-left"] {
-  bottom: 0;
-  left: 0;
-  cursor: sw-resize;
-}
-.metaScore-editor .resizable .resize-handle[data-direction="bottom-right"] {
-  bottom: 0;
-  right: 0;
-  cursor: se-resize;
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 .metaScore-editor .timefield {
   display: inline-block;
@@ -309,7 +281,7 @@
   border-left: 1px solid #b2b2b2;
 }
 .metaScore-editor .sidebar .panel .toolbar {
-  padding: 8px;
+  padding: 5px;
   border-bottom: 1px solid #d7d7d7;
   background-color: #fefefe;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fefefe), color-stop(32% #fcfcfc), color-stop(36% #fafafa), color-stop(100% #f3f3f3));

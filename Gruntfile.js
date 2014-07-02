@@ -161,6 +161,7 @@ module.exports = function(grunt) {
     }
   });
   
+  // Register tasks
   grunt.registerTask('build', [
     'jshint:all',
     'clean:dist',
@@ -177,14 +178,11 @@ module.exports = function(grunt) {
   ]);
   
   grunt.registerTask('drupal', [
-    'build',
     'clean:drupal',
     'copy:drupal'
   ]);
   
-  // Register tasks
   grunt.registerTask('default', [
     'build'
-    //'test'
   ]);
 };

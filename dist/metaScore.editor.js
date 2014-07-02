@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-06-30 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-07-02 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -418,6 +418,7 @@ metaScore.Array.remove = function(arr, element){
  * @requires metaScore.var.js
  */
 metaScore.Dom = metaScore.Base.extend(function(){
+
   this.constructor = function() {
   
     var elements;
@@ -425,13 +426,18 @@ metaScore.Dom = metaScore.Base.extend(function(){
     this.elements = [];
     
     if(arguments.length > 0){
-      elements = metaScore.Dom.elementsFromString.apply(this, arguments) || metaScore.Dom.selectElements.apply(this, arguments);
-      
-      if(elements){
+      if(elements = metaScore.Dom.elementsFromString.apply(this, arguments)){
         this.add(elements);
         
         if(arguments.length > 1){
           this.attr(arguments[1]);
+        }
+      }
+      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){      
+        this.add(elements);
+        
+        if(arguments.length > 2){
+          this.attr(arguments[2]);
         }
       }
     }
@@ -446,6 +452,10 @@ metaScore.Dom = metaScore.Base.extend(function(){
     else{
       this.elements.push(elements);
     }
+  };
+  
+  this.count = function(){
+    return this.elements.length;
   };
   
   this.get = function(index){
@@ -509,9 +519,9 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.toggleClass = function(className) {  
+  this.toggleClass = function(className, force) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.toggleClass(element, className);
+      metaScore.Dom.toggleClass(element, className, force);
     }, this);        
     return this;        
   };
@@ -626,6 +636,20 @@ metaScore.Dom = metaScore.Base.extend(function(){
       metaScore.Dom.append(parent, element);
     }, this);
     
+    return this;
+  };
+  
+  this.show = function(){
+    metaScore.Array.each(this.elements, function(index, element) {
+      this.css('display', 'initial');
+    }, this);
+    return this;
+  };
+  
+  this.hide = function(){
+    metaScore.Array.each(this.elements, function(index, element) {
+      this.css('display', 'none');
+    }, this);
     return this;
   };
   
@@ -810,14 +834,15 @@ metaScore.Dom.removeClass = function(element, className){
 * Toggles a given class on an element
 * @param {object} the dom element
 * @param {string} the class(es) to toggle; separated by a space
+* @param {boolean} optional boolean; If true, the class will be added but not removed. If false, the class will be removed but not added.
 * @returns {void}
 */
-metaScore.Dom.toggleClass = function(element, className){
+metaScore.Dom.toggleClass = function(element, className, force){
   var classNames = className.split(" "),
     i = 0, l = classNames.length;
   
   for(; i<l; i++){
-    element.classList.toggle(classNames[i]);
+    element.classList.toggle(classNames[i], force);
   }
 };
 
@@ -1271,8 +1296,8 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       'handle': evt.target,
       'x': evt.clientX,
       'y': evt.clientY,
-      'left': parseInt(_target.css('left'), 10) - evt.clientX,
-      'top': parseInt(_target.css('top'), 10) - evt.clientY,
+      'left': parseInt(_target.css('left'), 10),
+      'top': parseInt(_target.css('top'), 10),
       'w': parseInt(_target.css('width'), 10),
       'h': parseInt(_target.css('height'), 10)
     };
@@ -1296,18 +1321,18 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       case 'top-left':
         w = _startState.w - evt.clientX + _startState.x;
         h = _startState.h - evt.clientY + _startState.y;
-        top = evt.clientY + _startState.top;
-        left = evt.clientX + _startState.left;
+        top = _startState.top + evt.clientY  - _startState.y;
+        left = _startState.left + evt.clientX - _startState.x;
         break;
       case 'top-right':
         w = _startState.w + evt.clientX - _startState.x;
         h = _startState.h - evt.clientY + _startState.y;
-        top = evt.clientY + _startState.top;
+        top = _startState.top + evt.clientY - _startState.y;
         break;
       case 'bottom-left':
         w = _startState.w - evt.clientX + _startState.x;
         h = _startState.h + evt.clientY - _startState.y;
-        left = evt.clientX + _startState.left;
+        left = _startState.left + evt.clientX - _startState.x;
         break;
       case 'bottom-right':
         w = _startState.w + evt.clientX - _startState.x;
@@ -1384,7 +1409,21 @@ metaScore.String.capitalize = function(str){
 * @param {object} string replacements
 * @returns {string} the translated string
 */
-metaScore.String.t = function(str){
+metaScore.String.t = function(str, args){
+  return metaScore.formatString(str, args);
+};
+
+/**
+* Replace placeholders with sanitized values in a string.
+* @param {string} the original string
+* @param {object} string replacements
+* @returns {string} the formatted string
+*/
+metaScore.formatString = function(str, args) {
+  metaScore.Object.each(args, function(key, value){
+    str = str.replace(key, args[key]);
+  }, this);
+  
   return str;
 };
 
@@ -1470,13 +1509,18 @@ metaScore.Var.is = function(obj, type) {
  *
  * @requires ../helpers/metaScore.dom.js
  * @requires metaScore.editor.mainmenu.js
- * @requires metaScore.editor.sidebar.js
+ * @requires panel/metaScore.editor.panel.block.js
+ * @requires panel/metaScore.editor.panel.page.js
+ * @requires panel/metaScore.editor.panel.element.js
  * @requires ../player/metaScore.player.js
  */
 metaScore.Editor = metaScore.Dom.extend(function(){
 
   var _workspace, _mainmenu,
-    _sidebar, _player, _grid;
+    _sidebar,
+    _block_panel, _page_panel, _element_panel,
+    _player_wrapper, _player_head, _player_body, _player,
+    _grid;
 
   this.constructor = function(selector) {
   
@@ -1488,43 +1532,98 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
     if(selector !== undefined){
       this.appendTo(selector);
-    }
-    
+    } 
   
     // add components
-    _workspace = new metaScore.Dom('<div/>', {'class': 'workspace'})
-      .appendTo(this);
-  
-    _mainmenu = new metaScore.Editor.MainMenu()
-      .appendTo(this);
-  
-    _sidebar = new metaScore.Editor.Sidebar()
-      .appendTo(this);
-      
-    _player = new metaScore.Player()
-      .appendTo(_workspace);
-  
-    _grid = new metaScore.Dom('<div/>', {'class': 'grid'})
-      .appendTo(_workspace);
+    
+    _workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);      
+    _mainmenu = new metaScore.Editor.MainMenu().appendTo(this);     
+    _sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);    
+    _block_panel = new metaScore.Editor.Panel.Block().appendTo(_sidebar);
+    _page_panel = new metaScore.Editor.Panel.Page().appendTo(_sidebar);
+    _element_panel = new metaScore.Editor.Panel.Element().appendTo(_sidebar);
+    _player_wrapper = new metaScore.Dom('<iframe/>', {'class': 'player-wrapper'}).appendTo(_workspace);
+    _player_head = new metaScore.Dom(_player_wrapper.get(0).contentDocument.head);
+    _player_body = new metaScore.Dom(_player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
+    _player = new metaScore.Player();
+    _grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(_workspace);
+    
+    // add styles
+    
+    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': 'dist/metaScore.player.css'}).appendTo(_player_head);
       
       
     // add event listeners
-    _sidebar.getPanel('block').getToolbar()
-      .addDelegate('.buttons .menu .new', 'click', function(evt){
-        var block = _player.addBlock();
-        _sidebar.getPanel('block').selectBlock(block);
+    
+    _block_panel
+      .addListener('blockunset', function(evt){
+        _page_panel.unsetPage();
       })
-      .addDelegate('.buttons .menu .delete', 'click', function(evt){
-        var block = _sidebar.getPanel('block').getBlock();
-        _player.deleteBlock(block);
-      });
-      
-    _player.addDelegate('.block .pager', 'click', function(evt){
-      var id = new metaScore.Dom(evt.target).parents('.block').attr('id'),
-        block = _player.getBlock(id);
+      .getToolbar()
+        .addDelegate('.buttons .menu li', 'click', function(evt){
+          var action = metaScore.Dom.data(evt.target, 'action'),
+            block;
         
-      _sidebar.getPanel('block').selectBlock(block);
-    });
+          switch(action){
+            case 'new':        
+              block = new metaScore.Player.Block().appendTo(_player_body);           
+              _player.addComponenet('block', block);
+              _block_panel.setBlock(block);
+              break;
+              
+            case 'delete':
+              _block_panel.getBlock().remove();
+              break;
+          }
+          
+          evt.stopPropagation();
+        });
+    
+    _page_panel
+      .addListener('pageset', function(evt){
+        _page_panel.enableFields();
+        
+        evt.stopPropagation();
+      })
+      .addListener('pageunset', function(evt){
+        _page_panel.disableFields();
+        
+        evt.stopPropagation();
+      })
+      .getToolbar()
+        .addDelegate('.buttons .menu li', 'click', function(evt){
+          var action = metaScore.Dom.data(evt.target, 'action'),
+            page;
+            
+          switch(action){
+            case 'new':        
+              page = _block_panel.getBlock().addPage();                
+              _player.addComponenet('page', page);
+              _page_panel.setPage(page);
+              break;
+              
+            case 'delete':
+              _page_panel.getPage().remove();
+              break;
+          }
+          
+          evt.stopPropagation();
+        });
+    
+    
+    _player_body
+      .addListener('click', function(evt){        
+        _block_panel.unsetBlock();
+        
+        evt.stopPropagation();
+      })
+      .addDelegate('.metaScore-block .pager', 'click', function(evt){
+        var id = new metaScore.Dom(evt.target).parents('.metaScore-block').attr('id');
+        
+        _block_panel.setBlock(_player.getComponenetById('block', id));
+        
+        evt.stopPropagation();
+      });
     
   };
 });
@@ -1939,7 +2038,8 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
  */
 metaScore.Editor.Panel = metaScore.Dom.extend(function(){
 
-  var _toolbar, _fields = {};
+  var _toolbar, _contents,
+    _fields = {};
 
   this.defaults = {
     /**
@@ -1965,7 +2065,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     _toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
     
-    this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
+    _contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
       
     this.setupFields();
@@ -1978,7 +2078,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(this.contents);
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(_contents);
     
       field_uuid = 'field-'+ metaScore.String.uuid(5);
       
@@ -2008,47 +2108,26 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
   };
   
+  this.enableFields = function(){
+  
+    metaScore.Object.each(_fields, function(key, field){
+      field.enable();
+    }, this);
+    
+  };
+  
+  this.disableFields = function(){
+  
+    metaScore.Object.each(_fields, function(key, field){
+      field.disable();
+    }, this);
+    
+  };
+  
   this.toggleState = function(){
     
     this.toggleClass('collapsed');
     
-  };
-});
-/**
- * Sidebar
- *
- * @requires panel/metaScore.editor.panel.block.js
- * @requires panel/metaScore.editor.panel.page.js
- * @requires panel/metaScore.editor.panel.element.js
- * @requires panel/metaScore.editor.panel.text.js
- * @requires ../helpers/metaScore.dom.js
- */
-metaScore.Editor.Sidebar = metaScore.Dom.extend(function(){
-
-  var _panels = {};
-
-  this.constructor = function() {
-  
-    this.super('<div/>', {'class': 'sidebar'});
-  
-    _panels.block = new metaScore.Editor.Panel.Block()
-      .appendTo(this);
-  
-    _panels.page = new metaScore.Editor.Panel.Page()
-      .appendTo(this);
-  
-    _panels.element = new metaScore.Editor.Panel.Element()
-      .appendTo(this);
-  
-    _panels.text = new metaScore.Editor.Panel.Text()
-      .appendTo(this);
-   
-  };
-  
-  this.getPanel = function(panel){
-  
-    return _panels[panel];
-  
   };
 });
 /**
@@ -2348,6 +2427,10 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   };
   
   this.onClick = function(evt){
+  
+    if(this.disabled){
+      return;
+    }
   
     previous_value = metaScore.Object.copy(this.value);
     
@@ -2912,7 +2995,8 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
  * @requires ../field/metaScore.editor.field.colorfield.js
  * @requires ../field/metaScore.editor.field.imagefield.js
  * @requires ../field/metaScore.editor.field.booleanfield.js
- * @requires ../../helpers/metaScore.draggable.js
+ * @requires ../../helpers/metaScore.string.js
+ * @requires ../../helpers/metaScore.resizable.js
  * @requires ../../helpers/metaScore.resizable.js
  */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
@@ -2923,7 +3007,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     /**
     * The panel's title
     */
-    title: 'Block',
+    title: metaScore.String.t('Block'),
     
     /**
     * The panel's fields
@@ -2931,31 +3015,31 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     fields: {
       'x': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'X'
+        'label': metaScore.String.t('X')
       },
       'y': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Y'
+        'label': metaScore.String.t('Y')
       },
       'width': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Width'
+        'label': metaScore.String.t('Width')
       },
       'height': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Height'
+        'label': metaScore.String.t('Height')
       },
       'bg_color': {
         'type': metaScore.Editor.Field.ColorField,
-        'label': 'Background color'
+        'label': metaScore.String.t('Background color')
       },
       'bg_image': {
         'type': metaScore.Editor.Field.ImageField,
-        'label': 'Background image'
+        'label': metaScore.String.t('Background image')
       },
       'synched': {
         'type': metaScore.Editor.Field.BooleanField,
-        'label': 'Synchronized pages ?'
+        'label': metaScore.String.t('Synchronized pages ?')
       }
     }
   };
@@ -2970,46 +3054,14 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     this.super(configs);
     
     _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': 'Add a new block', 'class': 'new'});
-    _menu.addItem({'text': 'Delete the active block', 'class': 'delete'});
+    _menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
+    _menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
     
     this.getToolbar().addButton()
       .addClass('menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', function(evt){
-      var field = evt.detail.field,
-        value = evt.detail.value;
-        
-      if(!_block){
-        return;
-      }
-    
-      switch(field.data('name')){
-        case 'x':
-          _block.css('left', value +'px');
-          break;
-        case 'y':
-          _block.css('top', value +'px');
-          break;
-        case 'width':
-          _block.css('width', value +'px');
-          break;
-        case 'height':
-          _block.css('height', value +'px');
-          break;
-        case 'bg_color':
-          _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-          break;
-        case 'bg_image':
-          // TODO
-          break;
-        case 'synched':
-          _block.data('synched', value);
-          break;
-      }
-      
-    });
+    this.addDelegate('.field', 'change', this.onFieldChange);
     
   };
   
@@ -3019,13 +3071,17 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.selectBlock = function(new_block){
+  this.getBlock = function(){
   
-    var old_block = _block;
+    return _block;
+  
+  };
+  
+  this.setBlock = function(block){
     
-    _block = new_block;
-  
-    this.unSelectBlock(old_block);
+    this.unsetBlock(_block);
+    
+    _block = block;
     
     if(!_block._draggable){
       new metaScore.Draggable(_block, _block.children('.pager'), _block.parents());
@@ -3043,10 +3099,16 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       .addClass('selected');
     
     this.updateValues();
+      
+    this.enableFields();
+      
+    this.triggerEvent('blockset', {'block': _block});
     
   };
   
-  this.unSelectBlock = function(block){
+  this.unsetBlock = function(block){
+  
+    block = block || this.getBlock();
   
     if(!block){
       return;
@@ -3063,6 +3125,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       .removeListener('drag', this.onBlockDrag)
       .removeListener('resize', this.onBlockResize)
       .removeClass('selected');
+      
+    this.disableFields();
+      
+    this.triggerEvent('blockunset', {'block': block});
     
   };
   
@@ -3072,6 +3138,39 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   this.onBlockResize = function(evt){  
     this.updateValues(['x', 'y', 'width', 'height']);
+  };
+  
+  this.onFieldChange = function(evt){  
+    var field = evt.detail.field,
+      value = evt.detail.value;
+      
+    if(!_block){
+      return;
+    }
+  
+    switch(field.data('name')){
+      case 'x':
+        _block.css('left', value +'px');
+        break;
+      case 'y':
+        _block.css('top', value +'px');
+        break;
+      case 'width':
+        _block.css('width', value +'px');
+        break;
+      case 'height':
+        _block.css('height', value +'px');
+        break;
+      case 'bg_color':
+        _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg_image':
+        // TODO
+        break;
+      case 'synched':
+        _block.data('synched', value);
+        break;
+    }
   };
   
   this.updateValue = function(name){
@@ -3099,8 +3198,6 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'synched':
         field.setChecked(_block.data('synched') === "true");
         break;
-      default:
-        return;
     }
   };
   
@@ -3113,12 +3210,6 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     metaScore.Object.each(fields, function(key, field){
       this.updateValue(field);
     }, this);
-  
-  };
-  
-  this.getBlock = function(){
-  
-    return _block;
   
   };
   
@@ -3136,11 +3227,13 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
  */
 metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
 
+  var _menu, _element;
+
   this.defaults = {
     /**
     * The panel's title
     */
-    title: 'Element',
+    title: metaScore.String.t('Element'),
     
     /**
     * The panel's fields
@@ -3148,60 +3241,170 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     fields: {
       'x': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'X'
+        'label': metaScore.String.t('X')
       },
       'y': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Y'
+        'label': metaScore.String.t('Y')
       },
       'width': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Width'
+        'label': metaScore.String.t('Width')
       },
       'height': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Height'
+        'label': metaScore.String.t('Height')
       },
       'r_index': {
         'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Reading index'),
         'configs': {
           'min': 0
-        },
-        'label': 'Reading index'
+        }
       },
       'z_index': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Display index'
+        'label': metaScore.String.t('Display index')
       },
       'bg_color': {
         'type': metaScore.Editor.Field.ColorField,
-        'label': 'Background color'
+        'label': metaScore.String.t('Background color')
       },
       'bg_image': {
         'type': metaScore.Editor.Field.ImageField,
-        'label': 'Background image'
+        'label': metaScore.String.t('Background image')
       },
       'border_width': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Border width'
+        'label': metaScore.String.t('Border width')
       },
       'border_color': {
         'type': metaScore.Editor.Field.ColorField,
-        'label': 'Border color'
+        'label': metaScore.String.t('Border color')
       },
       'rounded_conrners': {
         'type': metaScore.Editor.Field.CornerField,
-        'label': 'Rounded conrners'
+        'label': metaScore.String.t('Rounded conrners')
       },
       'start_time': {
         'type': metaScore.Editor.Field.TimeField,
-        'label': 'Start time'
+        'label': metaScore.String.t('Start time')
       },
       'end_time': {
         'type': metaScore.Editor.Field.TimeField,
-        'label': 'End time'
+        'label': metaScore.String.t('End time')
       }
     }
+  };
+  
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    this.super(configs);
+    
+    _menu = new metaScore.Editor.DropDownMenu();
+    _menu.addItem({'text': metaScore.String.t('Add a new cursor'), 'data-action': 'new-cusror'});
+    _menu.addItem({'text': metaScore.String.t('Add a new image'), 'data-action': 'new-image'});
+    _menu.addItem({'text': metaScore.String.t('Add a new text element'), 'data-action': 'new-text'});
+    _menu.addItem({'text': metaScore.String.t('Delete the active element'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .addClass('menu')
+      .append(_menu);
+      
+    this.addDelegate('.field', 'change', this.onFieldChange);
+    
+  };
+  
+  this.getMenu = function(){
+  
+    return _menu;
+  
+  };
+  
+  this.getElement = function(){
+  
+    return _element;
+  
+  };
+  
+  this.setElement = function(element){
+    
+    this.unsetElement(_element);
+    
+    _element = element;
+    
+    _element.addClass('selected');
+    
+    this.updateValues();
+      
+    this.enableFields();
+      
+    this.triggerEvent('elementset', {'element': _element});
+    
+  };
+  
+  this.unsetElement = function(element){
+  
+    element = element || this.getElement();
+  
+    if(!element){
+      return;
+    }
+  
+    element.removeClass('selected');
+      
+    this.disableFields();
+      
+    this.triggerEvent('elementunset', {'element': element});
+    
+  };
+  
+  this.onFieldChange = function(evt){  
+    var field = evt.detail.field,
+      value = evt.detail.value;
+      
+    if(!_element){
+      return;
+    }
+  
+    switch(field.data('name')){
+      case 'bg_color':
+        _element.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg_image':
+        // TODO
+        break;
+    }
+  };
+  
+  this.updateValue = function(name){
+    var field = this.getField(name);
+    
+    switch(name){
+      case 'bg_color':
+        field.setValue(_element.css('background-color'));
+        break;
+      case 'bg_image':
+        // TODO
+        break;
+    }
+  };
+  
+  this.updateValues = function(fields){
+  
+    if(fields === undefined){
+      fields = Object.keys(this.getField());
+    }
+    
+    metaScore.Object.each(fields, function(key, field){
+      this.updateValue(field);
+    }, this);
+  
   };
   
   
@@ -3213,14 +3416,17 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
  * @requires ../field/metaScore.editor.field.colorfield.js
  * @requires ../field/metaScore.editor.field.imagefield.js
  * @requires ../field/metaScore.editor.field.timefield.js
+ * @requires ../../helpers/metaScore.string.js
  */
 metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
+
+  var _menu, _page;
 
   this.defaults = {
     /**
     * The panel's title
     */
-    title: 'Page',
+    title: metaScore.String.t('Page'),
     
     /**
     * The panel's fields
@@ -3228,57 +3434,129 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     fields: {
       'bg_color': {
         'type': metaScore.Editor.Field.ColorField,
-        'label': 'Background color'
+        'label': metaScore.String.t('Background color')
       },
       'bg_image': {
         'type': metaScore.Editor.Field.ImageField,
-        'label': 'Background image'
+        'label': metaScore.String.t('Background image')
       },
       'start_time': {
         'type': metaScore.Editor.Field.TimeField,
-        'label': 'Start time'
+        'label': metaScore.String.t('Start time')
       },
       'end_time': {
         'type': metaScore.Editor.Field.TimeField,
-        'label': 'End time'
+        'label': metaScore.String.t('End time')
       }
     }
   };
   
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
   
-});
-/**
- * Text
- *
- * @requires ../metaScore.editor.panel.js
- * @requires ../field/metaScore.editor.field.integerfield.js
- * @requires ../field/metaScore.editor.field.timefield.js
- */
-metaScore.Editor.Panel.Text = metaScore.Editor.Panel.extend(function(){
-
-  this.defaults = {
-    /**
-    * The panel's title
-    */
-    title: 'Text',
+    this.super(configs);
     
-    /**
-    * The panel's fields
-    */
-    fields: {
-      'x': {
-        'type': metaScore.Editor.Field.IntegerField,
-        'label': 'X'
-      },
-      'y': {
-        'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Y'
-      },
-      'endtime': {
-        'type': metaScore.Editor.Field.TimeField,
-        'label': 'End time'
-      }
+    _menu = new metaScore.Editor.DropDownMenu();
+    _menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
+    _menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .addClass('menu')
+      .append(_menu);
+      
+    this.addDelegate('.field', 'change', this.onFieldChange);
+    
+  };
+  
+  this.getMenu = function(){
+  
+    return _menu;
+  
+  };
+  
+  this.getPage = function(){
+  
+    return _page;
+  
+  };
+  
+  this.setPage = function(page){
+    
+    this.unsetPage(_page);
+    
+    _page = page;
+    
+    _page.addClass('selected');
+    
+    this.updateValues();
+      
+    this.enableFields();
+      
+    this.triggerEvent('pageset', {'page': _page});
+    
+  };
+  
+  this.unsetPage = function(page){
+  
+    page = page || this.getPage();
+  
+    if(!page){
+      return;
     }
+  
+    page.removeClass('selected');
+      
+    this.disableFields();
+      
+    this.triggerEvent('pageunset', {'page': page});
+    
+  };
+  
+  this.onFieldChange = function(evt){  
+    var field = evt.detail.field,
+      value = evt.detail.value;
+      
+    if(!_page){
+      return;
+    }
+  
+    switch(field.data('name')){
+      case 'bg_color':
+        _page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg_image':
+        // TODO
+        break;
+    }
+  };
+  
+  this.updateValue = function(name){
+    var field = this.getField(name);
+    
+    switch(name){
+      case 'bg_color':
+        field.setValue(_page.css('background-color'));
+        break;
+      case 'bg_image':
+        // TODO
+        break;
+    }
+  };
+  
+  this.updateValues = function(fields){
+  
+    if(fields === undefined){
+      fields = Object.keys(this.getField());
+    }
+    
+    metaScore.Object.each(fields, function(key, field){
+      this.updateValue(field);
+    }, this);
+  
   };
   
   
@@ -3286,61 +3564,61 @@ metaScore.Editor.Panel.Text = metaScore.Editor.Panel.extend(function(){
 /**
  * Player
  *
- * @requires ../helpers/metaScore.dom.js
- * @requires metaScore.player.block.js
+ * @requires ../metaScore.base.js
  */
-metaScore.Player = metaScore.Dom.extend(function(){
+metaScore.Player = metaScore.Base.extend(function(){
 
-  var _blocks;
+  var _componenets;
 
-  this.constructor = function(selector) {
+  this.constructor = function() {
   
-    _blocks = {};
+    _componenets = {};
   
-    this.super('<div/>', {'class': 'metaScore-player'});
-    
-    if(DEBUG){
-      metaScore.Player.instance = this;
-    }
-    
-    if(selector !== undefined){
-      this.appendTo(selector);
-    }
-    
   };
   
-  this.addBlock = function(configs){
-    
-    var block, id;
-    
-    block = new metaScore.Player.Block(configs)
-      .appendTo(this);
-      
-    id = block.attr('id');
-    
-    _blocks[id] = block;
-    
-    return block;
-    
+  this.addComponenet = function(type, componenet){
+  
+    var id = componenet.attr('id');
+  
+    if(!_componenets.hasOwnProperty(type)){
+      _componenets[type] = {};
+    }
+  
+    _componenets[type][id] = componenet;
+  
   };
   
-  this.getBlock = function(id){
+  this.getComponenetById = function(type, id){
     
-    return _blocks[id];
-    
-  };
-  
-  this.deleteBlock = function(block){
-    
-    var id;
-    
-    if(block){
-      id = block.attr('id');
-    
-      block.remove();      
-      delete _blocks[id];
+    if(_componenets.hasOwnProperty(type) && _componenets[type].hasOwnProperty(id)){
+      return _componenets[type][id];
     }
     
+    return undefined;
+  
+  };
+  
+  this.getComponenetByElement = function(type, element){
+    
+    return this.getComponenetById(type, metaScore.Dom.attr(element, 'id'));
+  
+  };
+  
+  this.getComponenetBySelector = function(type, selector){
+  
+    var componenet;
+  
+    if(_componenets.hasOwnProperty(type)){
+      metaScore.Object.each(_componenets[type], function(key, value){
+        if(value.is(selector)){
+          componenet = value;
+          return false;
+        }
+      }, this);
+    }
+    
+    return componenet;
+  
   };
   
 });
@@ -3354,61 +3632,45 @@ metaScore.Player = metaScore.Dom.extend(function(){
  */
 metaScore.Player.Block = metaScore.Dom.extend(function(){
   
-  var _pager, _pages;
+  var _pages, _pager;
 
-  this.constructor = function(selector) {
+  this.constructor = function(element) {
   
-    this.super('<div/>', {'class': 'block', 'id': metaScore.String.uuid(5)});
-  
-    _pages = [];
+    if(element){
+      this.super(element);
+    }
+    else{
+      this.super('<div/>', {'class': 'metaScore-block', 'id': metaScore.String.uuid(5)});
+    }
     
-    _pager = new metaScore.Player.Pager()
-      .appendTo(this);
+    _pages = this.children('pages');
+    if(_pages.count() === 0){
+      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}) .appendTo(this);
+    }
+    
+    _pager = this.children('page');
+    if(_pager.count() === 0){
+      _pager = new metaScore.Player.Pager() .appendTo(this);
+    }
     
   };
   
   this.addPage = function(configs){
   
     var page = new metaScore.Player.Page(configs)
-      .appendTo(this);
-  
-    _pages.push(page);
+      .appendTo(_pages);
+      
+    this.updatePagerCount();
     
     return page;
   
   };
   
-  this.setProperty = function(name, value){
+  this.updatePagerCount = function(){
   
-    switch(name){
-      case 'x':
-        this.css('left', value +'px');
-        break;
-        
-      case 'y':
-        this.css('top', value +'px');
-        break;
-        
-      case 'width':
-        this.css('width', value +'px');
-        break;
-        
-      case 'height':
-        this.css('height', value +'px');
-        break;
-        
-      case 'bg-color':
-        this.css('background-color', value);
-        break;
-        
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
-        break;
-        
-      case 'synched':
-        this.data('synched', value);
-        break;
-    }
+    var page_count = _pages.children('page').count();
+  
+    _pager.updateCount(page_count);
   
   };
 });
@@ -3556,6 +3818,16 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
     _buttons.next = new metaScore.Dom('<div/>', {'class': 'next'})
       .appendTo(_buttons);
     
+  };
+  
+  this.updateCount = function(index, total){
+  
+    _count.text(metaScore.String.t('page !current/!total', {'!current': index + 1, '!total': total}));
+    
+    _buttons.first.toggleClass('inactive', index === 0);
+    _buttons.previous.toggleClass('inactive', index === 0);
+    _buttons.next.toggleClass('inactive', index >= total - 1);
+  
   };
   
 });

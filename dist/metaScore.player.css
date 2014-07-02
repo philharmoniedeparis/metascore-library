@@ -75,11 +75,11 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
-.metaScore-player .block {
+.metaScore-block {
   position: absolute;
   top: 0;
   left: 0;
-  min-width: 100px;
+  min-width: 200px;
   min-height: 100px;
   overflow: hidden;
   color: #424242;
@@ -90,13 +90,8 @@
   border-radius: 10px;
   border: 1px solid #ccc;
 }
-.metaScore-player .block.selected {
-  border: 1px solid #0000fe;
-  -webkit-box-shadow: #0000fe 0px 0px 6px 0px;
-  -moz-box-shadow: #0000fe 0px 0px 6px 0px;
-  box-shadow: #0000fe 0px 0px 6px 0px;
-}
-.metaScore-player .block .pager {
+.metaScore-block .pager {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -106,8 +101,96 @@
   border-radius: 10px 10px 0 0;
   text-align: right;
 }
-.metaScore-player .block .page {
+.metaScore-block .pager .count {
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: top;
+  color: #636363;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 20px;
+}
+.metaScore-block .pager .buttons {
+  display: inline-block;
+  vertical-align: top;
+}
+.metaScore-block .pager .buttons div {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin: 1px 2px;
+  background: #ffffff url('img/player/pager-buttons.png') no-repeat;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+.metaScore-block .pager .buttons div.first {
+  background-position: 4px 4px;
+}
+.metaScore-block .pager .buttons div.first.inactive {
+  background-position: 4px -14px;
+}
+.metaScore-block .pager .buttons div.previous {
+  background-position: -14px 4px;
+}
+.metaScore-block .pager .buttons div.previous.inactive {
+  background-position: -14px -14px;
+}
+.metaScore-block .pager .buttons div.next {
+  background-position: -33px 4px;
+}
+.metaScore-block .pager .buttons div.next.inactive {
+  background-position: -33px -14px;
+}
+.metaScore-block .page {
   position: absolute;
   width: 100%;
   height: 100%;
+}
+.metaScore-block.selected {
+  border: 1px solid #0000fe;
+  -webkit-box-shadow: #0000fe 0px 0px 6px 0px;
+  -moz-box-shadow: #0000fe 0px 0px 6px 0px;
+  box-shadow: #0000fe 0px 0px 6px 0px;
+}
+.metaScore-block:hover .pager {
+  display: block;
+}
+.metaScore-player-wrapper div {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.metaScore-player-wrapper .draggable.dragging {
+  cursor: move;
+}
+.metaScore-player-wrapper .resizable .resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  z-index: 9999;
+}
+.metaScore-player-wrapper .resizable .resize-handle[data-direction="top-left"] {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+}
+.metaScore-player-wrapper .resizable .resize-handle[data-direction="top-right"] {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+}
+.metaScore-player-wrapper .resizable .resize-handle[data-direction="bottom-left"] {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+}
+.metaScore-player-wrapper .resizable .resize-handle[data-direction="bottom-right"] {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
 }

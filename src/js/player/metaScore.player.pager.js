@@ -28,4 +28,14 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
     
   };
   
+  this.updateCount = function(index, total){
+  
+    _count.text(metaScore.String.t('page !current/!total', {'!current': index + 1, '!total': total}));
+    
+    _buttons.first.toggleClass('inactive', index === 0);
+    _buttons.previous.toggleClass('inactive', index === 0);
+    _buttons.next.toggleClass('inactive', index >= total - 1);
+  
+  };
+  
 });

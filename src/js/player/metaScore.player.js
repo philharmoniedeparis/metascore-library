@@ -1,61 +1,61 @@
 /**
  * Player
  *
- * @requires ../helpers/metaScore.dom.js
- * @requires metaScore.player.block.js
+ * @requires ../metaScore.base.js
  */
-metaScore.Player = metaScore.Dom.extend(function(){
+metaScore.Player = metaScore.Base.extend(function(){
 
-  var _blocks;
+  var _componenets;
 
-  this.constructor = function(selector) {
+  this.constructor = function() {
   
-    _blocks = {};
+    _componenets = {};
   
-    this.super('<div/>', {'class': 'metaScore-player'});
-    
-    if(DEBUG){
-      metaScore.Player.instance = this;
-    }
-    
-    if(selector !== undefined){
-      this.appendTo(selector);
-    }
-    
   };
   
-  this.addBlock = function(configs){
-    
-    var block, id;
-    
-    block = new metaScore.Player.Block(configs)
-      .appendTo(this);
-      
-    id = block.attr('id');
-    
-    _blocks[id] = block;
-    
-    return block;
-    
+  this.addComponenet = function(type, componenet){
+  
+    var id = componenet.attr('id');
+  
+    if(!_componenets.hasOwnProperty(type)){
+      _componenets[type] = {};
+    }
+  
+    _componenets[type][id] = componenet;
+  
   };
   
-  this.getBlock = function(id){
+  this.getComponenetById = function(type, id){
     
-    return _blocks[id];
-    
-  };
-  
-  this.deleteBlock = function(block){
-    
-    var id;
-    
-    if(block){
-      id = block.attr('id');
-    
-      block.remove();      
-      delete _blocks[id];
+    if(_componenets.hasOwnProperty(type) && _componenets[type].hasOwnProperty(id)){
+      return _componenets[type][id];
     }
     
+    return undefined;
+  
+  };
+  
+  this.getComponenetByElement = function(type, element){
+    
+    return this.getComponenetById(type, metaScore.Dom.attr(element, 'id'));
+  
+  };
+  
+  this.getComponenetBySelector = function(type, selector){
+  
+    var componenet;
+  
+    if(_componenets.hasOwnProperty(type)){
+      metaScore.Object.each(_componenets[type], function(key, value){
+        if(value.is(selector)){
+          componenet = value;
+          return false;
+        }
+      }, this);
+    }
+    
+    return componenet;
+  
   };
   
 });

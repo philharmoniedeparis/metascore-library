@@ -6,7 +6,8 @@
  * @requires ../field/metaScore.editor.field.colorfield.js
  * @requires ../field/metaScore.editor.field.imagefield.js
  * @requires ../field/metaScore.editor.field.booleanfield.js
- * @requires ../../helpers/metaScore.draggable.js
+ * @requires ../../helpers/metaScore.string.js
+ * @requires ../../helpers/metaScore.resizable.js
  * @requires ../../helpers/metaScore.resizable.js
  */
 metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
@@ -17,7 +18,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     /**
     * The panel's title
     */
-    title: 'Block',
+    title: metaScore.String.t('Block'),
     
     /**
     * The panel's fields
@@ -25,31 +26,31 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     fields: {
       'x': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'X'
+        'label': metaScore.String.t('X')
       },
       'y': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Y'
+        'label': metaScore.String.t('Y')
       },
       'width': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Width'
+        'label': metaScore.String.t('Width')
       },
       'height': {
         'type': metaScore.Editor.Field.IntegerField,
-        'label': 'Height'
+        'label': metaScore.String.t('Height')
       },
       'bg_color': {
         'type': metaScore.Editor.Field.ColorField,
-        'label': 'Background color'
+        'label': metaScore.String.t('Background color')
       },
       'bg_image': {
         'type': metaScore.Editor.Field.ImageField,
-        'label': 'Background image'
+        'label': metaScore.String.t('Background image')
       },
       'synched': {
         'type': metaScore.Editor.Field.BooleanField,
-        'label': 'Synchronized pages ?'
+        'label': metaScore.String.t('Synchronized pages ?')
       }
     }
   };
@@ -64,46 +65,14 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     this.super(configs);
     
     _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': 'Add a new block', 'class': 'new'});
-    _menu.addItem({'text': 'Delete the active block', 'class': 'delete'});
+    _menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
+    _menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
     
     this.getToolbar().addButton()
       .addClass('menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', function(evt){
-      var field = evt.detail.field,
-        value = evt.detail.value;
-        
-      if(!_block){
-        return;
-      }
-    
-      switch(field.data('name')){
-        case 'x':
-          _block.css('left', value +'px');
-          break;
-        case 'y':
-          _block.css('top', value +'px');
-          break;
-        case 'width':
-          _block.css('width', value +'px');
-          break;
-        case 'height':
-          _block.css('height', value +'px');
-          break;
-        case 'bg_color':
-          _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-          break;
-        case 'bg_image':
-          // TODO
-          break;
-        case 'synched':
-          _block.data('synched', value);
-          break;
-      }
-      
-    });
+    this.addDelegate('.field', 'change', this.onFieldChange);
     
   };
   
@@ -113,13 +82,17 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.selectBlock = function(new_block){
+  this.getBlock = function(){
   
-    var old_block = _block;
+    return _block;
+  
+  };
+  
+  this.setBlock = function(block){
     
-    _block = new_block;
-  
-    this.unSelectBlock(old_block);
+    this.unsetBlock(_block);
+    
+    _block = block;
     
     if(!_block._draggable){
       new metaScore.Draggable(_block, _block.children('.pager'), _block.parents());
@@ -137,10 +110,16 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       .addClass('selected');
     
     this.updateValues();
+      
+    this.enableFields();
+      
+    this.triggerEvent('blockset', {'block': _block});
     
   };
   
-  this.unSelectBlock = function(block){
+  this.unsetBlock = function(block){
+  
+    block = block || this.getBlock();
   
     if(!block){
       return;
@@ -157,6 +136,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       .removeListener('drag', this.onBlockDrag)
       .removeListener('resize', this.onBlockResize)
       .removeClass('selected');
+      
+    this.disableFields();
+      
+    this.triggerEvent('blockunset', {'block': block});
     
   };
   
@@ -166,6 +149,39 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   this.onBlockResize = function(evt){  
     this.updateValues(['x', 'y', 'width', 'height']);
+  };
+  
+  this.onFieldChange = function(evt){  
+    var field = evt.detail.field,
+      value = evt.detail.value;
+      
+    if(!_block){
+      return;
+    }
+  
+    switch(field.data('name')){
+      case 'x':
+        _block.css('left', value +'px');
+        break;
+      case 'y':
+        _block.css('top', value +'px');
+        break;
+      case 'width':
+        _block.css('width', value +'px');
+        break;
+      case 'height':
+        _block.css('height', value +'px');
+        break;
+      case 'bg_color':
+        _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg_image':
+        // TODO
+        break;
+      case 'synched':
+        _block.data('synched', value);
+        break;
+    }
   };
   
   this.updateValue = function(name){
@@ -193,8 +209,6 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'synched':
         field.setChecked(_block.data('synched') === "true");
         break;
-      default:
-        return;
     }
   };
   
@@ -207,12 +221,6 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     metaScore.Object.each(fields, function(key, field){
       this.updateValue(field);
     }, this);
-  
-  };
-  
-  this.getBlock = function(){
-  
-    return _block;
   
   };
   
