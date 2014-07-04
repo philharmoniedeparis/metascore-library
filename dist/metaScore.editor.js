@@ -169,6 +169,62 @@ if(Element){
   })(Element.prototype);
 }
 /**
+ * Undo
+ *
+ * @requires metaScore.base.js
+ */
+ 
+metaScore.Evented = metaScore.Base.extend(function(){
+
+  var _listeners = {};
+  
+  this.addListener = function(type, listener){
+    if (typeof _listeners[type] === "undefined"){
+      _listeners[type] = [];
+    }
+
+    _listeners[type].push(listener);
+    
+    return this;
+  };
+
+  this.removeListener = function(type, listener){
+    if(_listeners[type] instanceof Array){
+      var listeners = _listeners[type];
+      for (var i=0, len=listeners.length; i < len; i++){
+        if (listeners[i] === listener){
+          listeners.splice(i, 1);
+          break;
+        }
+      }
+    }
+    
+    return this;
+  };
+
+  this.triggerEvent = function(type, data, bubbling, cancelable){
+    var listeners, event;
+
+    if (_listeners[type] instanceof Array){
+      listeners = _listeners[type];
+      
+      event = {
+        'target': this,
+        'type': type,
+        'detail': data,
+        'bubbles': bubbling !== false,
+        'cancelable': cancelable !== false
+      };
+      
+      metaScore.Object.each(listeners, function(index, listener){
+        listener.call(this, event);
+      }, this);
+    }
+    
+    return this;
+  };
+});
+/**
  * Ajax
  *
  * @requires ../metaScore.base.js
@@ -601,11 +657,11 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.triggerEvent = function(type, data, bubbling, cancelable){
+  this.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
   
     metaScore.Array.each(this.elements, function(index, element) {
-      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable) && return_value;
+      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
     }, this);
     
     return return_value;
@@ -979,11 +1035,11 @@ metaScore.Dom.removeListener = function(element, type, callback, useCapture){
 * @param {boolean} whether the event is cancelable
 * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
 */
-metaScore.Dom.triggerEvent = function(element, type, data, bubbling, cancelable){  
+metaScore.Dom.triggerEvent = function(element, type, data, bubbles, cancelable){  
   var event = new CustomEvent(type, {
-    detail: data,
-    bubbles: bubbling !== false,
-    cancelable: cancelable !== false
+    'detail': data,
+    'bubbles': bubbles !== false,
+    'cancelable': cancelable !== false
   });
   
   return element.dispatchEvent(event);
@@ -1167,7 +1223,9 @@ metaScore.Draggable = metaScore.Base.extend(function(){
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
     
-    _target.addClass('dragging');
+    _target
+      .addClass('dragging')
+      .triggerEvent('dragstart', null, false, true);
     
     evt.stopPropagation();
     
@@ -1193,7 +1251,9 @@ metaScore.Draggable = metaScore.Base.extend(function(){
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
     
-    _target.removeClass('dragging'); 
+    _target
+      .removeClass('dragging')
+      .triggerEvent('dragend', null, false, true);
     
     evt.stopPropagation();
     
@@ -1383,7 +1443,9 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       .addListener('mousemove', this.onMouseMove)
       .addListener('mouseup', this.onMouseUp);
     
-    _target.addClass('resizing');
+    _target
+      .addClass('resizing')
+      .triggerEvent('resizestart', null, false, true);
     
     evt.stopPropagation();
       
@@ -1439,7 +1501,9 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
     
-    _target.removeClass('resizing');
+    _target
+      .removeClass('resizing')
+      .triggerEvent('resizeend', null, false, true);
     
     evt.stopPropagation();
   };
@@ -1601,6 +1665,7 @@ metaScore.Var.is = function(obj, type) {
  * Editor
  *
  * @requires ../helpers/metaScore.dom.js
+ * @requires metaScore.editor.history.js
  * @requires metaScore.editor.mainmenu.js
  * @requires panel/metaScore.editor.panel.block.js
  * @requires panel/metaScore.editor.panel.page.js
@@ -1613,7 +1678,7 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     _sidebar,
     _block_panel, _page_panel, _element_panel,
     _player_wrapper, _player_head, _player_body, _player,
-    _grid;
+    _grid, _history;
 
   this.constructor = function(selector) {
   
@@ -1640,6 +1705,7 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     _player_body = new metaScore.Dom(_player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
     _player = new metaScore.Player();
     _grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(_workspace);
+    _history = new metaScore.Editor.History();
     
     // add styles
     
@@ -1648,9 +1714,41 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       
     // add event listeners
     
+    _mainmenu
+      .addDelegate('button[data-action]:not(.disabled)', 'click', function(evt){
+        switch(metaScore.Dom.data(evt.target, 'action')){
+          case 'new':
+            break;
+          case 'open':
+            break;
+          case 'save':
+            break;
+          case 'download':
+            break;
+          case 'delete':
+            break;
+          case 'revert':
+            break;
+          case 'undo':
+            _history.undo();
+            break;
+          case 'redo':
+            _history.redo();
+            break;
+          case 'edit':
+            break;
+          case 'settings':
+            break;
+          case 'help':
+            break;
+        }
+      }, this);
+    
     _block_panel
       .addListener('blockset', function(evt){
-        _page_panel.setPage(evt.detail.block.getActivePage(), true);
+        var block = evt.detail.block;
+        
+        _page_panel.setPage(block.getActivePage(), true);
         _page_panel.getMenu().enableItems('[data-action="new"]');
         _element_panel.getMenu().enableItems('[data-action="new"]');
           
@@ -1661,6 +1759,16 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         _page_panel.getMenu().disableItems('[data-action="new"]');
           
         evt.stopPropagation();
+      })
+      .addListener('valueschange', function(evt){
+        var block = evt.detail.block,
+          old_values = evt.detail.old_values,
+          new_values = evt.detail.new_values;
+         
+        _history.add({
+          'undo': function(cmd){_block_panel.updateFieldValues(block, old_values);},
+          'redo': function(cmd){_block_panel.updateFieldValues(block, new_values);}
+        });
       })
       .getToolbar()
         .addDelegate('.buttons [data-action]', 'click', function(evt){
@@ -1779,6 +1887,11 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       }, this)
       .addListener('keydown', this.onKeydown)
       .addListener('keyup', this.onKeyup);
+      
+    _history
+      .addListener('add', this.onHistoryAdd)
+      .addListener('undo', this.onHistoryUndo)
+      .addListener('redo', this.onHistoryRedo);
 
     new metaScore.Dom('body')
       .addListener('keydown', this.onKeydown)
@@ -1789,12 +1902,19 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
-  this.addBlock = function(){    
-    var block = new metaScore.Player.Block().appendTo(_player_body);
+  this.addBlock = function(block){  
+    if(!block){
+      block = new metaScore.Player.Block();
+      this.addPage(block);
+    }
     
+    block.appendTo(_player_body);
     _block_panel.setBlock(block);
-    
-    this.addPage(block);
+        
+    _history.add({
+      'undo': metaScore.Function.proxy(function(){this.removeBlock(block);}, this),
+      'redo': metaScore.Function.proxy(function(){this.addBlock(block);}, this)
+    });
     
     return block;
   };
@@ -1870,6 +1990,33 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         _player_body.removeClass('alt-down');
         break;
     }
+  };
+  
+  this.onHistoryAdd = function(evt){
+    _mainmenu.enableItems('[data-action="undo"]');
+    _mainmenu.disableItems('[data-action="redo"]');
+  };
+  
+  this.onHistoryUndo = function(evt){
+    if(_history.hasUndo()){
+      _mainmenu.enableItems('[data-action="undo"]');
+    }
+    else{
+      _mainmenu.disableItems('[data-action="undo"]');
+    }
+    
+    _mainmenu.enableItems('[data-action="redo"]');
+  };
+  
+  this.onHistoryRedo = function(evt){
+    if(_history.hasRedo()){
+      _mainmenu.enableItems('[data-action="redo"]');
+    }
+    else{
+      _mainmenu.disableItems('[data-action="redo"]');
+    }
+    
+    _mainmenu.enableItems('[data-action="undo"]');
   };
 });
 /**
@@ -1987,7 +2134,7 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
     var items = this.children(selector);
     
     items
-      .removeListener('click', this.stopClick)
+      .removeListener('click', this.preventClick)
       .removeClass('disabled');
   
     return items;
@@ -1999,14 +2146,14 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
     var items = this.children(selector);
     
     items
-      .addListener('click', this.stopClick)
+      .addListener('click', this.preventClick)
       .addClass('disabled');
   
     return items;
   
   };
   
-  this.stopClick = function(evt){
+  this.preventClick = function(evt){
   
     evt.stopPropagation();
   
@@ -2062,14 +2209,10 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
   };
   
   this.onChange = function(evt){
-  
-    if(!evt.hasOwnProperty('detail')){
-      evt.stopPropagation();
       
-      this.value = this.val();
-      
-      this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
-    }
+    this.value = this.val();
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   
@@ -2108,6 +2251,124 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
   };
 });
 /**
+ * Undo
+ *
+ * @requires ../metaScore.evented.js
+ */
+ 
+metaScore.Editor.History = metaScore.Evented.extend(function(){
+
+  var _commands = [],
+    _index = -1,
+    _executing = false;
+  
+  this.defaults = {    
+    /**
+    * Maximum number of commands to store
+    */
+    max_commands: 30
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {  
+    this.initConfig(configs);    
+  };
+  
+  this.execute = function(command, action) {  
+    if (command && command.hasOwnProperty(action)) {      
+      _executing = true;        
+      command[action](command);
+      _executing = false;
+    }
+    
+    return this;
+  };
+  
+  this.add = function (command){  
+    if (_executing) {
+      return this;
+    }
+    
+    // invalidate items higher on the stack
+    _commands.splice(_index + 1, _commands.length - _index);
+    
+    // insert the new command
+    _commands.push(command);
+    
+    // remove old commands
+    if(_commands.length > this.configs.max_commands){
+      _commands = _commands.slice(this.configs.max_commands * -1);
+    }
+
+    // update the index
+    _index = _commands.length - 1;
+    
+    this.triggerEvent('add', {'command': command});
+    
+    return this;    
+  };
+
+  this.undo = function() {
+    var command = _commands[_index];
+    
+    if (!command) {
+      return this;
+    }
+    
+    // execute the command's undo
+     this.execute(command, 'undo');
+    
+    // update the index
+    _index -= 1;
+    
+    this.triggerEvent('undo', {'command': command});
+    
+    return this;    
+  };
+
+  this.redo = function() {
+    var command = _commands[_index + 1];
+    
+    if (!command) {
+      return this;
+    }
+    
+    // execute the command's redo
+    this.execute(command, 'redo');
+    
+    // update the index
+    _index += 1;
+  
+    this.triggerEvent('redo', {'command': command});
+    
+    return this;    
+  };
+  
+  this.clear = function () {
+    var length = _commands.length;
+
+    _commands = [];
+    _index = -1;
+
+    if(length > 0) {
+      this.triggerEvent('clear');
+    }
+
+  };
+
+  this.hasUndo = function(){
+    return _index !== -1;
+  };
+
+  this.hasRedo = function(){
+    return _index < (_commands.length - 1);
+  };
+});
+/**
  * MainMenu
  *
  * @requires metaScore.editor.button.js
@@ -2129,101 +2390,114 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
   
     var left, right;
     
-    this.buttons = {};
-    
     left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
     right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
     
-    this.buttons['new'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'new',
         'title': metaScore.String.t('New')
       })
+      .data('action', 'new')
       .appendTo(left);
     
-    this.buttons['open'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'open',
         'title': metaScore.String.t('Open')
       })
+      .data('action', 'open')
       .appendTo(left);
     
-    this.buttons['edit'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'edit',
         'title': metaScore.String.t('edit')
       })
-      .disable()
+      .data('action', 'edit')
       .appendTo(left);
     
-    this.buttons['save'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'save',
         'title': metaScore.String.t('save')
       })
-      .disable()
+      .data('action', 'save')
       .appendTo(left);
     
-    this.buttons['download'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'download',
         'title': metaScore.String.t('download')
       })
-      .disable()
+      .data('action', 'download')
       .appendTo(left);
     
-    this.buttons['delete'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'delete',
         'title': metaScore.String.t('delete')
       })
-      .disable()
+      .data('action', 'delete')
       .appendTo(left);
     
-    this.buttons['time'] = new metaScore.Editor.Field.TimeField()
+    new metaScore.Editor.Field.TimeField()
       .attr({
-        'class': 'time',
         'title': metaScore.String.t('time')
       })
+      .data('action', 'time')
       .appendTo(left);
     
-    this.buttons['revert'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'revert',
         'title': metaScore.String.t('revert')
       })
+      .data('action', 'revert')
       .appendTo(left);
     
-    this.buttons['undo'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'undo',
         'title': metaScore.String.t('undo')
       })
+      .data('action', 'undo')
       .appendTo(left);
     
-    this.buttons['redo'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'redo',
         'title': metaScore.String.t('redo')
       })
-      .disable()
+      .data('action', 'redo')
       .appendTo(left);
       
     
-    this.buttons['settings'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'settings',
         'title': metaScore.String.t('settings')
       })
+      .data('action', 'settings')
       .appendTo(right);
     
-    this.buttons['help'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'help',
         'title': metaScore.String.t('help')
       })
+      .data('action', 'help')
       .appendTo(right);
     
+  };
+  
+  this.enableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items.removeClass('disabled');
+  
+    return items;
+  
+  };
+  
+  this.disableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items.addClass('disabled');
+  
+    return items;
+  
   };
 });
 /**
@@ -2528,14 +2802,10 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
   };
   
   this.onChange = function(evt){
-  
-    if(!evt.hasOwnProperty('detail')){
-      evt.stopPropagation();
       
-      this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
-      
-      this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
-    }
+    this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   
@@ -2676,9 +2946,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
     var hsv;
   
-    if(!this.hasOwnProperty('value')){
-      this.value = {};
-    }
+    this.value = this.value || {};
     
     if(!metaScore.Var.is(val, 'object')){
       val = this.parseColor(val);
@@ -2762,7 +3030,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
     _overlay.hide();
     
-    this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
     evt.stopPropagation();
   };
@@ -3053,7 +3321,7 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
     this.value = val;
     
     if(triggerChange !== false){
-      this.triggerEvent('change', {'field': this, 'value': this.value}, false, true);
+      this.triggerEvent('valuechange', {'field': this, 'value': this.value}, false, true);
     }
   
   };
@@ -3238,7 +3506,7 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     _minutes.val(minutes_val);
     _hours.val(hours_val);
     
-    this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   
@@ -3358,7 +3626,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       .data('action', 'menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', this.onFieldChange);
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
     
   };
   
@@ -3382,23 +3650,24 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
     this.unsetBlock(_block, supressEvent);
     
-    _block = block;
-    
-    this.updateValues();      
+    this.updateFieldValues(block);
     this.enableFields();      
     this.getMenu().enableItems('[data-action="delete"]');
     
-    _block._draggable = new metaScore.Draggable(_block, _block.child('.pager'), _block.parents()).enable();
-    _block._resizable = new metaScore.Resizable(_block, _block.parents()).enable();
+    block._draggable = new metaScore.Draggable(block, block.child('.pager'), block.parents()).enable();
+    block._resizable = new metaScore.Resizable(block, block.parents()).enable();
     
-    _block
-      .addListener('drag', this.onBlockDrag)
-      .addListener('resize', this.onBlockResize)
+    block
+      .addListener('dragstart', this.onBlockDragStart)
+      .addListener('dragend', this.onBlockDragEnd)
+      .addListener('resizeend', this.onBlockResizeEnd)
       .addClass('selected');
       
     if(supressEvent !== true){
-      this.triggerEvent('blockset', {'block': _block});
+      this.triggerEvent('blockset', {'block': block});
     }
+    
+    _block = block;
     
     return this;
     
@@ -3419,8 +3688,9 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       delete block._resizable;
   
       block
-        .removeListener('drag', this.onBlockDrag)
-        .removeListener('resize', this.onBlockResize)
+        .removeListener('dragstart', this.onBlockDragStart)
+        .removeListener('dragend', this.onBlockDragEnd)
+        .removeListener('resizeend', this.onBlockResizeEnd)
         .removeClass('selected');
       
       _block = null;
@@ -3434,85 +3704,162 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.onBlockDrag = function(evt){  
-    this.updateValues(['x', 'y']);
+  this.onBlockDragStart = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y'];
+    
+    this.beforeDragValues = this.getValues(block, fields);
   };
   
-  this.onBlockResize = function(evt){  
-    this.updateValues(['x', 'y', 'width', 'height']);
+  this.onBlockDragEnd = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y'];
+    
+    this.updateFieldValues(block, fields, true);
+    
+    this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeDragValues, 'new_values': this.getValues(block, fields)});
+    
+    delete this.beforeDragValues;
   };
   
-  this.onFieldChange = function(evt){  
-    var field = evt.detail.field,
-      value = evt.detail.value;
+  this.onBlockResizeEnd = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y', 'width', 'height'],  
+      old_values = this.getValues(block, fields);
+    
+    this.updateFieldValues(block, fields, true);
+    
+    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, fields)});
+  };
+  
+  this.onFieldValueChange = function(evt){
+    var block = this.getBlock(),
+      field, value, old_values;
       
-    if(!_block){
+    if(!block){
       return;
     }
-  
-    switch(field.data('name')){
-      case 'x':
-        _block.css('left', value +'px');
-        break;
-      case 'y':
-        _block.css('top', value +'px');
-        break;
-      case 'width':
-        _block.css('width', value +'px');
-        break;
-      case 'height':
-        _block.css('height', value +'px');
-        break;
-      case 'bg-color':
-        _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        _block.data('synched', value);
-        break;
-    }
+    
+    field = evt.detail.field.data('name');
+    value = evt.detail.value;
+    old_values = this.getValues(block, [field]);
+    
+    this.updateBlockProperty(block, field, value);
+    
+    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, [field])});
   };
   
-  this.updateValue = function(name){
+  this.updateFieldValue = function(name, value, supressEvent){
     var field = this.getField(name);
     
     switch(name){
       case 'x':
-        field.setValue(parseInt(_block.css('left'), 10));
-        break;
       case 'y':
-        field.setValue(parseInt(_block.css('top'), 10));
-        break;
       case 'width':
-        field.setValue(parseInt(_block.css('width'), 10));
-        break;
       case 'height':
-        field.setValue(parseInt(_block.css('height'), 10));
-        break;
       case 'bg-color':
-        field.setValue(_block.css('background-color'));
+        field.setValue(value);
         break;
       case 'bg-image':
         // TODO
         break;
       case 'synched':
-        field.setChecked(_block.data('synched') === "true");
+        field.setChecked(value);
         break;
+    }
+    
+    if(supressEvent !== true){
+      field.triggerEvent('change');
     }
   };
   
-  this.updateValues = function(fields){
+  this.updateFieldValues = function(block, values, supressEvent){
   
-    if(fields === undefined){
-      fields = Object.keys(this.getField());
+    values = values || this.getValues(block, Object.keys(this.getField()));
+    
+    if(metaScore.Var.is(values, 'array')){
+      metaScore.Array.each(values, function(index, field){
+        this.updateFieldValue(field, this.getValue(block, field), supressEvent);
+      }, this);
+    }
+    else{
+      metaScore.Object.each(values, function(field, value){
+        this.updateFieldValue(field, value, supressEvent);
+      }, this);
+    }
+  };
+  
+  this.updateBlockProperty = function(block, name, value){
+  
+    switch(name){
+      case 'x':
+        block.css('left', value +'px');
+        break;
+      case 'y':
+        block.css('top', value +'px');
+        break;
+      case 'width':
+        block.css('width', value +'px');
+        break;
+      case 'height':
+        block.css('height', value +'px');
+        break;
+      case 'bg-color':
+        block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'synched':
+        block.data('synched', value);
+        break;
+    }
+  
+  };
+  
+  this.getValue = function(block, name){
+  
+    var value;
+  
+    switch(name){
+      case 'x':
+        value = parseInt(block.css('left'), 10);
+        break;
+      case 'y':
+        value = parseInt(block.css('top'), 10);
+        break;
+      case 'width':
+       value = parseInt(block.css('width'), 10);
+        break;
+      case 'height':
+        value = parseInt(block.css('height'), 10);
+        break;
+      case 'bg-color':
+        value = block.css('background-color');
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'synched':
+        value = block.data('synched') === "true";
+        break;
     }
     
-    metaScore.Object.each(fields, function(key, field){
-      this.updateValue(field);
-    }, this);
+    return value;
   
+  };
+  
+  this.getValues = function(block, fields){
+  
+    var values = {};
+    
+    fields = fields || Object.keys(this.getField());
+    
+    metaScore.Array.each(fields, function(index, field){
+      values[field] = this.getValue(block, field);
+    }, this);
+    
+    return values;  
   };
   
   

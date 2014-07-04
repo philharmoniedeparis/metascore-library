@@ -48,14 +48,10 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
   };
   
   this.onChange = function(evt){
-  
-    if(!evt.hasOwnProperty('detail')){
-      evt.stopPropagation();
       
-      this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
-      
-      this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
-    }
+    this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   

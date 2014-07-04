@@ -12,6 +12,7 @@ module.exports = function(grunt) {
         sub('src/js/%s.polyfill.js'),
         sub('src/js/%s.core.js'),
         sub('src/js/%s.base.js'),
+        sub('src/js/%s.evented.js'),
         sub('src/js/helpers/%s.*.js')
       ],
       PLAYER_LIST = [

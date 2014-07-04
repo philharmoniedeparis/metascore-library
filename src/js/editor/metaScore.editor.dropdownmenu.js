@@ -32,7 +32,7 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
     var items = this.children(selector);
     
     items
-      .removeListener('click', this.stopClick)
+      .removeListener('click', this.preventClick)
       .removeClass('disabled');
   
     return items;
@@ -44,14 +44,14 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
     var items = this.children(selector);
     
     items
-      .addListener('click', this.stopClick)
+      .addListener('click', this.preventClick)
       .addClass('disabled');
   
     return items;
   
   };
   
-  this.stopClick = function(evt){
+  this.preventClick = function(evt){
   
     evt.stopPropagation();
   

@@ -53,7 +53,9 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       .addListener('mousemove', this.onMouseMove)
       .addListener('mouseup', this.onMouseUp);
     
-    _target.addClass('resizing');
+    _target
+      .addClass('resizing')
+      .triggerEvent('resizestart', null, false, true);
     
     evt.stopPropagation();
       
@@ -109,7 +111,9 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
     
-    _target.removeClass('resizing');
+    _target
+      .removeClass('resizing')
+      .triggerEvent('resizeend', null, false, true);
     
     evt.stopPropagation();
   };

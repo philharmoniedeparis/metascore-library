@@ -102,7 +102,7 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     _minutes.val(minutes_val);
     _hours.val(hours_val);
     
-    this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   

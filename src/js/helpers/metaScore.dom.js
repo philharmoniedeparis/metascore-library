@@ -173,11 +173,11 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.triggerEvent = function(type, data, bubbling, cancelable){
+  this.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
   
     metaScore.Array.each(this.elements, function(index, element) {
-      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable) && return_value;
+      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
     }, this);
     
     return return_value;
@@ -551,11 +551,11 @@ metaScore.Dom.removeListener = function(element, type, callback, useCapture){
 * @param {boolean} whether the event is cancelable
 * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
 */
-metaScore.Dom.triggerEvent = function(element, type, data, bubbling, cancelable){  
+metaScore.Dom.triggerEvent = function(element, type, data, bubbles, cancelable){  
   var event = new CustomEvent(type, {
-    detail: data,
-    bubbles: bubbling !== false,
-    cancelable: cancelable !== false
+    'detail': data,
+    'bubbles': bubbles !== false,
+    'cancelable': cancelable !== false
   });
   
   return element.dispatchEvent(event);

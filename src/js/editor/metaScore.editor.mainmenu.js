@@ -20,100 +20,113 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
   
     var left, right;
     
-    this.buttons = {};
-    
     left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
     right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
     
-    this.buttons['new'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'new',
         'title': metaScore.String.t('New')
       })
+      .data('action', 'new')
       .appendTo(left);
     
-    this.buttons['open'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'open',
         'title': metaScore.String.t('Open')
       })
+      .data('action', 'open')
       .appendTo(left);
     
-    this.buttons['edit'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'edit',
         'title': metaScore.String.t('edit')
       })
-      .disable()
+      .data('action', 'edit')
       .appendTo(left);
     
-    this.buttons['save'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'save',
         'title': metaScore.String.t('save')
       })
-      .disable()
+      .data('action', 'save')
       .appendTo(left);
     
-    this.buttons['download'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'download',
         'title': metaScore.String.t('download')
       })
-      .disable()
+      .data('action', 'download')
       .appendTo(left);
     
-    this.buttons['delete'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'delete',
         'title': metaScore.String.t('delete')
       })
-      .disable()
+      .data('action', 'delete')
       .appendTo(left);
     
-    this.buttons['time'] = new metaScore.Editor.Field.TimeField()
+    new metaScore.Editor.Field.TimeField()
       .attr({
-        'class': 'time',
         'title': metaScore.String.t('time')
       })
+      .data('action', 'time')
       .appendTo(left);
     
-    this.buttons['revert'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'revert',
         'title': metaScore.String.t('revert')
       })
+      .data('action', 'revert')
       .appendTo(left);
     
-    this.buttons['undo'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'undo',
         'title': metaScore.String.t('undo')
       })
+      .data('action', 'undo')
       .appendTo(left);
     
-    this.buttons['redo'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'redo',
         'title': metaScore.String.t('redo')
       })
-      .disable()
+      .data('action', 'redo')
       .appendTo(left);
       
     
-    this.buttons['settings'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'settings',
         'title': metaScore.String.t('settings')
       })
+      .data('action', 'settings')
       .appendTo(right);
     
-    this.buttons['help'] = new metaScore.Editor.Button()
+    new metaScore.Editor.Button()
       .attr({
-        'class': 'help',
         'title': metaScore.String.t('help')
       })
+      .data('action', 'help')
       .appendTo(right);
     
+  };
+  
+  this.enableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items.removeClass('disabled');
+  
+    return items;
+  
+  };
+  
+  this.disableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items.addClass('disabled');
+  
+    return items;
+  
   };
 });

@@ -72,7 +72,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       .data('action', 'menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', this.onFieldChange);
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
     
   };
   
@@ -96,23 +96,24 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
     this.unsetBlock(_block, supressEvent);
     
-    _block = block;
-    
-    this.updateValues();      
+    this.updateFieldValues(block);
     this.enableFields();      
     this.getMenu().enableItems('[data-action="delete"]');
     
-    _block._draggable = new metaScore.Draggable(_block, _block.child('.pager'), _block.parents()).enable();
-    _block._resizable = new metaScore.Resizable(_block, _block.parents()).enable();
+    block._draggable = new metaScore.Draggable(block, block.child('.pager'), block.parents()).enable();
+    block._resizable = new metaScore.Resizable(block, block.parents()).enable();
     
-    _block
-      .addListener('drag', this.onBlockDrag)
-      .addListener('resize', this.onBlockResize)
+    block
+      .addListener('dragstart', this.onBlockDragStart)
+      .addListener('dragend', this.onBlockDragEnd)
+      .addListener('resizeend', this.onBlockResizeEnd)
       .addClass('selected');
       
     if(supressEvent !== true){
-      this.triggerEvent('blockset', {'block': _block});
+      this.triggerEvent('blockset', {'block': block});
     }
+    
+    _block = block;
     
     return this;
     
@@ -133,8 +134,9 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       delete block._resizable;
   
       block
-        .removeListener('drag', this.onBlockDrag)
-        .removeListener('resize', this.onBlockResize)
+        .removeListener('dragstart', this.onBlockDragStart)
+        .removeListener('dragend', this.onBlockDragEnd)
+        .removeListener('resizeend', this.onBlockResizeEnd)
         .removeClass('selected');
       
       _block = null;
@@ -148,85 +150,162 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.onBlockDrag = function(evt){  
-    this.updateValues(['x', 'y']);
+  this.onBlockDragStart = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y'];
+    
+    this.beforeDragValues = this.getValues(block, fields);
   };
   
-  this.onBlockResize = function(evt){  
-    this.updateValues(['x', 'y', 'width', 'height']);
+  this.onBlockDragEnd = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y'];
+    
+    this.updateFieldValues(block, fields, true);
+    
+    this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeDragValues, 'new_values': this.getValues(block, fields)});
+    
+    delete this.beforeDragValues;
   };
   
-  this.onFieldChange = function(evt){  
-    var field = evt.detail.field,
-      value = evt.detail.value;
+  this.onBlockResizeEnd = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y', 'width', 'height'],  
+      old_values = this.getValues(block, fields);
+    
+    this.updateFieldValues(block, fields, true);
+    
+    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, fields)});
+  };
+  
+  this.onFieldValueChange = function(evt){
+    var block = this.getBlock(),
+      field, value, old_values;
       
-    if(!_block){
+    if(!block){
       return;
     }
-  
-    switch(field.data('name')){
-      case 'x':
-        _block.css('left', value +'px');
-        break;
-      case 'y':
-        _block.css('top', value +'px');
-        break;
-      case 'width':
-        _block.css('width', value +'px');
-        break;
-      case 'height':
-        _block.css('height', value +'px');
-        break;
-      case 'bg-color':
-        _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        _block.data('synched', value);
-        break;
-    }
+    
+    field = evt.detail.field.data('name');
+    value = evt.detail.value;
+    old_values = this.getValues(block, [field]);
+    
+    this.updateBlockProperty(block, field, value);
+    
+    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, [field])});
   };
   
-  this.updateValue = function(name){
+  this.updateFieldValue = function(name, value, supressEvent){
     var field = this.getField(name);
     
     switch(name){
       case 'x':
-        field.setValue(parseInt(_block.css('left'), 10));
-        break;
       case 'y':
-        field.setValue(parseInt(_block.css('top'), 10));
-        break;
       case 'width':
-        field.setValue(parseInt(_block.css('width'), 10));
-        break;
       case 'height':
-        field.setValue(parseInt(_block.css('height'), 10));
-        break;
       case 'bg-color':
-        field.setValue(_block.css('background-color'));
+        field.setValue(value);
         break;
       case 'bg-image':
         // TODO
         break;
       case 'synched':
-        field.setChecked(_block.data('synched') === "true");
+        field.setChecked(value);
         break;
+    }
+    
+    if(supressEvent !== true){
+      field.triggerEvent('change');
     }
   };
   
-  this.updateValues = function(fields){
+  this.updateFieldValues = function(block, values, supressEvent){
   
-    if(fields === undefined){
-      fields = Object.keys(this.getField());
+    values = values || this.getValues(block, Object.keys(this.getField()));
+    
+    if(metaScore.Var.is(values, 'array')){
+      metaScore.Array.each(values, function(index, field){
+        this.updateFieldValue(field, this.getValue(block, field), supressEvent);
+      }, this);
+    }
+    else{
+      metaScore.Object.each(values, function(field, value){
+        this.updateFieldValue(field, value, supressEvent);
+      }, this);
+    }
+  };
+  
+  this.updateBlockProperty = function(block, name, value){
+  
+    switch(name){
+      case 'x':
+        block.css('left', value +'px');
+        break;
+      case 'y':
+        block.css('top', value +'px');
+        break;
+      case 'width':
+        block.css('width', value +'px');
+        break;
+      case 'height':
+        block.css('height', value +'px');
+        break;
+      case 'bg-color':
+        block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'synched':
+        block.data('synched', value);
+        break;
+    }
+  
+  };
+  
+  this.getValue = function(block, name){
+  
+    var value;
+  
+    switch(name){
+      case 'x':
+        value = parseInt(block.css('left'), 10);
+        break;
+      case 'y':
+        value = parseInt(block.css('top'), 10);
+        break;
+      case 'width':
+       value = parseInt(block.css('width'), 10);
+        break;
+      case 'height':
+        value = parseInt(block.css('height'), 10);
+        break;
+      case 'bg-color':
+        value = block.css('background-color');
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'synched':
+        value = block.data('synched') === "true";
+        break;
     }
     
-    metaScore.Object.each(fields, function(key, field){
-      this.updateValue(field);
-    }, this);
+    return value;
   
+  };
+  
+  this.getValues = function(block, fields){
+  
+    var values = {};
+    
+    fields = fields || Object.keys(this.getField());
+    
+    metaScore.Array.each(fields, function(index, field){
+      values[field] = this.getValue(block, field);
+    }, this);
+    
+    return values;  
   };
   
   

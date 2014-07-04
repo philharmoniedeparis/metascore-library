@@ -48,14 +48,10 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
   };
   
   this.onChange = function(evt){
-  
-    if(!evt.hasOwnProperty('detail')){
-      evt.stopPropagation();
       
-      this.value = this.val();
-      
-      this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
-    }
+    this.value = this.val();
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   

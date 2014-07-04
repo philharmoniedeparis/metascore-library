@@ -129,9 +129,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
     var hsv;
   
-    if(!this.hasOwnProperty('value')){
-      this.value = {};
-    }
+    this.value = this.value || {};
     
     if(!metaScore.Var.is(val, 'object')){
       val = this.parseColor(val);
@@ -215,7 +213,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
     _overlay.hide();
     
-    this.triggerEvent('change', {'field': this, 'value': this.value}, true, false);
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
     evt.stopPropagation();
   };

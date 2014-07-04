@@ -31,7 +31,9 @@ metaScore.Draggable = metaScore.Base.extend(function(){
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
     
-    _target.addClass('dragging');
+    _target
+      .addClass('dragging')
+      .triggerEvent('dragstart', null, false, true);
     
     evt.stopPropagation();
     
@@ -57,7 +59,9 @@ metaScore.Draggable = metaScore.Base.extend(function(){
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
     
-    _target.removeClass('dragging'); 
+    _target
+      .removeClass('dragging')
+      .triggerEvent('dragend', null, false, true);
     
     evt.stopPropagation();
     

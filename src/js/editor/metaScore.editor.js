@@ -2,6 +2,7 @@
  * Editor
  *
  * @requires ../helpers/metaScore.dom.js
+ * @requires metaScore.editor.history.js
  * @requires metaScore.editor.mainmenu.js
  * @requires panel/metaScore.editor.panel.block.js
  * @requires panel/metaScore.editor.panel.page.js
@@ -14,7 +15,7 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     _sidebar,
     _block_panel, _page_panel, _element_panel,
     _player_wrapper, _player_head, _player_body, _player,
-    _grid;
+    _grid, _history;
 
   this.constructor = function(selector) {
   
@@ -41,6 +42,7 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     _player_body = new metaScore.Dom(_player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
     _player = new metaScore.Player();
     _grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(_workspace);
+    _history = new metaScore.Editor.History();
     
     // add styles
     
@@ -49,9 +51,41 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       
     // add event listeners
     
+    _mainmenu
+      .addDelegate('button[data-action]:not(.disabled)', 'click', function(evt){
+        switch(metaScore.Dom.data(evt.target, 'action')){
+          case 'new':
+            break;
+          case 'open':
+            break;
+          case 'save':
+            break;
+          case 'download':
+            break;
+          case 'delete':
+            break;
+          case 'revert':
+            break;
+          case 'undo':
+            _history.undo();
+            break;
+          case 'redo':
+            _history.redo();
+            break;
+          case 'edit':
+            break;
+          case 'settings':
+            break;
+          case 'help':
+            break;
+        }
+      }, this);
+    
     _block_panel
       .addListener('blockset', function(evt){
-        _page_panel.setPage(evt.detail.block.getActivePage(), true);
+        var block = evt.detail.block;
+        
+        _page_panel.setPage(block.getActivePage(), true);
         _page_panel.getMenu().enableItems('[data-action="new"]');
         _element_panel.getMenu().enableItems('[data-action="new"]');
           
@@ -62,6 +96,16 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         _page_panel.getMenu().disableItems('[data-action="new"]');
           
         evt.stopPropagation();
+      })
+      .addListener('valueschange', function(evt){
+        var block = evt.detail.block,
+          old_values = evt.detail.old_values,
+          new_values = evt.detail.new_values;
+         
+        _history.add({
+          'undo': function(cmd){_block_panel.updateFieldValues(block, old_values);},
+          'redo': function(cmd){_block_panel.updateFieldValues(block, new_values);}
+        });
       })
       .getToolbar()
         .addDelegate('.buttons [data-action]', 'click', function(evt){
@@ -180,6 +224,11 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       }, this)
       .addListener('keydown', this.onKeydown)
       .addListener('keyup', this.onKeyup);
+      
+    _history
+      .addListener('add', this.onHistoryAdd)
+      .addListener('undo', this.onHistoryUndo)
+      .addListener('redo', this.onHistoryRedo);
 
     new metaScore.Dom('body')
       .addListener('keydown', this.onKeydown)
@@ -190,12 +239,19 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
-  this.addBlock = function(){    
-    var block = new metaScore.Player.Block().appendTo(_player_body);
+  this.addBlock = function(block){  
+    if(!block){
+      block = new metaScore.Player.Block();
+      this.addPage(block);
+    }
     
+    block.appendTo(_player_body);
     _block_panel.setBlock(block);
-    
-    this.addPage(block);
+        
+    _history.add({
+      'undo': metaScore.Function.proxy(function(){this.removeBlock(block);}, this),
+      'redo': metaScore.Function.proxy(function(){this.addBlock(block);}, this)
+    });
     
     return block;
   };
@@ -271,5 +327,32 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         _player_body.removeClass('alt-down');
         break;
     }
+  };
+  
+  this.onHistoryAdd = function(evt){
+    _mainmenu.enableItems('[data-action="undo"]');
+    _mainmenu.disableItems('[data-action="redo"]');
+  };
+  
+  this.onHistoryUndo = function(evt){
+    if(_history.hasUndo()){
+      _mainmenu.enableItems('[data-action="undo"]');
+    }
+    else{
+      _mainmenu.disableItems('[data-action="undo"]');
+    }
+    
+    _mainmenu.enableItems('[data-action="redo"]');
+  };
+  
+  this.onHistoryRedo = function(evt){
+    if(_history.hasRedo()){
+      _mainmenu.enableItems('[data-action="redo"]');
+    }
+    else{
+      _mainmenu.disableItems('[data-action="redo"]');
+    }
+    
+    _mainmenu.enableItems('[data-action="undo"]');
   };
 });
