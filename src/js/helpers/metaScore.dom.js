@@ -67,6 +67,37 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;
   };
   
+  this.index = function(selector){
+  
+    var found = -1;
+    
+    metaScore.Array.each(this.elements, function(index, element) {
+      if(metaScore.Dom.is(element, selector)){
+        found = index;
+        return false;
+      }
+    }, this);
+    
+    return found;
+  
+  };
+  
+  this.child = function(selector){
+  
+    var children = new metaScore.Dom(),
+     child;
+  
+    metaScore.Array.each(this.elements, function(index, element) {
+      if(child = metaScore.Dom.selectElement.call(this, selector, element)){
+        children.add(child);
+        return false;
+      }
+    }, this);
+    
+    return children;
+  
+  };
+  
   this.children = function(selector){
   
     var children = new metaScore.Dom();
@@ -123,11 +154,13 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.addDelegate = function(selector, type, callback, useCapture) {
+  this.addDelegate = function(selector, type, callback, scope, useCapture) {
+  
+    scope = scope || this;
       
     return this.addListener(type, function(evt){
       if(metaScore.Dom.is(evt.target, selector)){
-        callback.call(this, evt);
+        callback.call(scope, evt);
       }
     }, useCapture);
     
@@ -140,10 +173,14 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.triggerEvent = function(type, data, bubbling, cancelable){  
+  this.triggerEvent = function(type, data, bubbling, cancelable){
+    var return_value = true;
+  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable);
+      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable) && return_value;
     }, this);
+    
+    return return_value;
   };
   
   this.text = function(value) {  
@@ -244,9 +281,14 @@ metaScore.Dom = metaScore.Base.extend(function(){
   };
   
   this.remove = function(){
-    metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.remove(element);
-    }, this);
+    if(this.triggerEvent('beforeremove') !== false){
+      metaScore.Array.each(this.elements, function(index, element) {
+        var parent = element.parentElement;
+        metaScore.Dom.remove(element);
+        metaScore.Dom.triggerEvent(parent, 'childremoved', {'child': element});
+      }, this);
+    }
+    
     return this;
   };
   
@@ -306,6 +348,32 @@ metaScore.Dom.bubbleEvents = {
   'mouseover': true,
   'mouseout': true,
   'transitionend': true
+};
+
+/**
+* Select a single element by selecor
+* @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
+* @param {object} an optional parent to constrain the matched elements 
+* @returns {object} an HTML element
+*/
+metaScore.Dom.selectElement = function (selector, parent) {      
+  var element;
+  
+  if(!parent){
+    parent = document;
+  }
+
+  if (metaScore.Var.is(selector, 'string')) {
+    element = parent.querySelector(selector);
+  }
+  else if (selector.length) {
+    element = selector[0];
+  }
+  else {
+    element = selector;
+  }
+
+  return element;
 };
 
 /**
@@ -431,8 +499,15 @@ metaScore.Dom.toggleClass = function(element, className, force){
   var classNames = className.split(" "),
     i = 0, l = classNames.length;
   
-  for(; i<l; i++){
-    element.classList.toggle(classNames[i], force);
+  if(force === undefined){
+    for(; i<l; i++){
+      element.classList.toggle(classNames[i]);
+    }
+  }
+  else{
+    for(; i<l; i++){
+      element.classList.toggle(classNames[i], force);
+    }
   }
 };
 
@@ -479,8 +554,8 @@ metaScore.Dom.removeListener = function(element, type, callback, useCapture){
 metaScore.Dom.triggerEvent = function(element, type, data, bubbling, cancelable){  
   var event = new CustomEvent(type, {
     detail: data,
-    bubbles: bubbling,
-    cancelable: cancelable
+    bubbles: bubbling !== false,
+    cancelable: cancelable !== false
   });
   
   return element.dispatchEvent(event);

@@ -33,7 +33,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
       .appendTo(this);
       
     _toolbar.getTitle()
-      .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+      .addListener('click', this.toggleState);
     
     _contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
@@ -48,12 +48,12 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(_contents);
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(_contents);
     
       field_uuid = 'field-'+ metaScore.String.uuid(5);
       
       _fields[key] = field = new value.type().attr('id', field_uuid);
-      field.data('name', key);      
+      field.data('name', key);
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
       new metaScore.Dom('<td/>').appendTo(row).append(field);
@@ -94,7 +94,29 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
   };
   
-  this.toggleState = function(){
+  this.showFields = function(keys){
+  
+    if(!keys){
+      _contents.children('tr.field-wrapper').show();
+    }
+    else{
+      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
+    }
+    
+  };
+  
+  this.hideFields = function(keys){
+  
+    if(!keys){
+      _contents.children('tr.field-wrapper').hide();
+    }
+    else{
+      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
+    }
+    
+  };
+  
+  this.toggleState = function(evt){
     
     this.toggleClass('collapsed');
     

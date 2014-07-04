@@ -58,7 +58,8 @@ metaScore.Ajax.send = function(url, options) {
       'data': {},
       'complete': null,
       'success': null,
-      'error': null
+      'error': null,
+      'scope': this
     };
   
   options = metaScore.Object.extend(function(){}, defaults, options);
@@ -84,15 +85,15 @@ metaScore.Ajax.send = function(url, options) {
   xhr.onreadystatechange = function() {        
     if (xhr.readyState === 4) {
       if(metaScore.Var.is(options.complete, 'function')){
-        options.complete(xhr);
+        options.complete.call(options.scope, xhr);
       }
       if(xhr.status >= 200 && status < 300 || status === 304){
         if(metaScore.Var.is(options.success, 'function')){
-          options.success(xhr);
+          options.success.call(options.scope, xhr);
         }
       }
       else if(metaScore.Var.is(options.error, 'function')){
-        options.error(xhr);
+        options.error.call(options.scope, xhr);
       }
     }
   };

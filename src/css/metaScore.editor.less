@@ -108,6 +108,12 @@
         opacity: 1;
       }
     }
+    
+    &.disabled{
+      button{
+        cursor: default;
+      }
+    }
   }
     
   .workspace{
@@ -182,8 +188,7 @@
       &.redo{
         margin-right: 50px;
         background-image: url('img/editor/main-menu/redo.png');
-      }
-      
+      }      
       &.edit{
         background-image: url('img/editor/main-menu/edit.png');
       }
@@ -241,9 +246,18 @@
             height: 16px;
             background-repeat: no-repeat;
             background-position: center center;
+            vertical-align: middle;
           
-            &.menu{
+            &[data-action="previous"]{
+              background-image: url('img/editor/panel/button/previous.png');
+            }
+            &[data-action="next"]{
+              background-image: url('img/editor/panel/button/next.png');
+              margin-left: -1px;
+            }
+            &[data-action="menu"]{
               position: relative;
+              margin-left: 10px;
               padding-bottom: 2px;
               
               &:after {
@@ -282,6 +296,12 @@
                   
                   &:active{
                     opacity: 0.75;
+                  }
+                  
+                  &.disabled{
+                    background: none;
+                    opacity: 0.5;
+                    cursor: default;
                   }
                 }
               }

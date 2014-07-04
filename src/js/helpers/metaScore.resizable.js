@@ -7,13 +7,9 @@
 metaScore.Resizable = metaScore.Base.extend(function(){
 
   var _target, _container, _handles,
-    _startState, _enabled;
+    _startState;
 
   this.constructor = function(target, container) {
-  
-    if(target._resizable){
-      return target._resizable;
-    }
   
     _target = target;
     
@@ -23,33 +19,25 @@ metaScore.Resizable = metaScore.Base.extend(function(){
     
     _handles.top_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'top-left')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
       
     _handles.top_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'top-right')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
       
     _handles.bottom_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'bottom-left')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
       
     _handles.bottom_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'bottom-right')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
-    
-    _target._resizable = this;
+      
+    this.enable();
   
   };
   
   this.onMouseDown = function(evt){
-  
-    if(_enabled !== true){
-      return;
-    }
   
     _startState = {
       'handle': evt.target,
@@ -128,7 +116,9 @@ metaScore.Resizable = metaScore.Base.extend(function(){
   
   this.enable = function(){
   
-    _enabled = true;
+    metaScore.Object.each(_handles, function(index, handle){
+      handle.addListener('mousedown', this.onMouseDown);
+    }, this);
   
     _target.addClass('resizable');
     
@@ -138,9 +128,23 @@ metaScore.Resizable = metaScore.Base.extend(function(){
   
   this.disable = function(){
   
-    _enabled = false;
+    metaScore.Object.each(_handles, function(index, handle){
+      handle.removeListener('mousedown', this.onMouseDown);
+    }, this);
   
     _target.removeClass('resizable');
+    
+    return this;
+  
+  };
+  
+  this.destroy = function(){
+  
+    this.disable();
+  
+    metaScore.Object.each(_handles, function(index, handle){
+      handle.remove();
+    }, this);
     
     return this;
   

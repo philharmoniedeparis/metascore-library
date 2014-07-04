@@ -26,4 +26,34 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
     return item;
   
   };
+  
+  this.enableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items
+      .removeListener('click', this.stopClick)
+      .removeClass('disabled');
+  
+    return items;
+  
+  };
+  
+  this.disableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items
+      .addListener('click', this.stopClick)
+      .addClass('disabled');
+  
+    return items;
+  
+  };
+  
+  this.stopClick = function(evt){
+  
+    evt.stopPropagation();
+  
+  };
 });

@@ -10,43 +10,106 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   
   var _pages, _pager;
 
-  this.constructor = function(element) {
+  this.constructor = function(dom) {
   
-    if(element){
-      this.super(element);
+    _pages = [];
+  
+    if(dom){
+      this.super(dom);
+      _pages = this.children('.pages');
+      _pager = new metaScore.Player.Pager(this.child('.pager').get(0));
     }
     else{
-      this.super('<div/>', {'class': 'metaScore-block', 'id': metaScore.String.uuid(5)});
+      this.super('<div/>', {'class': 'metaScore-block'});
+      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
+      _pager = new metaScore.Player.Pager().appendTo(this);
     }
     
-    _pages = this.children('pages');
-    if(_pages.count() === 0){
-      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}) .appendTo(this);
-    }
-    
-    _pager = this.children('page');
-    if(_pager.count() === 0){
-      _pager = new metaScore.Player.Pager() .appendTo(this);
-    }
+    _pager
+      .addDelegate('.button', 'click', function(evt){
+        var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
+          action, index;
+          
+        if(active){
+          action = metaScore.Dom.data(evt.target, 'action');
+        
+          switch(action){
+            case 'first':
+              this.setActivePage(0);
+              break;
+            case 'previous':
+              this.setActivePage(this.getActivePageIndex() - 1);
+              break;
+            case 'next':
+              this.setActivePage(this.getActivePageIndex() + 1);
+              break;
+          }
+        }
+        
+        evt.stopPropagation();
+      }, this);
     
   };
   
-  this.addPage = function(configs){
+  this.getPages = function(){
   
-    var page = new metaScore.Player.Page(configs)
-      .appendTo(_pages);
-      
-    this.updatePagerCount();
-    
-    return page;
+    return _pages.children('.page');
   
   };
   
-  this.updatePagerCount = function(){
+  this.addPage = function(page){
   
-    var page_count = _pages.children('page').count();
+    _pages.append(page);
+    
+    this.setActivePage(this.getPages().count() - 1);
   
-    _pager.updateCount(page_count);
+  };
   
+  this.getActivePage = function(){
+  
+    return new metaScore.Player.Page(this.getPages().child('.active').get(0));
+  
+  };
+  
+  this.getActivePageIndex = function(){
+  
+    return this.getPages().index('.active');
+  
+  };
+  
+  this.getPageCount = function(){
+  
+    return this.getPages().count();
+  
+  };
+  
+  this.setActivePage = function(index){
+    
+    var pages = this.getPages(),
+      page = new metaScore.Player.Page(pages.get(index));
+  
+    pages.removeClass('active');
+    
+    page.addClass('active');
+    
+    this.updatePager();
+    
+    this.triggerEvent('pageactivated', {'index': index, 'page': page});
+  
+  };
+  
+  this.updatePager = function(){
+  
+    var index = this.getActivePageIndex();
+    var count = this.getPageCount();
+  
+    _pager.updateCount(index, count);
+  
+  };
+  
+  this.isSynched = function(){
+    
+    return this.data('synched') === "true";
+    
   };
 });

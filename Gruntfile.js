@@ -17,14 +17,14 @@ module.exports = function(grunt) {
       PLAYER_LIST = [
         sub('src/js/player/%s.player.js'),
         sub('src/js/player/%s.player.*.js'),
-        sub('src/js/player/media/%s.player.media.js'),
-        sub('src/js/player/media/%s.player.media.*.js'),
+        sub('src/js/player/element/%s.*.js'),
+        sub('src/js/player/media/%s.*.js'),
       ],
       EDITOR_LIST = [
         sub('src/js/editor/%s.editor.js'),
         sub('src/js/editor/%s.editor.*.js'),
-        sub('src/js/editor/field/%s.editor.field.*.js'),
-        sub('src/js/editor/panel/%s.editor.panel.*.js')
+        sub('src/js/editor/field/%s.*.js'),
+        sub('src/js/editor/panel/%s.*.js')
       ],
       DEV_HEAD_LIST = [
         sub('src/js/%s.const.js'),

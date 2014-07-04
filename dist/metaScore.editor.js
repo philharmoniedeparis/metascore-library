@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-07-02 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-07-04 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -36,7 +36,24 @@ if (typeof DEBUG === 'undefined') DEBUG = true;
 */
 var metaScore = {
 
-  version: "0.0.1"
+  version: "0.0.1",
+  
+  locale: {},
+  
+  loadLocale: function(url, callback, scope){
+    
+    metaScore.Ajax.get(url, {
+      'success': function(xhr){
+        //metaScore.locale = xhr.data;
+        console.log(xhr);
+        callback.call(scope);
+      },
+      'error': function(){
+        callback.call(scope);
+      }
+    });
+  
+  }
   
 };
 /**
@@ -211,7 +228,8 @@ metaScore.Ajax.send = function(url, options) {
       'data': {},
       'complete': null,
       'success': null,
-      'error': null
+      'error': null,
+      'scope': this
     };
   
   options = metaScore.Object.extend(function(){}, defaults, options);
@@ -237,15 +255,15 @@ metaScore.Ajax.send = function(url, options) {
   xhr.onreadystatechange = function() {        
     if (xhr.readyState === 4) {
       if(metaScore.Var.is(options.complete, 'function')){
-        options.complete(xhr);
+        options.complete.call(options.scope, xhr);
       }
       if(xhr.status >= 200 && status < 300 || status === 304){
         if(metaScore.Var.is(options.success, 'function')){
-          options.success(xhr);
+          options.success.call(options.scope, xhr);
         }
       }
       else if(metaScore.Var.is(options.error, 'function')){
-        options.error(xhr);
+        options.error.call(options.scope, xhr);
       }
     }
   };
@@ -477,6 +495,37 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;
   };
   
+  this.index = function(selector){
+  
+    var found = -1;
+    
+    metaScore.Array.each(this.elements, function(index, element) {
+      if(metaScore.Dom.is(element, selector)){
+        found = index;
+        return false;
+      }
+    }, this);
+    
+    return found;
+  
+  };
+  
+  this.child = function(selector){
+  
+    var children = new metaScore.Dom(),
+     child;
+  
+    metaScore.Array.each(this.elements, function(index, element) {
+      if(child = metaScore.Dom.selectElement.call(this, selector, element)){
+        children.add(child);
+        return false;
+      }
+    }, this);
+    
+    return children;
+  
+  };
+  
   this.children = function(selector){
   
     var children = new metaScore.Dom();
@@ -533,11 +582,13 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.addDelegate = function(selector, type, callback, useCapture) {
+  this.addDelegate = function(selector, type, callback, scope, useCapture) {
+  
+    scope = scope || this;
       
     return this.addListener(type, function(evt){
       if(metaScore.Dom.is(evt.target, selector)){
-        callback.call(this, evt);
+        callback.call(scope, evt);
       }
     }, useCapture);
     
@@ -550,10 +601,14 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;        
   };
   
-  this.triggerEvent = function(type, data, bubbling, cancelable){  
+  this.triggerEvent = function(type, data, bubbling, cancelable){
+    var return_value = true;
+  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable);
+      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbling, cancelable) && return_value;
     }, this);
+    
+    return return_value;
   };
   
   this.text = function(value) {  
@@ -654,9 +709,14 @@ metaScore.Dom = metaScore.Base.extend(function(){
   };
   
   this.remove = function(){
-    metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.remove(element);
-    }, this);
+    if(this.triggerEvent('beforeremove') !== false){
+      metaScore.Array.each(this.elements, function(index, element) {
+        var parent = element.parentElement;
+        metaScore.Dom.remove(element);
+        metaScore.Dom.triggerEvent(parent, 'childremoved', {'child': element});
+      }, this);
+    }
+    
     return this;
   };
   
@@ -716,6 +776,32 @@ metaScore.Dom.bubbleEvents = {
   'mouseover': true,
   'mouseout': true,
   'transitionend': true
+};
+
+/**
+* Select a single element by selecor
+* @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
+* @param {object} an optional parent to constrain the matched elements 
+* @returns {object} an HTML element
+*/
+metaScore.Dom.selectElement = function (selector, parent) {      
+  var element;
+  
+  if(!parent){
+    parent = document;
+  }
+
+  if (metaScore.Var.is(selector, 'string')) {
+    element = parent.querySelector(selector);
+  }
+  else if (selector.length) {
+    element = selector[0];
+  }
+  else {
+    element = selector;
+  }
+
+  return element;
 };
 
 /**
@@ -841,8 +927,15 @@ metaScore.Dom.toggleClass = function(element, className, force){
   var classNames = className.split(" "),
     i = 0, l = classNames.length;
   
-  for(; i<l; i++){
-    element.classList.toggle(classNames[i], force);
+  if(force === undefined){
+    for(; i<l; i++){
+      element.classList.toggle(classNames[i]);
+    }
+  }
+  else{
+    for(; i<l; i++){
+      element.classList.toggle(classNames[i], force);
+    }
   }
 };
 
@@ -889,8 +982,8 @@ metaScore.Dom.removeListener = function(element, type, callback, useCapture){
 metaScore.Dom.triggerEvent = function(element, type, data, bubbling, cancelable){  
   var event = new CustomEvent(type, {
     detail: data,
-    bubbles: bubbling,
-    cancelable: cancelable
+    bubbles: bubbling !== false,
+    cancelable: cancelable !== false
   });
   
   return element.dispatchEvent(event);
@@ -1050,32 +1143,20 @@ metaScore.Dom.is = function(element, selector){
 metaScore.Draggable = metaScore.Base.extend(function(){
 
   var _target, _handle, _container,
-    _startState, _enabled;
+    _startState;
 
   this.constructor = function(target, handle, container) {
-  
-    if(target._draggable){
-      return target._draggable;
-    }
   
     _target = target;
     _handle = handle;
     
     _container = container || new metaScore.Dom('body');
     
-    _handle.addListener('mousedown', this.onMouseDown);
-      
-    _target.addClass('draggable');
-    
-    _target._draggable = this;
+    this.enable();
   
   };
   
   this.onMouseDown = function(evt){
-  
-    if(_enabled !== true){
-      return;
-    }
   
     _startState = {
       'left': parseInt(_target.css('left'), 10) - evt.clientX,
@@ -1120,9 +1201,9 @@ metaScore.Draggable = metaScore.Base.extend(function(){
   
   this.enable = function(){
   
-    _enabled = true;
-  
     _target.addClass('draggable');
+    
+    _handle.addListener('mousedown', this.onMouseDown);
     
     return this;
   
@@ -1130,12 +1211,20 @@ metaScore.Draggable = metaScore.Base.extend(function(){
   
   this.disable = function(){
   
-    _enabled = false;
-  
     _target.removeClass('draggable');
+    
+    _handle.removeListener('mousedown', this.onMouseDown);
     
     return this;
   
+  };
+  
+  this.destroy = function(){
+    
+    this.disable();
+    
+    return this;
+    
   };
 });
 /**
@@ -1248,13 +1337,9 @@ metaScore.Object.each = function(obj, callback, scope) {
 metaScore.Resizable = metaScore.Base.extend(function(){
 
   var _target, _container, _handles,
-    _startState, _enabled;
+    _startState;
 
   this.constructor = function(target, container) {
-  
-    if(target._resizable){
-      return target._resizable;
-    }
   
     _target = target;
     
@@ -1264,33 +1349,25 @@ metaScore.Resizable = metaScore.Base.extend(function(){
     
     _handles.top_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'top-left')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
       
     _handles.top_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'top-right')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
       
     _handles.bottom_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'bottom-left')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
       
     _handles.bottom_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'bottom-right')
-      .addListener('mousedown', this.onMouseDown)
       .appendTo(_target);
-    
-    _target._resizable = this;
+      
+    this.enable();
   
   };
   
   this.onMouseDown = function(evt){
-  
-    if(_enabled !== true){
-      return;
-    }
   
     _startState = {
       'handle': evt.target,
@@ -1369,7 +1446,9 @@ metaScore.Resizable = metaScore.Base.extend(function(){
   
   this.enable = function(){
   
-    _enabled = true;
+    metaScore.Object.each(_handles, function(index, handle){
+      handle.addListener('mousedown', this.onMouseDown);
+    }, this);
   
     _target.addClass('resizable');
     
@@ -1379,9 +1458,23 @@ metaScore.Resizable = metaScore.Base.extend(function(){
   
   this.disable = function(){
   
-    _enabled = false;
+    metaScore.Object.each(_handles, function(index, handle){
+      handle.removeListener('mousedown', this.onMouseDown);
+    }, this);
   
     _target.removeClass('resizable');
+    
+    return this;
+  
+  };
+  
+  this.destroy = function(){
+  
+    this.disable();
+  
+    metaScore.Object.each(_handles, function(index, handle){
+      handle.remove();
+    }, this);
     
     return this;
   
@@ -1556,75 +1649,227 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     // add event listeners
     
     _block_panel
+      .addListener('blockset', function(evt){
+        _page_panel.setPage(evt.detail.block.getActivePage(), true);
+        _page_panel.getMenu().enableItems('[data-action="new"]');
+        _element_panel.getMenu().enableItems('[data-action="new"]');
+          
+        evt.stopPropagation();
+      })
       .addListener('blockunset', function(evt){
         _page_panel.unsetPage();
+        _page_panel.getMenu().disableItems('[data-action="new"]');
+          
+        evt.stopPropagation();
       })
       .getToolbar()
-        .addDelegate('.buttons .menu li', 'click', function(evt){
-          var action = metaScore.Dom.data(evt.target, 'action'),
-            block;
-        
-          switch(action){
-            case 'new':        
-              block = new metaScore.Player.Block().appendTo(_player_body);           
-              _player.addComponenet('block', block);
-              _block_panel.setBlock(block);
+        .addDelegate('.buttons [data-action]', 'click', function(evt){
+          switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'new':
+              this.addBlock();
               break;
               
             case 'delete':
-              _block_panel.getBlock().remove();
+              this.removeBlock();
               break;
           }
           
           evt.stopPropagation();
-        });
+        }, this);
     
     _page_panel
       .addListener('pageset', function(evt){
-        _page_panel.enableFields();
+        var page = evt.detail.page,
+          block = new metaScore.Player.Block(page.parents().parents().get(0));
         
+        _block_panel.setBlock(block, true);
+        _page_panel.getMenu().enableItems('[data-action="new"]');
+        _element_panel.getMenu().enableItems('[data-action="new"]');
+          
         evt.stopPropagation();
       })
       .addListener('pageunset', function(evt){
-        _page_panel.disableFields();
-        
+        _element_panel.unsetElement();
+        _element_panel.getMenu().disableItems('[data-action="new"]');
+          
         evt.stopPropagation();
       })
       .getToolbar()
-        .addDelegate('.buttons .menu li', 'click', function(evt){
-          var action = metaScore.Dom.data(evt.target, 'action'),
-            page;
-            
-          switch(action){
-            case 'new':        
-              page = _block_panel.getBlock().addPage();                
-              _player.addComponenet('page', page);
-              _page_panel.setPage(page);
+        .addDelegate('.buttons [data-action]', 'click', function(evt){
+          switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'new':
+              this.addPage();
               break;
               
             case 'delete':
-              _page_panel.getPage().remove();
+              this.removePage();
               break;
           }
           
           evt.stopPropagation();
-        });
+        }, this);
     
+    _element_panel
+      .addListener('elementset', function(evt){
+        var element = evt.detail.element,
+          page = new metaScore.Player.Page(element.parents().get(0)),
+          block = new metaScore.Player.Block(page.parents().parents().get(0));
+        
+        _page_panel.setPage(page, true);
+        _block_panel.setBlock(block, true);
+          
+        evt.stopPropagation();
+      })
+      .getToolbar()
+        .addDelegate('.buttons [data-action]', 'click', function(evt){
+          switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'new':
+              this.addElement(metaScore.Dom.data(evt.target, 'type'));
+              break;
+              
+            case 'delete':
+              this.removePage();
+              break;
+          }
+          
+          evt.stopPropagation();
+        }, this);
     
     _player_body
-      .addListener('click', function(evt){        
+      .addDelegate('.metaScore-block .pages .page .element', 'click', function(evt){
+        var element = new metaScore.Player.Element(evt.target);
+        
+        _element_panel.setElement(element);
+        
+        evt.stopImmediatePropagation();
+      }, this)
+      .addDelegate('.metaScore-block .pages .page', 'click', function(evt){      
+        var page = new metaScore.Player.Page(evt.target);
+        
+        _page_panel.setPage(page);
+        _element_panel.unsetElement();
+        
+        evt.stopImmediatePropagation();
+      }, this)
+      .addDelegate('.metaScore-block .pager', 'click', function(evt){
+        var block = new metaScore.Player.Block(evt.target.parentElement);
+                
+        _block_panel.setBlock(block);
+        
+        evt.stopImmediatePropagation();
+      }, this)
+      .addListener('click', function(evt){
         _block_panel.unsetBlock();
         
         evt.stopPropagation();
       })
-      .addDelegate('.metaScore-block .pager', 'click', function(evt){
-        var id = new metaScore.Dom(evt.target).parents('.metaScore-block').attr('id');
+      .addDelegate('.metaScore-block', 'pageactivated', function(evt){
+        var page = evt.detail.page;
         
-        _block_panel.setBlock(_player.getComponenetById('block', id));
+        _page_panel.setPage(page);
+      }, this)
+      .addDelegate('.metaScore-block .pages', 'childremoved', function(evt){
+        var block = new metaScore.Player.Block(evt.target.parentElement);
         
-        evt.stopPropagation();
-      });
+        if(block.getPageCount() === 0){
+          this.addPage(block);
+        }
+        
+        block.setActivePage(0);
+      }, this)
+      .addListener('keydown', this.onKeydown)
+      .addListener('keyup', this.onKeyup);
+
+    new metaScore.Dom('body')
+      .addListener('keydown', this.onKeydown)
+      .addListener('keyup', this.onKeyup);
+      
+      
+    _block_panel.unsetBlock();
     
+  };
+  
+  this.addBlock = function(){    
+    var block = new metaScore.Player.Block().appendTo(_player_body);
+    
+    _block_panel.setBlock(block);
+    
+    this.addPage(block);
+    
+    return block;
+  };
+  
+  this.removeBlock = function(){
+    var block;
+    
+    if(block = _block_panel.getBlock()){
+      block.remove();
+    }
+    
+    _block_panel.unsetBlock();
+    
+  };
+  
+  this.addPage = function(block){
+    var page;
+    
+    block = block || _block_panel.getBlock();
+      
+    page = new metaScore.Player.Page();
+      
+    block.addPage(page);
+    
+    _page_panel.setPage(page);
+    
+    return page;
+  };
+  
+  this.removePage = function(){
+    var page;
+    
+    if(page = _page_panel.getPage()){
+      page.remove();
+    }
+    
+  };
+  
+  this.addElement = function(type, page){
+    var element;
+    
+    page = page || _page_panel.getPage();
+      
+    element = new metaScore.Player.Element[type]();
+      
+    page.addElement(element);
+    
+    _element_panel.setElement(element);
+    
+    return element;
+  };
+  
+  this.removeElement = function(){
+    var element;
+    
+    if(element = _element_panel.getElement()){
+      element.remove();
+    }
+    
+  };
+  
+  this.onKeydown = function(evt){  
+    switch(evt.keyCode){
+      case 18: //alt
+        _player_body.addClass('alt-down');
+        break;
+    }  
+  };
+  
+  this.onKeyup = function(evt){
+    switch(evt.keyCode){
+      case 18: //alt
+        _player_body.removeClass('alt-down');
+        break;
+    }
   };
 });
 /**
@@ -1734,6 +1979,36 @@ metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
       .appendTo(this);    
   
     return item;
+  
+  };
+  
+  this.enableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items
+      .removeListener('click', this.stopClick)
+      .removeClass('disabled');
+  
+    return items;
+  
+  };
+  
+  this.disableItems = function(selector){
+  
+    var items = this.children(selector);
+    
+    items
+      .addListener('click', this.stopClick)
+      .addClass('disabled');
+  
+    return items;
+  
+  };
+  
+  this.stopClick = function(evt){
+  
+    evt.stopPropagation();
   
   };
 });
@@ -2063,7 +2338,7 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
       .appendTo(this);
       
     _toolbar.getTitle()
-      .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+      .addListener('click', this.toggleState);
     
     _contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
@@ -2078,12 +2353,12 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper'}).appendTo(_contents);
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(_contents);
     
       field_uuid = 'field-'+ metaScore.String.uuid(5);
       
       _fields[key] = field = new value.type().attr('id', field_uuid);
-      field.data('name', key);      
+      field.data('name', key);
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
       new metaScore.Dom('<td/>').appendTo(row).append(field);
@@ -2124,7 +2399,29 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
   };
   
-  this.toggleState = function(){
+  this.showFields = function(keys){
+  
+    if(!keys){
+      _contents.children('tr.field-wrapper').show();
+    }
+    else{
+      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
+    }
+    
+  };
+  
+  this.hideFields = function(keys){
+  
+    if(!keys){
+      _contents.children('tr.field-wrapper').hide();
+    }
+    else{
+      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
+    }
+    
+  };
+  
+  this.toggleState = function(evt){
     
     this.toggleClass('collapsed');
     
@@ -3029,11 +3326,11 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         'type': metaScore.Editor.Field.IntegerField,
         'label': metaScore.String.t('Height')
       },
-      'bg_color': {
+      'bg-color': {
         'type': metaScore.Editor.Field.ColorField,
         'label': metaScore.String.t('Background color')
       },
-      'bg_image': {
+      'bg-image': {
         'type': metaScore.Editor.Field.ImageField,
         'label': metaScore.String.t('Background image')
       },
@@ -3058,7 +3355,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     _menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
     
     this.getToolbar().addButton()
-      .addClass('menu')
+      .data('action', 'menu')
       .append(_menu);
       
     this.addDelegate('.field', 'change', this.onFieldChange);
@@ -3077,58 +3374,63 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.setBlock = function(block){
+  this.setBlock = function(block, supressEvent){
+  
+    if(_block && (_block.get(0) === block.get(0))){
+      return;
+    }
     
-    this.unsetBlock(_block);
+    this.unsetBlock(_block, supressEvent);
     
     _block = block;
     
-    if(!_block._draggable){
-      new metaScore.Draggable(_block, _block.children('.pager'), _block.parents());
-    }
-    _block._draggable.enable();
+    this.updateValues();      
+    this.enableFields();      
+    this.getMenu().enableItems('[data-action="delete"]');
     
-    if(!_block._resizable){
-      new metaScore.Resizable(_block, _block.parents());
-    }
-    _block._resizable.enable(); 
+    _block._draggable = new metaScore.Draggable(_block, _block.child('.pager'), _block.parents()).enable();
+    _block._resizable = new metaScore.Resizable(_block, _block.parents()).enable();
     
     _block
       .addListener('drag', this.onBlockDrag)
       .addListener('resize', this.onBlockResize)
       .addClass('selected');
+      
+    if(supressEvent !== true){
+      this.triggerEvent('blockset', {'block': _block});
+    }
     
-    this.updateValues();
-      
-    this.enableFields();
-      
-    this.triggerEvent('blockset', {'block': _block});
+    return this;
     
   };
   
-  this.unsetBlock = function(block){
-  
+  this.unsetBlock = function(block, supressEvent){
+    
     block = block || this.getBlock();
+      
+    this.disableFields();    
+    this.getMenu().disableItems('[data-action="delete"]');
+    
+    if(block){
+      block._draggable.destroy();
+      delete block._draggable;
+      
+      block._resizable.destroy();
+      delete block._resizable;
   
-    if(!block){
-      return;
+      block
+        .removeListener('drag', this.onBlockDrag)
+        .removeListener('resize', this.onBlockResize)
+        .removeClass('selected');
+      
+      _block = null;
+    }
+      
+    if(supressEvent !== true){
+      this.triggerEvent('blockunset', {'block': block});
     }
     
-    if(block._draggable){
-      block._draggable.disable();
-    }
-    if(block._resizable){
-      block._resizable.disable();
-    }
-  
-    block
-      .removeListener('drag', this.onBlockDrag)
-      .removeListener('resize', this.onBlockResize)
-      .removeClass('selected');
-      
-    this.disableFields();
-      
-    this.triggerEvent('blockunset', {'block': block});
+    return this;
     
   };
   
@@ -3161,10 +3463,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'height':
         _block.css('height', value +'px');
         break;
-      case 'bg_color':
+      case 'bg-color':
         _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
         break;
       case 'synched':
@@ -3189,10 +3491,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'height':
         field.setValue(parseInt(_block.css('height'), 10));
         break;
-      case 'bg_color':
+      case 'bg-color':
         field.setValue(_block.css('background-color'));
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
         break;
       case 'synched':
@@ -3255,42 +3557,42 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
         'type': metaScore.Editor.Field.IntegerField,
         'label': metaScore.String.t('Height')
       },
-      'r_index': {
+      'r-index': {
         'type': metaScore.Editor.Field.IntegerField,
         'label': metaScore.String.t('Reading index'),
         'configs': {
           'min': 0
         }
       },
-      'z_index': {
+      'z-index': {
         'type': metaScore.Editor.Field.IntegerField,
         'label': metaScore.String.t('Display index')
       },
-      'bg_color': {
+      'bg-color': {
         'type': metaScore.Editor.Field.ColorField,
         'label': metaScore.String.t('Background color')
       },
-      'bg_image': {
+      'bg-image': {
         'type': metaScore.Editor.Field.ImageField,
         'label': metaScore.String.t('Background image')
       },
-      'border_width': {
+      'border-width': {
         'type': metaScore.Editor.Field.IntegerField,
         'label': metaScore.String.t('Border width')
       },
-      'border_color': {
+      'border-color': {
         'type': metaScore.Editor.Field.ColorField,
         'label': metaScore.String.t('Border color')
       },
-      'rounded_conrners': {
+      'rounded-conrners': {
         'type': metaScore.Editor.Field.CornerField,
         'label': metaScore.String.t('Rounded conrners')
       },
-      'start_time': {
+      'start-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('Start time')
       },
-      'end_time': {
+      'end-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('End time')
       }
@@ -3304,16 +3606,23 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
   */
   this.constructor = function(configs) {
   
+    var toolbar;
+  
     this.super(configs);
     
+    toolbar = this.getToolbar();
+    
+    toolbar.addButton().data('action', 'previous');
+    toolbar.addButton().data('action', 'next');
+    
     _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': metaScore.String.t('Add a new cursor'), 'data-action': 'new-cusror'});
-    _menu.addItem({'text': metaScore.String.t('Add a new image'), 'data-action': 'new-image'});
-    _menu.addItem({'text': metaScore.String.t('Add a new text element'), 'data-action': 'new-text'});
+    _menu.addItem({'text': metaScore.String.t('Add a new cursor'), 'data-action': 'new', 'data-type': 'Cursor'});
+    _menu.addItem({'text': metaScore.String.t('Add a new image'), 'data-action': 'new', 'data-type': 'Image'});
+    _menu.addItem({'text': metaScore.String.t('Add a new text element'), 'data-action': 'new', 'data-type': 'Text'});
     _menu.addItem({'text': metaScore.String.t('Delete the active element'), 'data-action': 'delete'});
     
-    this.getToolbar().addButton()
-      .addClass('menu')
+    toolbar.addButton()
+      .data('action', 'menu')
       .append(_menu);
       
     this.addDelegate('.field', 'change', this.onFieldChange);
@@ -3332,36 +3641,72 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.setElement = function(element){
+  this.setElement = function(element, supressEvent){
+  
+    if(_element && (_element.get(0) === element.get(0))){
+      return;
+    }
     
-    this.unsetElement(_element);
+    this.unsetElement(_element, supressEvent);
     
     _element = element;
     
-    _element.addClass('selected');
-    
-    this.updateValues();
-      
+    this.updateValues();      
     this.enableFields();
-      
-    this.triggerEvent('elementset', {'element': _element});
+    this.getMenu().enableItems('[data-action="delete"]');
+    
+    _element._draggable = new metaScore.Draggable(_element, _element, _element.parents()).enable();
+    _element._resizable = new metaScore.Resizable(_element, _element.parents()).enable();
+    
+    _element
+      .addListener('drag', this.onElementDrag)
+      .addListener('resize', this.onElementResize)
+      .addClass('selected');
+    
+    if(supressEvent !== true){
+      this.triggerEvent('elementset', {'element': _element});
+    }
+    
+    return this;
     
   };
   
-  this.unsetElement = function(element){
+  this.unsetElement = function(element, supressEvent){
   
     element = element || this.getElement();
-  
-    if(!element){
-      return;
-    }
-  
-    element.removeClass('selected');
       
     this.disableFields();
+    this.getMenu().disableItems('[data-action="delete"]');
+  
+    if(element){
+      element._draggable.destroy();
+      delete element._draggable;
       
-    this.triggerEvent('elementunset', {'element': element});
+      element._resizable.destroy();
+      delete element._resizable;
+  
+      element
+        .removeListener('drag', this.onElementDrag)
+        .removeListener('resize', this.onElementResize)
+        .removeClass('selected');
+      
+      _element = null;
+    }
     
+    if(supressEvent !== true){
+      this.triggerEvent('elementunset', {'element': element});
+    }
+    
+    return this;
+    
+  };
+  
+  this.onElementDrag = function(evt){  
+    this.updateValues(['x', 'y']);
+  };
+  
+  this.onElementResize = function(evt){  
+    this.updateValues(['x', 'y', 'width', 'height']);
   };
   
   this.onFieldChange = function(evt){  
@@ -3373,11 +3718,44 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     }
   
     switch(field.data('name')){
-      case 'bg_color':
+      case 'x':
+        _element.css('left', value +'px');
+        break;
+      case 'y':
+        _element.css('top', value +'px');
+        break;
+      case 'width':
+        _element.css('width', value +'px');
+        break;
+      case 'height':
+        _element.css('height', value +'px');
+        break;
+      case 'r-index':
+        _element.data('r-index', value);
+        break;
+      case 'z-index':
+        _element.css('z-index', value);
+        break;
+      case 'bg-color':
         _element.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
+        break;
+      case 'border-width':
+        _element.css('border-width', value +'px');
+        break;
+      case 'border-color':
+        _element.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'rounded-conrners':
+        // TODO
+        break;
+      case 'start-time':
+        _element.data('start-time', value);
+        break;
+      case 'end-time':
+        _element.data('end-time', value);
         break;
     }
   };
@@ -3386,11 +3764,44 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     var field = this.getField(name);
     
     switch(name){
-      case 'bg_color':
+      case 'x':
+        field.setValue(parseInt(_element.css('left'), 10));
+        break;
+      case 'y':
+        field.setValue(parseInt(_element.css('top'), 10));
+        break;
+      case 'width':
+        field.setValue(parseInt(_element.css('width'), 10));
+        break;
+      case 'height':
+        field.setValue(parseInt(_element.css('height'), 10));
+        break;
+      case 'r-index':
+        field.setValue(_element.data('r-index') || 0);
+        break;
+      case 'z-index':
+        field.setValue(parseInt(_element.css('z-index'), 10));
+        break;
+      case 'bg-color':
         field.setValue(_element.css('background-color'));
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
+        break;
+      case 'border-width':
+        field.setValue(parseInt(_element.css('border-width'), 10));
+        break;
+      case 'border-color':
+        field.setValue(_element.css('border-color'));
+        break;
+      case 'rounded-conrners':
+        // TODO
+        break;
+      case 'start-time':
+        field.setValue(_element.data('start-time') || 0);
+        break;
+      case 'end-time':
+        field.setValue(_element.data('end-time') || 0);
         break;
     }
   };
@@ -3432,19 +3843,19 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     * The panel's fields
     */
     fields: {
-      'bg_color': {
+      'bg-color': {
         'type': metaScore.Editor.Field.ColorField,
         'label': metaScore.String.t('Background color')
       },
-      'bg_image': {
+      'bg-image': {
         'type': metaScore.Editor.Field.ImageField,
         'label': metaScore.String.t('Background image')
       },
-      'start_time': {
+      'start-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('Start time')
       },
-      'end_time': {
+      'end-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('End time')
       }
@@ -3465,7 +3876,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     _menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
     
     this.getToolbar().addButton()
-      .addClass('menu')
+      .data('action', 'menu')
       .append(_menu);
       
     this.addDelegate('.field', 'change', this.onFieldChange);
@@ -3484,35 +3895,44 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.setPage = function(page){
+  this.setPage = function(page, supressEvent){
+  
+    if(_page && (_page.get(0) === page.get(0))){
+      return;
+    }
     
-    this.unsetPage(_page);
+    this.unsetPage(_page, supressEvent);
     
     _page = page;
     
-    _page.addClass('selected');
-    
-    this.updateValues();
-      
+    this.updateValues();      
     this.enableFields();
+    this.getMenu().enableItems('[data-action="delete"]');
       
-    this.triggerEvent('pageset', {'page': _page});
+    if(supressEvent !== true){
+      this.triggerEvent('pageset', {'page': _page});
+    }
+    
+    return this;
     
   };
   
-  this.unsetPage = function(page){
-  
+  this.unsetPage = function(page, supressEvent){
+    
     page = page || this.getPage();
-  
-    if(!page){
-      return;
+      
+    this.disableFields();    
+    this.getMenu().disableItems('[data-action="delete"]');
+      
+    if(page){    
+      _page = null;
     }
-  
-    page.removeClass('selected');
-      
-    this.disableFields();
-      
-    this.triggerEvent('pageunset', {'page': page});
+    
+    if(supressEvent !== true){
+      this.triggerEvent('pageunset', {'page': page});
+    }
+    
+    return this;
     
   };
   
@@ -3525,11 +3945,16 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     }
   
     switch(field.data('name')){
-      case 'bg_color':
+      case 'bg-color':
         _page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg_image':
         // TODO
+      case 'start-time':
+        _page.data('start-time', value);
+        break;
+      case 'end-time':
+        _page.data('end-time', value);
         break;
     }
   };
@@ -3538,11 +3963,17 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     var field = this.getField(name);
     
     switch(name){
-      case 'bg_color':
+      case 'bg-color':
         field.setValue(_page.css('background-color'));
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
+        break;
+      case 'start-time':
+        field.setValue(_page.data('start-time') || 0);
+        break;
+      case 'end-time':
+        field.setValue(_page.data('end-time') || 0);
         break;
     }
   };
@@ -3567,59 +3998,6 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
  * @requires ../metaScore.base.js
  */
 metaScore.Player = metaScore.Base.extend(function(){
-
-  var _componenets;
-
-  this.constructor = function() {
-  
-    _componenets = {};
-  
-  };
-  
-  this.addComponenet = function(type, componenet){
-  
-    var id = componenet.attr('id');
-  
-    if(!_componenets.hasOwnProperty(type)){
-      _componenets[type] = {};
-    }
-  
-    _componenets[type][id] = componenet;
-  
-  };
-  
-  this.getComponenetById = function(type, id){
-    
-    if(_componenets.hasOwnProperty(type) && _componenets[type].hasOwnProperty(id)){
-      return _componenets[type][id];
-    }
-    
-    return undefined;
-  
-  };
-  
-  this.getComponenetByElement = function(type, element){
-    
-    return this.getComponenetById(type, metaScore.Dom.attr(element, 'id'));
-  
-  };
-  
-  this.getComponenetBySelector = function(type, selector){
-  
-    var componenet;
-  
-    if(_componenets.hasOwnProperty(type)){
-      metaScore.Object.each(_componenets[type], function(key, value){
-        if(value.is(selector)){
-          componenet = value;
-          return false;
-        }
-      }, this);
-    }
-    
-    return componenet;
-  
-  };
   
 });
 /**
@@ -3634,44 +4012,107 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   
   var _pages, _pager;
 
-  this.constructor = function(element) {
+  this.constructor = function(dom) {
   
-    if(element){
-      this.super(element);
+    _pages = [];
+  
+    if(dom){
+      this.super(dom);
+      _pages = this.children('.pages');
+      _pager = new metaScore.Player.Pager(this.child('.pager').get(0));
     }
     else{
-      this.super('<div/>', {'class': 'metaScore-block', 'id': metaScore.String.uuid(5)});
+      this.super('<div/>', {'class': 'metaScore-block'});
+      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
+      _pager = new metaScore.Player.Pager().appendTo(this);
     }
     
-    _pages = this.children('pages');
-    if(_pages.count() === 0){
-      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}) .appendTo(this);
-    }
-    
-    _pager = this.children('page');
-    if(_pager.count() === 0){
-      _pager = new metaScore.Player.Pager() .appendTo(this);
-    }
+    _pager
+      .addDelegate('.button', 'click', function(evt){
+        var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
+          action, index;
+          
+        if(active){
+          action = metaScore.Dom.data(evt.target, 'action');
+        
+          switch(action){
+            case 'first':
+              this.setActivePage(0);
+              break;
+            case 'previous':
+              this.setActivePage(this.getActivePageIndex() - 1);
+              break;
+            case 'next':
+              this.setActivePage(this.getActivePageIndex() + 1);
+              break;
+          }
+        }
+        
+        evt.stopPropagation();
+      }, this);
     
   };
   
-  this.addPage = function(configs){
+  this.getPages = function(){
   
-    var page = new metaScore.Player.Page(configs)
-      .appendTo(_pages);
-      
-    this.updatePagerCount();
-    
-    return page;
+    return _pages.children('.page');
   
   };
   
-  this.updatePagerCount = function(){
+  this.addPage = function(page){
   
-    var page_count = _pages.children('page').count();
+    _pages.append(page);
+    
+    this.setActivePage(this.getPages().count() - 1);
   
-    _pager.updateCount(page_count);
+  };
   
+  this.getActivePage = function(){
+  
+    return new metaScore.Player.Page(this.getPages().child('.active').get(0));
+  
+  };
+  
+  this.getActivePageIndex = function(){
+  
+    return this.getPages().index('.active');
+  
+  };
+  
+  this.getPageCount = function(){
+  
+    return this.getPages().count();
+  
+  };
+  
+  this.setActivePage = function(index){
+    
+    var pages = this.getPages(),
+      page = new metaScore.Player.Page(pages.get(index));
+  
+    pages.removeClass('active');
+    
+    page.addClass('active');
+    
+    this.updatePager();
+    
+    this.triggerEvent('pageactivated', {'index': index, 'page': page});
+  
+  };
+  
+  this.updatePager = function(){
+  
+    var index = this.getActivePageIndex();
+    var count = this.getPageCount();
+  
+    _pager.updateCount(index, count);
+  
+  };
+  
+  this.isSynched = function(){
+    
+    return this.data('synched') === "true";
+    
   };
 });
 /**
@@ -3681,65 +4122,24 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
  */
 metaScore.Player.Element = metaScore.Dom.extend(function(){
 
-  this.constructor = function(selector) {
+  this.constructor = function(dom) {
   
-    this.super('<div/>', {'class': 'element'});
+    if(dom){
+      this.super(dom);
+    }
+    else{
+      this.super('<div/>', {'class': 'element'});
+    }
     
   };
-  
-  this.setProperty = function(name, value){
-  
-    switch(name){
-      case 'x':
-        this.css('left', value +'px');
-        break;
-        
-      case 'y':
-        this.css('top', value +'px');
-        break;
-        
-      case 'width':
-        this.css('width', value +'px');
-        break;
-        
-      case 'height':
-        this.css('height', value +'px');
-        break;
-        
-      case 'reading-index':
-        this.data('r-index', value);
-        break;
-        
-      case 'z-index':
-        this.css('z-index', value);
-        break;
-        
-      case 'bg-color':
-        this.css('background-color', value);
-        break;
-        
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
-        break;
-        
-      case 'border-width':
-        this.css('border-width', value +'px');
-        break;
-        
-      case 'border-color':
-        this.css('border-color', value);
-        break;
-        
-      case 'start':
-        this.data('start', value);
-        break;
-        
-      case 'end':
-        this.data('end', value);
-        break;
-    }
-  
-  };
+});
+/**
+ * Media
+ *
+ * @requires metaScore.player.js
+ * @requires ../metaScore.dom.js
+ */
+metaScore.Player.Media = metaScore.Dom.extend(function(){
 });
 /**
  * Player Page
@@ -3748,45 +4148,23 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
  * @requires ../helpers/metaScore.dom.js
  */
 metaScore.Player.Page = metaScore.Dom.extend(function(){
-  
-  var _elements = [];
 
-  this.constructor = function(selector) {
+  this.constructor = function(dom) {
   
-    this.super('<div/>', {'class': 'page'});
+    if(dom){
+      this.super(dom);
+    }
+    else{
+      this.super('<div/>', {'class': 'page'});
+    }
     
   };
   
-  this.addElement = function(configs){
+  this.addElement = function(element){
   
-    var element = new metaScore.Player.Element(configs)
-      .appendTo(this);
-  
-    _elements.push(element);
+    this.append(element);
     
     return element;
-  
-  };
-  
-  this.setProperty = function(name, value){
-  
-    switch(name){        
-      case 'bg-color':
-        this.css('background-color', value);
-        break;
-        
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
-        break;
-        
-      case 'start':
-        this.data('start', value);
-        break;
-        
-      case 'end':
-        this.data('end', value);
-        break;
-    }
   
   };
 });
@@ -3799,45 +4177,86 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
 
   var _count, _buttons;
 
-  this.constructor = function(selector) {
+  this.constructor = function(dom) {
   
-    this.super('<div/>', {'class': 'pager'});
-    
-    _count = new metaScore.Dom('<div/>', {'class': 'count'})
-      .appendTo(this);
-    
-    _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-      .appendTo(this);
-      
-    _buttons.first = new metaScore.Dom('<div/>', {'class': 'first'})
-      .appendTo(_buttons);
-      
-    _buttons.previous = new metaScore.Dom('<div/>', {'class': 'previous'})
-      .appendTo(_buttons);
-      
-    _buttons.next = new metaScore.Dom('<div/>', {'class': 'next'})
-      .appendTo(_buttons);
+    if(dom){
+      this.super(dom);      
+      _count = this.child('.count');      
+      _buttons = this.child('.buttons');        
+      _buttons.first = _buttons.child('[data-action="first"]');
+      _buttons.previous = _buttons.child('[data-action="previous"]');
+      _buttons.next = _buttons.child('[data-action="next"]');
+    }
+    else{
+      this.super('<div/>', {'class': 'pager'});
+      _count = new metaScore.Dom('<div/>', {'class': 'count'}).appendTo(this);      
+      _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+        .addListener('mousedown', function(evt){
+          evt.stopPropagation();
+        })
+        .appendTo(this);        
+      _buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'}).appendTo(_buttons);      
+      _buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'}).appendTo(_buttons);      
+      _buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'}).appendTo(_buttons);
+    }
     
   };
   
-  this.updateCount = function(index, total){
+  this.updateCount = function(index, count){
   
-    _count.text(metaScore.String.t('page !current/!total', {'!current': index + 1, '!total': total}));
+    _count.text(metaScore.String.t('page !current/!count', {'!current': (index + 1), '!count': count}));
     
     _buttons.first.toggleClass('inactive', index === 0);
     _buttons.previous.toggleClass('inactive', index === 0);
-    _buttons.next.toggleClass('inactive', index >= total - 1);
+    _buttons.next.toggleClass('inactive', index >= count - 1);
   
   };
   
 });
 /**
- * Media
+ * Cursor
  *
- * @requires metaScore.player.js
- * @requires ../metaScore.dom.js
+ * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Media = metaScore.Dom.extend(function(){
+metaScore.Player.Element.Cursor = metaScore.Player.Element.extend(function(){
+
+  this.constructor = function(element) {
+  
+    this.super(element);
+    
+    this.data('type', 'cursor');
+    
+  };
+});
+/**
+ * Image
+ *
+ * @requires ../metaScore.player.element.js
+ */
+metaScore.Player.Element.Image = metaScore.Player.Element.extend(function(){
+
+  this.constructor = function(element) {
+  
+    this.super(element);
+    
+    this.data('type', 'image');
+    
+  };
+});
+/**
+ * Text
+ *
+ * @requires ../metaScore.player.element.js
+ */
+metaScore.Player.Element.Text = metaScore.Player.Element.extend(function(){
+
+  this.constructor = function(element) {
+  
+    this.super(element);
+    
+    this.data('type', 'text');
+    
+  };
 });
 /**
  * Media CuePoints

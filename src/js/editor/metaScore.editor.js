@@ -50,74 +50,226 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     // add event listeners
     
     _block_panel
+      .addListener('blockset', function(evt){
+        _page_panel.setPage(evt.detail.block.getActivePage(), true);
+        _page_panel.getMenu().enableItems('[data-action="new"]');
+        _element_panel.getMenu().enableItems('[data-action="new"]');
+          
+        evt.stopPropagation();
+      })
       .addListener('blockunset', function(evt){
         _page_panel.unsetPage();
+        _page_panel.getMenu().disableItems('[data-action="new"]');
+          
+        evt.stopPropagation();
       })
       .getToolbar()
-        .addDelegate('.buttons .menu li', 'click', function(evt){
-          var action = metaScore.Dom.data(evt.target, 'action'),
-            block;
-        
-          switch(action){
-            case 'new':        
-              block = new metaScore.Player.Block().appendTo(_player_body);           
-              _player.addComponenet('block', block);
-              _block_panel.setBlock(block);
+        .addDelegate('.buttons [data-action]', 'click', function(evt){
+          switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'new':
+              this.addBlock();
               break;
               
             case 'delete':
-              _block_panel.getBlock().remove();
+              this.removeBlock();
               break;
           }
           
           evt.stopPropagation();
-        });
+        }, this);
     
     _page_panel
       .addListener('pageset', function(evt){
-        _page_panel.enableFields();
+        var page = evt.detail.page,
+          block = new metaScore.Player.Block(page.parents().parents().get(0));
         
+        _block_panel.setBlock(block, true);
+        _page_panel.getMenu().enableItems('[data-action="new"]');
+        _element_panel.getMenu().enableItems('[data-action="new"]');
+          
         evt.stopPropagation();
       })
       .addListener('pageunset', function(evt){
-        _page_panel.disableFields();
-        
+        _element_panel.unsetElement();
+        _element_panel.getMenu().disableItems('[data-action="new"]');
+          
         evt.stopPropagation();
       })
       .getToolbar()
-        .addDelegate('.buttons .menu li', 'click', function(evt){
-          var action = metaScore.Dom.data(evt.target, 'action'),
-            page;
-            
-          switch(action){
-            case 'new':        
-              page = _block_panel.getBlock().addPage();                
-              _player.addComponenet('page', page);
-              _page_panel.setPage(page);
+        .addDelegate('.buttons [data-action]', 'click', function(evt){
+          switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'new':
+              this.addPage();
               break;
               
             case 'delete':
-              _page_panel.getPage().remove();
+              this.removePage();
               break;
           }
           
           evt.stopPropagation();
-        });
+        }, this);
     
+    _element_panel
+      .addListener('elementset', function(evt){
+        var element = evt.detail.element,
+          page = new metaScore.Player.Page(element.parents().get(0)),
+          block = new metaScore.Player.Block(page.parents().parents().get(0));
+        
+        _page_panel.setPage(page, true);
+        _block_panel.setBlock(block, true);
+          
+        evt.stopPropagation();
+      })
+      .getToolbar()
+        .addDelegate('.buttons [data-action]', 'click', function(evt){
+          switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'new':
+              this.addElement(metaScore.Dom.data(evt.target, 'type'));
+              break;
+              
+            case 'delete':
+              this.removePage();
+              break;
+          }
+          
+          evt.stopPropagation();
+        }, this);
     
     _player_body
-      .addListener('click', function(evt){        
+      .addDelegate('.metaScore-block .pages .page .element', 'click', function(evt){
+        var element = new metaScore.Player.Element(evt.target);
+        
+        _element_panel.setElement(element);
+        
+        evt.stopImmediatePropagation();
+      }, this)
+      .addDelegate('.metaScore-block .pages .page', 'click', function(evt){      
+        var page = new metaScore.Player.Page(evt.target);
+        
+        _page_panel.setPage(page);
+        _element_panel.unsetElement();
+        
+        evt.stopImmediatePropagation();
+      }, this)
+      .addDelegate('.metaScore-block .pager', 'click', function(evt){
+        var block = new metaScore.Player.Block(evt.target.parentElement);
+                
+        _block_panel.setBlock(block);
+        
+        evt.stopImmediatePropagation();
+      }, this)
+      .addListener('click', function(evt){
         _block_panel.unsetBlock();
         
         evt.stopPropagation();
       })
-      .addDelegate('.metaScore-block .pager', 'click', function(evt){
-        var id = new metaScore.Dom(evt.target).parents('.metaScore-block').attr('id');
+      .addDelegate('.metaScore-block', 'pageactivated', function(evt){
+        var page = evt.detail.page;
         
-        _block_panel.setBlock(_player.getComponenetById('block', id));
+        _page_panel.setPage(page);
+      }, this)
+      .addDelegate('.metaScore-block .pages', 'childremoved', function(evt){
+        var block = new metaScore.Player.Block(evt.target.parentElement);
         
-        evt.stopPropagation();
-      });
+        if(block.getPageCount() === 0){
+          this.addPage(block);
+        }
+        
+        block.setActivePage(0);
+      }, this)
+      .addListener('keydown', this.onKeydown)
+      .addListener('keyup', this.onKeyup);
+
+    new metaScore.Dom('body')
+      .addListener('keydown', this.onKeydown)
+      .addListener('keyup', this.onKeyup);
+      
+      
+    _block_panel.unsetBlock();
     
+  };
+  
+  this.addBlock = function(){    
+    var block = new metaScore.Player.Block().appendTo(_player_body);
+    
+    _block_panel.setBlock(block);
+    
+    this.addPage(block);
+    
+    return block;
+  };
+  
+  this.removeBlock = function(){
+    var block;
+    
+    if(block = _block_panel.getBlock()){
+      block.remove();
+    }
+    
+    _block_panel.unsetBlock();
+    
+  };
+  
+  this.addPage = function(block){
+    var page;
+    
+    block = block || _block_panel.getBlock();
+      
+    page = new metaScore.Player.Page();
+      
+    block.addPage(page);
+    
+    _page_panel.setPage(page);
+    
+    return page;
+  };
+  
+  this.removePage = function(){
+    var page;
+    
+    if(page = _page_panel.getPage()){
+      page.remove();
+    }
+    
+  };
+  
+  this.addElement = function(type, page){
+    var element;
+    
+    page = page || _page_panel.getPage();
+      
+    element = new metaScore.Player.Element[type]();
+      
+    page.addElement(element);
+    
+    _element_panel.setElement(element);
+    
+    return element;
+  };
+  
+  this.removeElement = function(){
+    var element;
+    
+    if(element = _element_panel.getElement()){
+      element.remove();
+    }
+    
+  };
+  
+  this.onKeydown = function(evt){  
+    switch(evt.keyCode){
+      case 18: //alt
+        _player_body.addClass('alt-down');
+        break;
+    }  
+  };
+  
+  this.onKeyup = function(evt){
+    switch(evt.keyCode){
+      case 18: //alt
+        _player_body.removeClass('alt-down');
+        break;
+    }
   };
 });

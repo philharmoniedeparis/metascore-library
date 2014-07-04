@@ -40,11 +40,11 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         'type': metaScore.Editor.Field.IntegerField,
         'label': metaScore.String.t('Height')
       },
-      'bg_color': {
+      'bg-color': {
         'type': metaScore.Editor.Field.ColorField,
         'label': metaScore.String.t('Background color')
       },
-      'bg_image': {
+      'bg-image': {
         'type': metaScore.Editor.Field.ImageField,
         'label': metaScore.String.t('Background image')
       },
@@ -69,7 +69,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     _menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
     
     this.getToolbar().addButton()
-      .addClass('menu')
+      .data('action', 'menu')
       .append(_menu);
       
     this.addDelegate('.field', 'change', this.onFieldChange);
@@ -88,58 +88,63 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.setBlock = function(block){
+  this.setBlock = function(block, supressEvent){
+  
+    if(_block && (_block.get(0) === block.get(0))){
+      return;
+    }
     
-    this.unsetBlock(_block);
+    this.unsetBlock(_block, supressEvent);
     
     _block = block;
     
-    if(!_block._draggable){
-      new metaScore.Draggable(_block, _block.children('.pager'), _block.parents());
-    }
-    _block._draggable.enable();
+    this.updateValues();      
+    this.enableFields();      
+    this.getMenu().enableItems('[data-action="delete"]');
     
-    if(!_block._resizable){
-      new metaScore.Resizable(_block, _block.parents());
-    }
-    _block._resizable.enable(); 
+    _block._draggable = new metaScore.Draggable(_block, _block.child('.pager'), _block.parents()).enable();
+    _block._resizable = new metaScore.Resizable(_block, _block.parents()).enable();
     
     _block
       .addListener('drag', this.onBlockDrag)
       .addListener('resize', this.onBlockResize)
       .addClass('selected');
+      
+    if(supressEvent !== true){
+      this.triggerEvent('blockset', {'block': _block});
+    }
     
-    this.updateValues();
-      
-    this.enableFields();
-      
-    this.triggerEvent('blockset', {'block': _block});
+    return this;
     
   };
   
-  this.unsetBlock = function(block){
-  
+  this.unsetBlock = function(block, supressEvent){
+    
     block = block || this.getBlock();
+      
+    this.disableFields();    
+    this.getMenu().disableItems('[data-action="delete"]');
+    
+    if(block){
+      block._draggable.destroy();
+      delete block._draggable;
+      
+      block._resizable.destroy();
+      delete block._resizable;
   
-    if(!block){
-      return;
+      block
+        .removeListener('drag', this.onBlockDrag)
+        .removeListener('resize', this.onBlockResize)
+        .removeClass('selected');
+      
+      _block = null;
+    }
+      
+    if(supressEvent !== true){
+      this.triggerEvent('blockunset', {'block': block});
     }
     
-    if(block._draggable){
-      block._draggable.disable();
-    }
-    if(block._resizable){
-      block._resizable.disable();
-    }
-  
-    block
-      .removeListener('drag', this.onBlockDrag)
-      .removeListener('resize', this.onBlockResize)
-      .removeClass('selected');
-      
-    this.disableFields();
-      
-    this.triggerEvent('blockunset', {'block': block});
+    return this;
     
   };
   
@@ -172,10 +177,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'height':
         _block.css('height', value +'px');
         break;
-      case 'bg_color':
+      case 'bg-color':
         _block.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
         break;
       case 'synched':
@@ -200,10 +205,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'height':
         field.setValue(parseInt(_block.css('height'), 10));
         break;
-      case 'bg_color':
+      case 'bg-color':
         field.setValue(_block.css('background-color'));
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
         break;
       case 'synched':

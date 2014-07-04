@@ -21,19 +21,19 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     * The panel's fields
     */
     fields: {
-      'bg_color': {
+      'bg-color': {
         'type': metaScore.Editor.Field.ColorField,
         'label': metaScore.String.t('Background color')
       },
-      'bg_image': {
+      'bg-image': {
         'type': metaScore.Editor.Field.ImageField,
         'label': metaScore.String.t('Background image')
       },
-      'start_time': {
+      'start-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('Start time')
       },
-      'end_time': {
+      'end-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('End time')
       }
@@ -54,7 +54,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     _menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
     
     this.getToolbar().addButton()
-      .addClass('menu')
+      .data('action', 'menu')
       .append(_menu);
       
     this.addDelegate('.field', 'change', this.onFieldChange);
@@ -73,35 +73,44 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
   
   };
   
-  this.setPage = function(page){
+  this.setPage = function(page, supressEvent){
+  
+    if(_page && (_page.get(0) === page.get(0))){
+      return;
+    }
     
-    this.unsetPage(_page);
+    this.unsetPage(_page, supressEvent);
     
     _page = page;
     
-    _page.addClass('selected');
-    
-    this.updateValues();
-      
+    this.updateValues();      
     this.enableFields();
+    this.getMenu().enableItems('[data-action="delete"]');
       
-    this.triggerEvent('pageset', {'page': _page});
+    if(supressEvent !== true){
+      this.triggerEvent('pageset', {'page': _page});
+    }
+    
+    return this;
     
   };
   
-  this.unsetPage = function(page){
-  
+  this.unsetPage = function(page, supressEvent){
+    
     page = page || this.getPage();
-  
-    if(!page){
-      return;
+      
+    this.disableFields();    
+    this.getMenu().disableItems('[data-action="delete"]');
+      
+    if(page){    
+      _page = null;
     }
-  
-    page.removeClass('selected');
-      
-    this.disableFields();
-      
-    this.triggerEvent('pageunset', {'page': page});
+    
+    if(supressEvent !== true){
+      this.triggerEvent('pageunset', {'page': page});
+    }
+    
+    return this;
     
   };
   
@@ -114,11 +123,16 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     }
   
     switch(field.data('name')){
-      case 'bg_color':
+      case 'bg-color':
         _page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg_image':
         // TODO
+      case 'start-time':
+        _page.data('start-time', value);
+        break;
+      case 'end-time':
+        _page.data('end-time', value);
         break;
     }
   };
@@ -127,11 +141,17 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     var field = this.getField(name);
     
     switch(name){
-      case 'bg_color':
+      case 'bg-color':
         field.setValue(_page.css('background-color'));
         break;
-      case 'bg_image':
+      case 'bg-image':
         // TODO
+        break;
+      case 'start-time':
+        field.setValue(_page.data('start-time') || 0);
+        break;
+      case 'end-time':
+        field.setValue(_page.data('end-time') || 0);
         break;
     }
   };

@@ -13,7 +13,9 @@
     
     <script type="text/javascript">
       $(function(){
-        new metaScore.Editor('body');
+        metaScore.loadLocale('dist/fr.json', function(){
+          new metaScore.Editor('body');
+        });
       });
     </script>
   </head>
