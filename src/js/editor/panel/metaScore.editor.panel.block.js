@@ -94,10 +94,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       return;
     }
     
-    this.unsetBlock(_block, supressEvent);
+    this.unsetBlock(supressEvent);
     
-    this.updateFieldValues(block);
-    this.enableFields();      
+    this.enableFields();
+    this.updateFieldValues(block);  
     this.getMenu().enableItems('[data-action="delete"]');
     
     block._draggable = new metaScore.Draggable(block, block.child('.pager'), block.parents()).enable();
@@ -106,6 +106,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     block
       .addListener('dragstart', this.onBlockDragStart)
       .addListener('dragend', this.onBlockDragEnd)
+      .addListener('resizestart', this.onBlockResizeStart)
       .addListener('resizeend', this.onBlockResizeEnd)
       .addClass('selected');
       
@@ -119,9 +120,9 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.unsetBlock = function(block, supressEvent){
-    
-    block = block || this.getBlock();
+  this.unsetBlock = function(supressEvent){
+  
+    var block = this.getBlock();
       
     this.disableFields();    
     this.getMenu().disableItems('[data-action="delete"]');
@@ -136,6 +137,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       block
         .removeListener('dragstart', this.onBlockDragStart)
         .removeListener('dragend', this.onBlockDragEnd)
+        .removeListener('resizestart', this.onBlockResizeStart)
         .removeListener('resizeend', this.onBlockResizeEnd)
         .removeClass('selected');
       
@@ -168,14 +170,22 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     delete this.beforeDragValues;
   };
   
+  this.onBlockResizeStart = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y', 'width', 'height'];
+    
+    this.beforeResizeValues = this.getValues(block, fields);
+  };
+  
   this.onBlockResizeEnd = function(evt){
     var block = this.getBlock(),
-      fields = ['x', 'y', 'width', 'height'],  
-      old_values = this.getValues(block, fields);
+      fields = ['x', 'y', 'width', 'height'];
     
     this.updateFieldValues(block, fields, true);
     
-    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, fields)});
+    this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(block, fields)});
+    
+    delete this.beforeResizeValues;
   };
   
   this.onFieldValueChange = function(evt){
@@ -221,6 +231,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   this.updateFieldValues = function(block, values, supressEvent){
   
+    if(block !== this.getBlock()){
+      return;
+    }
+  
     values = values || this.getValues(block, Object.keys(this.getField()));
     
     if(metaScore.Var.is(values, 'array')){
@@ -260,6 +274,16 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         block.data('synched', value);
         break;
     }
+  
+  };
+  
+  this.updateBlockProperties = function(block, values){
+  
+    metaScore.Object.each(values, function(name, value){
+      this.updateBlockProperty(block, name, value);
+    }, this);
+    
+    this.updateFieldValues(block, values, true);
   
   };
   

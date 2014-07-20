@@ -17,6 +17,22 @@ metaScore.Resizable = metaScore.Base.extend(function(){
     
     _handles = {};
     
+    _handles.top = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'top')
+      .appendTo(_target);
+    
+    _handles.right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'right')
+      .appendTo(_target);
+    
+    _handles.bottom = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'bottom')
+      .appendTo(_target);
+    
+    _handles.left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'left')
+      .appendTo(_target);
+    
     _handles.top_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'top-left')
       .appendTo(_target);
@@ -67,6 +83,20 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       w, h, top, left;
     
     switch(handle.data('direction')){
+      case 'top':
+        h = _startState.h - evt.clientY + _startState.y;
+        top = _startState.top + evt.clientY  - _startState.y;
+        break;
+      case 'right':
+        w = _startState.w + evt.clientX - _startState.x;
+        break;
+      case 'bottom':
+        h = _startState.h + evt.clientY - _startState.y;
+        break;
+      case 'left':
+        w = _startState.w - evt.clientX + _startState.x;
+        left = _startState.left + evt.clientX - _startState.x;
+        break;
       case 'top-left':
         w = _startState.w - evt.clientX + _startState.x;
         h = _startState.h - evt.clientY + _startState.y;

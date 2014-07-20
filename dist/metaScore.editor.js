@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-07-04 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-07-20 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1407,6 +1407,22 @@ metaScore.Resizable = metaScore.Base.extend(function(){
     
     _handles = {};
     
+    _handles.top = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'top')
+      .appendTo(_target);
+    
+    _handles.right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'right')
+      .appendTo(_target);
+    
+    _handles.bottom = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'bottom')
+      .appendTo(_target);
+    
+    _handles.left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+      .data('direction', 'left')
+      .appendTo(_target);
+    
     _handles.top_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
       .data('direction', 'top-left')
       .appendTo(_target);
@@ -1457,6 +1473,20 @@ metaScore.Resizable = metaScore.Base.extend(function(){
       w, h, top, left;
     
     switch(handle.data('direction')){
+      case 'top':
+        h = _startState.h - evt.clientY + _startState.y;
+        top = _startState.top + evt.clientY  - _startState.y;
+        break;
+      case 'right':
+        w = _startState.w + evt.clientX - _startState.x;
+        break;
+      case 'bottom':
+        h = _startState.h + evt.clientY - _startState.y;
+        break;
+      case 'left':
+        w = _startState.w - evt.clientX + _startState.x;
+        left = _startState.left + evt.clientX - _startState.x;
+        break;
       case 'top-left':
         w = _startState.w - evt.clientX + _startState.x;
         h = _startState.h - evt.clientY + _startState.y;
@@ -1766,8 +1796,8 @@ metaScore.Editor = metaScore.Dom.extend(function(){
           new_values = evt.detail.new_values;
          
         _history.add({
-          'undo': function(cmd){_block_panel.updateFieldValues(block, old_values);},
-          'redo': function(cmd){_block_panel.updateFieldValues(block, new_values);}
+          'undo': function(cmd){_block_panel.updateBlockProperties(block, old_values);},
+          'redo': function(cmd){_block_panel.updateBlockProperties(block, new_values);}
         });
       })
       .getToolbar()
@@ -1859,10 +1889,8 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         
         evt.stopImmediatePropagation();
       }, this)
-      .addDelegate('.metaScore-block .pager', 'click', function(evt){
-        var block = new metaScore.Player.Block(evt.target.parentElement);
-                
-        _block_panel.setBlock(block);
+      .addDelegate('.metaScore-block', 'blockclicked', function(evt){
+        _block_panel.setBlock(evt.detail.block);
         
         evt.stopImmediatePropagation();
       }, this)
@@ -1876,15 +1904,26 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         
         _page_panel.setPage(page);
       }, this)
-      .addDelegate('.metaScore-block .pages', 'childremoved', function(evt){
-        var block = new metaScore.Player.Block(evt.target.parentElement);
+      .addListener('childremoved', function(evt){
+        var element = evt.detail.child,
+          block;
+      
+        if(metaScore.Dom.is(element, '.page')){
+          block = new metaScore.Player.Block(evt.target.parentElement);
         
-        if(block.getPageCount() === 0){
-          this.addPage(block);
+          if(block.getPageCount() === 0){
+            this.addPage(block);
+          }
+          
+          block.setActivePage(0);
         }
-        
-        block.setActivePage(0);
-      }, this)
+        else if(metaScore.Dom.is(element, '.metaScore-block')){
+          block = _block_panel.getBlock();
+          if(block && (element === block.get(0))){
+            _block_panel.unsetBlock();
+          }
+        }
+      })
       .addListener('keydown', this.onKeydown)
       .addListener('keyup', this.onKeyup);
       
@@ -1919,15 +1958,10 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     return block;
   };
   
-  this.removeBlock = function(){
-    var block;
-    
-    if(block = _block_panel.getBlock()){
-      block.remove();
-    }
-    
-    _block_panel.unsetBlock();
-    
+  this.removeBlock = function(block){
+    block = block || _block_panel.getBlock();
+  
+    block.remove();
   };
   
   this.addPage = function(block){
@@ -1938,8 +1972,6 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     page = new metaScore.Player.Page();
       
     block.addPage(page);
-    
-    _page_panel.setPage(page);
     
     return page;
   };
@@ -1976,10 +2008,24 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
-  this.onKeydown = function(evt){  
+  this.onKeydown = function(evt){
+    if(DEBUG){
+      console.log(evt);
+    }
+  
     switch(evt.keyCode){
       case 18: //alt
         _player_body.addClass('alt-down');
+        break;
+      case 90: //z
+        if(evt.ctrlKey){
+          _history.undo();
+        }
+        break;
+      case 89: //y
+        if(evt.ctrlKey){
+          _history.redo();
+        }
         break;
     }  
   };
@@ -2623,18 +2669,20 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   this.setupFields = function(){
   
-    var row, field_uuid, field;
+    var row, uuid, configs, field;
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
       row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(_contents);
     
-      field_uuid = 'field-'+ metaScore.String.uuid(5);
+      uuid = 'field-'+ metaScore.String.uuid(5);
       
-      _fields[key] = field = new value.type().attr('id', field_uuid);
+      configs = value.configs || {};
+      
+      _fields[key] = field = new value.type(configs).attr('id', uuid);
       field.data('name', key);
       
-      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
+      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
       new metaScore.Dom('<td/>').appendTo(row).append(field);
       
     }, this);
@@ -2813,6 +2861,156 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
   
     this.attr('checked', checked ? 'checked' : '');
   
+  };
+});
+/**
+ * TimeField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
+  
+  // private vars
+  var _hours, _minutes, _seconds, _centiseconds;
+  
+  this.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: 0,
+    
+    /**
+    * Defines whether the field is disabled by default
+    */
+    disabled: false,
+    
+    /**
+    * Defines the minimum value allowed
+    */
+    min: 0,
+    
+    /**
+    * Defines the maximum value allowed
+    */
+    max: null
+  };
+  
+  this.tag = '<div/>';
+  
+  this.attributes = {
+    'class': 'field timefield'
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+    
+    _hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
+    _minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
+    _seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
+    _centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
+  
+    this.super(configs);
+    
+    
+    _hours.addListener('input', this.onInput).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
+    
+    _minutes.addListener('input', this.onInput).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
+    
+    _seconds.addListener('input', this.onInput).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
+    
+    _centiseconds.addListener('input', this.onInput).appendTo(this);
+    
+  };
+  
+  this.onInput = function(evt){
+  
+    var centiseconds_val = parseInt(_centiseconds.val(), 10),
+      seconds_val = parseInt(_seconds.val(), 10),
+      minutes_val = parseInt(_minutes.val(), 10),
+      hours_val = parseInt(_hours.val(), 10);
+      
+    evt.stopPropagation();
+    
+    this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
+  };
+  
+  this.setValue = function(milliseconds){
+      
+    var centiseconds_val, seconds_val, minutes_val, hours_val;
+    
+    this.value = milliseconds;
+    
+    if(this.configs.min !== null){
+      this.value = Math.max(this.value, this.configs.min);
+    }
+    if(this.configs.max !== null){
+      this.value = Math.min(this.value, this.configs.max);
+    }
+      
+    centiseconds_val = parseInt((this.value / 10) % 100, 10);
+    seconds_val = parseInt((this.value / 1000) % 60, 10);
+    minutes_val = parseInt((this.value / 60000) % 60, 10);
+    hours_val = parseInt((this.value / 3600000), 10);
+    
+    _centiseconds.val(centiseconds_val);
+    _seconds.val(seconds_val);
+    _minutes.val(minutes_val);
+    _hours.val(hours_val);
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+  
+  };
+  
+  this.getValue = function(){
+  
+    return this.value;
+  
+  };
+
+  /**
+  * Disable the button
+  * @returns {object} the XMLHttp object
+  */
+  this.disable = function(){
+    this.disabled = true;
+    
+    _hours.attr('disabled', 'disabled');
+    _minutes.attr('disabled', 'disabled');
+    _seconds.attr('disabled', 'disabled');
+    _centiseconds.attr('disabled', 'disabled');
+    
+    this.addClass('disabled');
+    
+    return this;
+  };
+
+  /**
+  * Enable the button
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  this.enable = function(){
+    this.disabled = false;
+    
+    _hours.attr('disabled', null);
+    _minutes.attr('disabled', null);
+    _seconds.attr('disabled', null);
+    _centiseconds.attr('disabled', null);
+    
+    this.removeClass('disabled');
+    
+    return this;
   };
 });
 /**
@@ -3403,6 +3601,102 @@ metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
   };
 });
 /**
+ * SelectField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
+  
+  
+  this.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: null,
+    
+    /**
+    * Defines whether the field is disabled by default
+    */
+    disabled: false,
+    
+    /**
+    * Defines the maximum value allowed
+    */
+    options: {}
+  };
+  
+  this.tag = '<select/>';
+  
+  this.attributes = {
+    'class': 'field selectfield'
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    this.super(configs);
+    
+    this.setOptions(this.configs.options);
+    
+  };
+  
+  this.setOptions = function(options){
+  
+    metaScore.Object.each(options, function(key, value){    
+      this.append(new metaScore.Dom('<option/>', {'text': value, 'value': key}));
+    }, this);
+    
+  };
+  
+  this.setValue = function(value){
+    
+    this.val(value);
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+  
+  };
+  
+  this.getValue = function(){
+  
+    return this.value;
+  
+  };
+
+  /**
+  * Disable the button
+  * @returns {object} the XMLHttp object
+  */
+  this.disable = function(){
+    this.disabled = true;
+    
+    this
+      .attr('disabled', 'disabled')
+      .addClass('disabled');
+    
+    return this;
+  };
+
+  /**
+  * Enable the button
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  this.enable = function(){
+    this.disabled = false;
+    
+    this
+      .attr('disabled', null)
+      .removeClass('disabled');
+    
+    return this;
+  };
+});
+/**
  * TimeField
  *
  * @requires ../metaScore.editor.field.js
@@ -3648,10 +3942,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       return;
     }
     
-    this.unsetBlock(_block, supressEvent);
+    this.unsetBlock(supressEvent);
     
-    this.updateFieldValues(block);
-    this.enableFields();      
+    this.enableFields();
+    this.updateFieldValues(block);  
     this.getMenu().enableItems('[data-action="delete"]');
     
     block._draggable = new metaScore.Draggable(block, block.child('.pager'), block.parents()).enable();
@@ -3660,6 +3954,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     block
       .addListener('dragstart', this.onBlockDragStart)
       .addListener('dragend', this.onBlockDragEnd)
+      .addListener('resizestart', this.onBlockResizeStart)
       .addListener('resizeend', this.onBlockResizeEnd)
       .addClass('selected');
       
@@ -3673,9 +3968,9 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.unsetBlock = function(block, supressEvent){
-    
-    block = block || this.getBlock();
+  this.unsetBlock = function(supressEvent){
+  
+    var block = this.getBlock();
       
     this.disableFields();    
     this.getMenu().disableItems('[data-action="delete"]');
@@ -3690,6 +3985,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       block
         .removeListener('dragstart', this.onBlockDragStart)
         .removeListener('dragend', this.onBlockDragEnd)
+        .removeListener('resizestart', this.onBlockResizeStart)
         .removeListener('resizeend', this.onBlockResizeEnd)
         .removeClass('selected');
       
@@ -3722,14 +4018,22 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     delete this.beforeDragValues;
   };
   
+  this.onBlockResizeStart = function(evt){
+    var block = this.getBlock(),
+      fields = ['x', 'y', 'width', 'height'];
+    
+    this.beforeResizeValues = this.getValues(block, fields);
+  };
+  
   this.onBlockResizeEnd = function(evt){
     var block = this.getBlock(),
-      fields = ['x', 'y', 'width', 'height'],  
-      old_values = this.getValues(block, fields);
+      fields = ['x', 'y', 'width', 'height'];
     
     this.updateFieldValues(block, fields, true);
     
-    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, fields)});
+    this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(block, fields)});
+    
+    delete this.beforeResizeValues;
   };
   
   this.onFieldValueChange = function(evt){
@@ -3775,6 +4079,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
   
   this.updateFieldValues = function(block, values, supressEvent){
   
+    if(block !== this.getBlock()){
+      return;
+    }
+  
     values = values || this.getValues(block, Object.keys(this.getField()));
     
     if(metaScore.Var.is(values, 'array')){
@@ -3814,6 +4122,16 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         block.data('synched', value);
         break;
     }
+  
+  };
+  
+  this.updateBlockProperties = function(block, values){
+  
+    metaScore.Object.each(values, function(name, value){
+      this.updateBlockProperty(block, name, value);
+    }, this);
+    
+    this.updateFieldValues(block, values, true);
   
   };
   
@@ -3873,6 +4191,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
  * @requires ../field/metaScore.editor.field.imagefield.js
  * @requires ../field/metaScore.editor.field.cornerfield.js
  * @requires ../field/metaScore.editor.field.timefield.js
+ * @requires ../field/metaScore.editor.field.selectfield.js
  */
 metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
 
@@ -3942,6 +4261,24 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
       'end-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('End time')
+      },
+      'font-family': {
+        'type': metaScore.Editor.Field.SelectField,
+        'configs': {
+          'options': {
+            'Georgia, serif': 'Georgia',
+            '"Times New Roman", Times, serif': 'Times New Roman',
+            'Arial, Helvetica, sans-serif': 'Arial',
+            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
+            'Impact, Charcoal, sans-serif': 'Impact',
+            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
+            'Tahoma, Geneva, sans-serif': 'Tahoma',
+            'Verdana, Geneva, sans-serif': 'Verdana',
+            '"Courier New", Courier, monospace': 'Courier New',
+            '"Lucida Console", Monaco, monospace': 'Lucida Console'
+          }
+        },
+        'label': metaScore.String.t('Font')
       }
     }
   };
@@ -3972,7 +4309,7 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
       .data('action', 'menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', this.onFieldChange);
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
     
   };
   
@@ -4010,6 +4347,16 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
       .addListener('resize', this.onElementResize)
       .addClass('selected');
     
+    switch(_element.data('type')){
+      case 'cursor':
+        break;
+      case 'image':
+        break;
+      case 'text':
+        _element.attr('contenteditable', 'true');
+        break;
+    }
+    
     if(supressEvent !== true){
       this.triggerEvent('elementset', {'element': _element});
     }
@@ -4036,6 +4383,16 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
         .removeListener('drag', this.onElementDrag)
         .removeListener('resize', this.onElementResize)
         .removeClass('selected');
+    
+      switch(_element.data('type')){
+        case 'cursor':
+          break;
+        case 'image':
+          break;
+        case 'text':
+          _element.attr('contenteditable', null);
+          break;
+      }
       
       _element = null;
     }
@@ -4056,7 +4413,7 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     this.updateValues(['x', 'y', 'width', 'height']);
   };
   
-  this.onFieldChange = function(evt){  
+  this.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       
@@ -4226,7 +4583,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
       .data('action', 'menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', this.onFieldChange);
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
     
   };
   
@@ -4283,7 +4640,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.onFieldChange = function(evt){  
+  this.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       
@@ -4397,6 +4754,8 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
         
         evt.stopPropagation();
       }, this);
+      
+    this.addListener('click', this.onClick);
     
   };
   
@@ -4415,14 +4774,24 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   };
   
   this.getActivePage = function(){
+    
+    var pages = this.getPages(),
+      index = this.getActivePageIndex();
   
-    return new metaScore.Player.Page(this.getPages().child('.active').get(0));
+    return new metaScore.Player.Page(this.getPages().get(index));
   
   };
   
   this.getActivePageIndex = function(){
+    
+    var pages = this.getPages(),
+      index = pages.index('.active');
   
-    return this.getPages().index('.active');
+    if(index < 0){
+      index = 0;
+    }
+  
+    return index;
   
   };
   
@@ -4459,6 +4828,14 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   this.isSynched = function(){
     
     return this.data('synched') === "true";
+    
+  };
+  
+  this.onClick = function(evt){
+    
+    this.triggerEvent('blockclicked', {'block': this});
+    
+    evt.stopPropagation();
     
   };
 });

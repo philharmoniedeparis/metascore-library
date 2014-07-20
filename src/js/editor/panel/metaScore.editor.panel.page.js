@@ -57,7 +57,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
       .data('action', 'menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', this.onFieldChange);
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
     
   };
   
@@ -114,7 +114,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.onFieldChange = function(evt){  
+  this.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       

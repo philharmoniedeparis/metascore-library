@@ -44,18 +44,20 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   this.setupFields = function(){
   
-    var row, field_uuid, field;
+    var row, uuid, configs, field;
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
       row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(_contents);
     
-      field_uuid = 'field-'+ metaScore.String.uuid(5);
+      uuid = 'field-'+ metaScore.String.uuid(5);
       
-      _fields[key] = field = new value.type().attr('id', field_uuid);
+      configs = value.configs || {};
+      
+      _fields[key] = field = new value.type(configs).attr('id', uuid);
       field.data('name', key);
       
-      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': field_uuid}));
+      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
       new metaScore.Dom('<td/>').appendTo(row).append(field);
       
     }, this);

@@ -103,8 +103,8 @@ metaScore.Editor = metaScore.Dom.extend(function(){
           new_values = evt.detail.new_values;
          
         _history.add({
-          'undo': function(cmd){_block_panel.updateFieldValues(block, old_values);},
-          'redo': function(cmd){_block_panel.updateFieldValues(block, new_values);}
+          'undo': function(cmd){_block_panel.updateBlockProperties(block, old_values);},
+          'redo': function(cmd){_block_panel.updateBlockProperties(block, new_values);}
         });
       })
       .getToolbar()
@@ -196,10 +196,8 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         
         evt.stopImmediatePropagation();
       }, this)
-      .addDelegate('.metaScore-block .pager', 'click', function(evt){
-        var block = new metaScore.Player.Block(evt.target.parentElement);
-                
-        _block_panel.setBlock(block);
+      .addDelegate('.metaScore-block', 'blockclicked', function(evt){
+        _block_panel.setBlock(evt.detail.block);
         
         evt.stopImmediatePropagation();
       }, this)
@@ -213,15 +211,26 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         
         _page_panel.setPage(page);
       }, this)
-      .addDelegate('.metaScore-block .pages', 'childremoved', function(evt){
-        var block = new metaScore.Player.Block(evt.target.parentElement);
+      .addListener('childremoved', function(evt){
+        var element = evt.detail.child,
+          block;
+      
+        if(metaScore.Dom.is(element, '.page')){
+          block = new metaScore.Player.Block(evt.target.parentElement);
         
-        if(block.getPageCount() === 0){
-          this.addPage(block);
+          if(block.getPageCount() === 0){
+            this.addPage(block);
+          }
+          
+          block.setActivePage(0);
         }
-        
-        block.setActivePage(0);
-      }, this)
+        else if(metaScore.Dom.is(element, '.metaScore-block')){
+          block = _block_panel.getBlock();
+          if(block && (element === block.get(0))){
+            _block_panel.unsetBlock();
+          }
+        }
+      })
       .addListener('keydown', this.onKeydown)
       .addListener('keyup', this.onKeyup);
       
@@ -256,15 +265,10 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     return block;
   };
   
-  this.removeBlock = function(){
-    var block;
-    
-    if(block = _block_panel.getBlock()){
-      block.remove();
-    }
-    
-    _block_panel.unsetBlock();
-    
+  this.removeBlock = function(block){
+    block = block || _block_panel.getBlock();
+  
+    block.remove();
   };
   
   this.addPage = function(block){
@@ -275,8 +279,6 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     page = new metaScore.Player.Page();
       
     block.addPage(page);
-    
-    _page_panel.setPage(page);
     
     return page;
   };
@@ -313,10 +315,24 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
-  this.onKeydown = function(evt){  
+  this.onKeydown = function(evt){
+    if(DEBUG){
+      console.log(evt);
+    }
+  
     switch(evt.keyCode){
       case 18: //alt
         _player_body.addClass('alt-down');
+        break;
+      case 90: //z
+        if(evt.ctrlKey){
+          _history.undo();
+        }
+        break;
+      case 89: //y
+        if(evt.ctrlKey){
+          _history.redo();
+        }
         break;
     }  
   };

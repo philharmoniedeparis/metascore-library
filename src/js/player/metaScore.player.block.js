@@ -48,6 +48,8 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
         
         evt.stopPropagation();
       }, this);
+      
+    this.addListener('click', this.onClick);
     
   };
   
@@ -66,14 +68,24 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   };
   
   this.getActivePage = function(){
+    
+    var pages = this.getPages(),
+      index = this.getActivePageIndex();
   
-    return new metaScore.Player.Page(this.getPages().child('.active').get(0));
+    return new metaScore.Player.Page(this.getPages().get(index));
   
   };
   
   this.getActivePageIndex = function(){
+    
+    var pages = this.getPages(),
+      index = pages.index('.active');
   
-    return this.getPages().index('.active');
+    if(index < 0){
+      index = 0;
+    }
+  
+    return index;
   
   };
   
@@ -110,6 +122,14 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   this.isSynched = function(){
     
     return this.data('synched') === "true";
+    
+  };
+  
+  this.onClick = function(evt){
+    
+    this.triggerEvent('blockclicked', {'block': this});
+    
+    evt.stopPropagation();
     
   };
 });

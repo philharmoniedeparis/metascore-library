@@ -7,6 +7,7 @@
  * @requires ../field/metaScore.editor.field.imagefield.js
  * @requires ../field/metaScore.editor.field.cornerfield.js
  * @requires ../field/metaScore.editor.field.timefield.js
+ * @requires ../field/metaScore.editor.field.selectfield.js
  */
 metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
 
@@ -76,6 +77,24 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
       'end-time': {
         'type': metaScore.Editor.Field.TimeField,
         'label': metaScore.String.t('End time')
+      },
+      'font-family': {
+        'type': metaScore.Editor.Field.SelectField,
+        'configs': {
+          'options': {
+            'Georgia, serif': 'Georgia',
+            '"Times New Roman", Times, serif': 'Times New Roman',
+            'Arial, Helvetica, sans-serif': 'Arial',
+            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
+            'Impact, Charcoal, sans-serif': 'Impact',
+            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
+            'Tahoma, Geneva, sans-serif': 'Tahoma',
+            'Verdana, Geneva, sans-serif': 'Verdana',
+            '"Courier New", Courier, monospace': 'Courier New',
+            '"Lucida Console", Monaco, monospace': 'Lucida Console'
+          }
+        },
+        'label': metaScore.String.t('Font')
       }
     }
   };
@@ -106,7 +125,7 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
       .data('action', 'menu')
       .append(_menu);
       
-    this.addDelegate('.field', 'change', this.onFieldChange);
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
     
   };
   
@@ -144,6 +163,16 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
       .addListener('resize', this.onElementResize)
       .addClass('selected');
     
+    switch(_element.data('type')){
+      case 'cursor':
+        break;
+      case 'image':
+        break;
+      case 'text':
+        _element.attr('contenteditable', 'true');
+        break;
+    }
+    
     if(supressEvent !== true){
       this.triggerEvent('elementset', {'element': _element});
     }
@@ -170,6 +199,16 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
         .removeListener('drag', this.onElementDrag)
         .removeListener('resize', this.onElementResize)
         .removeClass('selected');
+    
+      switch(_element.data('type')){
+        case 'cursor':
+          break;
+        case 'image':
+          break;
+        case 'text':
+          _element.attr('contenteditable', null);
+          break;
+      }
       
       _element = null;
     }
@@ -190,7 +229,7 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     this.updateValues(['x', 'y', 'width', 'height']);
   };
   
-  this.onFieldChange = function(evt){  
+  this.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       
