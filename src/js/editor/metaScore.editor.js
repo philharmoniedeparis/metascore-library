@@ -181,25 +181,21 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         }, this);
     
     _player_body
-      .addDelegate('.metaScore-block .pages .page .element', 'click', function(evt){
-        var element = new metaScore.Player.Element(evt.target);
+      .addDelegate('.metaScore-block .element', 'elementclick', function(evt){
+        _element_panel.setElement(evt.detail.element);
         
-        _element_panel.setElement(element);
-        
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
       }, this)
-      .addDelegate('.metaScore-block .pages .page', 'click', function(evt){      
-        var page = new metaScore.Player.Page(evt.target);
-        
-        _page_panel.setPage(page);
+      .addDelegate('.metaScore-block .page', 'pageclick', function(evt){
+        _page_panel.setPage(evt.detail.page);
         _element_panel.unsetElement();
         
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
       }, this)
-      .addDelegate('.metaScore-block', 'blockclicked', function(evt){
+      .addDelegate('.metaScore-block', 'blockclick', function(evt){
         _block_panel.setBlock(evt.detail.block);
         
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
       }, this)
       .addListener('click', function(evt){
         _block_panel.unsetBlock();
@@ -315,11 +311,7 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
-  this.onKeydown = function(evt){
-    if(DEBUG){
-      console.log(evt);
-    }
-  
+  this.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
         _player_body.addClass('alt-down');

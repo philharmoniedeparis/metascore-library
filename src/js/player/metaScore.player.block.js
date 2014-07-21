@@ -127,7 +127,7 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   
   this.onClick = function(evt){
     
-    this.triggerEvent('blockclicked', {'block': this});
+    this.triggerEvent('blockclick', {'block': this});
     
     evt.stopPropagation();
     

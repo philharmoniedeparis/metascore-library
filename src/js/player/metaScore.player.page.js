@@ -14,6 +14,8 @@ metaScore.Player.Page = metaScore.Dom.extend(function(){
     else{
       this.super('<div/>', {'class': 'page'});
     }
+      
+    this.addListener('click', this.onClick);
     
   };
   
@@ -24,4 +26,12 @@ metaScore.Player.Page = metaScore.Dom.extend(function(){
     return element;
   
   };
+  
+  this.onClick = function(evt){
+    
+    this.triggerEvent('pageclick', {'page': this});
+    
+    evt.stopPropagation();
+    
+  }; 
 });

@@ -13,6 +13,16 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
     else{
       this.super('<div/>', {'class': 'element'});
     }
+      
+    this.addListener('click', this.onClick);
     
   };
+  
+  this.onClick = function(evt){
+    
+    this.triggerEvent('elementclick', {'element': this});
+    
+    evt.stopPropagation();
+    
+  };  
 });

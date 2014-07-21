@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-07-20 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-07-21 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1874,25 +1874,21 @@ metaScore.Editor = metaScore.Dom.extend(function(){
         }, this);
     
     _player_body
-      .addDelegate('.metaScore-block .pages .page .element', 'click', function(evt){
-        var element = new metaScore.Player.Element(evt.target);
+      .addDelegate('.metaScore-block .element', 'elementclick', function(evt){
+        _element_panel.setElement(evt.detail.element);
         
-        _element_panel.setElement(element);
-        
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
       }, this)
-      .addDelegate('.metaScore-block .pages .page', 'click', function(evt){      
-        var page = new metaScore.Player.Page(evt.target);
-        
-        _page_panel.setPage(page);
+      .addDelegate('.metaScore-block .page', 'pageclick', function(evt){
+        _page_panel.setPage(evt.detail.page);
         _element_panel.unsetElement();
         
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
       }, this)
-      .addDelegate('.metaScore-block', 'blockclicked', function(evt){
+      .addDelegate('.metaScore-block', 'blockclick', function(evt){
         _block_panel.setBlock(evt.detail.block);
         
-        evt.stopImmediatePropagation();
+        evt.stopPropagation();
       }, this)
       .addListener('click', function(evt){
         _block_panel.unsetBlock();
@@ -2008,11 +2004,7 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
-  this.onKeydown = function(evt){
-    if(DEBUG){
-      console.log(evt);
-    }
-  
+  this.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
         _player_body.addClass('alt-down');
@@ -4833,7 +4825,7 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   
   this.onClick = function(evt){
     
-    this.triggerEvent('blockclicked', {'block': this});
+    this.triggerEvent('blockclick', {'block': this});
     
     evt.stopPropagation();
     
@@ -4854,8 +4846,18 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
     else{
       this.super('<div/>', {'class': 'element'});
     }
+      
+    this.addListener('click', this.onClick);
     
   };
+  
+  this.onClick = function(evt){
+    
+    this.triggerEvent('elementclick', {'element': this});
+    
+    evt.stopPropagation();
+    
+  };  
 });
 /**
  * Media
@@ -4881,6 +4883,8 @@ metaScore.Player.Page = metaScore.Dom.extend(function(){
     else{
       this.super('<div/>', {'class': 'page'});
     }
+      
+    this.addListener('click', this.onClick);
     
   };
   
@@ -4891,6 +4895,14 @@ metaScore.Player.Page = metaScore.Dom.extend(function(){
     return element;
   
   };
+  
+  this.onClick = function(evt){
+    
+    this.triggerEvent('pageclick', {'page': this});
+    
+    evt.stopPropagation();
+    
+  }; 
 });
 /**
  * Player Page
