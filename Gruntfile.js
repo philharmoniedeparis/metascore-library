@@ -154,7 +154,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['Gruntfile.js'].concat('src/**'),
-        tasks: ['build'],
+        tasks: ['build', 'drupal'],
         options: {
           interrupt: true
         }

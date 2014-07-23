@@ -13,8 +13,12 @@
     
     <script type="text/javascript">
       $(function(){
-        metaScore.loadLocale('dist/fr.json', function(){
-          new metaScore.Editor('body');
+        new metaScore.Editor({
+          'container': 'body',
+          'palyer_css': [
+            'dist/metaScore.player.css'
+          ],
+          'api_url': 'http://metascore.localhost/api/'
         });
       });
     </script>
