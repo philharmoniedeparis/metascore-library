@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/panel/metaScore.editor.panel.element.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: editor/panel/metaScore.editor.panel.element.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * Element
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.integerfield.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.cornerfield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ * @requires ../field/metaScore.editor.field.selectfield.js
+ */
+metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
+
+  var _menu, _element;
+
+  this.defaults = {
+    /**
+    * The panel's title
+    */
+    title: metaScore.String.t('Element'),
+    
+    /**
+    * The panel's fields
+    */
+    fields: {
+      'x': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('X')
+      },
+      'y': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Y')
+      },
+      'width': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Width')
+      },
+      'height': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Height')
+      },
+      'r-index': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Reading index'),
+        'configs': {
+          'min': 0
+        }
+      },
+      'z-index': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Display index')
+      },
+      'bg-color': {
+        'type': metaScore.Editor.Field.ColorField,
+        'label': metaScore.String.t('Background color')
+      },
+      'bg-image': {
+        'type': metaScore.Editor.Field.ImageField,
+        'label': metaScore.String.t('Background image')
+      },
+      'border-width': {
+        'type': metaScore.Editor.Field.IntegerField,
+        'label': metaScore.String.t('Border width')
+      },
+      'border-color': {
+        'type': metaScore.Editor.Field.ColorField,
+        'label': metaScore.String.t('Border color')
+      },
+      'rounded-conrners': {
+        'type': metaScore.Editor.Field.CornerField,
+        'label': metaScore.String.t('Rounded conrners')
+      },
+      'start-time': {
+        'type': metaScore.Editor.Field.TimeField,
+        'label': metaScore.String.t('Start time')
+      },
+      'end-time': {
+        'type': metaScore.Editor.Field.TimeField,
+        'label': metaScore.String.t('End time')
+      },
+      'font-family': {
+        'type': metaScore.Editor.Field.SelectField,
+        'configs': {
+          'options': {
+            'Georgia, serif': 'Georgia',
+            '"Times New Roman", Times, serif': 'Times New Roman',
+            'Arial, Helvetica, sans-serif': 'Arial',
+            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
+            'Impact, Charcoal, sans-serif': 'Impact',
+            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
+            'Tahoma, Geneva, sans-serif': 'Tahoma',
+            'Verdana, Geneva, sans-serif': 'Verdana',
+            '"Courier New", Courier, monospace': 'Courier New',
+            '"Lucida Console", Monaco, monospace': 'Lucida Console'
+          }
+        },
+        'label': metaScore.String.t('Font')
+      }
+    }
+  };
+  
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    var toolbar;
+  
+    this.super(configs);
+    
+    toolbar = this.getToolbar();
+    
+    toolbar.addButton().data('action', 'previous');
+    toolbar.addButton().data('action', 'next');
+    
+    _menu = new metaScore.Editor.DropDownMenu();
+    _menu.addItem({'text': metaScore.String.t('Add a new cursor'), 'data-action': 'new', 'data-type': 'Cursor'});
+    _menu.addItem({'text': metaScore.String.t('Add a new image'), 'data-action': 'new', 'data-type': 'Image'});
+    _menu.addItem({'text': metaScore.String.t('Add a new text element'), 'data-action': 'new', 'data-type': 'Text'});
+    _menu.addItem({'text': metaScore.String.t('Delete the active element'), 'data-action': 'delete'});
+    
+    toolbar.addButton()
+      .data('action', 'menu')
+      .append(_menu);
+      
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
+    
+  };
+  
+  this.getMenu = function(){
+  
+    return _menu;
+  
+  };
+  
+  this.getElement = function(){
+  
+    return _element;
+  
+  };
+  
+  this.setElement = function(element, supressEvent){
+  
+    if(_element && (_element.get(0) === element.get(0))){
+      return;
+    }
+    
+    this.unsetElement(_element, supressEvent);
+    
+    _element = element;
+    
+    this.updateValues();      
+    this.enableFields();
+    this.getMenu().enableItems('[data-action="delete"]');
+    
+    _element._draggable = new metaScore.Draggable(_element, _element, _element.parents()).enable();
+    _element._resizable = new metaScore.Resizable(_element, _element.parents()).enable();
+    
+    _element
+      .addListener('drag', this.onElementDrag)
+      .addListener('resize', this.onElementResize)
+      .addClass('selected');
+    
+    switch(_element.data('type')){
+      case 'cursor':
+        break;
+      case 'image':
+        break;
+      case 'text':
+        _element.attr('contenteditable', 'true');
+        break;
+    }
+    
+    if(supressEvent !== true){
+      this.triggerEvent('elementset', {'element': _element});
+    }
+    
+    return this;
+    
+  };
+  
+  this.unsetElement = function(element, supressEvent){
+  
+    element = element || this.getElement();
+      
+    this.disableFields();
+    this.getMenu().disableItems('[data-action="delete"]');
+  
+    if(element){
+      element._draggable.destroy();
+      delete element._draggable;
+      
+      element._resizable.destroy();
+      delete element._resizable;
+  
+      element
+        .removeListener('drag', this.onElementDrag)
+        .removeListener('resize', this.onElementResize)
+        .removeClass('selected');
+    
+      switch(_element.data('type')){
+        case 'cursor':
+          break;
+        case 'image':
+          break;
+        case 'text':
+          _element.attr('contenteditable', null);
+          break;
+      }
+      
+      _element = null;
+    }
+    
+    if(supressEvent !== true){
+      this.triggerEvent('elementunset', {'element': element});
+    }
+    
+    return this;
+    
+  };
+  
+  this.onElementDrag = function(evt){  
+    this.updateValues(['x', 'y']);
+  };
+  
+  this.onElementResize = function(evt){  
+    this.updateValues(['x', 'y', 'width', 'height']);
+  };
+  
+  this.onFieldValueChange = function(evt){  
+    var field = evt.detail.field,
+      value = evt.detail.value;
+      
+    if(!_element){
+      return;
+    }
+  
+    switch(field.data('name')){
+      case 'x':
+        _element.css('left', value +'px');
+        break;
+      case 'y':
+        _element.css('top', value +'px');
+        break;
+      case 'width':
+        _element.css('width', value +'px');
+        break;
+      case 'height':
+        _element.css('height', value +'px');
+        break;
+      case 'r-index':
+        _element.data('r-index', value);
+        break;
+      case 'z-index':
+        _element.css('z-index', value);
+        break;
+      case 'bg-color':
+        _element.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'border-width':
+        _element.css('border-width', value +'px');
+        break;
+      case 'border-color':
+        _element.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'rounded-conrners':
+        // TODO
+        break;
+      case 'start-time':
+        _element.data('start-time', value);
+        break;
+      case 'end-time':
+        _element.data('end-time', value);
+        break;
+    }
+  };
+  
+  this.updateValue = function(name){
+    var field = this.getField(name);
+    
+    switch(name){
+      case 'x':
+        field.setValue(parseInt(_element.css('left'), 10));
+        break;
+      case 'y':
+        field.setValue(parseInt(_element.css('top'), 10));
+        break;
+      case 'width':
+        field.setValue(parseInt(_element.css('width'), 10));
+        break;
+      case 'height':
+        field.setValue(parseInt(_element.css('height'), 10));
+        break;
+      case 'r-index':
+        field.setValue(_element.data('r-index') || 0);
+        break;
+      case 'z-index':
+        field.setValue(parseInt(_element.css('z-index'), 10));
+        break;
+      case 'bg-color':
+        field.setValue(_element.css('background-color'));
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'border-width':
+        field.setValue(parseInt(_element.css('border-width'), 10));
+        break;
+      case 'border-color':
+        field.setValue(_element.css('border-color'));
+        break;
+      case 'rounded-conrners':
+        // TODO
+        break;
+      case 'start-time':
+        field.setValue(_element.data('start-time') || 0);
+        break;
+      case 'end-time':
+        field.setValue(_element.data('end-time') || 0);
+        break;
+    }
+  };
+  
+  this.updateValues = function(fields){
+  
+    if(fields === undefined){
+      fields = Object.keys(this.getField());
+    }
+    
+    metaScore.Object.each(fields, function(key, field){
+      this.updateValue(field);
+    }, this);
+  
+  };
+  
+  
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#metaScore">metaScore</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Aug 06 2014 20:05:15 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

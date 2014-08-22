@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: editor/panel/metaScore.editor.panel.page.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: editor/panel/metaScore.editor.panel.page.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * Page
+ *
+ * @requires ../metaScore.editor.panel.js
+ * @requires ../field/metaScore.editor.field.colorfield.js
+ * @requires ../field/metaScore.editor.field.imagefield.js
+ * @requires ../field/metaScore.editor.field.timefield.js
+ * @requires ../../helpers/metaScore.string.js
+ */
+metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
+
+  var _menu, _page;
+
+  this.defaults = {
+    /**
+    * The panel's title
+    */
+    title: metaScore.String.t('Page'),
+    
+    /**
+    * The panel's fields
+    */
+    fields: {
+      'bg-color': {
+        'type': metaScore.Editor.Field.ColorField,
+        'label': metaScore.String.t('Background color')
+      },
+      'bg-image': {
+        'type': metaScore.Editor.Field.ImageField,
+        'label': metaScore.String.t('Background image')
+      },
+      'start-time': {
+        'type': metaScore.Editor.Field.TimeField,
+        'label': metaScore.String.t('Start time')
+      },
+      'end-time': {
+        'type': metaScore.Editor.Field.TimeField,
+        'label': metaScore.String.t('End time')
+      }
+    }
+  };
+  
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+  
+    this.super(configs);
+    
+    _menu = new metaScore.Editor.DropDownMenu();
+    _menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
+    _menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .data('action', 'menu')
+      .append(_menu);
+      
+    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
+    
+  };
+  
+  this.getMenu = function(){
+  
+    return _menu;
+  
+  };
+  
+  this.getPage = function(){
+  
+    return _page;
+  
+  };
+  
+  this.setPage = function(page, supressEvent){
+  
+    if(_page && (_page.get(0) === page.get(0))){
+      return;
+    }
+    
+    this.unsetPage(_page, supressEvent);
+    
+    _page = page;
+    
+    this.updateValues();      
+    this.enableFields();
+    this.getMenu().enableItems('[data-action="delete"]');
+      
+    if(supressEvent !== true){
+      this.triggerEvent('pageset', {'page': _page});
+    }
+    
+    return this;
+    
+  };
+  
+  this.unsetPage = function(page, supressEvent){
+    
+    page = page || this.getPage();
+      
+    this.disableFields();    
+    this.getMenu().disableItems('[data-action="delete"]');
+      
+    if(page){    
+      _page = null;
+    }
+    
+    if(supressEvent !== true){
+      this.triggerEvent('pageunset', {'page': page});
+    }
+    
+    return this;
+    
+  };
+  
+  this.onFieldValueChange = function(evt){  
+    var field = evt.detail.field,
+      value = evt.detail.value;
+      
+    if(!_page){
+      return;
+    }
+  
+    switch(field.data('name')){
+      case 'bg-color':
+        _page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg_image':
+        // TODO
+      case 'start-time':
+        _page.data('start-time', value);
+        break;
+      case 'end-time':
+        _page.data('end-time', value);
+        break;
+    }
+  };
+  
+  this.updateValue = function(name){
+    var field = this.getField(name);
+    
+    switch(name){
+      case 'bg-color':
+        field.setValue(_page.css('background-color'));
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'start-time':
+        field.setValue(_page.data('start-time') || 0);
+        break;
+      case 'end-time':
+        field.setValue(_page.data('end-time') || 0);
+        break;
+    }
+  };
+  
+  this.updateValues = function(fields){
+  
+    if(fields === undefined){
+      fields = Object.keys(this.getField());
+    }
+    
+    metaScore.Object.each(fields, function(key, field){
+      this.updateValue(field);
+    }, this);
+  
+  };
+  
+  
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Global</h3><ul><li><a href="global.html#metaScore">metaScore</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Aug 06 2014 20:05:15 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
