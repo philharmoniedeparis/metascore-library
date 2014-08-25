@@ -8,15 +8,6 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   var _draggable;
   
   this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
     
     /**
     * The parent element in which the overlay will be appended

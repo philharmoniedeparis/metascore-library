@@ -25,7 +25,8 @@ module.exports = function(grunt) {
         sub('src/js/editor/%s.editor.js'),
         sub('src/js/editor/%s.editor.*.js'),
         sub('src/js/editor/field/%s.*.js'),
-        sub('src/js/editor/panel/%s.*.js')
+        sub('src/js/editor/panel/%s.*.js'),
+        sub('src/js/editor/popup/%s.*.js')
       ],
       DEV_HEAD_LIST = [
         sub('src/js/%s.const.js'),

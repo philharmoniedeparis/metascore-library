@@ -169,6 +169,12 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
+  this.openGuide = function(guide){
+    // TODO
+    console.log(guide);
+    console.log(this);
+  };
+  
   this.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
@@ -200,13 +206,11 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       case 'new':
         break;
       case 'open':
-        metaScore.Ajax.get(this.configs.api_url +'guide.json', {
-          'success': function(xhr){
-            console.log(JSON.parse(xhr.response));
-          },
-          'error': function(){
-          }
-        });
+        new metaScore.Editor.Popup.GuideSelector({
+          url: this.configs.api_url +'guide.json',
+          selectCallback: this.openGuide
+        })
+        .show();
         break;
       case 'save':
         break;

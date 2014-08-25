@@ -14,7 +14,7 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
+    disabled: false
   };
   
   this.tag = '<input/>';

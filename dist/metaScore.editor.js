@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-07-23 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-08-25 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -49,10 +49,10 @@ var metaScore = {
 	function initialize(method){
 		//Recursivly execute parent methods.
 		if(method.parent instanceof Function){
-			initialize.apply(this,[method.parent]);
+			initialize.apply(this, [method.parent]);
       
 			this.super = cloneCopy(this,
-				superCopy(this,this.constructor)
+				superCopy(this, this.constructor)
 			);
 		}
 		method.apply(this, arguments);
@@ -85,13 +85,13 @@ var metaScore = {
 			//Prevent the prototype scope set executing the constructor.
 			if(initialize !== arguments[0]){
 				//Create inhereted object
-				initialize.apply(this,[to]);
+				initialize.apply(this, [to]);
 				//Setup scope for class instance method calls
 				cloneCopy(this,this);
 				if(this.initializer instanceof Function){
 					this.initializer.apply(this);
         }
-				this.constructor.apply(this,arguments);
+				this.constructor.apply(this, arguments);
 			}
 		}
 
@@ -1845,6 +1845,12 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     
   };
   
+  this.openGuide = function(guide){
+    // TODO
+    console.log(guide);
+    console.log(this);
+  };
+  
   this.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
@@ -1876,13 +1882,11 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       case 'new':
         break;
       case 'open':
-        metaScore.Ajax.get(this.configs.api_url +'guide.json', {
-          'success': function(xhr){
-            console.log(JSON.parse(xhr.response));
-          },
-          'error': function(){
-          }
-        });
+        new metaScore.Editor.Popup.GuideSelector({
+          url: this.configs.api_url +'guide.json',
+          selectCallback: this.openGuide
+        })
+        .show();
         break;
       case 'save':
         break;
@@ -2241,7 +2245,7 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
+    disabled: false
   };
   
   this.tag = '<input/>';
@@ -2576,15 +2580,6 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
   var _draggable;
   
   this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
     
     /**
     * The parent element in which the overlay will be appended
@@ -2767,6 +2762,71 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     
     this.toggleClass('collapsed');
     
+  };
+});
+/**
+ * Field
+ *
+ * @requires ./metaScore.editor.overlay.js
+ */
+metaScore.Editor.Popup = metaScore.Editor.Overlay.extend(function(){
+
+  var _toolbar, _contents;
+
+  this.defaults = {
+    /**
+    * The popup's title
+    */
+    title: '',
+    
+    /**
+    * The parent element in which the overlay will be appended
+    */
+    parent: '.metaScore-editor',
+    
+    /**
+    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
+    */
+    modal: true,
+    
+    /**
+    * True to make this draggable
+    */
+    draggable: false
+  };
+  
+  this.constructor = function(configs) {
+  
+    this.super(configs);
+    
+    this.addClass('popup');
+  
+    _toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    _toolbar.addButton()
+      .data('action', 'close')
+      .addListener('click', this.onCloseClick);
+    
+    _contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);
+    
+  };
+  
+  this.getToolbar = function(){
+    
+    return _toolbar;
+    
+  };
+  
+  this.getContents = function(){
+    
+    return _contents;
+    
+  };
+  
+  this.onCloseClick = function(){
+    this.hide();
   };
 });
 /**
@@ -4715,6 +4775,110 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
   };
   
   
+});
+/**
+ * BooleanField
+ *
+ * @requires ../metaScore.editor.popup.js
+ * @requires ../../helpers/metaScore.ajax.js
+ */
+metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
+
+  this.defaults = {
+    /**
+    * The popup's title
+    */
+    title: metaScore.String.t('Select a guide'),
+    
+    /**
+    * The parent element in which the overlay will be appended
+    */
+    parent: '.metaScore-editor',
+    
+    /**
+    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
+    */
+    modal: true,
+    
+    /**
+    * True to make this draggable
+    */
+    draggable: false,
+    
+    /**
+    * The url from which to retreive the list of guides
+    */
+    url: null,
+    
+    /**
+    * A function to call when a guide is selected
+    */
+    selectCallback: metaScore.Function.emptyFn,
+    
+    /**
+    * Whether to automatically hide the popup when a guide is selected
+    */
+    hideOnSelect: true
+  };
+
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  this.constructor = function(configs) {
+    
+    this.super(configs);
+    
+    this.addClass('guide-selector');
+    
+    metaScore.Ajax.get(this.configs.url, {
+      'success': this.onLoad,
+      'error': this.onError
+    });
+    
+  };
+  
+  this.onLoad = function(xhr){
+  
+    var data = JSON.parse(xhr.response),
+      table, row;
+      
+    table = new metaScore.Dom('<table/>', {'class': 'guides'})
+      .appendTo(this.getContents());
+    
+    metaScore.Object.each(data, function(key, guide){
+      row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
+        .addListener('click', metaScore.Function.proxy(function(){
+          this.onGuideClick(guide);
+        }, this))
+        .appendTo(table);
+      
+      new metaScore.Dom('<td/>', {'class': 'thumbnail'})
+        .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail.url}))
+        .appendTo(row);
+        
+      new metaScore.Dom('<td/>', {'class': 'details'})
+        .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
+        .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
+        .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
+        .appendTo(row);
+        
+    }, this);
+    
+  };
+  
+  this.onError = function(){
+    
+  };
+  
+  this.onGuideClick = function(guide){
+    this.configs.selectCallback(guide);
+    
+    if(this.configs.hideOnSelect){
+      this.hide();
+    }
+  };
 });
 /**
  * Player

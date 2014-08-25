@@ -249,10 +249,10 @@
             vertical-align: middle;
           
             &[data-action="previous"]{
-              background-image: url('img/editor/panel/button/previous.png');
+              background-image: url('img/editor/panel/previous.png');
             }
             &[data-action="next"]{
-              background-image: url('img/editor/panel/button/next.png');
+              background-image: url('img/editor/panel/next.png');
               margin-left: -1px;
             }
             &[data-action="menu"]{
@@ -267,7 +267,7 @@
                 left: 0;
                 bottom: 0;
                 right: 0;
-                background: url('img/editor/panel/button/menu.png') no-repeat center center;
+                background: url('img/editor/panel/menu.png') no-repeat center center;
               }
               
               .dropdown-menu{
@@ -478,5 +478,80 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 99999;
+  }
+  
+  .popup{
+    .toolbar{
+      padding: 10px 16px;
+      border-bottom: 2px solid #B2B2B2;
+      .gradient(#DADADA, #DADADA, #C8C8C8);
+      
+      .title{
+        float: left;
+        font-weight: bold;
+        color: #5D5D5D;
+      }
+      
+      .buttons{
+        margin-left: 16px;
+        float: right;
+        
+        button{
+          width: 16px;
+          height: 16px;
+          background-repeat: no-repeat;
+          background-position: center center;
+          vertical-align: middle;
+        
+          &[data-action="close"]{
+            background-image: url('img/editor/popup/close.png');
+          }
+        }
+      }
+    }
+      
+    .contents{
+      padding: 12px 16px;
+    }
+    
+    &.guide-selector{
+      .contents{
+        tr.guide{
+          cursor: pointer;
+        
+          td.thumbnail{
+            padding-right: 10px;
+            padding-bottom: 10px;
+          }
+        
+          td.details{
+            padding-bottom: 10px;
+            vertical-align: top;
+            
+            .title{
+              margin: 0;
+              font-size: 12px;
+              font-weight: normal;
+            }
+            
+            .description{
+              margin: 0;
+              font-size: 11px;
+            }
+            
+            .author{
+              margin: 0;
+              font-size: 11px;
+              font-weight: normal;
+              color: #B2B2B2;
+            }
+          }
+          
+          &:hover{
+            background: #EEE;
+          }
+        }
+      }
+    }
   }
 }

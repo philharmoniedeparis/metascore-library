@@ -8,10 +8,10 @@
 	function initialize(method){
 		//Recursivly execute parent methods.
 		if(method.parent instanceof Function){
-			initialize.apply(this,[method.parent]);
+			initialize.apply(this, [method.parent]);
       
 			this.super = cloneCopy(this,
-				superCopy(this,this.constructor)
+				superCopy(this, this.constructor)
 			);
 		}
 		method.apply(this, arguments);
@@ -44,13 +44,13 @@
 			//Prevent the prototype scope set executing the constructor.
 			if(initialize !== arguments[0]){
 				//Create inhereted object
-				initialize.apply(this,[to]);
+				initialize.apply(this, [to]);
 				//Setup scope for class instance method calls
 				cloneCopy(this,this);
 				if(this.initializer instanceof Function){
 					this.initializer.apply(this);
         }
-				this.constructor.apply(this,arguments);
+				this.constructor.apply(this, arguments);
 			}
 		}
 

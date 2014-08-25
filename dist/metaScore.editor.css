@@ -314,10 +314,10 @@
   vertical-align: middle;
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="previous"] {
-  background-image: url('img/editor/panel/button/previous.png');
+  background-image: url('img/editor/panel/previous.png');
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="next"] {
-  background-image: url('img/editor/panel/button/next.png');
+  background-image: url('img/editor/panel/next.png');
   margin-left: -1px;
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] {
@@ -332,7 +332,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background: url('img/editor/panel/button/menu.png') no-repeat center center;
+  background: url('img/editor/panel/menu.png') no-repeat center center;
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu {
   display: none;
@@ -519,4 +519,66 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 99999;
+}
+.metaScore-editor .popup .toolbar {
+  padding: 10px 16px;
+  border-bottom: 2px solid #B2B2B2;
+  background-color: #dadada;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
+  background-image: -webkit-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: -moz-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: -ms-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: -o-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+}
+.metaScore-editor .popup .toolbar .title {
+  float: left;
+  font-weight: bold;
+  color: #5D5D5D;
+}
+.metaScore-editor .popup .toolbar .buttons {
+  margin-left: 16px;
+  float: right;
+}
+.metaScore-editor .popup .toolbar .buttons button {
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  vertical-align: middle;
+}
+.metaScore-editor .popup .toolbar .buttons button[data-action="close"] {
+  background-image: url('img/editor/popup/close.png');
+}
+.metaScore-editor .popup .contents {
+  padding: 12px 16px;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide {
+  cursor: pointer;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide td.thumbnail {
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide td.details {
+  padding-bottom: 10px;
+  vertical-align: top;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide td.details .title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide td.details .description {
+  margin: 0;
+  font-size: 11px;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide td.details .author {
+  margin: 0;
+  font-size: 11px;
+  font-weight: normal;
+  color: #B2B2B2;
+}
+.metaScore-editor .popup.guide-selector .contents tr.guide:hover {
+  background: #EEE;
 }
