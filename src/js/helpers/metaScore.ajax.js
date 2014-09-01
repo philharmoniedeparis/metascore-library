@@ -68,12 +68,14 @@ metaScore.Ajax.send = function(url, options) {
     query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
   });
   
-  if(options.method === 'POST'){
-    data = query.join('&');
-    options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-  }
-  else{
-    url += '?'+ query.join('&');
+  if(query.length > 0){
+    if(options.method === 'POST'){
+      data = query.join('&');
+      options.headers['Content-type'] = 'application/x-www-form-urlencoded';
+    }
+    else{
+      url += '?'+ query.join('&');
+    }
   }
   
   xhr.open(options.method, url, options.async);

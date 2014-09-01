@@ -3,7 +3,7 @@
  *
  * @requires metaScore.core.js
  */
-(function(metaScore){  
+(function(){  
 	//Helper method for creating an super copied object clone
 	function initialize(method){
 		//Recursivly execute parent methods.
@@ -75,6 +75,7 @@
   
 	//Bootstrap Class by inheriting itself with empty constructor.
   metaScore.Base = metaScore.Base.extend(function() {
+  
     this.constructor = function(){};
     
     this.initConfig = function(configs){
@@ -89,4 +90,4 @@
     };
   });
     
-})(metaScore);
+})();

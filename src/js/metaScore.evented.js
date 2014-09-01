@@ -1,5 +1,5 @@
 /**
- * Undo
+ * Evented
  *
  * @requires metaScore.base.js
  */

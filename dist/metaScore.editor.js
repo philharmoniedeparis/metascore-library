@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-08-25 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-08-28 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -44,7 +44,7 @@ var metaScore = {
  *
  * @requires metaScore.core.js
  */
-(function(metaScore){  
+(function(){  
 	//Helper method for creating an super copied object clone
 	function initialize(method){
 		//Recursivly execute parent methods.
@@ -116,6 +116,7 @@ var metaScore = {
   
 	//Bootstrap Class by inheriting itself with empty constructor.
   metaScore.Base = metaScore.Base.extend(function() {
+  
     this.constructor = function(){};
     
     this.initConfig = function(configs){
@@ -130,7 +131,7 @@ var metaScore = {
     };
   });
     
-})(metaScore);
+})();
 /**
  * Polyfills
  */
@@ -277,12 +278,14 @@ metaScore.Ajax.send = function(url, options) {
     query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
   });
   
-  if(options.method === 'POST'){
-    data = query.join('&');
-    options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-  }
-  else{
-    url += '?'+ query.join('&');
+  if(query.length > 0){
+    if(options.method === 'POST'){
+      data = query.join('&');
+      options.headers['Content-type'] = 'application/x-www-form-urlencoded';
+    }
+    else{
+      url += '?'+ query.join('&');
+    }
   }
   
   xhr.open(options.method, url, options.async);
@@ -490,7 +493,7 @@ metaScore.Dom = metaScore.Base.extend(function(){
           this.attr(arguments[1]);
         }
       }
-      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){      
+      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){
         this.add(elements);
         
         if(arguments.length > 2){
@@ -728,6 +731,14 @@ metaScore.Dom = metaScore.Base.extend(function(){
     
     metaScore.Array.each(this.elements, function(index, element) {
       metaScore.Dom.append(parent, element);
+    }, this);
+    
+    return this;
+  };
+  
+  this.empty = function(){    
+    metaScore.Array.each(this.elements, function(index, element) {
+      metaScore.Dom.empty(element);
     }, this);
     
     return this;
@@ -1151,6 +1162,17 @@ metaScore.Dom.append = function(element, children){
   metaScore.Array.each(children, function(index, child){
     element.appendChild(child);
   }, this);
+};
+
+/**
+* Removes all element children
+* @param {object} the dom element
+* @returns {void}
+*/
+metaScore.Dom.empty = function(element){
+  while(element.firstChild){
+    element.removeChild(element.firstChild);
+  }
 };
 
 /**
@@ -1687,8 +1709,7 @@ metaScore.Var.is = function(obj, type) {
  */
 metaScore.Editor = metaScore.Dom.extend(function(){
 
-  var _workspace, _mainmenu,
-    _sidebar,
+  var _workspace, _mainmenu, _sidebar,
     _block_panel, _page_panel, _element_panel,
     _player_wrapper, _player_head, _player_body, _player,
     _grid, _history;
@@ -4830,7 +4851,10 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
     
     this.super(configs);
     
-    this.addClass('guide-selector');
+    this.addClass('guide-selector loading');
+    
+    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
+      .appendTo(this.getContents());
     
     metaScore.Ajax.get(this.configs.url, {
       'success': this.onLoad,
@@ -4841,11 +4865,16 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
   
   this.onLoad = function(xhr){
   
-    var data = JSON.parse(xhr.response),
+    var contents = this.getContents(),
+      data = JSON.parse(xhr.response),
       table, row;
       
+    this.removeClass('loading');
+      
+    contents.empty();
+      
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
-      .appendTo(this.getContents());
+      .appendTo(contents);
     
     metaScore.Object.each(data, function(key, guide){
       row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
@@ -4886,6 +4915,22 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
  * @requires ../metaScore.base.js
  */
 metaScore.Player = metaScore.Base.extend(function(){
+  
+  var _blocks,
+    _media,
+    _cuepoints;
+  
+  this.defaults = {
+    keyboard: true
+  };
+  
+  this.constructor = function(configs) {
+  
+    this.initConfig(configs);
+    
+    _media = new metaScore.Player.Media();
+    
+  };
   
 });
 /**
@@ -5024,6 +5069,78 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
   };
 });
 /**
+ * CuePoints
+ *
+ * @requires metaScore.player.media.js
+ * @requires ../metaScore.base.js
+ * @requires ../helpers/metaScore.object.js
+ * @requires ../helpers/metaScore.var.js
+ */
+metaScore.Player.CuePoints = metaScore.Base.extend(function(){
+
+  var _media, _cuepoints;
+  
+  this.constructor = function(media){
+    
+    _cuepoints = [];
+  
+    _media = media;
+    
+    _media.addEventListener('timeupdate', this.onMediaTimeUpdate);
+    
+  };
+  
+  this.onMediaTimeUpdate = function(e){
+    var curTime;
+    
+    curTime = parseFloat(_media.currentTime);
+    
+    metaScore.Object.each(_cuepoints, function (index, cuepoint) {
+      if (!cuepoint.timer && curTime >= cuepoint.inTime - 0.5 && curTime < cuepoint.inTime) {
+        this.setupTimer(cuepoint, (cuepoint.inTime - curTime) * 1000);
+      }
+    });
+  };
+  
+  this.add = function(cuepoint){
+    return _cuepoints.push(cuepoint) - 1;
+  };
+  
+  this.remove = function(index){
+    var cuepoint = _cuepoints[index];
+  
+    this.stop(cuepoint, false);
+    
+    _cuepoints.splice(index, 1);
+  };
+  
+  this.setupTimer = function(cuepoint, delay){
+    cuepoint.timer = setTimeout(metaScore.Function.proxy(this.launch, this, cuepoint), delay);
+  };
+  
+  this.launch = function(cuepoint){
+    if(cuepoint.hasOwnProperty('onStart') && metaScore.Var.is(cuepoint.onStart, 'function')){
+      cuepoint.onStart(_media);
+    }    
+  };
+  
+  this.stop = function(cuepoint, launchHandler){    
+    if(cuepoint.hasOwnProperty('timer')){
+      clearTimeout(cuepoint.timer);
+      delete cuepoint.timer;
+    }
+    
+    if(cuepoint.hasOwnProperty('interval')){
+      clearInterval(cuepoint.interval);
+      delete cuepoint.interval;
+    }
+    
+    if(launchHandler !== false && cuepoint.hasOwnProperty('onEnd') && metaScore.Var.is(cuepoint.onEnd, 'function')){
+      cuepoint.onEnd(_media);
+    }
+  };
+});
+/**
  * Player Element
  *
  * @requires ../helpers/metaScore.dom.js
@@ -5058,6 +5175,42 @@ metaScore.Player.Element = metaScore.Dom.extend(function(){
  * @requires ../metaScore.dom.js
  */
 metaScore.Player.Media = metaScore.Dom.extend(function(){
+
+  this.defaults = {
+    'type': 'video',
+    'sources': []
+  };
+  
+  this.constructor = function(configs) {
+  
+    console.log(this.super);
+  
+    this.initConfig(configs);
+  
+    console.log(this.super);
+    
+  };
+
+  this.play = function() {
+
+  };
+  
+  this.pause = function() {
+
+  };
+  
+  this.stop = function() {
+
+  };
+  
+  this.setCurrentTime = function(time) {
+  
+  };
+  
+  this.getCurrentTime = function() {
+      
+  };
+
 });
 /**
  * Player Page
@@ -5184,78 +5337,6 @@ metaScore.Player.Element.Text = metaScore.Player.Element.extend(function(){
     
     this.data('type', 'text');
     
-  };
-});
-/**
- * Media CuePoints
- *
- * @requires metaScore.player.media.js
- * @requires ../metaScore.base.js
- * @requires ../helpers/metaScore.object.js
- * @requires ../helpers/metaScore.var.js
- */
-metaScore.Player.Media.CuePoint = metaScore.Base.extend(function(){
-
-  var _media, _triggers;
-  
-  this.constructor = function(media){
-    
-    _triggers = [];
-  
-    _media = media;
-    
-    _media.addEventListener('timeupdate', this.onMediaTimeUpdate);
-    
-  };
-  
-  this.onMediaTimeUpdate = function(e){
-    var media, curTime;
-    
-    media = e.target;
-    curTime = parseFloat(media.currentTime);
-    
-    metaScore.Object.each(_triggers, function (index, trigger) {
-      if (!trigger.timer && curTime >= trigger.inTime - 0.5 && curTime < trigger.inTime) {
-        this.setupTriggerTimer(trigger, (trigger.inTime - curTime) * 1000);
-      }
-    });
-  };
-  
-  this.addTrigger = function(trigger){
-    return _triggers.push(trigger) - 1;
-  };
-  
-  this.removeTrigger = function(index){
-    var trigger = _triggers[index];
-  
-    this.stopTrigger(trigger, false);
-    _triggers.splice(index, 1);
-  };
-  
-  this.setupTriggerTimer = function(trigger, delay){
-    trigger.timer = setTimeout(metaScore.Function.proxy(this.launchTrigger, this, trigger), delay);
-  };
-  
-  this.launchTrigger = function(trigger){
-    if(trigger.hasOwnProperty('onStart') && metaScore.Var.is(trigger.onStart, 'function')){
-      trigger.onStart(_media);
-    }    
-  };
-  
-  this.stopTrigger = function(trigger, launchHandler){    
-    if(trigger.hasOwnProperty('timer')){
-      clearTimeout(trigger.timer);
-      delete trigger.timer;
-    }
-    
-    if(trigger.hasOwnProperty('interval')){
-      clearInterval(trigger.interval);
-      delete trigger.interval;
-    }
-    
-    if(launchHandler !== false && trigger.hasOwnProperty('onEnd') && metaScore.Var.is(trigger.onEnd, 'function')){
-      trigger.onEnd(_media);
-    }
   };
 });
 

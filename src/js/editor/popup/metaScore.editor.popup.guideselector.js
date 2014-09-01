@@ -52,7 +52,10 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
     
     this.super(configs);
     
-    this.addClass('guide-selector');
+    this.addClass('guide-selector loading');
+    
+    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
+      .appendTo(this.getContents());
     
     metaScore.Ajax.get(this.configs.url, {
       'success': this.onLoad,
@@ -63,11 +66,16 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
   
   this.onLoad = function(xhr){
   
-    var data = JSON.parse(xhr.response),
+    var contents = this.getContents(),
+      data = JSON.parse(xhr.response),
       table, row;
       
+    this.removeClass('loading');
+      
+    contents.empty();
+      
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
-      .appendTo(this.getContents());
+      .appendTo(contents);
     
     metaScore.Object.each(data, function(key, guide){
       row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})

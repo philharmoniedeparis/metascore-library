@@ -23,7 +23,7 @@ metaScore.Dom = metaScore.Base.extend(function(){
           this.attr(arguments[1]);
         }
       }
-      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){      
+      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){
         this.add(elements);
         
         if(arguments.length > 2){
@@ -261,6 +261,14 @@ metaScore.Dom = metaScore.Base.extend(function(){
     
     metaScore.Array.each(this.elements, function(index, element) {
       metaScore.Dom.append(parent, element);
+    }, this);
+    
+    return this;
+  };
+  
+  this.empty = function(){    
+    metaScore.Array.each(this.elements, function(index, element) {
+      metaScore.Dom.empty(element);
     }, this);
     
     return this;
@@ -684,6 +692,17 @@ metaScore.Dom.append = function(element, children){
   metaScore.Array.each(children, function(index, child){
     element.appendChild(child);
   }, this);
+};
+
+/**
+* Removes all element children
+* @param {object} the dom element
+* @returns {void}
+*/
+metaScore.Dom.empty = function(element){
+  while(element.firstChild){
+    element.removeChild(element.firstChild);
+  }
 };
 
 /**

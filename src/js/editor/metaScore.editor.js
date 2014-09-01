@@ -11,8 +11,7 @@
  */
 metaScore.Editor = metaScore.Dom.extend(function(){
 
-  var _workspace, _mainmenu,
-    _sidebar,
+  var _workspace, _mainmenu, _sidebar,
     _block_panel, _page_panel, _element_panel,
     _player_wrapper, _player_head, _player_body, _player,
     _grid, _history;
