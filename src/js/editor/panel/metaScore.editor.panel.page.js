@@ -74,7 +74,7 @@ metaScore.editor.panel.Page = (function () {
   
   PagePanel.prototype.setPage = function(page, supressEvent){
   
-    if(this.page && (this.page.get(0) === page.get(0))){
+    if(this.page && (this.page.dom.get(0) === page.dom.get(0))){
       return;
     }
     
@@ -123,15 +123,15 @@ metaScore.editor.panel.Page = (function () {
   
     switch(field.data('name')){
       case 'bg-color':
-        this.page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.page.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg_image':
         // TODO
       case 'start-time':
-        this.page.data('start-time', value);
+        this.page.dom.data('start-time', value);
         break;
       case 'end-time':
-        this.page.data('end-time', value);
+        this.page.dom.data('end-time', value);
         break;
     }
   };
@@ -141,16 +141,16 @@ metaScore.editor.panel.Page = (function () {
     
     switch(name){
       case 'bg-color':
-        field.setValue(this.page.css('background-color'));
+        field.setValue(this.page.dom.css('background-color'));
         break;
       case 'bg-image':
         // TODO
         break;
       case 'start-time':
-        field.setValue(this.page.data('start-time') || 0);
+        field.setValue(this.page.dom.data('start-time') || 0);
         break;
       case 'end-time':
-        field.setValue(this.page.data('end-time') || 0);
+        field.setValue(this.page.dom.data('end-time') || 0);
         break;
     }
   };

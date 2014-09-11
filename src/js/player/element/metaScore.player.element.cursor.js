@@ -8,11 +8,11 @@ metaScore.namespace('player.element');
 
 metaScore.player.element.Cursor = (function () {
 
-  function Cursor(element) {  
+  function Cursor(configs) {
     // call parent constructor
-    Cursor.parent.call(this, element);
+    Cursor.parent.call(this, configs);
     
-    this.data('type', 'cursor');    
+    this.dom.data('type', 'cursor');
   }
   
   metaScore.player.Element.extend(Cursor);

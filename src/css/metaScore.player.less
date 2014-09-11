@@ -1,5 +1,10 @@
 @import "../../vendor/prefixer.less";
 
+@block-outline: rgb(51,49,47);
+@cursor-outline: rgb(255,0,60);
+@image-outline: rgb(255,138,0);
+@text-outline: rgb(0,193,118);
+
 .metaScore-block{
   position: absolute;
   top: 0;
@@ -107,15 +112,6 @@
     &[data-type="Text"]{
       
     }
-    
-    &.selected{
-      outline: 1px dashed rgb(0, 0, 254);
-    }
-  }
-  
-  &.selected{
-    border: 1px dashed rgb(0, 0, 254);
-    .box-shadow(rgb(0, 0, 254) 0px 0px 4px 0px);
   }
   
   &:hover{
@@ -146,10 +142,9 @@
   .resizable{
     .resize-handle{
       position: absolute;
-      background: rgba(0, 0, 254, 0.5);
+      background: fade(@block-outline, 50%);
       width: 10px;
       height: 10px;
-      z-index: 9999;
       
       &[data-direction="top"]{
         top: -6px;
@@ -199,13 +194,53 @@
     }
   }
   
+  
+  .metaScore-block{
+    &.selected{
+      border: 1px dashed @block-outline;
+      .box-shadow(@block-outline 0px 0px 4px 0px);
+    }
+    
+    .element{
+      &[data-type="cursor"]{
+        outline-color: @cursor-outline;
+        
+        &.resizable .resize-handle{
+          background: fade(@cursor-outline, 50%);
+        }
+      }
+      
+      &[data-type="image"]{
+        outline-color: @image-outline;
+        
+        &.resizable .resize-handle{
+          background: fade(@image-outline, 50%);
+        }
+      }
+      
+      &[data-type="text"]{
+        outline-color: @text-outline;
+        
+        &.resizable .resize-handle{
+          background: fade(@text-outline, 50%);
+        }
+      }
+        
+      &.selected{
+        outline-width: 1px;
+        outline-style: dashed;
+      }
+    }
+  }
+  
   &.alt-down{
     .metaScore-block:not(.selected){
-      border: 1px dashed rgba(0, 0, 254, 0.5);
-      .box-shadow(rgba(0, 0, 254, 0.5) 0px 0px 4px 0px);
+      border: 1px dashed fade(@block-outline, 50%);
+      .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
     }  
     .element:not(.selected){
-      outline: 1px dashed rgba(0, 0, 254, 0.5);
+      outline-width: 1px;
+      outline-style: dashed;
     }
   }
 }

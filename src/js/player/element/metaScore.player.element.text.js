@@ -8,11 +8,11 @@ metaScore.namespace('player.element');
 
 metaScore.player.element.Text = (function () {
 
-  function Text(element) {  
+  function Text(configs) {  
     // call parent constructor
-    Text.parent.call(this, element);
+    Text.parent.call(this, configs);
     
-    this.data('type', 'text');    
+    this.dom.data('type', 'text');    
   }
   
   metaScore.player.Element.extend(Text);

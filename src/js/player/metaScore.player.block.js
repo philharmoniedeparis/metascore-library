@@ -11,55 +11,63 @@ metaScore.namespace('player');
 
 metaScore.player.Block = (function () {
 
-  function Block(dom) {
-    this.pages = [];
-  
-    if(dom){
-      // call parent constructor
-      Block.parent.call(this, dom);
-      
-      this.pages = this.children('.pages');
-      this.pager = new metaScore.player.Pager(this.child('.pager').get(0));
+  function Block(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-block'});
+    this.dom.get(0)._metaScore = this;
+    
+    if(this.configs.container){
+      this.dom.appendTo(this.configs.container);
     }
-    else{
-      // call parent constructor
-      Block.parent.call(this, '<div/>', {'class': 'metaScore-block'});
-      
-      this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
-      this.pager = new metaScore.player.Pager().appendTo(this);
-    }
+          
+    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this.dom);
+    this.pager = new metaScore.player.Pager().appendTo(this.dom);
       
     this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
       
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    this.dom.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    metaScore.Array.each(this.configs.pages, function(index, page){
+      this.addPage(page);
+    }, this);
   }
   
-  metaScore.Dom.extend(Block);
+  metaScore.Class.extend(Block);
   
   Block.prototype.getPages = function(){  
     return this.pages.children('.page');  
   };
   
-  Block.prototype.addPage = function(page){  
-    this.pages.append(page);
+  Block.prototype.addPage = function(configs){
+    var page;
     
-    this.setActivePage(this.getPages().count() - 1);  
+    if(configs instanceof metaScore.player.Page){
+      page = configs;
+    }
+    else{
+      page = new metaScore.player.Page(configs);
+    }
+  
+    page.dom.appendTo(this.pages);
+    
+    this.setActivePage(this.getPages().count() - 1);
   };
   
   Block.prototype.getActivePage = function(){    
     var pages = this.getPages(),
       index = this.getActivePageIndex();
   
-    return new metaScore.player.Page(this.getPages().get(index));  
+    if(index < 0){
+      return null;
+    }
+  
+    return this.getPages().get(index)._metaScore;
   };
   
   Block.prototype.getActivePageIndex = function(){    
     var pages = this.getPages(),
       index = pages.index('.active');
-  
-    if(index < 0){
-      index = 0;
-    }
   
     return index;  
   };
@@ -70,15 +78,15 @@ metaScore.player.Block = (function () {
   
   Block.prototype.setActivePage = function(index){    
     var pages = this.getPages(),
-      page = new metaScore.player.Page(pages.get(index));
+      page = pages.get(index)._metaScore;
   
     pages.removeClass('active');
     
-    page.addClass('active');
+    page.dom.addClass('active');
     
     this.updatePager();
     
-    this.triggerEvent('pageactivated', {'index': index, 'page': page});  
+    this.dom.triggerEvent('pageactivated', {'index': index, 'page': page});  
   };
   
   Block.prototype.updatePager = function(){  
@@ -89,11 +97,11 @@ metaScore.player.Block = (function () {
   };
   
   Block.prototype.isSynched = function(){    
-    return this.data('synched') === "true";    
+    return this.dom.data('synched') === "true";    
   };
   
   Block.prototype.onClick = function(evt){    
-    this.triggerEvent('blockclick', {'block': this});
+    this.dom.triggerEvent('blockclick', {'block': this});
     
     evt.stopPropagation();    
   };

@@ -95,7 +95,7 @@ metaScore.Ajax = (function () {
         if(metaScore.Var.is(options.complete, 'function')){
           options.complete.call(options.scope, xhr);
         }
-        if(xhr.status >= 200 && status < 300 || status === 304){
+        if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
           if(metaScore.Var.is(options.success, 'function')){
             options.success.call(options.scope, xhr);
           }

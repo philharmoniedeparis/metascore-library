@@ -175,8 +175,7 @@ metaScore.editor.field.Color = (function () {
   
   };
   
-  ColorField.prototype.onClick = function(evt){
-  
+  ColorField.prototype.onClick = function(evt){  
     if(this.disabled){
       return;
     }
@@ -185,12 +184,10 @@ metaScore.editor.field.Color = (function () {
     
     this.fillPrevious();
   
-    this.overlay.show();
-  
+    this.overlay.show();  
   };
   
-  ColorField.prototype.onControlInput = function(evt){
-  
+  ColorField.prototype.onControlInput = function(evt){  
     var rgba, hsv;
     
     this.setValue({
@@ -198,20 +195,17 @@ metaScore.editor.field.Color = (function () {
       'g': this.overlay.controls.g.val(),
       'b': this.overlay.controls.b.val(),
       'a': this.overlay.controls.a.val()
-    }, true, true, false);
-  
+    }, true, true, false);  
   };
   
-  ColorField.prototype.onCancelClick = function(evt){
-  
+  ColorField.prototype.onCancelClick = function(evt){  
     this.setValue(this.previous_value);
     this.overlay.hide();
   
     evt.stopPropagation();
   };
   
-  ColorField.prototype.onApplyClick = function(evt){
-  
+  ColorField.prototype.onApplyClick = function(evt){  
     this.overlay.hide();
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
@@ -219,28 +213,23 @@ metaScore.editor.field.Color = (function () {
     evt.stopPropagation();
   };
   
-  ColorField.prototype.fillPrevious = function(){
-  
+  ColorField.prototype.fillPrevious = function(){  
     var context = this.overlay.controls.previous.get(0).getContext('2d');
     
     context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-  
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
   };
   
-  ColorField.prototype.fillCurrent = function(){
-  
+  ColorField.prototype.fillCurrent = function(){  
     var context = this.overlay.controls.current.get(0).getContext('2d');
     
     context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-  
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
   };
   
-  ColorField.prototype.fillGradient = function(){
-  
+  ColorField.prototype.fillGradient = function(){  
     var context = this.overlay.gradient.canvas.get(0).getContext('2d'),
       fill;
       
@@ -267,12 +256,10 @@ metaScore.editor.field.Color = (function () {
    
     // Apply gradient to canvas
     context.fillStyle = fill;
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-  
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
   };
   
-  ColorField.prototype.fillAlpha = function(){
-  
+  ColorField.prototype.fillAlpha = function(){  
     var context = this.overlay.alpha.canvas.get(0).getContext('2d'),
       fill;
       
@@ -284,8 +271,7 @@ metaScore.editor.field.Color = (function () {
     // Apply gradient to canvas
     context.fillStyle = fill;
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);    
   };
   
   ColorField.prototype.onGradientMousedown = function(evt){   
@@ -352,8 +338,7 @@ metaScore.editor.field.Color = (function () {
   
   ColorField.prototype.onAlphaMousemove = ColorField.prototype.onAlphaClick;
   
-  ColorField.prototype.rgb2hsv = function (rgb){
-    
+  ColorField.prototype.rgb2hsv = function (rgb){    
     var r = rgb.r, g = rgb.g, b = rgb.b,
       max = Math.max(r, g, b),
       min = Math.min(r, g, b),
@@ -391,8 +376,7 @@ metaScore.editor.field.Color = (function () {
     };
   };
   
-  ColorField.prototype.parseColor = function(color){
- 
+  ColorField.prototype.parseColor = function(color){ 
     var rgba = {}, matches;
       
     color = color.replace(/\s\s*/g,''); // Remove all spaces

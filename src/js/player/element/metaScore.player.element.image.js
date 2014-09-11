@@ -8,11 +8,11 @@ metaScore.namespace('player.element');
 
 metaScore.player.element.Image = (function () {
 
-  function Image(element) {
+  function Image(configs) {
     // call parent constructor
-    Image.parent.call(this, element);
+    Image.parent.call(this, configs);
     
-    this.data('type', 'image');    
+    this.dom.data('type', 'image');    
   }
   
   metaScore.player.Element.extend(Image);

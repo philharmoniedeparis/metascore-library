@@ -9,29 +9,38 @@ metaScore.namespace('player');
 
 metaScore.player.Page = (function () {
 
-  function Page(dom) {    
-    if(dom){
-      // call parent constructor
-      Page.parent.call(this, dom);
-    }
-    else{
-      // call parent constructor
-      Page.parent.call(this, '<div/>', {'class': 'page'});
-    }
+  function Page(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.dom = new metaScore.Dom('<div/>', {'class': 'page'});
+    this.dom.get(0)._metaScore = this;
       
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    this.dom.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    metaScore.Array.each(this.configs.elements, function(index, element){
+      this.addElement(element);
+    }, this);
   }
   
-  metaScore.Dom.extend(Page);
+  metaScore.Class.extend(Page);
   
-  Page.prototype.addElement = function(element){  
-    this.append(element);
+  Page.prototype.addElement = function(configs){
+    var element;
+    
+    if(configs instanceof metaScore.player.Element){
+      element = configs;
+    }
+    else{
+      element = new metaScore.player.element[configs.type](configs);
+    }
+    
+    element.dom.appendTo(this.dom);
     
     return element;  
   };
   
   Page.prototype.onClick = function(evt){    
-    this.triggerEvent('pageclick', {'page': this});
+    this.dom.triggerEvent('pageclick', {'page': this});
     
     evt.stopPropagation();    
   };

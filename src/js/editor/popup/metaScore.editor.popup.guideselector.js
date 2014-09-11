@@ -21,8 +21,8 @@ metaScore.editor.popup.GuideSelector = (function () {
       .appendTo(this.getContents());
     
     metaScore.Ajax.get(this.configs.url, {
-      'success': this.onLoad,
-      'error': this.onError
+      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+      'error': metaScore.Function.proxy(this.onLoadError, this)
     });
   }
 
@@ -65,7 +65,7 @@ metaScore.editor.popup.GuideSelector = (function () {
   
   metaScore.editor.Popup.extend(GuideSelector);
   
-  GuideSelector.prototype.onLoad = function(xhr){
+  GuideSelector.prototype.onLoadSuccess = function(xhr){
   
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
@@ -96,7 +96,7 @@ metaScore.editor.popup.GuideSelector = (function () {
     }, this);    
   };
   
-  GuideSelector.prototype.onError = function(){    
+  GuideSelector.prototype.onLoadError = function(){    
   };
   
   GuideSelector.prototype.onGuideClick = function(guide){

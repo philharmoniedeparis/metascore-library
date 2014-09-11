@@ -167,15 +167,6 @@
   min-width: 5px;
   border: 0 solid #000;
 }
-.metaScore-block .element.selected {
-  outline: 1px dashed #0000fe;
-}
-.metaScore-block.selected {
-  border: 1px dashed #0000fe;
-  -webkit-box-shadow: #0000fe 0px 0px 4px 0px;
-  -moz-box-shadow: #0000fe 0px 0px 4px 0px;
-  box-shadow: #0000fe 0px 0px 4px 0px;
-}
 .metaScore-block:hover .pager {
   display: block;
 }
@@ -193,10 +184,9 @@
 }
 .metaScore-player-wrapper .resizable .resize-handle {
   position: absolute;
-  background: rgba(0, 0, 254, 0.5);
+  background: rgba(51, 49, 47, 0.5);
   width: 10px;
   height: 10px;
-  z-index: 9999;
 }
 .metaScore-player-wrapper .resizable .resize-handle[data-direction="top"] {
   top: -6px;
@@ -242,12 +232,41 @@
   right: -6px;
   cursor: se-resize;
 }
+.metaScore-player-wrapper .metaScore-block.selected {
+  border: 1px dashed #33312f;
+  -webkit-box-shadow: #33312f 0px 0px 4px 0px;
+  -moz-box-shadow: #33312f 0px 0px 4px 0px;
+  box-shadow: #33312f 0px 0px 4px 0px;
+}
+.metaScore-player-wrapper .metaScore-block .element[data-type="cursor"] {
+  outline-color: #ff003c;
+}
+.metaScore-player-wrapper .metaScore-block .element[data-type="cursor"].resizable .resize-handle {
+  background: rgba(255, 0, 60, 0.5);
+}
+.metaScore-player-wrapper .metaScore-block .element[data-type="image"] {
+  outline-color: #ff8a00;
+}
+.metaScore-player-wrapper .metaScore-block .element[data-type="image"].resizable .resize-handle {
+  background: rgba(255, 138, 0, 0.5);
+}
+.metaScore-player-wrapper .metaScore-block .element[data-type="text"] {
+  outline-color: #00c176;
+}
+.metaScore-player-wrapper .metaScore-block .element[data-type="text"].resizable .resize-handle {
+  background: rgba(0, 193, 118, 0.5);
+}
+.metaScore-player-wrapper .metaScore-block .element.selected {
+  outline-width: 1px;
+  outline-style: dashed;
+}
 .metaScore-player-wrapper.alt-down .metaScore-block:not(.selected) {
-  border: 1px dashed rgba(0, 0, 254, 0.5);
-  -webkit-box-shadow: rgba(0, 0, 254, 0.5) 0px 0px 4px 0px;
-  -moz-box-shadow: rgba(0, 0, 254, 0.5) 0px 0px 4px 0px;
-  box-shadow: rgba(0, 0, 254, 0.5) 0px 0px 4px 0px;
+  border: 1px dashed rgba(51, 49, 47, 0.5);
+  -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
+  -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
+  box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
 .metaScore-player-wrapper.alt-down .element:not(.selected) {
-  outline: 1px dashed rgba(0, 0, 254, 0.5);
+  outline-width: 1px;
+  outline-style: dashed;
 }

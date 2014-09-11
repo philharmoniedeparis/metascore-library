@@ -54,6 +54,10 @@ metaScore.editor.panel.Element = (function () {
     * The panel's fields
     */
     fields: {
+      'name': {
+        'type': metaScore.editor.field.Text,
+        'label': metaScore.String.t('Name')
+      },
       'x': {
         'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('X')
@@ -141,7 +145,7 @@ metaScore.editor.panel.Element = (function () {
   };
   
   ElementPanel.prototype.setElement = function(element, supressEvent){  
-    if(this.element && (this.element.get(0) === element.get(0))){
+    if(this.element && (this.element.dom.get(0) === element.dom.get(0))){
       return;
     }
     
@@ -153,21 +157,21 @@ metaScore.editor.panel.Element = (function () {
     this.enableFields();
     this.getMenu().enableItems('[data-action="delete"]');
     
-    this.element._draggable = new metaScore.Draggable({'target': this.element, 'handle': this.element, 'container': this.element.parents()}).enable();
-    this.element._resizable = new metaScore.Resizable({'target': this.element, 'container': this.element.parents()}).enable();
+    this.element._draggable = new metaScore.Draggable({'target': this.element.dom, 'handle': this.element.dom, 'container': this.element.dom.parents()}).enable();
+    this.element._resizable = new metaScore.Resizable({'target': this.element.dom, 'container': this.element.dom.parents()}).enable();
     
-    this.element
+    this.element.dom
       .addListener('drag', this.onElementDrag)
       .addListener('resize', this.onElementResize)
       .addClass('selected');
     
-    switch(this.element.data('type')){
+    switch(this.element.dom.data('type')){
       case 'cursor':
         break;
       case 'image':
         break;
       case 'text':
-        this.element.attr('contenteditable', 'true');
+        this.element.dom.attr('contenteditable', 'true');
         break;
     }
     
@@ -191,18 +195,18 @@ metaScore.editor.panel.Element = (function () {
       element._resizable.destroy();
       delete element._resizable;
   
-      element
+      element.dom
         .removeListener('drag', this.onElementDrag)
         .removeListener('resize', this.onElementResize)
         .removeClass('selected');
     
-      switch(this.element.data('type')){
+      switch(this.element.dom.data('type')){
         case 'cursor':
           break;
         case 'image':
           break;
         case 'text':
-          this.element.attr('contenteditable', null);
+          this.element.dom.attr('contenteditable', null);
           break;
       }
       
@@ -234,43 +238,43 @@ metaScore.editor.panel.Element = (function () {
   
     switch(field.data('name')){
       case 'x':
-        this.element.css('left', value +'px');
+        this.element.dom.css('left', value +'px');
         break;
       case 'y':
-        this.element.css('top', value +'px');
+        this.element.dom.css('top', value +'px');
         break;
       case 'width':
-        this.element.css('width', value +'px');
+        this.element.dom.css('width', value +'px');
         break;
       case 'height':
-        this.element.css('height', value +'px');
+        this.element.dom.css('height', value +'px');
         break;
       case 'r-index':
-        this.element.data('r-index', value);
+        this.element.dom.data('r-index', value);
         break;
       case 'z-index':
-        this.element.css('z-index', value);
+        this.element.dom.css('z-index', value);
         break;
       case 'bg-color':
-        this.element.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.element.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg-image':
         // TODO
         break;
       case 'border-width':
-        this.element.css('border-width', value +'px');
+        this.element.dom.css('border-width', value +'px');
         break;
       case 'border-color':
-        this.element.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.element.dom.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'rounded-conrners':
         // TODO
         break;
       case 'start-time':
-        this.element.data('start-time', value);
+        this.element.dom.data('start-time', value);
         break;
       case 'end-time':
-        this.element.data('end-time', value);
+        this.element.dom.data('end-time', value);
         break;
     }
   };
@@ -280,43 +284,43 @@ metaScore.editor.panel.Element = (function () {
     
     switch(name){
       case 'x':
-        field.setValue(parseInt(this.element.css('left'), 10));
+        field.setValue(parseInt(this.element.dom.css('left'), 10));
         break;
       case 'y':
-        field.setValue(parseInt(this.element.css('top'), 10));
+        field.setValue(parseInt(this.element.dom.css('top'), 10));
         break;
       case 'width':
-        field.setValue(parseInt(this.element.css('width'), 10));
+        field.setValue(parseInt(this.element.dom.css('width'), 10));
         break;
       case 'height':
-        field.setValue(parseInt(this.element.css('height'), 10));
+        field.setValue(parseInt(this.element.dom.css('height'), 10));
         break;
       case 'r-index':
-        field.setValue(this.element.data('r-index') || 0);
+        field.setValue(this.element.dom.data('r-index') || 0);
         break;
       case 'z-index':
-        field.setValue(parseInt(this.element.css('z-index'), 10));
+        field.setValue(parseInt(this.element.dom.css('z-index'), 10));
         break;
       case 'bg-color':
-        field.setValue(this.element.css('background-color'));
+        field.setValue(this.element.dom.css('background-color'));
         break;
       case 'bg-image':
         // TODO
         break;
       case 'border-width':
-        field.setValue(parseInt(this.element.css('border-width'), 10));
+        field.setValue(parseInt(this.element.dom.css('border-width'), 10));
         break;
       case 'border-color':
-        field.setValue(this.element.css('border-color'));
+        field.setValue(this.element.dom.css('border-color'));
         break;
       case 'rounded-conrners':
         // TODO
         break;
       case 'start-time':
-        field.setValue(this.element.data('start-time') || 0);
+        field.setValue(this.element.dom.data('start-time') || 0);
         break;
       case 'end-time':
-        field.setValue(this.element.data('end-time') || 0);
+        field.setValue(this.element.dom.data('end-time') || 0);
         break;
     }
   };
