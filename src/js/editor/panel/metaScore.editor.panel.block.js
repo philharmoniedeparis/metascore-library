@@ -10,11 +10,35 @@
  * @requires ../../helpers/metaScore.resizable.js
  * @requires ../../helpers/metaScore.resizable.js
  */
-metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
+ 
+metaScore.namespace('editor.panel');
 
-  var _menu, _block;
+metaScore.editor.panel.Block = (function () {
+  
+  function BlockPanel(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    BlockPanel.parent.call(this, this.configs);
+      
+    // fix event handlers scope
+    this.onBlockDragStart = metaScore.Function.proxy(this.onBlockDragStart, this);
+    this.onBlockDragEnd = metaScore.Function.proxy(this.onBlockDragEnd, this);
+    this.onBlockResizeStart = metaScore.Function.proxy(this.onBlockResizeStart, this);
+    this.onBlockResizeEnd = metaScore.Function.proxy(this.onBlockResizeEnd, this);
+    
+    this.menu = new metaScore.editor.DropDownMenu();
+    this.menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
+    this.menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .data('action', 'menu')
+      .append(this.menu);
+      
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
+  }
 
-  this.defaults = {
+  BlockPanel.defaults = {
     /**
     * The panel's title
     */
@@ -25,72 +49,48 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     */
     fields: {
       'x': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('X')
       },
       'y': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Y')
       },
       'width': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Width')
       },
       'height': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Height')
       },
       'bg-color': {
-        'type': metaScore.Editor.Field.ColorField,
+        'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Background color')
       },
       'bg-image': {
-        'type': metaScore.Editor.Field.ImageField,
+        'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image')
       },
       'synched': {
-        'type': metaScore.Editor.Field.BooleanField,
+        'type': metaScore.editor.field.Boolean,
         'label': metaScore.String.t('Synchronized pages ?')
       }
     }
   };
   
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  metaScore.editor.Panel.extend(BlockPanel);
   
-    this.super(configs);
-    
-    _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
-    _menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
-    
-    this.getToolbar().addButton()
-      .data('action', 'menu')
-      .append(_menu);
-      
-    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
-    
+  BlockPanel.prototype.getMenu = function(){  
+    return this.menu;  
   };
   
-  this.getMenu = function(){
-  
-    return _menu;
-  
+  BlockPanel.prototype.getBlock = function(){  
+    return this.block;  
   };
   
-  this.getBlock = function(){
-  
-    return _block;
-  
-  };
-  
-  this.setBlock = function(block, supressEvent){
-  
-    if(_block && (_block.get(0) === block.get(0))){
+  BlockPanel.prototype.setBlock = function(block, supressEvent){  
+    if(this.block && (this.block.get(0) === block.get(0))){
       return;
     }
     
@@ -100,8 +100,8 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     this.updateFieldValues(block);  
     this.getMenu().enableItems('[data-action="delete"]');
     
-    block._draggable = new metaScore.Draggable(block, block.child('.pager'), block.parents()).enable();
-    block._resizable = new metaScore.Resizable(block, block.parents()).enable();
+    block._draggable = new metaScore.Draggable({'target': block, 'handle': block.child('.pager'), 'container': block.parents()}).enable();
+    block._resizable = new metaScore.Resizable({'target': block, 'container': block.parents()}).enable();
     
     block
       .addListener('dragstart', this.onBlockDragStart)
@@ -114,14 +114,12 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       this.triggerEvent('blockset', {'block': block});
     }
     
-    _block = block;
+    this.block = block;
     
-    return this;
-    
+    return this;    
   };
   
-  this.unsetBlock = function(supressEvent){
-  
+  BlockPanel.prototype.unsetBlock = function(supressEvent){  
     var block = this.getBlock();
       
     this.disableFields();    
@@ -141,25 +139,24 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         .removeListener('resizeend', this.onBlockResizeEnd)
         .removeClass('selected');
       
-      _block = null;
+      this.block = null;
     }
       
     if(supressEvent !== true){
       this.triggerEvent('blockunset', {'block': block});
     }
     
-    return this;
-    
+    return this;    
   };
   
-  this.onBlockDragStart = function(evt){
+  BlockPanel.prototype.onBlockDragStart = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y'];
     
     this.beforeDragValues = this.getValues(block, fields);
   };
   
-  this.onBlockDragEnd = function(evt){
+  BlockPanel.prototype.onBlockDragEnd = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y'];
     
@@ -170,14 +167,14 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     delete this.beforeDragValues;
   };
   
-  this.onBlockResizeStart = function(evt){
+  BlockPanel.prototype.onBlockResizeStart = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y', 'width', 'height'];
     
     this.beforeResizeValues = this.getValues(block, fields);
   };
   
-  this.onBlockResizeEnd = function(evt){
+  BlockPanel.prototype.onBlockResizeEnd = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y', 'width', 'height'];
     
@@ -188,7 +185,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     delete this.beforeResizeValues;
   };
   
-  this.onFieldValueChange = function(evt){
+  BlockPanel.prototype.onFieldValueChange = function(evt){
     var block = this.getBlock(),
       field, value, old_values;
       
@@ -205,7 +202,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, [field])});
   };
   
-  this.updateFieldValue = function(name, value, supressEvent){
+  BlockPanel.prototype.updateFieldValue = function(name, value, supressEvent){
     var field = this.getField(name);
     
     switch(name){
@@ -229,8 +226,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     }
   };
   
-  this.updateFieldValues = function(block, values, supressEvent){
-  
+  BlockPanel.prototype.updateFieldValues = function(block, values, supressEvent){  
     if(block !== this.getBlock()){
       return;
     }
@@ -249,8 +245,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     }
   };
   
-  this.updateBlockProperty = function(block, name, value){
-  
+  BlockPanel.prototype.updateBlockProperty = function(block, name, value){  
     switch(name){
       case 'x':
         block.css('left', value +'px');
@@ -273,22 +268,18 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'synched':
         block.data('synched', value);
         break;
-    }
-  
+    }  
   };
   
-  this.updateBlockProperties = function(block, values){
-  
+  BlockPanel.prototype.updateBlockProperties = function(block, values){  
     metaScore.Object.each(values, function(name, value){
       this.updateBlockProperty(block, name, value);
     }, this);
     
-    this.updateFieldValues(block, values, true);
-  
+    this.updateFieldValues(block, values, true);  
   };
   
-  this.getValue = function(block, name){
-  
+  BlockPanel.prototype.getValue = function(block, name){  
     var value;
   
     switch(name){
@@ -315,12 +306,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         break;
     }
     
-    return value;
-  
+    return value;  
   };
   
-  this.getValues = function(block, fields){
-  
+  BlockPanel.prototype.getValues = function(block, fields){  
     var values = {};
     
     fields = fields || Object.keys(this.getField());
@@ -331,6 +320,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
     return values;  
   };
+    
+  return BlockPanel;
   
-  
-});
+})();

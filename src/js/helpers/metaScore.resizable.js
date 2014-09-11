@@ -4,183 +4,158 @@
  * @requires ../metaScore.base.js
  * @requires metaScore.dom.js
  */
-metaScore.Resizable = metaScore.Base.extend(function(){
+ 
+metaScore.Resizable = (function () {
 
-  var _target, _container, _handles,
-    _startState;
-
-  this.constructor = function(target, container) {
+  function Resizable(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+    
+    this.handles = {};
+      
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+    
+    metaScore.Array.each(this.configs.directions, function(index, direction){
+      this.handles[direction] = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+        .data('direction', direction)
+        .addListener('mousedown', this.onMouseDown)
+        .appendTo(this.configs.target);
+    }, this);
+      
+    this.enable();  
+  }
   
-    _target = target;
-    
-    _container = container || new metaScore.Dom('body');
-    
-    _handles = {};
-    
-    _handles.top = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'top')
-      .appendTo(_target);
-    
-    _handles.right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'right')
-      .appendTo(_target);
-    
-    _handles.bottom = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'bottom')
-      .appendTo(_target);
-    
-    _handles.left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'left')
-      .appendTo(_target);
-    
-    _handles.top_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'top-left')
-      .appendTo(_target);
-      
-    _handles.top_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'top-right')
-      .appendTo(_target);
-      
-    _handles.bottom_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'bottom-left')
-      .appendTo(_target);
-      
-    _handles.bottom_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'bottom-right')
-      .appendTo(_target);
-      
-    this.enable();
-  
+  Resizable.defaults = {
+    directions: [
+      'top',
+      'right',
+      'bottom',
+      'left',
+      'top-left',
+      'top-right',
+      'bottom-left',
+      'bottom-right'
+    ]
   };
   
-  this.onMouseDown = function(evt){
+  metaScore.Class.extend(Resizable);
   
-    _startState = {
+  Resizable.prototype.onMouseDown = function(evt){  
+    this.start_state = {
       'handle': evt.target,
       'x': evt.clientX,
       'y': evt.clientY,
-      'left': parseInt(_target.css('left'), 10),
-      'top': parseInt(_target.css('top'), 10),
-      'w': parseInt(_target.css('width'), 10),
-      'h': parseInt(_target.css('height'), 10)
+      'left': parseInt(this.configs.target.css('left'), 10),
+      'top': parseInt(this.configs.target.css('top'), 10),
+      'w': parseInt(this.configs.target.css('width'), 10),
+      'h': parseInt(this.configs.target.css('height'), 10)
     };
     
-    _container
-      .addListener('mousemove', this.onMouseMove)
-      .addListener('mouseup', this.onMouseUp);
+    this.configs.container
+      .addListener('mousemove', this.onMouseMove, this)
+      .addListener('mouseup', this.onMouseUp, this);
     
-    _target
+    this.configs.target
       .addClass('resizing')
       .triggerEvent('resizestart', null, false, true);
     
-    evt.stopPropagation();
-      
+    evt.stopPropagation();      
   };
 
-  this.onMouseMove = function(evt){
-  
-    var handle = new metaScore.Dom(_startState.handle),
+  Resizable.prototype.onMouseMove = function(evt){  
+    var handle = new metaScore.Dom(this.start_state.handle),
       w, h, top, left;
     
     switch(handle.data('direction')){
       case 'top':
-        h = _startState.h - evt.clientY + _startState.y;
-        top = _startState.top + evt.clientY  - _startState.y;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
         break;
       case 'right':
-        w = _startState.w + evt.clientX - _startState.x;
+        w = this.start_state.w + evt.clientX - this.start_state.x;
         break;
       case 'bottom':
-        h = _startState.h + evt.clientY - _startState.y;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
         break;
       case 'left':
-        w = _startState.w - evt.clientX + _startState.x;
-        left = _startState.left + evt.clientX - _startState.x;
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
         break;
       case 'top-left':
-        w = _startState.w - evt.clientX + _startState.x;
-        h = _startState.h - evt.clientY + _startState.y;
-        top = _startState.top + evt.clientY  - _startState.y;
-        left = _startState.left + evt.clientX - _startState.x;
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
         break;
       case 'top-right':
-        w = _startState.w + evt.clientX - _startState.x;
-        h = _startState.h - evt.clientY + _startState.y;
-        top = _startState.top + evt.clientY - _startState.y;
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY - this.start_state.y;
         break;
       case 'bottom-left':
-        w = _startState.w - evt.clientX + _startState.x;
-        h = _startState.h + evt.clientY - _startState.y;
-        left = _startState.left + evt.clientX - _startState.x;
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
         break;
       case 'bottom-right':
-        w = _startState.w + evt.clientX - _startState.x;
-        h = _startState.h + evt.clientY - _startState.y;
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
         break;
     }
       
     if(top !== undefined){
-      _target.css('top', top +'px');
+      this.configs.target.css('top', top +'px');
     }
     if(left !== undefined){
-      _target.css('left', left +'px');
+      this.configs.target.css('left', left +'px');
     }
     
-    _target
+    this.configs.target
       .css('width', w +'px')
       .css('height', h +'px')
       .triggerEvent('resize', null, false, true);
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
 
-  this.onMouseUp = function(evt){
-  
-    _container
-      .removeListener('mousemove', this.onMouseMove)
-      .removeListener('mouseup', this.onMouseUp);
+  Resizable.prototype.onMouseUp = function(evt){  
+    this.configs.container
+      .removeListener('mousemove', this.onMouseMove, this)
+      .removeListener('mouseup', this.onMouseUp, this);
     
-    _target
+    this.configs.target
       .removeClass('resizing')
       .triggerEvent('resizeend', null, false, true);
     
     evt.stopPropagation();
   };
   
-  this.enable = function(){
-  
-    metaScore.Object.each(_handles, function(index, handle){
-      handle.addListener('mousedown', this.onMouseDown);
-    }, this);
-  
-    _target.addClass('resizable');
+  Resizable.prototype.enable = function(){  
+    this.configs.target.addClass('resizable');
     
     return this;
-  
   };
   
-  this.disable = function(){
-  
-    metaScore.Object.each(_handles, function(index, handle){
-      handle.removeListener('mousedown', this.onMouseDown);
-    }, this);
-  
-    _target.removeClass('resizable');
+  Resizable.prototype.disable = function(){  
+    this.configs.target.removeClass('resizable');
     
-    return this;
-  
+    return this;  
   };
   
-  this.destroy = function(){
-  
+  Resizable.prototype.destroy = function(){  
     this.disable();
   
-    metaScore.Object.each(_handles, function(index, handle){
+    metaScore.Object.each(this.handles, function(index, handle){
       handle.remove();
     }, this);
     
-    return this;
-  
+    return this;  
   };
-});
+    
+  return Resizable;
+  
+})();

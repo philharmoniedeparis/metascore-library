@@ -3,13 +3,20 @@
  *
  * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Element.Cursor = metaScore.Player.Element.extend(function(){
+ 
+metaScore.namespace('player.element');
 
-  this.constructor = function(element) {
+metaScore.player.element.Cursor = (function () {
+
+  function Cursor(element) {  
+    // call parent constructor
+    Cursor.parent.call(this, element);
+    
+    this.data('type', 'cursor');    
+  }
   
-    this.super(element);
+  metaScore.player.Element.extend(Cursor);
     
-    this.data('type', 'cursor');
-    
-  };
-});
+  return Cursor;
+  
+})();

@@ -6,12 +6,29 @@
  * @requires ../helpers/metaScore.string.js
  * @requires ../helpers/metaScore.function.js
  */
-metaScore.Editor.Panel = metaScore.Dom.extend(function(){
+metaScore.editor.Panel = (function(){
+  
+  function Panel(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    Panel.parent.call(this, '<div/>', {'class': 'panel'});
+    
+    this.fields = {};
+  
+    this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    this.toolbar.getTitle()
+      .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+    
+    this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
+      .appendTo(this);
+      
+    this.setupFields();    
+  }
 
-  var _toolbar, _contents,
-    _fields = {};
-
-  this.defaults = {
+  Panel.defaults = {
     /**
     * The panel's title
     */
@@ -23,38 +40,21 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     fields: {}
   };
   
-  this.constructor = function(configs) {
+  metaScore.Dom.extend(Panel);
   
-    this.super('<div/>', {'class': 'panel'});
-  
-    this.initConfig(configs);
-  
-    _toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
-      .appendTo(this);
-      
-    _toolbar.getTitle()
-      .addListener('click', this.toggleState);
-    
-    _contents = new metaScore.Dom('<table/>', {'class': 'fields'})
-      .appendTo(this);
-      
-    this.setupFields();
-    
-  };
-  
-  this.setupFields = function(){
+  Panel.prototype.setupFields = function(){
   
     var row, uuid, configs, field;
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(_contents);
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(this.contents);
     
       uuid = 'field-'+ metaScore.String.uuid(5);
       
       configs = value.configs || {};
       
-      _fields[key] = field = new value.type(configs).attr('id', uuid);
+      this.fields[key] = field = new value.type(configs).attr('id', uuid);
       field.data('name', key);
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
@@ -64,63 +64,66 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   };
   
-  this.getToolbar = function(){
+  Panel.prototype.getToolbar = function(){
     
-    return _toolbar;
+    return this.toolbar;
     
   };
   
-  this.getField = function(key){
+  Panel.prototype.getField = function(key){
     
     if(key === undefined){
-      return _fields;
+      return this.fields;
     }
     
-    return _fields[key];
+    return this.fields[key];
     
   };
   
-  this.enableFields = function(){
+  Panel.prototype.enableFields = function(){
   
-    metaScore.Object.each(_fields, function(key, field){
+    metaScore.Object.each(this.fields, function(key, field){
       field.enable();
     }, this);
     
   };
   
-  this.disableFields = function(){
+  Panel.prototype.disableFields = function(){
   
-    metaScore.Object.each(_fields, function(key, field){
+    metaScore.Object.each(this.fields, function(key, field){
       field.disable();
     }, this);
     
   };
   
-  this.showFields = function(keys){
+  Panel.prototype.showFields = function(keys){
   
     if(!keys){
-      _contents.children('tr.field-wrapper').show();
+      this.contents.children('tr.field-wrapper').show();
     }
     else{
-      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
+      this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
     }
     
   };
   
-  this.hideFields = function(keys){
+  Panel.prototype.hideFields = function(keys){
   
     if(!keys){
-      _contents.children('tr.field-wrapper').hide();
+      this.contents.children('tr.field-wrapper').hide();
     }
     else{
-      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
+      this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
     }
     
   };
   
-  this.toggleState = function(evt){
+  Panel.prototype.toggleState = function(evt){
     
     this.toggleClass('collapsed');
     
   };
-});
+    
+  return Panel;
+  
+})();

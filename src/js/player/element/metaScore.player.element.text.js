@@ -3,13 +3,20 @@
  *
  * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Element.Text = metaScore.Player.Element.extend(function(){
+ 
+metaScore.namespace('player.element');
 
-  this.constructor = function(element) {
+metaScore.player.element.Text = (function () {
+
+  function Text(element) {  
+    // call parent constructor
+    Text.parent.call(this, element);
+    
+    this.data('type', 'text');    
+  }
   
-    this.super(element);
+  metaScore.player.Element.extend(Text);
     
-    this.data('type', 'text');
-    
-  };
-});
+  return Text;
+  
+})();

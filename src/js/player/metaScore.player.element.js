@@ -3,26 +3,32 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Player.Element = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
 
-  this.constructor = function(dom) {
-  
+metaScore.player.Element = (function () {
+
+  function Element(dom) {
     if(dom){
-      this.super(dom);
+      // call parent constructor
+      Element.parent.call(this, dom);
     }
     else{
-      this.super('<div/>', {'class': 'element'});
+      // call parent constructor
+      Element.parent.call(this, '<div/>', {'class': 'element'});
     }
       
-    this.addListener('click', this.onClick);
-    
-  };
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
   
-  this.onClick = function(evt){
-    
+  metaScore.Dom.extend(Element);
+  
+  Element.prototype.onClick = function(evt){    
     this.triggerEvent('elementclick', {'element': this});
     
-    evt.stopPropagation();
+    evt.stopPropagation();    
+  };
     
-  };  
-});
+  return Element;
+  
+})();

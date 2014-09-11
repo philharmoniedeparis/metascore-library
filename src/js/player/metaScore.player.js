@@ -3,22 +3,20 @@
  *
  * @requires ../metaScore.base.js
  */
-metaScore.Player = metaScore.Base.extend(function(){
+metaScore.Player = (function () {
   
-  var _blocks,
-    _media,
-    _cuepoints;
+  function Player(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.media = new metaScore.player.Media();    
+  }
   
-  this.defaults = {
+  Player.defaults = {
     keyboard: true
   };
   
-  this.constructor = function(configs) {
-  
-    this.initConfig(configs);
+  metaScore.Class.extend(Player);
     
-    _media = new metaScore.Player.Media();
-    
-  };
+  return Player;
   
-});
+})();

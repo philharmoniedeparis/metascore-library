@@ -7,11 +7,29 @@
  * @requires ../field/metaScore.editor.field.timefield.js
  * @requires ../../helpers/metaScore.string.js
  */
-metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
+ 
+metaScore.namespace('editor.panel');
 
-  var _menu, _page;
+metaScore.editor.panel.Page = (function () {
+  
+  function PagePanel(configs) {
+     this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    PagePanel.parent.call(this, this.configs);
+    
+    this.menu = new metaScore.editor.DropDownMenu();
+    this.menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
+    this.menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .data('action', 'menu')
+      .append(this.menu);
+      
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
+  }
 
-  this.defaults = {
+  PagePanel.defaults = {
     /**
     * The panel's title
     */
@@ -22,80 +40,61 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     */
     fields: {
       'bg-color': {
-        'type': metaScore.Editor.Field.ColorField,
+        'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Background color')
       },
       'bg-image': {
-        'type': metaScore.Editor.Field.ImageField,
+        'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image')
       },
       'start-time': {
-        'type': metaScore.Editor.Field.TimeField,
+        'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('Start time')
       },
       'end-time': {
-        'type': metaScore.Editor.Field.TimeField,
+        'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('End time')
       }
     }
   };
   
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  metaScore.editor.Panel.extend(PagePanel);
   
-    this.super(configs);
-    
-    _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
-    _menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
-    
-    this.getToolbar().addButton()
-      .data('action', 'menu')
-      .append(_menu);
-      
-    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
-    
-  };
+  PagePanel.prototype.getMenu = function(){
   
-  this.getMenu = function(){
-  
-    return _menu;
+    return this.menu;
   
   };
   
-  this.getPage = function(){
+  PagePanel.prototype.getPage = function(){
   
-    return _page;
+    return this.page;
   
   };
   
-  this.setPage = function(page, supressEvent){
+  PagePanel.prototype.setPage = function(page, supressEvent){
   
-    if(_page && (_page.get(0) === page.get(0))){
+    if(this.page && (this.page.get(0) === page.get(0))){
       return;
     }
     
-    this.unsetPage(_page, supressEvent);
+    this.unsetPage(this.page, supressEvent);
     
-    _page = page;
+    this.page = page;
     
     this.updateValues();      
     this.enableFields();
     this.getMenu().enableItems('[data-action="delete"]');
       
     if(supressEvent !== true){
-      this.triggerEvent('pageset', {'page': _page});
+      this.triggerEvent('pageset', {'page': this.page});
     }
     
     return this;
     
   };
   
-  this.unsetPage = function(page, supressEvent){
+  PagePanel.prototype.unsetPage = function(page, supressEvent){
     
     page = page || this.getPage();
       
@@ -103,7 +102,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     this.getMenu().disableItems('[data-action="delete"]');
       
     if(page){    
-      _page = null;
+      this.page = null;
     }
     
     if(supressEvent !== true){
@@ -114,49 +113,49 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.onFieldValueChange = function(evt){  
+  PagePanel.prototype.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       
-    if(!_page){
+    if(!this.page){
       return;
     }
   
     switch(field.data('name')){
       case 'bg-color':
-        _page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg_image':
         // TODO
       case 'start-time':
-        _page.data('start-time', value);
+        this.page.data('start-time', value);
         break;
       case 'end-time':
-        _page.data('end-time', value);
+        this.page.data('end-time', value);
         break;
     }
   };
   
-  this.updateValue = function(name){
+  PagePanel.prototype.updateValue = function(name){
     var field = this.getField(name);
     
     switch(name){
       case 'bg-color':
-        field.setValue(_page.css('background-color'));
+        field.setValue(this.page.css('background-color'));
         break;
       case 'bg-image':
         // TODO
         break;
       case 'start-time':
-        field.setValue(_page.data('start-time') || 0);
+        field.setValue(this.page.data('start-time') || 0);
         break;
       case 'end-time':
-        field.setValue(_page.data('end-time') || 0);
+        field.setValue(this.page.data('end-time') || 0);
         break;
     }
   };
   
-  this.updateValues = function(fields){
+  PagePanel.prototype.updateValues = function(fields){
   
     if(fields === undefined){
       fields = Object.keys(this.getField());
@@ -167,6 +166,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     }, this);
   
   };
+    
+  return PagePanel;
   
-  
-});
+})();

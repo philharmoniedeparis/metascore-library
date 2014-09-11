@@ -6,78 +6,54 @@
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
-metaScore.Player.Block = metaScore.Dom.extend(function(){
-  
-  var _pages, _pager;
+ 
+metaScore.namespace('player');
 
-  this.constructor = function(dom) {
-  
-    _pages = [];
+metaScore.player.Block = (function () {
+
+  function Block(dom) {
+    this.pages = [];
   
     if(dom){
-      this.super(dom);
-      _pages = this.children('.pages');
-      _pager = new metaScore.Player.Pager(this.child('.pager').get(0));
+      // call parent constructor
+      Block.parent.call(this, dom);
+      
+      this.pages = this.children('.pages');
+      this.pager = new metaScore.player.Pager(this.child('.pager').get(0));
     }
     else{
-      this.super('<div/>', {'class': 'metaScore-block'});
-      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
-      _pager = new metaScore.Player.Pager().appendTo(this);
-    }
-    
-    _pager
-      .addDelegate('.button', 'click', function(evt){
-        var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
-          action, index;
-          
-        if(active){
-          action = metaScore.Dom.data(evt.target, 'action');
-        
-          switch(action){
-            case 'first':
-              this.setActivePage(0);
-              break;
-            case 'previous':
-              this.setActivePage(this.getActivePageIndex() - 1);
-              break;
-            case 'next':
-              this.setActivePage(this.getActivePageIndex() + 1);
-              break;
-          }
-        }
-        
-        evt.stopPropagation();
-      }, this);
+      // call parent constructor
+      Block.parent.call(this, '<div/>', {'class': 'metaScore-block'});
       
-    this.addListener('click', this.onClick);
-    
+      this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
+      this.pager = new metaScore.player.Pager().appendTo(this);
+    }
+      
+    this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
+      
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
+  
+  metaScore.Dom.extend(Block);
+  
+  Block.prototype.getPages = function(){  
+    return this.pages.children('.page');  
   };
   
-  this.getPages = function(){
-  
-    return _pages.children('.page');
-  
+  Block.prototype.addPage = function(page){  
+    this.pages.append(page);
+    
+    this.setActivePage(this.getPages().count() - 1);  
   };
   
-  this.addPage = function(page){
-  
-    _pages.append(page);
-    
-    this.setActivePage(this.getPages().count() - 1);
-  
-  };
-  
-  this.getActivePage = function(){
-    
+  Block.prototype.getActivePage = function(){    
     var pages = this.getPages(),
       index = this.getActivePageIndex();
   
-    return new metaScore.Player.Page(this.getPages().get(index));
-  
+    return new metaScore.player.Page(this.getPages().get(index));  
   };
   
-  this.getActivePageIndex = function(){
-    
+  Block.prototype.getActivePageIndex = function(){    
     var pages = this.getPages(),
       index = pages.index('.active');
   
@@ -85,20 +61,16 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
       index = 0;
     }
   
-    return index;
-  
+    return index;  
   };
   
-  this.getPageCount = function(){
-  
-    return this.getPages().count();
-  
+  Block.prototype.getPageCount = function(){  
+    return this.getPages().count();  
   };
   
-  this.setActivePage = function(index){
-    
+  Block.prototype.setActivePage = function(index){    
     var pages = this.getPages(),
-      page = new metaScore.Player.Page(pages.get(index));
+      page = new metaScore.player.Page(pages.get(index));
   
     pages.removeClass('active');
     
@@ -106,30 +78,49 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
     
     this.updatePager();
     
-    this.triggerEvent('pageactivated', {'index': index, 'page': page});
-  
+    this.triggerEvent('pageactivated', {'index': index, 'page': page});  
   };
   
-  this.updatePager = function(){
-  
+  Block.prototype.updatePager = function(){  
     var index = this.getActivePageIndex();
     var count = this.getPageCount();
   
-    _pager.updateCount(index, count);
-  
+    this.pager.updateCount(index, count);  
   };
   
-  this.isSynched = function(){
-    
-    return this.data('synched') === "true";
-    
+  Block.prototype.isSynched = function(){    
+    return this.data('synched') === "true";    
   };
   
-  this.onClick = function(evt){
-    
+  Block.prototype.onClick = function(evt){    
     this.triggerEvent('blockclick', {'block': this});
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
-});
+  
+  Block.prototype.onPagerClick = function(evt){
+    var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
+      action, index;
+      
+    if(active){
+      action = metaScore.Dom.data(evt.target, 'action');
+    
+      switch(action){
+        case 'first':
+          this.setActivePage(0);
+          break;
+        case 'previous':
+          this.setActivePage(this.getActivePageIndex() - 1);
+          break;
+        case 'next':
+          this.setActivePage(this.getActivePageIndex() + 1);
+          break;
+      }
+    }
+    
+    evt.stopPropagation();
+  };
+    
+  return Block;
+  
+})();

@@ -4,48 +4,52 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
-
-  var _title, _buttons;
-  
-  this.defaults = {    
-    /**
-    * A text to add as a title
-    */
-    title: null
-  };
+metaScore.editor.Toolbar = (function(){
 
   /**
   * Initialize
   * @param {object} a configuration object
   * @returns {void}
   */
-  this.constructor = function(configs) {    
-    this.super('<div/>', {'class': 'toolbar clearfix'});
-  
-    this.initConfig(configs);
+  function Toolbar(configs) {
+    this.configs = this.getConfigs(configs);
     
-    _title = new metaScore.Dom('<div/>', {'class': 'title'})
+    // call parent constructor
+    Toolbar.parent.call(this, '<div/>', {'class': 'toolbar clearfix'});
+    
+    this.title = new metaScore.Dom('<div/>', {'class': 'title'})
       .appendTo(this);
     
-    _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
       .appendTo(this);
       
     if(this.configs.title){
-      _title.text(this.configs.title);
+      this.title.text(this.configs.title);
     }
+  }
+  
+  Toolbar.defaults = {    
+    /**
+    * A text to add as a title
+    */
+    title: null
   };
   
-  this.getTitle = function(){
+  metaScore.Dom.extend(Toolbar);
   
-    return _title;
+  Toolbar.prototype.getTitle = function(){
+  
+    return this.title;
     
   };
   
-  this.addButton = function(configs){
+  Toolbar.prototype.addButton = function(configs){
   
-    return new metaScore.Editor.Button(configs)
-      .appendTo(_buttons);
+    return new metaScore.editor.Button(configs)
+      .appendTo(this.buttons);
   
   };
-});
+    
+  return Toolbar;
+  
+})();

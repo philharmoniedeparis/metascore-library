@@ -4,26 +4,36 @@
  * @requires ../metaScore.base.js
  * @requires metaScore.var.js
  */
-metaScore.Function = metaScore.Base.extend(function(){});
-
-/**
-* Checks if a variable is of a certain type
-* @param {mixed} the variable
-* @param {string} the type to check against
-* @returns {boolean} true if the variable is of the specified type, false otherwise
-*/
-metaScore.Function.proxy = function(fn, scope) {
+ 
+metaScore.Function = (function () {
   
-  if (!metaScore.Var.type(fn, 'function')) {
-    return undefined;
+  function Function() {
   }
   
-  return function () {
-    return fn.apply(scope || this, arguments);
-  };
-};
+  metaScore.Class.extend(Function);
 
-/**
-* A reusable empty function
-*/
-metaScore.Function.emptyFn = function(){};
+  /**
+  * Checks if a variable is of a certain type
+  * @param {mixed} the variable
+  * @param {string} the type to check against
+  * @param {array} an array of arguments to send, defaults to the arguments sent
+  * @returns {boolean} true if the variable is of the specified type, false otherwise
+  */
+  Function.proxy = function(fn, scope, args){
+    if (!metaScore.Var.type(fn, 'function')){
+      return undefined;
+    }
+    
+    return function () {    
+      return fn.apply(scope || this, args || arguments);
+    };
+  };
+
+  /**
+  * A reusable empty function
+  */
+  Function.emptyFn = function(){};
+    
+  return Function;
+  
+})();

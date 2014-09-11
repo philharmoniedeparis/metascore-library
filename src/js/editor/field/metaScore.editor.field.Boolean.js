@@ -3,9 +3,23 @@
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
 
-  this.defaults = {    
+metaScore.editor.field.Boolean = (function () {
+  
+  function BooleanField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    BooleanField.parent.call(this, this.configs);
+    
+    if(this.configs.checked){
+      this.attr('checked', 'checked');
+    }
+  }
+
+  BooleanField.defaults = {
     /**
     * Defines the default value
     */
@@ -24,30 +38,17 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
-  };
-  
-  this.attributes = {
-    'type': 'checkbox',
-    'class': 'field booleanfield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+    disabled: false,
     
-    this.super(configs);
-    
-    if(this.configs.checked){
-      this.attr('checked', 'checked');
+    attributes: {
+      'type': 'checkbox',
+      'class': 'field booleanfield'
     }
-    
   };
   
-  this.onChange = function(evt){
+  metaScore.editor.Field.extend(BooleanField);
+  
+  BooleanField.prototype.onChange = function(evt){
       
     this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
     
@@ -55,9 +56,12 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
   
   };
   
-  this.setChecked = function(checked){
+  BooleanField.prototype.setChecked = function(checked){
   
     this.attr('checked', checked ? 'checked' : '');
   
   };
-});
+    
+  return BooleanField;
+  
+})();

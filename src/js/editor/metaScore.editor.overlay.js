@@ -3,11 +3,29 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
+metaScore.editor.Overlay = (function(){
 
-  var _draggable;
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  function Overlay(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
+    
+    if(this.configs.modal){
+      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
+    }
+    
+    if(this.configs.draggable){
+      this.draggable = new metaScore.Draggable({'target': this, 'handle': this});
+    }    
+  }
   
-  this.defaults = {
+  Overlay.defaults = {
     
     /**
     * The parent element in which the overlay will be appended
@@ -24,29 +42,10 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     */
     draggable: true
   };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
   
-    this.super('<div/>', {'class': 'overlay clearfix'});
+  metaScore.Dom.extend(Overlay);
   
-    this.initConfig(configs);
-    
-    if(this.configs.modal){
-      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
-    }
-    
-    if(this.configs.draggable){
-      _draggable = new metaScore.Draggable(this, this);
-    }
-    
-  };
-  
-  this.show = function(){
+  Overlay.prototype.show = function(){
     
     if(this.configs.modal){
       this.mask.appendTo(this.configs.parent);
@@ -56,7 +55,7 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     
   };
   
-  this.hide = function(){
+  Overlay.prototype.hide = function(){
     
     if(this.configs.modal){
       this.mask.remove();
@@ -65,4 +64,7 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     this.remove();
     
   };
-});
+    
+  return Overlay;
+  
+})();

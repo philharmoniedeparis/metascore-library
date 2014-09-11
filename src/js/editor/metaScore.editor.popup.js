@@ -3,11 +3,31 @@
  *
  * @requires ./metaScore.editor.overlay.js
  */
-metaScore.Editor.Popup = metaScore.Editor.Overlay.extend(function(){
+ 
+metaScore.namespace('editor');
 
-  var _toolbar, _contents;
+metaScore.editor.Popup = (function () {
+  
+  function Popup(configs) {
+    this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    Popup.parent.call(this, this.configs);
+    
+    this.addClass('popup');
+  
+    this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    this.toolbar.addButton()
+      .data('action', 'close')
+      .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);    
+  }
 
-  this.defaults = {
+  Popup.defaults = {
     /**
     * The popup's title
     */
@@ -29,37 +49,20 @@ metaScore.Editor.Popup = metaScore.Editor.Overlay.extend(function(){
     draggable: false
   };
   
-  this.constructor = function(configs) {
+  metaScore.editor.Overlay.extend(Popup);
   
-    this.super(configs);
-    
-    this.addClass('popup');
-  
-    _toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
-      .appendTo(this);
-      
-    _toolbar.addButton()
-      .data('action', 'close')
-      .addListener('click', this.onCloseClick);
-    
-    _contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);
-    
+  Popup.prototype.getToolbar = function(){    
+    return this.toolbar;    
   };
   
-  this.getToolbar = function(){
-    
-    return _toolbar;
-    
+  Popup.prototype.getContents = function(){    
+    return this.contents;    
   };
   
-  this.getContents = function(){
-    
-    return _contents;
-    
-  };
-  
-  this.onCloseClick = function(){
+  Popup.prototype.onCloseClick = function(){
     this.hide();
   };
-});
+    
+  return Popup;
+  
+})();

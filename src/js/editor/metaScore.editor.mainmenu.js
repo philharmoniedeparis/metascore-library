@@ -6,87 +6,88 @@
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
-metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
+metaScore.editor.MainMenu = (function(){
 
-  this.constructor = function() {
-  
-    this.super('<div/>', {'class': 'main-menu clearfix'});
+  function MainMenu() {
+    // call parent constructor
+    MainMenu.parent.call(this, '<div/>', {'class': 'main-menu clearfix'});
     
-    this.setupUI();
-    
-  };
+    this.setupUI();    
+  }
   
-  this.setupUI = function(){
+  metaScore.Dom.extend(MainMenu);
+  
+  MainMenu.prototype.setupUI = function(){
   
     var left, right;
     
     left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
     right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('New')
       })
       .data('action', 'new')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('Open')
       })
       .data('action', 'open')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('edit')
       })
       .data('action', 'edit')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('save')
       })
       .data('action', 'save')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('download')
       })
       .data('action', 'download')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('delete')
       })
       .data('action', 'delete')
       .appendTo(left);
     
-    new metaScore.Editor.Field.TimeField()
+    new metaScore.editor.field.Time()
       .attr({
         'title': metaScore.String.t('time')
       })
       .data('action', 'time')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('revert')
       })
       .data('action', 'revert')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('undo')
       })
       .data('action', 'undo')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('redo')
       })
@@ -94,14 +95,14 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
       .appendTo(left);
       
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('settings')
       })
       .data('action', 'settings')
       .appendTo(right);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('help')
       })
@@ -110,7 +111,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
     
   };
   
-  this.enableItems = function(selector){
+  MainMenu.prototype.enableItems = function(selector){
   
     var items = this.children(selector);
     
@@ -120,7 +121,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
   
   };
   
-  this.disableItems = function(selector){
+  MainMenu.prototype.disableItems = function(selector){
   
     var items = this.children(selector);
     
@@ -129,4 +130,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
     return items;
   
   };
-});
+    
+  return MainMenu;
+  
+})();

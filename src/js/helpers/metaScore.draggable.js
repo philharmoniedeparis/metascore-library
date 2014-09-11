@@ -1,97 +1,90 @@
 /**
  * Dom
  *
- * @requires ../metaScore.base.js
+ * @requires ../metaScore.class.js
  * @requires metaScore.dom.js
  */
-metaScore.Draggable = metaScore.Base.extend(function(){
+ 
+metaScore.Draggable = (function () {
 
-  var _target, _handle, _container,
-    _startState;
-
-  this.constructor = function(target, handle, container) {
-  
-    _target = target;
-    _handle = handle;
+  function Draggable(configs) {
+    this.configs = this.getConfigs(configs);
     
-    _container = container || new metaScore.Dom('body');
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+      
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+    
+    this.configs.handle.addListener('mousedown', this.onMouseDown);
     
     this.enable();
+  }
   
-  };
+  metaScore.Class.extend(Draggable);
   
-  this.onMouseDown = function(evt){
-  
-    _startState = {
-      'left': parseInt(_target.css('left'), 10) - evt.clientX,
-      'top': parseInt(_target.css('top'), 10) - evt.clientY
+  Draggable.prototype.onMouseDown = function(evt){  
+    this.start_state = {
+      'left': parseInt(this.configs.target.css('left'), 10) - evt.clientX,
+      'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
     };
     
-    _container
+    this.configs.container
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
     
-    _target
+    this.configs.target
       .addClass('dragging')
       .triggerEvent('dragstart', null, false, true);
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
   
-  this.onMouseMove = function(evt){
-  
-    var left = evt.clientX + _startState.left,
-      top = evt.clientY + _startState.top;
+  Draggable.prototype.onMouseMove = function(evt){  
+    var left = evt.clientX + this.start_state.left,
+      top = evt.clientY + this.start_state.top;
     
-    _target
+    this.configs.target
       .css('left', left + 'px')
       .css('top', top + 'px')
       .triggerEvent('drag', null, false, true);
     
-    evt.stopPropagation();
-      
+    evt.stopPropagation();      
   };
   
-  this.onMouseUp = function(evt){  
-  
-    _container
+  Draggable.prototype.onMouseUp = function(evt){
+    this.configs.container
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
     
-    _target
+    this.configs.target
       .removeClass('dragging')
       .triggerEvent('dragend', null, false, true);
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
   
-  this.enable = function(){
-  
-    _target.addClass('draggable');
+  Draggable.prototype.enable = function(){
+    this.configs.target.addClass('draggable');
     
-    _handle.addListener('mousedown', this.onMouseDown);
-    
-    return this;
-  
+    return this;  
   };
   
-  this.disable = function(){
-  
-    _target.removeClass('draggable');
+  Draggable.prototype.disable = function(){  
+    this.configs.target.removeClass('draggable');
     
-    _handle.removeListener('mousedown', this.onMouseDown);
-    
-    return this;
-  
+    return this;  
   };
   
-  this.destroy = function(){
-    
+  Draggable.prototype.destroy = function(){
     this.disable();
     
-    return this;
+    this.configs.handle.removeListener('mousedown', this.onMouseDown);
     
+    return this;    
   };
-});
+    
+  return Draggable;
+  
+})();

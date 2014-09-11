@@ -3,14 +3,18 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Player.Pager = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
+
+metaScore.player.Pager = (function () {
 
   var _count, _buttons;
 
-  this.constructor = function(dom) {
-  
+  function Pager(dom) {
     if(dom){
-      this.super(dom);      
+      // call parent constructor
+      Pager.parent.call(this, dom);
+      
       _count = this.child('.count');      
       _buttons = this.child('.buttons');        
       _buttons.first = _buttons.child('[data-action="first"]');
@@ -18,7 +22,9 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
       _buttons.next = _buttons.child('[data-action="next"]');
     }
     else{
-      this.super('<div/>', {'class': 'pager'});
+      // call parent constructor
+      Pager.parent.call(this, '<div/>', {'class': 'pager'});
+      
       _count = new metaScore.Dom('<div/>', {'class': 'count'}).appendTo(this);      
       _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
         .addListener('mousedown', function(evt){
@@ -28,11 +34,12 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
       _buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'}).appendTo(_buttons);      
       _buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'}).appendTo(_buttons);      
       _buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'}).appendTo(_buttons);
-    }
-    
-  };
+    }    
+  }
   
-  this.updateCount = function(index, count){
+  metaScore.Dom.extend(Pager);
+  
+  Pager.prototype.updateCount = function(index, count){
   
     _count.text(metaScore.String.t('page !current/!count', {'!current': (index + 1), '!count': count}));
     
@@ -41,5 +48,7 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
     _buttons.next.toggleClass('inactive', index >= count - 1);
   
   };
+    
+  return Pager;
   
-});
+})();

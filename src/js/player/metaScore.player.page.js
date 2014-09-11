@@ -4,34 +4,38 @@
  * @requires metaScore.player.element.js
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Player.Page = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
 
-  this.constructor = function(dom) {
-  
+metaScore.player.Page = (function () {
+
+  function Page(dom) {    
     if(dom){
-      this.super(dom);
+      // call parent constructor
+      Page.parent.call(this, dom);
     }
     else{
-      this.super('<div/>', {'class': 'page'});
+      // call parent constructor
+      Page.parent.call(this, '<div/>', {'class': 'page'});
     }
       
-    this.addListener('click', this.onClick);
-    
-  };
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
   
-  this.addElement = function(element){
+  metaScore.Dom.extend(Page);
   
+  Page.prototype.addElement = function(element){  
     this.append(element);
     
-    return element;
-  
+    return element;  
   };
   
-  this.onClick = function(evt){
-    
+  Page.prototype.onClick = function(evt){    
     this.triggerEvent('pageclick', {'page': this});
     
-    evt.stopPropagation();
+    evt.stopPropagation();    
+  };
     
-  }; 
-});
+  return Page;
+  
+})();

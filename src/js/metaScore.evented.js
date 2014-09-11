@@ -1,26 +1,30 @@
 /**
  * Evented
  *
- * @requires metaScore.base.js
+ * @requires metaScore.class.js
  */
  
-metaScore.Evented = metaScore.Base.extend(function(){
-
-  var _listeners = {};
+metaScore.Evented = (function () {
   
-  this.addListener = function(type, listener){
-    if (typeof _listeners[type] === "undefined"){
-      _listeners[type] = [];
+  function Evented() {
+    this.listeners = {};
+  }
+  
+  metaScore.Class.extend(Evented);
+  
+  Evented.prototype.addListener = function(type, listener){
+    if (typeof this.listeners[type] === "undefined"){
+      this.listeners[type] = [];
     }
 
-    _listeners[type].push(listener);
+    this.listeners[type].push(listener);
     
     return this;
   };
 
-  this.removeListener = function(type, listener){
-    if(_listeners[type] instanceof Array){
-      var listeners = _listeners[type];
+  Evented.prototype.removeListener = function(type, listener){
+    if(this.listeners[type] instanceof Array){
+      var listeners = this.listeners[type];
       for (var i=0, len=listeners.length; i < len; i++){
         if (listeners[i] === listener){
           listeners.splice(i, 1);
@@ -32,11 +36,11 @@ metaScore.Evented = metaScore.Base.extend(function(){
     return this;
   };
 
-  this.triggerEvent = function(type, data, bubbling, cancelable){
+  Evented.prototype.triggerEvent = function(type, data, bubbling, cancelable){
     var listeners, event;
 
-    if (_listeners[type] instanceof Array){
-      listeners = _listeners[type];
+    if (this.listeners[type] instanceof Array){
+      listeners = this.listeners[type];
       
       event = {
         'target': this,
@@ -53,4 +57,7 @@ metaScore.Evented = metaScore.Base.extend(function(){
     
     return this;
   };
-});
+    
+  return Evented;
+  
+})();

@@ -8,10 +8,9 @@ module.exports = function(grunt) {
   // Helper variables
   var LIBRARY_NAME = 'metaScore',
       CORE_LIST = [
-        sub('src/js/%s.const.js'),
         sub('src/js/%s.polyfill.js'),
         sub('src/js/%s.core.js'),
-        sub('src/js/%s.base.js'),
+        sub('src/js/%s.class.js'),
         sub('src/js/%s.evented.js'),
         sub('src/js/helpers/%s.*.js')
       ],
@@ -30,14 +29,10 @@ module.exports = function(grunt) {
       ],
       DEV_HEAD_LIST = [
         sub('src/js/%s.const.js'),
-        sub('src/js/%s.intro.js'),
-        sub('src/js/%s.core.js'),
-        sub('src/js/%s.base.js')
+        sub('src/js/%s.intro.js')
       ],
       DIST_HEAD_LIST = [
-        sub('src/js/%s.intro.js'),
-        sub('src/js/%s.core.js'),
-        sub('src/js/%s.base.js')
+        sub('src/js/%s.intro.js')
       ],
       TAIL_LIST = [
         sub('src/js/%s.outro.js')

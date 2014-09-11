@@ -3,10 +3,21 @@
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
+
+metaScore.editor.field.Select = (function () {
   
+  function SelectField(configs) {
+    this.configs = this.getConfigs(configs);
   
-  this.defaults = {
+    // call parent constructor
+    SelectField.parent.call(this, this.configs);
+    
+    this.setOptions(this.configs.options);
+  }
+  
+  SelectField.defaults = {
     /**
     * Defines the default value
     */
@@ -20,29 +31,18 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines the maximum value allowed
     */
-    options: {}
-  };
-  
-  this.tag = '<select/>';
-  
-  this.attributes = {
-    'class': 'field selectfield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-  
-    this.super(configs);
+    options: {},
     
-    this.setOptions(this.configs.options);
+    tag: '<select/>',
     
+    attributes: {
+      'class': 'field selectfield'
+    }
   };
   
-  this.setOptions = function(options){
+  metaScore.editor.Field.extend(SelectField);
+  
+  SelectField.prototype.setOptions = function(options){
   
     metaScore.Object.each(options, function(key, value){    
       this.append(new metaScore.Dom('<option/>', {'text': value, 'value': key}));
@@ -50,7 +50,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
     
   };
   
-  this.setValue = function(value){
+  SelectField.prototype.setValue = function(value){
     
     this.val(value);
     
@@ -58,7 +58,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
   
   };
   
-  this.getValue = function(){
+  SelectField.prototype.getValue = function(){
   
     return this.value;
   
@@ -68,7 +68,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
   * Disable the button
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  SelectField.prototype.disable = function(){
     this.disabled = true;
     
     this
@@ -84,7 +84,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  SelectField.prototype.enable = function(){
     this.disabled = false;
     
     this
@@ -93,4 +93,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
     
     return this;
   };
-});
+    
+  return SelectField;
+  
+})();

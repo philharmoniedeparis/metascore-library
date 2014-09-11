@@ -3,61 +3,55 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.Button = metaScore.Dom.extend(function(){
-
-  var _label;
+ 
+metaScore.namespace('editor');
+ 
+metaScore.editor.Button = (function () {
   
-  /**
-  * Keep track of the current state
-  */
-  this.disabled = false;
-  
-  this.defaults = {    
-    /**
-    * A text to add as a label
-    */
-    label: null
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    var btn = this;
+  function Button(configs) {
+    this.configs = this.getConfigs(configs);
     
-    this.super('<button/>');
-  
-    this.initConfig(configs);
+    // call the super constructor.
+    metaScore.Dom.call(this, '<button/>');
+    
+    this.disabled = false;
     
     if(this.configs.label){
       this.setLabel(this.configs.label);
     }
     
-    this.addListener('click', function(evt){
-      if(btn.disabled){
-        evt.stopPropagation();
-      }
-    });
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
+  
+  Button.defaults = {
+    /**
+    * A text to add as a label
+    */
+    label: null
   };
   
-  this.setLabel = function(text){
+  metaScore.Dom.extend(Button);
   
-    if(_label === undefined){
-      _label = new metaScore.Dom('<span/>', {'class': 'label'})
+  Button.prototype.onClick = function(evt){
+    if(this.disabled){
+      evt.stopPropagation();
+    }
+  };
+  
+  Button.prototype.setLabel = function(text){  
+    if(this.label === undefined){
+      this.label = new metaScore.Dom('<span/>', {'class': 'label'})
         .appendTo(this);
     }
     
-    _label.text(text);
-    
+    this.label.text(text);    
   };
 
   /**
   * Disable the button
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  Button.prototype.disable = function(){
     this.disabled = true;
     
     this.addClass('disabled');
@@ -71,11 +65,14 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  Button.prototype.enable = function(){
     this.disabled = false;
     
     this.removeClass('disabled');
     
     return this;
   };
-});
+    
+  return Button;
+  
+})();

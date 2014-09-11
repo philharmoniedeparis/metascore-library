@@ -3,57 +3,43 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+ 
+metaScore.namespace('editor');
+ 
+metaScore.editor.DropDownMenu = (function () {
   
-    this.super('<ul/>', {'class': 'dropdown-menu'});
-  
-    this.initConfig(configs);
+  function DropDownMenu(configs) {  
+    this.configs = this.getConfigs(configs);
     
-  };
+    // call the super constructor.
+    metaScore.Dom.call(this, '<ul/>', {'class': 'dropdown-menu'});
+  }
   
-  this.addItem = function(attr){
+  metaScore.Dom.extend(DropDownMenu);
   
+  DropDownMenu.prototype.addItem = function(attr){  
     var item = new metaScore.Dom('<li/>', attr)
       .appendTo(this);    
   
-    return item;
-  
+    return item;  
   };
   
-  this.enableItems = function(selector){
-  
+  DropDownMenu.prototype.enableItems = function(selector){  
     var items = this.children(selector);
     
-    items
-      .removeListener('click', this.preventClick)
-      .removeClass('disabled');
+    items.removeClass('disabled');
   
-    return items;
-  
+    return items;  
   };
   
-  this.disableItems = function(selector){
-  
+  DropDownMenu.prototype.disableItems = function(selector){  
     var items = this.children(selector);
     
-    items
-      .addListener('click', this.preventClick)
-      .addClass('disabled');
+    items.addClass('disabled');
   
-    return items;
-  
+    return items;  
   };
+    
+  return DropDownMenu;
   
-  this.preventClick = function(evt){
-  
-    evt.stopPropagation();
-  
-  };
-});
+})();

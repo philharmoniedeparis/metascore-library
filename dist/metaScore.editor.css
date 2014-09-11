@@ -361,6 +361,7 @@
   opacity: 0.75;
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li.disabled {
+  pointer-events: none;
   background: none;
   opacity: 0.5;
   cursor: default;

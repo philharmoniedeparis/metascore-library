@@ -3,37 +3,18 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.Field = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('editor');
+ 
+metaScore.editor.Field = (function () {
   
-  this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
+  function Field(configs) {
+    this.configs = this.getConfigs(configs);
     
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false
-  };
-  
-  this.tag = '<input/>';
-  
-  this.attributes = {
-    'type': 'text',
-    'class': 'field'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-  
-    this.super(this.tag, this.attributes);
-  
-    this.initConfig(configs);
+    // call the super constructor.
+    metaScore.Dom.call(this, this.configs.tag, this.configs.attributes);
+    
+    this.disabled = false;
     
     if(this.configs.value !== null){
       this.setValue(this.configs.value);
@@ -43,29 +24,45 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
       this.disable();
     }
     
-    this.addListener('change', this.onChange);
+    this.addListener('change', metaScore.Function.proxy(this.onChange, this));
+  }
+  
+  Field.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: null,
     
+    /**
+    * Defines whether the field is disabled by default
+    */
+    disabled: false,
+    
+    tag: '<input/>'
   };
   
-  this.onChange = function(evt){
-      
+  metaScore.Dom.extend(Field);
+  
+  Field.prototype.attributes = {
+    'type': 'text',
+    'class': 'field'
+  };
+  
+  Field.prototype.onChange = function(evt){      
     this.value = this.val();
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  this.setValue = function(val){
-    
-    this.val(val);    
-  
+  Field.prototype.setValue = function(val){    
+    this.val(val);  
   };
 
   /**
   * Disable the field
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  Field.prototype.disable = function(){
     this.disabled = true;
     
     this.addClass('disabled');
@@ -80,7 +77,7 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  Field.prototype.enable = function(){
     this.disabled = false;
     
     this.removeClass('disabled');
@@ -88,4 +85,7 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
     
     return this;
   };
-});
+    
+  return Field;
+  
+})();

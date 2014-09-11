@@ -4,41 +4,42 @@
  * @requires metaScore.player.js
  * @requires ../metaScore.dom.js
  */
-metaScore.Player.Media = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
 
-  this.defaults = {
+metaScore.player.Media = (function () {
+  
+  function Media(configs){  
+    this.configs = this.getConfigs(configs);
+  }
+
+  Media.defaults = {
     'type': 'video',
     'sources': []
   };
   
-  this.constructor = function(configs) {
-  
-    console.log(this.super);
-  
-    this.initConfig(configs);
-  
-    console.log(this.super);
-    
-  };
+  metaScore.Dom.extend(Media);
 
-  this.play = function() {
+  Media.prototype.play = function() {
 
   };
   
-  this.pause = function() {
+  Media.prototype.pause = function() {
 
   };
   
-  this.stop = function() {
+  Media.prototype.stop = function() {
 
   };
   
-  this.setCurrentTime = function(time) {
+  Media.prototype.setCurrentTime = function(time) {
   
   };
   
-  this.getCurrentTime = function() {
+  Media.prototype.getCurrentTime = function() {
       
   };
-
-});
+    
+  return Media;
+  
+})();

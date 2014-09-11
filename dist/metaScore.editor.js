@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-08-28 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-09-11 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -32,107 +32,6 @@ if (typeof DEBUG === 'undefined') DEBUG = true;
 ;(function (global) {
 "use strict";
 /**
-* Core
-*/
-var metaScore = {
-
-  version: "0.0.1"
-  
-};
-/**
- * Base Class
- *
- * @requires metaScore.core.js
- */
-(function(){  
-	//Helper method for creating an super copied object clone
-	function initialize(method){
-		//Recursivly execute parent methods.
-		if(method.parent instanceof Function){
-			initialize.apply(this, [method.parent]);
-      
-			this.super = cloneCopy(this,
-				superCopy(this, this.constructor)
-			);
-		}
-		method.apply(this, arguments);
-	}
-
-	//Helper method which allows for super referances.
-	function cloneCopy(from, to){
-		for(var x in from){
-			if(x !== "super" && from[x] instanceof Function){
-				//Never create circular super referances.
-				to[x] = from[x].super || superCopy(from, from[x]);
-			}
-		}
-		return to;
-	}
-
-	function superCopy(scope, method){
-		var scopeSuper = scope.super;
-    
-		return method.super = function(){
-			scope.super = scopeSuper;
-			return method.apply(scope, arguments);
-		};
-	}
-
-	//Create Class object
-	metaScore.Base = function(){};
-	metaScore.Base.extend = function ext(to){
-		function child(){
-			//Prevent the prototype scope set executing the constructor.
-			if(initialize !== arguments[0]){
-				//Create inhereted object
-				initialize.apply(this, [to]);
-				//Setup scope for class instance method calls
-				cloneCopy(this,this);
-				if(this.initializer instanceof Function){
-					this.initializer.apply(this);
-        }
-				this.constructor.apply(this, arguments);
-			}
-		}
-
-		//Set prototype and constructor enabeling propper type checking.
-		child.prototype = new this(initialize);
-		child.prototype.constructor = child;
-
-		//Return expected result from toString
-		child.toString = function(){
-			return to.toString();
-		};
-
-		//Allow the child to be extended.
-		child.extend = function(target){
-			//Create parent referance and inherentence path.
-			target.parent = to;
-			return ext.apply(child,arguments);
-		};
-
-		return child;
-	};
-  
-	//Bootstrap Class by inheriting itself with empty constructor.
-  metaScore.Base = metaScore.Base.extend(function() {
-  
-    this.constructor = function(){};
-    
-    this.initConfig = function(configs){
-      configs = configs || {};
-    
-      if(this.defaults){
-        this.configs = metaScore.Object.extend({}, this.defaults, configs);
-      }
-      else{
-        this.configs = configs;
-      }
-    };
-  });
-    
-})();
-/**
  * Polyfills
  */
 if(Element){
@@ -153,28 +52,106 @@ if(Element){
   })(Element.prototype);
 }
 /**
- * Undo
+* Core
+*/
+var metaScore = {
+
+  version: "0.0.1",
+  
+  namespace: function(str){  
+    var parent = this,
+      parts = str.split('.'),
+      part;
+        
+    for(var i = 0, length = parts.length; i < length; i++) {
+      part = parts[i];
+      parent[part] = parent[part] || {};
+      parent = parent[part];
+    }
+    
+    return parent;
+  }
+  
+};
+/**
+ * Base Class
  *
- * @requires metaScore.base.js
+ * @requires metaScore.core.js
  */
  
-metaScore.Evented = metaScore.Base.extend(function(){
+metaScore.Class = (function () {
+ 
+  /**
+   * @constructor
+   */
+  function Class(){    
+  }
 
-  var _listeners = {};
+  Class.defaults = {};
+      
+  Class.extend = function(child){
+    child.prototype = Object.create(this.prototype, {
+      constructor: {
+        value: child
+      }
+    });
+    
+    child.parent = this;
+    child.extend = this.extend;
+    
+    if(!child.hasOwnProperty('defaults')){
+      child.defaults = {};
+    }
+    
+    for(var prop in this.defaults){
+      if(!child.defaults.hasOwnProperty(prop)){
+        child.defaults[prop] = this.defaults[prop];
+      }
+    } 
+  };
   
-  this.addListener = function(type, listener){
-    if (typeof _listeners[type] === "undefined"){
-      _listeners[type] = [];
+  Class.prototype.getConfigs = function(configs){
+    configs = configs || {};
+  
+    for(var prop in this.constructor.defaults){
+      if(!configs.hasOwnProperty(prop)){
+        configs[prop] = this.constructor.defaults[prop];
+      }
+    }
+  
+    return configs;  
+  };
+  
+  return Class;
+  
+})();
+/**
+ * Evented
+ *
+ * @requires metaScore.class.js
+ */
+ 
+metaScore.Evented = (function () {
+  
+  function Evented() {
+    this.listeners = {};
+  }
+  
+  metaScore.Class.extend(Evented);
+  
+  Evented.prototype.addListener = function(type, listener){
+    if (typeof this.listeners[type] === "undefined"){
+      this.listeners[type] = [];
     }
 
-    _listeners[type].push(listener);
+    this.listeners[type].push(listener);
     
     return this;
   };
 
-  this.removeListener = function(type, listener){
-    if(_listeners[type] instanceof Array){
-      var listeners = _listeners[type];
+  Evented.prototype.removeListener = function(type, listener){
+    if(this.listeners[type] instanceof Array){
+      var listeners = this.listeners[type];
       for (var i=0, len=listeners.length; i < len; i++){
         if (listeners[i] === listener){
           listeners.splice(i, 1);
@@ -186,11 +163,11 @@ metaScore.Evented = metaScore.Base.extend(function(){
     return this;
   };
 
-  this.triggerEvent = function(type, data, bubbling, cancelable){
+  Evented.prototype.triggerEvent = function(type, data, bubbling, cancelable){
     var listeners, event;
 
-    if (_listeners[type] instanceof Array){
-      listeners = _listeners[type];
+    if (this.listeners[type] instanceof Array){
+      listeners = this.listeners[type];
       
       event = {
         'target': this,
@@ -207,267 +184,290 @@ metaScore.Evented = metaScore.Base.extend(function(){
     
     return this;
   };
-});
+    
+  return Evented;
+  
+})();
 /**
  * Ajax
  *
- * @requires ../metaScore.base.js
+ * @requires ../metaScore.class.js
  * @requires metaScore.object.js
  * @requires metaScore.var.js
  */
-metaScore.Ajax = metaScore.Base.extend(function(){});
-
-/**
-* Create an XMLHttp object
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.createXHR = function() {
-
-  var xhr, i, l,
-    activeX = [
-      "MSXML2.XMLHttp.5.0",
-      "MSXML2.XMLHttp.4.0",
-      "MSXML2.XMLHttp.3.0",
-      "MSXML2.XMLHttp",
-      "Microsoft.XMLHttp"
-    ];
-
-  if (typeof XMLHttpRequest !== "undefined") {
-    xhr = new XMLHttpRequest();
-    return xhr;
+ 
+metaScore.Ajax = (function () {
+  
+  function Ajax() {
   }
-  else if (window.ActiveXObject) {
-    for (i = 0, l = activeX.length; i < l; i++) {
-      try {
-        xhr = new ActiveXObject(activeX[i]);
-        return xhr;
+  
+  metaScore.Class.extend(Ajax);
+
+  /**
+  * Create an XMLHttp object
+  * @returns {object} the XMLHttp object
+  */
+  Ajax.createXHR = function() {
+
+    var xhr, i, l,
+      activeX = [
+        "MSXML2.XMLHttp.5.0",
+        "MSXML2.XMLHttp.4.0",
+        "MSXML2.XMLHttp.3.0",
+        "MSXML2.XMLHttp",
+        "Microsoft.XMLHttp"
+      ];
+
+    if (typeof XMLHttpRequest !== "undefined") {
+      xhr = new XMLHttpRequest();
+      return xhr;
+    }
+    else if (window.ActiveXObject) {
+      for (i = 0, l = activeX.length; i < l; i++) {
+        try {
+          xhr = new ActiveXObject(activeX[i]);
+          return xhr;
+        }
+        catch (e) {}
       }
-      catch (e) {}
     }
-  }
-  
-  throw new Error("XMLHttp object could be created.");
-  
-};
+    
+    throw new Error("XMLHttp object could be created.");
+    
+  };
 
-/**
-* Send an XMLHttp request
-* @param {string} the url of the request
-* @param {object} options to set for the request; see the defaults variable
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.send = function(url, options) {
+  /**
+  * Send an XMLHttp request
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  Ajax.send = function(url, options) {
 
-  var key,
-    xhr = metaScore.Ajax.createXHR(),
-    data, query = [],
-    defaults = {
-      'method': 'GET',
-      'headers': [],
-      'async': true,
-      'data': {},
-      'complete': null,
-      'success': null,
-      'error': null,
-      'scope': this
-    };
-  
-  options = metaScore.Object.extend(function(){}, defaults, options);
-  
-  metaScore.Object.each(options.data, function(key, value){
-    query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-  });
-  
-  if(query.length > 0){
-    if(options.method === 'POST'){
-      data = query.join('&');
-      options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-    }
-    else{
-      url += '?'+ query.join('&');
-    }
-  }
-  
-  xhr.open(options.method, url, options.async);
-  
-  metaScore.Object.each(options.headers, function(key, value){
-    xhr.setRequestHeader(key, value);
-  });
-  
-  xhr.onreadystatechange = function() {        
-    if (xhr.readyState === 4) {
-      if(metaScore.Var.is(options.complete, 'function')){
-        options.complete.call(options.scope, xhr);
+    var key,
+      xhr = Ajax.createXHR(),
+      data, query = [],
+      defaults = {
+        'method': 'GET',
+        'headers': [],
+        'async': true,
+        'data': {},
+        'complete': null,
+        'success': null,
+        'error': null,
+        'scope': this
+      };
+    
+    options = metaScore.Object.extend(function(){}, defaults, options);
+    
+    metaScore.Object.each(options.data, function(key, value){
+      query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+    });
+    
+    if(query.length > 0){
+      if(options.method === 'POST'){
+        data = query.join('&');
+        options.headers['Content-type'] = 'application/x-www-form-urlencoded';
       }
-      if(xhr.status >= 200 && status < 300 || status === 304){
-        if(metaScore.Var.is(options.success, 'function')){
-          options.success.call(options.scope, xhr);
+      else{
+        url += '?'+ query.join('&');
+      }
+    }
+    
+    xhr.open(options.method, url, options.async);
+    
+    metaScore.Object.each(options.headers, function(key, value){
+      xhr.setRequestHeader(key, value);
+    });
+    
+    xhr.onreadystatechange = function() {        
+      if (xhr.readyState === 4) {
+        if(metaScore.Var.is(options.complete, 'function')){
+          options.complete.call(options.scope, xhr);
+        }
+        if(xhr.status >= 200 && status < 300 || status === 304){
+          if(metaScore.Var.is(options.success, 'function')){
+            options.success.call(options.scope, xhr);
+          }
+        }
+        else if(metaScore.Var.is(options.error, 'function')){
+          options.error.call(options.scope, xhr);
         }
       }
-      else if(metaScore.Var.is(options.error, 'function')){
-        options.error.call(options.scope, xhr);
-      }
-    }
+    };
+    
+    xhr.send(data);
+    
+    return xhr;
+    
   };
-  
-  xhr.send(data);
-  
-  return xhr;
-  
-};
 
-/**
-* Send an XMLHttp GET request
-* @param {string} the url of the request
-* @param {object} options to set for the request; see the defaults variable
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.get = function(url, options) {
-  
-  metaScore.Object.extend(options, {'method': 'GET'});
-  
-  return metaScore.Ajax.send(url, options);
-  
-};
+  /**
+  * Send an XMLHttp GET request
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  Ajax.get = function(url, options) {
+    
+    metaScore.Object.extend(options, {'method': 'GET'});
+    
+    return Ajax.send(url, options);
+    
+  };
 
-/**
-* Send an XMLHttp POST request
-* @param {string} the url of the request
-* @param {object} options to set for the request; see the defaults variable
-* @returns {object} the XMLHttp object
-*/
-metaScore.Ajax.post = function(url, options) {
+  /**
+  * Send an XMLHttp POST request
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  Ajax.post = function(url, options) {
+    
+    metaScore.Object.extend(options, {'method': 'POST'});
+    
+    return Ajax.send(url, options);
+    
+  };
+    
+  return Ajax;
   
-  metaScore.Object.extend(options, {'method': 'POST'});
-  
-  return metaScore.Ajax.send(url, options);
-  
-};
+})();
 /**
  * Array
  *
- * @requires ../metaScore.base.js
+ * @requires ../metaScore.class.js
  */
-metaScore.Array = metaScore.Base.extend(function(){});
+ 
+metaScore.Array = (function () {
+  
+  function Array() {
+  }
+  
+  metaScore.Class.extend(Array);
 
-/**
-* Checks if a value is in an array
-* @param {mixed} the value to check
-* @param {array} the array
-* @returns {number} the index of the value if found, -1 otherwise
-*/
-metaScore.Array.inArray = function (value, arr) {
-  var len, i = 0;
+  /**
+  * Checks if a value is in an array
+  * @param {mixed} the value to check
+  * @param {array} the array
+  * @returns {number} the index of the value if found, -1 otherwise
+  */
+  Array.inArray = function (value, arr) {
+    var len, i = 0;
 
-  if(arr) {
-    if(arr.indexOf){
-      return arr.indexOf(value);
-    }
+    if(arr) {
+      if(arr.indexOf){
+        return arr.indexOf(value);
+      }
 
-    len = arr.length;
+      len = arr.length;
 
-    for ( ; i < len; i++ ) {
-      // Skip accessing in sparse arrays
-      if ( i in arr && arr[i] === value ) {
-        return i;
+      for ( ; i < len; i++ ) {
+        // Skip accessing in sparse arrays
+        if ( i in arr && arr[i] === value ) {
+          return i;
+        }
       }
     }
-  }
 
-  return -1;
-};
+    return -1;
+  };
 
-/**
-* Copies an array
-* @param {array} the original array
-* @returns {array} a copy of the array
-*/
-metaScore.Array.copy = function (arr) {
-  return [].concat(arr);
-};
+  /**
+  * Copies an array
+  * @param {array} the original array
+  * @returns {array} a copy of the array
+  */
+  Array.copy = function (arr) {
+    return [].concat(arr);
+  };
 
-/**
-* Shuffles elements in an array
-* @param {array} the original array
-* @returns {array} a copy of the array with it's elements shuffled
-*/
-metaScore.Array.shuffle = function(arr) {
+  /**
+  * Shuffles elements in an array
+  * @param {array} the original array
+  * @returns {array} a copy of the array with it's elements shuffled
+  */
+  Array.shuffle = function(arr) {
 
-  var shuffled = metaScore.Array.copy(arr);
+    var shuffled = Array.copy(arr);
 
-  shuffled.sort(function(){
-    return ((Math.random() * 3) | 0) - 1;
-  });
+    shuffled.sort(function(){
+      return ((Math.random() * 3) | 0) - 1;
+    });
 
-  return shuffled;
+    return shuffled;
 
-};
+  };
 
-/**
-* Return new array with duplicate values removed
-* @param {array} the original array
-* @returns {array} a copy of the array with the duplicate values removed
-*/
-metaScore.Array.unique = function(arr) {
+  /**
+  * Return new array with duplicate values removed
+  * @param {array} the original array
+  * @returns {array} a copy of the array with the duplicate values removed
+  */
+  Array.unique = function(arr) {
 
-  var unique = [];
-  var length = arr.length;
+    var unique = [];
+    var length = arr.length;
 
-  for(var i=0; i<length; i++) {
-    for(var j=i+1; j<length; j++) {
-      // If this[i] is found later in the array
-      if (arr[i] === arr[j]){
-        j = ++i;
+    for(var i=0; i<length; i++) {
+      for(var j=i+1; j<length; j++) {
+        // If this[i] is found later in the array
+        if (arr[i] === arr[j]){
+          j = ++i;
+        }
+      }
+      unique.push(arr[i]);
+    }
+
+    return unique;
+
+  };
+
+  /**
+  * Call a function on each element of an array
+  * @param {array} the array
+  * @param {function} the function to call
+  * @returns {array} a copy of the array
+  */
+  Array.each = function(arr, callback, scope) {
+
+    var i = 0,
+      l = arr.length,
+      value,
+      scope_provided = scope !== undefined;
+
+    for(; i < l; i++) {
+      value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
+      
+      if (value === false) {
+        break;
       }
     }
-    unique.push(arr[i]);
-  }
-
-  return unique;
-
-};
-
-/**
-* Call a function on each element of an array
-* @param {array} the array
-* @param {function} the function to call
-* @returns {array} a copy of the array
-*/
-metaScore.Array.each = function(arr, callback, scope) {
-
-  var i = 0,
-    l = arr.length,
-    value,
-    scope_provided = scope !== undefined;
-
-  for(; i < l; i++) {
-    value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
     
-    if (value === false) {
-      break;
+    return arr;
+
+  };
+
+  /**
+  * Remove an element from an array
+  * @param {array} the array
+  * @param {mixed} the element to remove
+  * @returns {array} a copy of the array
+  */
+  Array.remove = function(arr, element){
+    var index = Array.inArray(element, arr);
+
+    while(index > -1){
+      arr.splice(index, 1);    
+      index = Array.inArray(element, arr);
     }
-  }
+    
+    return arr;
+  };
+    
+  return Array;
   
-  return arr;
-
-};
-
-/**
-* Remove an element from an array
-* @param {array} the array
-* @param {mixed} the element to remove
-* @returns {array} a copy of the array
-*/
-metaScore.Array.remove = function(arr, element){
-  var index = metaScore.Array.inArray(element, arr);
-
-  while(index > -1){
-    arr.splice(index, 1);    
-    index = metaScore.Array.inArray(element, arr);
-  }
-  
-  return arr;
-};
+})();
 /**
  * Dom
  *
@@ -477,10 +477,10 @@ metaScore.Array.remove = function(arr, element){
  * @requires metaScore.object.js
  * @requires metaScore.var.js
  */
-metaScore.Dom = metaScore.Base.extend(function(){
-
-  this.constructor = function() {
+ 
+metaScore.Dom = (function () {
   
+  function Dom() { 
     var elements;
   
     this.elements = [];
@@ -500,10 +500,420 @@ metaScore.Dom = metaScore.Base.extend(function(){
           this.attr(arguments[2]);
         }
       }
+    }    
+  }
+  
+  metaScore.Class.extend(Dom);
+  
+  /**
+  * Regular expression that matches an element's string
+  */
+  Dom.stringRe = /^<(.)+>$/;
+
+  /**
+  * Regular expression that matches dashed string for camelizing
+  */
+  Dom.camelRe = /-([\da-z])/gi;
+
+  /**
+  * Helper function used by the camel function
+  */
+  Dom.camelReplaceFn = function(all, letter) {
+    return letter.toUpperCase();
+  };
+
+  /**
+  * Normaliz a string to Camel Case; used for CSS properties
+  * @param {string} the original string
+  * @returns {string} the normalized string
+  */
+  Dom.camel = function(str){
+    return str.replace(Dom.camelRe, Dom.camelReplaceFn);
+  };
+
+  /**
+  * List of event that should generaly bubble up
+  */
+  Dom.bubbleEvents = {
+    'click': true,
+    'submit': true,
+    'mousedown': true,
+    'mousemove': true,
+    'mouseup': true,
+    'mouseover': true,
+    'mouseout': true,
+    'transitionend': true
+  };
+
+  /**
+  * Select a single element by selecor
+  * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
+  * @param {object} an optional parent to constrain the matched elements 
+  * @returns {object} an HTML element
+  */
+  Dom.selectElement = function (selector, parent) {      
+    var element;
+    
+    if(!parent){
+      parent = document;
+    }
+
+    if (metaScore.Var.is(selector, 'string')) {
+      element = parent.querySelector(selector);
+    }
+    else if (selector.length) {
+      element = selector[0];
+    }
+    else {
+      element = selector;
+    }
+
+    return element;
+  };
+
+  /**
+  * Select elements by selecor
+  * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
+  * @param {object} an optional parent to constrain the matched elements 
+  * @returns {array} an array of HTML elements
+  */
+  Dom.selectElements = function (selector, parent) {      
+    var elements;
+    
+    if(!parent){
+      parent = document;
+    }
+
+    if (metaScore.Var.is(selector, 'string')) {
+      elements = parent.querySelectorAll(selector);
+    }
+    else if (selector.length) {
+      elements = selector;
+    }
+    else {
+      elements = [selector];
+    }
+
+    return elements;
+  };
+
+  /**
+  * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+  * @param {string} the HTML string
+  * @returns {object} an HTML element
+  */
+  Dom.elementsFromString = function(html){
+    var wrapMap = {
+        'option': [1, "<select multiple='multiple'>", "</select>"],
+        'optgroup': [1, "<select multiple='multiple'>", "</select>"],
+        'legend': [1, "<fieldset>", "</fieldset>"],
+        'area': [1, "<map>", "</map>"],
+        'param': [1, "<object>", "</object>"],
+        'thead': [1, "<table>", "</table>"],
+        'tbody': [1, "<table>", "</table>"],
+        'tfoot': [1, "<table>", "</table>"],
+        'colgroup': [1, "<table>", "</table>"],
+        'caption': [1, "<table>", "</table>"],
+        'tr': [2, "<table><tbody>", "</tbody></table>"],
+        'col': [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
+        'th': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+        'td': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+        '_default': [1, "<div>", "</div>" ]
+      },
+      element = document.createElement('div'),
+      match = /<\s*\w.*?>/g.exec(html),
+      tag, map, j;
+      
+    if(match != null){
+      tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
+      
+      map = wrapMap[tag] || wrapMap['_default'];
+      html = map[1] + html + map[2];
+      element.innerHTML = html;
+      
+      // Descend through wrappers to the right content
+      j = map[0];
+      while(j--) {
+        element = element.lastChild;
+      }
+      
+      return element.childNodes;
+    }
+    
+    return null;
+  };
+
+  /**
+  * Checks if an element has a given class
+  * @param {object} the dom element
+  * @param {string} the class to check
+  * @returns {boolean} true if the element has the given class, false otherwise
+  */     
+  Dom.hasClass = function(element, className){
+    return element.classList.contains(className);
+  };
+
+  /**
+  * Adds a given class to an element
+  * @param {object} the dom element
+  * @param {string} the class(es) to add; separated by a space
+  * @returns {void}
+  */
+  Dom.addClass = function(element, className){
+    var classNames = className.split(" "),
+      i = 0, l = classNames.length;
+    
+    for(; i<l; i++){
+      element.classList.add(classNames[i]);
     }
   };
+
+  /**
+  * Removes a given class from an element
+  * @param {object} the dom element
+  * @param {string} the class(es) to remove; separated by a space
+  * @returns {void}
+  */
+  Dom.removeClass = function(element, className){
+    var classNames = className.split(" "),
+      i = 0, l = classNames.length;
+    
+    for(; i<l; i++){
+      element.classList.remove(classNames[i]);
+    }
+  };
+
+  /**
+  * Toggles a given class on an element
+  * @param {object} the dom element
+  * @param {string} the class(es) to toggle; separated by a space
+  * @param {boolean} optional boolean; If true, the class will be added but not removed. If false, the class will be removed but not added.
+  * @returns {void}
+  */
+  Dom.toggleClass = function(element, className, force){
+    var classNames = className.split(" "),
+      i = 0, l = classNames.length;
+    
+    if(force === undefined){
+      for(; i<l; i++){
+        element.classList.toggle(classNames[i]);
+      }
+    }
+    else{
+      for(; i<l; i++){
+        element.classList.toggle(classNames[i], force);
+      }
+    }
+  };
+
+  /**
+  * Add an event listener on an element
+  * @param {object} the dom element
+  * @param {string} the event type to register
+  * @param {function} the callback function
+  * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
+  * @returns {void}
+  */
+  Dom.addListener = function(element, type, callback, useCapture){
+    if(useCapture === undefined){
+      useCapture = Dom.bubbleEvents.hasOwnProperty('type') ? Dom.bubbleEvents[type] : false;
+    }
+
+    return element.addEventListener(type, callback, useCapture);
+  };
+
+  /**
+  * Remove an event listener from an element
+  * @param {object} the dom element
+  * @param {string} the event type to remove
+  * @param {function} the callback function
+  * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
+  * @returns {void}
+  */
+  Dom.removeListener = function(element, type, callback, useCapture){
+    if(useCapture === undefined){
+      useCapture = Dom.bubbleEvents.hasOwnProperty('type') ? Dom.bubbleEvents[type] : false;
+    }
+    
+    return element.removeEventListener(type, callback, useCapture);
+  };
+
+  /**
+  * Trigger an event from an element
+  * @param {object} the dom element
+  * @param {string} the event type to trigger
+  * @param {boolean} whether the event should bubble
+  * @param {boolean} whether the event is cancelable
+  * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
+  */
+  Dom.triggerEvent = function(element, type, data, bubbles, cancelable){  
+    var event = new CustomEvent(type, {
+      'detail': data,
+      'bubbles': bubbles !== false,
+      'cancelable': cancelable !== false
+    });
+    
+    return element.dispatchEvent(event);
+  };
+
+  /**
+  * Sets or gets the innerHTML of an element
+  * @param {object} the dom element
+  * @param {string} an optional text to set
+  * @returns {string} the value of the innerHTML
+  */
+  Dom.text = function(element, value){
+    if(value !== undefined){
+      element.innerHTML = value;
+    }
+    
+    return element.innerHTML;
+  };
+
+  /**
+  * Sets or gets the value of an element
+  * @param {object} the dom element
+  * @param {string} an optional value to set
+  * @returns {string} the value
+  */
+  Dom.val = function(element, value){
+    if(value !== undefined){
+      element.value = value;
+    }
+    
+    return element.value;
+  };
+
+  /**
+  * Sets an attribute on an element
+  * @param {object} the dom element
+  * @param {string} the attribute's name
+  * @param {string} an optional value to set
+  * @returns {void}
+  */
+  Dom.attr = function(element, name, value){
+    
+    if(metaScore.Var.is(name, 'object')){
+      metaScore.Object.each(name, function(key, value){
+        Dom.attr(element, key, value);
+      }, this);
+    }
+    else{
+      switch(name){
+        case 'class':
+          this.addClass(element, value);
+          break;
+          
+        case 'text':
+          this.text(element, value);
+          break;
+          
+        default:
+          if(value === null){
+            element.removeAttribute(name);
+          }
+          else{
+            if(value !== undefined){
+              element.setAttribute(name, value);
+            }
+            
+            return element.getAttribute(name);
+          }
+          break;
+      }
+    }
+  };
+
+  /**
+  * Sets or gets a style property of an element
+  * @param {object} the dom element
+  * @param {string} the property's name
+  * @param {string} an optional value to set
+  * @returns {string} the value of the property
+  */
+  Dom.css = function(element, name, value){
+    var camel, style;
+
+    camel = this.camel(name);
+
+    if(value !== undefined){
+      element.style[camel] = value;
+    }
+    
+    style = window.getComputedStyle(element);
+    
+    return style.getPropertyValue(name);
+  };
+
+  /**
+  * Sets or gets a data string of an element
+  * @param {object} the dom element
+  * @param {string} the object's name
+  * @param {string} an optional value to set
+  * @returns {object} the object
+  */
+  Dom.data = function(element, name, value){
+    name = this.camel(name);
+
+    if(value === null){
+      delete element.dataset[name];
+    }
+    else if(value !== undefined){
+      element.dataset[name] = value;
+    }
+    
+    return element.dataset[name];
+  };
+
+  /**
+  * Appends children to an element
+  * @param {object} the dom element
+  * @param {object/array} the child(ren) to append
+  * @returns {void}
+  */
+  Dom.append = function(element, children){
+    if (!metaScore.Var.is(children, 'array')) {
+      children = [children];
+    }
+    
+    metaScore.Array.each(children, function(index, child){
+      element.appendChild(child);
+    }, this);
+  };
+
+  /**
+  * Removes all element children
+  * @param {object} the dom element
+  * @returns {void}
+  */
+  Dom.empty = function(element){
+    while(element.firstChild){
+      element.removeChild(element.firstChild);
+    }
+  };
+
+  /**
+  * Removes an element from the dom
+  * @param {object} the dom element
+  * @returns {void}
+  */
+  Dom.remove = function(element){
+    element.parentElement.removeChild(element);
+  };
+
+  /**
+  * Checks if an element matches a selector
+  * @param {object} the dom element
+  * @param {string} the selector
+  * @returns {boolean} true if the element matches the selector, false otherwise
+  */
+  Dom.is = function(element, selector){
+    
+    return element.matches(selector);
+    
+  };
   
-  this.add = function(elements){
+  Dom.prototype.add = function(elements){
     if(elements.hasOwnProperty('length')){
       for(var i = 0; i < elements.length; i++ ) {
         this.elements.push(elements[i]);
@@ -514,20 +924,20 @@ metaScore.Dom = metaScore.Base.extend(function(){
     }
   };
   
-  this.count = function(){
+  Dom.prototype.count = function(){
     return this.elements.length;
   };
   
-  this.get = function(index){
+  Dom.prototype.get = function(index){
     return this.elements[index];
   };
   
-  this.filter = function(selector){
+  Dom.prototype.filter = function(selector){
   
     var filtered = [];
     
     metaScore.Array.each(this.elements, function(index, element) {
-      if(metaScore.Dom.is(element, selector)){
+      if(Dom.is(element, selector)){
         filtered.push(element);
       }
     }, this);
@@ -537,12 +947,12 @@ metaScore.Dom = metaScore.Base.extend(function(){
     return this;
   };
   
-  this.index = function(selector){
+  Dom.prototype.index = function(selector){
   
     var found = -1;
     
     metaScore.Array.each(this.elements, function(index, element) {
-      if(metaScore.Dom.is(element, selector)){
+      if(Dom.is(element, selector)){
         found = index;
         return false;
       }
@@ -552,13 +962,13 @@ metaScore.Dom = metaScore.Base.extend(function(){
   
   };
   
-  this.child = function(selector){
+  Dom.prototype.child = function(selector){
   
-    var children = new metaScore.Dom(),
+    var children = new Dom(),
      child;
   
     metaScore.Array.each(this.elements, function(index, element) {
-      if(child = metaScore.Dom.selectElement.call(this, selector, element)){
+      if(child = Dom.selectElement.call(this, selector, element)){
         children.add(child);
         return false;
       }
@@ -568,21 +978,21 @@ metaScore.Dom = metaScore.Base.extend(function(){
   
   };
   
-  this.children = function(selector){
+  Dom.prototype.children = function(selector){
   
-    var children = new metaScore.Dom();
+    var children = new Dom();
   
     metaScore.Array.each(this.elements, function(index, element) {
-      children.add(metaScore.Dom.selectElements.call(this, selector, element));
+      children.add(Dom.selectElements.call(this, selector, element));
     }, this);
     
     return children;
   
   };
   
-  this.parents = function(selector){
+  Dom.prototype.parents = function(selector){
   
-    var parents = new metaScore.Dom();
+    var parents = new Dom();
   
     metaScore.Array.each(this.elements, function(index, element) {
       parents.add(element.parentElement);
@@ -596,1106 +1006,703 @@ metaScore.Dom = metaScore.Base.extend(function(){
   
   };
   
-  this.addClass = function(className) {  
+  Dom.prototype.addClass = function(className) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.addClass(element, className);
+      Dom.addClass(element, className);
     }, this);
     return this;        
   };
   
-  this.removeClass = function(className) {  
+  Dom.prototype.removeClass = function(className) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.removeClass(element, className);
+      Dom.removeClass(element, className);
     }, this);        
     return this;        
   };
   
-  this.toggleClass = function(className, force) {  
+  Dom.prototype.toggleClass = function(className, force) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.toggleClass(element, className, force);
+      Dom.toggleClass(element, className, force);
     }, this);        
     return this;        
   };
   
-  this.addListener = function(type, callback, useCapture) {  
+  Dom.prototype.addListener = function(type, callback, useCapture) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.addListener(element, type, callback, useCapture);
+      Dom.addListener(element, type, callback, useCapture);
     }, this);        
     return this;        
   };
   
-  this.addDelegate = function(selector, type, callback, scope, useCapture) {
+  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
   
     scope = scope || this;
-      
+    
     return this.addListener(type, function(evt){
-      if(metaScore.Dom.is(evt.target, selector)){
+      if(Dom.is(evt.target, selector)){
         callback.call(scope, evt);
       }
     }, useCapture);
     
   };
   
-  this.removeListener = function(type, callback, useCapture) {  
+  Dom.prototype.removeListener = function(type, callback, useCapture) {  
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.removeListener(element, type, callback, useCapture);
+      Dom.removeListener(element, type, callback, useCapture);
     }, this);        
     return this;        
   };
   
-  this.triggerEvent = function(type, data, bubbles, cancelable){
+  Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
   
     metaScore.Array.each(this.elements, function(index, element) {
-      return_value = metaScore.Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
+      return_value = Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
     }, this);
     
     return return_value;
   };
   
-  this.text = function(value) {  
+  Dom.prototype.text = function(value) {  
     if(value !== undefined){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.text(element, value);
+        Dom.text(element, value);
       }, this);
     }
     else{
-      return metaScore.Dom.text(this.get(0));
+      return Dom.text(this.get(0));
     }
   };
   
-  this.val = function(value) {
+  Dom.prototype.val = function(value) {
     if(value !== undefined){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.val(element, value);
+        Dom.val(element, value);
       }, this);
       return this;
     }
     else{
-      return metaScore.Dom.val(this.get(0));
+      return Dom.val(this.get(0));
     }
   };
   
-  this.attr = function(name, value) {
+  Dom.prototype.attr = function(name, value) {
     if(value !== undefined || metaScore.Var.is(name, 'object')){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.attr(element, name, value);
+        Dom.attr(element, name, value);
       }, this);
       return this;
     }
     else{
-      return metaScore.Dom.attr(this.get(0), name);
+      return Dom.attr(this.get(0), name);
     }
   };
   
-  this.css = function(name, value) {
+  Dom.prototype.css = function(name, value) {
     if(value !== undefined){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.css(element, name, value);
+        Dom.css(element, name, value);
       }, this);
       return this;
     }
     else{
-      return metaScore.Dom.css(this.get(0), name);
+      return Dom.css(this.get(0), name);
     }
   };
   
-  this.data = function(name, value) {
+  Dom.prototype.data = function(name, value) {
     if(value !== undefined){
       metaScore.Array.each(this.elements, function(index, element) {
-        metaScore.Dom.data(element, name, value);
+        Dom.data(element, name, value);
       }, this);
       return this;
     }
     else{
-      return metaScore.Dom.data(this.get(0), name);
+      return Dom.data(this.get(0), name);
     }
   };
   
-  this.append = function(children){
-    if(children instanceof metaScore.Dom){
+  Dom.prototype.append = function(children){
+    if(children instanceof Dom){
       children = children.elements;
     }
     
-    metaScore.Dom.append(this.get(0), children);
+    Dom.append(this.get(0), children);
     
     return this;
   };
   
-  this.appendTo = function(parent){    
-    if(!(parent instanceof metaScore.Dom)){
-      parent = new metaScore.Dom(parent);
+  Dom.prototype.appendTo = function(parent){    
+    if(!(parent instanceof Dom)){
+      parent = new Dom(parent);
     }
     
     parent = parent.get(0);
     
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.append(parent, element);
+      Dom.append(parent, element);
     }, this);
     
     return this;
   };
   
-  this.empty = function(){    
+  Dom.prototype.empty = function(){    
     metaScore.Array.each(this.elements, function(index, element) {
-      metaScore.Dom.empty(element);
+      Dom.empty(element);
     }, this);
     
     return this;
   };
   
-  this.show = function(){
+  Dom.prototype.show = function(){
     metaScore.Array.each(this.elements, function(index, element) {
       this.css('display', 'initial');
     }, this);
     return this;
   };
   
-  this.hide = function(){
+  Dom.prototype.hide = function(){
     metaScore.Array.each(this.elements, function(index, element) {
       this.css('display', 'none');
     }, this);
     return this;
   };
   
-  this.remove = function(){
+  Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       metaScore.Array.each(this.elements, function(index, element) {
         var parent = element.parentElement;
-        metaScore.Dom.remove(element);
-        metaScore.Dom.triggerEvent(parent, 'childremoved', {'child': element});
+        Dom.remove(element);
+        Dom.triggerEvent(parent, 'childremoved', {'child': element});
       }, this);
     }
     
     return this;
   };
   
-  this.is = function(selector){
+  Dom.prototype.is = function(selector){
     var found;
   
     metaScore.Array.each(this.elements, function(index, element) {
-      found = metaScore.Dom.is(element, selector);
+      found = Dom.is(element, selector);
       return found;
     }, this);
     
     return found;
   };
-  
-});
-
-
-/********************
-****** STATICS ******
-********************/
-
-/**
-* Regular expression that matches an element's string
-*/
-metaScore.Dom.stringRe = /^<(.)+>$/;
-
-/**
-* Regular expression that matches dashed string for camelizing
-*/
-metaScore.Dom.camelRe = /-([\da-z])/gi;
-
-/**
-* Helper function used by the camel function
-*/
-metaScore.Dom.camelReplaceFn = function(all, letter) {
-  return letter.toUpperCase();
-};
-
-/**
-* Normaliz a string to Camel Case; used for CSS properties
-* @param {string} the original string
-* @returns {string} the normalized string
-*/
-metaScore.Dom.camel = function(str){
-  return str.replace(metaScore.Dom.camelRe, metaScore.Dom.camelReplaceFn);
-};
-
-/**
-* List of event that should generaly bubble up
-*/
-metaScore.Dom.bubbleEvents = {
-  'click': true,
-  'submit': true,
-  'mousedown': true,
-  'mousemove': true,
-  'mouseup': true,
-  'mouseover': true,
-  'mouseout': true,
-  'transitionend': true
-};
-
-/**
-* Select a single element by selecor
-* @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-* @param {object} an optional parent to constrain the matched elements 
-* @returns {object} an HTML element
-*/
-metaScore.Dom.selectElement = function (selector, parent) {      
-  var element;
-  
-  if(!parent){
-    parent = document;
-  }
-
-  if (metaScore.Var.is(selector, 'string')) {
-    element = parent.querySelector(selector);
-  }
-  else if (selector.length) {
-    element = selector[0];
-  }
-  else {
-    element = selector;
-  }
-
-  return element;
-};
-
-/**
-* Select elements by selecor
-* @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-* @param {object} an optional parent to constrain the matched elements 
-* @returns {array} an array of HTML elements
-*/
-metaScore.Dom.selectElements = function (selector, parent) {      
-  var elements;
-  
-  if(!parent){
-    parent = document;
-  }
-
-  if (metaScore.Var.is(selector, 'string')) {
-    elements = parent.querySelectorAll(selector);
-  }
-  else if (selector.length) {
-    elements = selector;
-  }
-  else {
-    elements = [selector];
-  }
-
-  return elements;
-};
-
-/**
-* Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
-* @param {string} the HTML string
-* @returns {object} an HTML element
-*/
-metaScore.Dom.elementsFromString = function(html){
-  var wrapMap = {
-      'option': [1, "<select multiple='multiple'>", "</select>"],
-      'optgroup': [1, "<select multiple='multiple'>", "</select>"],
-      'legend': [1, "<fieldset>", "</fieldset>"],
-      'area': [1, "<map>", "</map>"],
-      'param': [1, "<object>", "</object>"],
-      'thead': [1, "<table>", "</table>"],
-      'tbody': [1, "<table>", "</table>"],
-      'tfoot': [1, "<table>", "</table>"],
-      'colgroup': [1, "<table>", "</table>"],
-      'caption': [1, "<table>", "</table>"],
-      'tr': [2, "<table><tbody>", "</tbody></table>"],
-      'col': [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
-      'th': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-      'td': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-      '_default': [1, "<div>", "</div>" ]
-    },
-    element = document.createElement('div'),
-    match = /<\s*\w.*?>/g.exec(html),
-    tag, map, j;
     
-  if(match != null){
-    tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
-    
-    map = wrapMap[tag] || wrapMap['_default'];
-    html = map[1] + html + map[2];
-    element.innerHTML = html;
-    
-    // Descend through wrappers to the right content
-    j = map[0];
-    while(j--) {
-      element = element.lastChild;
-    }
-    
-    return element.childNodes;
-  }
+  return Dom;
   
-  return null;
-};
-
-/**
-* Checks if an element has a given class
-* @param {object} the dom element
-* @param {string} the class to check
-* @returns {boolean} true if the element has the given class, false otherwise
-*/     
-metaScore.Dom.hasClass = function(element, className){
-  return element.classList.contains(className);
-};
-
-/**
-* Adds a given class to an element
-* @param {object} the dom element
-* @param {string} the class(es) to add; separated by a space
-* @returns {void}
-*/
-metaScore.Dom.addClass = function(element, className){
-  var classNames = className.split(" "),
-    i = 0, l = classNames.length;
-  
-  for(; i<l; i++){
-    element.classList.add(classNames[i]);
-  }
-};
-
-/**
-* Removes a given class from an element
-* @param {object} the dom element
-* @param {string} the class(es) to remove; separated by a space
-* @returns {void}
-*/
-metaScore.Dom.removeClass = function(element, className){
-  var classNames = className.split(" "),
-    i = 0, l = classNames.length;
-  
-  for(; i<l; i++){
-    element.classList.remove(classNames[i]);
-  }
-};
-
-/**
-* Toggles a given class on an element
-* @param {object} the dom element
-* @param {string} the class(es) to toggle; separated by a space
-* @param {boolean} optional boolean; If true, the class will be added but not removed. If false, the class will be removed but not added.
-* @returns {void}
-*/
-metaScore.Dom.toggleClass = function(element, className, force){
-  var classNames = className.split(" "),
-    i = 0, l = classNames.length;
-  
-  if(force === undefined){
-    for(; i<l; i++){
-      element.classList.toggle(classNames[i]);
-    }
-  }
-  else{
-    for(; i<l; i++){
-      element.classList.toggle(classNames[i], force);
-    }
-  }
-};
-
-/**
-* Add an event listener on an element
-* @param {object} the dom element
-* @param {string} the event type to register
-* @param {function} the callback function
-* @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
-* @returns {void}
-*/
-metaScore.Dom.addListener = function(element, type, callback, useCapture){
-  if(useCapture === undefined){
-    useCapture = metaScore.Dom.bubbleEvents.hasOwnProperty('type') ? metaScore.Dom.bubbleEvents[type] : false;
-  }
-
-  return element.addEventListener(type, callback, useCapture);
-};
-
-/**
-* Remove an event listener from an element
-* @param {object} the dom element
-* @param {string} the event type to remove
-* @param {function} the callback function
-* @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
-* @returns {void}
-*/
-metaScore.Dom.removeListener = function(element, type, callback, useCapture){
-  if(useCapture === undefined){
-    useCapture = metaScore.Dom.bubbleEvents.hasOwnProperty('type') ? metaScore.Dom.bubbleEvents[type] : false;
-  }
-  
-  return element.removeEventListener(type, callback, useCapture);
-};
-
-/**
-* Trigger an event from an element
-* @param {object} the dom element
-* @param {string} the event type to trigger
-* @param {boolean} whether the event should bubble
-* @param {boolean} whether the event is cancelable
-* @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
-*/
-metaScore.Dom.triggerEvent = function(element, type, data, bubbles, cancelable){  
-  var event = new CustomEvent(type, {
-    'detail': data,
-    'bubbles': bubbles !== false,
-    'cancelable': cancelable !== false
-  });
-  
-  return element.dispatchEvent(event);
-};
-
-/**
-* Sets or gets the innerHTML of an element
-* @param {object} the dom element
-* @param {string} an optional text to set
-* @returns {string} the value of the innerHTML
-*/
-metaScore.Dom.text = function(element, value){
-  if(value !== undefined){
-    element.innerHTML = value;
-  }
-  
-  return element.innerHTML;
-};
-
-/**
-* Sets or gets the value of an element
-* @param {object} the dom element
-* @param {string} an optional value to set
-* @returns {string} the value
-*/
-metaScore.Dom.val = function(element, value){
-  if(value !== undefined){
-    element.value = value;
-  }
-  
-  return element.value;
-};
-
-/**
-* Sets an attribute on an element
-* @param {object} the dom element
-* @param {string} the attribute's name
-* @param {string} an optional value to set
-* @returns {void}
-*/
-metaScore.Dom.attr = function(element, name, value){
-  
-  if(metaScore.Var.is(name, 'object')){
-    metaScore.Object.each(name, function(key, value){
-      metaScore.Dom.attr(element, key, value);
-    }, this);
-  }
-  else{
-    switch(name){
-      case 'class':
-        this.addClass(element, value);
-        break;
-        
-      case 'text':
-        this.text(element, value);
-        break;
-        
-      default:
-        if(value === null){
-          element.removeAttribute(name);
-        }
-        else{
-          if(value !== undefined){
-            element.setAttribute(name, value);
-          }
-          
-          return element.getAttribute(name);
-        }
-        break;
-    }
-  }
-};
-
-/**
-* Sets or gets a style property of an element
-* @param {object} the dom element
-* @param {string} the property's name
-* @param {string} an optional value to set
-* @returns {string} the value of the property
-*/
-metaScore.Dom.css = function(element, name, value){
-  var camel, style;
-
-  camel = this.camel(name);
-
-  if(value !== undefined){
-    element.style[camel] = value;
-  }
-  
-  style = window.getComputedStyle(element);
-  
-  return style.getPropertyValue(name);
-};
-
-/**
-* Sets or gets a data string of an element
-* @param {object} the dom element
-* @param {string} the object's name
-* @param {string} an optional value to set
-* @returns {object} the object
-*/
-metaScore.Dom.data = function(element, name, value){
-  name = this.camel(name);
-
-  if(value === null){
-    delete element.dataset[name];
-  }
-  else if(value !== undefined){
-    element.dataset[name] = value;
-  }
-  
-  return element.dataset[name];
-};
-
-/**
-* Appends children to an element
-* @param {object} the dom element
-* @param {object/array} the child(ren) to append
-* @returns {void}
-*/
-metaScore.Dom.append = function(element, children){
-  if (!metaScore.Var.is(children, 'array')) {
-    children = [children];
-  }
-  
-  metaScore.Array.each(children, function(index, child){
-    element.appendChild(child);
-  }, this);
-};
-
-/**
-* Removes all element children
-* @param {object} the dom element
-* @returns {void}
-*/
-metaScore.Dom.empty = function(element){
-  while(element.firstChild){
-    element.removeChild(element.firstChild);
-  }
-};
-
-/**
-* Removes an element from the dom
-* @param {object} the dom element
-* @returns {void}
-*/
-metaScore.Dom.remove = function(element){
-  element.parentElement.removeChild(element);
-};
-
-/**
-* Checks if an element matches a selector
-* @param {object} the dom element
-* @param {string} the selector
-* @returns {boolean} true if the element matches the selector, false otherwise
-*/
-metaScore.Dom.is = function(element, selector){
-  
-  return element.matches(selector);
-  
-};
+})();
 /**
  * Dom
  *
- * @requires ../metaScore.base.js
+ * @requires ../metaScore.class.js
  * @requires metaScore.dom.js
  */
-metaScore.Draggable = metaScore.Base.extend(function(){
+ 
+metaScore.Draggable = (function () {
 
-  var _target, _handle, _container,
-    _startState;
-
-  this.constructor = function(target, handle, container) {
-  
-    _target = target;
-    _handle = handle;
+  function Draggable(configs) {
+    this.configs = this.getConfigs(configs);
     
-    _container = container || new metaScore.Dom('body');
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+      
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+    
+    this.configs.handle.addListener('mousedown', this.onMouseDown);
     
     this.enable();
+  }
   
-  };
+  metaScore.Class.extend(Draggable);
   
-  this.onMouseDown = function(evt){
-  
-    _startState = {
-      'left': parseInt(_target.css('left'), 10) - evt.clientX,
-      'top': parseInt(_target.css('top'), 10) - evt.clientY
+  Draggable.prototype.onMouseDown = function(evt){  
+    this.start_state = {
+      'left': parseInt(this.configs.target.css('left'), 10) - evt.clientX,
+      'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
     };
     
-    _container
+    this.configs.container
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
     
-    _target
+    this.configs.target
       .addClass('dragging')
       .triggerEvent('dragstart', null, false, true);
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
   
-  this.onMouseMove = function(evt){
-  
-    var left = evt.clientX + _startState.left,
-      top = evt.clientY + _startState.top;
+  Draggable.prototype.onMouseMove = function(evt){  
+    var left = evt.clientX + this.start_state.left,
+      top = evt.clientY + this.start_state.top;
     
-    _target
+    this.configs.target
       .css('left', left + 'px')
       .css('top', top + 'px')
       .triggerEvent('drag', null, false, true);
     
-    evt.stopPropagation();
-      
+    evt.stopPropagation();      
   };
   
-  this.onMouseUp = function(evt){  
-  
-    _container
+  Draggable.prototype.onMouseUp = function(evt){
+    this.configs.container
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
     
-    _target
+    this.configs.target
       .removeClass('dragging')
       .triggerEvent('dragend', null, false, true);
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
   
-  this.enable = function(){
-  
-    _target.addClass('draggable');
+  Draggable.prototype.enable = function(){
+    this.configs.target.addClass('draggable');
     
-    _handle.addListener('mousedown', this.onMouseDown);
-    
-    return this;
-  
+    return this;  
   };
   
-  this.disable = function(){
-  
-    _target.removeClass('draggable');
+  Draggable.prototype.disable = function(){  
+    this.configs.target.removeClass('draggable');
     
-    _handle.removeListener('mousedown', this.onMouseDown);
-    
-    return this;
-  
+    return this;  
   };
   
-  this.destroy = function(){
-    
+  Draggable.prototype.destroy = function(){
     this.disable();
     
-    return this;
+    this.configs.handle.removeListener('mousedown', this.onMouseDown);
     
+    return this;    
   };
-});
+    
+  return Draggable;
+  
+})();
 /**
  * Function
  *
  * @requires ../metaScore.base.js
  * @requires metaScore.var.js
  */
-metaScore.Function = metaScore.Base.extend(function(){});
-
-/**
-* Checks if a variable is of a certain type
-* @param {mixed} the variable
-* @param {string} the type to check against
-* @returns {boolean} true if the variable is of the specified type, false otherwise
-*/
-metaScore.Function.proxy = function(fn, scope) {
+ 
+metaScore.Function = (function () {
   
-  if (!metaScore.Var.type(fn, 'function')) {
-    return undefined;
+  function Function() {
   }
   
-  return function () {
-    return fn.apply(scope || this, arguments);
-  };
-};
+  metaScore.Class.extend(Function);
 
-/**
-* A reusable empty function
-*/
-metaScore.Function.emptyFn = function(){};
+  /**
+  * Checks if a variable is of a certain type
+  * @param {mixed} the variable
+  * @param {string} the type to check against
+  * @param {array} an array of arguments to send, defaults to the arguments sent
+  * @returns {boolean} true if the variable is of the specified type, false otherwise
+  */
+  Function.proxy = function(fn, scope, args){
+    if (!metaScore.Var.type(fn, 'function')){
+      return undefined;
+    }
+    
+    return function () {    
+      return fn.apply(scope || this, args || arguments);
+    };
+  };
+
+  /**
+  * A reusable empty function
+  */
+  Function.emptyFn = function(){};
+    
+  return Function;
+  
+})();
 /**
  * Object
  *
  * @requires ../metaScore.base.js
  */
-metaScore.Object = metaScore.Base.extend(function(){});
+ 
+metaScore.Object = (function () {
+  
+  function Object() {
+  }
+  
+  metaScore.Class.extend(Object);
 
-/**
-* Merge the contents of two or more objects together into the first object.
-* @returns {object} the target object extended with the properties of the other objects
-*/
-metaScore.Object.extend = function() {
+  /**
+  * Merge the contents of two or more objects together into the first object.
+  * @returns {object} the target object extended with the properties of the other objects
+  */
+  Object.extend = function() {
 
-  var target = arguments[0] || {},
-    options,
-    i = 1,
-    length = arguments.length,
-    key, src, copy;
-    
-  for (; i < length; i++ ) {
-    if ((options = arguments[i]) != null) {
-      for ( key in options ) {            
-        src = target[key];
-        copy = options[key];
-        
-        if(src !== copy && copy !== undefined ) {
-          target[key] = copy;
+    var target = arguments[0] || {},
+      options,
+      i = 1,
+      length = arguments.length,
+      key, src, copy;
+      
+    for (; i < length; i++ ) {
+      if ((options = arguments[i]) != null) {
+        for ( key in options ) {            
+          src = target[key];
+          copy = options[key];
+          
+          if(src !== copy && copy !== undefined ) {
+            target[key] = copy;
+          }
         }
       }
     }
-  }
+      
+    return target;
+
+  };
+
+  /**
+  * Return a copy of an object
+  * @param {object} the original object
+  * @returns {object} a copy of the original object
+  */
+  Object.copy = function(obj) {
+      
+    return Object.extend({}, obj);
+
+  };
+
+  /**
+  * Call a function on each property of an object
+  * @param {object} the object
+  * @param {function} the function to call
+  * @param {object} the scope of the function
+  * @returns {void}
+  */
+  Object.each = function(obj, callback, scope) {
+
+    var key, value,
+      scope_provided = scope !== undefined;
     
-  return target;
-
-};
-
-/**
-* Return a copy of an object
-* @param {object} the original object
-* @returns {object} a copy of the original object
-*/
-metaScore.Object.copy = function(obj) {
-    
-  return metaScore.Object.extend({}, obj);
-
-};
-
-/**
-* Call a function on each property of an object
-* @param {object} the object
-* @param {function} the function to call
-* @param {object} the scope of the function
-* @returns {void}
-*/
-metaScore.Object.each = function(obj, callback, scope) {
-
-  var key, value,
-    scope_provided = scope !== undefined;
-  
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
-    
-      if (value === false) {
-        break;
+    for (key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
+      
+        if (value === false) {
+          break;
+        }
       }
     }
-  }
-  
-  return obj;
+    
+    return obj;
 
-};
+  };
+    
+  return Object;
+  
+})();
 /**
  * Dom
  *
  * @requires ../metaScore.base.js
  * @requires metaScore.dom.js
  */
-metaScore.Resizable = metaScore.Base.extend(function(){
+ 
+metaScore.Resizable = (function () {
 
-  var _target, _container, _handles,
-    _startState;
-
-  this.constructor = function(target, container) {
+  function Resizable(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+    
+    this.handles = {};
+      
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+    
+    metaScore.Array.each(this.configs.directions, function(index, direction){
+      this.handles[direction] = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+        .data('direction', direction)
+        .addListener('mousedown', this.onMouseDown)
+        .appendTo(this.configs.target);
+    }, this);
+      
+    this.enable();  
+  }
   
-    _target = target;
-    
-    _container = container || new metaScore.Dom('body');
-    
-    _handles = {};
-    
-    _handles.top = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'top')
-      .appendTo(_target);
-    
-    _handles.right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'right')
-      .appendTo(_target);
-    
-    _handles.bottom = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'bottom')
-      .appendTo(_target);
-    
-    _handles.left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'left')
-      .appendTo(_target);
-    
-    _handles.top_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'top-left')
-      .appendTo(_target);
-      
-    _handles.top_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'top-right')
-      .appendTo(_target);
-      
-    _handles.bottom_left = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'bottom-left')
-      .appendTo(_target);
-      
-    _handles.bottom_right = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-      .data('direction', 'bottom-right')
-      .appendTo(_target);
-      
-    this.enable();
-  
+  Resizable.defaults = {
+    directions: [
+      'top',
+      'right',
+      'bottom',
+      'left',
+      'top-left',
+      'top-right',
+      'bottom-left',
+      'bottom-right'
+    ]
   };
   
-  this.onMouseDown = function(evt){
+  metaScore.Class.extend(Resizable);
   
-    _startState = {
+  Resizable.prototype.onMouseDown = function(evt){  
+    this.start_state = {
       'handle': evt.target,
       'x': evt.clientX,
       'y': evt.clientY,
-      'left': parseInt(_target.css('left'), 10),
-      'top': parseInt(_target.css('top'), 10),
-      'w': parseInt(_target.css('width'), 10),
-      'h': parseInt(_target.css('height'), 10)
+      'left': parseInt(this.configs.target.css('left'), 10),
+      'top': parseInt(this.configs.target.css('top'), 10),
+      'w': parseInt(this.configs.target.css('width'), 10),
+      'h': parseInt(this.configs.target.css('height'), 10)
     };
     
-    _container
-      .addListener('mousemove', this.onMouseMove)
-      .addListener('mouseup', this.onMouseUp);
+    this.configs.container
+      .addListener('mousemove', this.onMouseMove, this)
+      .addListener('mouseup', this.onMouseUp, this);
     
-    _target
+    this.configs.target
       .addClass('resizing')
       .triggerEvent('resizestart', null, false, true);
     
-    evt.stopPropagation();
-      
+    evt.stopPropagation();      
   };
 
-  this.onMouseMove = function(evt){
-  
-    var handle = new metaScore.Dom(_startState.handle),
+  Resizable.prototype.onMouseMove = function(evt){  
+    var handle = new metaScore.Dom(this.start_state.handle),
       w, h, top, left;
     
     switch(handle.data('direction')){
       case 'top':
-        h = _startState.h - evt.clientY + _startState.y;
-        top = _startState.top + evt.clientY  - _startState.y;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
         break;
       case 'right':
-        w = _startState.w + evt.clientX - _startState.x;
+        w = this.start_state.w + evt.clientX - this.start_state.x;
         break;
       case 'bottom':
-        h = _startState.h + evt.clientY - _startState.y;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
         break;
       case 'left':
-        w = _startState.w - evt.clientX + _startState.x;
-        left = _startState.left + evt.clientX - _startState.x;
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
         break;
       case 'top-left':
-        w = _startState.w - evt.clientX + _startState.x;
-        h = _startState.h - evt.clientY + _startState.y;
-        top = _startState.top + evt.clientY  - _startState.y;
-        left = _startState.left + evt.clientX - _startState.x;
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
         break;
       case 'top-right':
-        w = _startState.w + evt.clientX - _startState.x;
-        h = _startState.h - evt.clientY + _startState.y;
-        top = _startState.top + evt.clientY - _startState.y;
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY - this.start_state.y;
         break;
       case 'bottom-left':
-        w = _startState.w - evt.clientX + _startState.x;
-        h = _startState.h + evt.clientY - _startState.y;
-        left = _startState.left + evt.clientX - _startState.x;
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
         break;
       case 'bottom-right':
-        w = _startState.w + evt.clientX - _startState.x;
-        h = _startState.h + evt.clientY - _startState.y;
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
         break;
     }
       
     if(top !== undefined){
-      _target.css('top', top +'px');
+      this.configs.target.css('top', top +'px');
     }
     if(left !== undefined){
-      _target.css('left', left +'px');
+      this.configs.target.css('left', left +'px');
     }
     
-    _target
+    this.configs.target
       .css('width', w +'px')
       .css('height', h +'px')
       .triggerEvent('resize', null, false, true);
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
 
-  this.onMouseUp = function(evt){
-  
-    _container
-      .removeListener('mousemove', this.onMouseMove)
-      .removeListener('mouseup', this.onMouseUp);
+  Resizable.prototype.onMouseUp = function(evt){  
+    this.configs.container
+      .removeListener('mousemove', this.onMouseMove, this)
+      .removeListener('mouseup', this.onMouseUp, this);
     
-    _target
+    this.configs.target
       .removeClass('resizing')
       .triggerEvent('resizeend', null, false, true);
     
     evt.stopPropagation();
   };
   
-  this.enable = function(){
-  
-    metaScore.Object.each(_handles, function(index, handle){
-      handle.addListener('mousedown', this.onMouseDown);
-    }, this);
-  
-    _target.addClass('resizable');
+  Resizable.prototype.enable = function(){  
+    this.configs.target.addClass('resizable');
     
     return this;
-  
   };
   
-  this.disable = function(){
-  
-    metaScore.Object.each(_handles, function(index, handle){
-      handle.removeListener('mousedown', this.onMouseDown);
-    }, this);
-  
-    _target.removeClass('resizable');
+  Resizable.prototype.disable = function(){  
+    this.configs.target.removeClass('resizable');
     
-    return this;
-  
+    return this;  
   };
   
-  this.destroy = function(){
-  
+  Resizable.prototype.destroy = function(){  
     this.disable();
   
-    metaScore.Object.each(_handles, function(index, handle){
+    metaScore.Object.each(this.handles, function(index, handle){
       handle.remove();
     }, this);
     
-    return this;
-  
+    return this;  
   };
-});
+    
+  return Resizable;
+  
+})();
 /**
  * String
  *
  * @requires ../metaScore.base.js
  */
-metaScore.String = metaScore.Base.extend(function(){});
-
-/**
-* Capitalize a string
-* @param {string} the original string
-* @returns {string} the capitalized string
-*/
-metaScore.String.capitalize = function(str){
-  return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-};
-
-/**
-* Translate a string
-* @param {string} the original string
-* @param {object} string replacements
-* @returns {string} the translated string
-*/
-metaScore.String.t = function(str, args){
-  return metaScore.formatString(str, args);
-};
-
-/**
-* Replace placeholders with sanitized values in a string.
-* @param {string} the original string
-* @param {object} string replacements
-* @returns {string} the formatted string
-*/
-metaScore.formatString = function(str, args) {
-  metaScore.Object.each(args, function(key, value){
-    str = str.replace(key, args[key]);
-  }, this);
+ 
+metaScore.String = (function () {
   
-  return str;
-};
-
-/**
-* Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
-* @param {number} the desired number of characters
-* @param {number} the number of allowable values for each character
-* @returns {string} a random uuid
-*/
-metaScore.String.uuid = function (len, radix) {
-  var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
-    uuid = [], i;
-  
-  radix = radix || chars.length;
-
-  if (len) {
-    // Compact form
-    for (i = 0; i < len; i++){
-      uuid[i] = chars[0 | Math.random() * radix];
-    }
+  function String() {
   }
-  else {
-    // rfc4122, version 4 form
-    var r;
+  
+  metaScore.Class.extend(String);
 
-    // rfc4122 requires these characters
-    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
-    uuid[14] = '4';
+  /**
+  * Capitalize a string
+  * @param {string} the original string
+  * @returns {string} the capitalized string
+  */
+  String.capitalize = function(str){
+    return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+  };
 
-    // Fill in random data.  At i==19 set the high bits of clock sequence as
-    // per rfc4122, sec. 4.1.5
-    for (i = 0; i < 36; i++) {
-      if (!uuid[i]) {
-        r = 0 | Math.random()*16;
-        uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+  /**
+  * Translate a string
+  * @param {string} the original string
+  * @param {object} string replacements
+  * @returns {string} the translated string
+  */
+  String.t = function(str, args){
+    return String.formatString(str, args);
+  };
+
+  /**
+  * Replace placeholders with sanitized values in a string.
+  * @param {string} the original string
+  * @param {object} string replacements
+  * @returns {string} the formatted string
+  */
+  String.formatString = function(str, args) {
+    metaScore.Object.each(args, function(key, value){
+      str = str.replace(key, args[key]);
+    }, this);
+    
+    return str;
+  };
+
+  /**
+  * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+  * @param {number} the desired number of characters
+  * @param {number} the number of allowable values for each character
+  * @returns {string} a random uuid
+  */
+  String.uuid = function (len, radix) {
+    var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
+      uuid = [], i;
+    
+    radix = radix || chars.length;
+
+    if (len) {
+      // Compact form
+      for (i = 0; i < len; i++){
+        uuid[i] = chars[0 | Math.random() * radix];
       }
     }
-  }
+    else {
+      // rfc4122, version 4 form
+      var r;
 
-  return uuid.join('');
-};
+      // rfc4122 requires these characters
+      uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+      uuid[14] = '4';
+
+      // Fill in random data.  At i==19 set the high bits of clock sequence as
+      // per rfc4122, sec. 4.1.5
+      for (i = 0; i < 36; i++) {
+        if (!uuid[i]) {
+          r = 0 | Math.random()*16;
+          uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+        }
+      }
+    }
+
+    return uuid.join('');
+  };
+    
+  return String;
+  
+})();
 /**
  * Variable
  *
  * @requires ../metaScore.base.js
  */
-metaScore.Var = metaScore.Base.extend(function(){});
+ 
+metaScore.Var = (function () {
 
-/**
-* Helper object used by the type function
-*/
-metaScore.Var.classes2types = {
-  "[object Boolean]": "boolean",
-  "[object Number]": "number",
-  "[object String]": "string",
-  "[object Function]": "function",
-  "[object Array]": "array",
-  "[object Date]": "date",
-  "[object RegExp]": "regexp",
-  "[object Object]": "object"
-};
+  /**
+  * Helper object used by the type function
+  */
+  var classes2types = {
+    "[object Boolean]": "boolean",
+    "[object Number]": "number",
+    "[object String]": "string",
+    "[object Function]": "function",
+    "[object Array]": "array",
+    "[object Date]": "date",
+    "[object RegExp]": "regexp",
+    "[object Object]": "object"
+  };
+  
+  function Var() {
+  }
+  
+  metaScore.Class.extend(Var);
 
-/**
-* Get the type of a variable
-* @param {mixed} the variable
-* @returns {string} the type
-*/
-metaScore.Var.type = function(obj) {
-  return obj == null ? String(obj) : metaScore.Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
-};
+  /**
+  * Get the type of a variable
+  * @param {mixed} the variable
+  * @returns {string} the type
+  */
+  Var.type = function(obj) {
+    return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
+  };
 
-/**
-* Checks if a variable is of a certain type
-* @param {mixed} the variable
-* @param {string} the type to check against
-* @returns {boolean} true if the variable is of the specified type, false otherwise
-*/
-metaScore.Var.is = function(obj, type) {
-  return metaScore.Var.type(obj) === type.toLowerCase();
-};
+  /**
+  * Checks if a variable is of a certain type
+  * @param {mixed} the variable
+  * @param {string} the type to check against
+  * @returns {boolean} true if the variable is of the specified type, false otherwise
+  */
+  Var.is = function(obj, type) {
+    return Var.type(obj) === type.toLowerCase();
+  };
+    
+  return Var;
+  
+})();
 /**
  * Editor
  *
@@ -1707,18 +1714,13 @@ metaScore.Var.is = function(obj, type) {
  * @requires panel/metaScore.editor.panel.element.js
  * @requires ../player/metaScore.player.js
  */
-metaScore.Editor = metaScore.Dom.extend(function(){
-
-  var _workspace, _mainmenu, _sidebar,
-    _block_panel, _page_panel, _element_panel,
-    _player_wrapper, _player_head, _player_body, _player,
-    _grid, _history;
-
-  this.constructor = function(configs) {
+metaScore.Editor = (function(){
   
-    this.super('<div/>', {'class': 'metaScore-editor'});
-  
-    this.initConfig(configs);
+  function Editor(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    Editor.parent.call(this, '<div/>', {'class': 'metaScore-editor'});
     
     if(DEBUG){
       metaScore.Editor.instance = this;
@@ -1728,87 +1730,85 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       this.appendTo(this.configs.container);
     } 
   
-    // add components
+    // add components    
+    this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);      
+    this.mainmenu = new metaScore.editor.MainMenu().appendTo(this);     
+    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);    
+    this.block_panel = new metaScore.editor.panel.Block().appendTo(this.sidebar);
+    this.page_panel = new metaScore.editor.panel.Page().appendTo(this.sidebar);
+    this.element_panel = new metaScore.editor.panel.Element().appendTo(this.sidebar);
+    this.player_wrapper = new metaScore.Dom('<iframe/>', {'class': 'player-wrapper'}).appendTo(this.workspace);
+    this.player_head = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.head);
+    this.player_body = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
+    this.player = new metaScore.Player();
+    this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
+    this.history = new metaScore.editor.History();
     
-    _workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);      
-    _mainmenu = new metaScore.Editor.MainMenu().appendTo(this);     
-    _sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);    
-    _block_panel = new metaScore.Editor.Panel.Block().appendTo(_sidebar);
-    _page_panel = new metaScore.Editor.Panel.Page().appendTo(_sidebar);
-    _element_panel = new metaScore.Editor.Panel.Element().appendTo(_sidebar);
-    _player_wrapper = new metaScore.Dom('<iframe/>', {'class': 'player-wrapper'}).appendTo(_workspace);
-    _player_head = new metaScore.Dom(_player_wrapper.get(0).contentDocument.head);
-    _player_body = new metaScore.Dom(_player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
-    _player = new metaScore.Player();
-    _grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(_workspace);
-    _history = new metaScore.Editor.History();
-    
-    // add player style sheets
-    
+    // add player style sheets    
     if(this.configs.palyer_css){
       metaScore.Array.each(this.configs.palyer_css, function(index, url) {
         this.addPlayerCSS(url);
       }, this);
     }
       
-    // add event listeners
+    // add event listeners    
+    this.mainmenu
+      .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this));
     
-    _mainmenu
-      .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick, this);
+    this.block_panel
+      .addListener('blockset', metaScore.Function.proxy(this.onBlockSet, this))
+      .addListener('blockunset', metaScore.Function.proxy(this.onBlockUnset, this))
+      .addListener('valueschange', metaScore.Function.proxy(this.onBlockPanelValueChange, this))
+      .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this));
     
-    _block_panel
-      .addListener('blockset', this.onBlockSet)
-      .addListener('blockunset', this.onBlockUnset)
-      .addListener('valueschange', this.onBlockPanelValueChange)
-      .getToolbar().addDelegate('.buttons [data-action]', 'click', this.onBlockPanelToolbarClick, this);
+    this.page_panel
+      .addListener('pageset', metaScore.Function.proxy(this.onPageSet, this))
+      .addListener('pageunset', metaScore.Function.proxy(this.onPageUnset, this))
+      .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
     
-    _page_panel
-      .addListener('pageset', this.onPageSet)
-      .addListener('pageunset', this.onPageUnset)
-      .getToolbar().addDelegate('.buttons [data-action]', 'click', this.onPagePanelToolbarClick, this);
+    this.element_panel
+      .addListener('elementset', metaScore.Function.proxy(this.onElementSet))
+      .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
     
-    _element_panel
-      .addListener('elementset', this.onElementSet)
-      .getToolbar().addDelegate('.buttons [data-action]', 'click', this.onElementPanelToolbarClick, this);
-    
-    _player_body
-      .addDelegate('.metaScore-block .element', 'elementclick', this.onElementClick, this)
-      .addDelegate('.metaScore-block .page', 'pageclick', this.onPageClick, this)
-      .addDelegate('.metaScore-block', 'blockclick', this.onBlockClick, this)
-      .addListener('click', this.onPlayerClick)
-      .addDelegate('.metaScore-block', 'pageactivated', this.onPageActivated, this)
-      .addListener('childremoved', this.onPlayerChildRemoved)
-      .addListener('keydown', this.onKeydown)
-      .addListener('keyup', this.onKeyup);
+    this.player_body
+      .addDelegate('.metaScore-block .element', 'elementclick', metaScore.Function.proxy(this.onElementClick, this))
+      .addDelegate('.metaScore-block .page', 'pageclick', metaScore.Function.proxy(this.onPageClick, this))
+      .addDelegate('.metaScore-block', 'blockclick', metaScore.Function.proxy(this.onBlockClick, this))
+      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+      .addDelegate('.metaScore-block', 'pageactivated', metaScore.Function.proxy(this.onPageActivated, this))
+      .addListener('childremoved', metaScore.Function.proxy(this.onPlayerChildRemoved, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
       
-    _history
-      .addListener('add', this.onHistoryAdd)
-      .addListener('undo', this.onHistoryUndo)
-      .addListener('redo', this.onHistoryRedo);
+    this.history
+      .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
+      .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
+      .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
 
     new metaScore.Dom('body')
-      .addListener('keydown', this.onKeydown)
-      .addListener('keyup', this.onKeyup);
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
       
       
-    _block_panel.unsetBlock();
-    
+    this.block_panel.unsetBlock();
+  }
+  
+  metaScore.Dom.extend(Editor);
+  
+  Editor.prototype.addPlayerCSS = function(url){
+    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.player_head);
   };
   
-  this.addPlayerCSS = function(url){
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(_player_head);
-  };
-  
-  this.addBlock = function(block){  
+  Editor.prototype.addBlock = function(block){    
     if(!block){
-      block = new metaScore.Player.Block();
+      block = new metaScore.player.Block();
       this.addPage(block);
     }
     
-    block.appendTo(_player_body);
-    _block_panel.setBlock(block);
+    block.appendTo(this.player_body);
+    this.block_panel.setBlock(block);
         
-    _history.add({
+    this.history.add({
       'undo': metaScore.Function.proxy(function(){this.removeBlock(block);}, this),
       'redo': metaScore.Function.proxy(function(){this.addBlock(block);}, this)
     });
@@ -1816,94 +1816,94 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     return block;
   };
   
-  this.removeBlock = function(block){
-    block = block || _block_panel.getBlock();
+  Editor.prototype.removeBlock = function(block){
+    block = block || this.block_panel.getBlock();
   
     block.remove();
   };
   
-  this.addPage = function(block){
+  Editor.prototype.addPage = function(block){
     var page;
     
-    block = block || _block_panel.getBlock();
+    block = block || this.block_panel.getBlock();
       
-    page = new metaScore.Player.Page();
+    page = new metaScore.player.Page();
       
     block.addPage(page);
     
     return page;
   };
   
-  this.removePage = function(){
+  Editor.prototype.removePage = function(){
     var page;
     
-    if(page = _page_panel.getPage()){
+    if(page = this.page_panel.getPage()){
       page.remove();
     }
     
   };
   
-  this.addElement = function(type, page){
+  Editor.prototype.addElement = function(type, page){
     var element;
     
-    page = page || _page_panel.getPage();
+    page = page || this.page_panel.getPage();
       
-    element = new metaScore.Player.Element[type]();
+    element = new metaScore.player.Element[type]();
       
     page.addElement(element);
     
-    _element_panel.setElement(element);
+    this.element_panel.setElement(element);
     
     return element;
   };
   
-  this.removeElement = function(){
+  Editor.prototype.removeElement = function(){
     var element;
     
-    if(element = _element_panel.getElement()){
+    if(element = this.element_panel.getElement()){
       element.remove();
     }
     
   };
   
-  this.openGuide = function(guide){
+  Editor.prototype.openGuide = function(guide){
     // TODO
     console.log(guide);
     console.log(this);
   };
   
-  this.onKeydown = function(evt){  
+  Editor.prototype.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
-        _player_body.addClass('alt-down');
+        this.player_body.addClass('alt-down');
         break;
       case 90: //z
         if(evt.ctrlKey){
-          _history.undo();
+          this.history.undo();
         }
         break;
       case 89: //y
         if(evt.ctrlKey){
-          _history.redo();
+          this.history.redo();
         }
         break;
     }  
   };
   
-  this.onKeyup = function(evt){
+  Editor.prototype.onKeyup = function(evt){
     switch(evt.keyCode){
       case 18: //alt
-        _player_body.removeClass('alt-down');
+        this.player_body.removeClass('alt-down');
         break;
     }
   };
   
-  this.onMainmenuClick = function(evt){
+  Editor.prototype.onMainmenuClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         break;
       case 'open':
-        new metaScore.Editor.Popup.GuideSelector({
+        new metaScore.editor.popup.GuideSelector({
           url: this.configs.api_url +'guide.json',
           selectCallback: this.openGuide
         })
@@ -1918,10 +1918,10 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       case 'revert':
         break;
       case 'undo':
-        _history.undo();
+        this.history.undo();
         break;
       case 'redo':
-        _history.redo();
+        this.history.redo();
         break;
       case 'edit':
         break;
@@ -1932,35 +1932,33 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     }
   };
   
-  this.onBlockSet = function(evt){
+  Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.block;
     
-    _page_panel.setPage(block.getActivePage(), true);
-    _page_panel.getMenu().enableItems('[data-action="new"]');
-    _element_panel.getMenu().enableItems('[data-action="new"]');
+    this.page_panel.setPage(block.getActivePage(), true);
+    this.page_panel.getMenu().enableItems('[data-action="new"]');
+    this.element_panel.getMenu().enableItems('[data-action="new"]');
       
     evt.stopPropagation();
   };
   
-  this.onBlockUnset = function(evt){
-    _page_panel.unsetPage();
-    _page_panel.getMenu().disableItems('[data-action="new"]');
-      
-    evt.stopPropagation();
+  Editor.prototype.onBlockUnset = function(evt){
+    this.page_panel.unsetPage();
+    this.page_panel.getMenu().disableItems('[data-action="new"]');
   };
   
-  this.onBlockPanelValueChange = function(evt){
+  Editor.prototype.onBlockPanelValueChange = function(evt){
     var block = evt.detail.block,
       old_values = evt.detail.old_values,
       new_values = evt.detail.new_values;
      
-    _history.add({
-      'undo': function(cmd){_block_panel.updateBlockProperties(block, old_values);},
-      'redo': function(cmd){_block_panel.updateBlockProperties(block, new_values);}
+    this.history.add({
+      'undo': function(cmd){this.block_panel.updateBlockProperties(block, old_values);},
+      'redo': function(cmd){this.block_panel.updateBlockProperties(block, new_values);}
     });
   };
   
-  this.onBlockPanelToolbarClick = function(evt){
+  Editor.prototype.onBlockPanelToolbarClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         this.addBlock();
@@ -1974,25 +1972,23 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     evt.stopPropagation();
   };
   
-  this.onPageSet = function(evt){
+  Editor.prototype.onPageSet = function(evt){
     var page = evt.detail.page,
-      block = new metaScore.Player.Block(page.parents().parents().get(0));
+      block = new metaScore.player.Block(page.parents().parents().get(0));
     
-    _block_panel.setBlock(block, true);
-    _page_panel.getMenu().enableItems('[data-action="new"]');
-    _element_panel.getMenu().enableItems('[data-action="new"]');
+    this.block_panel.setBlock(block, true);
+    this.page_panel.getMenu().enableItems('[data-action="new"]');
+    this.element_panel.getMenu().enableItems('[data-action="new"]');
       
     evt.stopPropagation();
   };
   
-  this.onPageUnset = function(evt){
-    _element_panel.unsetElement();
-    _element_panel.getMenu().disableItems('[data-action="new"]');
-      
-    evt.stopPropagation();
+  Editor.prototype.onPageUnset = function(evt){
+    this.element_panel.unsetElement();
+    this.element_panel.getMenu().disableItems('[data-action="new"]');
   };
   
-  this.onPagePanelToolbarClick = function(evt){
+  Editor.prototype.onPagePanelToolbarClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         this.addPage();
@@ -2006,18 +2002,18 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     evt.stopPropagation();
   };
   
-  this.onElementSet = function(evt){
+  Editor.prototype.onElementSet = function(evt){
     var element = evt.detail.element,
-      page = new metaScore.Player.Page(element.parents().get(0)),
-      block = new metaScore.Player.Block(page.parents().parents().get(0));
+      page = new metaScore.player.Page(element.parents().get(0)),
+      block = new metaScore.player.Block(page.parents().parents().get(0));
     
-    _page_panel.setPage(page, true);
-    _block_panel.setBlock(block, true);
+    this.page_panel.setPage(page, true);
+    this.block_panel.setBlock(block, true);
       
     evt.stopPropagation();
   };
   
-  this.onElementPanelToolbarClick = function(evt){
+  Editor.prototype.onElementPanelToolbarClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         this.addElement(metaScore.Dom.data(evt.target, 'type'));
@@ -2031,43 +2027,43 @@ metaScore.Editor = metaScore.Dom.extend(function(){
     evt.stopPropagation();
   };
   
-  this.onElementClick = function(evt){
-    _element_panel.setElement(evt.detail.element);
+  Editor.prototype.onElementClick = function(evt){
+    this.element_panel.setElement(evt.detail.element);
     
     evt.stopPropagation();
   };
   
-  this.onPageClick = function(evt){
-    _page_panel.setPage(evt.detail.page);
-    _element_panel.unsetElement();
+  Editor.prototype.onPageClick = function(evt){
+    this.page_panel.setPage(evt.detail.page);
+    this.element_panel.unsetElement();
     
     evt.stopPropagation();
   };
   
-  this.onBlockClick = function(evt){
-    _block_panel.setBlock(evt.detail.block);
+  Editor.prototype.onBlockClick = function(evt){
+    this.block_panel.setBlock(evt.detail.block);
     
     evt.stopPropagation();
   };
   
-  this.onPlayerClick = function(evt){
-    _block_panel.unsetBlock();
+  Editor.prototype.onPlayerClick = function(evt){
+    this.block_panel.unsetBlock();
     
     evt.stopPropagation();
   };
   
-  this.onPageActivated = function(evt){
+  Editor.prototype.onPageActivated = function(evt){
     var page = evt.detail.page;
     
-    _page_panel.setPage(page);
+    this.page_panel.setPage(page);
   };
   
-  this.onPlayerChildRemoved = function(evt){
+  Editor.prototype.onPlayerChildRemoved = function(evt){
     var element = evt.detail.child,
       block;
   
     if(metaScore.Dom.is(element, '.page')){
-      block = new metaScore.Player.Block(evt.target.parentElement);
+      block = new metaScore.player.Block(evt.target.parentElement);
     
       if(block.getPageCount() === 0){
         this.addPage(block);
@@ -2076,100 +2072,97 @@ metaScore.Editor = metaScore.Dom.extend(function(){
       block.setActivePage(0);
     }
     else if(metaScore.Dom.is(element, '.metaScore-block')){
-      block = _block_panel.getBlock();
+      block = this.block_panel.getBlock();
       if(block && (element === block.get(0))){
-        _block_panel.unsetBlock();
+        this.block_panel.unsetBlock();
       }
     }
   };
   
-  this.onHistoryAdd = function(evt){
-    _mainmenu.enableItems('[data-action="undo"]');
-    _mainmenu.disableItems('[data-action="redo"]');
+  Editor.prototype.onHistoryAdd = function(evt){
+    this.mainmenu.enableItems('[data-action="undo"]');
+    this.mainmenu.disableItems('[data-action="redo"]');
   };
   
-  this.onHistoryUndo = function(evt){
-    if(_history.hasUndo()){
-      _mainmenu.enableItems('[data-action="undo"]');
+  Editor.prototype.onHistoryUndo = function(evt){
+    if(this.history.hasUndo()){
+      this.mainmenu.enableItems('[data-action="undo"]');
     }
     else{
-      _mainmenu.disableItems('[data-action="undo"]');
+      this.mainmenu.disableItems('[data-action="undo"]');
     }
     
-    _mainmenu.enableItems('[data-action="redo"]');
+    this.mainmenu.enableItems('[data-action="redo"]');
   };
   
-  this.onHistoryRedo = function(evt){
-    if(_history.hasRedo()){
-      _mainmenu.enableItems('[data-action="redo"]');
+  Editor.prototype.onHistoryRedo = function(evt){
+    if(this.history.hasRedo()){
+      this.mainmenu.enableItems('[data-action="redo"]');
     }
     else{
-      _mainmenu.disableItems('[data-action="redo"]');
+      this.mainmenu.disableItems('[data-action="redo"]');
     }
     
-    _mainmenu.enableItems('[data-action="undo"]');
+    this.mainmenu.enableItems('[data-action="undo"]');
   };
-});
+    
+  return Editor;
+  
+})();
 /**
  * Button
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.Button = metaScore.Dom.extend(function(){
-
-  var _label;
+ 
+metaScore.namespace('editor');
+ 
+metaScore.editor.Button = (function () {
   
-  /**
-  * Keep track of the current state
-  */
-  this.disabled = false;
-  
-  this.defaults = {    
-    /**
-    * A text to add as a label
-    */
-    label: null
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    var btn = this;
+  function Button(configs) {
+    this.configs = this.getConfigs(configs);
     
-    this.super('<button/>');
-  
-    this.initConfig(configs);
+    // call the super constructor.
+    metaScore.Dom.call(this, '<button/>');
+    
+    this.disabled = false;
     
     if(this.configs.label){
       this.setLabel(this.configs.label);
     }
     
-    this.addListener('click', function(evt){
-      if(btn.disabled){
-        evt.stopPropagation();
-      }
-    });
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
+  
+  Button.defaults = {
+    /**
+    * A text to add as a label
+    */
+    label: null
   };
   
-  this.setLabel = function(text){
+  metaScore.Dom.extend(Button);
   
-    if(_label === undefined){
-      _label = new metaScore.Dom('<span/>', {'class': 'label'})
+  Button.prototype.onClick = function(evt){
+    if(this.disabled){
+      evt.stopPropagation();
+    }
+  };
+  
+  Button.prototype.setLabel = function(text){  
+    if(this.label === undefined){
+      this.label = new metaScore.Dom('<span/>', {'class': 'label'})
         .appendTo(this);
     }
     
-    _label.text(text);
-    
+    this.label.text(text);    
   };
 
   /**
   * Disable the button
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  Button.prototype.disable = function(){
     this.disabled = true;
     
     this.addClass('disabled');
@@ -2183,109 +2176,79 @@ metaScore.Editor.Button = metaScore.Dom.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  Button.prototype.enable = function(){
     this.disabled = false;
     
     this.removeClass('disabled');
     
     return this;
   };
-});
+    
+  return Button;
+  
+})();
 /**
  * DropDownMenu
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.DropDownMenu = metaScore.Dom.extend(function(){
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+ 
+metaScore.namespace('editor');
+ 
+metaScore.editor.DropDownMenu = (function () {
   
-    this.super('<ul/>', {'class': 'dropdown-menu'});
-  
-    this.initConfig(configs);
+  function DropDownMenu(configs) {  
+    this.configs = this.getConfigs(configs);
     
-  };
+    // call the super constructor.
+    metaScore.Dom.call(this, '<ul/>', {'class': 'dropdown-menu'});
+  }
   
-  this.addItem = function(attr){
+  metaScore.Dom.extend(DropDownMenu);
   
+  DropDownMenu.prototype.addItem = function(attr){  
     var item = new metaScore.Dom('<li/>', attr)
       .appendTo(this);    
   
-    return item;
-  
+    return item;  
   };
   
-  this.enableItems = function(selector){
-  
+  DropDownMenu.prototype.enableItems = function(selector){  
     var items = this.children(selector);
     
-    items
-      .removeListener('click', this.preventClick)
-      .removeClass('disabled');
+    items.removeClass('disabled');
   
-    return items;
-  
+    return items;  
   };
   
-  this.disableItems = function(selector){
-  
+  DropDownMenu.prototype.disableItems = function(selector){  
     var items = this.children(selector);
     
-    items
-      .addListener('click', this.preventClick)
-      .addClass('disabled');
+    items.addClass('disabled');
   
-    return items;
-  
+    return items;  
   };
+    
+  return DropDownMenu;
   
-  this.preventClick = function(evt){
-  
-    evt.stopPropagation();
-  
-  };
-});
+})();
 /**
  * Field
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.Field = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('editor');
+ 
+metaScore.editor.Field = (function () {
   
-  this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
+  function Field(configs) {
+    this.configs = this.getConfigs(configs);
     
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false
-  };
-  
-  this.tag = '<input/>';
-  
-  this.attributes = {
-    'type': 'text',
-    'class': 'field'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-  
-    this.super(this.tag, this.attributes);
-  
-    this.initConfig(configs);
+    // call the super constructor.
+    metaScore.Dom.call(this, this.configs.tag, this.configs.attributes);
+    
+    this.disabled = false;
     
     if(this.configs.value !== null){
       this.setValue(this.configs.value);
@@ -2295,29 +2258,45 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
       this.disable();
     }
     
-    this.addListener('change', this.onChange);
+    this.addListener('change', metaScore.Function.proxy(this.onChange, this));
+  }
+  
+  Field.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: null,
     
+    /**
+    * Defines whether the field is disabled by default
+    */
+    disabled: false,
+    
+    tag: '<input/>'
   };
   
-  this.onChange = function(evt){
-      
+  metaScore.Dom.extend(Field);
+  
+  Field.prototype.attributes = {
+    'type': 'text',
+    'class': 'field'
+  };
+  
+  Field.prototype.onChange = function(evt){      
     this.value = this.val();
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  this.setValue = function(val){
-    
-    this.val(val);    
-  
+  Field.prototype.setValue = function(val){    
+    this.val(val);  
   };
 
   /**
   * Disable the field
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  Field.prototype.disable = function(){
     this.disabled = true;
     
     this.addClass('disabled');
@@ -2332,7 +2311,7 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  Field.prototype.enable = function(){
     this.disabled = false;
     
     this.removeClass('disabled');
@@ -2340,71 +2319,74 @@ metaScore.Editor.Field = metaScore.Dom.extend(function(){
     
     return this;
   };
-});
+    
+  return Field;
+  
+})();
 /**
  * Undo
  *
  * @requires ../metaScore.evented.js
  */
  
-metaScore.Editor.History = metaScore.Evented.extend(function(){
-
-  var _commands = [],
-    _index = -1,
-    _executing = false;
+metaScore.editor.History = (function(){
   
-  this.defaults = {    
+  function History(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    History.parent.call(this);
+    
+    this.commands = [];
+    this.index = -1;
+    this.executing = false;
+  }
+  
+  History.defaults = {
     /**
     * Maximum number of commands to store
     */
     max_commands: 30
   };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {  
-    this.initConfig(configs);    
-  };
   
-  this.execute = function(command, action) {  
+  metaScore.Evented.extend(History);
+  
+  History.prototype.execute = function(command, action) {  
     if (command && command.hasOwnProperty(action)) {      
-      _executing = true;        
+      this.executing = true;        
       command[action](command);
-      _executing = false;
+      this.executing = false;
     }
     
     return this;
   };
   
-  this.add = function (command){  
-    if (_executing) {
+  History.prototype.add = function (command){  
+    if (this.executing) {
       return this;
     }
     
     // invalidate items higher on the stack
-    _commands.splice(_index + 1, _commands.length - _index);
+    this.commands.splice(this.index + 1, this.commands.length - this.index);
     
     // insert the new command
-    _commands.push(command);
+    this.commands.push(command);
     
     // remove old commands
-    if(_commands.length > this.configs.max_commands){
-      _commands = _commands.slice(this.configs.max_commands * -1);
+    if(this.commands.length > this.configs.max_commands){
+      this.commands = this.commands.slice(this.configs.max_commands * -1);
     }
 
     // update the index
-    _index = _commands.length - 1;
+    this.index = this.commands.length - 1;
     
     this.triggerEvent('add', {'command': command});
     
     return this;    
   };
 
-  this.undo = function() {
-    var command = _commands[_index];
+  History.prototype.undo = function() {
+    var command = this.commands[this.index];
     
     if (!command) {
       return this;
@@ -2414,15 +2396,15 @@ metaScore.Editor.History = metaScore.Evented.extend(function(){
      this.execute(command, 'undo');
     
     // update the index
-    _index -= 1;
+    this.index -= 1;
     
     this.triggerEvent('undo', {'command': command});
     
     return this;    
   };
 
-  this.redo = function() {
-    var command = _commands[_index + 1];
+  History.prototype.redo = function() {
+    var command = this.commands[this.index + 1];
     
     if (!command) {
       return this;
@@ -2432,18 +2414,18 @@ metaScore.Editor.History = metaScore.Evented.extend(function(){
     this.execute(command, 'redo');
     
     // update the index
-    _index += 1;
+    this.index += 1;
   
     this.triggerEvent('redo', {'command': command});
     
     return this;    
   };
   
-  this.clear = function () {
-    var length = _commands.length;
+  History.prototype.clear = function () {
+    var length = this.commands.length;
 
-    _commands = [];
-    _index = -1;
+    this.commands = [];
+    this.index = -1;
 
     if(length > 0) {
       this.triggerEvent('clear');
@@ -2451,14 +2433,17 @@ metaScore.Editor.History = metaScore.Evented.extend(function(){
 
   };
 
-  this.hasUndo = function(){
-    return _index !== -1;
+  History.prototype.hasUndo = function(){
+    return this.index !== -1;
   };
 
-  this.hasRedo = function(){
-    return _index < (_commands.length - 1);
+  History.prototype.hasRedo = function(){
+    return this.index < (this.commands.length - 1);
   };
-});
+    
+  return History;
+  
+})();
 /**
  * MainMenu
  *
@@ -2467,87 +2452,88 @@ metaScore.Editor.History = metaScore.Evented.extend(function(){
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
-metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
+metaScore.editor.MainMenu = (function(){
 
-  this.constructor = function() {
-  
-    this.super('<div/>', {'class': 'main-menu clearfix'});
+  function MainMenu() {
+    // call parent constructor
+    MainMenu.parent.call(this, '<div/>', {'class': 'main-menu clearfix'});
     
-    this.setupUI();
-    
-  };
+    this.setupUI();    
+  }
   
-  this.setupUI = function(){
+  metaScore.Dom.extend(MainMenu);
+  
+  MainMenu.prototype.setupUI = function(){
   
     var left, right;
     
     left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
     right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('New')
       })
       .data('action', 'new')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('Open')
       })
       .data('action', 'open')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('edit')
       })
       .data('action', 'edit')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('save')
       })
       .data('action', 'save')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('download')
       })
       .data('action', 'download')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('delete')
       })
       .data('action', 'delete')
       .appendTo(left);
     
-    new metaScore.Editor.Field.TimeField()
+    new metaScore.editor.field.Time()
       .attr({
         'title': metaScore.String.t('time')
       })
       .data('action', 'time')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('revert')
       })
       .data('action', 'revert')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('undo')
       })
       .data('action', 'undo')
       .appendTo(left);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('redo')
       })
@@ -2555,14 +2541,14 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
       .appendTo(left);
       
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('settings')
       })
       .data('action', 'settings')
       .appendTo(right);
     
-    new metaScore.Editor.Button()
+    new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('help')
       })
@@ -2571,7 +2557,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
     
   };
   
-  this.enableItems = function(selector){
+  MainMenu.prototype.enableItems = function(selector){
   
     var items = this.children(selector);
     
@@ -2581,7 +2567,7 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
   
   };
   
-  this.disableItems = function(selector){
+  MainMenu.prototype.disableItems = function(selector){
   
     var items = this.children(selector);
     
@@ -2590,17 +2576,38 @@ metaScore.Editor.MainMenu = metaScore.Dom.extend(function(){
     return items;
   
   };
-});
+    
+  return MainMenu;
+  
+})();
 /**
  * Overlay
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
+metaScore.editor.Overlay = (function(){
 
-  var _draggable;
+  /**
+  * Initialize
+  * @param {object} a configuration object
+  * @returns {void}
+  */
+  function Overlay(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
+    
+    if(this.configs.modal){
+      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
+    }
+    
+    if(this.configs.draggable){
+      this.draggable = new metaScore.Draggable({'target': this, 'handle': this});
+    }    
+  }
   
-  this.defaults = {
+  Overlay.defaults = {
     
     /**
     * The parent element in which the overlay will be appended
@@ -2617,29 +2624,10 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     */
     draggable: true
   };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
   
-    this.super('<div/>', {'class': 'overlay clearfix'});
+  metaScore.Dom.extend(Overlay);
   
-    this.initConfig(configs);
-    
-    if(this.configs.modal){
-      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
-    }
-    
-    if(this.configs.draggable){
-      _draggable = new metaScore.Draggable(this, this);
-    }
-    
-  };
-  
-  this.show = function(){
+  Overlay.prototype.show = function(){
     
     if(this.configs.modal){
       this.mask.appendTo(this.configs.parent);
@@ -2649,7 +2637,7 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     
   };
   
-  this.hide = function(){
+  Overlay.prototype.hide = function(){
     
     if(this.configs.modal){
       this.mask.remove();
@@ -2658,7 +2646,10 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
     this.remove();
     
   };
-});
+    
+  return Overlay;
+  
+})();
 /**
  * Panel
  *
@@ -2667,12 +2658,29 @@ metaScore.Editor.Overlay = metaScore.Dom.extend(function(){
  * @requires ../helpers/metaScore.string.js
  * @requires ../helpers/metaScore.function.js
  */
-metaScore.Editor.Panel = metaScore.Dom.extend(function(){
+metaScore.editor.Panel = (function(){
+  
+  function Panel(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    Panel.parent.call(this, '<div/>', {'class': 'panel'});
+    
+    this.fields = {};
+  
+    this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    this.toolbar.getTitle()
+      .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+    
+    this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
+      .appendTo(this);
+      
+    this.setupFields();    
+  }
 
-  var _toolbar, _contents,
-    _fields = {};
-
-  this.defaults = {
+  Panel.defaults = {
     /**
     * The panel's title
     */
@@ -2684,38 +2692,21 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
     fields: {}
   };
   
-  this.constructor = function(configs) {
+  metaScore.Dom.extend(Panel);
   
-    this.super('<div/>', {'class': 'panel'});
-  
-    this.initConfig(configs);
-  
-    _toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
-      .appendTo(this);
-      
-    _toolbar.getTitle()
-      .addListener('click', this.toggleState);
-    
-    _contents = new metaScore.Dom('<table/>', {'class': 'fields'})
-      .appendTo(this);
-      
-    this.setupFields();
-    
-  };
-  
-  this.setupFields = function(){
+  Panel.prototype.setupFields = function(){
   
     var row, uuid, configs, field;
   
     metaScore.Object.each(this.configs.fields, function(key, value){
       
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(_contents);
+      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(this.contents);
     
       uuid = 'field-'+ metaScore.String.uuid(5);
       
       configs = value.configs || {};
       
-      _fields[key] = field = new value.type(configs).attr('id', uuid);
+      this.fields[key] = field = new value.type(configs).attr('id', uuid);
       field.data('name', key);
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
@@ -2725,76 +2716,99 @@ metaScore.Editor.Panel = metaScore.Dom.extend(function(){
   
   };
   
-  this.getToolbar = function(){
+  Panel.prototype.getToolbar = function(){
     
-    return _toolbar;
+    return this.toolbar;
     
   };
   
-  this.getField = function(key){
+  Panel.prototype.getField = function(key){
     
     if(key === undefined){
-      return _fields;
+      return this.fields;
     }
     
-    return _fields[key];
+    return this.fields[key];
     
   };
   
-  this.enableFields = function(){
+  Panel.prototype.enableFields = function(){
   
-    metaScore.Object.each(_fields, function(key, field){
+    metaScore.Object.each(this.fields, function(key, field){
       field.enable();
     }, this);
     
   };
   
-  this.disableFields = function(){
+  Panel.prototype.disableFields = function(){
   
-    metaScore.Object.each(_fields, function(key, field){
+    metaScore.Object.each(this.fields, function(key, field){
       field.disable();
     }, this);
     
   };
   
-  this.showFields = function(keys){
+  Panel.prototype.showFields = function(keys){
   
     if(!keys){
-      _contents.children('tr.field-wrapper').show();
+      this.contents.children('tr.field-wrapper').show();
     }
     else{
-      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
+      this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
     }
     
   };
   
-  this.hideFields = function(keys){
+  Panel.prototype.hideFields = function(keys){
   
     if(!keys){
-      _contents.children('tr.field-wrapper').hide();
+      this.contents.children('tr.field-wrapper').hide();
     }
     else{
-      _contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
+      this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
     }
     
   };
   
-  this.toggleState = function(evt){
+  Panel.prototype.toggleState = function(evt){
     
     this.toggleClass('collapsed');
     
   };
-});
+    
+  return Panel;
+  
+})();
 /**
  * Field
  *
  * @requires ./metaScore.editor.overlay.js
  */
-metaScore.Editor.Popup = metaScore.Editor.Overlay.extend(function(){
+ 
+metaScore.namespace('editor');
 
-  var _toolbar, _contents;
+metaScore.editor.Popup = (function () {
+  
+  function Popup(configs) {
+    this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    Popup.parent.call(this, this.configs);
+    
+    this.addClass('popup');
+  
+    this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+      .appendTo(this);
+      
+    this.toolbar.addButton()
+      .data('action', 'close')
+      .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);    
+  }
 
-  this.defaults = {
+  Popup.defaults = {
     /**
     * The popup's title
     */
@@ -2816,99 +2830,100 @@ metaScore.Editor.Popup = metaScore.Editor.Overlay.extend(function(){
     draggable: false
   };
   
-  this.constructor = function(configs) {
+  metaScore.editor.Overlay.extend(Popup);
   
-    this.super(configs);
-    
-    this.addClass('popup');
-  
-    _toolbar = new metaScore.Editor.Toolbar({'title': this.configs.title})
-      .appendTo(this);
-      
-    _toolbar.addButton()
-      .data('action', 'close')
-      .addListener('click', this.onCloseClick);
-    
-    _contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);
-    
+  Popup.prototype.getToolbar = function(){    
+    return this.toolbar;    
   };
   
-  this.getToolbar = function(){
-    
-    return _toolbar;
-    
+  Popup.prototype.getContents = function(){    
+    return this.contents;    
   };
   
-  this.getContents = function(){
-    
-    return _contents;
-    
-  };
-  
-  this.onCloseClick = function(){
+  Popup.prototype.onCloseClick = function(){
     this.hide();
   };
-});
+    
+  return Popup;
+  
+})();
 /**
  * Toolbar
  *
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.Editor.Toolbar = metaScore.Dom.extend(function(){
-
-  var _title, _buttons;
-  
-  this.defaults = {    
-    /**
-    * A text to add as a title
-    */
-    title: null
-  };
+metaScore.editor.Toolbar = (function(){
 
   /**
   * Initialize
   * @param {object} a configuration object
   * @returns {void}
   */
-  this.constructor = function(configs) {    
-    this.super('<div/>', {'class': 'toolbar clearfix'});
-  
-    this.initConfig(configs);
+  function Toolbar(configs) {
+    this.configs = this.getConfigs(configs);
     
-    _title = new metaScore.Dom('<div/>', {'class': 'title'})
+    // call parent constructor
+    Toolbar.parent.call(this, '<div/>', {'class': 'toolbar clearfix'});
+    
+    this.title = new metaScore.Dom('<div/>', {'class': 'title'})
       .appendTo(this);
     
-    _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
       .appendTo(this);
       
     if(this.configs.title){
-      _title.text(this.configs.title);
+      this.title.text(this.configs.title);
     }
+  }
+  
+  Toolbar.defaults = {    
+    /**
+    * A text to add as a title
+    */
+    title: null
   };
   
-  this.getTitle = function(){
+  metaScore.Dom.extend(Toolbar);
   
-    return _title;
+  Toolbar.prototype.getTitle = function(){
+  
+    return this.title;
     
   };
   
-  this.addButton = function(configs){
+  Toolbar.prototype.addButton = function(configs){
   
-    return new metaScore.Editor.Button(configs)
-      .appendTo(_buttons);
+    return new metaScore.editor.Button(configs)
+      .appendTo(this.buttons);
   
   };
-});
+    
+  return Toolbar;
+  
+})();
 /**
  * BooleanField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
 
-  this.defaults = {    
+metaScore.editor.field.Boolean = (function () {
+  
+  function BooleanField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    BooleanField.parent.call(this, this.configs);
+    
+    if(this.configs.checked){
+      this.attr('checked', 'checked');
+    }
+  }
+
+  BooleanField.defaults = {
     /**
     * Defines the default value
     */
@@ -2927,30 +2942,17 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
-  };
-  
-  this.attributes = {
-    'type': 'checkbox',
-    'class': 'field booleanfield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+    disabled: false,
     
-    this.super(configs);
-    
-    if(this.configs.checked){
-      this.attr('checked', 'checked');
+    attributes: {
+      'type': 'checkbox',
+      'class': 'field booleanfield'
     }
-    
   };
   
-  this.onChange = function(evt){
+  metaScore.editor.Field.extend(BooleanField);
+  
+  BooleanField.prototype.onChange = function(evt){
       
     this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
     
@@ -2958,175 +2960,141 @@ metaScore.Editor.Field.BooleanField = metaScore.Editor.Field.extend(function(){
   
   };
   
-  this.setChecked = function(checked){
+  BooleanField.prototype.setChecked = function(checked){
   
     this.attr('checked', checked ? 'checked' : '');
   
   };
-});
+    
+  return BooleanField;
+  
+})();
 /**
- * TimeField
+ * ButtonField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
-  
-  // private vars
-  var _hours, _minutes, _seconds, _centiseconds;
-  
-  this.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: 0,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    /**
-    * Defines the minimum value allowed
-    */
-    min: 0,
-    
-    /**
-    * Defines the maximum value allowed
-    */
-    max: null
-  };
-  
-  this.tag = '<div/>';
-  
-  this.attributes = {
-    'class': 'field timefield'
-  };
+ 
+metaScore.namespace('editor.field');
 
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    
-    _hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
-    _minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
-    _seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
-    _centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
+metaScore.editor.field.Button = (function () {
   
-    this.super(configs);
+  function ButtonField(configs) {
+    this.configs = this.getConfigs(configs);
     
-    
-    _hours.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    _minutes.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    _seconds.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
-    
-    _centiseconds.addListener('input', this.onInput).appendTo(this);
-    
-  };
+    // call parent constructor
+    ButtonField.parent.call(this, this.configs);
+  }
   
-  this.onInput = function(evt){
+  metaScore.editor.Field.extend(ButtonField);
+    
+  return ButtonField;
   
-    var centiseconds_val = parseInt(_centiseconds.val(), 10),
-      seconds_val = parseInt(_seconds.val(), 10),
-      minutes_val = parseInt(_minutes.val(), 10),
-      hours_val = parseInt(_hours.val(), 10);
-      
-    evt.stopPropagation();
-    
-    this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
-  };
-  
-  this.setValue = function(milliseconds){
-      
-    var centiseconds_val, seconds_val, minutes_val, hours_val;
-    
-    this.value = milliseconds;
-    
-    if(this.configs.min !== null){
-      this.value = Math.max(this.value, this.configs.min);
-    }
-    if(this.configs.max !== null){
-      this.value = Math.min(this.value, this.configs.max);
-    }
-      
-    centiseconds_val = parseInt((this.value / 10) % 100, 10);
-    seconds_val = parseInt((this.value / 1000) % 60, 10);
-    minutes_val = parseInt((this.value / 60000) % 60, 10);
-    hours_val = parseInt((this.value / 3600000), 10);
-    
-    _centiseconds.val(centiseconds_val);
-    _seconds.val(seconds_val);
-    _minutes.val(minutes_val);
-    _hours.val(hours_val);
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
-  };
-  
-  this.getValue = function(){
-  
-    return this.value;
-  
-  };
-
-  /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
-  this.disable = function(){
-    this.disabled = true;
-    
-    _hours.attr('disabled', 'disabled');
-    _minutes.attr('disabled', 'disabled');
-    _seconds.attr('disabled', 'disabled');
-    _centiseconds.attr('disabled', 'disabled');
-    
-    this.addClass('disabled');
-    
-    return this;
-  };
-
-  /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
-  this.enable = function(){
-    this.disabled = false;
-    
-    _hours.attr('disabled', null);
-    _minutes.attr('disabled', null);
-    _seconds.attr('disabled', null);
-    _centiseconds.attr('disabled', null);
-    
-    this.removeClass('disabled');
-    
-    return this;
-  };
-});
+})();
 /**
  * ColorField
  *
  * @requires ../metaScore.editor.field.js
  * @requires ../../helpers/metaScore.object.js
  */
-metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
 
-  // private vars
-  var _button, _overlay,
-    previous_value;
+metaScore.editor.field.Color = (function () {
   
-  this.defaults = {
+  function ColorField(configs) {
+    this.configs = this.getConfigs(configs);
+      
+    // fix event handlers scope
+    this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
+    this.onAlphaMousemove = metaScore.Function.proxy(this.onAlphaMousemove, this);
+  
+    this.button = new metaScore.editor.Button()
+      .addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    this.overlay = new metaScore.editor.Overlay()
+      .addClass('colorfield-overlay');
+    
+    this.overlay.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.overlay);
+    this.overlay.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
+      .addListener('click', metaScore.Function.proxy(this.onGradientClick, this))
+      .addListener('mousedown', metaScore.Function.proxy(this.onGradientMousedown, this))
+      .addListener('mouseup', metaScore.Function.proxy(this.onGradientMouseup, this))
+      .appendTo(this.overlay.gradient);
+    this.overlay.gradient.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.overlay.gradient);
+        
+    this.overlay.alpha = new metaScore.Dom('<div/>', {'class': 'alpha'}).appendTo(this.overlay);
+    this.overlay.alpha.canvas = new metaScore.Dom('<canvas/>', {'width': '20', 'height': '255'})
+      .addListener('click', metaScore.Function.proxy(this.onAlphaClick, this))
+      .addListener('mousedown', metaScore.Function.proxy(this.onAlphaMousedown, this))
+      .addListener('mouseup', metaScore.Function.proxy(this.onAlphaMouseup, this))
+      .appendTo(this.overlay.alpha);
+    this.overlay.alpha.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.overlay.alpha);
+    
+    this.overlay.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(this.overlay);
+    
+    this.overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
+      .append(this.overlay.controls.r)
+      .appendTo(this.overlay.controls);
+      
+    this.overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
+      .append(this.overlay.controls.g)
+      .appendTo(this.overlay.controls);
+      
+    this.overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
+      .append(this.overlay.controls.b)
+      .appendTo(this.overlay.controls);
+      
+    this.overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
+      .append(this.overlay.controls.a)
+      .appendTo(this.overlay.controls);
+      
+    this.overlay.controls.current = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
+      .append(this.overlay.controls.current)
+      .appendTo(this.overlay.controls);
+    
+    this.overlay.controls.previous = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
+      .append(this.overlay.controls.previous)
+      .appendTo(this.overlay.controls);
+      
+    this.overlay.controls.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
+      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
+      .appendTo(this.overlay.controls);
+      
+    this.overlay.controls.apply = new metaScore.editor.Button({'label': 'Apply'})
+      .addClass('apply')
+      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
+      .appendTo(this.overlay.controls);
+          
+    this.overlay.mask.addListener('click', metaScore.Function.proxy(this.onApplyClick, this));
+    
+    // call parent constructor
+    ColorField.parent.call(this, this.configs);
+    
+    new metaScore.Dom('<div/>', {'class': 'icon'})
+      .appendTo(this);
+    
+    this.button.appendTo(this);
+    
+    this.fillGradient();
+  }
+  
+  ColorField.defaults = {
     /**
     * Defines the default value
     */
@@ -3140,108 +3108,18 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
+    disabled: false,
+    
+    tag: '<div/>',
+    
+    attributes: {
+      'class': 'field colorfield'
+    }
   };
   
-  this.tag = '<div/>';
+  metaScore.editor.Field.extend(ColorField);
   
-  this.attributes = {
-    'class': 'field colorfield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-  
-    _button = new metaScore.Editor.Button()
-      .addListener('click', this.onClick);
-    
-    _overlay = new metaScore.Editor.Overlay()
-      .addClass('colorfield-overlay');
-    
-    _overlay.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(_overlay);
-    _overlay.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
-      .addListener('click', this.onGradientClick)
-      .addListener('mousedown', this.onGradientMousedown)
-      .addListener('mouseup', this.onGradientMouseup)
-      .appendTo(_overlay.gradient);
-    _overlay.gradient.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(_overlay.gradient);
-        
-    _overlay.alpha = new metaScore.Dom('<div/>', {'class': 'alpha'}).appendTo(_overlay);
-    _overlay.alpha.canvas = new metaScore.Dom('<canvas/>', {'width': '20', 'height': '255'})
-      .addListener('click', this.onAlphaClick)
-      .addListener('mousedown', this.onAlphaMousedown)
-      .addListener('mouseup', this.onAlphaMouseup)
-      .appendTo(_overlay.alpha);
-    _overlay.alpha.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(_overlay.alpha);
-    
-    _overlay.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(_overlay);
-    
-    _overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
-      .addListener('input', this.onControlInput);
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
-      .append(_overlay.controls.r)
-      .appendTo(_overlay.controls);
-      
-    _overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
-      .addListener('input', this.onControlInput);
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
-      .append(_overlay.controls.g)
-      .appendTo(_overlay.controls);
-      
-    _overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
-      .addListener('input', this.onControlInput);
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
-      .append(_overlay.controls.b)
-      .appendTo(_overlay.controls);
-      
-    _overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
-      .addListener('input', this.onControlInput);
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
-      .append(_overlay.controls.a)
-      .appendTo(_overlay.controls);
-      
-    _overlay.controls.current = new metaScore.Dom('<canvas/>');
-    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
-      .append(_overlay.controls.current)
-      .appendTo(_overlay.controls);
-    
-    _overlay.controls.previous = new metaScore.Dom('<canvas/>');
-    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
-      .append(_overlay.controls.previous)
-      .appendTo(_overlay.controls);
-      
-    _overlay.controls.cancel = new metaScore.Editor.Button({'label': 'Cancel'})
-      .addClass('cancel')
-      .addListener('click', this.onCancelClick)
-      .appendTo(_overlay.controls);
-      
-    _overlay.controls.apply = new metaScore.Editor.Button({'label': 'Apply'})
-      .addClass('apply')
-      .addListener('click', this.onApplyClick)
-      .appendTo(_overlay.controls);
-          
-    _overlay.mask.addListener('click', this.onApplyClick);
-    
-    this.super(configs);
-    
-    new metaScore.Dom('<div/>', {'class': 'icon'})
-      .appendTo(this);
-    
-    _button.appendTo(this);
-    
-    this.fillGradient();
-    
-  };
-  
-  this.setValue = function(val, refillAlpha, updatePositions, updateInputs){
+  ColorField.prototype.setValue = function(val, refillAlpha, updatePositions, updateInputs){
   
     var hsv;
   
@@ -3269,84 +3147,84 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     }
     
     if(updateInputs !== false){
-      _overlay.controls.r.val(this.value.r);
-      _overlay.controls.g.val(this.value.g);
-      _overlay.controls.b.val(this.value.b);
-      _overlay.controls.a.val(this.value.a);
+      this.overlay.controls.r.val(this.value.r);
+      this.overlay.controls.g.val(this.value.g);
+      this.overlay.controls.b.val(this.value.b);
+      this.overlay.controls.a.val(this.value.a);
     }
     
     if(updatePositions !== false){
       hsv = this.rgb2hsv(this.value);
       
-      _overlay.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
-      _overlay.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
+      this.overlay.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
+      this.overlay.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
       
-      _overlay.alpha.position.css('top', ((1 - this.value.a) * 255) +'px');
+      this.overlay.alpha.position.css('top', ((1 - this.value.a) * 255) +'px');
     }
     
     this.fillCurrent();
     
-    _button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
+    this.button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
   
   };
   
-  this.onClick = function(evt){
+  ColorField.prototype.onClick = function(evt){
   
     if(this.disabled){
       return;
     }
   
-    previous_value = metaScore.Object.copy(this.value);
+    this.previous_value = metaScore.Object.copy(this.value);
     
     this.fillPrevious();
   
-    _overlay.show();
+    this.overlay.show();
   
   };
   
-  this.onControlInput = function(evt){
+  ColorField.prototype.onControlInput = function(evt){
   
     var rgba, hsv;
     
     this.setValue({
-      'r': _overlay.controls.r.val(),
-      'g': _overlay.controls.g.val(),
-      'b': _overlay.controls.b.val(),
-      'a': _overlay.controls.a.val()
+      'r': this.overlay.controls.r.val(),
+      'g': this.overlay.controls.g.val(),
+      'b': this.overlay.controls.b.val(),
+      'a': this.overlay.controls.a.val()
     }, true, true, false);
   
   };
   
-  this.onCancelClick = function(evt){
+  ColorField.prototype.onCancelClick = function(evt){
   
-    this.setValue(previous_value);
-    _overlay.hide();
+    this.setValue(this.previous_value);
+    this.overlay.hide();
   
     evt.stopPropagation();
   };
   
-  this.onApplyClick = function(evt){
+  ColorField.prototype.onApplyClick = function(evt){
   
-    _overlay.hide();
+    this.overlay.hide();
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
     evt.stopPropagation();
   };
   
-  this.fillPrevious = function(){
+  ColorField.prototype.fillPrevious = function(){
   
-    var context = _overlay.controls.previous.get(0).getContext('2d');
+    var context = this.overlay.controls.previous.get(0).getContext('2d');
     
-    context.fillStyle = "rgba("+ previous_value.r +","+ previous_value.g +","+ previous_value.b +","+ previous_value.a +")";
+    context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   
   };
   
-  this.fillCurrent = function(){
+  ColorField.prototype.fillCurrent = function(){
   
-    var context = _overlay.controls.current.get(0).getContext('2d');
+    var context = this.overlay.controls.current.get(0).getContext('2d');
     
     context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
@@ -3354,9 +3232,9 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
   };
   
-  this.fillGradient = function(){
+  ColorField.prototype.fillGradient = function(){
   
-    var context = _overlay.gradient.canvas.get(0).getContext('2d'),
+    var context = this.overlay.gradient.canvas.get(0).getContext('2d'),
       fill;
       
     // Create color gradient
@@ -3386,9 +3264,9 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
   
   };
   
-  this.fillAlpha = function(){
+  ColorField.prototype.fillAlpha = function(){
   
-    var context = _overlay.alpha.canvas.get(0).getContext('2d'),
+    var context = this.overlay.alpha.canvas.get(0).getContext('2d'),
       fill;
       
     // Create color gradient
@@ -3403,28 +3281,28 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     
   };
   
-  this.onGradientMousedown = function(evt){   
-    _overlay.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
+  ColorField.prototype.onGradientMousedown = function(evt){   
+    this.overlay.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
     
     evt.stopPropagation();
   };
   
-  this.onGradientMouseup = function(evt){
-    _overlay.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
+  ColorField.prototype.onGradientMouseup = function(evt){
+    this.overlay.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
     
     evt.stopPropagation();
   };
   
-  this.onGradientClick = this.onGradientMousemove = function(evt){
+  ColorField.prototype.onGradientClick = function(evt){
     var offset = evt.target.getBoundingClientRect(),
       colorX = evt.pageX - offset.left,
       colorY = evt.pageY - offset.top,
-      context = _overlay.gradient.canvas.get(0).getContext('2d'),
+      context = this.overlay.gradient.canvas.get(0).getContext('2d'),
       imageData = context.getImageData(colorX, colorY, 1, 1),
       value = this.value;
       
-    _overlay.gradient.position.css('left', colorX +'px');
-    _overlay.gradient.position.css('top', colorY +'px');
+    this.overlay.gradient.position.css('left', colorX +'px');
+    this.overlay.gradient.position.css('top', colorY +'px');
     
     value.r = imageData.data[0];
     value.g = imageData.data[1];
@@ -3435,26 +3313,28 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     evt.stopPropagation();
   };
   
-  this.onAlphaMousedown = function(evt){   
-    _overlay.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
+  ColorField.prototype.onGradientMousemove = ColorField.prototype.onGradientClick;
+  
+  ColorField.prototype.onAlphaMousedown = function(evt){   
+    this.overlay.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
     
     evt.stopPropagation();
   };
   
-  this.onAlphaMouseup = function(evt){
-    _overlay.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
+  ColorField.prototype.onAlphaMouseup = function(evt){
+    this.overlay.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
     
     evt.stopPropagation();
   };
   
-  this.onAlphaClick = this.onAlphaMousemove = function(evt){
+  ColorField.prototype.onAlphaClick = function(evt){
     var offset = evt.target.getBoundingClientRect(),
       colorY = evt.pageY - offset.top,
-      context = _overlay.alpha.canvas.get(0).getContext('2d'),
+      context = this.overlay.alpha.canvas.get(0).getContext('2d'),
       imageData = context.getImageData(0, colorY, 1, 1),
       value = this.value;
       
-    _overlay.alpha.position.css('top', colorY +'px');
+    this.overlay.alpha.position.css('top', colorY +'px');
     
     value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
     
@@ -3463,7 +3343,9 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     evt.stopPropagation();
   };
   
-  this.rgb2hsv = function (rgb){
+  ColorField.prototype.onAlphaMousemove = ColorField.prototype.onAlphaClick;
+  
+  ColorField.prototype.rgb2hsv = function (rgb){
     
     var r = rgb.r, g = rgb.g, b = rgb.b,
       max = Math.max(r, g, b),
@@ -3502,7 +3384,7 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     };
   };
   
-  this.parseColor = function(color){
+  ColorField.prototype.parseColor = function(color){
  
     var rgba = {}, matches;
       
@@ -3544,15 +3426,28 @@ metaScore.Editor.Field.ColorField = metaScore.Editor.Field.extend(function(){
     
     return rgba;
   };
-});
+    
+  return ColorField;
+  
+})();
 /**
  * CornerField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
+
+metaScore.editor.field.Corner = (function () {
   
-  this.defaults = {
+  function CornerField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    CornerField.parent.call(this, this.configs);
+  }
+  
+  CornerField.defaults = {
     /**
     * Defines the default value
     */
@@ -3563,29 +3458,32 @@ metaScore.Editor.Field.CornerField = metaScore.Editor.Field.extend(function(){
     */
     disabled: false
   };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  
+  metaScore.editor.Field.extend(CornerField);
     
-    this.super(configs);
-    
-  };
-});
+  return CornerField;
+  
+})();
 /**
  * ImageField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
 
-  // private vars
-  var _file;
+metaScore.editor.field.Image = (function () {
   
-  this.defaults = {
+  function ImageField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    ImageField.parent.call(this, this.configs);
+
+    this.addListener('change', metaScore.Function.proxy(this.onFileSelect, this), false);
+  }
+  
+  ImageField.defaults = {
     /**
     * Defines the default value
     */
@@ -3594,76 +3492,72 @@ metaScore.Editor.Field.ImageField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
-  };
-  
-  this.attributes = {
-    'type': 'file',
-    'class': 'field imagefield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+    disabled: false,
     
-    this.super(configs);
-
-    this.addListener('change', this.onFileSelect, false);
-    
+    attributes: {
+      'type': 'file',
+      'class': 'field imagefield'
+    }
   };
   
-  this.setValue = function(val, triggerChange){
+  metaScore.editor.Field.extend(ImageField);
   
+  ImageField.prototype.setValue = function(val, triggerChange){  
     this.value = val;
     
     if(triggerChange !== false){
       this.triggerEvent('valuechange', {'field': this, 'value': this.value}, false, true);
-    }
-  
+    }  
   };
   
-  this.onFileSelect = function(evt) {
-  
+  ImageField.prototype.onFileSelect = function(evt) {  
     var files = evt.target.files;
   
     if(files.length > 0 && files[0].type.match('image.*')){
-      _file = files[0];
+      this.file = files[0];
     }
     else{
-      _file = null;
+      this.file = null;
     }
     
     /*this.getBase64(function(result){
       this.setValue(result);
-    });*/
-    
+    });*/    
   };
   
-  this.getBase64 = function(callback){
-  
+  ImageField.prototype.getBase64 = function(callback){  
     var reader;
   
-    if(_file){
+    if(this.file){
       reader = new FileReader();
       reader.onload = metaScore.Function.proxy(function(evt){
         callback.call(this, evt.target.result, evt);
       }, this);
-      reader.readAsDataURL(_file);
-    }
-  
+      reader.readAsDataURL(this.file);
+    }  
   };
-});
+    
+  return ImageField;
+  
+})();
 /**
  * IntegerField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
+
+metaScore.editor.field.Integer = (function () {
   
-  this.defaults = {
+  function IntegerField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    IntegerField.parent.call(this, this.configs);
+  }
+  
+  IntegerField.defaults = {
     /**
     * Defines the default value
     */
@@ -3682,34 +3576,39 @@ metaScore.Editor.Field.IntegerField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines the maximum value allowed
     */
-    max: null
+    max: null,
+    
+    attributes: {
+      'type': 'number',
+      'class': 'field integerfield'
+    }
   };
   
-  this.attributes = {
-    'type': 'number',
-    'class': 'field integerfield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  metaScore.editor.Field.extend(IntegerField);
     
-    this.super(configs);
-    
-  };
-});
+  return IntegerField;
+  
+})();
 /**
  * SelectField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
+
+metaScore.editor.field.Select = (function () {
   
+  function SelectField(configs) {
+    this.configs = this.getConfigs(configs);
   
-  this.defaults = {
+    // call parent constructor
+    SelectField.parent.call(this, this.configs);
+    
+    this.setOptions(this.configs.options);
+  }
+  
+  SelectField.defaults = {
     /**
     * Defines the default value
     */
@@ -3723,29 +3622,18 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines the maximum value allowed
     */
-    options: {}
-  };
-  
-  this.tag = '<select/>';
-  
-  this.attributes = {
-    'class': 'field selectfield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-  
-    this.super(configs);
+    options: {},
     
-    this.setOptions(this.configs.options);
+    tag: '<select/>',
     
+    attributes: {
+      'class': 'field selectfield'
+    }
   };
   
-  this.setOptions = function(options){
+  metaScore.editor.Field.extend(SelectField);
+  
+  SelectField.prototype.setOptions = function(options){
   
     metaScore.Object.each(options, function(key, value){    
       this.append(new metaScore.Dom('<option/>', {'text': value, 'value': key}));
@@ -3753,7 +3641,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
     
   };
   
-  this.setValue = function(value){
+  SelectField.prototype.setValue = function(value){
     
     this.val(value);
     
@@ -3761,7 +3649,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
   
   };
   
-  this.getValue = function(){
+  SelectField.prototype.getValue = function(){
   
     return this.value;
   
@@ -3771,7 +3659,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
   * Disable the button
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  SelectField.prototype.disable = function(){
     this.disabled = true;
     
     this
@@ -3787,7 +3675,7 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  SelectField.prototype.enable = function(){
     this.disabled = false;
     
     this
@@ -3796,18 +3684,47 @@ metaScore.Editor.Field.SelectField = metaScore.Editor.Field.extend(function(){
     
     return this;
   };
-});
+    
+  return SelectField;
+  
+})();
 /**
  * TimeField
  *
  * @requires ../metaScore.editor.field.js
  */
-metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
+ 
+metaScore.namespace('editor.field');
+
+metaScore.editor.field.Time = (function () {
   
-  // private vars
-  var _hours, _minutes, _seconds, _centiseconds;
+  function TimeField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
+    this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
+    this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
+    this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
   
-  this.defaults = {
+    // call parent constructor
+    TimeField.parent.call(this, this.configs);
+    
+    this.hours.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
+    
+    this.minutes.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
+    
+    this.seconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
+    
+    this.centiseconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
+  }
+  
+  TimeField.defaults = {
     /**
     * Defines the default value
     */
@@ -3826,59 +3743,30 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     /**
     * Defines the maximum value allowed
     */
-    max: null
+    max: null,
+    
+    tag: '<div/>',
+    
+    attributes: {
+      'class': 'field timefield'
+    }
   };
   
-  this.tag = '<div/>';
+  metaScore.editor.Field.extend(TimeField);
   
-  this.attributes = {
-    'class': 'field timefield'
-  };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    
-    _hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
-    _minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
-    _seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
-    _centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
+  TimeField.prototype.onInput = function(evt){
   
-    this.super(configs);
-    
-    
-    _hours.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    _minutes.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    _seconds.addListener('input', this.onInput).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
-    
-    _centiseconds.addListener('input', this.onInput).appendTo(this);
-    
-  };
-  
-  this.onInput = function(evt){
-  
-    var centiseconds_val = parseInt(_centiseconds.val(), 10),
-      seconds_val = parseInt(_seconds.val(), 10),
-      minutes_val = parseInt(_minutes.val(), 10),
-      hours_val = parseInt(_hours.val(), 10);
+    var centiseconds_val = parseInt(this.centiseconds.val(), 10),
+      seconds_val = parseInt(this.seconds.val(), 10),
+      minutes_val = parseInt(this.minutes.val(), 10),
+      hours_val = parseInt(this.hours.val(), 10);
       
     evt.stopPropagation();
     
     this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
   };
   
-  this.setValue = function(milliseconds){
+  TimeField.prototype.setValue = function(milliseconds){
       
     var centiseconds_val, seconds_val, minutes_val, hours_val;
     
@@ -3896,16 +3784,16 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
     minutes_val = parseInt((this.value / 60000) % 60, 10);
     hours_val = parseInt((this.value / 3600000), 10);
     
-    _centiseconds.val(centiseconds_val);
-    _seconds.val(seconds_val);
-    _minutes.val(minutes_val);
-    _hours.val(hours_val);
+    this.centiseconds.val(centiseconds_val);
+    this.seconds.val(seconds_val);
+    this.minutes.val(minutes_val);
+    this.hours.val(hours_val);
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   
   };
   
-  this.getValue = function(){
+  TimeField.prototype.getValue = function(){
   
     return this.value;
   
@@ -3915,13 +3803,13 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   * Disable the button
   * @returns {object} the XMLHttp object
   */
-  this.disable = function(){
+  TimeField.prototype.disable = function(){
     this.disabled = true;
     
-    _hours.attr('disabled', 'disabled');
-    _minutes.attr('disabled', 'disabled');
-    _seconds.attr('disabled', 'disabled');
-    _centiseconds.attr('disabled', 'disabled');
+    this.hours.attr('disabled', 'disabled');
+    this.minutes.attr('disabled', 'disabled');
+    this.seconds.attr('disabled', 'disabled');
+    this.centiseconds.attr('disabled', 'disabled');
     
     this.addClass('disabled');
     
@@ -3934,19 +3822,22 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
   * @param {object} options to set for the request; see the defaults variable
   * @returns {object} the XMLHttp object
   */
-  this.enable = function(){
+  TimeField.prototype.enable = function(){
     this.disabled = false;
     
-    _hours.attr('disabled', null);
-    _minutes.attr('disabled', null);
-    _seconds.attr('disabled', null);
-    _centiseconds.attr('disabled', null);
+    this.hours.attr('disabled', null);
+    this.minutes.attr('disabled', null);
+    this.seconds.attr('disabled', null);
+    this.centiseconds.attr('disabled', null);
     
     this.removeClass('disabled');
     
     return this;
   };
-});
+    
+  return TimeField;
+  
+})();
 /**
  * Block
  *
@@ -3959,11 +3850,35 @@ metaScore.Editor.Field.TimeField = metaScore.Editor.Field.extend(function(){
  * @requires ../../helpers/metaScore.resizable.js
  * @requires ../../helpers/metaScore.resizable.js
  */
-metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
+ 
+metaScore.namespace('editor.panel');
 
-  var _menu, _block;
+metaScore.editor.panel.Block = (function () {
+  
+  function BlockPanel(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    BlockPanel.parent.call(this, this.configs);
+      
+    // fix event handlers scope
+    this.onBlockDragStart = metaScore.Function.proxy(this.onBlockDragStart, this);
+    this.onBlockDragEnd = metaScore.Function.proxy(this.onBlockDragEnd, this);
+    this.onBlockResizeStart = metaScore.Function.proxy(this.onBlockResizeStart, this);
+    this.onBlockResizeEnd = metaScore.Function.proxy(this.onBlockResizeEnd, this);
+    
+    this.menu = new metaScore.editor.DropDownMenu();
+    this.menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
+    this.menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .data('action', 'menu')
+      .append(this.menu);
+      
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
+  }
 
-  this.defaults = {
+  BlockPanel.defaults = {
     /**
     * The panel's title
     */
@@ -3974,72 +3889,48 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     */
     fields: {
       'x': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('X')
       },
       'y': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Y')
       },
       'width': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Width')
       },
       'height': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Height')
       },
       'bg-color': {
-        'type': metaScore.Editor.Field.ColorField,
+        'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Background color')
       },
       'bg-image': {
-        'type': metaScore.Editor.Field.ImageField,
+        'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image')
       },
       'synched': {
-        'type': metaScore.Editor.Field.BooleanField,
+        'type': metaScore.editor.field.Boolean,
         'label': metaScore.String.t('Synchronized pages ?')
       }
     }
   };
   
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  metaScore.editor.Panel.extend(BlockPanel);
   
-    this.super(configs);
-    
-    _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
-    _menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
-    
-    this.getToolbar().addButton()
-      .data('action', 'menu')
-      .append(_menu);
-      
-    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
-    
+  BlockPanel.prototype.getMenu = function(){  
+    return this.menu;  
   };
   
-  this.getMenu = function(){
-  
-    return _menu;
-  
+  BlockPanel.prototype.getBlock = function(){  
+    return this.block;  
   };
   
-  this.getBlock = function(){
-  
-    return _block;
-  
-  };
-  
-  this.setBlock = function(block, supressEvent){
-  
-    if(_block && (_block.get(0) === block.get(0))){
+  BlockPanel.prototype.setBlock = function(block, supressEvent){  
+    if(this.block && (this.block.get(0) === block.get(0))){
       return;
     }
     
@@ -4049,8 +3940,8 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     this.updateFieldValues(block);  
     this.getMenu().enableItems('[data-action="delete"]');
     
-    block._draggable = new metaScore.Draggable(block, block.child('.pager'), block.parents()).enable();
-    block._resizable = new metaScore.Resizable(block, block.parents()).enable();
+    block._draggable = new metaScore.Draggable({'target': block, 'handle': block.child('.pager'), 'container': block.parents()}).enable();
+    block._resizable = new metaScore.Resizable({'target': block, 'container': block.parents()}).enable();
     
     block
       .addListener('dragstart', this.onBlockDragStart)
@@ -4063,14 +3954,12 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       this.triggerEvent('blockset', {'block': block});
     }
     
-    _block = block;
+    this.block = block;
     
-    return this;
-    
+    return this;    
   };
   
-  this.unsetBlock = function(supressEvent){
-  
+  BlockPanel.prototype.unsetBlock = function(supressEvent){  
     var block = this.getBlock();
       
     this.disableFields();    
@@ -4090,25 +3979,24 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         .removeListener('resizeend', this.onBlockResizeEnd)
         .removeClass('selected');
       
-      _block = null;
+      this.block = null;
     }
       
     if(supressEvent !== true){
       this.triggerEvent('blockunset', {'block': block});
     }
     
-    return this;
-    
+    return this;    
   };
   
-  this.onBlockDragStart = function(evt){
+  BlockPanel.prototype.onBlockDragStart = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y'];
     
     this.beforeDragValues = this.getValues(block, fields);
   };
   
-  this.onBlockDragEnd = function(evt){
+  BlockPanel.prototype.onBlockDragEnd = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y'];
     
@@ -4119,14 +4007,14 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     delete this.beforeDragValues;
   };
   
-  this.onBlockResizeStart = function(evt){
+  BlockPanel.prototype.onBlockResizeStart = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y', 'width', 'height'];
     
     this.beforeResizeValues = this.getValues(block, fields);
   };
   
-  this.onBlockResizeEnd = function(evt){
+  BlockPanel.prototype.onBlockResizeEnd = function(evt){
     var block = this.getBlock(),
       fields = ['x', 'y', 'width', 'height'];
     
@@ -4137,7 +4025,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     delete this.beforeResizeValues;
   };
   
-  this.onFieldValueChange = function(evt){
+  BlockPanel.prototype.onFieldValueChange = function(evt){
     var block = this.getBlock(),
       field, value, old_values;
       
@@ -4154,7 +4042,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues(block, [field])});
   };
   
-  this.updateFieldValue = function(name, value, supressEvent){
+  BlockPanel.prototype.updateFieldValue = function(name, value, supressEvent){
     var field = this.getField(name);
     
     switch(name){
@@ -4178,8 +4066,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     }
   };
   
-  this.updateFieldValues = function(block, values, supressEvent){
-  
+  BlockPanel.prototype.updateFieldValues = function(block, values, supressEvent){  
     if(block !== this.getBlock()){
       return;
     }
@@ -4198,8 +4085,7 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     }
   };
   
-  this.updateBlockProperty = function(block, name, value){
-  
+  BlockPanel.prototype.updateBlockProperty = function(block, name, value){  
     switch(name){
       case 'x':
         block.css('left', value +'px');
@@ -4222,22 +4108,18 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
       case 'synched':
         block.data('synched', value);
         break;
-    }
-  
+    }  
   };
   
-  this.updateBlockProperties = function(block, values){
-  
+  BlockPanel.prototype.updateBlockProperties = function(block, values){  
     metaScore.Object.each(values, function(name, value){
       this.updateBlockProperty(block, name, value);
     }, this);
     
-    this.updateFieldValues(block, values, true);
-  
+    this.updateFieldValues(block, values, true);  
   };
   
-  this.getValue = function(block, name){
-  
+  BlockPanel.prototype.getValue = function(block, name){  
     var value;
   
     switch(name){
@@ -4264,12 +4146,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
         break;
     }
     
-    return value;
-  
+    return value;  
   };
   
-  this.getValues = function(block, fields){
-  
+  BlockPanel.prototype.getValues = function(block, fields){  
     var values = {};
     
     fields = fields || Object.keys(this.getField());
@@ -4280,9 +4160,10 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
     
     return values;  
   };
+    
+  return BlockPanel;
   
-  
-});
+})();
 /**
  * Element
  *
@@ -4294,11 +4175,42 @@ metaScore.Editor.Panel.Block = metaScore.Editor.Panel.extend(function(){
  * @requires ../field/metaScore.editor.field.timefield.js
  * @requires ../field/metaScore.editor.field.selectfield.js
  */
-metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
+ 
+metaScore.namespace('editor.panel');
+ 
+metaScore.editor.panel.Element = (function () {
+  
+  function ElementPanel(configs) {
+    var toolbar;
+    
+    this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    ElementPanel.parent.call(this, this.configs);
+      
+    // fix event handlers scope
+    this.onElementDrag = metaScore.Function.proxy(this.onElementDrag, this);
+    this.onElementResize = metaScore.Function.proxy(this.onElementResize, this);
+    
+    toolbar = this.getToolbar();
+    
+    toolbar.addButton().data('action', 'previous');
+    toolbar.addButton().data('action', 'next');
+    
+    this.menu = new metaScore.editor.DropDownMenu();
+    this.menu.addItem({'text': metaScore.String.t('Add a new cursor'), 'data-action': 'new', 'data-type': 'Cursor'});
+    this.menu.addItem({'text': metaScore.String.t('Add a new image'), 'data-action': 'new', 'data-type': 'Image'});
+    this.menu.addItem({'text': metaScore.String.t('Add a new text element'), 'data-action': 'new', 'data-type': 'Text'});
+    this.menu.addItem({'text': metaScore.String.t('Delete the active element'), 'data-action': 'delete'});
+    
+    toolbar.addButton()
+      .data('action', 'menu')
+      .append(this.menu);
+      
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
+  }
 
-  var _menu, _element;
-
-  this.defaults = {
+  ElementPanel.defaults = {
     /**
     * The panel's title
     */
@@ -4309,62 +4221,62 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     */
     fields: {
       'x': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('X')
       },
       'y': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Y')
       },
       'width': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Width')
       },
       'height': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Height')
       },
       'r-index': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Reading index'),
         'configs': {
           'min': 0
         }
       },
       'z-index': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Display index')
       },
       'bg-color': {
-        'type': metaScore.Editor.Field.ColorField,
+        'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Background color')
       },
       'bg-image': {
-        'type': metaScore.Editor.Field.ImageField,
+        'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image')
       },
       'border-width': {
-        'type': metaScore.Editor.Field.IntegerField,
+        'type': metaScore.editor.field.Integer,
         'label': metaScore.String.t('Border width')
       },
       'border-color': {
-        'type': metaScore.Editor.Field.ColorField,
+        'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Border color')
       },
       'rounded-conrners': {
-        'type': metaScore.Editor.Field.CornerField,
+        'type': metaScore.editor.field.Corner,
         'label': metaScore.String.t('Rounded conrners')
       },
       'start-time': {
-        'type': metaScore.Editor.Field.TimeField,
+        'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('Start time')
       },
       'end-time': {
-        'type': metaScore.Editor.Field.TimeField,
+        'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('End time')
       },
       'font-family': {
-        'type': metaScore.Editor.Field.SelectField,
+        'type': metaScore.editor.field.Select,
         'configs': {
           'options': {
             'Georgia, serif': 'Georgia',
@@ -4384,90 +4296,55 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
     }
   };
   
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  metaScore.editor.Panel.extend(ElementPanel);
   
-    var toolbar;
-  
-    this.super(configs);
-    
-    toolbar = this.getToolbar();
-    
-    toolbar.addButton().data('action', 'previous');
-    toolbar.addButton().data('action', 'next');
-    
-    _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': metaScore.String.t('Add a new cursor'), 'data-action': 'new', 'data-type': 'Cursor'});
-    _menu.addItem({'text': metaScore.String.t('Add a new image'), 'data-action': 'new', 'data-type': 'Image'});
-    _menu.addItem({'text': metaScore.String.t('Add a new text element'), 'data-action': 'new', 'data-type': 'Text'});
-    _menu.addItem({'text': metaScore.String.t('Delete the active element'), 'data-action': 'delete'});
-    
-    toolbar.addButton()
-      .data('action', 'menu')
-      .append(_menu);
-      
-    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
-    
+  ElementPanel.prototype.getMenu = function(){  
+    return this.menu;  
   };
   
-  this.getMenu = function(){
-  
-    return _menu;
-  
+  ElementPanel.prototype.getElement = function(){  
+    return this.element;  
   };
   
-  this.getElement = function(){
-  
-    return _element;
-  
-  };
-  
-  this.setElement = function(element, supressEvent){
-  
-    if(_element && (_element.get(0) === element.get(0))){
+  ElementPanel.prototype.setElement = function(element, supressEvent){  
+    if(this.element && (this.element.get(0) === element.get(0))){
       return;
     }
     
-    this.unsetElement(_element, supressEvent);
+    this.unsetElement(this.element, supressEvent);
     
-    _element = element;
+    this.element = element;
     
     this.updateValues();      
     this.enableFields();
     this.getMenu().enableItems('[data-action="delete"]');
     
-    _element._draggable = new metaScore.Draggable(_element, _element, _element.parents()).enable();
-    _element._resizable = new metaScore.Resizable(_element, _element.parents()).enable();
+    this.element._draggable = new metaScore.Draggable({'target': this.element, 'handle': this.element, 'container': this.element.parents()}).enable();
+    this.element._resizable = new metaScore.Resizable({'target': this.element, 'container': this.element.parents()}).enable();
     
-    _element
+    this.element
       .addListener('drag', this.onElementDrag)
       .addListener('resize', this.onElementResize)
       .addClass('selected');
     
-    switch(_element.data('type')){
+    switch(this.element.data('type')){
       case 'cursor':
         break;
       case 'image':
         break;
       case 'text':
-        _element.attr('contenteditable', 'true');
+        this.element.attr('contenteditable', 'true');
         break;
     }
     
     if(supressEvent !== true){
-      this.triggerEvent('elementset', {'element': _element});
+      this.triggerEvent('elementset', {'element': this.element});
     }
     
-    return this;
-    
+    return this;    
   };
   
-  this.unsetElement = function(element, supressEvent){
-  
+  ElementPanel.prototype.unsetElement = function(element, supressEvent){  
     element = element || this.getElement();
       
     this.disableFields();
@@ -4485,146 +4362,144 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
         .removeListener('resize', this.onElementResize)
         .removeClass('selected');
     
-      switch(_element.data('type')){
+      switch(this.element.data('type')){
         case 'cursor':
           break;
         case 'image':
           break;
         case 'text':
-          _element.attr('contenteditable', null);
+          this.element.attr('contenteditable', null);
           break;
       }
       
-      _element = null;
+      this.element = null;
     }
     
     if(supressEvent !== true){
       this.triggerEvent('elementunset', {'element': element});
     }
     
-    return this;
-    
+    return this;    
   };
   
-  this.onElementDrag = function(evt){  
+  ElementPanel.prototype.onElementDrag = function(evt){  
     this.updateValues(['x', 'y']);
   };
   
-  this.onElementResize = function(evt){  
+  ElementPanel.prototype.onElementResize = function(evt){  
     this.updateValues(['x', 'y', 'width', 'height']);
   };
   
-  this.onFieldValueChange = function(evt){  
+  ElementPanel.prototype.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       
-    if(!_element){
+    if(!this.element){
       return;
     }
   
     switch(field.data('name')){
       case 'x':
-        _element.css('left', value +'px');
+        this.element.css('left', value +'px');
         break;
       case 'y':
-        _element.css('top', value +'px');
+        this.element.css('top', value +'px');
         break;
       case 'width':
-        _element.css('width', value +'px');
+        this.element.css('width', value +'px');
         break;
       case 'height':
-        _element.css('height', value +'px');
+        this.element.css('height', value +'px');
         break;
       case 'r-index':
-        _element.data('r-index', value);
+        this.element.data('r-index', value);
         break;
       case 'z-index':
-        _element.css('z-index', value);
+        this.element.css('z-index', value);
         break;
       case 'bg-color':
-        _element.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.element.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg-image':
         // TODO
         break;
       case 'border-width':
-        _element.css('border-width', value +'px');
+        this.element.css('border-width', value +'px');
         break;
       case 'border-color':
-        _element.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.element.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'rounded-conrners':
         // TODO
         break;
       case 'start-time':
-        _element.data('start-time', value);
+        this.element.data('start-time', value);
         break;
       case 'end-time':
-        _element.data('end-time', value);
+        this.element.data('end-time', value);
         break;
     }
   };
   
-  this.updateValue = function(name){
+  ElementPanel.prototype.updateValue = function(name){
     var field = this.getField(name);
     
     switch(name){
       case 'x':
-        field.setValue(parseInt(_element.css('left'), 10));
+        field.setValue(parseInt(this.element.css('left'), 10));
         break;
       case 'y':
-        field.setValue(parseInt(_element.css('top'), 10));
+        field.setValue(parseInt(this.element.css('top'), 10));
         break;
       case 'width':
-        field.setValue(parseInt(_element.css('width'), 10));
+        field.setValue(parseInt(this.element.css('width'), 10));
         break;
       case 'height':
-        field.setValue(parseInt(_element.css('height'), 10));
+        field.setValue(parseInt(this.element.css('height'), 10));
         break;
       case 'r-index':
-        field.setValue(_element.data('r-index') || 0);
+        field.setValue(this.element.data('r-index') || 0);
         break;
       case 'z-index':
-        field.setValue(parseInt(_element.css('z-index'), 10));
+        field.setValue(parseInt(this.element.css('z-index'), 10));
         break;
       case 'bg-color':
-        field.setValue(_element.css('background-color'));
+        field.setValue(this.element.css('background-color'));
         break;
       case 'bg-image':
         // TODO
         break;
       case 'border-width':
-        field.setValue(parseInt(_element.css('border-width'), 10));
+        field.setValue(parseInt(this.element.css('border-width'), 10));
         break;
       case 'border-color':
-        field.setValue(_element.css('border-color'));
+        field.setValue(this.element.css('border-color'));
         break;
       case 'rounded-conrners':
         // TODO
         break;
       case 'start-time':
-        field.setValue(_element.data('start-time') || 0);
+        field.setValue(this.element.data('start-time') || 0);
         break;
       case 'end-time':
-        field.setValue(_element.data('end-time') || 0);
+        field.setValue(this.element.data('end-time') || 0);
         break;
     }
   };
   
-  this.updateValues = function(fields){
-  
+  ElementPanel.prototype.updateValues = function(fields){  
     if(fields === undefined){
       fields = Object.keys(this.getField());
     }
     
     metaScore.Object.each(fields, function(key, field){
       this.updateValue(field);
-    }, this);
-  
+    }, this);  
   };
+    
+  return ElementPanel;
   
-  
-});
+})();
 /**
  * Page
  *
@@ -4634,11 +4509,29 @@ metaScore.Editor.Panel.Element = metaScore.Editor.Panel.extend(function(){
  * @requires ../field/metaScore.editor.field.timefield.js
  * @requires ../../helpers/metaScore.string.js
  */
-metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
+ 
+metaScore.namespace('editor.panel');
 
-  var _menu, _page;
+metaScore.editor.panel.Page = (function () {
+  
+  function PagePanel(configs) {
+     this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    PagePanel.parent.call(this, this.configs);
+    
+    this.menu = new metaScore.editor.DropDownMenu();
+    this.menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
+    this.menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
+    
+    this.getToolbar().addButton()
+      .data('action', 'menu')
+      .append(this.menu);
+      
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
+  }
 
-  this.defaults = {
+  PagePanel.defaults = {
     /**
     * The panel's title
     */
@@ -4649,80 +4542,61 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     */
     fields: {
       'bg-color': {
-        'type': metaScore.Editor.Field.ColorField,
+        'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Background color')
       },
       'bg-image': {
-        'type': metaScore.Editor.Field.ImageField,
+        'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image')
       },
       'start-time': {
-        'type': metaScore.Editor.Field.TimeField,
+        'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('Start time')
       },
       'end-time': {
-        'type': metaScore.Editor.Field.TimeField,
+        'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('End time')
       }
     }
   };
   
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
+  metaScore.editor.Panel.extend(PagePanel);
   
-    this.super(configs);
-    
-    _menu = new metaScore.Editor.DropDownMenu();
-    _menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
-    _menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
-    
-    this.getToolbar().addButton()
-      .data('action', 'menu')
-      .append(_menu);
-      
-    this.addDelegate('.field', 'valuechange', this.onFieldValueChange);
-    
-  };
+  PagePanel.prototype.getMenu = function(){
   
-  this.getMenu = function(){
-  
-    return _menu;
+    return this.menu;
   
   };
   
-  this.getPage = function(){
+  PagePanel.prototype.getPage = function(){
   
-    return _page;
+    return this.page;
   
   };
   
-  this.setPage = function(page, supressEvent){
+  PagePanel.prototype.setPage = function(page, supressEvent){
   
-    if(_page && (_page.get(0) === page.get(0))){
+    if(this.page && (this.page.get(0) === page.get(0))){
       return;
     }
     
-    this.unsetPage(_page, supressEvent);
+    this.unsetPage(this.page, supressEvent);
     
-    _page = page;
+    this.page = page;
     
     this.updateValues();      
     this.enableFields();
     this.getMenu().enableItems('[data-action="delete"]');
       
     if(supressEvent !== true){
-      this.triggerEvent('pageset', {'page': _page});
+      this.triggerEvent('pageset', {'page': this.page});
     }
     
     return this;
     
   };
   
-  this.unsetPage = function(page, supressEvent){
+  PagePanel.prototype.unsetPage = function(page, supressEvent){
     
     page = page || this.getPage();
       
@@ -4730,7 +4604,7 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     this.getMenu().disableItems('[data-action="delete"]');
       
     if(page){    
-      _page = null;
+      this.page = null;
     }
     
     if(supressEvent !== true){
@@ -4741,49 +4615,49 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     
   };
   
-  this.onFieldValueChange = function(evt){  
+  PagePanel.prototype.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
       value = evt.detail.value;
       
-    if(!_page){
+    if(!this.page){
       return;
     }
   
     switch(field.data('name')){
       case 'bg-color':
-        _page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        this.page.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
         break;
       case 'bg_image':
         // TODO
       case 'start-time':
-        _page.data('start-time', value);
+        this.page.data('start-time', value);
         break;
       case 'end-time':
-        _page.data('end-time', value);
+        this.page.data('end-time', value);
         break;
     }
   };
   
-  this.updateValue = function(name){
+  PagePanel.prototype.updateValue = function(name){
     var field = this.getField(name);
     
     switch(name){
       case 'bg-color':
-        field.setValue(_page.css('background-color'));
+        field.setValue(this.page.css('background-color'));
         break;
       case 'bg-image':
         // TODO
         break;
       case 'start-time':
-        field.setValue(_page.data('start-time') || 0);
+        field.setValue(this.page.data('start-time') || 0);
         break;
       case 'end-time':
-        field.setValue(_page.data('end-time') || 0);
+        field.setValue(this.page.data('end-time') || 0);
         break;
     }
   };
   
-  this.updateValues = function(fields){
+  PagePanel.prototype.updateValues = function(fields){
   
     if(fields === undefined){
       fields = Object.keys(this.getField());
@@ -4794,18 +4668,39 @@ metaScore.Editor.Panel.Page = metaScore.Editor.Panel.extend(function(){
     }, this);
   
   };
+    
+  return PagePanel;
   
-  
-});
+})();
 /**
- * BooleanField
+ * GuideSelector
  *
  * @requires ../metaScore.editor.popup.js
  * @requires ../../helpers/metaScore.ajax.js
  */
-metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
+ 
+metaScore.namespace('editor.popup');
 
-  this.defaults = {
+metaScore.editor.popup.GuideSelector = (function () {
+  
+  function GuideSelector(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    GuideSelector.parent.call(this, this.configs);
+    
+    this.addClass('guide-selector loading');
+    
+    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
+      .appendTo(this.getContents());
+    
+    metaScore.Ajax.get(this.configs.url, {
+      'success': this.onLoad,
+      'error': this.onError
+    });
+  }
+
+  GuideSelector.defaults = {
     /**
     * The popup's title
     */
@@ -4841,29 +4736,10 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
     */
     hideOnSelect: true
   };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    
-    this.super(configs);
-    
-    this.addClass('guide-selector loading');
-    
-    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
-      .appendTo(this.getContents());
-    
-    metaScore.Ajax.get(this.configs.url, {
-      'success': this.onLoad,
-      'error': this.onError
-    });
-    
-  };
   
-  this.onLoad = function(xhr){
+  metaScore.editor.Popup.extend(GuideSelector);
+  
+  GuideSelector.prototype.onLoad = function(xhr){
   
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
@@ -4878,9 +4754,7 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
     
     metaScore.Object.each(data, function(key, guide){
       row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
-        .addListener('click', metaScore.Function.proxy(function(){
-          this.onGuideClick(guide);
-        }, this))
+        .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide]))
         .appendTo(table);
       
       new metaScore.Dom('<td/>', {'class': 'thumbnail'})
@@ -4893,46 +4767,45 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
         .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
         .appendTo(row);
         
-    }, this);
-    
+    }, this);    
   };
   
-  this.onError = function(){
-    
+  GuideSelector.prototype.onError = function(){    
   };
   
-  this.onGuideClick = function(guide){
+  GuideSelector.prototype.onGuideClick = function(guide){
     this.configs.selectCallback(guide);
     
     if(this.configs.hideOnSelect){
       this.hide();
     }
   };
-});
+    
+  return GuideSelector;
+  
+})();
 /**
  * Player
  *
  * @requires ../metaScore.base.js
  */
-metaScore.Player = metaScore.Base.extend(function(){
+metaScore.Player = (function () {
   
-  var _blocks,
-    _media,
-    _cuepoints;
+  function Player(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    this.media = new metaScore.player.Media();    
+  }
   
-  this.defaults = {
+  Player.defaults = {
     keyboard: true
   };
   
-  this.constructor = function(configs) {
-  
-    this.initConfig(configs);
+  metaScore.Class.extend(Player);
     
-    _media = new metaScore.Player.Media();
-    
-  };
+  return Player;
   
-});
+})();
 /**
  * Player Block
  *
@@ -4941,78 +4814,54 @@ metaScore.Player = metaScore.Base.extend(function(){
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
-metaScore.Player.Block = metaScore.Dom.extend(function(){
-  
-  var _pages, _pager;
+ 
+metaScore.namespace('player');
 
-  this.constructor = function(dom) {
-  
-    _pages = [];
+metaScore.player.Block = (function () {
+
+  function Block(dom) {
+    this.pages = [];
   
     if(dom){
-      this.super(dom);
-      _pages = this.children('.pages');
-      _pager = new metaScore.Player.Pager(this.child('.pager').get(0));
+      // call parent constructor
+      Block.parent.call(this, dom);
+      
+      this.pages = this.children('.pages');
+      this.pager = new metaScore.player.Pager(this.child('.pager').get(0));
     }
     else{
-      this.super('<div/>', {'class': 'metaScore-block'});
-      _pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
-      _pager = new metaScore.Player.Pager().appendTo(this);
-    }
-    
-    _pager
-      .addDelegate('.button', 'click', function(evt){
-        var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
-          action, index;
-          
-        if(active){
-          action = metaScore.Dom.data(evt.target, 'action');
-        
-          switch(action){
-            case 'first':
-              this.setActivePage(0);
-              break;
-            case 'previous':
-              this.setActivePage(this.getActivePageIndex() - 1);
-              break;
-            case 'next':
-              this.setActivePage(this.getActivePageIndex() + 1);
-              break;
-          }
-        }
-        
-        evt.stopPropagation();
-      }, this);
+      // call parent constructor
+      Block.parent.call(this, '<div/>', {'class': 'metaScore-block'});
       
-    this.addListener('click', this.onClick);
-    
+      this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
+      this.pager = new metaScore.player.Pager().appendTo(this);
+    }
+      
+    this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
+      
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
+  
+  metaScore.Dom.extend(Block);
+  
+  Block.prototype.getPages = function(){  
+    return this.pages.children('.page');  
   };
   
-  this.getPages = function(){
-  
-    return _pages.children('.page');
-  
+  Block.prototype.addPage = function(page){  
+    this.pages.append(page);
+    
+    this.setActivePage(this.getPages().count() - 1);  
   };
   
-  this.addPage = function(page){
-  
-    _pages.append(page);
-    
-    this.setActivePage(this.getPages().count() - 1);
-  
-  };
-  
-  this.getActivePage = function(){
-    
+  Block.prototype.getActivePage = function(){    
     var pages = this.getPages(),
       index = this.getActivePageIndex();
   
-    return new metaScore.Player.Page(this.getPages().get(index));
-  
+    return new metaScore.player.Page(this.getPages().get(index));  
   };
   
-  this.getActivePageIndex = function(){
-    
+  Block.prototype.getActivePageIndex = function(){    
     var pages = this.getPages(),
       index = pages.index('.active');
   
@@ -5020,20 +4869,16 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
       index = 0;
     }
   
-    return index;
-  
+    return index;  
   };
   
-  this.getPageCount = function(){
-  
-    return this.getPages().count();
-  
+  Block.prototype.getPageCount = function(){  
+    return this.getPages().count();  
   };
   
-  this.setActivePage = function(index){
-    
+  Block.prototype.setActivePage = function(index){    
     var pages = this.getPages(),
-      page = new metaScore.Player.Page(pages.get(index));
+      page = new metaScore.player.Page(pages.get(index));
   
     pages.removeClass('active');
     
@@ -5041,33 +4886,52 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
     
     this.updatePager();
     
-    this.triggerEvent('pageactivated', {'index': index, 'page': page});
-  
+    this.triggerEvent('pageactivated', {'index': index, 'page': page});  
   };
   
-  this.updatePager = function(){
-  
+  Block.prototype.updatePager = function(){  
     var index = this.getActivePageIndex();
     var count = this.getPageCount();
   
-    _pager.updateCount(index, count);
-  
+    this.pager.updateCount(index, count);  
   };
   
-  this.isSynched = function(){
-    
-    return this.data('synched') === "true";
-    
+  Block.prototype.isSynched = function(){    
+    return this.data('synched') === "true";    
   };
   
-  this.onClick = function(evt){
-    
+  Block.prototype.onClick = function(evt){    
     this.triggerEvent('blockclick', {'block': this});
     
-    evt.stopPropagation();
-    
+    evt.stopPropagation();    
   };
-});
+  
+  Block.prototype.onPagerClick = function(evt){
+    var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
+      action, index;
+      
+    if(active){
+      action = metaScore.Dom.data(evt.target, 'action');
+    
+      switch(action){
+        case 'first':
+          this.setActivePage(0);
+          break;
+        case 'previous':
+          this.setActivePage(this.getActivePageIndex() - 1);
+          break;
+        case 'next':
+          this.setActivePage(this.getActivePageIndex() + 1);
+          break;
+      }
+    }
+    
+    evt.stopPropagation();
+  };
+    
+  return Block;
+  
+})();
 /**
  * CuePoints
  *
@@ -5076,55 +4940,56 @@ metaScore.Player.Block = metaScore.Dom.extend(function(){
  * @requires ../helpers/metaScore.object.js
  * @requires ../helpers/metaScore.var.js
  */
-metaScore.Player.CuePoints = metaScore.Base.extend(function(){
+ 
+metaScore.namespace('player');
 
-  var _media, _cuepoints;
+metaScore.player.CuePoints = (function () {
   
-  this.constructor = function(media){
+  function CuePoints(media) {  
+    this.media = media;
     
-    _cuepoints = [];
+    this.cuepoints = [];
+    
+    this.media.addEventListener('timeupdate', this.onMediaTimeUpdate);
+  }
   
-    _media = media;
-    
-    _media.addEventListener('timeupdate', this.onMediaTimeUpdate);
-    
-  };
+  metaScore.Class.extend(CuePoints);
   
-  this.onMediaTimeUpdate = function(e){
+  CuePoints.prototype.onMediaTimeUpdate = function(e){
     var curTime;
     
-    curTime = parseFloat(_media.currentTime);
+    curTime = parseFloat(this.media.currentTime);
     
-    metaScore.Object.each(_cuepoints, function (index, cuepoint) {
+    metaScore.Object.each(this.cuepoints, function (index, cuepoint) {
       if (!cuepoint.timer && curTime >= cuepoint.inTime - 0.5 && curTime < cuepoint.inTime) {
         this.setupTimer(cuepoint, (cuepoint.inTime - curTime) * 1000);
       }
     });
   };
   
-  this.add = function(cuepoint){
-    return _cuepoints.push(cuepoint) - 1;
+  CuePoints.prototype.add = function(cuepoint){
+    return this.cuepoints.push(cuepoint) - 1;
   };
   
-  this.remove = function(index){
-    var cuepoint = _cuepoints[index];
+  CuePoints.prototype.remove = function(index){
+    var cuepoint = this.cuepoints[index];
   
     this.stop(cuepoint, false);
     
-    _cuepoints.splice(index, 1);
+    this.cuepoints.splice(index, 1);
   };
   
-  this.setupTimer = function(cuepoint, delay){
+  CuePoints.prototype.setupTimer = function(cuepoint, delay){
     cuepoint.timer = setTimeout(metaScore.Function.proxy(this.launch, this, cuepoint), delay);
   };
   
-  this.launch = function(cuepoint){
+  CuePoints.prototype.launch = function(cuepoint){
     if(cuepoint.hasOwnProperty('onStart') && metaScore.Var.is(cuepoint.onStart, 'function')){
-      cuepoint.onStart(_media);
+      cuepoint.onStart(this.media);
     }    
   };
   
-  this.stop = function(cuepoint, launchHandler){    
+  CuePoints.prototype.stop = function(cuepoint, launchHandler){    
     if(cuepoint.hasOwnProperty('timer')){
       clearTimeout(cuepoint.timer);
       delete cuepoint.timer;
@@ -5136,132 +5001,150 @@ metaScore.Player.CuePoints = metaScore.Base.extend(function(){
     }
     
     if(launchHandler !== false && cuepoint.hasOwnProperty('onEnd') && metaScore.Var.is(cuepoint.onEnd, 'function')){
-      cuepoint.onEnd(_media);
+      cuepoint.onEnd(this.media);
     }
   };
-});
+    
+  return CuePoints;
+  
+})();
 /**
  * Player Element
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Player.Element = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
 
-  this.constructor = function(dom) {
-  
+metaScore.player.Element = (function () {
+
+  function Element(dom) {
     if(dom){
-      this.super(dom);
+      // call parent constructor
+      Element.parent.call(this, dom);
     }
     else{
-      this.super('<div/>', {'class': 'element'});
+      // call parent constructor
+      Element.parent.call(this, '<div/>', {'class': 'element'});
     }
       
-    this.addListener('click', this.onClick);
-    
-  };
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
   
-  this.onClick = function(evt){
-    
+  metaScore.Dom.extend(Element);
+  
+  Element.prototype.onClick = function(evt){    
     this.triggerEvent('elementclick', {'element': this});
     
-    evt.stopPropagation();
+    evt.stopPropagation();    
+  };
     
-  };  
-});
+  return Element;
+  
+})();
 /**
  * Media
  *
  * @requires metaScore.player.js
  * @requires ../metaScore.dom.js
  */
-metaScore.Player.Media = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
 
-  this.defaults = {
+metaScore.player.Media = (function () {
+  
+  function Media(configs){  
+    this.configs = this.getConfigs(configs);
+  }
+
+  Media.defaults = {
     'type': 'video',
     'sources': []
   };
   
-  this.constructor = function(configs) {
-  
-    console.log(this.super);
-  
-    this.initConfig(configs);
-  
-    console.log(this.super);
-    
-  };
+  metaScore.Dom.extend(Media);
 
-  this.play = function() {
+  Media.prototype.play = function() {
 
   };
   
-  this.pause = function() {
+  Media.prototype.pause = function() {
 
   };
   
-  this.stop = function() {
+  Media.prototype.stop = function() {
 
   };
   
-  this.setCurrentTime = function(time) {
+  Media.prototype.setCurrentTime = function(time) {
   
   };
   
-  this.getCurrentTime = function() {
+  Media.prototype.getCurrentTime = function() {
       
   };
-
-});
+    
+  return Media;
+  
+})();
 /**
  * Player Page
  *
  * @requires metaScore.player.element.js
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Player.Page = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
 
-  this.constructor = function(dom) {
-  
+metaScore.player.Page = (function () {
+
+  function Page(dom) {    
     if(dom){
-      this.super(dom);
+      // call parent constructor
+      Page.parent.call(this, dom);
     }
     else{
-      this.super('<div/>', {'class': 'page'});
+      // call parent constructor
+      Page.parent.call(this, '<div/>', {'class': 'page'});
     }
       
-    this.addListener('click', this.onClick);
-    
-  };
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
   
-  this.addElement = function(element){
+  metaScore.Dom.extend(Page);
   
+  Page.prototype.addElement = function(element){  
     this.append(element);
     
-    return element;
-  
+    return element;  
   };
   
-  this.onClick = function(evt){
-    
+  Page.prototype.onClick = function(evt){    
     this.triggerEvent('pageclick', {'page': this});
     
-    evt.stopPropagation();
+    evt.stopPropagation();    
+  };
     
-  }; 
-});
+  return Page;
+  
+})();
 /**
  * Player Page
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.Player.Pager = metaScore.Dom.extend(function(){
+ 
+metaScore.namespace('player');
+
+metaScore.player.Pager = (function () {
 
   var _count, _buttons;
 
-  this.constructor = function(dom) {
-  
+  function Pager(dom) {
     if(dom){
-      this.super(dom);      
+      // call parent constructor
+      Pager.parent.call(this, dom);
+      
       _count = this.child('.count');      
       _buttons = this.child('.buttons');        
       _buttons.first = _buttons.child('[data-action="first"]');
@@ -5269,7 +5152,9 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
       _buttons.next = _buttons.child('[data-action="next"]');
     }
     else{
-      this.super('<div/>', {'class': 'pager'});
+      // call parent constructor
+      Pager.parent.call(this, '<div/>', {'class': 'pager'});
+      
       _count = new metaScore.Dom('<div/>', {'class': 'count'}).appendTo(this);      
       _buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
         .addListener('mousedown', function(evt){
@@ -5279,11 +5164,12 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
       _buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'}).appendTo(_buttons);      
       _buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'}).appendTo(_buttons);      
       _buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'}).appendTo(_buttons);
-    }
-    
-  };
+    }    
+  }
   
-  this.updateCount = function(index, count){
+  metaScore.Dom.extend(Pager);
+  
+  Pager.prototype.updateCount = function(index, count){
   
     _count.text(metaScore.String.t('page !current/!count', {'!current': (index + 1), '!count': count}));
     
@@ -5292,53 +5178,76 @@ metaScore.Player.Pager = metaScore.Dom.extend(function(){
     _buttons.next.toggleClass('inactive', index >= count - 1);
   
   };
+    
+  return Pager;
   
-});
+})();
 /**
  * Cursor
  *
  * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Element.Cursor = metaScore.Player.Element.extend(function(){
+ 
+metaScore.namespace('player.element');
 
-  this.constructor = function(element) {
+metaScore.player.element.Cursor = (function () {
+
+  function Cursor(element) {  
+    // call parent constructor
+    Cursor.parent.call(this, element);
+    
+    this.data('type', 'cursor');    
+  }
   
-    this.super(element);
+  metaScore.player.Element.extend(Cursor);
     
-    this.data('type', 'cursor');
-    
-  };
-});
+  return Cursor;
+  
+})();
 /**
  * Image
  *
  * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Element.Image = metaScore.Player.Element.extend(function(){
+ 
+metaScore.namespace('player.element');
 
-  this.constructor = function(element) {
+metaScore.player.element.Image = (function () {
+
+  function Image(element) {
+    // call parent constructor
+    Image.parent.call(this, element);
+    
+    this.data('type', 'image');    
+  }
   
-    this.super(element);
+  metaScore.player.Element.extend(Image);
     
-    this.data('type', 'image');
-    
-  };
-});
+  return Image;
+  
+})();
 /**
  * Text
  *
  * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Element.Text = metaScore.Player.Element.extend(function(){
+ 
+metaScore.namespace('player.element');
 
-  this.constructor = function(element) {
+metaScore.player.element.Text = (function () {
+
+  function Text(element) {  
+    // call parent constructor
+    Text.parent.call(this, element);
+    
+    this.data('type', 'text');    
+  }
   
-    this.super(element);
+  metaScore.player.Element.extend(Text);
     
-    this.data('type', 'text');
-    
-  };
-});
+  return Text;
+  
+})();
 
   global.metaScore = metaScore;
 

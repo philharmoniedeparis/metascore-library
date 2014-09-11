@@ -1,12 +1,32 @@
 /**
- * BooleanField
+ * GuideSelector
  *
  * @requires ../metaScore.editor.popup.js
  * @requires ../../helpers/metaScore.ajax.js
  */
-metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
+ 
+metaScore.namespace('editor.popup');
 
-  this.defaults = {
+metaScore.editor.popup.GuideSelector = (function () {
+  
+  function GuideSelector(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    GuideSelector.parent.call(this, this.configs);
+    
+    this.addClass('guide-selector loading');
+    
+    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
+      .appendTo(this.getContents());
+    
+    metaScore.Ajax.get(this.configs.url, {
+      'success': this.onLoad,
+      'error': this.onError
+    });
+  }
+
+  GuideSelector.defaults = {
     /**
     * The popup's title
     */
@@ -42,29 +62,10 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
     */
     hideOnSelect: true
   };
-
-  /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
-  this.constructor = function(configs) {
-    
-    this.super(configs);
-    
-    this.addClass('guide-selector loading');
-    
-    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
-      .appendTo(this.getContents());
-    
-    metaScore.Ajax.get(this.configs.url, {
-      'success': this.onLoad,
-      'error': this.onError
-    });
-    
-  };
   
-  this.onLoad = function(xhr){
+  metaScore.editor.Popup.extend(GuideSelector);
+  
+  GuideSelector.prototype.onLoad = function(xhr){
   
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
@@ -79,9 +80,7 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
     
     metaScore.Object.each(data, function(key, guide){
       row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
-        .addListener('click', metaScore.Function.proxy(function(){
-          this.onGuideClick(guide);
-        }, this))
+        .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide]))
         .appendTo(table);
       
       new metaScore.Dom('<td/>', {'class': 'thumbnail'})
@@ -94,19 +93,20 @@ metaScore.Editor.Popup.GuideSelector = metaScore.Editor.Popup.extend(function(){
         .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
         .appendTo(row);
         
-    }, this);
-    
+    }, this);    
   };
   
-  this.onError = function(){
-    
+  GuideSelector.prototype.onError = function(){    
   };
   
-  this.onGuideClick = function(guide){
+  GuideSelector.prototype.onGuideClick = function(guide){
     this.configs.selectCallback(guide);
     
     if(this.configs.hideOnSelect){
       this.hide();
     }
   };
-});
+    
+  return GuideSelector;
+  
+})();

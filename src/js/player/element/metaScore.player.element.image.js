@@ -3,13 +3,20 @@
  *
  * @requires ../metaScore.player.element.js
  */
-metaScore.Player.Element.Image = metaScore.Player.Element.extend(function(){
+ 
+metaScore.namespace('player.element');
 
-  this.constructor = function(element) {
+metaScore.player.element.Image = (function () {
+
+  function Image(element) {
+    // call parent constructor
+    Image.parent.call(this, element);
+    
+    this.data('type', 'image');    
+  }
   
-    this.super(element);
+  metaScore.player.Element.extend(Image);
     
-    this.data('type', 'image');
-    
-  };
-});
+  return Image;
+  
+})();
