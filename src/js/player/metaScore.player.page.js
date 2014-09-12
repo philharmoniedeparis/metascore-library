@@ -12,6 +12,9 @@ metaScore.player.Page = (function () {
   function Page(configs) {
     this.configs = this.getConfigs(configs);
     
+    // call parent constructor
+    Page.parent.call(this);
+    
     this.dom = new metaScore.Dom('<div/>', {'class': 'page'});
     this.dom.get(0)._metaScore = this;
       
@@ -22,7 +25,11 @@ metaScore.player.Page = (function () {
     }, this);
   }
   
-  metaScore.Class.extend(Page);
+  Page.defaults = {
+    'elements': []
+  };
+  
+  metaScore.Evented.extend(Page);
   
   Page.prototype.addElement = function(configs){
     var element;
@@ -36,13 +43,25 @@ metaScore.player.Page = (function () {
     
     element.dom.appendTo(this.dom);
     
+    element.addListener('click', metaScore.Function.proxy(this.onElementClick, this));
+    
     return element;  
   };
   
-  Page.prototype.onClick = function(evt){    
-    this.dom.triggerEvent('pageclick', {'page': this});
+  Page.prototype.onClick = function(evt){
+    this.triggerEvent('click');
     
     evt.stopPropagation();    
+  };
+  
+  Page.prototype.onElementClick = function(evt){
+    this.triggerEvent('elementclick', {'element': evt.target});
+  };
+  
+  Page.prototype.destroy = function(){
+    this.dom.remove();
+    
+    this.triggerEvent('destroy');
   };
     
   return Page;

@@ -22,6 +22,10 @@ metaScore.editor.Overlay = (function(){
     
     if(this.configs.draggable){
       this.draggable = new metaScore.Draggable({'target': this, 'handle': this});
+    }  
+    
+    if(this.configs.autoShow){
+      this.show();
     }    
   }
   
@@ -40,29 +44,34 @@ metaScore.editor.Overlay = (function(){
     /**
     * True to make this draggable
     */
-    draggable: true
+    draggable: true,
+    
+    /**
+    * True to show automatically
+    */
+    autoShow: false
   };
   
   metaScore.Dom.extend(Overlay);
   
-  Overlay.prototype.show = function(){
-    
+  Overlay.prototype.show = function(){    
     if(this.configs.modal){
       this.mask.appendTo(this.configs.parent);
     }
   
     this.appendTo(this.configs.parent);
     
+    return this;
   };
   
-  Overlay.prototype.hide = function(){
-    
+  Overlay.prototype.hide = function(){    
     if(this.configs.modal){
       this.mask.remove();
     }
   
     this.remove();
     
+    return this;    
   };
     
   return Overlay;

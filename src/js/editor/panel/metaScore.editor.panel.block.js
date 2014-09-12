@@ -201,7 +201,7 @@ metaScore.editor.panel.Block = (function () {
     value = evt.detail.value;
     old_values = this.getValues([field]);
     
-    this.updateBlockProperty(field, value);
+    this.updateBlockProperty(block, field, value);
     
     this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues([field])});
   };
@@ -245,9 +245,7 @@ metaScore.editor.panel.Block = (function () {
     }
   };
   
-  BlockPanel.prototype.updateBlockProperty = function(name, value){
-    var block = this.getBlock();
-  
+  BlockPanel.prototype.updateBlockProperty = function(block, name, value){  
     switch(name){
       case 'x':
         block.dom.css('left', value +'px');
@@ -273,9 +271,9 @@ metaScore.editor.panel.Block = (function () {
     }  
   };
   
-  BlockPanel.prototype.updateBlockProperties = function(values){
+  BlockPanel.prototype.updateBlockProperties = function(block, values){
     metaScore.Object.each(values, function(name, value){
-      this.updateBlockProperty(name, value);
+      this.updateBlockProperty(block, name, value);
     }, this);
     
     this.updateFieldValues(values, true);  

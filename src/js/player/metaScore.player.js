@@ -13,6 +13,10 @@ metaScore.Player = (function () {
     
     this.media = new metaScore.player.Media();
     
+    if(!(this.configs.hasOwnProperty('id'))){
+      this.configs.id = metaScore.String.uuid();
+    }
+    
     metaScore.Array.each(this.configs.blocks, function(index, block){
       this.addBlock(block);
     }, this);
@@ -36,47 +40,40 @@ metaScore.Player = (function () {
       block = new metaScore.player.Block(metaScore.Object.extend({}, configs, {'container': this.configs.container}));
     }
     
+    block.dom.data('player-id', this.configs.id);
+    
     if(block.getPageCount() < 1){
-      this.addPage(block);
+      block.addPage();
     }
+    
+    block
+      .addListener('click', metaScore.Function.proxy(this.onBlockClick, this))
+      .addListener('pageclick', metaScore.Function.proxy(this.onPageClick, this))
+      .addListener('elementclick', metaScore.Function.proxy(this.onElementClick, this));
     
     this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
     
     return block;
   };
   
-  Player.prototype.removeBlock = function(block){  
-    block.remove();
+  Player.prototype.destroy = function(parent){
+    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
     
-    this.triggerEvent('blockremove', {'player': this, 'block': block}, true, false);
+    metaScore.Array.each(blocks, function(index, block){
+      block._metaScore.destroy();
+    }, this);
   };
   
-  Player.prototype.addPage = function(block, configs){      
-    var page = block.addPage(configs);
-    
-    this.triggerEvent('pageadd', {'player': this, 'page': page}, true, false);
-    
-    return page;
+  Player.prototype.onBlockClick = function(evt){
+    this.triggerEvent('blockclick', {'block': evt.target});
   };
   
-  Player.prototype.removePage = function(page){
-    page.remove();
-    
-    this.triggerEvent('pageremove', {'player': this, 'page': page}, true, false);
+  Player.prototype.onPageClick = function(evt){
+    this.triggerEvent('pageclick', {'page': evt.detail.page});
   };
   
-  Player.prototype.addElement = function(page, configs){
-    var element = page.addElement(configs);
-    
-    this.triggerEvent('elementadd', {'player': this, 'element': element}, true, false);
-    
-    return element;
-  };
-  
-  Player.prototype.removeElement = function(element){    
-    element.remove();
-    
-    this.triggerEvent('elementremove', {'player': this, 'element': element}, true, false);
+  Player.prototype.onElementClick = function(evt){
+    this.triggerEvent('elementclick', {'element': evt.detail.element});
   };
     
   return Player;

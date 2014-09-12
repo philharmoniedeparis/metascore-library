@@ -101,7 +101,7 @@ metaScore.editor.Panel = (function(){
     if(!keys){
       this.contents.children('tr.field-wrapper').show();
     }
-    else{
+    else if(keys.length > 0){
       this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
     }
     
@@ -112,7 +112,7 @@ metaScore.editor.Panel = (function(){
     if(!keys){
       this.contents.children('tr.field-wrapper').hide();
     }
-    else{
+    else if(keys.length > 0){
       this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
     }
     

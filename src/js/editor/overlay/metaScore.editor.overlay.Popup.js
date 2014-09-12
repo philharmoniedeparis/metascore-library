@@ -1,12 +1,12 @@
 /**
- * Field
+ * Popup
  *
  * @requires ./metaScore.editor.overlay.js
  */
  
-metaScore.namespace('editor');
+metaScore.namespace('editor.overlay');
 
-metaScore.editor.Popup = (function () {
+metaScore.editor.overlay.Popup = (function () {
   
   function Popup(configs) {
     this.configs = this.getConfigs(configs);
@@ -24,7 +24,7 @@ metaScore.editor.Popup = (function () {
       .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
     
     this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);    
+      .appendTo(this);
   }
 
   Popup.defaults = {

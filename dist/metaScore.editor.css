@@ -521,6 +521,9 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: 99999;
 }
+.metaScore-editor .alert {
+  padding: 12px 16px;
+}
 .metaScore-editor .popup .toolbar {
   padding: 10px 16px;
   border-bottom: 2px solid #B2B2B2;

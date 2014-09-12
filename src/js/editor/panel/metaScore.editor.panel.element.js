@@ -56,7 +56,7 @@ metaScore.editor.panel.Element = (function () {
     fields: {
       'name': {
         'type': metaScore.editor.field.Text,
-        'label': metaScore.String.t('Name')
+        'label': metaScore.String.t('Name'),
       },
       'x': {
         'type': metaScore.editor.field.Integer,
@@ -113,6 +113,29 @@ metaScore.editor.panel.Element = (function () {
         'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('End time')
       },
+      'direction': {
+        'type': metaScore.editor.field.Select,
+        'configs': {
+          'options': {
+            'right': metaScore.String.t('Left > Right'),
+            'left': metaScore.String.t('Right > Left'),
+            'bottom': metaScore.String.t('Top > Bottom'),
+            'top': metaScore.String.t('Bottom > Top'),
+          }
+        },
+        'label': metaScore.String.t('Direction'),
+        'element-types': ['cursor']
+      },
+      'cursor-width': {
+        'type': metaScore.editor.field.Integer,
+        'label': metaScore.String.t('Cursor width'),
+        'element-types': ['cursor']
+      },
+      'cursor-color': {
+        'type': metaScore.editor.field.Color,
+        'label': metaScore.String.t('Cursor color'),
+        'element-types': ['cursor']
+      },
       'font-family': {
         'type': metaScore.editor.field.Select,
         'configs': {
@@ -129,7 +152,13 @@ metaScore.editor.panel.Element = (function () {
             '"Lucida Console", Monaco, monospace': 'Lucida Console'
           }
         },
-        'label': metaScore.String.t('Font')
+        'label': metaScore.String.t('Font'),
+        'element-types': ['text']
+      },
+      'text-color': {
+        'type': metaScore.editor.field.Color,
+        'label': metaScore.String.t('Text color'),
+        'element-types': ['text']
       }
     }
   };
@@ -153,7 +182,12 @@ metaScore.editor.panel.Element = (function () {
     
     this.element = element;
     
-    this.updateValues();      
+    if(this.element.dom.data('type') === 'text'){
+      this.element.setEditable(true);
+    }
+    
+    this.toggleFields();
+    this.updateValues();
     this.enableFields();
     this.getMenu().enableItems('[data-action="delete"]');
     
@@ -165,16 +199,6 @@ metaScore.editor.panel.Element = (function () {
       .addListener('resize', this.onElementResize)
       .addClass('selected');
     
-    switch(this.element.dom.data('type')){
-      case 'cursor':
-        break;
-      case 'image':
-        break;
-      case 'text':
-        this.element.dom.attr('contenteditable', 'true');
-        break;
-    }
-    
     if(supressEvent !== true){
       this.triggerEvent('elementset', {'element': this.element});
     }
@@ -182,7 +206,7 @@ metaScore.editor.panel.Element = (function () {
     return this;    
   };
   
-  ElementPanel.prototype.unsetElement = function(element, supressEvent){  
+  ElementPanel.prototype.unsetElement = function(element, supressEvent){
     element = element || this.getElement();
       
     this.disableFields();
@@ -200,14 +224,8 @@ metaScore.editor.panel.Element = (function () {
         .removeListener('resize', this.onElementResize)
         .removeClass('selected');
     
-      switch(this.element.dom.data('type')){
-        case 'cursor':
-          break;
-        case 'image':
-          break;
-        case 'text':
-          this.element.dom.attr('contenteditable', null);
-          break;
+      if(this.element.dom.data('type') === 'text'){
+        this.element.setEditable(false);
       }
       
       this.element = null;
@@ -276,7 +294,53 @@ metaScore.editor.panel.Element = (function () {
       case 'end-time':
         this.element.dom.data('end-time', value);
         break;
+      case 'direction':
+        this.element.dom.data('direction', value);
+        break;
+      case 'cursor-width':
+        this.element.cursor.css('width', value +'px');
+        break;
+      case 'cursor-color':
+        this.element.cursor.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'font-family':
+        this.element.dom.css('font-family', value);
+        break;
+      case 'text-color':
+        this.element.dom.css('color', value);
+        break;
     }
+  };
+  
+  ElementPanel.prototype.getApplicableFields = function(){
+    var type = this.element.dom.data('type'),
+      fields = [];
+    
+    metaScore.Object.each(this.configs.fields, function(key, configs){      
+      if(!configs.hasOwnProperty('element-types') || metaScore.Array.inArray(configs['element-types'], type) > -1){
+        fields.push(key);
+      }
+    }, this);
+    
+    return fields;  
+  };
+  
+  ElementPanel.prototype.getNonApplicableFields = function(){
+    var type = this.element.dom.data('type'),
+      fields = [];
+    
+    metaScore.Object.each(this.configs.fields, function(key, configs){      
+      if(configs.hasOwnProperty('element-types') && metaScore.Array.inArray(configs['element-types'], type) === -1){
+        fields.push(key);
+      }
+    }, this);
+    
+    return fields;  
+  };
+  
+  ElementPanel.prototype.toggleFields = function(type){    
+    this.showFields(this.getApplicableFields());
+    this.hideFields(this.getNonApplicableFields());
   };
   
   ElementPanel.prototype.updateValue = function(name){
@@ -296,7 +360,7 @@ metaScore.editor.panel.Element = (function () {
         field.setValue(parseInt(this.element.dom.css('height'), 10));
         break;
       case 'r-index':
-        field.setValue(this.element.dom.data('r-index') || 0);
+        field.setValue(this.element.dom.data('r-index') || null);
         break;
       case 'z-index':
         field.setValue(parseInt(this.element.dom.css('z-index'), 10));
@@ -317,17 +381,32 @@ metaScore.editor.panel.Element = (function () {
         // TODO
         break;
       case 'start-time':
-        field.setValue(this.element.dom.data('start-time') || 0);
+        field.setValue(this.element.dom.data('start-time') || null);
         break;
       case 'end-time':
-        field.setValue(this.element.dom.data('end-time') || 0);
+        field.setValue(this.element.dom.data('end-time') || null);
+        break;
+      case 'direction':
+        field.setValue(this.element.dom.data('direction') || null);
+        break;
+      case 'cursor-width':
+        field.setValue(this.element.cursor.css('width'));
+        break;
+      case 'cursor-color':
+        field.setValue(this.element.cursor.css('background-color'));
+        break;
+      case 'font-family':
+        field.setValue(this.element.dom.css('font-family'));
+        break;
+      case 'text-color':
+        field.setValue(this.element.dom.css('color'));
         break;
     }
   };
   
   ElementPanel.prototype.updateValues = function(fields){  
     if(fields === undefined){
-      fields = Object.keys(this.getField());
+      fields = this.getApplicableFields();
     }
     
     metaScore.Object.each(fields, function(key, field){

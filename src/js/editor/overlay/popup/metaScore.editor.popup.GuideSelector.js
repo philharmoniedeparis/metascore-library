@@ -5,9 +5,9 @@
  * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.popup');
+metaScore.namespace('editor.overlay.popup');
 
-metaScore.editor.popup.GuideSelector = (function () {
+metaScore.editor.overlay.popup.GuideSelector = (function () {
   
   function GuideSelector(configs) {
     this.configs = this.getConfigs(configs);
@@ -63,7 +63,7 @@ metaScore.editor.popup.GuideSelector = (function () {
     hideOnSelect: true
   };
   
-  metaScore.editor.Popup.extend(GuideSelector);
+  metaScore.editor.overlay.Popup.extend(GuideSelector);
   
   GuideSelector.prototype.onLoadSuccess = function(xhr){
   

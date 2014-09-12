@@ -13,6 +13,9 @@ metaScore.player.element.Cursor = (function () {
     Cursor.parent.call(this, configs);
     
     this.dom.data('type', 'cursor');
+    
+    this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
+      .appendTo(this.contents);
   }
   
   metaScore.player.Element.extend(Cursor);

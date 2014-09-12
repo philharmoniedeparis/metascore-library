@@ -7,6 +7,9 @@
 metaScore.Evented = (function () {
   
   function Evented() {
+    // call parent constructor
+    Evented.parent.call(this);
+  
     this.listeners = {};
   }
   

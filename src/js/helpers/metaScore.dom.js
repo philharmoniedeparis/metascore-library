@@ -113,6 +113,9 @@ metaScore.Dom = (function () {
     if(!parent){
       parent = document;
     }
+    else if(parent instanceof Dom){
+      parent = parent.get(0);
+    }
 
     if (metaScore.Var.is(selector, 'string')) {
       elements = parent.querySelectorAll(selector);
@@ -686,7 +689,7 @@ metaScore.Dom = (function () {
   
   Dom.prototype.show = function(){
     metaScore.Array.each(this.elements, function(index, element) {
-      this.css('display', 'initial');
+      this.css('display', '');
     }, this);
     return this;
   };

@@ -14,6 +14,9 @@ metaScore.player.Block = (function () {
   function Block(configs) {
     this.configs = this.getConfigs(configs);
     
+    // call parent constructor
+    Block.parent.call(this);
+    
     this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-block'});
     this.dom.get(0)._metaScore = this;
     
@@ -33,7 +36,12 @@ metaScore.player.Block = (function () {
     }, this);
   }
   
-  metaScore.Class.extend(Block);
+  Block.defaults = {
+    'container': null,
+    'pages': []
+  };
+  
+  metaScore.Evented.extend(Block);
   
   Block.prototype.getPages = function(){  
     return this.pages.children('.page');  
@@ -51,7 +59,13 @@ metaScore.player.Block = (function () {
   
     page.dom.appendTo(this.pages);
     
+    page
+      .addListener('click', metaScore.Function.proxy(this.onPageClick, this))
+      .addListener('elementclick', metaScore.Function.proxy(this.onElementClick, this));
+    
     this.setActivePage(this.getPages().count() - 1);
+    
+    return page;
   };
   
   Block.prototype.getActivePage = function(){    
@@ -86,7 +100,7 @@ metaScore.player.Block = (function () {
     
     this.updatePager();
     
-    this.dom.triggerEvent('pageactivated', {'index': index, 'page': page});  
+    this.triggerEvent('pageactivate', {'index': index, 'page': page});  
   };
   
   Block.prototype.updatePager = function(){  
@@ -100,10 +114,18 @@ metaScore.player.Block = (function () {
     return this.dom.data('synched') === "true";    
   };
   
-  Block.prototype.onClick = function(evt){    
-    this.dom.triggerEvent('blockclick', {'block': this});
+  Block.prototype.onClick = function(evt){
+    this.triggerEvent('click');
     
     evt.stopPropagation();    
+  };
+  
+  Block.prototype.onPageClick = function(evt){
+    this.triggerEvent('pageclick', {'page': evt.target});
+  };
+  
+  Block.prototype.onElementClick = function(evt){
+    this.triggerEvent('elementclick', {'element': evt.detail.element});
   };
   
   Block.prototype.onPagerClick = function(evt){
@@ -127,6 +149,12 @@ metaScore.player.Block = (function () {
     }
     
     evt.stopPropagation();
+  };
+  
+  Block.prototype.destroy = function(){
+    this.dom.remove();
+    
+    this.triggerEvent('destroy');
   };
     
   return Block;
