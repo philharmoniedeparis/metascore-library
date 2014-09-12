@@ -246,8 +246,8 @@ metaScore.Editor = (function(){
       new_values = evt.detail.new_values;
      
     this.history.add({
-      'undo': metaScore.Function.proxy(this.block_panel.updateBlockProperties, this.block_panel, [block, old_values]),
-      'redo': metaScore.Function.proxy(this.block_panel.updateBlockProperties, this.block_panel, [block, new_values])
+      'undo': metaScore.Function.proxy(this.block_panel.updateProperties, this.block_panel, [block, old_values]),
+      'redo': metaScore.Function.proxy(this.block_panel.updateProperties, this.block_panel, [block, new_values])
     });
   };
   

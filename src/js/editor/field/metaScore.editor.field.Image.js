@@ -1,3 +1,4 @@
+/* global Drupal */
 /**
  * ImageField
  *
@@ -13,8 +14,12 @@ metaScore.editor.field.Image = (function () {
     
     // call parent constructor
     ImageField.parent.call(this, this.configs);
+    
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
 
     this.addListener('change', metaScore.Function.proxy(this.onFileSelect, this), false);
+    
+    this.attr('readonly', 'readonly');
   }
   
   ImageField.defaults = {
@@ -29,46 +34,26 @@ metaScore.editor.field.Image = (function () {
     disabled: false,
     
     attributes: {
-      'type': 'file',
       'class': 'field imagefield'
     }
   };
   
   metaScore.editor.Field.extend(ImageField);
-  
-  ImageField.prototype.setValue = function(val, triggerChange){  
-    this.value = val;
     
-    if(triggerChange !== false){
-      this.triggerEvent('valuechange', {'field': this, 'value': this.value}, false, true);
-    }  
+  ImageField.prototype.onClick = function(evt){
+    Drupal.media.popups.mediaBrowser(metaScore.Function.proxy(this.onFileSelect, this));
   };
   
-  ImageField.prototype.onFileSelect = function(evt) {  
-    var files = evt.target.files;
-  
-    if(files.length > 0 && files[0].type.match('image.*')){
-      this.file = files[0];
+  ImageField.prototype.onFileSelect = function(files){
+    if(files.length > 0){
+      this.setValue(files[0].url);
     }
-    else{
-      this.file = null;
-    }
-    
-    /*this.getBase64(function(result){
-      this.setValue(result);
-    });*/    
   };
   
-  ImageField.prototype.getBase64 = function(callback){  
-    var reader;
-  
-    if(this.file){
-      reader = new FileReader();
-      reader.onload = metaScore.Function.proxy(function(evt){
-        callback.call(this, evt.target.result, evt);
-      }, this);
-      reader.readAsDataURL(this.file);
-    }  
+  ImageField.prototype.setValue = function(value){    
+    this.val(value);
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
     
   return ImageField;

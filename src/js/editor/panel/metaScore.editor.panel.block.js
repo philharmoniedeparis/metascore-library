@@ -85,72 +85,20 @@ metaScore.editor.panel.Block = (function () {
   
   metaScore.editor.Panel.extend(BlockPanel);
   
-  BlockPanel.prototype.getMenu = function(){  
-    return this.menu;  
-  };
-  
-  BlockPanel.prototype.getBlock = function(){  
-    return this.block;  
-  };
-  
-  BlockPanel.prototype.setBlock = function(block, supressEvent){  
-    if(block === this.getBlock()){
-      return;
-    }
+  BlockPanel.prototype.setComponenet = function(componenet, supressEvent){
+    // call parent constructor
+    BlockPanel.parent.setComponenet.call(this, componenet, supressEvent);
     
-    this.unsetBlock(supressEvent);
+    componenet._draggable = new metaScore.Draggable({'target': componenet.dom, 'handle': componenet.dom.child('.pager'), 'container': componenet.dom.parents()}).enable();
+    componenet._resizable = new metaScore.Resizable({'target': componenet.dom, 'container': componenet.dom.parents()}).enable();
     
-    this.block = block;
-    
-    this.enableFields();
-    this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
-    this.getMenu().enableItems('[data-action="delete"]');
-    
-    block._draggable = new metaScore.Draggable({'target': block.dom, 'handle': block.dom.child('.pager'), 'container': block.dom.parents()}).enable();
-    block._resizable = new metaScore.Resizable({'target': block.dom, 'container': block.dom.parents()}).enable();
-    
-    block.dom
+    componenet.dom
       .addListener('dragstart', this.onBlockDragStart)
       .addListener('dragend', this.onBlockDragEnd)
       .addListener('resizestart', this.onBlockResizeStart)
       .addListener('resizeend', this.onBlockResizeEnd)
       .addClass('selected');
-      
-    if(supressEvent !== true){
-      this.triggerEvent('blockset', {'block': block});
-    }
     
-    return this;    
-  };
-  
-  BlockPanel.prototype.unsetBlock = function(supressEvent){  
-    var block = this.getBlock();
-      
-    this.disableFields();    
-    this.getMenu().disableItems('[data-action="delete"]');
-    
-    if(block){
-      block._draggable.destroy();
-      delete block._draggable;
-      
-      block._resizable.destroy();
-      delete block._resizable;
-  
-      block.dom
-        .removeListener('dragstart', this.onBlockDragStart)
-        .removeListener('dragend', this.onBlockDragEnd)
-        .removeListener('resizestart', this.onBlockResizeStart)
-        .removeListener('resizeend', this.onBlockResizeEnd)
-        .removeClass('selected');
-      
-      this.block = null;
-    }
-      
-    if(supressEvent !== true){
-      this.triggerEvent('blockunset', {'block': block});
-    }
-    
-    return this;    
   };
   
   BlockPanel.prototype.onBlockDragStart = function(evt){
@@ -187,140 +135,6 @@ metaScore.editor.panel.Block = (function () {
     this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(fields)});
     
     delete this.beforeResizeValues;
-  };
-  
-  BlockPanel.prototype.onFieldValueChange = function(evt){
-    var block = this.getBlock(),
-      field, value, old_values;
-      
-    if(!block){
-      return;
-    }
-    
-    field = evt.detail.field.data('name');
-    value = evt.detail.value;
-    old_values = this.getValues([field]);
-    
-    this.updateBlockProperty(block, field, value);
-    
-    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues([field])});
-  };
-  
-  BlockPanel.prototype.updateFieldValue = function(name, value, supressEvent){
-    var field = this.getField(name);
-    
-    switch(name){
-      case 'x':
-      case 'y':
-      case 'width':
-      case 'height':
-      case 'bg-color':
-        field.setValue(value);
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        field.setChecked(value);
-        break;
-    }
-    
-    if(supressEvent !== true){
-      field.triggerEvent('change');
-    }
-  };
-  
-  BlockPanel.prototype.updateFieldValues = function(values, supressEvent){  
-    var block = this.getBlock();
-    
-    if(metaScore.Var.is(values, 'array')){
-      metaScore.Array.each(values, function(index, field){
-        this.updateFieldValue(field, this.getValue(field), supressEvent);
-      }, this);
-    }
-    else{
-      metaScore.Object.each(values, function(field, value){
-        this.updateFieldValue(field, value, supressEvent);
-      }, this);
-    }
-  };
-  
-  BlockPanel.prototype.updateBlockProperty = function(block, name, value){  
-    switch(name){
-      case 'x':
-        block.dom.css('left', value +'px');
-        break;
-      case 'y':
-        block.dom.css('top', value +'px');
-        break;
-      case 'width':
-        block.dom.css('width', value +'px');
-        break;
-      case 'height':
-        block.dom.css('height', value +'px');
-        break;
-      case 'bg-color':
-        block.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        block.dom.data('synched', value);
-        break;
-    }  
-  };
-  
-  BlockPanel.prototype.updateBlockProperties = function(block, values){
-    metaScore.Object.each(values, function(name, value){
-      this.updateBlockProperty(block, name, value);
-    }, this);
-    
-    this.updateFieldValues(values, true);  
-  };
-  
-  BlockPanel.prototype.getValue = function(name){
-    var block = this.getBlock(),
-      value;
-  
-    switch(name){
-      case 'x':
-        value = parseInt(block.dom.css('left'), 10);
-        break;
-      case 'y':
-        value = parseInt(block.dom.css('top'), 10);
-        break;
-      case 'width':
-       value = parseInt(block.dom.css('width'), 10);
-        break;
-      case 'height':
-        value = parseInt(block.dom.css('height'), 10);
-        break;
-      case 'bg-color':
-        value = block.dom.css('background-color');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        value = block.dom.data('synched') === "true";
-        break;
-    }
-    
-    return value;  
-  };
-  
-  BlockPanel.prototype.getValues = function(fields){
-    var block = this.getBlock(),
-      values = {};
-    
-    fields = fields || Object.keys(this.getField());
-    
-    metaScore.Array.each(fields, function(index, field){
-      values[field] = this.getValue(field);
-    }, this);
-    
-    return values;  
   };
     
   return BlockPanel;

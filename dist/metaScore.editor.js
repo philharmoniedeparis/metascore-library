@@ -1957,8 +1957,8 @@ metaScore.Editor = (function(){
       new_values = evt.detail.new_values;
      
     this.history.add({
-      'undo': metaScore.Function.proxy(this.block_panel.updateBlockProperties, this.block_panel, [block, old_values]),
-      'redo': metaScore.Function.proxy(this.block_panel.updateBlockProperties, this.block_panel, [block, new_values])
+      'undo': metaScore.Function.proxy(this.block_panel.updateProperties, this.block_panel, [block, old_values]),
+      'redo': metaScore.Function.proxy(this.block_panel.updateProperties, this.block_panel, [block, new_values])
     });
   };
   
@@ -2318,7 +2318,7 @@ metaScore.editor.Field = (function () {
   Field.prototype.onChange = function(evt){
     this.value = this.val();
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
   Field.prototype.setValue = function(val){    
@@ -2731,7 +2731,11 @@ metaScore.editor.Panel = (function(){
     /**
     * The panel's fields
     */
-    fields: {}
+    fields: {},
+    
+    componenetDraggable: false,
+    
+    componenetResizable: false,
   };
   
   metaScore.Dom.extend(Panel);
@@ -2816,6 +2820,203 @@ metaScore.editor.Panel = (function(){
     
     this.toggleClass('collapsed');
     
+  };
+  
+  Panel.prototype.getMenu = function(){  
+    return this.menu;  
+  };
+  
+  Panel.prototype.getComponenet = function(){  
+    return this.componenet;  
+  };
+  
+  Panel.prototype.setComponenet = function(componenet, supressEvent){    
+    if(componenet === this.getComponenet()){
+      return;
+    }
+    
+    this.unsetComponenet(supressEvent);
+    
+    this.componenet = componenet;
+    
+    this.enableFields();
+    this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
+    this.getMenu().enableItems('[data-action="delete"]');
+      
+    if(supressEvent !== true){
+      this.triggerEvent('componenetset', {'componenet': componenet});
+    }
+    
+    return this;    
+  };
+  
+  Panel.prototype.unsetComponenet = function(supressEvent){  
+    var componenet = this.getComponenet();
+      
+    this.disableFields();    
+    this.getMenu().disableItems('[data-action="delete"]');
+    
+    if(componenet){
+      if(componenet._draggable){
+        componenet._draggable.destroy();
+        delete componenet._draggable;
+        
+        componenet.dom
+          .removeListener('dragstart', this.onComponenetDragStart)
+          .removeListener('dragend', this.onComponenetDragEnd);
+      }
+      
+      if(componenet._resizable){      
+        componenet._resizable.destroy();
+        delete componenet._resizable;
+        
+        componenet.dom
+          .removeListener('resizestart', this.onComponenetResizeStart)
+          .removeListener('resizeend', this.onComponenetResizeEnd);
+      }
+  
+      componenet.dom
+        .removeClass('selected');
+      
+      this.componenet = null;
+    }
+      
+    if(supressEvent !== true){
+      this.triggerEvent('componenetunset', {'componenet': componenet});
+    }
+    
+    return this;    
+  };
+  
+  Panel.prototype.onFieldValueChange = function(evt){
+    var componenet = this.getComponenet(),
+      field, value, old_values;
+      
+    if(!componenet){
+      return;
+    }
+    
+    field = evt.detail.field.data('name');
+    value = evt.detail.value;
+    old_values = this.getValues([field]);
+    
+    this.updateProperty(componenet, field, value);
+    
+    this.triggerEvent('valueschange', {'componenet': componenet, 'old_values': old_values, 'new_values': this.getValues([field])});
+  };
+  
+  Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+    var field = this.getField(name);
+    
+    switch(name){
+      case 'x':
+      case 'y':
+      case 'width':
+      case 'height':
+      case 'bg-color':
+        field.setValue(value);
+        break;
+      case 'bg-image':
+        field.setValue(value);
+        break;
+      case 'synched':
+        field.setChecked(value);
+        break;
+    }
+    
+    if(supressEvent !== true){
+      field.triggerEvent('change');
+    }
+  };
+  
+  Panel.prototype.updateFieldValues = function(values, supressEvent){    
+    if(metaScore.Var.is(values, 'array')){
+      metaScore.Array.each(values, function(index, field){
+        this.updateFieldValue(field, this.getValue(field), supressEvent);
+      }, this);
+    }
+    else{
+      metaScore.Object.each(values, function(field, value){
+        this.updateFieldValue(field, value, supressEvent);
+      }, this);
+    }
+  };
+  
+  Panel.prototype.updateProperty = function(component, name, value){
+    switch(name){
+      case 'x':
+        component.dom.css('left', value +'px');
+        break;
+      case 'y':
+        component.dom.css('top', value +'px');
+        break;
+      case 'width':
+        component.dom.css('width', value +'px');
+        break;
+      case 'height':
+        component.dom.css('height', value +'px');
+        break;
+      case 'bg-color':
+        component.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+      case 'bg-image':
+        component.dom.css('background-image', 'url('+ value +')');
+        break;
+      case 'synched':
+        component.dom.data('synched', value);
+        break;
+    }  
+  };
+  
+  Panel.prototype.updateProperties = function(component, values){  
+    metaScore.Object.each(values, function(name, value){
+      this.updateProperty(component, name, value);
+    }, this);
+    
+    this.updateFieldValues(values, true);  
+  };
+  
+  Panel.prototype.getValue = function(name){
+    var component = this.getComponent(),
+      value;
+  
+    switch(name){
+      case 'x':
+        value = parseInt(component.dom.css('left'), 10);
+        break;
+      case 'y':
+        value = parseInt(component.dom.css('top'), 10);
+        break;
+      case 'width':
+       value = parseInt(component.dom.css('width'), 10);
+        break;
+      case 'height':
+        value = parseInt(component.dom.css('height'), 10);
+        break;
+      case 'bg-color':
+        value = component.dom.css('background-color');
+        break;
+      case 'bg-image':
+        // TODO
+        break;
+      case 'synched':
+        value = component.dom.data('synched') === "true";
+        break;
+    }
+    
+    return value;  
+  };
+  
+  Panel.prototype.getValues = function(fields){
+    var values = {};
+    
+    fields = fields || Object.keys(this.getField());
+    
+    metaScore.Array.each(fields, function(index, field){
+      values[field] = this.getValue(field);
+    }, this);
+    
+    return values;  
   };
     
   return Panel;
@@ -3422,6 +3623,7 @@ metaScore.editor.field.Corner = (function () {
   return CornerField;
   
 })();
+/* global Drupal */
 /**
  * ImageField
  *
@@ -3437,8 +3639,12 @@ metaScore.editor.field.Image = (function () {
     
     // call parent constructor
     ImageField.parent.call(this, this.configs);
+    
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
 
     this.addListener('change', metaScore.Function.proxy(this.onFileSelect, this), false);
+    
+    this.attr('readonly', 'readonly');
   }
   
   ImageField.defaults = {
@@ -3453,46 +3659,26 @@ metaScore.editor.field.Image = (function () {
     disabled: false,
     
     attributes: {
-      'type': 'file',
       'class': 'field imagefield'
     }
   };
   
   metaScore.editor.Field.extend(ImageField);
-  
-  ImageField.prototype.setValue = function(val, triggerChange){  
-    this.value = val;
     
-    if(triggerChange !== false){
-      this.triggerEvent('valuechange', {'field': this, 'value': this.value}, false, true);
-    }  
+  ImageField.prototype.onClick = function(evt){
+    Drupal.media.popups.mediaBrowser(metaScore.Function.proxy(this.onFileSelect, this));
   };
   
-  ImageField.prototype.onFileSelect = function(evt) {  
-    var files = evt.target.files;
-  
-    if(files.length > 0 && files[0].type.match('image.*')){
-      this.file = files[0];
+  ImageField.prototype.onFileSelect = function(files){
+    if(files.length > 0){
+      this.setValue(files[0].url);
     }
-    else{
-      this.file = null;
-    }
-    
-    /*this.getBase64(function(result){
-      this.setValue(result);
-    });*/    
   };
   
-  ImageField.prototype.getBase64 = function(callback){  
-    var reader;
-  
-    if(this.file){
-      reader = new FileReader();
-      reader.onload = metaScore.Function.proxy(function(evt){
-        callback.call(this, evt.target.result, evt);
-      }, this);
-      reader.readAsDataURL(this.file);
-    }  
+  ImageField.prototype.setValue = function(value){    
+    this.val(value);
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
     
   return ImageField;
@@ -3599,18 +3785,14 @@ metaScore.editor.field.Select = (function () {
     
   };
   
-  SelectField.prototype.setValue = function(value){
-    
+  SelectField.prototype.setValue = function(value){    
     this.val(value);
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  SelectField.prototype.getValue = function(){
-  
-    return this.value;
-  
+  SelectField.prototype.getValue = function(){  
+    return this.value;  
   };
 
   /**
@@ -3921,72 +4103,20 @@ metaScore.editor.panel.Block = (function () {
   
   metaScore.editor.Panel.extend(BlockPanel);
   
-  BlockPanel.prototype.getMenu = function(){  
-    return this.menu;  
-  };
-  
-  BlockPanel.prototype.getBlock = function(){  
-    return this.block;  
-  };
-  
-  BlockPanel.prototype.setBlock = function(block, supressEvent){  
-    if(block === this.getBlock()){
-      return;
-    }
+  BlockPanel.prototype.setComponenet = function(componenet, supressEvent){
+    // call parent constructor
+    BlockPanel.parent.setComponenet.call(this, componenet, supressEvent);
     
-    this.unsetBlock(supressEvent);
+    componenet._draggable = new metaScore.Draggable({'target': componenet.dom, 'handle': componenet.dom.child('.pager'), 'container': componenet.dom.parents()}).enable();
+    componenet._resizable = new metaScore.Resizable({'target': componenet.dom, 'container': componenet.dom.parents()}).enable();
     
-    this.block = block;
-    
-    this.enableFields();
-    this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
-    this.getMenu().enableItems('[data-action="delete"]');
-    
-    block._draggable = new metaScore.Draggable({'target': block.dom, 'handle': block.dom.child('.pager'), 'container': block.dom.parents()}).enable();
-    block._resizable = new metaScore.Resizable({'target': block.dom, 'container': block.dom.parents()}).enable();
-    
-    block.dom
+    componenet.dom
       .addListener('dragstart', this.onBlockDragStart)
       .addListener('dragend', this.onBlockDragEnd)
       .addListener('resizestart', this.onBlockResizeStart)
       .addListener('resizeend', this.onBlockResizeEnd)
       .addClass('selected');
-      
-    if(supressEvent !== true){
-      this.triggerEvent('blockset', {'block': block});
-    }
     
-    return this;    
-  };
-  
-  BlockPanel.prototype.unsetBlock = function(supressEvent){  
-    var block = this.getBlock();
-      
-    this.disableFields();    
-    this.getMenu().disableItems('[data-action="delete"]');
-    
-    if(block){
-      block._draggable.destroy();
-      delete block._draggable;
-      
-      block._resizable.destroy();
-      delete block._resizable;
-  
-      block.dom
-        .removeListener('dragstart', this.onBlockDragStart)
-        .removeListener('dragend', this.onBlockDragEnd)
-        .removeListener('resizestart', this.onBlockResizeStart)
-        .removeListener('resizeend', this.onBlockResizeEnd)
-        .removeClass('selected');
-      
-      this.block = null;
-    }
-      
-    if(supressEvent !== true){
-      this.triggerEvent('blockunset', {'block': block});
-    }
-    
-    return this;    
   };
   
   BlockPanel.prototype.onBlockDragStart = function(evt){
@@ -4023,140 +4153,6 @@ metaScore.editor.panel.Block = (function () {
     this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(fields)});
     
     delete this.beforeResizeValues;
-  };
-  
-  BlockPanel.prototype.onFieldValueChange = function(evt){
-    var block = this.getBlock(),
-      field, value, old_values;
-      
-    if(!block){
-      return;
-    }
-    
-    field = evt.detail.field.data('name');
-    value = evt.detail.value;
-    old_values = this.getValues([field]);
-    
-    this.updateBlockProperty(block, field, value);
-    
-    this.triggerEvent('valueschange', {'block': block, 'old_values': old_values, 'new_values': this.getValues([field])});
-  };
-  
-  BlockPanel.prototype.updateFieldValue = function(name, value, supressEvent){
-    var field = this.getField(name);
-    
-    switch(name){
-      case 'x':
-      case 'y':
-      case 'width':
-      case 'height':
-      case 'bg-color':
-        field.setValue(value);
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        field.setChecked(value);
-        break;
-    }
-    
-    if(supressEvent !== true){
-      field.triggerEvent('change');
-    }
-  };
-  
-  BlockPanel.prototype.updateFieldValues = function(values, supressEvent){  
-    var block = this.getBlock();
-    
-    if(metaScore.Var.is(values, 'array')){
-      metaScore.Array.each(values, function(index, field){
-        this.updateFieldValue(field, this.getValue(field), supressEvent);
-      }, this);
-    }
-    else{
-      metaScore.Object.each(values, function(field, value){
-        this.updateFieldValue(field, value, supressEvent);
-      }, this);
-    }
-  };
-  
-  BlockPanel.prototype.updateBlockProperty = function(block, name, value){  
-    switch(name){
-      case 'x':
-        block.dom.css('left', value +'px');
-        break;
-      case 'y':
-        block.dom.css('top', value +'px');
-        break;
-      case 'width':
-        block.dom.css('width', value +'px');
-        break;
-      case 'height':
-        block.dom.css('height', value +'px');
-        break;
-      case 'bg-color':
-        block.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        block.dom.data('synched', value);
-        break;
-    }  
-  };
-  
-  BlockPanel.prototype.updateBlockProperties = function(block, values){
-    metaScore.Object.each(values, function(name, value){
-      this.updateBlockProperty(block, name, value);
-    }, this);
-    
-    this.updateFieldValues(values, true);  
-  };
-  
-  BlockPanel.prototype.getValue = function(name){
-    var block = this.getBlock(),
-      value;
-  
-    switch(name){
-      case 'x':
-        value = parseInt(block.dom.css('left'), 10);
-        break;
-      case 'y':
-        value = parseInt(block.dom.css('top'), 10);
-        break;
-      case 'width':
-       value = parseInt(block.dom.css('width'), 10);
-        break;
-      case 'height':
-        value = parseInt(block.dom.css('height'), 10);
-        break;
-      case 'bg-color':
-        value = block.dom.css('background-color');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        value = block.dom.data('synched') === "true";
-        break;
-    }
-    
-    return value;  
-  };
-  
-  BlockPanel.prototype.getValues = function(fields){
-    var block = this.getBlock(),
-      values = {};
-    
-    fields = fields || Object.keys(this.getField());
-    
-    metaScore.Array.each(fields, function(index, field){
-      values[field] = this.getValue(field);
-    }, this);
-    
-    return values;  
   };
     
   return BlockPanel;

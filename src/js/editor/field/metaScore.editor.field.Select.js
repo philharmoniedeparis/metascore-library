@@ -50,18 +50,14 @@ metaScore.editor.field.Select = (function () {
     
   };
   
-  SelectField.prototype.setValue = function(value){
-    
+  SelectField.prototype.setValue = function(value){    
     this.val(value);
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  SelectField.prototype.getValue = function(){
-  
-    return this.value;
-  
+  SelectField.prototype.getValue = function(){  
+    return this.value;  
   };
 
   /**
