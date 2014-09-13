@@ -42,22 +42,10 @@ metaScore.editor.field.Select = (function () {
   
   metaScore.editor.Field.extend(SelectField);
   
-  SelectField.prototype.setOptions = function(options){
-  
+  SelectField.prototype.setOptions = function(options){  
     metaScore.Object.each(options, function(key, value){    
       this.append(new metaScore.Dom('<option/>', {'text': value, 'value': key}));
-    }, this);
-    
-  };
-  
-  SelectField.prototype.setValue = function(value){    
-    this.val(value);
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
-  };
-  
-  SelectField.prototype.getValue = function(){  
-    return this.value;  
+    }, this);    
   };
 
   /**

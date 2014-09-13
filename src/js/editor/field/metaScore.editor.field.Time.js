@@ -64,8 +64,7 @@ metaScore.editor.field.Time = (function () {
   
   metaScore.editor.Field.extend(TimeField);
   
-  TimeField.prototype.onInput = function(evt){
-  
+  TimeField.prototype.onInput = function(evt){  
     var centiseconds_val = parseInt(this.centiseconds.val(), 10),
       seconds_val = parseInt(this.seconds.val(), 10),
       minutes_val = parseInt(this.minutes.val(), 10),
@@ -76,8 +75,7 @@ metaScore.editor.field.Time = (function () {
     this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
   };
   
-  TimeField.prototype.setValue = function(milliseconds){
-      
+  TimeField.prototype.setValue = function(milliseconds){      
     var centiseconds_val, seconds_val, minutes_val, hours_val;
     
     this.value = milliseconds;
@@ -99,14 +97,7 @@ metaScore.editor.field.Time = (function () {
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
-  };
-  
-  TimeField.prototype.getValue = function(){
-  
-    return this.value;
-  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
 
   /**

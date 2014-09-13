@@ -48,18 +48,14 @@ metaScore.editor.field.Boolean = (function () {
   
   metaScore.editor.Field.extend(BooleanField);
   
-  BooleanField.prototype.onChange = function(evt){
-      
+  BooleanField.prototype.onChange = function(evt){      
     this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  BooleanField.prototype.setChecked = function(checked){
-  
-    this.attr('checked', checked ? 'checked' : '');
-  
+  BooleanField.prototype.setChecked = function(checked){  
+    this.attr('checked', checked ? 'checked' : '');  
   };
     
   return BooleanField;

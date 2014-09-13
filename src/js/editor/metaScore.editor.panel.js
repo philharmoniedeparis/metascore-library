@@ -13,8 +13,16 @@ metaScore.editor.Panel = (function(){
     
     // call parent constructor
     Panel.parent.call(this, '<div/>', {'class': 'panel'});
+      
+    // fix event handlers scope
+    this.onComponentDragStart = metaScore.Function.proxy(this.onComponentDragStart, this);
+    this.onComponentDragEnd = metaScore.Function.proxy(this.onComponentDragEnd, this);
+    this.onComponentResizeStart = metaScore.Function.proxy(this.onComponentResizeStart, this);
+    this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
     
     this.fields = {};
+    
+    this.menu = new metaScore.editor.DropDownMenu();
   
     this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
       .appendTo(this);
@@ -22,10 +30,16 @@ metaScore.editor.Panel = (function(){
     this.toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
     
+    this.toolbar.addButton()
+      .data('action', 'menu')
+      .append(this.menu);
+    
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
       
-    this.setupFields();    
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this)); 
+      
+    this.setupFields();
   }
 
   Panel.defaults = {
@@ -39,15 +53,14 @@ metaScore.editor.Panel = (function(){
     */
     fields: {},
     
-    componenetDraggable: false,
+    componentDraggable: false,
     
-    componenetResizable: false,
+    componentResizable: false
   };
   
   metaScore.Dom.extend(Panel);
   
-  Panel.prototype.setupFields = function(){
-  
+  Panel.prototype.setupFields = function(){  
     var row, uuid, configs, field;
   
     metaScore.Object.each(this.configs.fields, function(key, value){
@@ -64,141 +77,180 @@ metaScore.editor.Panel = (function(){
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
       new metaScore.Dom('<td/>').appendTo(row).append(field);
       
-    }, this);
-  
+    }, this);  
   };
   
-  Panel.prototype.getToolbar = function(){
-    
+  Panel.prototype.getToolbar = function(){    
     return this.toolbar;
-    
   };
   
-  Panel.prototype.getField = function(key){
-    
+  Panel.prototype.getField = function(key){    
     if(key === undefined){
       return this.fields;
     }
     
-    return this.fields[key];
-    
+    return this.fields[key];    
   };
   
-  Panel.prototype.enableFields = function(){
-  
+  Panel.prototype.enableFields = function(){  
     metaScore.Object.each(this.fields, function(key, field){
       field.enable();
-    }, this);
-    
+    }, this);    
   };
   
-  Panel.prototype.disableFields = function(){
-  
+  Panel.prototype.disableFields = function(){  
     metaScore.Object.each(this.fields, function(key, field){
       field.disable();
-    }, this);
-    
+    }, this);    
   };
   
-  Panel.prototype.showFields = function(keys){
-  
+  Panel.prototype.showFields = function(keys){  
     if(!keys){
       this.contents.children('tr.field-wrapper').show();
     }
     else if(keys.length > 0){
       this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
-    }
-    
+    }    
   };
   
-  Panel.prototype.hideFields = function(keys){
-  
+  Panel.prototype.hideFields = function(keys){  
     if(!keys){
       this.contents.children('tr.field-wrapper').hide();
     }
     else if(keys.length > 0){
       this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
-    }
-    
+    }    
   };
   
-  Panel.prototype.toggleState = function(evt){
-    
-    this.toggleClass('collapsed');
-    
+  Panel.prototype.toggleState = function(evt){    
+    this.toggleClass('collapsed');    
   };
   
   Panel.prototype.getMenu = function(){  
     return this.menu;  
   };
   
-  Panel.prototype.getComponenet = function(){  
-    return this.componenet;  
+  Panel.prototype.getComponent = function(){  
+    return this.component;  
   };
   
-  Panel.prototype.setComponenet = function(componenet, supressEvent){    
-    if(componenet === this.getComponenet()){
+  Panel.prototype.setComponent = function(component, supressEvent){    
+    if(component === this.getComponent()){
       return;
     }
     
-    this.unsetComponenet(supressEvent);
+    this.unsetComponent(supressEvent);
     
-    this.componenet = componenet;
+    this.component = component;
     
     this.enableFields();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     this.getMenu().enableItems('[data-action="delete"]');
+    
+  if(this.configs.componentDraggable){
+    component._draggable = new metaScore.Draggable({'target': component.dom, 'handle': component.dom.child('.pager'), 'container': component.dom.parents()}).enable();
+    
+    component.dom
+      .addListener('dragstart', this.onComponentDragStart)
+      .addListener('dragend', this.onComponentDragEnd);
+  }
+  if(this.configs.componentResizable){
+    component._resizable = new metaScore.Resizable({'target': component.dom, 'container': component.dom.parents()}).enable();
+    
+    component.dom
+      .addListener('resizestart', this.onComponentResizeStart)
+      .addListener('resizeend', this.onComponentResizeEnd);
+  }
+    
+    component.dom
+      .addClass('selected');
       
     if(supressEvent !== true){
-      this.triggerEvent('componenetset', {'componenet': componenet});
+      this.triggerEvent('componentset', {'component': component});
     }
     
     return this;    
   };
   
-  Panel.prototype.unsetComponenet = function(supressEvent){  
-    var componenet = this.getComponenet();
+  Panel.prototype.unsetComponent = function(supressEvent){  
+    var component = this.getComponent();
       
     this.disableFields();    
     this.getMenu().disableItems('[data-action="delete"]');
     
-    if(componenet){
-      if(componenet._draggable){
-        componenet._draggable.destroy();
-        delete componenet._draggable;
+    if(component){
+      if(component._draggable){
+        component._draggable.destroy();
+        delete component._draggable;
         
-        componenet.dom
-          .removeListener('dragstart', this.onComponenetDragStart)
-          .removeListener('dragend', this.onComponenetDragEnd);
+        component.dom
+          .removeListener('dragstart', this.onComponentDragStart)
+          .removeListener('dragend', this.onComponentDragEnd);
       }
       
-      if(componenet._resizable){      
-        componenet._resizable.destroy();
-        delete componenet._resizable;
+      if(component._resizable){      
+        component._resizable.destroy();
+        delete component._resizable;
         
-        componenet.dom
-          .removeListener('resizestart', this.onComponenetResizeStart)
-          .removeListener('resizeend', this.onComponenetResizeEnd);
+        component.dom
+          .removeListener('resizestart', this.onComponentResizeStart)
+          .removeListener('resizeend', this.onComponentResizeEnd);
       }
   
-      componenet.dom
+      component.dom
         .removeClass('selected');
       
-      this.componenet = null;
+      this.component = null;
     }
       
     if(supressEvent !== true){
-      this.triggerEvent('componenetunset', {'componenet': componenet});
+      this.triggerEvent('componentunset', {'component': component});
     }
     
     return this;    
   };
   
+  Panel.prototype.onComponentDragStart = function(evt){
+    var component = this.getComponent(),
+      fields = ['x', 'y'];
+    
+    this.beforeDragValues = this.getValues(fields);
+  };
+  
+  Panel.prototype.onComponentDragEnd = function(evt){
+    var component = this.getComponent(),
+      fields = ['x', 'y'];
+    
+    this.updateFieldValues(fields, true);
+    
+    this.triggerEvent('valueschange', {'component': component, 'old_values': this.beforeDragValues, 'new_values': this.getValues(fields)});
+    
+    delete this.beforeDragValues;
+  };
+  
+  Panel.prototype.onComponentResizeStart = function(evt){
+    var component = this.getComponent(),
+      fields = ['x', 'y', 'width', 'height'];
+    
+    this.beforeResizeValues = this.getValues(fields);
+  };
+  
+  Panel.prototype.onComponentResizeEnd = function(evt){
+    var component = this.getComponent(),
+      fields = ['x', 'y', 'width', 'height'];
+    
+    this.updateFieldValues(fields, true);
+    
+    this.triggerEvent('valueschange', {'component': component, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(fields)});
+    
+    delete this.beforeResizeValues;
+  };
+  
   Panel.prototype.onFieldValueChange = function(evt){
-    var componenet = this.getComponenet(),
+    var component = this.getComponent(),
       field, value, old_values;
       
-    if(!componenet){
+    if(!component){
       return;
     }
     
@@ -206,28 +258,19 @@ metaScore.editor.Panel = (function(){
     value = evt.detail.value;
     old_values = this.getValues([field]);
     
-    this.updateProperty(componenet, field, value);
+    this.updateProperty(component, field, value);
     
-    this.triggerEvent('valueschange', {'componenet': componenet, 'old_values': old_values, 'new_values': this.getValues([field])});
+    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([field])});
   };
   
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
     var field = this.getField(name);
     
-    switch(name){
-      case 'x':
-      case 'y':
-      case 'width':
-      case 'height':
-      case 'bg-color':
-        field.setValue(value);
-        break;
-      case 'bg-image':
-        field.setValue(value);
-        break;
-      case 'synched':
-        field.setChecked(value);
-        break;
+    if(field instanceof metaScore.editor.field.Boolean){
+      field.setChecked(value);
+    }
+    else{
+      field.setValue(value);
     }
     
     if(supressEvent !== true){
@@ -249,29 +292,7 @@ metaScore.editor.Panel = (function(){
   };
   
   Panel.prototype.updateProperty = function(component, name, value){
-    switch(name){
-      case 'x':
-        component.dom.css('left', value +'px');
-        break;
-      case 'y':
-        component.dom.css('top', value +'px');
-        break;
-      case 'width':
-        component.dom.css('width', value +'px');
-        break;
-      case 'height':
-        component.dom.css('height', value +'px');
-        break;
-      case 'bg-color':
-        component.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-      case 'bg-image':
-        component.dom.css('background-image', 'url('+ value +')');
-        break;
-      case 'synched':
-        component.dom.data('synched', value);
-        break;
-    }  
+    this.configs.fields[name].setter(component, value);
   };
   
   Panel.prototype.updateProperties = function(component, values){  
@@ -283,34 +304,9 @@ metaScore.editor.Panel = (function(){
   };
   
   Panel.prototype.getValue = function(name){
-    var component = this.getComponent(),
-      value;
-  
-    switch(name){
-      case 'x':
-        value = parseInt(component.dom.css('left'), 10);
-        break;
-      case 'y':
-        value = parseInt(component.dom.css('top'), 10);
-        break;
-      case 'width':
-       value = parseInt(component.dom.css('width'), 10);
-        break;
-      case 'height':
-        value = parseInt(component.dom.css('height'), 10);
-        break;
-      case 'bg-color':
-        value = component.dom.css('background-color');
-        break;
-      case 'bg-image':
-        // TODO
-        break;
-      case 'synched':
-        value = component.dom.data('synched') === "true";
-        break;
-    }
-    
-    return value;  
+    var component = this.getComponent();
+      
+    return this.configs.fields[name].getter(component);
   };
   
   Panel.prototype.getValues = function(fields){

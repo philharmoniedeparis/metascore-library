@@ -15,11 +15,9 @@ metaScore.editor.field.Image = (function () {
     // call parent constructor
     ImageField.parent.call(this, this.configs);
     
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-
-    this.addListener('change', metaScore.Function.proxy(this.onFileSelect, this), false);
-    
     this.attr('readonly', 'readonly');
+    
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
   }
   
   ImageField.defaults = {
@@ -39,7 +37,7 @@ metaScore.editor.field.Image = (function () {
   };
   
   metaScore.editor.Field.extend(ImageField);
-    
+  
   ImageField.prototype.onClick = function(evt){
     Drupal.media.popups.mediaBrowser(metaScore.Function.proxy(this.onFileSelect, this));
   };
@@ -47,13 +45,8 @@ metaScore.editor.field.Image = (function () {
   ImageField.prototype.onFileSelect = function(files){
     if(files.length > 0){
       this.setValue(files[0].url);
+      this.triggerEvent('change');
     }
-  };
-  
-  ImageField.prototype.setValue = function(value){    
-    this.val(value);
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
     
   return ImageField;

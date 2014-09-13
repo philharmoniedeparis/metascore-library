@@ -20,22 +20,9 @@ metaScore.editor.panel.Block = (function () {
     
     // call parent constructor
     BlockPanel.parent.call(this, this.configs);
-      
-    // fix event handlers scope
-    this.onBlockDragStart = metaScore.Function.proxy(this.onBlockDragStart, this);
-    this.onBlockDragEnd = metaScore.Function.proxy(this.onBlockDragEnd, this);
-    this.onBlockResizeStart = metaScore.Function.proxy(this.onBlockResizeStart, this);
-    this.onBlockResizeEnd = metaScore.Function.proxy(this.onBlockResizeEnd, this);
     
-    this.menu = new metaScore.editor.DropDownMenu();
     this.menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
     this.menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
-    
-    this.getToolbar().addButton()
-      .data('action', 'menu')
-      .append(this.menu);
-      
-    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
   }
 
   BlockPanel.defaults = {
@@ -50,92 +37,92 @@ metaScore.editor.panel.Block = (function () {
     fields: {
       'name': {
         'type': metaScore.editor.field.Text,
-        'label': metaScore.String.t('Name')
+        'label': metaScore.String.t('Name'),
+        'getter': function(component){
+          return component.dom.data('name');
+        },
+        'setter': function(component, value){
+          component.dom.data('name', value);
+        }
       },
       'x': {
         'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('X')
+        'label': metaScore.String.t('X'),
+        'getter': function(component){
+          return parseInt(component.dom.css('left'), 10);
+        },
+        'setter': function(component, value){
+          component.dom.css('left', value +'px');
+        }
       },
       'y': {
         'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Y')
+        'label': metaScore.String.t('Y'),
+        'getter': function(component){
+          return parseInt(component.dom.css('top'), 10);
+        },
+        'setter': function(component, value){
+          component.dom.css('top', value +'px');
+        }
       },
       'width': {
         'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Width')
+        'label': metaScore.String.t('Width'),
+        'getter': function(component){
+          return parseInt(component.dom.css('width'), 10);
+        },
+        'setter': function(component, value){
+          component.dom.css('width', value +'px');
+        }
       },
       'height': {
         'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Height')
+        'label': metaScore.String.t('Height'),
+        'getter': function(component){
+          return parseInt(component.dom.css('height'), 10);
+        },
+        'setter': function(component, value){
+          component.dom.css('height', value +'px');
+        }
       },
       'bg-color': {
         'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Background color')
+        'label': metaScore.String.t('Background color'),
+        'getter': function(component){
+          return component.dom.css('background-color');
+        },
+        'setter': function(component, value){
+          component.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        }
       },
       'bg-image': {
         'type': metaScore.editor.field.Image,
-        'label': metaScore.String.t('Background image')
+        'label': metaScore.String.t('Background image'),
+        'getter': function(component){
+          return component.dom.css('background-image');
+        },
+        'setter': function(component, value){
+          component.dom.css('background-image', 'url('+ value +')');
+        }
       },
       'synched': {
         'type': metaScore.editor.field.Boolean,
-        'label': metaScore.String.t('Synchronized pages ?')
+        'label': metaScore.String.t('Synchronized pages ?'),
+        'getter': function(component){
+          return component.dom.data('synched') === "true";
+        },
+        'setter': function(component, value){
+          component.dom.data('synched', value);
+        }
       }
-    }
+    },
+  
+    componentDraggable: true,
+    
+    componentResizable: true
   };
   
   metaScore.editor.Panel.extend(BlockPanel);
-  
-  BlockPanel.prototype.setComponenet = function(componenet, supressEvent){
-    // call parent constructor
-    BlockPanel.parent.setComponenet.call(this, componenet, supressEvent);
-    
-    componenet._draggable = new metaScore.Draggable({'target': componenet.dom, 'handle': componenet.dom.child('.pager'), 'container': componenet.dom.parents()}).enable();
-    componenet._resizable = new metaScore.Resizable({'target': componenet.dom, 'container': componenet.dom.parents()}).enable();
-    
-    componenet.dom
-      .addListener('dragstart', this.onBlockDragStart)
-      .addListener('dragend', this.onBlockDragEnd)
-      .addListener('resizestart', this.onBlockResizeStart)
-      .addListener('resizeend', this.onBlockResizeEnd)
-      .addClass('selected');
-    
-  };
-  
-  BlockPanel.prototype.onBlockDragStart = function(evt){
-    var block = this.getBlock(),
-      fields = ['x', 'y'];
-    
-    this.beforeDragValues = this.getValues(fields);
-  };
-  
-  BlockPanel.prototype.onBlockDragEnd = function(evt){
-    var block = this.getBlock(),
-      fields = ['x', 'y'];
-    
-    this.updateFieldValues(fields, true);
-    
-    this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeDragValues, 'new_values': this.getValues(fields)});
-    
-    delete this.beforeDragValues;
-  };
-  
-  BlockPanel.prototype.onBlockResizeStart = function(evt){
-    var block = this.getBlock(),
-      fields = ['x', 'y', 'width', 'height'];
-    
-    this.beforeResizeValues = this.getValues(fields);
-  };
-  
-  BlockPanel.prototype.onBlockResizeEnd = function(evt){
-    var block = this.getBlock(),
-      fields = ['x', 'y', 'width', 'height'];
-    
-    this.updateFieldValues(fields, true);
-    
-    this.triggerEvent('valueschange', {'block': block, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(fields)});
-    
-    delete this.beforeResizeValues;
-  };
     
   return BlockPanel;
   

@@ -54,8 +54,13 @@ metaScore.editor.Field = (function () {
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  Field.prototype.setValue = function(val){    
-    this.val(val);  
+  Field.prototype.setValue = function(value){    
+    this.val(value);
+    this.value = value;
+  };
+  
+  Field.prototype.getValue = function(){  
+    return this.value;  
   };
 
   /**

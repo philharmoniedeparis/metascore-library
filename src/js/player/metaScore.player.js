@@ -49,7 +49,8 @@ metaScore.Player = (function () {
     block
       .addListener('click', metaScore.Function.proxy(this.onBlockClick, this))
       .addListener('pageclick', metaScore.Function.proxy(this.onPageClick, this))
-      .addListener('elementclick', metaScore.Function.proxy(this.onElementClick, this));
+      .addListener('elementclick', metaScore.Function.proxy(this.onElementClick, this))
+      .addListener('pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
     
     this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
     
@@ -74,6 +75,10 @@ metaScore.Player = (function () {
   
   Player.prototype.onElementClick = function(evt){
     this.triggerEvent('elementclick', {'element': evt.detail.element});
+  };
+  
+  Player.prototype.onBlockPageActivated = function(evt){
+    this.triggerEvent('blockpageactivate', {'block': evt.target, 'index': evt.detail.index, 'page': evt.detail.page});
   };
     
   return Player;

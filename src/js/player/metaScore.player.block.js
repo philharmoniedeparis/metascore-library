@@ -100,7 +100,7 @@ metaScore.player.Block = (function () {
     
     this.updatePager();
     
-    this.triggerEvent('pageactivate', {'index': index, 'page': page});  
+    this.triggerEvent('pageactivate', {'index': index, 'page': page});
   };
   
   Block.prototype.updatePager = function(){  

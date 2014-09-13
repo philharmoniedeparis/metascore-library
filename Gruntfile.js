@@ -64,7 +64,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist/*'],
-      drupal: ['../Drupal/sites/default/libraries/metaScore'],
+      drupal: ['../Drupal.git/sites/default/libraries/metaScore'],
       options: {
         force: true
       }
@@ -141,7 +141,7 @@ module.exports = function(grunt) {
             expand: true,
             cwd:'dist/',
             src: ['**'],
-            dest: '../Drupal/sites/default/libraries/metaScore'
+            dest: '../Drupal.git/sites/default/libraries/metaScore'
           }
         ]
       }
