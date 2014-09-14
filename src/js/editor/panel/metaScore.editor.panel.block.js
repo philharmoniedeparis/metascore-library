@@ -15,14 +15,9 @@ metaScore.namespace('editor.panel');
 
 metaScore.editor.panel.Block = (function () {
   
-  function BlockPanel(configs) {
-    this.configs = this.getConfigs(configs);
-    
+  function BlockPanel(configs) {    
     // call parent constructor
-    BlockPanel.parent.call(this, this.configs);
-    
-    this.menu.addItem({'text': metaScore.String.t('Add a new block'), 'data-action': 'new'});
-    this.menu.addItem({'text': metaScore.String.t('Delete the active block'), 'data-action': 'delete'});
+    BlockPanel.parent.call(this, configs);
   }
 
   BlockPanel.defaults = {
@@ -30,6 +25,17 @@ metaScore.editor.panel.Block = (function () {
     * The panel's title
     */
     title: metaScore.String.t('Block'),
+    
+    menuItems: [
+      {
+        'text': metaScore.String.t('Add a new block'),
+        'data-action': 'new'
+      },
+      {
+        'text': metaScore.String.t('Delete the active block'),
+        'data-action': 'delete'
+      }
+    ],
     
     /**
     * The panel's fields
@@ -99,7 +105,7 @@ metaScore.editor.panel.Block = (function () {
         'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image'),
         'getter': function(component){
-          return component.dom.css('background-image');
+          return component.dom.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(component, value){
           component.dom.css('background-image', 'url('+ value +')');
@@ -115,14 +121,29 @@ metaScore.editor.panel.Block = (function () {
           component.dom.data('synched', value);
         }
       }
-    },
-  
-    componentDraggable: true,
-    
-    componentResizable: true
+    }
   };
   
   metaScore.editor.Panel.extend(BlockPanel);
+  
+  BlockPanel.prototype.getDraggable = function(){
+    var component = this.getComponent();
+  
+    return {
+      'target': component.dom,
+      'handle': component.dom.child('.pager'),
+      'container': component.dom.parents()
+    };
+  };
+  
+  BlockPanel.prototype.getResizable = function(){  
+    var component = this.getComponent();
+    
+    return {
+      'target': component.dom,
+      'container': component.dom.parents()
+    };
+  };
     
   return BlockPanel;
   

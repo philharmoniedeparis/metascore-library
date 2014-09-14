@@ -132,7 +132,7 @@ metaScore.Editor = (function(){
       element = page.addElement(element);
     }
     
-    this.element_panel.setElement(element);
+    this.element_panel.setComponent(element);
     
     return element;
   };
@@ -294,7 +294,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPageUnset = function(evt){
-    this.element_panel.unsetElement();
+    this.element_panel.unsetComponent();
     this.element_panel.getMenu().disableItems('[data-action="new"]');
   };
   
@@ -350,7 +350,7 @@ metaScore.Editor = (function(){
         page = this.page_panel.getComponent();
         element = this.addElement(page, {'type': metaScore.Dom.data(evt.target, 'type')});
     
-        this.element_panel.setElement(element);
+        this.element_panel.setComponent(element);
             
         this.history.add({
           'undo': metaScore.Function.proxy(element.destroy, this),
@@ -360,11 +360,11 @@ metaScore.Editor = (function(){
         
       case 'delete':
         page = this.page_panel.getComponent();
-        element = this.element_panel.getElement();
+        element = this.element_panel.getComponent();
         
         if(element){
           element.destroy();
-          this.element_panel.unsetElement();
+          this.element_panel.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addElement, this, [page, element]),
@@ -386,7 +386,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onElementClick = function(evt){
-    this.element_panel.setElement(evt.detail.element);
+    this.element_panel.setComponent(evt.detail.element);
   };
   
   Editor.prototype.onPlayerClick = function(evt){

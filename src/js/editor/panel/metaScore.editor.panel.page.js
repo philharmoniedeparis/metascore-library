@@ -15,14 +15,9 @@ metaScore.namespace('editor.panel');
 
 metaScore.editor.panel.Page = (function () {
   
-  function PagePanel(configs) {
-    this.configs = this.getConfigs(configs);
-    
+  function PagePanel(configs) {    
     // call parent constructor
-    PagePanel.parent.call(this, this.configs);
-    
-    this.menu.addItem({'text': metaScore.String.t('Add a new page'), 'data-action': 'new'});
-    this.menu.addItem({'text': metaScore.String.t('Delete the active page'), 'data-action': 'delete'});
+    PagePanel.parent.call(this, configs);
   }
 
   PagePanel.defaults = {
@@ -30,6 +25,17 @@ metaScore.editor.panel.Page = (function () {
     * The panel's title
     */
     title: metaScore.String.t('Page'),
+    
+    menuItems: [
+      {
+        'text': metaScore.String.t('Add a new page'),
+        'data-action': 'new'
+      },
+      {
+        'text': metaScore.String.t('Delete the active page'),
+        'data-action': 'delete'
+      }
+    ],
     
     /**
     * The panel's fields
@@ -49,7 +55,7 @@ metaScore.editor.panel.Page = (function () {
         'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image'),
         'getter': function(component){
-          return component.dom.css('background-image');
+          return component.dom.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(component, value){
           component.dom.css('background-image', 'url('+ value +')');

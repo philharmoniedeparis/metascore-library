@@ -23,12 +23,20 @@ metaScore.editor.Panel = (function(){
     this.fields = {};
     
     this.menu = new metaScore.editor.DropDownMenu();
+    
+    metaScore.Array.each(this.configs.menuItems, function(index, item){
+      this.menu.addItem(item);
+    }, this);
   
     this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
       .appendTo(this);
       
     this.toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
+      
+    metaScore.Array.each(this.configs.toolbarButtons, function(index, action){
+      this.toolbar.addButton().data('action', action);
+    }, this);
     
     this.toolbar.addButton()
       .data('action', 'menu')
@@ -48,14 +56,14 @@ metaScore.editor.Panel = (function(){
     */
     title: '',
     
+    toolbarButtons: [],
+    
+    menuItems: [],
+    
     /**
     * The panel's fields
     */
-    fields: {},
-    
-    componentDraggable: false,
-    
-    componentResizable: false
+    fields: {}
   };
   
   metaScore.Dom.extend(Panel);
@@ -63,8 +71,7 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.setupFields = function(){  
     var row, uuid, configs, field;
   
-    metaScore.Object.each(this.configs.fields, function(key, value){
-      
+    metaScore.Object.each(this.configs.fields, function(key, value){      
       row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(this.contents);
     
       uuid = 'field-'+ metaScore.String.uuid(5);
@@ -75,8 +82,7 @@ metaScore.editor.Panel = (function(){
       field.data('name', key);
       
       new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
-      new metaScore.Dom('<td/>').appendTo(row).append(field);
-      
+      new metaScore.Dom('<td/>').appendTo(row).append(field);      
     }, this);  
   };
   
@@ -98,28 +104,33 @@ metaScore.editor.Panel = (function(){
     }, this);    
   };
   
-  Panel.prototype.disableFields = function(){  
+  Panel.prototype.toggleFields = function(enable){
+    var component = this.getComponent();
+  
     metaScore.Object.each(this.fields, function(key, field){
-      field.disable();
+      if(component && this.configs.fields[key].hasOwnProperty('filter') && this.configs.fields[key].filter(component) === false){
+        this.hideField(key);
+        field.disable();
+      }
+      else{
+        this.showField();
+        
+        if(enable === true){
+          field.enable();
+        }
+        else{
+          field.disable();
+        }
+      }
     }, this);    
   };
   
-  Panel.prototype.showFields = function(keys){  
-    if(!keys){
-      this.contents.children('tr.field-wrapper').show();
-    }
-    else if(keys.length > 0){
-      this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).show();
-    }    
+  Panel.prototype.showField = function(key){
+    this.contents.children('tr.field-wrapper.'+ key).show();
   };
   
-  Panel.prototype.hideFields = function(keys){  
-    if(!keys){
-      this.contents.children('tr.field-wrapper').hide();
-    }
-    else if(keys.length > 0){
-      this.contents.children('tr.field-wrapper.'+ keys.join(', tr.field-wrapper.')).hide();
-    }    
+  Panel.prototype.hideField = function(key){  
+    this.contents.children('tr.field-wrapper.'+ key).hide();
   };
   
   Panel.prototype.toggleState = function(evt){    
@@ -134,7 +145,17 @@ metaScore.editor.Panel = (function(){
     return this.component;  
   };
   
-  Panel.prototype.setComponent = function(component, supressEvent){    
+  Panel.prototype.getDraggable = function(){  
+    return false;
+  };
+  
+  Panel.prototype.getResizable = function(){  
+    return false;
+  };
+  
+  Panel.prototype.setComponent = function(component, supressEvent){
+    var draggable, resizable;
+  
     if(component === this.getComponent()){
       return;
     }
@@ -143,24 +164,25 @@ metaScore.editor.Panel = (function(){
     
     this.component = component;
     
-    this.enableFields();
+    this.toggleFields(true);
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     this.getMenu().enableItems('[data-action="delete"]');
     
-  if(this.configs.componentDraggable){
-    component._draggable = new metaScore.Draggable({'target': component.dom, 'handle': component.dom.child('.pager'), 'container': component.dom.parents()}).enable();
+    draggable = this.getDraggable();
+    if(draggable){
+      component._draggable = new metaScore.Draggable(draggable).enable();      
+      component.dom
+        .addListener('dragstart', this.onComponentDragStart)
+        .addListener('dragend', this.onComponentDragEnd);
+    }
     
-    component.dom
-      .addListener('dragstart', this.onComponentDragStart)
-      .addListener('dragend', this.onComponentDragEnd);
-  }
-  if(this.configs.componentResizable){
-    component._resizable = new metaScore.Resizable({'target': component.dom, 'container': component.dom.parents()}).enable();
-    
-    component.dom
-      .addListener('resizestart', this.onComponentResizeStart)
-      .addListener('resizeend', this.onComponentResizeEnd);
-  }
+    resizable = this.getResizable();
+    if(resizable){
+      component._resizable = new metaScore.Resizable(resizable).enable();      
+      component.dom
+        .addListener('resizestart', this.onComponentResizeStart)
+        .addListener('resizeend', this.onComponentResizeEnd);
+    }
     
     component.dom
       .addClass('selected');
@@ -175,7 +197,7 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.unsetComponent = function(supressEvent){  
     var component = this.getComponent();
       
-    this.disableFields();    
+    this.toggleFields(false);    
     this.getMenu().disableItems('[data-action="delete"]');
     
     if(component){
@@ -297,7 +319,9 @@ metaScore.editor.Panel = (function(){
   
   Panel.prototype.updateProperties = function(component, values){  
     metaScore.Object.each(values, function(name, value){
-      this.updateProperty(component, name, value);
+      if(!this.getField(name).disabled){
+        this.updateProperty(component, name, value);
+      }
     }, this);
     
     this.updateFieldValues(values, true);  
@@ -305,7 +329,7 @@ metaScore.editor.Panel = (function(){
   
   Panel.prototype.getValue = function(name){
     var component = this.getComponent();
-      
+    
     return this.configs.fields[name].getter(component);
   };
   
@@ -314,8 +338,10 @@ metaScore.editor.Panel = (function(){
     
     fields = fields || Object.keys(this.getField());
     
-    metaScore.Array.each(fields, function(index, field){
-      values[field] = this.getValue(field);
+    metaScore.Array.each(fields, function(index, name){
+      if(!this.getField(name).disabled){
+        values[name] = this.getValue(name);
+      }
     }, this);
     
     return values;  
