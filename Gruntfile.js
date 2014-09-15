@@ -10,18 +10,18 @@ module.exports = function(grunt) {
       CORE_LIST = [
         sub('src/js/%s.polyfill.js'),
         sub('src/js/%s.core.js'),
-        sub('src/js/%s.class.js'),
-        sub('src/js/%s.evented.js'),
+        sub('src/js/%s.Class.js'),
+        sub('src/js/%s.Evented.js'),
         sub('src/js/helpers/%s.*.js')
       ],
       PLAYER_LIST = [
-        sub('src/js/player/%s.player.js'),
+        sub('src/js/player/%s.Player.js'),
         sub('src/js/player/%s.player.*.js'),
         sub('src/js/player/element/%s.*.js'),
         sub('src/js/player/media/%s.*.js'),
       ],
       EDITOR_LIST = [
-        sub('src/js/editor/%s.editor.js'),
+        sub('src/js/editor/%s.Editor.js'),
         sub('src/js/editor/%s.editor.*.js'),
         sub('src/js/editor/field/%s.*.js'),
         sub('src/js/editor/panel/%s.*.js'),

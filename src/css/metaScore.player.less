@@ -5,6 +5,53 @@
 @image-outline: rgb(255,138,0);
 @text-outline: rgb(0,193,118);
 
+.metaScore-controller{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 73px;
+  height: 100px;
+  overflow: hidden;
+  color: rgb(221,221,221);
+  background: rgb(204,204,204);
+  font-weight: bold;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  border-radius: 10px;
+  
+  .timer{
+    text-align: center;
+    line-height: 30px;
+    background: rgb(0,0,254);
+  }
+  
+  .buttons{
+    position: relative;
+    
+    button{
+      position: absolute;
+      border: none;
+      background: transparent url('img/player/controller-buttons.png') no-repeat;
+    
+      &[data-action="rewind"]{
+        top: 22px;
+        left: 4px;
+        width: 10px;
+        height: 11px;
+        background-position: -17px -17px;
+      }
+      
+      &[data-action="play"]{
+        top: 5px;
+        left: 15px;
+        width: 43px;
+        height: 43px;
+        background-position: -50px 0;
+      }
+    }
+  }
+}
+
 .metaScore-block{
   position: absolute;
   top: 0;

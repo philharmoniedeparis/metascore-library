@@ -49,6 +49,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.data('name', value);
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'x': {
@@ -79,6 +82,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('width', value +'px');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'height': {
@@ -89,6 +95,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('height', value +'px');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'bg-color': {
@@ -99,6 +108,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'bg-image': {
@@ -109,6 +121,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('background-image', 'url('+ value +')');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'synched': {
@@ -119,6 +134,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.data('synched', value);
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       }
     }
@@ -128,6 +146,14 @@ metaScore.editor.panel.Block = (function () {
   
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
+    
+    if(component instanceof metaScore.player.Controller){
+      return {
+        'target': component.dom,
+        'handle': component.dom.child('.timer'),
+        'container': component.dom.parents()
+      };
+    }
   
     return {
       'target': component.dom,
@@ -138,6 +164,10 @@ metaScore.editor.panel.Block = (function () {
   
   BlockPanel.prototype.getResizable = function(){  
     var component = this.getComponent();
+    
+    if(component instanceof metaScore.player.Controller){
+      return false;
+    }
     
     return {
       'target': component.dom,

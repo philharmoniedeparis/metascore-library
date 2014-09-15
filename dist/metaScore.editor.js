@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-09-14 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-09-15 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1939,9 +1939,11 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
     
-    this.page_panel.setComponent(block.getActivePage(), true);
-    this.page_panel.getMenu().enableItems('[data-action="new"]');
-    this.element_panel.getMenu().enableItems('[data-action="new"]');
+    if(!(block instanceof metaScore.player.Controller)){
+      this.page_panel.setComponent(block.getActivePage(), true);
+      this.page_panel.getMenu().enableItems('[data-action="new"]');
+      this.element_panel.getMenu().enableItems('[data-action="new"]');
+    }    
       
     evt.stopPropagation();
   };
@@ -2812,7 +2814,7 @@ metaScore.editor.Panel = (function(){
         field.disable();
       }
       else{
-        this.showField();
+        this.showField(key);
         
         if(enable === true){
           field.enable();
@@ -2865,11 +2867,14 @@ metaScore.editor.Panel = (function(){
     
     this.toggleFields(true);
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
-    this.getMenu().enableItems('[data-action="delete"]');
+    
+    if(!(component instanceof metaScore.player.Controller)){
+      this.getMenu().enableItems('[data-action="delete"]');
+    }
     
     draggable = this.getDraggable();
     if(draggable){
-      component._draggable = new metaScore.Draggable(draggable).enable();      
+      component._draggable = new metaScore.Draggable(draggable).enable();
       component.dom
         .addListener('dragstart', this.onComponentDragStart)
         .addListener('dragend', this.onComponentDragEnd);
@@ -4062,6 +4067,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.data('name', value);
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'x': {
@@ -4092,6 +4100,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('width', value +'px');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'height': {
@@ -4102,6 +4113,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('height', value +'px');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'bg-color': {
@@ -4112,6 +4126,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'bg-image': {
@@ -4122,6 +4139,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.css('background-image', 'url('+ value +')');
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       },
       'synched': {
@@ -4132,6 +4152,9 @@ metaScore.editor.panel.Block = (function () {
         },
         'setter': function(component, value){
           component.dom.data('synched', value);
+        },
+        'filter': function(component){
+          return !(component instanceof metaScore.player.Controller);
         }
       }
     }
@@ -4141,6 +4164,14 @@ metaScore.editor.panel.Block = (function () {
   
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
+    
+    if(component instanceof metaScore.player.Controller){
+      return {
+        'target': component.dom,
+        'handle': component.dom.child('.timer'),
+        'container': component.dom.parents()
+      };
+    }
   
     return {
       'target': component.dom,
@@ -4151,6 +4182,10 @@ metaScore.editor.panel.Block = (function () {
   
   BlockPanel.prototype.getResizable = function(){  
     var component = this.getComponent();
+    
+    if(component instanceof metaScore.player.Controller){
+      return false;
+    }
     
     return {
       'target': component.dom,
@@ -4844,11 +4879,18 @@ metaScore.Player = (function () {
     // call parent constructor
     Player.parent.call(this);
     
-    this.media = new metaScore.player.Media();
-    
     if(!(this.configs.hasOwnProperty('id'))){
       this.configs.id = metaScore.String.uuid();
     }
+    
+    this.media = new metaScore.player.Media();
+    
+    this.controller = new metaScore.player.Controller({
+         'container': this.configs.container,
+      })
+      .addListener('click', metaScore.Function.proxy(this.onBlockClick, this));
+      
+    this.controller.dom.data('player-id', this.configs.id);
     
     metaScore.Array.each(this.configs.blocks, function(index, block){
       this.addBlock(block);
@@ -4856,9 +4898,9 @@ metaScore.Player = (function () {
   }
   
   Player.defaults = {
-    container: 'body',
-    blocks: [],
-    keyboard: true
+    'container': 'body',
+    'blocks': [],
+    'keyboard': true
   };
   
   metaScore.Evented.extend(Player);
@@ -4891,7 +4933,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
+    var blocks = metaScore.Dom.selectElements('.metaScore-controller[data-player-id="'+ this.configs.id +'"], .metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
     
     metaScore.Array.each(blocks, function(index, block){
       block._metaScore.destroy();
@@ -5077,6 +5119,68 @@ metaScore.player.Block = (function () {
   };
     
   return Block;
+  
+})();
+/**
+ * Player Controller
+ *
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
+ */
+ 
+metaScore.namespace('player');
+
+metaScore.player.Controller = (function () {
+
+  function Controller(configs) {
+    var buttons;
+  
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    Controller.parent.call(this);
+    
+    this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-controller'});
+    this.dom.get(0)._metaScore = this;
+    
+    if(this.configs.container){
+      this.dom.appendTo(this.configs.container);
+    }
+          
+    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
+      .appendTo(this.dom);
+      
+    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this.dom);
+          
+    this.rewind_btn = new metaScore.Dom('<button/>', {'data-action': 'rewind'})
+      .appendTo(buttons);
+          
+    this.play_btn = new metaScore.Dom('<button/>', {'data-action': 'play'})
+      .appendTo(buttons);
+      
+    this.dom.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  }
+  
+  Controller.defaults = {
+    'container': null
+  };
+  
+  metaScore.Evented.extend(Controller);
+  
+  Controller.prototype.onClick = function(evt){
+    this.triggerEvent('click');
+    
+    evt.stopPropagation();    
+  };
+  
+  Controller.prototype.destroy = function(){
+    this.dom.remove();
+    
+    this.triggerEvent('destroy');
+  };
+    
+  return Controller;
   
 })();
 /**

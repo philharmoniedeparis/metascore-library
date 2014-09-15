@@ -113,7 +113,7 @@ metaScore.editor.Panel = (function(){
         field.disable();
       }
       else{
-        this.showField();
+        this.showField(key);
         
         if(enable === true){
           field.enable();
@@ -166,11 +166,14 @@ metaScore.editor.Panel = (function(){
     
     this.toggleFields(true);
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
-    this.getMenu().enableItems('[data-action="delete"]');
+    
+    if(!(component instanceof metaScore.player.Controller)){
+      this.getMenu().enableItems('[data-action="delete"]');
+    }
     
     draggable = this.getDraggable();
     if(draggable){
-      component._draggable = new metaScore.Draggable(draggable).enable();      
+      component._draggable = new metaScore.Draggable(draggable).enable();
       component.dom
         .addListener('dragstart', this.onComponentDragStart)
         .addListener('dragend', this.onComponentDragEnd);

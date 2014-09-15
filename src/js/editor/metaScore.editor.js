@@ -228,9 +228,11 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
     
-    this.page_panel.setComponent(block.getActivePage(), true);
-    this.page_panel.getMenu().enableItems('[data-action="new"]');
-    this.element_panel.getMenu().enableItems('[data-action="new"]');
+    if(!(block instanceof metaScore.player.Controller)){
+      this.page_panel.setComponent(block.getActivePage(), true);
+      this.page_panel.getMenu().enableItems('[data-action="new"]');
+      this.element_panel.getMenu().enableItems('[data-action="new"]');
+    }    
       
     evt.stopPropagation();
   };

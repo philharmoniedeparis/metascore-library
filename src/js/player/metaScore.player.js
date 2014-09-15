@@ -11,11 +11,18 @@ metaScore.Player = (function () {
     // call parent constructor
     Player.parent.call(this);
     
-    this.media = new metaScore.player.Media();
-    
     if(!(this.configs.hasOwnProperty('id'))){
       this.configs.id = metaScore.String.uuid();
     }
+    
+    this.media = new metaScore.player.Media();
+    
+    this.controller = new metaScore.player.Controller({
+         'container': this.configs.container,
+      })
+      .addListener('click', metaScore.Function.proxy(this.onBlockClick, this));
+      
+    this.controller.dom.data('player-id', this.configs.id);
     
     metaScore.Array.each(this.configs.blocks, function(index, block){
       this.addBlock(block);
@@ -23,9 +30,9 @@ metaScore.Player = (function () {
   }
   
   Player.defaults = {
-    container: 'body',
-    blocks: [],
-    keyboard: true
+    'container': 'body',
+    'blocks': [],
+    'keyboard': true
   };
   
   metaScore.Evented.extend(Player);
@@ -58,7 +65,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
+    var blocks = metaScore.Dom.selectElements('.metaScore-controller[data-player-id="'+ this.configs.id +'"], .metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
     
     metaScore.Array.each(blocks, function(index, block){
       block._metaScore.destroy();
