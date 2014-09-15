@@ -35,11 +35,10 @@ metaScore.editor.Panel = (function(){
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
       
     metaScore.Array.each(this.configs.toolbarButtons, function(index, action){
-      this.toolbar.addButton().data('action', action);
+      this.toolbar.addButton(action);
     }, this);
     
-    this.toolbar.addButton()
-      .data('action', 'menu')
+    this.toolbar.addButton('menu')
       .append(this.menu);
     
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
@@ -56,7 +55,10 @@ metaScore.editor.Panel = (function(){
     */
     title: '',
     
-    toolbarButtons: [],
+    toolbarButtons: [
+      'previous',
+      'next'
+    ],
     
     menuItems: [],
     
@@ -133,8 +135,20 @@ metaScore.editor.Panel = (function(){
     this.contents.children('tr.field-wrapper.'+ key).hide();
   };
   
-  Panel.prototype.toggleState = function(evt){    
-    this.toggleClass('collapsed');    
+  Panel.prototype.toggleState = function(){    
+    this.toggleClass('collapsed');
+  };
+  
+  Panel.prototype.disable = function(){    
+    this.addClass('disabled');
+    this.getToolbar().getButton('previous').addClass('disabled');
+    this.getToolbar().getButton('next').addClass('disabled');
+  };
+  
+  Panel.prototype.enable = function(){    
+    this.removeClass('disabled');
+    this.getToolbar().getButton('previous').removeClass('disabled');
+    this.getToolbar().getButton('next').removeClass('disabled');
   };
   
   Panel.prototype.getMenu = function(){  
@@ -165,6 +179,7 @@ metaScore.editor.Panel = (function(){
     this.component = component;
     
     this.toggleFields(true);
+    this.enable();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     
     if(!(component instanceof metaScore.player.Controller)){
@@ -200,7 +215,8 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.unsetComponent = function(supressEvent){  
     var component = this.getComponent();
       
-    this.toggleFields(false);    
+    this.toggleFields(false);
+    this.disable();
     this.getMenu().disableItems('[data-action="delete"]');
     
     if(component){

@@ -37,17 +37,19 @@ metaScore.editor.Toolbar = (function(){
   
   metaScore.Dom.extend(Toolbar);
   
-  Toolbar.prototype.getTitle = function(){
-  
-    return this.title;
-    
+  Toolbar.prototype.getTitle = function(){  
+    return this.title;    
   };
   
-  Toolbar.prototype.addButton = function(configs){
-  
-    return new metaScore.editor.Button(configs)
+  Toolbar.prototype.addButton = function(action){
+    var button = new metaScore.editor.Button().data('action', action)
       .appendTo(this.buttons);
   
+    return button;
+  };
+  
+  Toolbar.prototype.getButton = function(action){  
+    return this.buttons.children('[data-action="'+ action +'"]');
   };
     
   return Toolbar;

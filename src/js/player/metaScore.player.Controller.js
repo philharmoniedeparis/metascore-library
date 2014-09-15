@@ -17,7 +17,7 @@ metaScore.player.Controller = (function () {
     // call parent constructor
     Controller.parent.call(this);
     
-    this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-controller'});
+    this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-block controller'});
     this.dom.get(0)._metaScore = this;
     
     if(this.configs.container){

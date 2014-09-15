@@ -344,6 +344,7 @@
   padding-top: 2px;
   list-style-type: none;
   background: #fff;
+  z-index: 999;
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li {
   min-width: 50px;
@@ -404,18 +405,25 @@
   width: auto;
   height: auto;
 }
-.metaScore-editor .sidebar .panel.collapsed .toolbar .title {
+.metaScore-editor .sidebar .panel.collapsed .toolbar .title,
+.metaScore-editor .sidebar .panel.disabled .toolbar .title {
   background-image: url('img/editor/panel/collapsed.png');
 }
-.metaScore-editor .sidebar .panel.collapsed .fields {
+.metaScore-editor .sidebar .panel.collapsed .fields,
+.metaScore-editor .sidebar .panel.disabled .fields {
   display: none;
+}
+.metaScore-editor .sidebar .panel.collapsed.disabled .toolbar .title,
+.metaScore-editor .sidebar .panel.disabled.disabled .toolbar .title {
+  pointer-events: none;
 }
 .metaScore-editor .overlay {
   position: absolute;
-  background: #fff;
-  z-index: 99999;
   left: 50%;
   top: 50%;
+  padding: 0;
+  background: #fff;
+  z-index: 99999;
   -webkit-transform: translate(-50%, -50%);
   -moz-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);

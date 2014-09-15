@@ -90,9 +90,12 @@ metaScore.player.Block = (function () {
     return this.getPages().count();  
   };
   
-  Block.prototype.setActivePage = function(index){    
-    var pages = this.getPages(),
-      page = pages.get(index)._metaScore;
+  Block.prototype.setActivePage = function(page){    
+    var pages = this.getPages();
+      
+    if(metaScore.Var.is(page, "number")){
+      page = pages.get(page)._metaScore;
+    }
   
     pages.removeClass('active');
     
@@ -100,7 +103,7 @@ metaScore.player.Block = (function () {
     
     this.updatePager();
     
-    this.triggerEvent('pageactivate', {'index': index, 'page': page});
+    this.triggerEvent('pageactivate', {'page': page});
   };
   
   Block.prototype.updatePager = function(){  

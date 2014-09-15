@@ -280,6 +280,7 @@
                 padding-top: 2px;
                 list-style-type: none;
                 background: #fff;
+                z-index: 999;
                 
                 li{
                   min-width: 50px;
@@ -358,7 +359,8 @@
         }
       }
       
-      &.collapsed{
+      &.collapsed,
+      &.disabled{
         .toolbar{
           .title{
             background-image: url('img/editor/panel/collapsed.png');
@@ -368,16 +370,25 @@
         .fields{
           display: none;
         }
+        
+        &.disabled{
+          .toolbar{
+            .title{
+              pointer-events: none;
+            }
+          }
+        }
       }
     }
   }
 
   .overlay{
     position: absolute;
-    background: #fff;
-    z-index: 99999;
     left: 50%;
     top: 50%;
+    padding: 0;
+    background: #fff;
+    z-index: 99999;
     .transform(translate(-50%, -50%));
     
     &.colorfield-overlay{

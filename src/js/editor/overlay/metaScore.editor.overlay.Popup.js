@@ -19,8 +19,7 @@ metaScore.editor.overlay.Popup = (function () {
     this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
       .appendTo(this);
       
-    this.toolbar.addButton()
-      .data('action', 'close')
+    this.toolbar.addButton('close')
       .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
     
     this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})

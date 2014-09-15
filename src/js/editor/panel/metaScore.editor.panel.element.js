@@ -26,11 +26,6 @@ metaScore.editor.panel.Element = (function () {
     */
     title: metaScore.String.t('Element'),
     
-    toolbarButtons: [
-      'previous',
-      'next'
-    ],
-    
     menuItems: [
       {
         'text': metaScore.String.t('Add a new cursor'),

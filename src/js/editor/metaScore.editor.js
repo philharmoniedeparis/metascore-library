@@ -254,9 +254,10 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var block;
+    var block,
+      dom, count, index;
   
-    switch(metaScore.Dom.data(evt.target, 'action')){
+    switch(metaScore.Dom.data(evt.target, 'action')){        
       case 'new':
         block = this.addBlock({'container': this.player_body});
             
@@ -277,6 +278,38 @@ metaScore.Editor = (function(){
             'undo': metaScore.Function.proxy(this.addBlock, this, [block]),
             'redo': metaScore.Function.proxy(block.destroy, this)
           });
+        }
+        break;
+        
+      case 'previous':
+        dom = new metaScore.Dom('.metaScore-block', this.player_body);
+        count = dom.count();
+        
+        if(count > 0){
+          index = dom.index('.selected') - 1;          
+          if(index < 0){
+            index = count - 1;
+          }
+          
+          block = dom.get(index)._metaScore;
+          
+          this.block_panel.setComponent(block);
+        }
+        break;
+        
+      case 'next':
+        dom = new metaScore.Dom('.metaScore-block', this.player_body);
+        count = dom.count();
+        
+        if(count > 0){
+          index = dom.index('.selected') + 1;          
+          if(index >= count){
+            index = 0;
+          }
+          
+          block = dom.get(index)._metaScore;
+          
+          this.block_panel.setComponent(block);
         }
         break;
     }
@@ -301,7 +334,8 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPagePanelToolbarClick = function(evt){
-    var block, page;
+    var block, page,
+      dom, count, index;
   
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -328,6 +362,46 @@ metaScore.Editor = (function(){
           });
         }
         break;
+        
+      case 'previous':
+        block = this.block_panel.getComponent();
+        
+        if(block){
+          dom = new metaScore.Dom('.page', block.dom);
+          count = dom.count();
+          
+          if(count > 0){
+            index = dom.index('.selected') - 1;          
+            if(index < 0){
+              index = count - 1;
+            }
+            
+            page = dom.get(index)._metaScore;
+            
+            block.setActivePage(page);
+          }
+        }
+        break;
+        
+      case 'next':
+        block = this.block_panel.getComponent();
+        
+        if(block){
+          dom = new metaScore.Dom('.page', block.dom);
+          count = dom.count();
+          
+          if(count > 0){
+            index = dom.index('.selected') + 1;          
+            if(index >= count){
+              index = 0;
+            }
+            
+            page = dom.get(index)._metaScore;
+            
+            block.setActivePage(page);
+          }
+        }
+        break;
     }
     
     evt.stopPropagation();
@@ -345,7 +419,8 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onElementPanelToolbarClick = function(evt){
-    var page, element;
+    var page, element,
+      dom, count, index;
   
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -372,6 +447,46 @@ metaScore.Editor = (function(){
             'undo': metaScore.Function.proxy(this.addElement, this, [page, element]),
             'redo': metaScore.Function.proxy(element.destroy, this)
           });
+        }
+        break;
+        
+      case 'previous':
+        page = this.page_panel.getComponent();
+        
+        if(page){
+          dom = new metaScore.Dom('.element', page.dom);
+          count = dom.count();
+          
+          if(count > 0){
+            index = dom.index('.selected') - 1;          
+            if(index < 0){
+              index = count - 1;
+            }
+            
+            element = dom.get(index)._metaScore;
+            
+            this.element_panel.setComponent(element);
+          }
+        }
+        break;
+        
+      case 'next':
+        page = this.page_panel.getComponent();
+        
+        if(page){
+          dom = new metaScore.Dom('.element', page.dom);
+          count = dom.count();
+          
+          if(count > 0){
+            index = dom.index('.selected') + 1;          
+            if(index >= count){
+              index = 0;
+            }
+            
+            element = dom.get(index)._metaScore;
+            
+            this.element_panel.setComponent(element);
+          }
         }
         break;
     }

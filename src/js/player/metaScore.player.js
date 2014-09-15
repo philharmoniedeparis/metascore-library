@@ -65,7 +65,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-controller[data-player-id="'+ this.configs.id +'"], .metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
+    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
     
     metaScore.Array.each(blocks, function(index, block){
       block._metaScore.destroy();
@@ -85,7 +85,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onBlockPageActivated = function(evt){
-    this.triggerEvent('blockpageactivate', {'block': evt.target, 'index': evt.detail.index, 'page': evt.detail.page});
+    this.triggerEvent('blockpageactivate', {'block': evt.target, 'page': evt.detail.page});
   };
     
   return Player;
