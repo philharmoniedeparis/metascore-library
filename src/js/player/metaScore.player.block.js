@@ -15,33 +15,69 @@ metaScore.player.Block = (function () {
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    Block.parent.call(this);
+    Block.parent.call(this, '<div/>', {'class': 'metaScore-block'});
     
-    this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-block'});
-    this.dom.get(0)._metaScore = this;
+    // keep a reference to this class instance in the DOM node
+    this.get(0)._metaScore = this;
     
     if(this.configs.container){
-      this.dom.appendTo(this.configs.container);
+      this.appendTo(this.configs.container);
     }
+    
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
           
-    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this.dom);
-    this.pager = new metaScore.player.Pager().appendTo(this.dom);
+    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
+    this.pager = new metaScore.player.Pager().appendTo(this);
       
     this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
-      
-    this.dom.addListener('click', metaScore.Function.proxy(this.onClick, this));
     
-    metaScore.Array.each(this.configs.pages, function(index, page){
-      this.addPage(page);
+    metaScore.Object.each(this.configs.listeners, function(key, value){
+      this.addListener(key, value);
+    }, this);
+    
+    metaScore.Object.each(this.configs, function(key, value){
+      this.setProperty(key, value);
     }, this);
   }
   
   Block.defaults = {
     'container': null,
+    'player_id': null,
     'pages': []
   };
   
-  metaScore.Evented.extend(Block);
+  metaScore.Dom.extend(Block);
+  
+  Block.prototype.onClick = function(evt){
+    if(evt instanceof MouseEvent){
+      this.triggerEvent('click', {'block': this});
+    
+      evt.stopPropagation();
+    }
+  };
+  
+  Block.prototype.onPagerClick = function(evt){
+    var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
+      action, index;
+      
+    if(active){
+      action = metaScore.Dom.data(evt.target, 'action');
+    
+      switch(action){
+        case 'first':
+          this.setActivePage(0);
+          break;
+        case 'previous':
+          this.setActivePage(this.getActivePageIndex() - 1);
+          break;
+        case 'next':
+          this.setActivePage(this.getActivePageIndex() + 1);
+          break;
+      }
+    }
+    
+    evt.stopPropagation();
+  };
   
   Block.prototype.getPages = function(){  
     return this.pages.children('.page');  
@@ -57,11 +93,7 @@ metaScore.player.Block = (function () {
       page = new metaScore.player.Page(configs);
     }
   
-    page.dom.appendTo(this.pages);
-    
-    page
-      .addListener('click', metaScore.Function.proxy(this.onPageClick, this))
-      .addListener('elementclick', metaScore.Function.proxy(this.onElementClick, this));
+    page.appendTo(this.pages);
     
     this.setActivePage(this.getPages().count() - 1);
     
@@ -99,7 +131,7 @@ metaScore.player.Block = (function () {
   
     pages.removeClass('active');
     
-    page.dom.addClass('active');
+    page.addClass('active');
     
     this.updatePager();
     
@@ -114,48 +146,90 @@ metaScore.player.Block = (function () {
   };
   
   Block.prototype.isSynched = function(){    
-    return this.dom.data('synched') === "true";    
+    return this.data('synched') === "true";    
   };
   
-  Block.prototype.onClick = function(evt){
-    this.triggerEvent('click');
-    
-    evt.stopPropagation();    
+  Block.prototype.getProperty = function(prop){
+    switch(prop){
+      case 'id':
+        return this.data('id');
+        
+      case 'name':
+        return this.data('name');
+        
+      case 'x':
+        return parseInt(this.css('left'), 10);
+        
+      case 'y':
+        return parseInt(this.css('top'), 10);
+        
+      case 'width':
+        return parseInt(this.css('width'), 10);
+        
+      case 'height':
+        return parseInt(this.css('height'), 10);
+        
+      case 'bg-color':
+        return this.css('background-color');
+        
+      case 'bg-image':
+        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        
+     case  'synched':
+        return this.data('synched') === "true";
+    }
   };
   
-  Block.prototype.onPageClick = function(evt){
-    this.triggerEvent('pageclick', {'page': evt.target});
-  };
-  
-  Block.prototype.onElementClick = function(evt){
-    this.triggerEvent('elementclick', {'element': evt.detail.element});
-  };
-  
-  Block.prototype.onPagerClick = function(evt){
-    var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
-      action, index;
-      
-    if(active){
-      action = metaScore.Dom.data(evt.target, 'action');
-    
-      switch(action){
-        case 'first':
-          this.setActivePage(0);
-          break;
-        case 'previous':
-          this.setActivePage(this.getActivePageIndex() - 1);
-          break;
-        case 'next':
-          this.setActivePage(this.getActivePageIndex() + 1);
-          break;
-      }
+  Block.prototype.setProperty = function(prop, value){
+    switch(prop){
+      case 'id':
+        this.data('id', value);
+        break;
+        
+      case 'name':
+        this.data('name', value);
+        break;
+        
+      case 'x':
+        this.css('left', value +'px');
+        break;
+        
+      case 'y':
+        this.css('top', value +'px');
+        break;
+        
+      case 'width':
+        this.css('width', value +'px');
+        break;
+        
+      case 'height':
+        this.css('height', value +'px');
+        break;
+        
+      case 'bg-color':
+        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+     case 'synched':
+        this.data('synched', value);
+        break;
+        
+     case 'pages':
+        metaScore.Array.each(value, function(index, configs){
+          this.addPage(configs);
+        }, this);
+        break;
     }
     
-    evt.stopPropagation();
+    this.triggerEvent('propertychange', {'property': prop, 'value': value});
   };
   
   Block.prototype.destroy = function(){
-    this.dom.remove();
+    this.remove();
     
     this.triggerEvent('destroy');
   };

@@ -50,23 +50,23 @@ metaScore.player.CuePoints = (function () {
   };
   
   CuePoints.prototype.launch = function(cuepoint){
-    if(cuepoint.hasOwnProperty('onStart') && metaScore.Var.is(cuepoint.onStart, 'function')){
+    if(('onStart' in cuepoint) && metaScore.Var.is(cuepoint.onStart, 'function')){
       cuepoint.onStart(this.media);
     }    
   };
   
   CuePoints.prototype.stop = function(cuepoint, launchHandler){    
-    if(cuepoint.hasOwnProperty('timer')){
+    if('timer' in cuepoint){
       clearTimeout(cuepoint.timer);
       delete cuepoint.timer;
     }
     
-    if(cuepoint.hasOwnProperty('interval')){
+    if('interval' in cuepoint){
       clearInterval(cuepoint.interval);
       delete cuepoint.interval;
     }
     
-    if(launchHandler !== false && cuepoint.hasOwnProperty('onEnd') && metaScore.Var.is(cuepoint.onEnd, 'function')){
+    if(launchHandler !== false && ('onEnd' in cuepoint) && metaScore.Var.is(cuepoint.onEnd, 'function')){
       cuepoint.onEnd(this.media);
     }
   };

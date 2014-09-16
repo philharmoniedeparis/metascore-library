@@ -8,31 +8,21 @@ metaScore.namespace('player');
 
 metaScore.player.Pager = (function () {
 
-  function Pager(dom) {
-    if(dom){
-      // call parent constructor
-      Pager.parent.call(this, dom);
-      
-      this.count = this.child('.count');      
-      this.buttons = this.child('.buttons');        
-      this.buttons.first = this.buttons.child('[data-action="first"]');
-      this.buttons.previous = this.buttons.child('[data-action="previous"]');
-      this.buttons.next = this.buttons.child('[data-action="next"]');
-    }
-    else{
-      // call parent constructor
-      Pager.parent.call(this, '<div/>', {'class': 'pager'});
-      
-      this.count = new metaScore.Dom('<div/>', {'class': 'count'}).appendTo(this);      
-      this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-        .addListener('mousedown', function(evt){
-          evt.stopPropagation();
-        })
-        .appendTo(this);        
-      this.buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'}).appendTo(this.buttons);      
-      this.buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'}).appendTo(this.buttons);      
-      this.buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'}).appendTo(this.buttons);
-    }    
+  function Pager(configs) {
+    this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    Pager.parent.call(this, '<div/>', {'class': 'pager'});
+    
+    this.count = new metaScore.Dom('<div/>', {'class': 'count'}).appendTo(this);      
+    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .addListener('mousedown', function(evt){
+        evt.stopPropagation();
+      })
+      .appendTo(this);        
+    this.buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'}).appendTo(this.buttons);      
+    this.buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'}).appendTo(this.buttons);      
+    this.buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'}).appendTo(this.buttons);
   }
   
   metaScore.Dom.extend(Pager);

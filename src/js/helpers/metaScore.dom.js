@@ -249,7 +249,7 @@ metaScore.Dom = (function () {
   */
   Dom.addListener = function(element, type, callback, useCapture){
     if(useCapture === undefined){
-      useCapture = Dom.bubbleEvents.hasOwnProperty('type') ? Dom.bubbleEvents[type] : false;
+      useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
     }
 
     return element.addEventListener(type, callback, useCapture);
@@ -265,7 +265,7 @@ metaScore.Dom = (function () {
   */
   Dom.removeListener = function(element, type, callback, useCapture){
     if(useCapture === undefined){
-      useCapture = Dom.bubbleEvents.hasOwnProperty('type') ? Dom.bubbleEvents[type] : false;
+      useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
     }
     
     return element.removeEventListener(type, callback, useCapture);
@@ -447,7 +447,7 @@ metaScore.Dom = (function () {
   };
   
   Dom.prototype.add = function(elements){
-    if(elements.hasOwnProperty('length')){
+    if('length' in elements){
       for(var i = 0; i < elements.length; i++ ) {
         this.elements.push(elements[i]);
       }

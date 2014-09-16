@@ -44,42 +44,22 @@ metaScore.editor.panel.Page = (function () {
       'bg-color': {
         'type': metaScore.editor.field.Color,
         'label': metaScore.String.t('Background color'),
-        'getter': function(component){
-          return component.dom.css('background-color');
-        },
-        'setter': function(component, value){
-          component.dom.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        }
+        'property': 'bg-color'
       },
       'bg-image': {
         'type': metaScore.editor.field.Image,
         'label': metaScore.String.t('Background image'),
-        'getter': function(component){
-          return component.dom.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-        },
-        'setter': function(component, value){
-          component.dom.css('background-image', 'url('+ value +')');
-        }
+        'property': 'bg-image'
       },
       'start-time': {
         'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('Start time'),
-        'getter': function(component){
-          return component.dom.data('start-time') || 0;
-        },
-        'setter': function(component, value){
-          component.dom.data('start-time', value);
-        }
+        'property': 'start-time'
       },
       'end-time': {
         'type': metaScore.editor.field.Time,
         'label': metaScore.String.t('End time'),
-        'getter': function(component){
-          return component.dom.data('end-time') || 0;
-        },
-        'setter': function(component, value){
-          component.dom.data('end-time', value);
-        }
+        'property': 'end-time'
       }
     }
   };

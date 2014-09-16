@@ -64,12 +64,10 @@ metaScore.Object = (function () {
       scope_provided = scope !== undefined;
     
     for (key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
-      
-        if (value === false) {
-          break;
-        }
+      value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
+    
+      if (value === false) {
+        break;
       }
     }
     

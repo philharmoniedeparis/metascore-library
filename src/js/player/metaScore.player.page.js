@@ -13,15 +13,15 @@ metaScore.player.Page = (function () {
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    Page.parent.call(this);
+    Page.parent.call(this, '<div/>', {'class': 'page'});
     
-    this.dom = new metaScore.Dom('<div/>', {'class': 'page'});
-    this.dom.get(0)._metaScore = this;
-      
-    this.dom.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    // keep a reference to this class instance in the DOM node
+    this.get(0)._metaScore = this;
     
-    metaScore.Array.each(this.configs.elements, function(index, element){
-      this.addElement(element);
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    metaScore.Object.each(this.configs, function(key, value){
+      this.setProperty(key, value);
     }, this);
   }
   
@@ -29,7 +29,15 @@ metaScore.player.Page = (function () {
     'elements': []
   };
   
-  metaScore.Evented.extend(Page);
+  metaScore.Dom.extend(Page);
+  
+  Page.prototype.onClick = function(evt){  
+    if(evt instanceof MouseEvent){
+      this.triggerEvent('click', {'page': this});
+    
+      evt.stopPropagation();
+    }
+  };
   
   Page.prototype.addElement = function(configs){
     var element;
@@ -41,25 +49,58 @@ metaScore.player.Page = (function () {
       element = new metaScore.player.element[configs.type](configs);
     }
     
-    element.dom.appendTo(this.dom);
-    
-    element.addListener('click', metaScore.Function.proxy(this.onElementClick, this));
+    element.appendTo(this);
     
     return element;  
   };
   
-  Page.prototype.onClick = function(evt){
-    this.triggerEvent('click');
-    
-    evt.stopPropagation();    
+  Page.prototype.getProperty = function(prop){
+    switch(prop){
+      case 'bg-color':
+        return this.css('background-color');
+        
+      case 'bg-image':
+        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        
+      case 'start-time':
+        console.log(this.data('ds'));
+        return this.data('start-time');
+        
+      case 'end-time':
+        return this.data('end-time');
+    }
   };
   
-  Page.prototype.onElementClick = function(evt){
-    this.triggerEvent('elementclick', {'element': evt.target});
+  Page.prototype.setProperty = function(prop, value){
+    switch(prop){
+      case 'bg-color':
+        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        break;
+        
+      case 'bg-image':
+        this.css('background-image', 'url('+ value +')');
+        break;
+        
+      case 'start-time':
+        this.data('start-time', value);
+        break;
+        
+      case 'end-time':
+        this.data('end-time', value);
+        break;
+        
+     case 'elements':
+        metaScore.Array.each(value, function(index, configs){
+          this.addElement(configs);
+        }, this);
+        break;
+    }
+    
+    this.triggerEvent('propertychange', {'property': prop, 'value': value});
   };
   
   Page.prototype.destroy = function(){
-    this.dom.remove();
+    this.remove();
     
     this.triggerEvent('destroy');
   };

@@ -136,16 +136,16 @@ metaScore.editor.field.Color = (function () {
       val = this.parseColor(val);
     }
   
-    if(val.hasOwnProperty('r')){
+    if('r' in val){
       this.value.r = parseInt(val.r, 10);
     }
-    if(val.hasOwnProperty('g')){
+    if('g' in val){
       this.value.g = parseInt(val.g, 10);
     }
-    if(val.hasOwnProperty('b')){
+    if('b' in val){
       this.value.b = parseInt(val.b, 10);
     }
-    if(val.hasOwnProperty('a')){
+    if('a' in val){
       this.value.a = parseFloat(val.a);
     }
     

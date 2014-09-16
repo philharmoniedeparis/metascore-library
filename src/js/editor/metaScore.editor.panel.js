@@ -16,8 +16,10 @@ metaScore.editor.Panel = (function(){
       
     // fix event handlers scope
     this.onComponentDragStart = metaScore.Function.proxy(this.onComponentDragStart, this);
+    this.onComponentDrag = metaScore.Function.proxy(this.onComponentDrag, this);
     this.onComponentDragEnd = metaScore.Function.proxy(this.onComponentDragEnd, this);
     this.onComponentResizeStart = metaScore.Function.proxy(this.onComponentResizeStart, this);
+    this.onComponentResize = metaScore.Function.proxy(this.onComponentResize, this);
     this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
     
     this.fields = {};
@@ -110,7 +112,7 @@ metaScore.editor.Panel = (function(){
     var component = this.getComponent();
   
     metaScore.Object.each(this.fields, function(key, field){
-      if(component && this.configs.fields[key].hasOwnProperty('filter') && this.configs.fields[key].filter(component) === false){
+      if(component && ('filter' in this.configs.fields[key]) && this.configs.fields[key].filter(component) === false){
         this.hideField(key);
         field.disable();
       }
@@ -189,24 +191,25 @@ metaScore.editor.Panel = (function(){
     draggable = this.getDraggable();
     if(draggable){
       component._draggable = new metaScore.Draggable(draggable).enable();
-      component.dom
+      component
         .addListener('dragstart', this.onComponentDragStart)
+        .addListener('drag', this.onComponentDrag)
         .addListener('dragend', this.onComponentDragEnd);
     }
     
     resizable = this.getResizable();
     if(resizable){
       component._resizable = new metaScore.Resizable(resizable).enable();      
-      component.dom
+      component
         .addListener('resizestart', this.onComponentResizeStart)
+        .addListener('resize', this.onComponentResize)
         .addListener('resizeend', this.onComponentResizeEnd);
     }
     
-    component.dom
-      .addClass('selected');
+    component.addClass('selected');
       
     if(supressEvent !== true){
-      this.triggerEvent('componentset', {'component': component});
+      this.triggerEvent('componentset', {'component': component}, false);
     }
     
     return this;    
@@ -224,8 +227,9 @@ metaScore.editor.Panel = (function(){
         component._draggable.destroy();
         delete component._draggable;
         
-        component.dom
+        component
           .removeListener('dragstart', this.onComponentDragStart)
+          .removeListener('drag', this.onComponentDrag)
           .removeListener('dragend', this.onComponentDragEnd);
       }
       
@@ -233,29 +237,34 @@ metaScore.editor.Panel = (function(){
         component._resizable.destroy();
         delete component._resizable;
         
-        component.dom
+        component
           .removeListener('resizestart', this.onComponentResizeStart)
+          .removeListener('resize', this.onComponentResize)
           .removeListener('resizeend', this.onComponentResizeEnd);
       }
   
-      component.dom
-        .removeClass('selected');
+      component.removeClass('selected');
       
       this.component = null;
     }
       
     if(supressEvent !== true){
-      this.triggerEvent('componentunset', {'component': component});
+      this.triggerEvent('componentunset', {'component': component}, false);
     }
     
     return this;    
   };
   
   Panel.prototype.onComponentDragStart = function(evt){
-    var component = this.getComponent(),
-      fields = ['x', 'y'];
+    var fields = ['x', 'y'];
     
-    this.beforeDragValues = this.getValues(fields);
+    this._beforeDragValues = this.getValues(fields);
+  };
+  
+  Panel.prototype.onComponentDrag = function(evt){
+    var fields = ['x', 'y'];
+    
+    this.updateFieldValues(fields, true);
   };
   
   Panel.prototype.onComponentDragEnd = function(evt){
@@ -264,16 +273,21 @@ metaScore.editor.Panel = (function(){
     
     this.updateFieldValues(fields, true);
     
-    this.triggerEvent('valueschange', {'component': component, 'old_values': this.beforeDragValues, 'new_values': this.getValues(fields)});
+    this.triggerEvent('valueschange', {'component': component, 'old_values': this._beforeDragValues, 'new_values': this.getValues(fields)}, false);
     
-    delete this.beforeDragValues;
+    delete this._beforeDragValues;
   };
   
   Panel.prototype.onComponentResizeStart = function(evt){
-    var component = this.getComponent(),
-      fields = ['x', 'y', 'width', 'height'];
+    var fields = ['x', 'y', 'width', 'height'];
     
-    this.beforeResizeValues = this.getValues(fields);
+    this._beforeResizeValues = this.getValues(fields);
+  };
+  
+  Panel.prototype.onComponentResize = function(evt){
+    var fields = ['x', 'y', 'width', 'height'];
+    
+    this.updateFieldValues(fields, true);
   };
   
   Panel.prototype.onComponentResizeEnd = function(evt){
@@ -282,9 +296,9 @@ metaScore.editor.Panel = (function(){
     
     this.updateFieldValues(fields, true);
     
-    this.triggerEvent('valueschange', {'component': component, 'old_values': this.beforeResizeValues, 'new_values': this.getValues(fields)});
+    this.triggerEvent('valueschange', {'component': component, 'old_values': this._beforeResizeValues, 'new_values': this.getValues(fields)}, false);
     
-    delete this.beforeResizeValues;
+    delete this._beforeResizeValues;
   };
   
   Panel.prototype.onFieldValueChange = function(evt){
@@ -301,7 +315,7 @@ metaScore.editor.Panel = (function(){
     
     this.updateProperty(component, field, value);
     
-    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([field])});
+    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([field])}, false);
   };
   
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
@@ -333,7 +347,7 @@ metaScore.editor.Panel = (function(){
   };
   
   Panel.prototype.updateProperty = function(component, name, value){
-    this.configs.fields[name].setter(component, value);
+    component.setProperty(this.configs.fields[name].property, value);
   };
   
   Panel.prototype.updateProperties = function(component, values){  
@@ -349,7 +363,7 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.getValue = function(name){
     var component = this.getComponent();
     
-    return this.configs.fields[name].getter(component);
+    return component.getProperty(this.configs.fields[name].property);
   };
   
   Panel.prototype.getValues = function(fields){

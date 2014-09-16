@@ -12,7 +12,7 @@ metaScore.player.element.Text = (function () {
     // call parent constructor
     Text.parent.call(this, configs);
     
-    this.dom.data('type', 'text');
+    this.data('type', 'text');
     
     this.text = new metaScore.Dom('<div/>', {'class': 'text'})
       .appendTo(this.contents);

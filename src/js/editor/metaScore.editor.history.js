@@ -27,7 +27,7 @@ metaScore.editor.History = (function(){
   metaScore.Evented.extend(History);
   
   History.prototype.execute = function(command, action) {  
-    if (command && command.hasOwnProperty(action)) {      
+    if (command && (action in command)) {      
       this.executing = true;        
       command[action](command);
       this.executing = false;

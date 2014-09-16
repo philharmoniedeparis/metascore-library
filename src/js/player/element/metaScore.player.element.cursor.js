@@ -8,11 +8,11 @@ metaScore.namespace('player.element');
 
 metaScore.player.element.Cursor = (function () {
 
-  function Cursor(configs) {
+  function Cursor(configs) {  
     // call parent constructor
     Cursor.parent.call(this, configs);
     
-    this.dom.data('type', 'cursor');
+    this.data('type', 'cursor');
     
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);

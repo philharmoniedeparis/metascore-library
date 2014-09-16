@@ -11,21 +11,28 @@ metaScore.Player = (function () {
     // call parent constructor
     Player.parent.call(this);
     
-    if(!(this.configs.hasOwnProperty('id'))){
-      this.configs.id = metaScore.String.uuid();
-    }
+    this.id = this.configs.id || metaScore.String.uuid();
     
-    this.media = new metaScore.player.Media();
-    
-    this.controller = new metaScore.player.Controller({
-         'container': this.configs.container,
+    this.media = new metaScore.player.Media({
+        'type': this.configs.file.type,
+        'sources': this.configs.transcoded_files
       })
-      .addListener('click', metaScore.Function.proxy(this.onBlockClick, this));
-      
-    this.controller.dom.data('player-id', this.configs.id);
+      .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .appendTo(this.configs.container);
     
-    metaScore.Array.each(this.configs.blocks, function(index, block){
-      this.addBlock(block);
+    this.controller = new metaScore.player.Controller(this.configs.controller)
+      .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
+      .data('player-id', this.id)
+      .appendTo(this.configs.container);   
+    
+    metaScore.Array.each(this.configs.blocks, function(index, configs){
+      this.addBlock(metaScore.Object.extend({}, configs, {
+        'container': this.configs.container,
+        'listeners': {
+          'propertychange': metaScore.Function.proxy(this.onComponenetPropertyChange, this)
+        }
+      }));
     }, this);
   }
   
@@ -37,6 +44,44 @@ metaScore.Player = (function () {
   
   metaScore.Evented.extend(Player);
   
+  Player.prototype.onControllerButtonClick = function(evt){  
+    var action = metaScore.Dom.data(evt.target, 'action');
+    
+    switch(action){
+      case 'rewind':
+        this.media.reset();
+        break;
+        
+      case 'play':
+        if(this.media.isPlaying()){
+          this.media.pause();
+        }
+        else{
+          this.media.play();
+        }
+        break;
+    }
+    
+    evt.stopPropagation();
+  };
+  
+  Player.prototype.onMediaPlay = function(evt){
+    this.controller.addClass('playing');
+  };
+  
+  Player.prototype.onMediaPause = function(evt){
+    this.controller.removeClass('playing');
+  };
+  
+  Player.prototype.onComponenetPropertyChange = function(evt){
+    switch(evt.detail.property){
+      case 'start-time':
+      case 'end-time':
+        console.log(evt.detail.property, evt.detail.value);
+        break;
+    }
+  };
+  
   Player.prototype.addBlock = function(configs){
     var block, page;
   
@@ -44,20 +89,9 @@ metaScore.Player = (function () {
       block = configs;
     }
     else{
-      block = new metaScore.player.Block(metaScore.Object.extend({}, configs, {'container': this.configs.container}));
+      block = new metaScore.player.Block(configs)
+        .data('player-id', this.id);
     }
-    
-    block.dom.data('player-id', this.configs.id);
-    
-    if(block.getPageCount() < 1){
-      block.addPage();
-    }
-    
-    block
-      .addListener('click', metaScore.Function.proxy(this.onBlockClick, this))
-      .addListener('pageclick', metaScore.Function.proxy(this.onPageClick, this))
-      .addListener('elementclick', metaScore.Function.proxy(this.onElementClick, this))
-      .addListener('pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
     
     this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
     
@@ -65,27 +99,11 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.configs.id +'"]', parent);
+    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.id +'"]', parent);
     
     metaScore.Array.each(blocks, function(index, block){
       block._metaScore.destroy();
     }, this);
-  };
-  
-  Player.prototype.onBlockClick = function(evt){
-    this.triggerEvent('blockclick', {'block': evt.target});
-  };
-  
-  Player.prototype.onPageClick = function(evt){
-    this.triggerEvent('pageclick', {'page': evt.detail.page});
-  };
-  
-  Player.prototype.onElementClick = function(evt){
-    this.triggerEvent('elementclick', {'element': evt.detail.element});
-  };
-  
-  Player.prototype.onBlockPageActivated = function(evt){
-    this.triggerEvent('blockpageactivate', {'block': evt.target, 'page': evt.detail.page});
   };
     
   return Player;

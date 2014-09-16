@@ -24,12 +24,12 @@ metaScore.Class = (function () {
     child.parent = this;
     child.extend = this.extend;
     
-    if(!child.hasOwnProperty('defaults')){
+    if(!('defaults' in child)){
       child.defaults = {};
     }
     
     for(var prop in this.defaults){
-      if(!child.defaults.hasOwnProperty(prop)){
+      if(!(prop in child.defaults)){
         child.defaults[prop] = this.defaults[prop];
       }
     } 
@@ -39,7 +39,7 @@ metaScore.Class = (function () {
     configs = configs || {};
   
     for(var prop in this.constructor.defaults){
-      if(!configs.hasOwnProperty(prop)){
+      if(!(prop in configs)){
         configs[prop] = this.constructor.defaults[prop];
       }
     }

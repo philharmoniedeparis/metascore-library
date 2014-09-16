@@ -15,44 +15,66 @@ metaScore.player.Controller = (function () {
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    Controller.parent.call(this);
+    Controller.parent.call(this, '<div/>', {'class': 'metaScore-block controller'});
     
-    this.dom = new metaScore.Dom('<div/>', {'class': 'metaScore-block controller'});
-    this.dom.get(0)._metaScore = this;
+    // keep a reference to this class instance in the DOM node
+    this.get(0)._metaScore = this;
     
-    if(this.configs.container){
-      this.dom.appendTo(this.configs.container);
-    }
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
           
     this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
-      .appendTo(this.dom);
+      .appendTo(this);
       
     buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-      .appendTo(this.dom);
+      .appendTo(this);
           
-    this.rewind_btn = new metaScore.Dom('<button/>', {'data-action': 'rewind'})
+    this.rewind_btn = new metaScore.Dom('<button/>')
+      .data('action', 'rewind')
       .appendTo(buttons);
           
-    this.play_btn = new metaScore.Dom('<button/>', {'data-action': 'play'})
+    this.play_btn = new metaScore.Dom('<button/>')
+      .data('action', 'play')
       .appendTo(buttons);
-      
-    this.dom.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    metaScore.Object.each(this.configs, function(key, value){
+      this.setProperty(key, value);
+    }, this);
   }
   
-  Controller.defaults = {
-    'container': null
-  };
-  
-  metaScore.Evented.extend(Controller);
+  metaScore.Dom.extend(Controller);
   
   Controller.prototype.onClick = function(evt){
-    this.triggerEvent('click');
+    if(evt instanceof MouseEvent){
+      this.triggerEvent('click', {'block': this});
     
-    evt.stopPropagation();    
+      evt.stopPropagation();
+    }
+  };
+  
+  Controller.prototype.getProperty = function(prop){
+    switch(prop){
+      case 'x':
+        return parseInt(this.css('left'), 10);
+        
+      case 'y':
+        return parseInt(this.css('top'), 10);
+    }
+  };
+  
+  Controller.prototype.setProperty = function(prop, value){
+    switch(prop){        
+      case 'x':
+        this.css('left', value +'px');
+        break;
+        
+      case 'y':
+        this.css('top', value +'px');
+        break;
+    }
   };
   
   Controller.prototype.destroy = function(){
-    this.dom.remove();
+    this.remove();
     
     this.triggerEvent('destroy');
   };

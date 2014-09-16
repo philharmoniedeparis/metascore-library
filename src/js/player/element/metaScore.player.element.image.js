@@ -12,7 +12,7 @@ metaScore.player.element.Image = (function () {
     // call parent constructor
     Image.parent.call(this, configs);
     
-    this.dom.data('type', 'image');    
+    this.data('type', 'image');    
   }
   
   metaScore.player.Element.extend(Image);

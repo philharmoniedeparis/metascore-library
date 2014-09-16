@@ -5,6 +5,10 @@ var metaScore = {
 
   version: "[[VERSION]]",
   
+  getVersion: function(){
+    return this.version;
+  },
+  
   namespace: function(str){  
     var parent = this,
       parts = str.split('.'),

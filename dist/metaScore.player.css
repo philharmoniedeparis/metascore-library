@@ -93,6 +93,9 @@
   border: 1px solid #ccc;
   font: normal 12px / normal Verdana, Arial, Helvetica, sans-serif;
 }
+.metaScore-block button {
+  padding: 0;
+}
 .metaScore-block .pager {
   display: none;
   position: absolute;
@@ -246,14 +249,17 @@
   left: 4px;
   width: 10px;
   height: 11px;
-  background-position: -17px -17px;
+  background-position: -16px -17px;
 }
 .metaScore-block.controller .buttons button[data-action="play"] {
   top: 5px;
   left: 15px;
   width: 43px;
   height: 43px;
-  background-position: -50px 0;
+  background-position: -47px 0;
+}
+.metaScore-block.controller.playing .buttons button[data-action="play"] {
+  background-position: -94px 0;
 }
 .metaScore-block:hover .pager {
   display: block;
@@ -261,6 +267,9 @@
 /*
 * Special styles when embedded in editor
 */
+.metaScore-player-wrapper {
+  margin: 0;
+}
 .metaScore-player-wrapper div {
   -moz-user-select: none;
   -khtml-user-select: none;
@@ -352,16 +361,16 @@
   outline-width: 1px;
   outline-style: dashed;
 }
-.metaScore-player-wrapper.alt-down .metaScore-block:not(.selected) {
+.metaScore-player-wrapper.editing .metaScore-block:not(.selected) {
   border: 1px dashed rgba(51, 49, 47, 0.5);
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.alt-down .metaScore-block:not(.selected)controller {
+.metaScore-player-wrapper.editing .metaScore-block:not(.selected)controller {
   border: none;
 }
-.metaScore-player-wrapper.alt-down .element:not(.selected) {
+.metaScore-player-wrapper.editing .element:not(.selected) {
   outline-width: 1px;
   outline-style: dashed;
 }
