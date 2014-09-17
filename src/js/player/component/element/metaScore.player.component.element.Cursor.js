@@ -4,25 +4,20 @@
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.element');
+metaScore.namespace('player.component.element');
 
-metaScore.player.element.Cursor = (function () {
+metaScore.player.component.element.Cursor = (function () {
 
-  function Cursor(configs) {  
+  function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
-    
-    this.data('type', 'cursor');
-    
-    this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
-      .appendTo(this.contents);
   }
   
-  metaScore.player.Element.extend(Cursor);
+  metaScore.player.component.Element.extend(Cursor);
   
   Cursor.defaults = {
     'acceleration': 1,
-    'properties': metaScore.Object.extend({}, metaScore.player.Element.defaults.properties, {    
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {    
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -33,17 +28,46 @@ metaScore.player.element.Cursor = (function () {
             'bottom': metaScore.String.t('Top > Bottom'),
             'top': metaScore.String.t('Bottom > Top'),
           }
+        },
+        'getter': function(){
+          return this.data('direction');
+        },
+        'setter': function(value){
+          this.data('direction', value);
         }
       },
       'cursor-width': {
         'type': 'Integer',
-        'label': metaScore.String.t('Cursor width')
+        'label': metaScore.String.t('Cursor width'),
+        'getter': function(){
+          return this.cursor.css('width');
+        },
+        'setter': function(value){
+          this.cursor.css('width', value +'px');
+        }
       },
       'cursor-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Cursor color')
+        'label': metaScore.String.t('Cursor color'),
+        'getter': function(){
+           return this.cursor.css('background-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
       }
     })
+  };
+  
+  Cursor.prototype.setupDOM = function(){
+    // call parent function
+    Cursor.parent.prototype.setupDOM.call(this);
+  
+    this.data('type', 'cursor');
+    
+    this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
+      .appendTo(this.contents);
   };
   
   Cursor.prototype.setCuePoint = function(configs){
@@ -67,7 +91,8 @@ metaScore.player.element.Cursor = (function () {
   };
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
-    var width, inTime, outTime,
+    var width,
+      inTime, outTime,
       curX;
     
     width = this.getProperty('width');

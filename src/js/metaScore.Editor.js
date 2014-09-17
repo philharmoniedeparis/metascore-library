@@ -72,10 +72,8 @@ metaScore.Editor = (function(){
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
-      .addDelegate('.metaScore-block', 'click', metaScore.Function.proxy(this.onBlockClick, this))
-      .addDelegate('.metaScore-block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
-      .addDelegate('.metaScore-block .page', 'click', metaScore.Function.proxy(this.onPageClick, this))
-      .addDelegate('.metaScore-block .page .element', 'click', metaScore.Function.proxy(this.onElementClick, this));
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
       
     this.history
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -110,7 +108,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.addBlock = function(block){
-    if(!(block instanceof metaScore.player.Block)){
+    if(!(block instanceof metaScore.player.component.Block)){
       block = this.player.addBlock(block);
     }
 
@@ -120,7 +118,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.addPage = function(block, page){
-    if(!(page instanceof metaScore.player.Page)){
+    if(!(page instanceof metaScore.player.component.Page)){
       page = block.addPage(page);
     }
     
@@ -130,7 +128,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.addElement = function(page, element){
-    if(!(element instanceof metaScore.player.Element)){
+    if(!(element instanceof metaScore.player.component.Element)){
       element = page.addElement(element);
     }
     
@@ -232,7 +230,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
     
-    if(!(block instanceof metaScore.player.Controller)){
+    if(!(block instanceof metaScore.player.component.Controller)){
       this.page_panel.setComponent(block.getActivePage(), true);
       this.page_panel.getMenu().enableItems('[data-action="new"]');
       this.element_panel.getMenu().enableItems('[data-action="new"]');
@@ -498,30 +496,22 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
   
-  Editor.prototype.onBlockClick = function(evt){
+  Editor.prototype.onComponentClick = function(evt){
     if(!this.editing){
       return;
     }
     
-    this.element_panel.unsetComponent();
-    this.block_panel.setComponent(evt.detail.block);
-  };
-  
-  Editor.prototype.onPageClick = function(evt){
-    if(!this.editing){
-      return;
+    if(evt.detail.component instanceof metaScore.player.component.Block){
+      this.element_panel.unsetComponent();
+      this.block_panel.setComponent(evt.detail.component);
     }
-    
-    this.element_panel.unsetComponent();
-    this.page_panel.setComponent(evt.detail.page);
-  };
-  
-  Editor.prototype.onElementClick = function(evt){
-    if(!this.editing){
-      return;
+    else if(evt.detail.component instanceof metaScore.player.component.Page){
+      this.element_panel.unsetComponent();
+      this.page_panel.setComponent(evt.detail.component);
     }
-    
-    this.element_panel.setComponent(evt.detail.element);
+    else if(evt.detail.component instanceof metaScore.player.component.Element){
+      this.element_panel.setComponent(evt.detail.component);
+    }    
   };
   
   Editor.prototype.onPlayerClick = function(evt){

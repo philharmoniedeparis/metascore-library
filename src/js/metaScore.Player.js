@@ -21,7 +21,7 @@ metaScore.Player = (function () {
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .appendTo(this.configs.container);
     
-    this.controller = new metaScore.player.Controller(this.configs.controller)
+    this.controller = new metaScore.player.component.Controller(this.configs.controller)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .data('player-id', this.id)
       .appendTo(this.configs.container);   
@@ -73,7 +73,7 @@ metaScore.Player = (function () {
     this.controller.removeClass('playing');
   };
   
-  Player.prototype.onComponenetPropChange = function(evt){        
+  Player.prototype.onComponenetPropChange = function(evt){
     switch(evt.detail.property){
       case 'start-time':
       case 'end-time':
@@ -87,11 +87,11 @@ metaScore.Player = (function () {
   Player.prototype.addBlock = function(configs){
     var block, page;
   
-    if(configs instanceof metaScore.player.Block){
+    if(configs instanceof metaScore.player.component.Block){
       block = configs;
     }
     else{
-      block = new metaScore.player.Block(configs)
+      block = new metaScore.player.component.Block(configs)
         .data('player-id', this.id);
     }
     
@@ -101,7 +101,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.id +'"]', parent);
+    var blocks = metaScore.Dom.selectElements('.metaScore-component.block[data-player-id="'+ this.id +'"]', parent);
     
     metaScore.Array.each(blocks, function(index, block){
       block._metaScore.destroy();

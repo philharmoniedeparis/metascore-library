@@ -4,24 +4,19 @@
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.element');
+metaScore.namespace('player.component.element');
 
-metaScore.player.element.Text = (function () {
+metaScore.player.component.element.Text = (function () {
 
   function Text(configs) {  
     // call parent constructor
     Text.parent.call(this, configs);
-    
-    this.data('type', 'text');
-    
-    this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-      .appendTo(this.contents);
   }
   
-  metaScore.player.Element.extend(Text);
+  metaScore.player.component.Element.extend(Text);
   
   Text.defaults = {
-    'properties': metaScore.Object.extend({}, metaScore.player.Element.defaults.properties, {
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'font-family': {
         'type': 'Select',
         'label': metaScore.String.t('Font'),
@@ -38,13 +33,36 @@ metaScore.player.element.Text = (function () {
             '"Courier New", Courier, monospace': 'Courier New',
             '"Lucida Console", Monaco, monospace': 'Lucida Console'
           }
+        },
+        'getter': function(){
+          return this.css('font-family');
+        },
+        'setter': function(value){
+          this.css('font-family', value);
         }
       },
       'text-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Text color')
+        'label': metaScore.String.t('Text color'),
+        'getter': function(){
+          return this.css('color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
       }
     })
+  };
+  
+  Text.prototype.setupDOM = function(){
+    // call parent function
+    Text.parent.prototype.setupDOM.call(this);
+    
+    this.data('type', 'text');
+    
+    this.text = new metaScore.Dom('<div/>', {'class': 'text'})
+      .appendTo(this.contents);
   };
   
   Text.prototype.setEditable = function(editable){

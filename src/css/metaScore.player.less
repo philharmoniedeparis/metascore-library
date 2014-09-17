@@ -5,93 +5,95 @@
 @image-outline: rgb(255,138,0);
 @text-outline: rgb(0,193,118);
 
-.metaScore-block{
-  position: absolute;
-  top: 0;
-  left: 0;
-  min-width: 200px;
-  min-height: 100px;
-  width: 200px;
-  height: 200px;
-  overflow: vissible;
-  color: #424242;
-  background-repeat: no-repeat;
-  background-position: 0 0;
-  background-size: contain;
-  background: #eee;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font: normal 12px/normal Verdana, Arial, Helvetica, sans-serif;
-  
-  button{
-    padding: 0;
-  }
-  
-  .pager{
-    display: none;
+.metaScore-component{
+  &.block{
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 20px;
-    background: rgba(214, 214, 214, 0.6);
-    border-radius: 10px 10px 0 0;
-    text-align: right;
+    min-width: 200px;
+    min-height: 100px;
+    width: 200px;
+    height: 200px;
+    overflow: vissible;
+    color: #424242;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: contain;
+    background: #eee;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font: normal 12px/normal Verdana, Arial, Helvetica, sans-serif;
     
-    .count{
-      display: inline-block;
-      margin-right: 10px;
-      color: #636363;
-      font-size: 10px;
-      font-weight: bold;
-      vertical-align: middle;
-      cursor: default;
+    button{
+      padding: 0;
     }
     
-    .buttons{
-      display: inline-block;
-      margin-right:  2px; 
-      vertical-align: middle;
-        
-      .button{
+    .pager{
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: rgba(214, 214, 214, 0.6);
+      border-radius: 10px 10px 0 0;
+      text-align: right;
+      
+      .count{
         display: inline-block;
-        width: 17px;
-        height: 17px;
-        margin: 1px 2px;
-        background: #fff url('img/player/pager-buttons.png') no-repeat;
-        .border-radius(10px);
-        cursor: pointer;
+        margin-right: 10px;
+        color: #636363;
+        font-size: 10px;
+        font-weight: bold;
+        vertical-align: middle;
+        cursor: default;
+      }
+      
+      .buttons{
+        display: inline-block;
+        margin-right:  2px; 
+        vertical-align: middle;
           
-        &.inactive{
-          cursor: default;
-        }
-        
-        &[data-action="first"]{
-          background-position: 4px 4px;
-          
+        .button{
+          display: inline-block;
+          width: 17px;
+          height: 17px;
+          margin: 1px 2px;
+          background: #fff url('img/player/pager-buttons.png') no-repeat;
+          .border-radius(10px);
+          cursor: pointer;
+            
           &.inactive{
-            background-position: 4px -14px;
+            cursor: default;
           }
-        }
-        &[data-action="previous"]{
-          background-position: -14px 4px;
           
-          &.inactive{
-            background-position: -14px -14px;
+          &[data-action="first"]{
+            background-position: 4px 4px;
+            
+            &.inactive{
+              background-position: 4px -14px;
+            }
           }
-        }
-        &[data-action="next"]{
-          background-position: -33px 4px;
-          
-          &.inactive{
-            background-position: -33px -14px;
+          &[data-action="previous"]{
+            background-position: -14px 4px;
+            
+            &.inactive{
+              background-position: -14px -14px;
+            }
+          }
+          &[data-action="next"]{
+            background-position: -33px 4px;
+            
+            &.inactive{
+              background-position: -33px -14px;
+            }
           }
         }
       }
     }
   }
   
-  .page{
+  &.page{
     display: none;
     position: absolute;
     width: 100%;
@@ -103,7 +105,7 @@
     }
   }
   
-  .element{
+  &.element{
     position: absolute;
     top: 0;
     left: 0;
@@ -323,19 +325,21 @@
     }
   }
   
-  .metaScore-block{
-    &.selected{
-      border: 1px dashed @block-outline;
-      .box-shadow(@block-outline 0px 0px 4px 0px);
+  .metaScore-component{
+    &.block{
+      &.selected{
+        border: 1px dashed @block-outline;
+        .box-shadow(@block-outline 0px 0px 4px 0px);
+      }
     }
     
-    .controller{
+    &.controller{
       &.selected{
         border: none;
       }
     }
     
-    .element{
+    &.element{
       &[data-type="cursor"]{
         outline-color: @cursor-outline;
         
@@ -368,17 +372,18 @@
   }
   
   &.editing{
-    .metaScore-block:not(.selected){
-      border: 1px dashed fade(@block-outline, 50%);
-      .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
-      
-      &controller{
-        border: none;
+    .metaScore-component:not(.selected){
+      &.block{
+        border: 1px dashed fade(@block-outline, 50%);
+        .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
+      }      
+      &.controller{
+        .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
       }
-    }  
-    .element:not(.selected){
-      outline-width: 1px;
-      outline-style: dashed;
+      &.element{
+        outline-width: 1px;
+        outline-style: dashed;
+      }
     }
   }
 }

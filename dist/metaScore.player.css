@@ -75,7 +75,7 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
-.metaScore-block {
+.metaScore-component.block {
   position: absolute;
   top: 0;
   left: 0;
@@ -93,10 +93,10 @@
   border: 1px solid #ccc;
   font: normal 12px / normal Verdana, Arial, Helvetica, sans-serif;
 }
-.metaScore-block button {
+.metaScore-component.block button {
   padding: 0;
 }
-.metaScore-block .pager {
+.metaScore-component.block .pager {
   display: none;
   position: absolute;
   top: 0;
@@ -107,7 +107,7 @@
   border-radius: 10px 10px 0 0;
   text-align: right;
 }
-.metaScore-block .pager .count {
+.metaScore-component.block .pager .count {
   display: inline-block;
   margin-right: 10px;
   color: #636363;
@@ -116,12 +116,12 @@
   vertical-align: middle;
   cursor: default;
 }
-.metaScore-block .pager .buttons {
+.metaScore-component.block .pager .buttons {
   display: inline-block;
   margin-right: 2px;
   vertical-align: middle;
 }
-.metaScore-block .pager .buttons .button {
+.metaScore-component.block .pager .buttons .button {
   display: inline-block;
   width: 17px;
   height: 17px;
@@ -135,38 +135,38 @@
   background-clip: padding-box;
   cursor: pointer;
 }
-.metaScore-block .pager .buttons .button.inactive {
+.metaScore-component.block .pager .buttons .button.inactive {
   cursor: default;
 }
-.metaScore-block .pager .buttons .button[data-action="first"] {
+.metaScore-component.block .pager .buttons .button[data-action="first"] {
   background-position: 4px 4px;
 }
-.metaScore-block .pager .buttons .button[data-action="first"].inactive {
+.metaScore-component.block .pager .buttons .button[data-action="first"].inactive {
   background-position: 4px -14px;
 }
-.metaScore-block .pager .buttons .button[data-action="previous"] {
+.metaScore-component.block .pager .buttons .button[data-action="previous"] {
   background-position: -14px 4px;
 }
-.metaScore-block .pager .buttons .button[data-action="previous"].inactive {
+.metaScore-component.block .pager .buttons .button[data-action="previous"].inactive {
   background-position: -14px -14px;
 }
-.metaScore-block .pager .buttons .button[data-action="next"] {
+.metaScore-component.block .pager .buttons .button[data-action="next"] {
   background-position: -33px 4px;
 }
-.metaScore-block .pager .buttons .button[data-action="next"].inactive {
+.metaScore-component.block .pager .buttons .button[data-action="next"].inactive {
   background-position: -33px -14px;
 }
-.metaScore-block .page {
+.metaScore-component.page {
   display: none;
   position: absolute;
   width: 100%;
   height: 100%;
   overflow: auto;
 }
-.metaScore-block .page.active {
+.metaScore-component.page.active {
   display: block;
 }
-.metaScore-block .element {
+.metaScore-component.element {
   position: absolute;
   top: 0;
   left: 0;
@@ -175,7 +175,7 @@
   min-width: 5px;
   border: 0 solid #000;
 }
-.metaScore-block .element .contents {
+.metaScore-component.element .contents {
   position: absolute;
   top: 0;
   left: 0;
@@ -184,10 +184,10 @@
   overflow: hidden;
   display: none;
 }
-.metaScore-block .element.active .contents {
+.metaScore-component.element.active .contents {
   display: block;
 }
-.metaScore-block .element[data-type="cursor"] .cursor {
+.metaScore-component.element[data-type="cursor"] .cursor {
   position: absolute;
   top: 0;
   left: 0;
@@ -195,31 +195,31 @@
   height: 100%;
   background: #000;
 }
-.metaScore-block .element[data-type="cursor"][data-direction="left"] .cursor {
+.metaScore-component.element[data-type="cursor"][data-direction="left"] .cursor {
   left: initial;
   right: 0;
 }
-.metaScore-block .element[data-type="cursor"][data-direction="bottom"] .cursor {
+.metaScore-component.element[data-type="cursor"][data-direction="bottom"] .cursor {
   width: 100%;
   height: 1px;
 }
-.metaScore-block .element[data-type="cursor"][data-direction="top"] .cursor {
+.metaScore-component.element[data-type="cursor"][data-direction="top"] .cursor {
   width: 100%;
   height: 1px;
   top: initial;
   bottom: 0;
 }
-.metaScore-block .element[data-type="text"] .contents {
+.metaScore-component.element[data-type="text"] .contents {
   overflow: auto;
 }
-.metaScore-block .element[data-type="text"] .contents .text {
+.metaScore-component.element[data-type="text"] .contents .text {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-.metaScore-block.controller {
+.metaScore-component.controller {
   position: absolute;
   top: 0;
   left: 0;
@@ -234,38 +234,38 @@
   font-size: 11px;
   border-radius: 10px;
 }
-.metaScore-block.controller .timer {
+.metaScore-component.controller .timer {
   text-align: center;
   line-height: 30px;
   background: #0000fe;
 }
-.metaScore-block.controller .buttons {
+.metaScore-component.controller .buttons {
   position: relative;
 }
-.metaScore-block.controller .buttons button {
+.metaScore-component.controller .buttons button {
   position: absolute;
   border: none;
   outline: none;
   background: transparent url('img/player/controller-buttons.png') no-repeat;
 }
-.metaScore-block.controller .buttons button[data-action="rewind"] {
+.metaScore-component.controller .buttons button[data-action="rewind"] {
   top: 22px;
   left: 4px;
   width: 10px;
   height: 11px;
   background-position: -16px -17px;
 }
-.metaScore-block.controller .buttons button[data-action="play"] {
+.metaScore-component.controller .buttons button[data-action="play"] {
   top: 5px;
   left: 15px;
   width: 43px;
   height: 43px;
   background-position: -47px 0;
 }
-.metaScore-block.controller.playing .buttons button[data-action="play"] {
+.metaScore-component.controller.playing .buttons button[data-action="play"] {
   background-position: -94px 0;
 }
-.metaScore-block:hover .pager {
+.metaScore-component:hover .pager {
   display: block;
 }
 /*
@@ -334,47 +334,49 @@
   right: -6px;
   cursor: se-resize;
 }
-.metaScore-player-wrapper .metaScore-block.selected {
+.metaScore-player-wrapper .metaScore-component.block.selected {
   border: 1px dashed #33312f;
   -webkit-box-shadow: #33312f 0px 0px 4px 0px;
   -moz-box-shadow: #33312f 0px 0px 4px 0px;
   box-shadow: #33312f 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper .metaScore-block .controller.selected {
+.metaScore-player-wrapper .metaScore-component.controller.selected {
   border: none;
 }
-.metaScore-player-wrapper .metaScore-block .element[data-type="cursor"] {
+.metaScore-player-wrapper .metaScore-component.element[data-type="cursor"] {
   outline-color: #ff003c;
 }
-.metaScore-player-wrapper .metaScore-block .element[data-type="cursor"].resizable .resize-handle {
+.metaScore-player-wrapper .metaScore-component.element[data-type="cursor"].resizable .resize-handle {
   background: rgba(255, 0, 60, 0.5);
 }
-.metaScore-player-wrapper .metaScore-block .element[data-type="image"] {
+.metaScore-player-wrapper .metaScore-component.element[data-type="image"] {
   outline-color: #ff8a00;
 }
-.metaScore-player-wrapper .metaScore-block .element[data-type="image"].resizable .resize-handle {
+.metaScore-player-wrapper .metaScore-component.element[data-type="image"].resizable .resize-handle {
   background: rgba(255, 138, 0, 0.5);
 }
-.metaScore-player-wrapper .metaScore-block .element[data-type="text"] {
+.metaScore-player-wrapper .metaScore-component.element[data-type="text"] {
   outline-color: #00c176;
 }
-.metaScore-player-wrapper .metaScore-block .element[data-type="text"].resizable .resize-handle {
+.metaScore-player-wrapper .metaScore-component.element[data-type="text"].resizable .resize-handle {
   background: rgba(0, 193, 118, 0.5);
 }
-.metaScore-player-wrapper .metaScore-block .element.selected {
+.metaScore-player-wrapper .metaScore-component.element.selected {
   outline-width: 1px;
   outline-style: dashed;
 }
-.metaScore-player-wrapper.editing .metaScore-block:not(.selected) {
+.metaScore-player-wrapper.editing .metaScore-component:not(.selected).block {
   border: 1px dashed rgba(51, 49, 47, 0.5);
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .metaScore-block:not(.selected)controller {
-  border: none;
+.metaScore-player-wrapper.editing .metaScore-component:not(.selected).controller {
+  -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
+  -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
+  box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .element:not(.selected) {
+.metaScore-player-wrapper.editing .metaScore-component:not(.selected).element {
   outline-width: 1px;
   outline-style: dashed;
 }

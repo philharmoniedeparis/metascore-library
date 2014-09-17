@@ -22,8 +22,6 @@ metaScore.editor.Panel = (function(){
     this.onComponentResize = metaScore.Function.proxy(this.onComponentResize, this);
     this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
     
-    this.fields = {};
-    
     this.menu = new metaScore.editor.DropDownMenu();
     
     metaScore.Array.each(this.configs.menuItems, function(index, item){
@@ -67,7 +65,8 @@ metaScore.editor.Panel = (function(){
   
   Panel.prototype.setupFields = function(){
     var row, uuid, configs, fieldType, field;
-    
+     
+    this.fields = {};
     this.contents.empty();
     
     metaScore.Object.each(this.component.configs.properties, function(key, prop){
@@ -169,7 +168,7 @@ metaScore.editor.Panel = (function(){
     this.enable();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     
-    if(!(component instanceof metaScore.player.Controller)){
+    if(!(component instanceof metaScore.player.component.Controller)){
       this.getMenu().enableItems('[data-action="delete"]');
     }
     
@@ -302,7 +301,7 @@ metaScore.editor.Panel = (function(){
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
-  Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+  Panel.prototype.updateFieldValue = function(name, value, supressEvent){  
     var field = this.getField(name);
     
     if(field instanceof metaScore.editor.field.Boolean){

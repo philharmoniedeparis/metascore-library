@@ -1,0 +1,76 @@
+/**
+ * Player Controller
+ *
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
+ */
+ 
+metaScore.namespace('player.component');
+
+metaScore.player.component.Controller = (function () {
+
+  function Controller(configs) {    
+    // call parent constructor
+    Controller.parent.call(this, configs);
+  }
+  
+  metaScore.player.Component.extend(Controller);
+  
+  Controller.defaults = {
+    'properties': {
+      'id': {
+        'editable':false,
+        'getter': function(){
+          return this.data('id');
+        },
+        'setter': function(value){
+          this.attr('id', value);
+        }
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+        'getter': function(){
+          return parseInt(this.css('left'), 10);
+        },
+        'setter': function(value){
+          this.css('left', value +'px');
+        }
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+        'getter': function(){
+          return parseInt(this.css('top'), 10);
+        },
+        'setter': function(value){
+          this.css('top', value +'px');
+        }
+      }
+    }
+  };
+  
+  Controller.prototype.setupDOM = function(){
+    // call parent function
+    Controller.parent.prototype.setupDOM.call(this);
+    
+    this.addClass('controller');
+          
+    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
+      .appendTo(this);
+          
+    this.rewind_btn = new metaScore.Dom('<button/>')
+      .data('action', 'rewind');
+          
+    this.play_btn = new metaScore.Dom('<button/>')
+      .data('action', 'play');
+      
+    new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .append(this.rewind_btn)
+      .append(this.play_btn)
+      .appendTo(this);
+  };
+    
+  return Controller;
+  
+})();

@@ -43,7 +43,7 @@ metaScore.editor.panel.Block = (function () {
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
     
-    if(component instanceof metaScore.player.Controller){
+    if(component instanceof metaScore.player.component.Controller){
       return {
         'target': component,
         'handle': component.child('.timer'),
@@ -61,7 +61,7 @@ metaScore.editor.panel.Block = (function () {
   BlockPanel.prototype.getResizable = function(){  
     var component = this.getComponent();
     
-    if(component instanceof metaScore.player.Controller){
+    if(component instanceof metaScore.player.component.Controller){
       return false;
     }
     

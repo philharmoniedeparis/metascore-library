@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-09-17 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-09-18 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1915,10 +1915,8 @@ metaScore.Editor = (function(){
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
-      .addDelegate('.metaScore-block', 'click', metaScore.Function.proxy(this.onBlockClick, this))
-      .addDelegate('.metaScore-block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
-      .addDelegate('.metaScore-block .page', 'click', metaScore.Function.proxy(this.onPageClick, this))
-      .addDelegate('.metaScore-block .page .element', 'click', metaScore.Function.proxy(this.onElementClick, this));
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
       
     this.history
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -1953,7 +1951,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.addBlock = function(block){
-    if(!(block instanceof metaScore.player.Block)){
+    if(!(block instanceof metaScore.player.component.Block)){
       block = this.player.addBlock(block);
     }
 
@@ -1963,7 +1961,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.addPage = function(block, page){
-    if(!(page instanceof metaScore.player.Page)){
+    if(!(page instanceof metaScore.player.component.Page)){
       page = block.addPage(page);
     }
     
@@ -1973,7 +1971,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.addElement = function(page, element){
-    if(!(element instanceof metaScore.player.Element)){
+    if(!(element instanceof metaScore.player.component.Element)){
       element = page.addElement(element);
     }
     
@@ -2075,7 +2073,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
     
-    if(!(block instanceof metaScore.player.Controller)){
+    if(!(block instanceof metaScore.player.component.Controller)){
       this.page_panel.setComponent(block.getActivePage(), true);
       this.page_panel.getMenu().enableItems('[data-action="new"]');
       this.element_panel.getMenu().enableItems('[data-action="new"]');
@@ -2341,30 +2339,22 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
   
-  Editor.prototype.onBlockClick = function(evt){
+  Editor.prototype.onComponentClick = function(evt){
     if(!this.editing){
       return;
     }
     
-    this.element_panel.unsetComponent();
-    this.block_panel.setComponent(evt.detail.block);
-  };
-  
-  Editor.prototype.onPageClick = function(evt){
-    if(!this.editing){
-      return;
+    if(evt.detail.component instanceof metaScore.player.component.Block){
+      this.element_panel.unsetComponent();
+      this.block_panel.setComponent(evt.detail.component);
     }
-    
-    this.element_panel.unsetComponent();
-    this.page_panel.setComponent(evt.detail.page);
-  };
-  
-  Editor.prototype.onElementClick = function(evt){
-    if(!this.editing){
-      return;
+    else if(evt.detail.component instanceof metaScore.player.component.Page){
+      this.element_panel.unsetComponent();
+      this.page_panel.setComponent(evt.detail.component);
     }
-    
-    this.element_panel.setComponent(evt.detail.element);
+    else if(evt.detail.component instanceof metaScore.player.component.Element){
+      this.element_panel.setComponent(evt.detail.component);
+    }    
   };
   
   Editor.prototype.onPlayerClick = function(evt){
@@ -2997,8 +2987,6 @@ metaScore.editor.Panel = (function(){
     this.onComponentResize = metaScore.Function.proxy(this.onComponentResize, this);
     this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
     
-    this.fields = {};
-    
     this.menu = new metaScore.editor.DropDownMenu();
     
     metaScore.Array.each(this.configs.menuItems, function(index, item){
@@ -3042,7 +3030,8 @@ metaScore.editor.Panel = (function(){
   
   Panel.prototype.setupFields = function(){
     var row, uuid, configs, fieldType, field;
-    
+     
+    this.fields = {};
     this.contents.empty();
     
     metaScore.Object.each(this.component.configs.properties, function(key, prop){
@@ -3144,7 +3133,7 @@ metaScore.editor.Panel = (function(){
     this.enable();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     
-    if(!(component instanceof metaScore.player.Controller)){
+    if(!(component instanceof metaScore.player.component.Controller)){
       this.getMenu().enableItems('[data-action="delete"]');
     }
     
@@ -3277,7 +3266,7 @@ metaScore.editor.Panel = (function(){
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
-  Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+  Panel.prototype.updateFieldValue = function(name, value, supressEvent){  
     var field = this.getField(name);
     
     if(field instanceof metaScore.editor.field.Boolean){
@@ -4265,7 +4254,7 @@ metaScore.editor.panel.Block = (function () {
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
     
-    if(component instanceof metaScore.player.Controller){
+    if(component instanceof metaScore.player.component.Controller){
       return {
         'target': component,
         'handle': component.child('.timer'),
@@ -4283,7 +4272,7 @@ metaScore.editor.panel.Block = (function () {
   BlockPanel.prototype.getResizable = function(){  
     var component = this.getComponent();
     
-    if(component instanceof metaScore.player.Controller){
+    if(component instanceof metaScore.player.component.Controller){
       return false;
     }
     
@@ -4700,7 +4689,7 @@ metaScore.Player = (function () {
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .appendTo(this.configs.container);
     
-    this.controller = new metaScore.player.Controller(this.configs.controller)
+    this.controller = new metaScore.player.component.Controller(this.configs.controller)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .data('player-id', this.id)
       .appendTo(this.configs.container);   
@@ -4752,7 +4741,7 @@ metaScore.Player = (function () {
     this.controller.removeClass('playing');
   };
   
-  Player.prototype.onComponenetPropChange = function(evt){        
+  Player.prototype.onComponenetPropChange = function(evt){
     switch(evt.detail.property){
       case 'start-time':
       case 'end-time':
@@ -4766,11 +4755,11 @@ metaScore.Player = (function () {
   Player.prototype.addBlock = function(configs){
     var block, page;
   
-    if(configs instanceof metaScore.player.Block){
+    if(configs instanceof metaScore.player.component.Block){
       block = configs;
     }
     else{
-      block = new metaScore.player.Block(configs)
+      block = new metaScore.player.component.Block(configs)
         .data('player-id', this.id);
     }
     
@@ -4780,7 +4769,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-block[data-player-id="'+ this.id +'"]', parent);
+    var blocks = metaScore.Dom.selectElements('.metaScore-component.block[data-player-id="'+ this.id +'"]', parent);
     
     metaScore.Array.each(blocks, function(index, block){
       block._metaScore.destroy();
@@ -4791,23 +4780,21 @@ metaScore.Player = (function () {
   
 })();
 /**
- * Player Block
+ * Player Component
  *
- * @requires metaScore.player.pager.js
- * @requires metaScore.player.page.js
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
  
 metaScore.namespace('player');
 
-metaScore.player.Block = (function () {
+metaScore.player.Component = (function () {
 
-  function Block(configs) {
+  function Component(configs) {  
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    Block.parent.call(this, '<div/>', {'class': 'metaScore-block'});
+    Component.parent.call(this, '<div/>', {'class': 'metaScore-component'});
     
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
@@ -4821,344 +4808,55 @@ metaScore.player.Block = (function () {
     metaScore.Object.each(this.configs.listeners, function(key, value){
       this.addListener(key, value);
     }, this);
-          
-    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
-    this.pager = new metaScore.player.Pager().appendTo(this);
-      
-    this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
+    
+    this.setupDOM();
     
     metaScore.Object.each(this.configs, function(key, value){
       this.setProperty(key, value);
     }, this);
   }
   
-  Block.defaults = {
-    'container': null,
-    'properties': {
-      'pages': {
-        'editable':false,
-      }, 
-      'name': {
-        'type': 'Text',
-        'label': metaScore.String.t('Name'),
-      },
-      'x': {
-        'type': 'Integer',
-        'label': metaScore.String.t('X'),
-      },
-      'y': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Y'),
-      },
-      'width': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Width'),
-      },
-      'height': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Height'),
-      },
-      'background-color': {
-        'type': 'Color',
-        'label': metaScore.String.t('Background color'),
-      },
-      'background-image': {
-        'type':'Image',
-        'label': metaScore.String.t('Background image'),
-      },
-      'synched': {
-        'type': 'Boolean',
-        'label': metaScore.String.t('Synchronized pages ?'),
-      }
-    }
+  metaScore.Dom.extend(Component);
+  
+  Component.defaults = {
+    'properties': {}
   };
   
-  metaScore.Dom.extend(Block);
+  Component.prototype.setupDOM = function(){
   
-  Block.prototype.onClick = function(evt){
+  };
+  
+  Component.prototype.onClick = function(evt){
     if(evt instanceof MouseEvent){
-      this.triggerEvent('click', {'block': this});
+      this.triggerEvent('click', {'component': this});
     
       evt.stopPropagation();
     }
   };
   
-  Block.prototype.onPagerClick = function(evt){
-    var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
-      action, index;
-      
-    if(active){
-      action = metaScore.Dom.data(evt.target, 'action');
-    
-      switch(action){
-        case 'first':
-          this.setActivePage(0);
-          break;
-        case 'previous':
-          this.setActivePage(this.getActivePageIndex() - 1);
-          break;
-        case 'next':
-          this.setActivePage(this.getActivePageIndex() + 1);
-          break;
-      }
-    }
-    
-    evt.stopPropagation();
-  };
-  
-  Block.prototype.getPages = function(){  
-    return this.pages.children('.page');  
-  };
-  
-  Block.prototype.addPage = function(configs){
-    var page;
-    
-    if(configs instanceof metaScore.player.Page){
-      page = configs;
-      page.appendTo(this.pages);
-    }
-    else{
-      page = new metaScore.player.Page(metaScore.Object.extend({}, configs, {
-        'container': this.pages
-      }));
-    }
-    
-    this.setActivePage(this.getPages().count() - 1);
-    
-    return page;
-  };
-  
-  Block.prototype.getActivePage = function(){    
-    var pages = this.getPages(),
-      index = this.getActivePageIndex();
-  
-    if(index < 0){
-      return null;
-    }
-  
-    return this.getPages().get(index)._metaScore;
-  };
-  
-  Block.prototype.getActivePageIndex = function(){    
-    var pages = this.getPages(),
-      index = pages.index('.active');
-  
-    return index;  
-  };
-  
-  Block.prototype.getPageCount = function(){  
-    return this.getPages().count();  
-  };
-  
-  Block.prototype.setActivePage = function(page){    
-    var pages = this.getPages();
-      
-    if(metaScore.Var.is(page, "number")){
-      page = pages.get(page)._metaScore;
-    }
-  
-    pages.removeClass('active');
-    
-    page.addClass('active');
-    
-    this.updatePager();
-    
-    this.triggerEvent('pageactivate', {'page': page});
-  };
-  
-  Block.prototype.updatePager = function(){  
-    var index = this.getActivePageIndex();
-    var count = this.getPageCount();
-  
-    this.pager.updateCount(index, count);  
-  };
-  
-  Block.prototype.isSynched = function(){    
-    return this.data('synched') === "true";    
-  };
-  
-  Block.prototype.getProperty = function(prop){
-    switch(prop){
-      case 'id':
-      case 'name':
-        return this.data(prop);
-        
-      case 'x':
-        return parseInt(this.css('left'), 10);
-        
-      case 'y':
-        return parseInt(this.css('top'), 10);
-        
-      case 'width':
-      case 'height':
-        return parseInt(this.css(prop), 10);
-        
-      case 'background-color':
-        return this.css(prop);
-        
-      case 'background-image':
-        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-        
-     case  'synched':
-        return this.data(prop) === "true";
+  Component.prototype.getProperty = function(prop){
+    if(prop in this.configs.properties && 'getter' in this.configs.properties[prop]){
+      return this.configs.properties[prop].getter.call(this);
     }
   };
   
-  Block.prototype.setProperty = function(prop, value){
-    var supressEvent = false,
-      color;
-  
-    switch(prop){
-      case 'id':
-      case 'name':
-      case 'synched':
-        this.data(prop, value);
-        break;
-        
-      case 'x':
-        this.css('left', value +'px');
-        break;
-        
-      case 'y':
-        this.css('top', value +'px');
-        break;
-        
-      case 'width':
-      case 'height':
-        this.css(prop, value +'px');
-        break;
-        
-      case 'background-color':
-        color = metaScore.Color.parse(value);
-        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        break;
-        
-      case 'background-image':
-        if(metaScore.Var.is(value, "string")){
-         value = 'url('+ value +')';
-        }        
-        this.css(prop, value);
-        break;
-        
-      case 'pages':
-        metaScore.Array.each(value, function(index, configs){
-          this.addPage(configs);
-        }, this);
-        break;
-        
-      default:
-        supressEvent = true;
-    }
-    
-    if(supressEvent !== true){
+  Component.prototype.setProperty = function(prop, value){
+    if(prop in this.configs.properties && 'setter' in this.configs.properties[prop]){
+      this.configs.properties[prop].setter.call(this, value);
       this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
     }
   };
   
-  Block.prototype.destroy = function(){
+  Element.prototype.setCuePoint = function(configs){
+  };
+  
+  Component.prototype.destroy = function(){
     this.remove();
     
     this.triggerEvent('destroy');
   };
     
-  return Block;
-  
-})();
-/**
- * Player Controller
- *
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
- 
-metaScore.namespace('player');
-
-metaScore.player.Controller = (function () {
-
-  function Controller(configs) {
-    var buttons;
-  
-    this.configs = this.getConfigs(configs);
-    
-    // call parent constructor
-    Controller.parent.call(this, '<div/>', {'class': 'metaScore-block controller'});
-    
-    // keep a reference to this class instance in the DOM node
-    this.get(0)._metaScore = this;
-    
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-          
-    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
-      .appendTo(this);
-      
-    buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-      .appendTo(this);
-          
-    this.rewind_btn = new metaScore.Dom('<button/>')
-      .data('action', 'rewind')
-      .appendTo(buttons);
-          
-    this.play_btn = new metaScore.Dom('<button/>')
-      .data('action', 'play')
-      .appendTo(buttons);
-    
-    metaScore.Object.each(this.configs, function(key, value){
-      this.setProperty(key, value);
-    }, this);
-  }
-  
-  metaScore.Dom.extend(Controller);
-  
-  Controller.defaults = {
-    'properties': {
-      'x': {
-        'type': 'Integer',
-        'label': metaScore.String.t('X'),
-      },
-      'y': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Y'),
-      }
-    }
-  };
-  
-  Controller.prototype.onClick = function(evt){
-    if(evt instanceof MouseEvent){
-      this.triggerEvent('click', {'block': this});
-    
-      evt.stopPropagation();
-    }
-  };
-  
-  Controller.prototype.getProperty = function(prop){
-    switch(prop){
-      case 'x':
-        return parseInt(this.css('left'), 10);
-        
-      case 'y':
-        return parseInt(this.css('top'), 10);
-    }
-  };
-  
-  Controller.prototype.setProperty = function(prop, value){
-    switch(prop){        
-      case 'x':
-        this.css('left', value +'px');
-        break;
-        
-      case 'y':
-        this.css('top', value +'px');
-        break;
-    }
-  };
-  
-  Controller.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
-  };
-    
-  return Controller;
+  return Component;
   
 })();
 /**
@@ -5262,243 +4960,6 @@ metaScore.player.CuePoint = (function () {
   };
     
   return CuePoint;
-  
-})();
-/**
- * Player Element
- *
- * @requires ../helpers/metaScore.dom.js
- */
- 
-metaScore.namespace('player');
-
-metaScore.player.Element = (function () {
-
-  function Element(configs) {
-    this.configs = this.getConfigs(configs);
-    
-    // call parent constructor
-    Element.parent.call(this, '<div/>', {'class': 'element'});
-    
-    // keep a reference to this class instance in the DOM node
-    this.get(0)._metaScore = this;
-    
-    if(this.configs.container){
-      this.appendTo(this.configs.container);
-    }
-    
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-    
-    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);
-    
-    metaScore.Object.each(this.configs, function(key, value){
-      this.setProperty(key, value);
-    }, this);
-  }
-  
-  metaScore.Dom.extend(Element);
-  
-  Element.defaults = {
-    'properties': {
-      'name': {
-        'type': 'Text',
-        'label': metaScore.String.t('Name')
-      },
-      'x': {
-        'type': 'Integer',
-        'label': metaScore.String.t('X')
-      },
-      'y': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Y')
-      },
-      'width': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Width')
-      },
-      'height': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Height')
-      },
-      'r-index': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Reading index'),
-        'configs': {
-          'min': 0
-        }
-      },
-      'z-index': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Display index')
-      },
-      'background-color': {
-        'type': 'Color',
-        'label': metaScore.String.t('Background color')
-      },
-      'background-image': {
-        'type': 'Image',
-        'label': metaScore.String.t('Background image')
-      },
-      'border-width': {
-        'type': 'Integer',
-        'label': metaScore.String.t('Border width')
-      },
-      'border-color': {
-        'type': 'Color',
-        'label': metaScore.String.t('Border color')
-      },
-      'rounded-conrners': {
-        'type': 'Corner',
-        'label': metaScore.String.t('Rounded conrners')
-      },
-      'start-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('Start time')
-      },
-      'end-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('End time')
-      }
-    }
-  };
-  
-  Element.prototype.onClick = function(evt){
-    if(evt instanceof MouseEvent){
-      this.triggerEvent('click', {'element': this});
-    
-      evt.stopPropagation();
-    }
-  };
-  
-  Element.prototype.getProperty = function(prop){
-    switch(prop){
-      case 'id':
-      case 'name':
-      case 'direction':
-        return this.data(prop);
-        
-      case 'x':
-        return parseInt(this.css('left'), 10);
-        
-      case 'y':
-        return parseInt(this.css('top'), 10);
-        
-      case 'width':
-      case 'height':
-      case 'z-index':
-      case 'border-width':
-        return parseInt(this.css(prop), 10);
-        
-      case 'background-color':
-      case 'border-color':
-      case 'font-family':
-        return this.css(prop);
-        
-      case 'background-image':
-        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-        
-      case 'rounded-conrners':
-        break;
-        
-      case 'r-index':
-      case 'start-time':
-      case 'end-time':
-        return parseInt(this.data(prop), 10);
-        
-      case 'cursor-width':
-        return this.cursor.css('width');
-        
-      case 'cursor-color':
-        return this.cursor.css('background-color');
-        
-      case 'text-color':
-        return this.css('color');
-    }
-  };
-  
-  Element.prototype.setProperty = function(prop, value){
-    var supressEvent = false,
-      color;
-    
-    switch(prop){        
-      case 'id':
-      case 'name':
-      case 'r-index':
-      case 'start-time':
-      case 'end-time':
-      case 'direction':
-        this.data(prop, value);
-        break;
-        
-      case 'x':
-        this.css('left', value +'px');
-        break;
-        
-      case 'y':
-        this.css('top', value +'px');
-        break;
-        
-      case 'width':
-      case 'height':
-      case 'border-width':
-        this.css(prop, value +'px');
-        break;
-        
-      case 'z-index':
-      case 'font-family':
-        this.css(prop, value);
-        break;
-        
-      case 'background-color':
-      case 'border-color':
-        color = metaScore.Color.parse(value);
-        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        break;
-        
-      case 'background-image':
-        if(metaScore.Var.is(value, "string")){
-         value = 'url('+ value +')';
-        }        
-        this.css(prop, value);
-        break;
-        
-      case 'rounded-conrners':
-        break;
-        
-      case 'cursor-width':
-        this.cursor.css('width', value +'px');
-        break;
-        
-      case 'cursor-color':
-        color = metaScore.Color.parse(value);
-        this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        break;
-        
-      case 'text-color':
-        color = metaScore.Color.parse(value);
-        this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        break;
-        
-      default:
-        supressEvent = true;
-    }
-    
-    if(supressEvent !== true){
-      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
-    }
-  };
-  
-  Element.prototype.setCuePoint = function(configs){
-  };
-  
-  Element.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
-  };
-    
-  return Element;
   
 })();
 /**
@@ -5642,165 +5103,6 @@ metaScore.player.Media = (function () {
 /**
  * Player Page
  *
- * @requires metaScore.player.element.js
- * @requires ../helpers/metaScore.dom.js
- */
- 
-metaScore.namespace('player');
-
-metaScore.player.Page = (function () {
-
-  function Page(configs) {
-    this.configs = this.getConfigs(configs);
-    
-    // call parent constructor
-    Page.parent.call(this, '<div/>', {'class': 'page'});
-    
-    // keep a reference to this class instance in the DOM node
-    this.get(0)._metaScore = this;
-    
-    if(this.configs.container){
-      this.appendTo(this.configs.container);
-    }
-    
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-    
-    metaScore.Object.each(this.configs, function(key, value){
-      this.setProperty(key, value);
-    }, this);
-  }
-  
-  Page.defaults = {
-    'properties': {
-      'elements': {
-        'editable': false
-      },
-      'background-color': {
-        'type': 'Color',
-        'label': metaScore.String.t('Background color'),
-      },
-      'background-image': {
-        'type': 'Image',
-        'label': metaScore.String.t('Background image'),
-      },
-      'start-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('Start time'),
-      },
-      'end-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('End time'),
-      }
-    }
-  };
-  
-  metaScore.Dom.extend(Page);
-  
-  Page.prototype.onClick = function(evt){  
-    if(evt instanceof MouseEvent){
-      this.triggerEvent('click', {'page': this});
-    
-      evt.stopPropagation();
-    }
-  };
-  
-  Page.prototype.addElement = function(configs){
-    var element;
-    
-    if(configs instanceof metaScore.player.Element){
-      element = configs;
-      element.appendTo(this);
-    }
-    else{
-      element = new metaScore.player.element[configs.type](metaScore.Object.extend({}, configs, {
-        'container': this
-      }));
-    }
-    
-    return element;  
-  };
-  
-  Page.prototype.getProperty = function(prop){
-    switch(prop){
-      case 'background-color':
-        return this.css(prop);
-        
-      case 'background-image':
-        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-        
-      case 'start-time':
-      case 'end-time':
-        return parseInt(this.data(prop), 10);
-    }
-  };
-  
-  Page.prototype.setProperty = function(prop, value){
-    var supressEvent = false,
-      color;
-    
-    switch(prop){
-      case 'background-color':
-        color = metaScore.Color.parse(value);
-        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        break;
-        
-      case 'background-image':
-        if(metaScore.Var.is(value, "string")){
-         value = 'url('+ value +')';
-        }        
-        this.css(prop, value);
-        break;
-        
-      case 'start-time':
-      case 'end-time':
-        this.data(prop, value);
-        break;
-        
-     case 'elements':
-        metaScore.Array.each(value, function(index, configs){
-          this.addElement(configs);
-        }, this);
-        break;
-        
-      default:
-        supressEvent = true;
-    }
-    
-    if(supressEvent !== true){
-      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
-    }
-  };
-  
-  Page.prototype.setCuePoint = function(configs){
-    if(this.cuepoint){
-      this.cuepoint.stop(false);
-    }
-  
-    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
-      'inTime': this.getProperty('start-time'),
-      'outTime': this.getProperty('end-time'),
-      'onStart': metaScore.Function.proxy(this.onCuePointStart, this)
-    }));
-    
-    return this.cuepoint;
-  };
-  
-  Page.prototype.onCuePointStart = function(cuepoint){
-    this.addClass('active');
-  };
-  
-  Page.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
-  };
-    
-  return Page;
-  
-})();
-/**
- * Player Page
- *
  * @requires ../helpers/metaScore.dom.js
  */
  
@@ -5841,30 +5143,666 @@ metaScore.player.Pager = (function () {
   
 })();
 /**
+ * Player Block
+ *
+ * @requires metaScore.player.pager.js
+ * @requires metaScore.player.page.js
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
+ */
+ 
+metaScore.namespace('player.component');
+
+metaScore.player.component.Block = (function () {
+
+  function Block(configs) {  
+    // call parent constructor
+    Block.parent.call(this, configs);
+  }
+  
+  metaScore.player.Component.extend(Block);
+  
+  Block.defaults = {
+    'container': null,
+    'properties': {
+      'id': {
+        'editable':false,
+        'getter': function(){
+          return this.data('id');
+        },
+        'setter': function(value){
+          this.attr('id', value);
+        }
+      },
+      'pages': {
+        'editable':false,
+        'getter': function(){
+        
+        },
+        'setter': function(value){
+          metaScore.Array.each(value, function(index, configs){
+            this.addPage(configs);
+          }, this);
+        }
+      },
+      'name': {
+        'type': 'Text',
+        'label': metaScore.String.t('Name'),
+        'getter': function(){
+          return this.data('name');
+        },
+        'setter': function(value){
+          this.data('name', value);
+        }
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+        'getter': function(){
+          return parseInt(this.css('left'), 10);
+        },
+        'setter': function(value){
+          this.css('left', value +'px');
+        }
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+        'getter': function(){
+          return parseInt(this.css('top'), 10);
+        },
+        'setter': function(value){
+          this.css('top', value +'px');
+        },
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width'),
+        'getter': function(){
+          return parseInt(this.css('width'), 10);
+        },
+        'setter': function(value){
+          this.css('width', value +'px');
+        }
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height'),
+        'getter': function(){
+          return parseInt(this.css('height'), 10);
+        },
+        'setter': function(value){
+          this.css('height', value +'px');
+        }
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+        'getter': function(){
+          return this.css('background-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
+      'background-image': {
+        'type':'Image',
+        'label': metaScore.String.t('Background image'),
+        'getter': function(){
+          return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        },
+        'setter': function(value){
+          if(metaScore.Var.is(value, "string")){
+           value = 'url('+ value +')';
+          }        
+          this.css('background-image', value);
+        }
+      },
+      'synched': {
+        'type': 'Boolean',
+        'label': metaScore.String.t('Synchronized pages ?'),
+        'getter': function(){
+          return this.data('synched') === "true";
+        },
+        'setter': function(value){
+          this.data('synched', value);
+        }
+      }
+    }
+  };
+  
+  Block.prototype.setupDOM = function(){
+    // call parent function
+    Block.parent.prototype.setupDOM.call(this);
+    
+    this.addClass('block');
+          
+    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
+      .appendTo(this);
+      
+    this.pager = new metaScore.player.Pager()
+      .addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this))
+      .appendTo(this);
+  };
+  
+  Block.prototype.onPagerClick = function(evt){
+    var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
+      action, index;
+      
+    if(active){
+      action = metaScore.Dom.data(evt.target, 'action');
+    
+      switch(action){
+        case 'first':
+          this.setActivePage(0);
+          break;
+        case 'previous':
+          this.setActivePage(this.getActivePageIndex() - 1);
+          break;
+        case 'next':
+          this.setActivePage(this.getActivePageIndex() + 1);
+          break;
+      }
+    }
+    
+    evt.stopPropagation();
+  };
+  
+  Block.prototype.getPages = function(){  
+    return this.pages.children('.page');  
+  };
+  
+  Block.prototype.addPage = function(configs){
+    var page;
+    
+    if(configs instanceof metaScore.player.component.Page){
+      page = configs;
+      page.appendTo(this.pages);
+    }
+    else{
+      page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
+        'container': this.pages
+      }));
+    }
+    
+    this.setActivePage(this.getPages().count() - 1);
+    
+    return page;
+  };
+  
+  Block.prototype.getActivePage = function(){    
+    var pages = this.getPages(),
+      index = this.getActivePageIndex();
+  
+    if(index < 0){
+      return null;
+    }
+  
+    return this.getPages().get(index)._metaScore;
+  };
+  
+  Block.prototype.getActivePageIndex = function(){    
+    var pages = this.getPages(),
+      index = pages.index('.active');
+  
+    return index;  
+  };
+  
+  Block.prototype.getPageCount = function(){  
+    return this.getPages().count();  
+  };
+  
+  Block.prototype.setActivePage = function(page){    
+    var pages = this.getPages();
+      
+    if(metaScore.Var.is(page, "number")){
+      page = pages.get(page)._metaScore;
+    }
+  
+    pages.removeClass('active');
+    
+    page.addClass('active');
+    
+    this.updatePager();
+    
+    this.triggerEvent('pageactivate', {'page': page});
+  };
+  
+  Block.prototype.updatePager = function(){  
+    var index = this.getActivePageIndex();
+    var count = this.getPageCount();
+  
+    this.pager.updateCount(index, count);  
+  };
+    
+  return Block;
+  
+})();
+/**
+ * Player Controller
+ *
+ * @requires ../helpers/metaScore.dom.js
+ * @requires ../helpers/metaScore.string.js
+ */
+ 
+metaScore.namespace('player.component');
+
+metaScore.player.component.Controller = (function () {
+
+  function Controller(configs) {    
+    // call parent constructor
+    Controller.parent.call(this, configs);
+  }
+  
+  metaScore.player.Component.extend(Controller);
+  
+  Controller.defaults = {
+    'properties': {
+      'id': {
+        'editable':false,
+        'getter': function(){
+          return this.data('id');
+        },
+        'setter': function(value){
+          this.attr('id', value);
+        }
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+        'getter': function(){
+          return parseInt(this.css('left'), 10);
+        },
+        'setter': function(value){
+          this.css('left', value +'px');
+        }
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+        'getter': function(){
+          return parseInt(this.css('top'), 10);
+        },
+        'setter': function(value){
+          this.css('top', value +'px');
+        }
+      }
+    }
+  };
+  
+  Controller.prototype.setupDOM = function(){
+    // call parent function
+    Controller.parent.prototype.setupDOM.call(this);
+    
+    this.addClass('controller');
+          
+    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
+      .appendTo(this);
+          
+    this.rewind_btn = new metaScore.Dom('<button/>')
+      .data('action', 'rewind');
+          
+    this.play_btn = new metaScore.Dom('<button/>')
+      .data('action', 'play');
+      
+    new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .append(this.rewind_btn)
+      .append(this.play_btn)
+      .appendTo(this);
+  };
+    
+  return Controller;
+  
+})();
+/**
+ * Player Element
+ *
+ * @requires ../helpers/metaScore.dom.js
+ */
+ 
+metaScore.namespace('player.component');
+
+metaScore.player.component.Element = (function () {
+
+  function Element(configs) {
+    // call parent constructor
+    Element.parent.call(this, configs);
+  }
+  
+  metaScore.player.Component.extend(Element);
+  
+  Element.defaults = {
+    'properties': {
+      'id': {
+        'editable':false,
+        'getter': function(){
+          return this.data('id');
+        },
+        'setter': function(value){
+          this.attr('id', value);
+        }
+      },
+      'name': {
+        'type': 'Text',
+        'label': metaScore.String.t('Name'),
+        'getter': function(){
+          return this.data('name');
+        },
+        'setter': function(value){
+          this.data('name', value);
+        }
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+        'getter': function(){
+          return parseInt(this.css('left'), 10);
+        },
+        'setter': function(value){
+          this.css('left', value +'px');
+        }
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+        'getter': function(){
+          return parseInt(this.css('top'), 10);
+        },
+        'setter': function(value){
+          this.css('top', value +'px');
+        }
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width'),
+        'getter': function(){
+          return parseInt(this.css('width'), 10);
+        },
+        'setter': function(value){
+          this.css('width', value +'px');
+        }
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height'),
+        'getter': function(){
+          return parseInt(this.css('height'), 10);
+        },
+        'setter': function(value){
+          this.css('height', value +'px');
+        }
+      },
+      'r-index': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Reading index'),
+        'configs': {
+          'min': 0
+        },
+        'getter': function(){
+          return parseInt(this.data('r-index'), 10);
+        },
+        'setter': function(value){
+          this.data('r-index', value);
+        }
+      },
+      'z-index': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Display index'),
+        'getter': function(){
+          return parseInt(this.css('z-index'), 10);
+        },
+        'setter': function(value){
+          this.css('z-index', value);
+        }
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+        'getter': function(){
+          return this.css('background-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
+      'background-image': {
+        'type': 'Image',
+        'label': metaScore.String.t('Background image'),
+        'getter': function(){
+          return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        },
+        'setter': function(value){
+          if(metaScore.Var.is(value, "string")){
+           value = 'url('+ value +')';
+          }        
+          this.css('background-image', value);
+        }
+      },
+      'border-width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Border width'),
+        'getter': function(){
+          return parseInt(this.css('border-width'), 10);
+        },
+        'setter': function(value){
+          this.css('border-width', value +'px');
+        }
+      },
+      'border-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Border color'),
+        'getter': function(){
+          return this.css('border-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
+      'rounded-conrners': {
+        'type': 'Corner',
+        'label': metaScore.String.t('Rounded conrners'),
+        'getter': function(){
+        
+        },
+        'setter': function(value){
+        }
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+        'getter': function(){
+          return parseInt(this.data('start-time'), 10);
+        },
+        'setter': function(value){
+          this.data('start-time', value);
+        }
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+        'getter': function(){
+          return parseInt(this.data('end-time'), 10);
+        },
+        'setter': function(value){
+          this.data('end-time', value);
+        }
+      }
+    }
+  };
+  
+  Element.prototype.setupDOM = function(){
+    // call parent function
+    Element.parent.prototype.setupDOM.call(this);
+    
+    this.addClass('element');
+    
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);
+  };
+    
+  return Element;
+  
+})();
+/**
+ * Player Page
+ *
+ * @requires metaScore.player.element.js
+ * @requires ../helpers/metaScore.dom.js
+ */
+ 
+metaScore.namespace('player.component');
+
+metaScore.player.component.Page = (function () {
+
+  function Page(configs) {    
+    // call parent constructor
+    Page.parent.call(this, configs);
+  }
+  
+  metaScore.player.Component.extend(Page);
+  
+  Page.defaults = {
+    'properties': {
+      'id': {
+        'editable':false,
+        'getter': function(){
+          return this.data('id');
+        },
+        'setter': function(value){
+          this.attr('id', value);
+        }
+      },
+      'elements': {
+        'editable': false,
+        'getter': function(){
+        
+        },
+        'setter': function(value){
+          metaScore.Array.each(value, function(index, configs){
+            this.addElement(configs);
+          }, this);
+        }
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+        'getter': function(){
+          return this.css('background-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
+      'background-image': {
+        'type': 'Image',
+        'label': metaScore.String.t('Background image'),
+        'getter': function(){
+          return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        },
+        'setter': function(value){
+          if(metaScore.Var.is(value, "string")){
+           value = 'url('+ value +')';
+          }        
+          this.css('background-image', value);
+        }
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+        'getter': function(){
+          return parseInt(this.data('start-time'), 10);
+        },
+        'setter': function(value){
+          this.data('start-time', value);
+        }
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+        'getter': function(){
+          return parseInt(this.data('end-time'), 10);
+        },
+        'setter': function(value){
+          this.data('end-time', value);
+        }
+      }
+    }
+  };
+  
+  Page.prototype.setupDOM = function(){
+    // call parent function
+    Page.parent.prototype.setupDOM.call(this);
+    
+    this.addClass('page');
+  };
+  
+  Page.prototype.addElement = function(configs){
+    var element;
+    
+    if(configs instanceof metaScore.player.component.Element){
+      element = configs;
+      element.appendTo(this);
+    }
+    else{
+      element = new metaScore.player.component.element[configs.type](metaScore.Object.extend({}, configs, {
+        'container': this
+      }));
+    }
+    
+    return element;  
+  };
+  
+  Page.prototype.setCuePoint = function(configs){
+    if(this.cuepoint){
+      this.cuepoint.stop(false);
+    }
+  
+    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
+      'inTime': this.getProperty('start-time'),
+      'outTime': this.getProperty('end-time'),
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this)
+    }));
+    
+    return this.cuepoint;
+  };
+  
+  Page.prototype.onCuePointStart = function(cuepoint){
+    this.addClass('active');
+  };
+  
+  Page.prototype.destroy = function(){
+    this.remove();
+    
+    this.triggerEvent('destroy');
+  };
+    
+  return Page;
+  
+})();
+/**
  * Cursor
  *
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.element');
+metaScore.namespace('player.component.element');
 
-metaScore.player.element.Cursor = (function () {
+metaScore.player.component.element.Cursor = (function () {
 
-  function Cursor(configs) {  
+  function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
-    
-    this.data('type', 'cursor');
-    
-    this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
-      .appendTo(this.contents);
   }
   
-  metaScore.player.Element.extend(Cursor);
+  metaScore.player.component.Element.extend(Cursor);
   
   Cursor.defaults = {
     'acceleration': 1,
-    'properties': metaScore.Object.extend({}, metaScore.player.Element.defaults.properties, {    
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {    
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -5875,17 +5813,46 @@ metaScore.player.element.Cursor = (function () {
             'bottom': metaScore.String.t('Top > Bottom'),
             'top': metaScore.String.t('Bottom > Top'),
           }
+        },
+        'getter': function(){
+          return this.data('direction');
+        },
+        'setter': function(value){
+          this.data('direction', value);
         }
       },
       'cursor-width': {
         'type': 'Integer',
-        'label': metaScore.String.t('Cursor width')
+        'label': metaScore.String.t('Cursor width'),
+        'getter': function(){
+          return this.cursor.css('width');
+        },
+        'setter': function(value){
+          this.cursor.css('width', value +'px');
+        }
       },
       'cursor-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Cursor color')
+        'label': metaScore.String.t('Cursor color'),
+        'getter': function(){
+           return this.cursor.css('background-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
       }
     })
+  };
+  
+  Cursor.prototype.setupDOM = function(){
+    // call parent function
+    Cursor.parent.prototype.setupDOM.call(this);
+  
+    this.data('type', 'cursor');
+    
+    this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
+      .appendTo(this.contents);
   };
   
   Cursor.prototype.setCuePoint = function(configs){
@@ -5909,7 +5876,8 @@ metaScore.player.element.Cursor = (function () {
   };
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
-    var width, inTime, outTime,
+    var width,
+      inTime, outTime,
       curX;
     
     width = this.getProperty('width');
@@ -5941,18 +5909,23 @@ metaScore.player.element.Cursor = (function () {
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.element');
+metaScore.namespace('player.component.element');
 
-metaScore.player.element.Image = (function () {
+metaScore.player.component.element.Image = (function () {
 
   function Image(configs) {
     // call parent constructor
-    Image.parent.call(this, configs);
-    
-    this.data('type', 'image');    
+    Image.parent.call(this, configs);   
   }
   
-  metaScore.player.Element.extend(Image);
+  metaScore.player.component.Element.extend(Image);
+  
+  Image.prototype.setupDOM = function(){
+    // call parent function
+    Image.parent.prototype.setupDOM.call(this);
+    
+    this.data('type', 'image');
+  };
     
   return Image;
   
@@ -5963,24 +5936,19 @@ metaScore.player.element.Image = (function () {
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.element');
+metaScore.namespace('player.component.element');
 
-metaScore.player.element.Text = (function () {
+metaScore.player.component.element.Text = (function () {
 
   function Text(configs) {  
     // call parent constructor
     Text.parent.call(this, configs);
-    
-    this.data('type', 'text');
-    
-    this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-      .appendTo(this.contents);
   }
   
-  metaScore.player.Element.extend(Text);
+  metaScore.player.component.Element.extend(Text);
   
   Text.defaults = {
-    'properties': metaScore.Object.extend({}, metaScore.player.Element.defaults.properties, {
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'font-family': {
         'type': 'Select',
         'label': metaScore.String.t('Font'),
@@ -5997,13 +5965,36 @@ metaScore.player.element.Text = (function () {
             '"Courier New", Courier, monospace': 'Courier New',
             '"Lucida Console", Monaco, monospace': 'Lucida Console'
           }
+        },
+        'getter': function(){
+          return this.css('font-family');
+        },
+        'setter': function(value){
+          this.css('font-family', value);
         }
       },
       'text-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Text color')
+        'label': metaScore.String.t('Text color'),
+        'getter': function(){
+          return this.css('color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
       }
     })
+  };
+  
+  Text.prototype.setupDOM = function(){
+    // call parent function
+    Text.parent.prototype.setupDOM.call(this);
+    
+    this.data('type', 'text');
+    
+    this.text = new metaScore.Dom('<div/>', {'class': 'text'})
+      .appendTo(this.contents);
   };
   
   Text.prototype.setEditable = function(editable){
