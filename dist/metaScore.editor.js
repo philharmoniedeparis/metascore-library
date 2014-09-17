@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-09-16 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-09-17 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -51,6 +51,36 @@ if(Element){
     };
   })(Element.prototype);
 }
+
+
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+// MIT license
+(function() {
+  var lastTime = 0;
+  var vendors = ['ms', 'moz', 'webkit', 'o'];
+  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame){
+    window.requestAnimationFrame = function(callback, element) {
+      var currTime = new Date().getTime();
+      var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+      var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+  }
+
+  if (!window.cancelAnimationFrame){
+    window.cancelAnimationFrame = function(id) {
+      clearTimeout(id);
+    };
+  }
+}());
 /**
 * Core
 */
@@ -473,6 +503,106 @@ metaScore.Array = (function () {
   };
     
   return Array;
+  
+})();
+/**
+ * Color
+ *
+ * @requires ../metaScore.base.js
+ */
+ 
+metaScore.Color = (function () {
+  
+  function Color() {
+  }
+  
+  metaScore.Class.extend(Color);
+  
+  Color.rgb2hsv = function (rgb){    
+    var r = rgb.r, g = rgb.g, b = rgb.b,
+      max = Math.max(r, g, b),
+      min = Math.min(r, g, b),
+      d = max - min,
+      h, s, v;
+      
+    s = max === 0 ? 0 : d / max;
+    v = max;
+
+    if(max === min) {
+      h = 0; // achromatic
+    }
+    else {
+      switch(max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+          
+        case g:
+          h = (b - r) / d + 2;
+          break;
+          
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      
+      h /= 6;
+    }
+    
+    return {
+      'h': h,
+      's': s,
+      'v': v
+    };
+  };
+  
+  Color.parse = function(color){ 
+    var rgba = {}, matches;
+    
+    if(color === null){
+      return rgba;
+    }
+      
+    color = color.replace(/\s\s*/g,''); // Remove all spaces
+    
+    // Checks for 6 digit hex and converts string to integer
+    if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
+      rgba.r = parseInt(matches[1], 16);
+      rgba.g = parseInt(matches[2], 16);
+      rgba.b = parseInt(matches[3], 16);
+      rgba.a = 1;
+    }
+        
+    // Checks for 3 digit hex and converts string to integer
+    else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
+      rgba.r = parseInt(matches[1], 16) * 17;
+      rgba.g = parseInt(matches[2], 16) * 17;
+      rgba.b = parseInt(matches[3], 16) * 17;
+      rgba.a = 1;
+    }
+        
+    // Checks for rgba and converts string to
+    // integer/float using unary + operator to save bytes
+    else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
+      rgba.r = +matches[1];
+      rgba.g = +matches[2];
+      rgba.b = +matches[3];
+      rgba.a = +matches[4];
+    }
+        
+    // Checks for rgb and converts string to
+    // integer/float using unary + operator to save bytes
+    else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
+      rgba.r = +matches[1];
+      rgba.g = +matches[2];
+      rgba.b = +matches[3];
+      rgba.a = 1;
+    }
+    
+    return rgba;
+  };
+    
+  return Color;
   
 })();
 /**
@@ -2651,6 +2781,9 @@ metaScore.editor.MainMenu = (function(){
     left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
     right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
     
+    new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
+      .appendTo(left);
+    
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('New')
@@ -2888,9 +3021,7 @@ metaScore.editor.Panel = (function(){
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
       
-    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this)); 
-      
-    this.setupFields();
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
   }
 
   Panel.defaults = {
@@ -2904,32 +3035,40 @@ metaScore.editor.Panel = (function(){
       'next'
     ],
     
-    menuItems: [],
-    
-    /**
-    * The panel's fields
-    */
-    fields: {}
+    menuItems: []
   };
   
   metaScore.Dom.extend(Panel);
   
-  Panel.prototype.setupFields = function(){  
-    var row, uuid, configs, field;
-  
-    metaScore.Object.each(this.configs.fields, function(key, value){      
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(this.contents);
+  Panel.prototype.setupFields = function(){
+    var row, uuid, configs, fieldType, field;
     
-      uuid = 'field-'+ metaScore.String.uuid(5);
+    this.contents.empty();
+    
+    metaScore.Object.each(this.component.configs.properties, function(key, prop){
+      if(prop.editable !== false){        
+        row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key})
+          .appendTo(this.contents);
       
-      configs = value.configs || {};
-      
-      this.fields[key] = field = new value.type(configs).attr('id', uuid);
-      field.data('name', key);
-      
-      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
-      new metaScore.Dom('<td/>').appendTo(row).append(field);      
-    }, this);  
+        uuid = 'field-'+ metaScore.String.uuid(5);
+        
+        configs = prop.configs || {};
+        
+        field = new metaScore.editor.field[prop.type](configs)
+          .attr('id', uuid)
+          .data('name', key);
+        
+        new metaScore.Dom('<td/>')
+          .appendTo(row)
+          .append(new metaScore.Dom('<label/>', {'text': prop.label, 'for': uuid}));
+          
+        new metaScore.Dom('<td/>')
+          .appendTo(row)
+          .append(field);
+        
+        this.fields[key] = field;
+      }
+    }, this);
   };
   
   Panel.prototype.getToolbar = function(){    
@@ -2947,27 +3086,6 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.enableFields = function(){  
     metaScore.Object.each(this.fields, function(key, field){
       field.enable();
-    }, this);    
-  };
-  
-  Panel.prototype.toggleFields = function(enable){
-    var component = this.getComponent();
-  
-    metaScore.Object.each(this.fields, function(key, field){
-      if(component && ('filter' in this.configs.fields[key]) && this.configs.fields[key].filter(component) === false){
-        this.hideField(key);
-        field.disable();
-      }
-      else{
-        this.showField(key);
-        
-        if(enable === true){
-          field.enable();
-        }
-        else{
-          field.disable();
-        }
-      }
     }, this);    
   };
   
@@ -3022,7 +3140,7 @@ metaScore.editor.Panel = (function(){
     
     this.component = component;
     
-    this.toggleFields(true);
+    this.setupFields();
     this.enable();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     
@@ -3060,7 +3178,6 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.unsetComponent = function(supressEvent){  
     var component = this.getComponent();
       
-    this.toggleFields(false);
     this.disable();
     this.getMenu().disableItems('[data-action="delete"]');
     
@@ -3145,19 +3262,19 @@ metaScore.editor.Panel = (function(){
   
   Panel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
-      field, value, old_values;
+      name, value, old_values;
       
     if(!component){
       return;
     }
     
-    field = evt.detail.field.data('name');
+    name = evt.detail.field.data('name');
     value = evt.detail.value;
-    old_values = this.getValues([field]);
+    old_values = this.getValues([name]);
     
-    this.updateProperty(component, field, value);
+    component.setProperty(name, value);
     
-    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([field])}, false);
+    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
@@ -3188,24 +3305,18 @@ metaScore.editor.Panel = (function(){
     }
   };
   
-  Panel.prototype.updateProperty = function(component, name, value){
-    component.setProperty(this.configs.fields[name].property, value);
-  };
-  
   Panel.prototype.updateProperties = function(component, values){  
     metaScore.Object.each(values, function(name, value){
       if(!this.getField(name).disabled){
-        this.updateProperty(component, name, value);
+        component.setProperty(name, value);
       }
     }, this);
     
     this.updateFieldValues(values, true);  
   };
   
-  Panel.prototype.getValue = function(name){
-    var component = this.getComponent();
-    
-    return component.getProperty(this.configs.fields[name].property);
+  Panel.prototype.getValue = function(name){    
+    return this.getComponent().getProperty(name);
   };
   
   Panel.prototype.getValues = function(fields){
@@ -3502,7 +3613,7 @@ metaScore.editor.field.Color = (function () {
     this.value = this.value || {};
     
     if(!metaScore.Var.is(val, 'object')){
-      val = this.parseColor(val);
+      val = metaScore.Color.parse(val);
     }
   
     if('r' in val){
@@ -3530,7 +3641,7 @@ metaScore.editor.field.Color = (function () {
     }
     
     if(updatePositions !== false){
-      hsv = this.rgb2hsv(this.value);
+      hsv = metaScore.Color.rgb2hsv(this.value);
       
       this.overlay.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
       this.overlay.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
@@ -3706,86 +3817,6 @@ metaScore.editor.field.Color = (function () {
   };
   
   ColorField.prototype.onAlphaMousemove = ColorField.prototype.onAlphaClick;
-  
-  ColorField.prototype.rgb2hsv = function (rgb){    
-    var r = rgb.r, g = rgb.g, b = rgb.b,
-      max = Math.max(r, g, b),
-      min = Math.min(r, g, b),
-      d = max - min,
-      h, s, v;
-      
-    s = max === 0 ? 0 : d / max;
-    v = max;
-
-    if(max === min) {
-      h = 0; // achromatic
-    }
-    else {
-      switch(max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-          
-        case g:
-          h = (b - r) / d + 2;
-          break;
-          
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      
-      h /= 6;
-    }
-    
-    return {
-      'h': h,
-      's': s,
-      'v': v
-    };
-  };
-  
-  ColorField.prototype.parseColor = function(color){ 
-    var rgba = {}, matches;
-      
-    color = color.replace(/\s\s*/g,''); // Remove all spaces
-    
-    // Checks for 6 digit hex and converts string to integer
-    if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
-      rgba.r = parseInt(matches[1], 16);
-      rgba.g = parseInt(matches[2], 16);
-      rgba.b = parseInt(matches[3], 16);
-      rgba.a = 1;
-    }
-        
-    // Checks for 3 digit hex and converts string to integer
-    else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
-      rgba.r = parseInt(matches[1], 16) * 17;
-      rgba.g = parseInt(matches[2], 16) * 17;
-      rgba.b = parseInt(matches[3], 16) * 17;
-      rgba.a = 1;
-    }
-        
-    // Checks for rgba and converts string to
-    // integer/float using unary + operator to save bytes
-    else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
-      rgba.r = +matches[1];
-      rgba.g = +matches[2];
-      rgba.b = +matches[3];
-      rgba.a = +matches[4];
-    }
-        
-    // Checks for rgb and converts string to
-    // integer/float using unary + operator to save bytes
-    else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
-      rgba.r = +matches[1];
-      rgba.g = +matches[2];
-      rgba.b = +matches[3];
-      rgba.a = 1;
-    }
-    
-    return rgba;
-  };
     
   return ColorField;
   
@@ -4123,6 +4154,8 @@ metaScore.editor.field.Time = (function () {
     evt.stopPropagation();
     
     this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
   TimeField.prototype.setValue = function(milliseconds){      
@@ -4146,8 +4179,6 @@ metaScore.editor.field.Time = (function () {
     this.seconds.val(seconds_val);
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
 
   /**
@@ -4226,68 +4257,7 @@ metaScore.editor.panel.Block = (function () {
         'text': metaScore.String.t('Delete the active block'),
         'data-action': 'delete'
       }
-    ],
-    
-    /**
-    * The panel's fields
-    */
-    fields: {
-      'name': {
-        'type': metaScore.editor.field.Text,
-        'label': metaScore.String.t('Name'),
-        'property': 'name'
-      },
-      'x': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('X'),
-        'property': 'x'
-      },
-      'y': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Y'),
-        'property': 'y'
-      },
-      'width': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Width'),
-        'property': 'width',
-        'filter': function(component){
-          return !(component instanceof metaScore.player.Controller);
-        }
-      },
-      'height': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Height'),
-        'property': 'height',
-        'filter': function(component){
-          return !(component instanceof metaScore.player.Controller);
-        }
-      },
-      'bg-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Background color'),
-        'property': 'bg-color',
-        'filter': function(component){
-          return !(component instanceof metaScore.player.Controller);
-        }
-      },
-      'bg-image': {
-        'type': metaScore.editor.field.Image,
-        'label': metaScore.String.t('Background image'),
-        'property': 'bg-image',
-        'filter': function(component){
-          return !(component instanceof metaScore.player.Controller);
-        }
-      },
-      'synched': {
-        'type': metaScore.editor.field.Boolean,
-        'label': metaScore.String.t('Synchronized pages ?'),
-        'property': 'synched',
-        'filter': function(component){
-          return !(component instanceof metaScore.player.Controller);
-        }
-      }
-    }
+    ]
   };
   
   metaScore.editor.Panel.extend(BlockPanel);
@@ -4374,148 +4344,7 @@ metaScore.editor.panel.Element = (function () {
         'text': metaScore.String.t('Delete the active element'),
         'data-action': 'delete'
       }
-    ],
-    
-    /**
-    * The panel's fields
-    */
-    fields: {
-      'name': {
-        'type': metaScore.editor.field.Text,
-        'label': metaScore.String.t('Name'),
-        'property': 'name'
-      },
-      'x': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('X'),
-        'property': 'x'
-      },
-      'y': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Y'),
-        'property': 'y'
-      },
-      'width': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Width'),
-        'property': 'width'
-      },
-      'height': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Height'),
-        'property': 'height'
-      },
-      'r-index': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Reading index'),
-        'property': 'r-index',
-        'configs': {
-          'min': 0
-        }
-      },
-      'z-index': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Display index'),
-        'property': 'z-index'
-      },
-      'bg-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Background color'),
-        'property': 'bg-color'
-      },
-      'bg-image': {
-        'type': metaScore.editor.field.Image,
-        'label': metaScore.String.t('Background image'),
-        'property': 'bg-image'
-      },
-      'border-width': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Border width'),
-        'property': 'border-width'
-      },
-      'border-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Border color'),
-        'property': 'border-color'
-      },
-      'rounded-conrners': {
-        'type': metaScore.editor.field.Corner,
-        'label': metaScore.String.t('Rounded conrners'),
-        'property': 'rounded-conrners'
-      },
-      'start-time': {
-        'type': metaScore.editor.field.Time,
-        'label': metaScore.String.t('Start time'),
-        'property': 'start-time'
-      },
-      'end-time': {
-        'type': metaScore.editor.field.Time,
-        'label': metaScore.String.t('End time'),
-        'property': 'end-time'
-      },
-      'direction': {
-        'type': metaScore.editor.field.Select,
-        'label': metaScore.String.t('Direction'),
-        'property': 'direction',
-        'filter': function(component){
-          return component.data('type') === 'cursor';
-        },
-        'configs': {
-          'options': {
-            'right': metaScore.String.t('Left > Right'),
-            'left': metaScore.String.t('Right > Left'),
-            'bottom': metaScore.String.t('Top > Bottom'),
-            'top': metaScore.String.t('Bottom > Top'),
-          }
-        }
-      },
-      'cursor-width': {
-        'type': metaScore.editor.field.Integer,
-        'label': metaScore.String.t('Cursor width'),
-        'property': 'cursor-width',
-        'filter': function(component){
-          return component.data('type') === 'cursor';
-        }
-      },
-      'cursor-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Cursor color'),
-        'property': 'cursor-color',
-        'filter': function(component){
-          return component.data('type') === 'cursor';
-        }
-      },
-      'font-family': {
-        'type': metaScore.editor.field.Select,
-        'label': metaScore.String.t('Font'),
-        'property': 'font-family',
-        'filter': function(component){
-          return component.data('type') === 'text';
-        },
-        'configs': {
-          'options': {
-            'Georgia, serif': 'Georgia',
-            '"Times New Roman", Times, serif': 'Times New Roman',
-            'Arial, Helvetica, sans-serif': 'Arial',
-            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
-            'Impact, Charcoal, sans-serif': 'Impact',
-            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
-            'Tahoma, Geneva, sans-serif': 'Tahoma',
-            'Verdana, Geneva, sans-serif': 'Verdana',
-            '"Courier New", Courier, monospace': 'Courier New',
-            '"Lucida Console", Monaco, monospace': 'Lucida Console'
-          }
-        }
-      },
-      'text-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Text color'),
-        'property': 'text-color',
-        'filter': function(component){
-          return component.data('type') === 'text';
-        }
-      }
-    }
+    ]
   };
   
   metaScore.editor.Panel.extend(ElementPanel);
@@ -4590,33 +4419,7 @@ metaScore.editor.panel.Page = (function () {
         'text': metaScore.String.t('Delete the active page'),
         'data-action': 'delete'
       }
-    ],
-    
-    /**
-    * The panel's fields
-    */
-    fields: {
-      'bg-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Background color'),
-        'property': 'bg-color'
-      },
-      'bg-image': {
-        'type': metaScore.editor.field.Image,
-        'label': metaScore.String.t('Background image'),
-        'property': 'bg-image'
-      },
-      'start-time': {
-        'type': metaScore.editor.field.Time,
-        'label': metaScore.String.t('Start time'),
-        'property': 'start-time'
-      },
-      'end-time': {
-        'type': metaScore.editor.field.Time,
-        'label': metaScore.String.t('End time'),
-        'property': 'end-time'
-      }
-    }
+    ]
   };
   
   metaScore.editor.Panel.extend(PagePanel);
@@ -4906,7 +4709,7 @@ metaScore.Player = (function () {
       this.addBlock(metaScore.Object.extend({}, configs, {
         'container': this.configs.container,
         'listeners': {
-          'propertychange': metaScore.Function.proxy(this.onComponenetPropertyChange, this)
+          'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
         }
       }));
     }, this);
@@ -4949,11 +4752,13 @@ metaScore.Player = (function () {
     this.controller.removeClass('playing');
   };
   
-  Player.prototype.onComponenetPropertyChange = function(evt){
+  Player.prototype.onComponenetPropChange = function(evt){        
     switch(evt.detail.property){
       case 'start-time':
       case 'end-time':
-        console.log(evt.detail.property, evt.detail.value);
+        evt.detail.component.setCuePoint({
+          'media': this.media
+        });        
         break;
     }
   };
@@ -5012,15 +4817,15 @@ metaScore.player.Block = (function () {
     }
     
     this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    metaScore.Object.each(this.configs.listeners, function(key, value){
+      this.addListener(key, value);
+    }, this);
           
     this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
     this.pager = new metaScore.player.Pager().appendTo(this);
       
     this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
-    
-    metaScore.Object.each(this.configs.listeners, function(key, value){
-      this.addListener(key, value);
-    }, this);
     
     metaScore.Object.each(this.configs, function(key, value){
       this.setProperty(key, value);
@@ -5029,8 +4834,43 @@ metaScore.player.Block = (function () {
   
   Block.defaults = {
     'container': null,
-    'player_id': null,
-    'pages': []
+    'properties': {
+      'pages': {
+        'editable':false,
+      }, 
+      'name': {
+        'type': 'Text',
+        'label': metaScore.String.t('Name'),
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width'),
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height'),
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+      },
+      'background-image': {
+        'type':'Image',
+        'label': metaScore.String.t('Background image'),
+      },
+      'synched': {
+        'type': 'Boolean',
+        'label': metaScore.String.t('Synchronized pages ?'),
+      }
+    }
   };
   
   metaScore.Dom.extend(Block);
@@ -5075,12 +4915,13 @@ metaScore.player.Block = (function () {
     
     if(configs instanceof metaScore.player.Page){
       page = configs;
+      page.appendTo(this.pages);
     }
     else{
-      page = new metaScore.player.Page(configs);
+      page = new metaScore.player.Page(metaScore.Object.extend({}, configs, {
+        'container': this.pages
+      }));
     }
-  
-    page.appendTo(this.pages);
     
     this.setActivePage(this.getPages().count() - 1);
     
@@ -5139,10 +4980,8 @@ metaScore.player.Block = (function () {
   Block.prototype.getProperty = function(prop){
     switch(prop){
       case 'id':
-        return this.data('id');
-        
       case 'name':
-        return this.data('name');
+        return this.data(prop);
         
       case 'x':
         return parseInt(this.css('left'), 10);
@@ -5151,30 +4990,29 @@ metaScore.player.Block = (function () {
         return parseInt(this.css('top'), 10);
         
       case 'width':
-        return parseInt(this.css('width'), 10);
-        
       case 'height':
-        return parseInt(this.css('height'), 10);
+        return parseInt(this.css(prop), 10);
         
-      case 'bg-color':
-        return this.css('background-color');
+      case 'background-color':
+        return this.css(prop);
         
-      case 'bg-image':
-        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+      case 'background-image':
+        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         
      case  'synched':
-        return this.data('synched') === "true";
+        return this.data(prop) === "true";
     }
   };
   
   Block.prototype.setProperty = function(prop, value){
+    var supressEvent = false,
+      color;
+  
     switch(prop){
       case 'id':
-        this.data('id', value);
-        break;
-        
       case 'name':
-        this.data('name', value);
+      case 'synched':
+        this.data(prop, value);
         break;
         
       case 'x':
@@ -5186,33 +5024,35 @@ metaScore.player.Block = (function () {
         break;
         
       case 'width':
-        this.css('width', value +'px');
-        break;
-        
       case 'height':
-        this.css('height', value +'px');
+        this.css(prop, value +'px');
         break;
         
-      case 'bg-color':
-        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+      case 'background-color':
+        color = metaScore.Color.parse(value);
+        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         break;
         
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
+      case 'background-image':
+        if(metaScore.Var.is(value, "string")){
+         value = 'url('+ value +')';
+        }        
+        this.css(prop, value);
         break;
         
-     case 'synched':
-        this.data('synched', value);
-        break;
-        
-     case 'pages':
+      case 'pages':
         metaScore.Array.each(value, function(index, configs){
           this.addPage(configs);
         }, this);
         break;
+        
+      default:
+        supressEvent = true;
     }
     
-    this.triggerEvent('propertychange', {'property': prop, 'value': value});
+    if(supressEvent !== true){
+      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
+    }
   };
   
   Block.prototype.destroy = function(){
@@ -5269,6 +5109,19 @@ metaScore.player.Controller = (function () {
   
   metaScore.Dom.extend(Controller);
   
+  Controller.defaults = {
+    'properties': {
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+      }
+    }
+  };
+  
   Controller.prototype.onClick = function(evt){
     if(evt instanceof MouseEvent){
       this.triggerEvent('click', {'block': this});
@@ -5319,69 +5172,96 @@ metaScore.player.Controller = (function () {
  
 metaScore.namespace('player');
 
-metaScore.player.CuePoints = (function () {
+metaScore.player.CuePoint = (function () {
   
-  function CuePoints(media) {  
-    this.media = media;
+  function CuePoint(configs) {
+    this.configs = this.getConfigs(configs);
     
-    this.cuepoints = [];
+    this.id = metaScore.String.uuid();
     
-    this.media.addEventListener('timeupdate', this.onMediaTimeUpdate);
+    this.running = false;
+    this.inTimer = null;
+    this.outTimer = null;
+    
+    this.launch = metaScore.Function.proxy(this.launch, this);
+    this.stop = metaScore.Function.proxy(this.stop, this);
+    this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
+    
+    this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
   }
   
-  metaScore.Class.extend(CuePoints);
+  metaScore.Evented.extend(CuePoint);
   
-  CuePoints.prototype.onMediaTimeUpdate = function(e){
-    var curTime;
-    
-    curTime = parseFloat(this.media.currentTime);
-    
-    metaScore.Object.each(this.cuepoints, function (index, cuepoint) {
-      if (!cuepoint.timer && curTime >= cuepoint.inTime - 0.5 && curTime < cuepoint.inTime) {
-        this.setupTimer(cuepoint, (cuepoint.inTime - curTime) * 1000);
+  CuePoint.defaults = {
+    'media': null,
+    'inTime': null,
+    'outTime': null,
+    'onStart': null,
+    'onUpdate': null,
+    'onEnd': null
+  };
+  
+  CuePoint.prototype.onMediaTimeUpdate = function(evt){
+    var curTime = this.configs.media.getCurrentTime();
+     
+    if(!this.running){
+      if((!this.inTimer) && (curTime >= this.configs.inTime - 0.5) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
+        this.inTimer = setTimeout(this.launch, Math.max(0, this.configs.inTime - curTime));
       }
-    });
-  };
-  
-  CuePoints.prototype.add = function(cuepoint){
-    return this.cuepoints.push(cuepoint) - 1;
-  };
-  
-  CuePoints.prototype.remove = function(index){
-    var cuepoint = this.cuepoints[index];
-  
-    this.stop(cuepoint, false);
-    
-    this.cuepoints.splice(index, 1);
-  };
-  
-  CuePoints.prototype.setupTimer = function(cuepoint, delay){
-    cuepoint.timer = setTimeout(metaScore.Function.proxy(this.launch, this, cuepoint), delay);
-  };
-  
-  CuePoints.prototype.launch = function(cuepoint){
-    if(('onStart' in cuepoint) && metaScore.Var.is(cuepoint.onStart, 'function')){
-      cuepoint.onStart(this.media);
-    }    
-  };
-  
-  CuePoints.prototype.stop = function(cuepoint, launchHandler){    
-    if('timer' in cuepoint){
-      clearTimeout(cuepoint.timer);
-      delete cuepoint.timer;
     }
-    
-    if('interval' in cuepoint){
-      clearInterval(cuepoint.interval);
-      delete cuepoint.interval;
-    }
-    
-    if(launchHandler !== false && ('onEnd' in cuepoint) && metaScore.Var.is(cuepoint.onEnd, 'function')){
-      cuepoint.onEnd(this.media);
+    else{
+      if((!this.outTimer) && (this.configs.outTime !== null) && (curTime >= this.configs.outTime - 0.5)){
+        this.outTimer = setTimeout(this.stop, Math.max(0, this.configs.outTime - curTime));
+      }
+      
+      if(metaScore.Var.is(this.configs.onUpdate, 'function')){
+        this.configs.onUpdate(this, curTime);
+      }
     }
   };
+  
+  CuePoint.prototype.launch = function(){
+    if(this.running){
+      return;
+    }
+  
+    if(this.inTimer){
+      clearTimeout(this.inTimer);
+      this.inTimer = null;
+    }
     
-  return CuePoints;
+    if(metaScore.Var.is(this.configs.onStart, 'function')){
+      this.configs.onStart(this);
+    }
+    
+    // stop the cuepoint if it doesn't have an outTime or doesn't have onUpdate and onEnd callbacks
+    if((this.configs.outTime === null) || (!(this.configs.onUpdate) && !(this.configs.onEnd))){
+      this.stop();
+    }
+    else{
+      this.running = true;
+    }
+  };
+  
+  CuePoint.prototype.stop = function(launchCallback){
+    if(this.inTimer){
+      clearTimeout(this.inTimer);
+      this.inTimer = null;
+    }
+    
+    if(this.outTimer){
+      clearTimeout(this.outTimer);
+      this.outTimer = null;
+    }
+    
+    if(launchCallback !== false && metaScore.Var.is(this.configs.onEnd, 'function')){
+      this.configs.onEnd(this);
+    }
+    
+    this.running = false;
+  };
+    
+  return CuePoint;
   
 })();
 /**
@@ -5403,6 +5283,10 @@ metaScore.player.Element = (function () {
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
     
+    if(this.configs.container){
+      this.appendTo(this.configs.container);
+    }
+    
     this.addListener('click', metaScore.Function.proxy(this.onClick, this));
     
     this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
@@ -5415,6 +5299,70 @@ metaScore.player.Element = (function () {
   
   metaScore.Dom.extend(Element);
   
+  Element.defaults = {
+    'properties': {
+      'name': {
+        'type': 'Text',
+        'label': metaScore.String.t('Name')
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X')
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y')
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width')
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height')
+      },
+      'r-index': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Reading index'),
+        'configs': {
+          'min': 0
+        }
+      },
+      'z-index': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Display index')
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color')
+      },
+      'background-image': {
+        'type': 'Image',
+        'label': metaScore.String.t('Background image')
+      },
+      'border-width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Border width')
+      },
+      'border-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Border color')
+      },
+      'rounded-conrners': {
+        'type': 'Corner',
+        'label': metaScore.String.t('Rounded conrners')
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time')
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time')
+      }
+    }
+  };
+  
   Element.prototype.onClick = function(evt){
     if(evt instanceof MouseEvent){
       this.triggerEvent('click', {'element': this});
@@ -5426,10 +5374,9 @@ metaScore.player.Element = (function () {
   Element.prototype.getProperty = function(prop){
     switch(prop){
       case 'id':
-        return this.data('id');
-        
       case 'name':
-        return this.data('name');
+      case 'direction':
+        return this.data(prop);
         
       case 'x':
         return parseInt(this.css('left'), 10);
@@ -5438,40 +5385,26 @@ metaScore.player.Element = (function () {
         return parseInt(this.css('top'), 10);
         
       case 'width':
-        return parseInt(this.css('width'), 10);
-        
       case 'height':
-        return parseInt(this.css('height'), 10);
-        
-      case 'r-index':
-        return parseInt(this.data('r-index'), 10);
-        
       case 'z-index':
-        return parseInt(this.css('z-index'), 10);
-        
-      case 'bg-color':
-        return this.css('background-color');
-        
-      case 'bg-image':
-        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-        
       case 'border-width':
-        return parseInt(this.css('border-width'), 10);
+        return parseInt(this.css(prop), 10);
         
+      case 'background-color':
       case 'border-color':
-        return this.css('border-color');
+      case 'font-family':
+        return this.css(prop);
+        
+      case 'background-image':
+        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         
       case 'rounded-conrners':
         break;
         
+      case 'r-index':
       case 'start-time':
-        return this.data('start-time');
-        
       case 'end-time':
-        return this.data('end-time');
-        
-      case 'direction':
-        return this.data('direction');
+        return parseInt(this.data(prop), 10);
         
       case 'cursor-width':
         return this.cursor.css('width');
@@ -5479,22 +5412,23 @@ metaScore.player.Element = (function () {
       case 'cursor-color':
         return this.cursor.css('background-color');
         
-      case 'font-family':
-        return this.css('font-family');
-        
       case 'text-color':
         return this.css('color');
     }
   };
   
   Element.prototype.setProperty = function(prop, value){
-    switch(prop){
+    var supressEvent = false,
+      color;
+    
+    switch(prop){        
       case 'id':
-        this.data('id', value);
-        break;
-        
       case 'name':
-        this.data('name', value);
+      case 'r-index':
+      case 'start-time':
+      case 'end-time':
+      case 'direction':
+        this.data(prop, value);
         break;
         
       case 'x':
@@ -5506,50 +5440,30 @@ metaScore.player.Element = (function () {
         break;
         
       case 'width':
-        this.css('width', value +'px');
-        break;
-        
       case 'height':
-        this.css('height', value +'px');
-        break;
-        
-      case 'r-index':
-        this.data('r-index', value);
+      case 'border-width':
+        this.css(prop, value +'px');
         break;
         
       case 'z-index':
-        this.css('z-index', value);
+      case 'font-family':
+        this.css(prop, value);
         break;
         
-      case 'bg-color':
-        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-        
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
-        break;
-        
-      case 'border-width':
-        this.css('border-width', value +'px');
-        break;
-        
+      case 'background-color':
       case 'border-color':
-        this.css('border-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+        color = metaScore.Color.parse(value);
+        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        break;
+        
+      case 'background-image':
+        if(metaScore.Var.is(value, "string")){
+         value = 'url('+ value +')';
+        }        
+        this.css(prop, value);
         break;
         
       case 'rounded-conrners':
-        break;
-        
-      case 'start-time':
-        this.data('start-time', value);
-        break;
-        
-      case 'end-time':
-        this.data('end-time', value);
-        break;
-        
-      case 'direction':
-        this.data('direction', value);
         break;
         
       case 'cursor-width':
@@ -5557,19 +5471,25 @@ metaScore.player.Element = (function () {
         break;
         
       case 'cursor-color':
-        this.cursor.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
-        break;
-        
-      case 'font-family':
-        this.css('font-family', value);
+        color = metaScore.Color.parse(value);
+        this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         break;
         
       case 'text-color':
-        this.css('color', value);
+        color = metaScore.Color.parse(value);
+        this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         break;
+        
+      default:
+        supressEvent = true;
     }
     
-    this.triggerEvent('propertychange', {'property': prop, 'value': value});
+    if(supressEvent !== true){
+      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
+    }
+  };
+  
+  Element.prototype.setCuePoint = function(configs){
   };
   
   Element.prototype.destroy = function(){
@@ -5609,16 +5529,47 @@ metaScore.player.Media = (function () {
     this
       .addListener('play', metaScore.Function.proxy(this.onPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onPause, this));
+      
+    if(this.configs.useFrameAnimation){
+      this
+        .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
+        .addListener('play', metaScore.Function.proxy(this.triggerTimeUpdate, this));
+    }
 
     this.el = this.get(0);
   }
 
   Media.defaults = {
     'type': 'audio',
-    'sources': []
+    'sources': [],
+    'useFrameAnimation': true,
+    'properties': {
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width'),
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height'),
+      }
+    }
   };
   
   metaScore.Dom.extend(Media);
+  
+  Media.prototype.onTimeUpdate = function(evt){
+    if(!(evt instanceof CustomEvent)){
+      evt.stopPropagation();
+    }
+  };
   
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
@@ -5665,18 +5616,26 @@ metaScore.player.Media = (function () {
     }
   };
   
+  Media.prototype.triggerTimeUpdate = function() {
+    if(this.isPlaying()){
+      window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
+    }
+    
+    this.triggerEvent('timeupdate');
+  };
+  
   Media.prototype.setCurrentTime = function(time) {
-    this.el.currentTime = time;
+    this.el.currentTime = parseFloat(time) / 1000;
   };
   
   Media.prototype.getCurrentTime = function() {
-    return this.el.currentTime;
+    return parseFloat(this.el.currentTime) * 1000;
   };
   
   Media.prototype.getDuration = function() {
-    return this.el.duration;
+    return parseFloat(this.el.duration) * 1000;
   };
-    
+  
   return Media;
   
 })();
@@ -5700,6 +5659,10 @@ metaScore.player.Page = (function () {
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
     
+    if(this.configs.container){
+      this.appendTo(this.configs.container);
+    }
+    
     this.addListener('click', metaScore.Function.proxy(this.onClick, this));
     
     metaScore.Object.each(this.configs, function(key, value){
@@ -5708,7 +5671,27 @@ metaScore.player.Page = (function () {
   }
   
   Page.defaults = {
-    'elements': []
+    'properties': {
+      'elements': {
+        'editable': false
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+      },
+      'background-image': {
+        'type': 'Image',
+        'label': metaScore.String.t('Background image'),
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+      }
+    }
   };
   
   metaScore.Dom.extend(Page);
@@ -5726,49 +5709,51 @@ metaScore.player.Page = (function () {
     
     if(configs instanceof metaScore.player.Element){
       element = configs;
+      element.appendTo(this);
     }
     else{
-      element = new metaScore.player.element[configs.type](configs);
+      element = new metaScore.player.element[configs.type](metaScore.Object.extend({}, configs, {
+        'container': this
+      }));
     }
-    
-    element.appendTo(this);
     
     return element;  
   };
   
   Page.prototype.getProperty = function(prop){
     switch(prop){
-      case 'bg-color':
-        return this.css('background-color');
+      case 'background-color':
+        return this.css(prop);
         
-      case 'bg-image':
-        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+      case 'background-image':
+        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         
       case 'start-time':
-        console.log(this.data('ds'));
-        return this.data('start-time');
-        
       case 'end-time':
-        return this.data('end-time');
+        return parseInt(this.data(prop), 10);
     }
   };
   
   Page.prototype.setProperty = function(prop, value){
+    var supressEvent = false,
+      color;
+    
     switch(prop){
-      case 'bg-color':
-        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+      case 'background-color':
+        color = metaScore.Color.parse(value);
+        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         break;
         
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
+      case 'background-image':
+        if(metaScore.Var.is(value, "string")){
+         value = 'url('+ value +')';
+        }        
+        this.css(prop, value);
         break;
         
       case 'start-time':
-        this.data('start-time', value);
-        break;
-        
       case 'end-time':
-        this.data('end-time', value);
+        this.data(prop, value);
         break;
         
      case 'elements':
@@ -5776,9 +5761,32 @@ metaScore.player.Page = (function () {
           this.addElement(configs);
         }, this);
         break;
+        
+      default:
+        supressEvent = true;
     }
     
-    this.triggerEvent('propertychange', {'property': prop, 'value': value});
+    if(supressEvent !== true){
+      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
+    }
+  };
+  
+  Page.prototype.setCuePoint = function(configs){
+    if(this.cuepoint){
+      this.cuepoint.stop(false);
+    }
+  
+    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
+      'inTime': this.getProperty('start-time'),
+      'outTime': this.getProperty('end-time'),
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this)
+    }));
+    
+    return this.cuepoint;
+  };
+  
+  Page.prototype.onCuePointStart = function(cuepoint){
+    this.addClass('active');
   };
   
   Page.prototype.destroy = function(){
@@ -5853,6 +5861,76 @@ metaScore.player.element.Cursor = (function () {
   }
   
   metaScore.player.Element.extend(Cursor);
+  
+  Cursor.defaults = {
+    'acceleration': 1,
+    'properties': metaScore.Object.extend({}, metaScore.player.Element.defaults.properties, {    
+      'direction': {
+        'type': 'Select',
+        'label': metaScore.String.t('Direction'),
+        'configs': {
+          'options': {
+            'right': metaScore.String.t('Left > Right'),
+            'left': metaScore.String.t('Right > Left'),
+            'bottom': metaScore.String.t('Top > Bottom'),
+            'top': metaScore.String.t('Bottom > Top'),
+          }
+        }
+      },
+      'cursor-width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Cursor width')
+      },
+      'cursor-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Cursor color')
+      }
+    })
+  };
+  
+  Cursor.prototype.setCuePoint = function(configs){
+    if(this.cuepoint){
+      this.cuepoint.stop(false);
+    }
+  
+    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
+      'inTime': this.getProperty('start-time'),
+      'outTime': this.getProperty('end-time'),
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
+      'onUpdate': metaScore.Function.proxy(this.onCuePointUpdate, this),
+      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
+    }));
+    
+    return this.cuepoint;
+  };
+  
+  Cursor.prototype.onCuePointStart = function(cuepoint){
+    this.addClass('active');
+  };
+  
+  Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
+    var width, inTime, outTime,
+      curX;
+    
+    width = this.getProperty('width');
+    inTime = this.getProperty('start-time');
+    outTime = this.getProperty('end-time');
+        
+    if(this.configs.acceleration === 1){
+      curX = width * (curTime - inTime)  / (outTime - inTime);
+    }
+    else{
+      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), this.configs.acceleration);
+    }
+    
+    curX = Math.min(curX, width);
+
+    this.cursor.css('left', curX +'px');
+  };
+  
+  Cursor.prototype.onCuePointEnd = function(cuepoint){
+    this.removeClass('active');
+  };
     
   return Cursor;
   
@@ -5900,6 +5978,33 @@ metaScore.player.element.Text = (function () {
   }
   
   metaScore.player.Element.extend(Text);
+  
+  Text.defaults = {
+    'properties': metaScore.Object.extend({}, metaScore.player.Element.defaults.properties, {
+      'font-family': {
+        'type': 'Select',
+        'label': metaScore.String.t('Font'),
+        'configs': {
+          'options': {
+            'Georgia, serif': 'Georgia',
+            '"Times New Roman", Times, serif': 'Times New Roman',
+            'Arial, Helvetica, sans-serif': 'Arial',
+            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
+            'Impact, Charcoal, sans-serif': 'Impact',
+            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
+            'Tahoma, Geneva, sans-serif': 'Tahoma',
+            'Verdana, Geneva, sans-serif': 'Verdana',
+            '"Courier New", Courier, monospace': 'Courier New',
+            '"Lucida Console", Monaco, monospace': 'Lucida Console'
+          }
+        }
+      },
+      'text-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Text color')
+      }
+    })
+  };
   
   Text.prototype.setEditable = function(editable){
     this.text.attr('contenteditable', editable ? 'true' : 'null');

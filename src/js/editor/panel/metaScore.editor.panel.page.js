@@ -35,33 +35,7 @@ metaScore.editor.panel.Page = (function () {
         'text': metaScore.String.t('Delete the active page'),
         'data-action': 'delete'
       }
-    ],
-    
-    /**
-    * The panel's fields
-    */
-    fields: {
-      'bg-color': {
-        'type': metaScore.editor.field.Color,
-        'label': metaScore.String.t('Background color'),
-        'property': 'bg-color'
-      },
-      'bg-image': {
-        'type': metaScore.editor.field.Image,
-        'label': metaScore.String.t('Background image'),
-        'property': 'bg-image'
-      },
-      'start-time': {
-        'type': metaScore.editor.field.Time,
-        'label': metaScore.String.t('Start time'),
-        'property': 'start-time'
-      },
-      'end-time': {
-        'type': metaScore.editor.field.Time,
-        'label': metaScore.String.t('End time'),
-        'property': 'end-time'
-      }
-    }
+    ]
   };
   
   metaScore.editor.Panel.extend(PagePanel);

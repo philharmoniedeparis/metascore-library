@@ -25,15 +25,15 @@ metaScore.player.Block = (function () {
     }
     
     this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    
+    metaScore.Object.each(this.configs.listeners, function(key, value){
+      this.addListener(key, value);
+    }, this);
           
     this.pages = new metaScore.Dom('<div/>', {'class': 'pages'}).appendTo(this);
     this.pager = new metaScore.player.Pager().appendTo(this);
       
     this.pager.addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this));
-    
-    metaScore.Object.each(this.configs.listeners, function(key, value){
-      this.addListener(key, value);
-    }, this);
     
     metaScore.Object.each(this.configs, function(key, value){
       this.setProperty(key, value);
@@ -42,8 +42,43 @@ metaScore.player.Block = (function () {
   
   Block.defaults = {
     'container': null,
-    'player_id': null,
-    'pages': []
+    'properties': {
+      'pages': {
+        'editable':false,
+      }, 
+      'name': {
+        'type': 'Text',
+        'label': metaScore.String.t('Name'),
+      },
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width'),
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height'),
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+      },
+      'background-image': {
+        'type':'Image',
+        'label': metaScore.String.t('Background image'),
+      },
+      'synched': {
+        'type': 'Boolean',
+        'label': metaScore.String.t('Synchronized pages ?'),
+      }
+    }
   };
   
   metaScore.Dom.extend(Block);
@@ -88,12 +123,13 @@ metaScore.player.Block = (function () {
     
     if(configs instanceof metaScore.player.Page){
       page = configs;
+      page.appendTo(this.pages);
     }
     else{
-      page = new metaScore.player.Page(configs);
+      page = new metaScore.player.Page(metaScore.Object.extend({}, configs, {
+        'container': this.pages
+      }));
     }
-  
-    page.appendTo(this.pages);
     
     this.setActivePage(this.getPages().count() - 1);
     
@@ -152,10 +188,8 @@ metaScore.player.Block = (function () {
   Block.prototype.getProperty = function(prop){
     switch(prop){
       case 'id':
-        return this.data('id');
-        
       case 'name':
-        return this.data('name');
+        return this.data(prop);
         
       case 'x':
         return parseInt(this.css('left'), 10);
@@ -164,30 +198,29 @@ metaScore.player.Block = (function () {
         return parseInt(this.css('top'), 10);
         
       case 'width':
-        return parseInt(this.css('width'), 10);
-        
       case 'height':
-        return parseInt(this.css('height'), 10);
+        return parseInt(this.css(prop), 10);
         
-      case 'bg-color':
-        return this.css('background-color');
+      case 'background-color':
+        return this.css(prop);
         
-      case 'bg-image':
-        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+      case 'background-image':
+        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         
      case  'synched':
-        return this.data('synched') === "true";
+        return this.data(prop) === "true";
     }
   };
   
   Block.prototype.setProperty = function(prop, value){
+    var supressEvent = false,
+      color;
+  
     switch(prop){
       case 'id':
-        this.data('id', value);
-        break;
-        
       case 'name':
-        this.data('name', value);
+      case 'synched':
+        this.data(prop, value);
         break;
         
       case 'x':
@@ -199,33 +232,35 @@ metaScore.player.Block = (function () {
         break;
         
       case 'width':
-        this.css('width', value +'px');
-        break;
-        
       case 'height':
-        this.css('height', value +'px');
+        this.css(prop, value +'px');
         break;
         
-      case 'bg-color':
-        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+      case 'background-color':
+        color = metaScore.Color.parse(value);
+        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         break;
         
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
+      case 'background-image':
+        if(metaScore.Var.is(value, "string")){
+         value = 'url('+ value +')';
+        }        
+        this.css(prop, value);
         break;
         
-     case 'synched':
-        this.data('synched', value);
-        break;
-        
-     case 'pages':
+      case 'pages':
         metaScore.Array.each(value, function(index, configs){
           this.addPage(configs);
         }, this);
         break;
+        
+      default:
+        supressEvent = true;
     }
     
-    this.triggerEvent('propertychange', {'property': prop, 'value': value});
+    if(supressEvent !== true){
+      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
+    }
   };
   
   Block.prototype.destroy = function(){

@@ -26,16 +26,47 @@ metaScore.player.Media = (function () {
     this
       .addListener('play', metaScore.Function.proxy(this.onPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onPause, this));
+      
+    if(this.configs.useFrameAnimation){
+      this
+        .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
+        .addListener('play', metaScore.Function.proxy(this.triggerTimeUpdate, this));
+    }
 
     this.el = this.get(0);
   }
 
   Media.defaults = {
     'type': 'audio',
-    'sources': []
+    'sources': [],
+    'useFrameAnimation': true,
+    'properties': {
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+      },
+      'width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Width'),
+      },
+      'height': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Height'),
+      }
+    }
   };
   
   metaScore.Dom.extend(Media);
+  
+  Media.prototype.onTimeUpdate = function(evt){
+    if(!(evt instanceof CustomEvent)){
+      evt.stopPropagation();
+    }
+  };
   
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
@@ -82,18 +113,26 @@ metaScore.player.Media = (function () {
     }
   };
   
+  Media.prototype.triggerTimeUpdate = function() {
+    if(this.isPlaying()){
+      window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
+    }
+    
+    this.triggerEvent('timeupdate');
+  };
+  
   Media.prototype.setCurrentTime = function(time) {
-    this.el.currentTime = time;
+    this.el.currentTime = parseFloat(time) / 1000;
   };
   
   Media.prototype.getCurrentTime = function() {
-    return this.el.currentTime;
+    return parseFloat(this.el.currentTime) * 1000;
   };
   
   Media.prototype.getDuration = function() {
-    return this.el.duration;
+    return parseFloat(this.el.duration) * 1000;
   };
-    
+  
   return Media;
   
 })();

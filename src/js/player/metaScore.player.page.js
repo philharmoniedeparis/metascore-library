@@ -18,6 +18,10 @@ metaScore.player.Page = (function () {
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
     
+    if(this.configs.container){
+      this.appendTo(this.configs.container);
+    }
+    
     this.addListener('click', metaScore.Function.proxy(this.onClick, this));
     
     metaScore.Object.each(this.configs, function(key, value){
@@ -26,7 +30,27 @@ metaScore.player.Page = (function () {
   }
   
   Page.defaults = {
-    'elements': []
+    'properties': {
+      'elements': {
+        'editable': false
+      },
+      'background-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Background color'),
+      },
+      'background-image': {
+        'type': 'Image',
+        'label': metaScore.String.t('Background image'),
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+      }
+    }
   };
   
   metaScore.Dom.extend(Page);
@@ -44,49 +68,51 @@ metaScore.player.Page = (function () {
     
     if(configs instanceof metaScore.player.Element){
       element = configs;
+      element.appendTo(this);
     }
     else{
-      element = new metaScore.player.element[configs.type](configs);
+      element = new metaScore.player.element[configs.type](metaScore.Object.extend({}, configs, {
+        'container': this
+      }));
     }
-    
-    element.appendTo(this);
     
     return element;  
   };
   
   Page.prototype.getProperty = function(prop){
     switch(prop){
-      case 'bg-color':
-        return this.css('background-color');
+      case 'background-color':
+        return this.css(prop);
         
-      case 'bg-image':
-        return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+      case 'background-image':
+        return this.css(prop).replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         
       case 'start-time':
-        console.log(this.data('ds'));
-        return this.data('start-time');
-        
       case 'end-time':
-        return this.data('end-time');
+        return parseInt(this.data(prop), 10);
     }
   };
   
   Page.prototype.setProperty = function(prop, value){
+    var supressEvent = false,
+      color;
+    
     switch(prop){
-      case 'bg-color':
-        this.css('background-color', 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')');
+      case 'background-color':
+        color = metaScore.Color.parse(value);
+        this.css(prop, 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         break;
         
-      case 'bg-image':
-        this.css('background-image', 'url('+ value +')');
+      case 'background-image':
+        if(metaScore.Var.is(value, "string")){
+         value = 'url('+ value +')';
+        }        
+        this.css(prop, value);
         break;
         
       case 'start-time':
-        this.data('start-time', value);
-        break;
-        
       case 'end-time':
-        this.data('end-time', value);
+        this.data(prop, value);
         break;
         
      case 'elements':
@@ -94,9 +120,32 @@ metaScore.player.Page = (function () {
           this.addElement(configs);
         }, this);
         break;
+        
+      default:
+        supressEvent = true;
     }
     
-    this.triggerEvent('propertychange', {'property': prop, 'value': value});
+    if(supressEvent !== true){
+      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
+    }
+  };
+  
+  Page.prototype.setCuePoint = function(configs){
+    if(this.cuepoint){
+      this.cuepoint.stop(false);
+    }
+  
+    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
+      'inTime': this.getProperty('start-time'),
+      'outTime': this.getProperty('end-time'),
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this)
+    }));
+    
+    return this.cuepoint;
+  };
+  
+  Page.prototype.onCuePointStart = function(cuepoint){
+    this.addClass('active');
   };
   
   Page.prototype.destroy = function(){

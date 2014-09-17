@@ -24,6 +24,9 @@ metaScore.editor.MainMenu = (function(){
     left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
     right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
     
+    new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
+      .appendTo(left);
+    
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.String.t('New')

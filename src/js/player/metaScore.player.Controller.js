@@ -43,6 +43,19 @@ metaScore.player.Controller = (function () {
   
   metaScore.Dom.extend(Controller);
   
+  Controller.defaults = {
+    'properties': {
+      'x': {
+        'type': 'Integer',
+        'label': metaScore.String.t('X'),
+      },
+      'y': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Y'),
+      }
+    }
+  };
+  
   Controller.prototype.onClick = function(evt){
     if(evt instanceof MouseEvent){
       this.triggerEvent('click', {'block': this});

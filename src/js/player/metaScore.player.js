@@ -30,7 +30,7 @@ metaScore.Player = (function () {
       this.addBlock(metaScore.Object.extend({}, configs, {
         'container': this.configs.container,
         'listeners': {
-          'propertychange': metaScore.Function.proxy(this.onComponenetPropertyChange, this)
+          'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
         }
       }));
     }, this);
@@ -73,11 +73,13 @@ metaScore.Player = (function () {
     this.controller.removeClass('playing');
   };
   
-  Player.prototype.onComponenetPropertyChange = function(evt){
+  Player.prototype.onComponenetPropChange = function(evt){        
     switch(evt.detail.property){
       case 'start-time':
       case 'end-time':
-        console.log(evt.detail.property, evt.detail.value);
+        evt.detail.component.setCuePoint({
+          'media': this.media
+        });        
         break;
     }
   };

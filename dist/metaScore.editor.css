@@ -221,6 +221,15 @@
 .metaScore-editor .main-menu .right {
   float: right;
 }
+.metaScore-editor .main-menu .logo-philharmonie {
+  display: inline-block;
+  width: 102px;
+  height: 40px;
+  margin-right: 50px;
+  margin-left: 10px;
+  vertical-align: middle;
+  background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
+}
 .metaScore-editor .main-menu button {
   width: 20px;
   height: 18px;

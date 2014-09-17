@@ -46,9 +46,7 @@ metaScore.editor.Panel = (function(){
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
       
-    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this)); 
-      
-    this.setupFields();
+    this.addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this));
   }
 
   Panel.defaults = {
@@ -62,32 +60,40 @@ metaScore.editor.Panel = (function(){
       'next'
     ],
     
-    menuItems: [],
-    
-    /**
-    * The panel's fields
-    */
-    fields: {}
+    menuItems: []
   };
   
   metaScore.Dom.extend(Panel);
   
-  Panel.prototype.setupFields = function(){  
-    var row, uuid, configs, field;
-  
-    metaScore.Object.each(this.configs.fields, function(key, value){      
-      row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key}).appendTo(this.contents);
+  Panel.prototype.setupFields = function(){
+    var row, uuid, configs, fieldType, field;
     
-      uuid = 'field-'+ metaScore.String.uuid(5);
+    this.contents.empty();
+    
+    metaScore.Object.each(this.component.configs.properties, function(key, prop){
+      if(prop.editable !== false){        
+        row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key})
+          .appendTo(this.contents);
       
-      configs = value.configs || {};
-      
-      this.fields[key] = field = new value.type(configs).attr('id', uuid);
-      field.data('name', key);
-      
-      new metaScore.Dom('<td/>').appendTo(row).append(new metaScore.Dom('<label/>', {'text': value.label, 'for': uuid}));
-      new metaScore.Dom('<td/>').appendTo(row).append(field);      
-    }, this);  
+        uuid = 'field-'+ metaScore.String.uuid(5);
+        
+        configs = prop.configs || {};
+        
+        field = new metaScore.editor.field[prop.type](configs)
+          .attr('id', uuid)
+          .data('name', key);
+        
+        new metaScore.Dom('<td/>')
+          .appendTo(row)
+          .append(new metaScore.Dom('<label/>', {'text': prop.label, 'for': uuid}));
+          
+        new metaScore.Dom('<td/>')
+          .appendTo(row)
+          .append(field);
+        
+        this.fields[key] = field;
+      }
+    }, this);
   };
   
   Panel.prototype.getToolbar = function(){    
@@ -105,27 +111,6 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.enableFields = function(){  
     metaScore.Object.each(this.fields, function(key, field){
       field.enable();
-    }, this);    
-  };
-  
-  Panel.prototype.toggleFields = function(enable){
-    var component = this.getComponent();
-  
-    metaScore.Object.each(this.fields, function(key, field){
-      if(component && ('filter' in this.configs.fields[key]) && this.configs.fields[key].filter(component) === false){
-        this.hideField(key);
-        field.disable();
-      }
-      else{
-        this.showField(key);
-        
-        if(enable === true){
-          field.enable();
-        }
-        else{
-          field.disable();
-        }
-      }
     }, this);    
   };
   
@@ -180,7 +165,7 @@ metaScore.editor.Panel = (function(){
     
     this.component = component;
     
-    this.toggleFields(true);
+    this.setupFields();
     this.enable();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
     
@@ -218,7 +203,6 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.unsetComponent = function(supressEvent){  
     var component = this.getComponent();
       
-    this.toggleFields(false);
     this.disable();
     this.getMenu().disableItems('[data-action="delete"]');
     
@@ -303,19 +287,19 @@ metaScore.editor.Panel = (function(){
   
   Panel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
-      field, value, old_values;
+      name, value, old_values;
       
     if(!component){
       return;
     }
     
-    field = evt.detail.field.data('name');
+    name = evt.detail.field.data('name');
     value = evt.detail.value;
-    old_values = this.getValues([field]);
+    old_values = this.getValues([name]);
     
-    this.updateProperty(component, field, value);
+    component.setProperty(name, value);
     
-    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([field])}, false);
+    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
@@ -346,24 +330,18 @@ metaScore.editor.Panel = (function(){
     }
   };
   
-  Panel.prototype.updateProperty = function(component, name, value){
-    component.setProperty(this.configs.fields[name].property, value);
-  };
-  
   Panel.prototype.updateProperties = function(component, values){  
     metaScore.Object.each(values, function(name, value){
       if(!this.getField(name).disabled){
-        this.updateProperty(component, name, value);
+        component.setProperty(name, value);
       }
     }, this);
     
     this.updateFieldValues(values, true);  
   };
   
-  Panel.prototype.getValue = function(name){
-    var component = this.getComponent();
-    
-    return component.getProperty(this.configs.fields[name].property);
+  Panel.prototype.getValue = function(name){    
+    return this.getComponent().getProperty(name);
   };
   
   Panel.prototype.getValues = function(fields){

@@ -73,6 +73,8 @@ metaScore.editor.field.Time = (function () {
     evt.stopPropagation();
     
     this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
+    
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
   TimeField.prototype.setValue = function(milliseconds){      
@@ -96,8 +98,6 @@ metaScore.editor.field.Time = (function () {
     this.seconds.val(seconds_val);
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
 
   /**
