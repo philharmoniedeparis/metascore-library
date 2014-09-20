@@ -13,17 +13,16 @@ metaScore.Player = (function () {
     
     this.id = this.configs.id || metaScore.String.uuid();
     
-    this.media = new metaScore.player.Media({
-        'type': this.configs.file.type,
-        'sources': this.configs.transcoded_files
-      })
+    this.media = new metaScore.player.component.Media(this.configs.media)
+      .data('player-id', this.id)
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this.configs.container);
     
     this.controller = new metaScore.player.component.Controller(this.configs.controller)
-      .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .data('player-id', this.id)
+      .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .appendTo(this.configs.container);   
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
@@ -73,6 +72,12 @@ metaScore.Player = (function () {
     this.controller.removeClass('playing');
   };
   
+  Player.prototype.onMediaTimeUpdate = function(evt){
+    var currentTime = this.media.getCurrentTime();
+  
+    this.controller.updateTime(currentTime);
+  };
+  
   Player.prototype.onComponenetPropChange = function(evt){
     switch(evt.detail.property){
       case 'start-time':
@@ -100,11 +105,21 @@ metaScore.Player = (function () {
     return block;
   };
   
-  Player.prototype.destroy = function(parent){
-    var blocks = metaScore.Dom.selectElements('.metaScore-component.block[data-player-id="'+ this.id +'"]', parent);
+  Player.prototype.getComponents = function(parent){
+    var components = [];
     
-    metaScore.Array.each(blocks, function(index, block){
-      block._metaScore.destroy();
+    new metaScore.Dom('.metaScore-component[data-player-id="'+ this.id +'"]', parent).each(function(index, component){
+      components.push(component._metaScore);
+    }, this);
+    
+    return components;
+  };
+  
+  Player.prototype.destroy = function(parent){
+    var components = this.getComponents(parent);
+    
+    metaScore.Array.each(components, function(index, component){
+      component.destroy();
     }, this);
   };
     

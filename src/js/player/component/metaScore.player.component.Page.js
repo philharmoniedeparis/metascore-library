@@ -24,18 +24,7 @@ metaScore.player.component.Page = (function () {
           return this.data('id');
         },
         'setter': function(value){
-          this.attr('id', value);
-        }
-      },
-      'elements': {
-        'editable': false,
-        'getter': function(){
-        
-        },
-        'setter': function(value){
-          metaScore.Array.each(value, function(index, configs){
-            this.addElement(configs);
-          }, this);
+          this.data('id', value);
         }
       },
       'background-color': {
@@ -81,6 +70,23 @@ metaScore.player.component.Page = (function () {
         'setter': function(value){
           this.data('end-time', value);
         }
+      },
+      'elements': {
+        'editable': false,
+        'getter': function(){
+          var elements = [];
+          
+          this.getElements().each(function(index, element){
+            elements.push(element._metaScore.getProperties());
+          }, this);
+          
+          return elements;        
+        },
+        'setter': function(value){
+          metaScore.Array.each(value, function(index, configs){
+            this.addElement(configs);
+          }, this);
+        }
       }
     }
   };
@@ -106,6 +112,10 @@ metaScore.player.component.Page = (function () {
     }
     
     return element;  
+  };
+  
+  Page.prototype.getElements = function(){  
+    return this.children('.element');
   };
   
   Page.prototype.setCuePoint = function(configs){

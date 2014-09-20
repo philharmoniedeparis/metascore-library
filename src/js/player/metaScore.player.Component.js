@@ -53,16 +53,28 @@ metaScore.player.Component = (function () {
     }
   };
   
-  Component.prototype.getProperty = function(prop){
-    if(prop in this.configs.properties && 'getter' in this.configs.properties[prop]){
-      return this.configs.properties[prop].getter.call(this);
+  Component.prototype.getProperty = function(name){
+    if(name in this.configs.properties && 'getter' in this.configs.properties[name]){
+      return this.configs.properties[name].getter.call(this);
     }
   };
   
-  Component.prototype.setProperty = function(prop, value){
-    if(prop in this.configs.properties && 'setter' in this.configs.properties[prop]){
-      this.configs.properties[prop].setter.call(this, value);
-      this.triggerEvent('propchange', {'component': this, 'property': prop, 'value': value});
+  Component.prototype.getProperties = function(){
+    var values = {};
+  
+    metaScore.Object.each(this.configs.properties, function(name, prop){
+      if('getter' in prop){
+        values[name] = prop.getter.call(this);
+      }
+    }, this);
+    
+    return values;
+  };
+  
+  Component.prototype.setProperty = function(name, value){
+    if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
+      this.configs.properties[name].setter.call(this, value);
+      this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
     }
   };
   

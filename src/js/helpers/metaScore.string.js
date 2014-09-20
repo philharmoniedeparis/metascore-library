@@ -50,7 +50,7 @@ metaScore.String = (function () {
   * @param {number} the number of allowable values for each character
   * @returns {string} a random uuid
   */
-  String.uuid = function (len, radix) {
+  String.uuid = function(len, radix) {
     var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
       uuid = [], i;
     
@@ -81,6 +81,37 @@ metaScore.String = (function () {
     }
 
     return uuid.join('');
+  };
+ 
+  String.pad = function(str, len, pad, dir) {
+    var right, left,
+      padlen;
+  
+    if (typeof(len) === "undefined") { len = 0; }
+    if (typeof(pad) === "undefined") { pad = ' '; }
+    if (typeof(dir) === "undefined") { dir = 'right'; }
+    
+    str = str +'';
+ 
+    if (len + 1 >= str.length) { 
+      switch (dir){ 
+        case 'left':
+          str = Array(len + 1 - str.length).join(pad) + str;
+          break;
+
+        case 'both':
+          padlen = len - str.length;
+          right = Math.ceil(padlen / 2);
+          left = padlen - right;
+          str = Array(left+1).join(pad) + str + Array(right+1).join(pad);
+          break;
+
+        default:
+          str = str + Array(len + 1 - str.length).join(pad);
+          break;
+      } 
+    } 
+    return str; 
   };
     
   return String;

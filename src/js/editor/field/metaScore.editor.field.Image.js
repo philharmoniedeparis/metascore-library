@@ -44,7 +44,7 @@ metaScore.editor.field.Image = (function () {
   
   ImageField.prototype.onFileSelect = function(files){
     if(files.length > 0){
-      this.setValue(files[0].url);
+      this.setValue(files[0].url +'?fid='+ files[0].fid);
       this.triggerEvent('change');
     }
   };

@@ -24,7 +24,7 @@ metaScore.player.component.Controller = (function () {
           return this.data('id');
         },
         'setter': function(value){
-          this.attr('id', value);
+          this.data('id', value);
         }
       },
       'x': {
@@ -56,7 +56,7 @@ metaScore.player.component.Controller = (function () {
     
     this.addClass('controller');
           
-    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
+    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00:00.00'})
       .appendTo(this);
           
     this.rewind_btn = new metaScore.Dom('<button/>')
@@ -69,6 +69,15 @@ metaScore.player.component.Controller = (function () {
       .append(this.rewind_btn)
       .append(this.play_btn)
       .appendTo(this);
+  };
+  
+  Controller.prototype.updateTime = function(time){
+    var centiseconds = metaScore.String.pad(parseInt((time / 10) % 100, 10), 2, '0', 'left'),
+      seconds = metaScore.String.pad(parseInt((time / 1000) % 60, 10), 2, '0', 'left'),
+      minutes = metaScore.String.pad(parseInt((time / 60000) % 60, 10), 2, '0', 'left'),
+      hours = metaScore.String.pad(parseInt((time / 3600000), 10), 2, '0', 'left');
+  
+    this.timer.text(hours +':'+ minutes +':'+ seconds +'.'+ centiseconds);
   };
     
   return Controller;

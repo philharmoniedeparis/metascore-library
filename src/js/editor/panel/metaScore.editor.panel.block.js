@@ -41,7 +41,7 @@ metaScore.editor.panel.Block = (function () {
   metaScore.editor.Panel.extend(BlockPanel);
   
   BlockPanel.prototype.getDraggable = function(){
-    var component = this.getComponent();
+    var component = this.getComponent();    
     
     if(component instanceof metaScore.player.component.Controller){
       return {
@@ -49,13 +49,23 @@ metaScore.editor.panel.Block = (function () {
         'handle': component.child('.timer'),
         'container': component.parents()
       };
+    }    
+    else if(component instanceof metaScore.player.component.Media){
+      return {
+        'target': component,
+        'handle': component.child('video'),
+        'container': component.parents()
+      };
     }
-  
-    return {
-      'target': component,
-      'handle': component.child('.pager'),
-      'container': component.parents()
-    };
+    else if(component instanceof metaScore.player.component.Block){
+      return {
+        'target': component,
+        'handle': component.child('.pager'),
+        'container': component.parents()
+      };
+    }
+    
+    return false;
   };
   
   BlockPanel.prototype.getResizable = function(){  

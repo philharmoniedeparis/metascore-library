@@ -89,64 +89,8 @@ metaScore.Editor = (function(){
   
   metaScore.Dom.extend(Editor);
   
-  Editor.prototype.addPlayerCSS = function(url){
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.player_head);
-  };
-  
-  Editor.prototype.addPlayer = function(configs){  
-    this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
-      'container': this.player_body
-    }));
-  };
-  
-  Editor.prototype.removePlayer = function(){
-    if(this.player){
-      this.player.destroy(this.player_body);
-    }
-    
-    delete this.player;
-  };
-  
-  Editor.prototype.addBlock = function(block){
-    if(!(block instanceof metaScore.player.component.Block)){
-      block = this.player.addBlock(block);
-    }
-
-    this.block_panel.setComponent(block);
-    
-    return block;
-  };
-  
-  Editor.prototype.addPage = function(block, page){
-    if(!(page instanceof metaScore.player.component.Page)){
-      page = block.addPage(page);
-    }
-    
-    this.page_panel.setComponent(page);
-    
-    return page;
-  };
-  
-  Editor.prototype.addElement = function(page, element){
-    if(!(element instanceof metaScore.player.component.Element)){
-      element = page.addElement(element);
-    }
-    
-    this.element_panel.setComponent(element);
-    
-    return element;
-  };
-  
-  Editor.prototype.openGuide = function(guide){    
-    this.alert = new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('Loading...'),
-      'autoShow': true
-    });
-  
-    metaScore.Ajax.get(this.configs.api_url +'guide/'+ guide.id +'.json', {
-      'success': metaScore.Function.proxy(this.onGuideLoadSuccess, this),
-      'error': metaScore.Function.proxy(this.onGuideLoadError, this)
-    });
+  Editor.defaults = {
+    'ajax': {}
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -155,12 +99,22 @@ metaScore.Editor = (function(){
     this.removePlayer();
     this.addPlayer(data);
     
-    this.alert.hide();
+    this.loadmask.hide();
     
-    delete this.alert;
+    delete this.loadmask;
   };
   
-  Editor.prototype.onGuideLoadError = function(evt){
+  Editor.prototype.onGuideLoadError = function(xhr){
+  
+  };
+  
+  Editor.prototype.onGuideSaveSuccess = function(xhr){    
+    this.loadmask.hide();
+    
+    delete this.loadmask;
+  };
+  
+  Editor.prototype.onGuideSaveError = function(xhr){
   
   };
   
@@ -204,7 +158,10 @@ metaScore.Editor = (function(){
         })
         .show();
         break;
+      case 'edit':
+        break;
       case 'save':
+        this.saveGuide();
         break;
       case 'download':
         break;
@@ -218,8 +175,6 @@ metaScore.Editor = (function(){
       case 'redo':
         this.history.redo();
         break;
-      case 'edit':
-        break;
       case 'settings':
         break;
       case 'help':
@@ -230,7 +185,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
     
-    if(!(block instanceof metaScore.player.component.Controller)){
+    if(block instanceof metaScore.player.component.Block){
       this.page_panel.setComponent(block.getActivePage(), true);
       this.page_panel.getMenu().enableItems('[data-action="new"]');
       this.element_panel.getMenu().enableItems('[data-action="new"]');
@@ -505,6 +460,14 @@ metaScore.Editor = (function(){
       this.element_panel.unsetComponent();
       this.block_panel.setComponent(evt.detail.component);
     }
+    else if(evt.detail.component instanceof metaScore.player.component.Controller){
+      this.element_panel.unsetComponent();
+      this.block_panel.setComponent(evt.detail.component);
+    }
+    else if(evt.detail.component instanceof metaScore.player.component.Media){
+      this.element_panel.unsetComponent();
+      this.block_panel.setComponent(evt.detail.component);
+    }
     else if(evt.detail.component instanceof metaScore.player.component.Page){
       this.element_panel.unsetComponent();
       this.page_panel.setComponent(evt.detail.component);
@@ -557,6 +520,107 @@ metaScore.Editor = (function(){
     }
     
     this.mainmenu.enableItems('[data-action="undo"]');
+  };
+  
+  Editor.prototype.addPlayerCSS = function(url){
+    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.player_head);
+  };
+  
+  Editor.prototype.addPlayer = function(configs){  
+    this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
+      'container': this.player_body
+    }));
+  };
+  
+  Editor.prototype.removePlayer = function(){
+    if(this.player){
+      this.player.destroy(this.player_body);
+    }
+    
+    delete this.player;
+  };
+  
+  Editor.prototype.addBlock = function(block){
+    if(!(block instanceof metaScore.player.component.Block)){
+      block = this.player.addBlock(block);
+    }
+
+    this.block_panel.setComponent(block);
+    
+    return block;
+  };
+  
+  Editor.prototype.addPage = function(block, page){
+    if(!(page instanceof metaScore.player.component.Page)){
+      page = block.addPage(page);
+    }
+    
+    this.page_panel.setComponent(page);
+    
+    return page;
+  };
+  
+  Editor.prototype.addElement = function(page, element){
+    if(!(element instanceof metaScore.player.component.Element)){
+      element = page.addElement(element);
+    }
+    
+    this.element_panel.setComponent(element);
+    
+    return element;
+  };
+  
+  Editor.prototype.openGuide = function(guide){
+    var options;
+  
+    this.loadmask = new metaScore.editor.overlay.Alert({
+      'text': metaScore.String.t('Loading...'),
+      'autoShow': true
+    });
+    
+    options = metaScore.Object.extend({}, {
+      'success': metaScore.Function.proxy(this.onGuideLoadSuccess, this),
+      'error': metaScore.Function.proxy(this.onGuideLoadError, this)
+    }, this.configs.ajax);
+  
+    metaScore.Ajax.get(this.configs.api_url +'guide/'+ guide.id +'.json', options);
+  };
+  
+  Editor.prototype.saveGuide = function(){
+    var components = this.player.getComponents(this.player_body),
+      id = this.player.id,
+      options,
+      data = {};
+    
+    metaScore.Array.each(components, function(index, component){
+      if(component instanceof metaScore.player.component.Media){
+        data['media'] = component.getProperties();
+      }      
+      else if(component instanceof metaScore.player.component.Controller){        
+        data['controller'] = component.getProperties();
+      }      
+      else if(component instanceof metaScore.player.component.Block){
+        if(!('blocks' in data)){
+          data['blocks'] = [];
+        }
+        
+        data['blocks'].push(component.getProperties());
+      }
+    }, this);
+    
+    options = metaScore.Object.extend({}, {
+      'data': JSON.stringify(data),
+      'dataType': 'json',
+      'success': metaScore.Function.proxy(this.onGuideSaveSuccess, this),
+      'error': metaScore.Function.proxy(this.onGuideSaveError, this)
+    }, this.configs.ajax);
+  
+    this.loadmask = new metaScore.editor.overlay.Alert({
+      'text': metaScore.String.t('Saving...'),
+      'autoShow': true
+    });
+  
+    metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);    
   };
     
   return Editor;

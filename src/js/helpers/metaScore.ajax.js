@@ -56,31 +56,28 @@ metaScore.Ajax = (function () {
 
     var key,
       xhr = Ajax.createXHR(),
-      data, query = [],
       defaults = {
         'method': 'GET',
-        'headers': [],
+        'headers': {},
         'async': true,
         'data': {},
+        'dataType': 'json', // xml, json, script, text or html
         'complete': null,
         'success': null,
         'error': null,
         'scope': this
       };
     
-    options = metaScore.Object.extend(function(){}, defaults, options);
+    options = metaScore.Object.extend({}, defaults, options);
     
-    metaScore.Object.each(options.data, function(key, value){
-      query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-    });
-    
-    if(query.length > 0){
-      if(options.method === 'POST'){
-        data = query.join('&');
-        options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-      }
-      else{
-        url += '?'+ query.join('&');
+    if((options.method === 'POST' || options.method === 'PUT') && !('Content-type' in options.headers)){
+      switch(options.dataType){
+        case 'json':
+          options.headers['Content-type'] = 'application/json;charset=UTF-8';
+          break;
+          
+        default:
+          options.headers['Content-type'] = 'application/x-www-form-urlencoded';
       }
     }
     
@@ -106,7 +103,7 @@ metaScore.Ajax = (function () {
       }
     };
     
-    xhr.send(data);
+    xhr.send(options.data);
     
     return xhr;
     
@@ -135,6 +132,20 @@ metaScore.Ajax = (function () {
   Ajax.post = function(url, options) {
     
     metaScore.Object.extend(options, {'method': 'POST'});
+    
+    return Ajax.send(url, options);
+    
+  };
+
+  /**
+  * Send an XMLHttp PUT request
+  * @param {string} the url of the request
+  * @param {object} options to set for the request; see the defaults variable
+  * @returns {object} the XMLHttp object
+  */
+  Ajax.put = function(url, options) {
+    
+    metaScore.Object.extend(options, {'method': 'PUT'});
     
     return Ajax.send(url, options);
     

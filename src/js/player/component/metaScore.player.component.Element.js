@@ -23,7 +23,7 @@ metaScore.player.component.Element = (function () {
           return this.data('id');
         },
         'setter': function(value){
-          this.attr('id', value);
+          this.data('id', value);
         }
       },
       'name': {

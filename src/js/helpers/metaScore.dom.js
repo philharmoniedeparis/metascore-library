@@ -440,10 +440,8 @@ metaScore.Dom = (function () {
   * @param {string} the selector
   * @returns {boolean} true if the element matches the selector, false otherwise
   */
-  Dom.is = function(element, selector){
-    
-    return element.matches(selector);
-    
+  Dom.is = function(element, selector){    
+    return element.matches(selector);    
   };
   
   Dom.prototype.add = function(elements){
@@ -465,11 +463,10 @@ metaScore.Dom = (function () {
     return this.elements[index];
   };
   
-  Dom.prototype.filter = function(selector){
-  
+  Dom.prototype.filter = function(selector){  
     var filtered = [];
     
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       if(Dom.is(element, selector)){
         filtered.push(element);
       }
@@ -480,54 +477,47 @@ metaScore.Dom = (function () {
     return this;
   };
   
-  Dom.prototype.index = function(selector){
-  
+  Dom.prototype.index = function(selector){  
     var found = -1;
     
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       if(Dom.is(element, selector)){
         found = index;
         return false;
       }
     }, this);
     
-    return found;
-  
+    return found;  
   };
   
-  Dom.prototype.child = function(selector){
-  
+  Dom.prototype.child = function(selector){  
     var children = new Dom(),
      child;
   
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       if(child = Dom.selectElement.call(this, selector, element)){
         children.add(child);
         return false;
       }
     }, this);
     
-    return children;
-  
+    return children;  
   };
   
-  Dom.prototype.children = function(selector){
-  
+  Dom.prototype.children = function(selector){  
     var children = new Dom();
   
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       children.add(Dom.selectElements.call(this, selector, element));
     }, this);
     
-    return children;
-  
+    return children;  
   };
   
-  Dom.prototype.parents = function(selector){
-  
+  Dom.prototype.parents = function(selector){  
     var parents = new Dom();
   
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       parents.add(element.parentElement);
     }, this);
       
@@ -536,60 +526,68 @@ metaScore.Dom = (function () {
     }
     
     return parents;
+  };
   
+  Dom.prototype.each = function(callback, scope){
+    scope = scope || this;
+  
+    metaScore.Array.each(this.elements, callback, scope);
   };
   
   Dom.prototype.addClass = function(className) {  
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       Dom.addClass(element, className);
     }, this);
+    
     return this;        
   };
   
   Dom.prototype.removeClass = function(className) {  
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       Dom.removeClass(element, className);
-    }, this);        
+    }, this);
+    
     return this;        
   };
   
   Dom.prototype.toggleClass = function(className, force) {  
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       Dom.toggleClass(element, className, force);
-    }, this);        
+    }, this);
+    
     return this;        
   };
   
   Dom.prototype.addListener = function(type, callback, useCapture) {  
-    metaScore.Array.each(this.elements, function(index, element) {
+   this.each(function(index, element) {
       Dom.addListener(element, type, callback, useCapture);
-    }, this);        
+    }, this);
+    
     return this;        
   };
   
-  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
-  
+  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {  
     scope = scope || this;
     
     return this.addListener(type, function(evt){
       if(Dom.is(evt.target, selector)){
         callback.call(scope, evt);
       }
-    }, useCapture);
-    
+    }, useCapture);    
   };
   
   Dom.prototype.removeListener = function(type, callback, useCapture) {  
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       Dom.removeListener(element, type, callback, useCapture);
-    }, this);        
+    }, this);
+    
     return this;        
   };
   
   Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
   
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       return_value = Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
     }, this);
     
@@ -598,7 +596,7 @@ metaScore.Dom = (function () {
   
   Dom.prototype.text = function(value) {  
     if(value !== undefined){
-      metaScore.Array.each(this.elements, function(index, element) {
+      this.each(function(index, element) {
         Dom.text(element, value);
       }, this);
     }
@@ -609,7 +607,7 @@ metaScore.Dom = (function () {
   
   Dom.prototype.val = function(value) {
     if(value !== undefined){
-      metaScore.Array.each(this.elements, function(index, element) {
+      this.each(function(index, element) {
         Dom.val(element, value);
       }, this);
       return this;
@@ -621,7 +619,7 @@ metaScore.Dom = (function () {
   
   Dom.prototype.attr = function(name, value) {
     if(value !== undefined || metaScore.Var.is(name, 'object')){
-      metaScore.Array.each(this.elements, function(index, element) {
+      this.each(function(index, element) {
         Dom.attr(element, name, value);
       }, this);
       return this;
@@ -633,7 +631,7 @@ metaScore.Dom = (function () {
   
   Dom.prototype.css = function(name, value) {
     if(value !== undefined){
-      metaScore.Array.each(this.elements, function(index, element) {
+      this.each(function(index, element) {
         Dom.css(element, name, value);
       }, this);
       return this;
@@ -645,7 +643,7 @@ metaScore.Dom = (function () {
   
   Dom.prototype.data = function(name, value) {
     if(value !== undefined){
-      metaScore.Array.each(this.elements, function(index, element) {
+      this.each(function(index, element) {
         Dom.data(element, name, value);
       }, this);
       return this;
@@ -672,7 +670,7 @@ metaScore.Dom = (function () {
     
     parent = parent.get(0);
     
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       Dom.append(parent, element);
     }, this);
     
@@ -680,7 +678,7 @@ metaScore.Dom = (function () {
   };
   
   Dom.prototype.empty = function(){    
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       Dom.empty(element);
     }, this);
     
@@ -688,22 +686,24 @@ metaScore.Dom = (function () {
   };
   
   Dom.prototype.show = function(){
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       this.css('display', '');
     }, this);
+    
     return this;
   };
   
   Dom.prototype.hide = function(){
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       this.css('display', 'none');
     }, this);
+    
     return this;
   };
   
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
-      metaScore.Array.each(this.elements, function(index, element) {
+      this.each(function(index, element) {
         var parent = element.parentElement;
         Dom.remove(element);
         Dom.triggerEvent(parent, 'childremoved', {'child': element});
@@ -716,7 +716,7 @@ metaScore.Dom = (function () {
   Dom.prototype.is = function(selector){
     var found;
   
-    metaScore.Array.each(this.elements, function(index, element) {
+    this.each(function(index, element) {
       found = Dom.is(element, selector);
       return found;
     }, this);

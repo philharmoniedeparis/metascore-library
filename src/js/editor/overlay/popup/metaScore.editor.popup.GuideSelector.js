@@ -84,7 +84,7 @@ metaScore.editor.overlay.popup.GuideSelector = (function () {
         .appendTo(table);
       
       new metaScore.Dom('<td/>', {'class': 'thumbnail'})
-        .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail.url}))
+        .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail}))
         .appendTo(row);
         
       new metaScore.Dom('<td/>', {'class': 'details'})

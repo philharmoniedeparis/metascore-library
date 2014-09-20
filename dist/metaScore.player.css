@@ -75,10 +75,79 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
-.metaScore-component.block {
+.metaScore-component {
   position: absolute;
   top: 0;
   left: 0;
+}
+.metaScore-component.media.audio {
+  display: none;
+}
+.metaScore-component.media.video {
+  min-width: 50px;
+  min-height: 50px;
+}
+.metaScore-component.media.video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+.metaScore-component.controller {
+  width: 90px;
+  height: 100px;
+  min-width: 0;
+  overflow: hidden;
+  color: #dddddd;
+  background: #cccccc;
+  font-weight: bold;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+.metaScore-component.controller .timer {
+  text-align: center;
+  line-height: 30px;
+  background: #0000fe;
+}
+.metaScore-component.controller .buttons {
+  position: relative;
+}
+.metaScore-component.controller .buttons button {
+  position: absolute;
+  border: none;
+  outline: none;
+  background: transparent url('img/player/controller-buttons.png') no-repeat;
+}
+.metaScore-component.controller .buttons button[data-action="rewind"] {
+  top: 22px;
+  left: 10px;
+  width: 10px;
+  height: 11px;
+  background-position: -16px -17px;
+}
+.metaScore-component.controller .buttons button[data-action="play"] {
+  top: 5px;
+  left: 23px;
+  width: 43px;
+  height: 43px;
+  background-position: -47px 0;
+}
+.metaScore-component.controller.playing .buttons button[data-action="play"] {
+  background-position: -94px 0;
+}
+.metaScore-component.block {
   min-width: 200px;
   min-height: 100px;
   width: 200px;
@@ -88,10 +157,15 @@
   background-repeat: no-repeat;
   background-position: 0 0;
   background-size: contain;
-  background: #eee;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  background: #eeeeee;
+  border: 1px solid #cccccc;
   font: normal 12px / normal Verdana, Arial, Helvetica, sans-serif;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
 }
 .metaScore-component.block button {
   padding: 0;
@@ -104,8 +178,13 @@
   width: 100%;
   height: 20px;
   background: rgba(214, 214, 214, 0.6);
-  border-radius: 10px 10px 0 0;
   text-align: right;
+  -webkit-border-radius: 10px 10px 0 0;
+  -moz-border-radius: 10px 10px 0 0;
+  border-radius: 10px 10px 0 0;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
 }
 .metaScore-component.block .pager .count {
   display: inline-block;
@@ -156,9 +235,11 @@
 .metaScore-component.block .pager .buttons .button[data-action="next"].inactive {
   background-position: -33px -14px;
 }
+.metaScore-component:hover .pager {
+  display: block;
+}
 .metaScore-component.page {
   display: none;
-  position: absolute;
   width: 100%;
   height: 100%;
   overflow: auto;
@@ -167,13 +248,10 @@
   display: block;
 }
 .metaScore-component.element {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 50px;
   height: 50px;
   min-width: 5px;
-  border: 0 solid #000;
+  border: 0 solid #000000;
 }
 .metaScore-component.element .contents {
   position: absolute;
@@ -193,7 +271,7 @@
   left: 0;
   width: 1px;
   height: 100%;
-  background: #000;
+  background: #000000;
 }
 .metaScore-component.element[data-type="cursor"][data-direction="left"] .cursor {
   left: initial;
@@ -218,55 +296,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-}
-.metaScore-component.controller {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 73px;
-  height: 100px;
-  min-width: 0;
-  overflow: hidden;
-  color: #dddddd;
-  background: #cccccc;
-  font-weight: bold;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 11px;
-  border-radius: 10px;
-}
-.metaScore-component.controller .timer {
-  text-align: center;
-  line-height: 30px;
-  background: #0000fe;
-}
-.metaScore-component.controller .buttons {
-  position: relative;
-}
-.metaScore-component.controller .buttons button {
-  position: absolute;
-  border: none;
-  outline: none;
-  background: transparent url('img/player/controller-buttons.png') no-repeat;
-}
-.metaScore-component.controller .buttons button[data-action="rewind"] {
-  top: 22px;
-  left: 4px;
-  width: 10px;
-  height: 11px;
-  background-position: -16px -17px;
-}
-.metaScore-component.controller .buttons button[data-action="play"] {
-  top: 5px;
-  left: 15px;
-  width: 43px;
-  height: 43px;
-  background-position: -47px 0;
-}
-.metaScore-component.controller.playing .buttons button[data-action="play"] {
-  background-position: -94px 0;
-}
-.metaScore-component:hover .pager {
-  display: block;
 }
 /*
 * Special styles when embedded in editor

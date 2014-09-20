@@ -27,18 +27,7 @@ metaScore.player.component.Block = (function () {
           return this.data('id');
         },
         'setter': function(value){
-          this.attr('id', value);
-        }
-      },
-      'pages': {
-        'editable':false,
-        'getter': function(){
-        
-        },
-        'setter': function(value){
-          metaScore.Array.each(value, function(index, configs){
-            this.addPage(configs);
-          }, this);
+          this.data('id', value);
         }
       },
       'name': {
@@ -115,6 +104,27 @@ metaScore.player.component.Block = (function () {
           this.css('background-image', value);
         }
       },
+      'border-width': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Border width'),
+        'getter': function(){
+          return parseInt(this.css('border-width'), 10);
+        },
+        'setter': function(value){
+          this.css('border-width', value +'px');
+        }
+      },
+      'border-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Border color'),
+        'getter': function(){
+          return this.css('border-color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
       'synched': {
         'type': 'Boolean',
         'label': metaScore.String.t('Synchronized pages ?'),
@@ -123,6 +133,23 @@ metaScore.player.component.Block = (function () {
         },
         'setter': function(value){
           this.data('synched', value);
+        }
+      },
+      'pages': {
+        'editable':false,
+        'getter': function(){
+          var pages = [];
+                
+          this.getPages().each(function(index, page){            
+            pages.push(page._metaScore.getProperties());
+          }, this);
+          
+          return pages;
+        },
+        'setter': function(value){
+          metaScore.Array.each(value, function(index, configs){
+            this.addPage(configs);
+          }, this);
         }
       }
     }

@@ -6,23 +6,100 @@
 @text-outline: rgb(0,193,118);
 
 .metaScore-component{
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  &.media{
+    &.audio{
+      display: none;
+    }
+  
+    &.video{
+      min-width: 50px;
+      min-height: 50px;
+      
+      video{
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: rgb(0, 0, 0);
+        .border-radius(10px);
+      }
+    }
+  }
+
+  &.controller{
+    width: 90px;
+    height: 100px;
+    min-width: 0;
+    min-width: 0;
+    overflow: hidden;
+    color: rgb(221,221,221);
+    background: rgb(204,204,204);
+    font-weight: bold;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    .border-radius(10px);
+    
+    .timer{
+      text-align: center;
+      line-height: 30px;
+      background: rgb(0,0,254);
+    }
+    
+    .buttons{
+      position: relative;
+      
+      button{
+        position: absolute;
+        border: none;
+        outline: none;
+        background: transparent url('img/player/controller-buttons.png') no-repeat;
+      
+        &[data-action="rewind"]{
+          top: 22px;
+          left: 10px;
+          width: 10px;
+          height: 11px;
+          background-position: -16px -17px;
+        }
+        
+        &[data-action="play"]{
+          top: 5px;
+          left: 23px;
+          width: 43px;
+          height: 43px;
+          background-position: -47px 0;
+        }
+      }
+    }
+    
+    &.playing{
+      .buttons{
+        button{
+          &[data-action="play"]{
+            background-position: -94px 0;
+          }
+        }
+      }
+    }
+  }
+    
   &.block{
-    position: absolute;
-    top: 0;
-    left: 0;
     min-width: 200px;
     min-height: 100px;
     width: 200px;
     height: 200px;
     overflow: vissible;
-    color: #424242;
+    color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: contain;
-    background: #eee;
-    border-radius: 10px;
-    border: 1px solid #ccc;
+    background: rgb(238, 238, 238);
+    border: 1px solid rgb(204, 204, 204);
     font: normal 12px/normal Verdana, Arial, Helvetica, sans-serif;
+    .border-radius(10px);
     
     button{
       padding: 0;
@@ -36,13 +113,13 @@
       width: 100%;
       height: 20px;
       background: rgba(214, 214, 214, 0.6);
-      border-radius: 10px 10px 0 0;
       text-align: right;
+      .border-radius(10px 10px 0 0);
       
       .count{
         display: inline-block;
         margin-right: 10px;
-        color: #636363;
+        color: rgb(99, 99, 99);
         font-size: 10px;
         font-weight: bold;
         vertical-align: middle;
@@ -59,7 +136,7 @@
           width: 17px;
           height: 17px;
           margin: 1px 2px;
-          background: #fff url('img/player/pager-buttons.png') no-repeat;
+          background: rgb(255, 255, 255) url('img/player/pager-buttons.png') no-repeat;
           .border-radius(10px);
           cursor: pointer;
             
@@ -93,9 +170,14 @@
     }
   }
   
+  &:hover{
+    .pager{
+      display: block;
+    }
+  }
+  
   &.page{
     display: none;
-    position: absolute;
     width: 100%;
     height: 100%;
     overflow: auto;
@@ -106,14 +188,11 @@
   }
   
   &.element{
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 50px;
     height: 50px;
     min-width: 5px;
     min-width: 5px;
-    border: 0 solid #000;
+    border: 0 solid rgb(0, 0, 0);
     
     .contents{
       position: absolute;
@@ -138,7 +217,7 @@
         left: 0;
         width: 1px;
         height: 100%;
-        background: #000;
+        background: rgb(0, 0, 0);
       }
         
       &[data-direction="left"]{
@@ -179,72 +258,6 @@
           height: 100%;
         }
       }
-    }
-  }
-
-  &.controller{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 73px;
-    height: 100px;
-    min-width: 0;
-    min-width: 0;
-    overflow: hidden;
-    color: rgb(221,221,221);
-    background: rgb(204,204,204);
-    font-weight: bold;
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-size: 11px;
-    border-radius: 10px;
-    
-    .timer{
-      text-align: center;
-      line-height: 30px;
-      background: rgb(0,0,254);
-    }
-    
-    .buttons{
-      position: relative;
-      
-      button{
-        position: absolute;
-        border: none;
-        outline: none;
-        background: transparent url('img/player/controller-buttons.png') no-repeat;
-      
-        &[data-action="rewind"]{
-          top: 22px;
-          left: 4px;
-          width: 10px;
-          height: 11px;
-          background-position: -16px -17px;
-        }
-        
-        &[data-action="play"]{
-          top: 5px;
-          left: 15px;
-          width: 43px;
-          height: 43px;
-          background-position: -47px 0;
-        }
-      }
-    }
-    
-    &.playing{
-      .buttons{
-        button{
-          &[data-action="play"]{
-            background-position: -94px 0;
-          }
-        }
-      }
-    }
-  }
-  
-  &:hover{
-    .pager{
-      display: block;
     }
   }
 }
