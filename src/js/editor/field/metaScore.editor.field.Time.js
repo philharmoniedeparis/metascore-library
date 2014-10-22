@@ -9,6 +9,8 @@ metaScore.namespace('editor.field');
 metaScore.editor.field.Time = (function () {
   
   function TimeField(configs) {
+    var buttons;
+  
     this.configs = this.getConfigs(configs);
     
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
@@ -32,6 +34,18 @@ metaScore.editor.field.Time = (function () {
     new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
     
     this.centiseconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
+    
+    if(this.configs.buttons){
+      buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this);
+      
+      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
+        .addListener('click', metaScore.Function.proxy(this.onInClick, this))
+        .appendTo(buttons);
+      
+      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
+        .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
+        .appendTo(buttons);    
+    }
   }
   
   TimeField.defaults = {
@@ -59,12 +73,18 @@ metaScore.editor.field.Time = (function () {
     
     attributes: {
       'class': 'field timefield'
-    }
+    },
+    
+    buttons: true
   };
   
   metaScore.editor.Field.extend(TimeField);
   
-  TimeField.prototype.onInput = function(evt){  
+  TimeField.prototype.onChange = function(evt){
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+  };
+  
+  TimeField.prototype.onInput = function(evt){
     var centiseconds_val = parseInt(this.centiseconds.val(), 10),
       seconds_val = parseInt(this.seconds.val(), 10),
       minutes_val = parseInt(this.minutes.val(), 10),
@@ -73,11 +93,17 @@ metaScore.editor.field.Time = (function () {
     evt.stopPropagation();
     
     this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  TimeField.prototype.setValue = function(milliseconds){      
+  TimeField.prototype.onInClick = function(evt){
+    this.triggerEvent('valuein');
+  };
+  
+  TimeField.prototype.onOutClick = function(evt){
+    this.triggerEvent('valueout');
+  };
+  
+  TimeField.prototype.setValue = function(milliseconds, triggerChange){      
     var centiseconds_val, seconds_val, minutes_val, hours_val;
     
     this.value = milliseconds;
@@ -98,6 +124,10 @@ metaScore.editor.field.Time = (function () {
     this.seconds.val(seconds_val);
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
+    
+    if(triggerChange === true){
+      this.triggerEvent('change');
+    }
   };
 
   /**

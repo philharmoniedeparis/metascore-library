@@ -210,43 +210,60 @@
       }
     }
     
-    &[data-type="cursor"]{
+    &[data-type="Cursor"]{
       .cursor{
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 1px;
-        height: 100%;
         background: rgb(0, 0, 0);
+      }
+        
+      &[data-direction="right"]{
+        .cursor{
+          width: 1px;
+          height: 100% !important;
+          top: initial !important;
+          right: initial !important;
+          bottom: initial !important;
+          left: 0;
+        }
       }
         
       &[data-direction="left"]{
         .cursor{
-          left: initial;
+          width: 1px;
+          height: 100% !important;
+          top: initial !important;
           right: 0;
+          bottom: initial !important;
+          left: initial !important;
         }
       }
       
       &[data-direction="bottom"]{
         .cursor{
-          width: 100%;
+          width: 100% !important;
           height: 1px;
+          top: 0;
+          right: initial !important;
+          bottom: initial !important;
+          left: initial !important;
         }
       }
       
       &[data-direction="top"]{
         .cursor{
-          width: 100%;
-          height: 1px;
-          top: initial;
+          width: 100% !important;
+          height: 1px;          
+          top: initial !important;
+          right: initial !important;
           bottom: 0;
+          left: initial !important;
         }
       }
     }
-    &[data-type="image"]{
+    &[data-type="Image"]{
       
     }
-    &[data-type="text"]{
+    &[data-type="Text"]{
       .contents{
         overflow: auto;
         
@@ -285,9 +302,10 @@
   .resizable{
     .resize-handle{
       position: absolute;
-      background: fade(@block-outline, 50%);
+      display: none;
       width: 10px;
       height: 10px;
+      background: fade(@block-outline, 50%);
       z-index: 9999;
       
       &[data-direction="top"]{
@@ -338,14 +356,7 @@
     }
   }
   
-  .metaScore-component{
-    &.block{
-      &.selected{
-        border: 1px dashed @block-outline;
-        .box-shadow(@block-outline 0px 0px 4px 0px);
-      }
-    }
-    
+  .metaScore-component{    
     &.controller{
       &.selected{
         border: none;
@@ -376,26 +387,36 @@
           background: fade(@text-outline, 50%);
         }
       }
-        
-      &.selected{
-        outline-width: 1px;
-        outline-style: dashed;
-      }
     }
   }
   
   &.editing{
-    .metaScore-component:not(.selected){
+    .resizable{
+      .resize-handle{
+        display: block;
+      }
+    }
+    
+    .metaScore-component{
       &.block{
         border: 1px dashed fade(@block-outline, 50%);
         .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
-      }      
+        
+        &.selected{
+          border: 1px dashed @block-outline;
+          .box-shadow(@block-outline 0px 0px 4px 0px);
+        }
+      }
       &.controller{
         .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
       }
       &.element{
         outline-width: 1px;
         outline-style: dashed;
+        
+        .contents{
+          pointer-events: none;
+        }
       }
     }
   }

@@ -16,8 +16,7 @@ metaScore.player.component.element.Cursor = (function () {
   metaScore.player.component.Element.extend(Cursor);
   
   Cursor.defaults = {
-    'acceleration': 1,
-    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {    
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -34,6 +33,16 @@ metaScore.player.component.element.Cursor = (function () {
         },
         'setter': function(value){
           this.data('direction', value);
+        }
+      },
+      'acceleration': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Acceleration'),
+        'getter': function(){
+          return this.data('accel');
+        },
+        'setter': function(value){
+          this.data('accel', value);
         }
       },
       'cursor-width': {
@@ -56,6 +65,26 @@ metaScore.player.component.element.Cursor = (function () {
           var color = metaScore.Color.parse(value);
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+        'getter': function(){
+          return parseInt(this.data('start-time'), 10);
+        },
+        'setter': function(value){
+          this.data('start-time', value);
+        }
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+        'getter': function(){
+          return parseInt(this.data('end-time'), 10);
+        },
+        'setter': function(value){
+          this.data('end-time', value);
+        }
       }
     })
   };
@@ -68,6 +97,45 @@ metaScore.player.component.element.Cursor = (function () {
     
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
+      
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  };
+  
+  Cursor.prototype.onClick = function(evt){
+    console.log('Cursor.prototype.onClick');
+  
+    var pos, time,    
+      inTime = this.getProperty('start-time'),
+      outTime = this.getProperty('end-time'),
+      direction = this.getProperty('direction'),
+      acceleration = this.getProperty('acceleration'),    
+      rect = evt.target.getBoundingClientRect();
+
+    switch(direction){
+      case 'left':
+        pos = (rect.right - evt.clientX) / this.getProperty('width');
+        break;
+        
+      case 'bottom':
+        pos = (evt.clientY - rect.top) / this.getProperty('height');
+        break;
+        
+      case 'top':
+        pos = (rect.bottom - evt.clientY) / this.getProperty('height');
+        break;
+        
+      default:
+        pos = (evt.clientX - rect.left) / this.getProperty('width');
+    }
+    
+    if(!acceleration || acceleration === 1){
+        time = inTime + ((outTime - inTime) * pos);
+    }
+    else{
+        time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
+    }
+    
+    this.triggerEvent('time', {'element': this, 'value': time});
   };
   
   Cursor.prototype.setCuePoint = function(configs){
@@ -92,23 +160,39 @@ metaScore.player.component.element.Cursor = (function () {
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width,
-      inTime, outTime,
-      curX;
+      inTime, outTime, curX,
+      direction = this.getProperty('direction'),
+      acceleration = this.getProperty('acceleration');
     
     width = this.getProperty('width');
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
         
-    if(this.configs.acceleration === 1){
+    if(!acceleration || acceleration === 1){
       curX = width * (curTime - inTime)  / (outTime - inTime);
     }
     else{
-      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), this.configs.acceleration);
+      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
     }
     
     curX = Math.min(curX, width);
 
-    this.cursor.css('left', curX +'px');
+    switch(direction){
+      case 'left':
+        this.cursor.css('right', curX +'px');
+        break;
+        
+      case 'bottom':
+        this.cursor.css('top', curX +'px');
+        break;
+        
+      case 'top':
+        this.cursor.css('bottom', curX +'px');
+        break;
+        
+      default:
+        this.cursor.css('left', curX +'px');
+    }
   };
   
   Cursor.prototype.onCuePointEnd = function(cuepoint){

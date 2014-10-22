@@ -57,19 +57,21 @@ metaScore.editor.MainMenu = (function(){
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('download')
-      })
-      .data('action', 'download')
-      .appendTo(left);
-    
-    new metaScore.editor.Button()
-      .attr({
         'title': metaScore.String.t('delete')
       })
       .data('action', 'delete')
       .appendTo(left);
     
-    new metaScore.editor.field.Time()
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.String.t('download')
+      })
+      .data('action', 'download')
+      .appendTo(left);
+    
+    this.timefield = new metaScore.editor.field.Time({
+        buttons: false
+      })
       .attr({
         'title': metaScore.String.t('time')
       })
@@ -96,6 +98,14 @@ metaScore.editor.MainMenu = (function(){
       })
       .data('action', 'redo')
       .appendTo(left);
+      
+    
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.String.t('edit toggle')
+      })
+      .data('action', 'edit-toggle')
+      .appendTo(right);
       
     
     new metaScore.editor.Button()

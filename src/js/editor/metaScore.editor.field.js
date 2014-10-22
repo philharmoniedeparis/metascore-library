@@ -14,6 +14,9 @@ metaScore.editor.Field = (function () {
     // call the super constructor.
     metaScore.Dom.call(this, this.configs.tag, this.configs.attributes);
     
+    // keep a reference to this class instance in the DOM node
+    this.get(0)._metaScore = this;
+    
     this.disabled = false;
     
     if(this.configs.value !== null){
@@ -54,9 +57,13 @@ metaScore.editor.Field = (function () {
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  Field.prototype.setValue = function(value){    
+  Field.prototype.setValue = function(value, triggerChange){    
     this.val(value);
     this.value = value;
+    
+    if(triggerChange === true){
+      this.triggerEvent('change');
+    }
   };
   
   Field.prototype.getValue = function(){  

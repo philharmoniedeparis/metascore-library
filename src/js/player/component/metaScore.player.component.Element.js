@@ -36,6 +36,15 @@ metaScore.player.component.Element = (function () {
           this.data('name', value);
         }
       },
+      'type': {
+        'editable':false,
+        'getter': function(){
+          return this.data('type');
+        },
+        'setter': function(value){
+          this.data('type', value);
+        }
+      },
       'x': {
         'type': 'Integer',
         'label': metaScore.String.t('X'),
@@ -144,33 +153,13 @@ metaScore.player.component.Element = (function () {
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       },
-      'rounded-conrners': {
+      'corners': {
         'type': 'Corner',
-        'label': metaScore.String.t('Rounded conrners'),
+        'label': metaScore.String.t('Corners'),
         'getter': function(){
         
         },
         'setter': function(value){
-        }
-      },
-      'start-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('Start time'),
-        'getter': function(){
-          return parseInt(this.data('start-time'), 10);
-        },
-        'setter': function(value){
-          this.data('start-time', value);
-        }
-      },
-      'end-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('End time'),
-        'getter': function(){
-          return parseInt(this.data('end-time'), 10);
-        },
-        'setter': function(value){
-          this.data('end-time', value);
         }
       }
     }

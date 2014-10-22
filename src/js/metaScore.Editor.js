@@ -22,6 +22,7 @@ metaScore.Editor = (function(){
     }
     
     this.editing = false;
+    this.editToggle = false;
     
     if(this.configs.container){
       this.appendTo(this.configs.container);
@@ -51,7 +52,12 @@ metaScore.Editor = (function(){
       
     // add event listeners    
     this.mainmenu
-      .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this));
+      .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
+      .addDelegate('.timefield', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this));
+    
+    this.sidebar
+      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
+      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
     
     this.block_panel
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
@@ -72,6 +78,7 @@ metaScore.Editor = (function(){
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
       
@@ -91,6 +98,21 @@ metaScore.Editor = (function(){
   
   Editor.defaults = {
     'ajax': {}
+  };
+  
+  Editor.prototype.setEditing = function(editing){
+    this.editing = editing;
+    
+    if(this.player){
+      this.player.editing = this.editing;
+    }
+    
+    this.toggleClass('editing', this.editing);
+    this.player_body.toggleClass('editing', this.editing);
+  };
+  
+  Editor.prototype.isEditing = function(editing){
+    return this.editing;
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -121,8 +143,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onKeydown = function(evt){
     switch(evt.keyCode){
       case 18: //alt
-        this.editing = true;
-        this.player_body.addClass('editing');
+        this.setEditing(!this.editToggle);
         break;
       case 90: //z
         if(evt.ctrlKey){
@@ -140,8 +161,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onKeyup = function(evt){
     switch(evt.keyCode){
       case 18: //alt
-        this.editing = false;
-        this.player_body.removeClass('editing');
+        this.setEditing(this.editToggle);
         break;
     }
   };
@@ -175,11 +195,36 @@ metaScore.Editor = (function(){
       case 'redo':
         this.history.redo();
         break;
+      case 'edit-toggle':
+        this.editToggle = !this.editToggle;
+        this.setEditing(this.editToggle);
+        break;
       case 'settings':
         break;
       case 'help':
         break;
     }
+  };
+  
+  Editor.prototype.onMainmenuTimeFieldChange = function(evt){
+    var field = evt.target._metaScore,
+      time = field.getValue();
+    
+    this.player.media.setCurrentTime(time);
+  };
+  
+  Editor.prototype.onTimeFieldIn = function(evt){
+    var field = evt.target._metaScore,
+      time = this.player.media.getCurrentTime();
+    
+    field.setValue(time, true);
+  };
+  
+  Editor.prototype.onTimeFieldOut = function(evt){
+    var field = evt.target._metaScore,
+      time = field.getValue();
+    
+    this.player.media.setCurrentTime(time);
   };
   
   Editor.prototype.onBlockSet = function(evt){
@@ -447,38 +492,47 @@ metaScore.Editor = (function(){
         }
         break;
     }
+  };
+  
+  Editor.prototype.onPlayerTimeUpdate = function(evt){
+    var currentTime = evt.detail.media.getCurrentTime();
     
-    evt.stopPropagation();
+    this.mainmenu.timefield.setValue(currentTime);
   };
   
   Editor.prototype.onComponentClick = function(evt){
-    if(!this.editing){
+  
+    var component;
+  
+    if(!this.isEditing()){
       return;
     }
     
-    if(evt.detail.component instanceof metaScore.player.component.Block){
+    component = evt.target._metaScore;
+    
+    if(component instanceof metaScore.player.component.Block){
       this.element_panel.unsetComponent();
-      this.block_panel.setComponent(evt.detail.component);
+      this.block_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Controller){
+    else if(component instanceof metaScore.player.component.Controller){
       this.element_panel.unsetComponent();
-      this.block_panel.setComponent(evt.detail.component);
+      this.block_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Media){
+    else if(component instanceof metaScore.player.component.Media){
       this.element_panel.unsetComponent();
-      this.block_panel.setComponent(evt.detail.component);
+      this.block_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Page){
+    else if(component instanceof metaScore.player.component.Page){
       this.element_panel.unsetComponent();
-      this.page_panel.setComponent(evt.detail.component);
+      this.page_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Element){
-      this.element_panel.setComponent(evt.detail.component);
-    }    
+    else if(component instanceof metaScore.player.component.Element){
+      this.element_panel.setComponent(component);
+    }
   };
   
   Editor.prototype.onPlayerClick = function(evt){
-    if(!this.editing){
+    if(!this.isEditing()){
       return;
     }
     
@@ -488,7 +542,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPageActivated = function(evt){  
-    if(!this.editing){
+    if(!this.isEditing()){
       return;
     }
     

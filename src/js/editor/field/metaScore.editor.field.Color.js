@@ -126,7 +126,7 @@ metaScore.editor.field.Color = (function () {
   
   metaScore.editor.Field.extend(ColorField);
   
-  ColorField.prototype.setValue = function(val, refillAlpha, updatePositions, updateInputs){
+  ColorField.prototype.setValue = function(val, triggerChange, refillAlpha, updatePositions, updateInputs){
   
     var hsv;
   
@@ -172,6 +172,10 @@ metaScore.editor.field.Color = (function () {
     this.fillCurrent();
     
     this.button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
+    
+    if(triggerChange === true){
+      this.triggerEvent('change');
+    }
   
   };
   
@@ -195,11 +199,11 @@ metaScore.editor.field.Color = (function () {
       'g': this.overlay.controls.g.val(),
       'b': this.overlay.controls.b.val(),
       'a': this.overlay.controls.a.val()
-    }, true, true, false);  
+    }, false, true, true, false);  
   };
   
   ColorField.prototype.onCancelClick = function(evt){  
-    this.setValue(this.previous_value);
+    this.setValue(this.previous_value, false);
     this.overlay.hide();
   
     evt.stopPropagation();
@@ -301,7 +305,7 @@ metaScore.editor.field.Color = (function () {
     value.g = imageData.data[1];
     value.b =  imageData.data[2];
     
-    this.setValue(value, true, false);
+    this.setValue(value, false, true, false);
     
     evt.stopPropagation();
   };
@@ -331,7 +335,7 @@ metaScore.editor.field.Color = (function () {
     
     value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
     
-    this.setValue(value, false, false);
+    this.setValue(value, false, false, false);
     
     evt.stopPropagation();
   };

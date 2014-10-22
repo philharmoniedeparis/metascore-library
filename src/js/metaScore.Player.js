@@ -12,6 +12,7 @@ metaScore.Player = (function () {
     Player.parent.call(this);
     
     this.id = this.configs.id || metaScore.String.uuid();
+    this.editing = false;
     
     this.media = new metaScore.player.component.Media(this.configs.media)
       .data('player-id', this.id)
@@ -23,7 +24,7 @@ metaScore.Player = (function () {
     this.controller = new metaScore.player.component.Controller(this.configs.controller)
       .data('player-id', this.id)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.configs.container);   
+      .appendTo(this.configs.container);
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
       this.addBlock(metaScore.Object.extend({}, configs, {
@@ -73,9 +74,15 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onMediaTimeUpdate = function(evt){
-    var currentTime = this.media.getCurrentTime();
+    var currentTime = evt.detail.media.getCurrentTime();
   
     this.controller.updateTime(currentTime);
+  };
+  
+  Player.prototype.onElementTime = function(evt){  
+    if(!this.editing){
+      this.media.setCurrentTime(evt.detail.value);
+    }    
   };
   
   Player.prototype.onComponenetPropChange = function(evt){
@@ -97,6 +104,7 @@ metaScore.Player = (function () {
     }
     else{
       block = new metaScore.player.component.Block(configs)
+        .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))
         .data('player-id', this.id);
     }
     

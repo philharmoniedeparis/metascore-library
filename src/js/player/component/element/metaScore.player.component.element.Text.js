@@ -17,6 +17,26 @@ metaScore.player.component.element.Text = (function () {
   
   Text.defaults = {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
+      'text': {
+        'editable':false,
+        'getter': function(){
+          return this.contents.text();
+        },
+        'setter': function(value){
+          this.contents.text(value);
+        }
+      },
+      'text-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Text color'),
+        'getter': function(){
+          return this.css('color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
       'font-family': {
         'type': 'Select',
         'label': metaScore.String.t('Font'),
@@ -40,17 +60,6 @@ metaScore.player.component.element.Text = (function () {
         'setter': function(value){
           this.css('font-family', value);
         }
-      },
-      'text-color': {
-        'type': 'Color',
-        'label': metaScore.String.t('Text color'),
-        'getter': function(){
-          return this.css('color');
-        },
-        'setter': function(value){
-          var color = metaScore.Color.parse(value);
-          this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        }
       }
     })
   };
@@ -60,13 +69,10 @@ metaScore.player.component.element.Text = (function () {
     Text.parent.prototype.setupDOM.call(this);
     
     this.data('type', 'text');
-    
-    this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-      .appendTo(this.contents);
   };
   
   Text.prototype.setEditable = function(editable){
-    this.text.attr('contenteditable', editable ? 'true' : 'null');
+    this.contents.attr('contenteditable', editable ? 'true' : 'null');
   };
     
   return Text;

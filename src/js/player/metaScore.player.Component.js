@@ -22,8 +22,6 @@ metaScore.player.Component = (function () {
       this.appendTo(this.configs.container);
     }
     
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-    
     metaScore.Object.each(this.configs.listeners, function(key, value){
       this.addListener(key, value);
     }, this);
@@ -41,17 +39,7 @@ metaScore.player.Component = (function () {
     'properties': {}
   };
   
-  Component.prototype.setupDOM = function(){
-  
-  };
-  
-  Component.prototype.onClick = function(evt){
-    if(evt instanceof MouseEvent){
-      this.triggerEvent('click', {'component': this});
-    
-      evt.stopPropagation();
-    }
-  };
+  Component.prototype.setupDOM = function(){};
   
   Component.prototype.getProperty = function(name){
     if(name in this.configs.properties && 'getter' in this.configs.properties[name]){

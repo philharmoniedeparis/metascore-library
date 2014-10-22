@@ -161,13 +161,29 @@
 .metaScore-editor .timefield .separator {
   font-size: 0.8em;
 }
+.metaScore-editor .timefield .buttons {
+  float: right;
+  height: 100%;
+}
+.metaScore-editor .timefield .buttons button {
+  display: inline-block;
+  width: 15px;
+  height: 100%;
+  margin-left: 5px;
+}
+.metaScore-editor .timefield .buttons button[data-action="in"] {
+  background: transparent url('img/editor/field/time/in.png') no-repeat center center;
+}
+.metaScore-editor .timefield .buttons button[data-action="out"] {
+  background: transparent url('img/editor/field/time/out.png') no-repeat center center;
+}
 .metaScore-editor .colorfield {
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
 .metaScore-editor .colorfield button {
   width: 100%;
   height: 100%;
-  background-image: url('img/editor/colorfield-picker.png');
+  background-image: url('img/editor/field/color/picker.png');
   background-position: left center;
   background-size: contain;
 }
@@ -189,6 +205,7 @@
 }
 .metaScore-editor .workspace .grid {
   position: absolute;
+  display: none;
   width: 100%;
   height: 100%;
   pointer-events: none;
@@ -235,6 +252,7 @@
   height: 18px;
   margin: 10px;
   vertical-align: middle;
+  background-size: contain;
 }
 .metaScore-editor .main-menu button[data-action="new"] {
   background-image: url('img/editor/main-menu/new.png');
@@ -242,15 +260,19 @@
 .metaScore-editor .main-menu button[data-action="open"] {
   background-image: url('img/editor/main-menu/open.png');
 }
+.metaScore-editor .main-menu button[data-action="edit"] {
+  background-image: url('img/editor/main-menu/edit.png');
+}
 .metaScore-editor .main-menu button[data-action="save"] {
   background-image: url('img/editor/main-menu/save.png');
-}
-.metaScore-editor .main-menu button[data-action="download"] {
-  background-image: url('img/editor/main-menu/download.png');
 }
 .metaScore-editor .main-menu button[data-action="delete"] {
   margin-right: 50px;
   background-image: url('img/editor/main-menu/delete.png');
+}
+.metaScore-editor .main-menu button[data-action="download"] {
+  margin-right: 50px;
+  background-image: url('img/editor/main-menu/download.png');
 }
 .metaScore-editor .main-menu button[data-action="revert"] {
   margin-left: 50px;
@@ -263,8 +285,9 @@
   margin-right: 50px;
   background-image: url('img/editor/main-menu/redo.png');
 }
-.metaScore-editor .main-menu button[data-action="edit"] {
-  background-image: url('img/editor/main-menu/edit.png');
+.metaScore-editor .main-menu button[data-action="edit-toggle"] {
+  margin-right: 50px;
+  background-image: url('img/editor/main-menu/edit-toggle.png');
 }
 .metaScore-editor .main-menu button[data-action="settings"] {
   background-image: url('img/editor/main-menu/settings.png');
@@ -602,4 +625,11 @@
 }
 .metaScore-editor .popup.guide-selector .contents tr.guide:hover {
   background: #EEE;
+}
+.metaScore-editor.editing .main-menu button[data-action="edit-toggle"] {
+  opacity: 0.5;
+  filter: alpha(opacity=(50));
+}
+.metaScore-editor.editing .workspace .grid {
+  display: block;
 }

@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-09-19 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-10-22 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1907,6 +1907,7 @@ metaScore.Editor = (function(){
     }
     
     this.editing = false;
+    this.editToggle = false;
     
     if(this.configs.container){
       this.appendTo(this.configs.container);
@@ -1936,7 +1937,12 @@ metaScore.Editor = (function(){
       
     // add event listeners    
     this.mainmenu
-      .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this));
+      .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
+      .addDelegate('.timefield', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this));
+    
+    this.sidebar
+      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
+      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
     
     this.block_panel
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
@@ -1957,6 +1963,7 @@ metaScore.Editor = (function(){
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
       
@@ -1976,6 +1983,21 @@ metaScore.Editor = (function(){
   
   Editor.defaults = {
     'ajax': {}
+  };
+  
+  Editor.prototype.setEditing = function(editing){
+    this.editing = editing;
+    
+    if(this.player){
+      this.player.editing = this.editing;
+    }
+    
+    this.toggleClass('editing', this.editing);
+    this.player_body.toggleClass('editing', this.editing);
+  };
+  
+  Editor.prototype.isEditing = function(editing){
+    return this.editing;
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -2006,8 +2028,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onKeydown = function(evt){
     switch(evt.keyCode){
       case 18: //alt
-        this.editing = true;
-        this.player_body.addClass('editing');
+        this.setEditing(!this.editToggle);
         break;
       case 90: //z
         if(evt.ctrlKey){
@@ -2025,8 +2046,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onKeyup = function(evt){
     switch(evt.keyCode){
       case 18: //alt
-        this.editing = false;
-        this.player_body.removeClass('editing');
+        this.setEditing(this.editToggle);
         break;
     }
   };
@@ -2060,11 +2080,36 @@ metaScore.Editor = (function(){
       case 'redo':
         this.history.redo();
         break;
+      case 'edit-toggle':
+        this.editToggle = !this.editToggle;
+        this.setEditing(this.editToggle);
+        break;
       case 'settings':
         break;
       case 'help':
         break;
     }
+  };
+  
+  Editor.prototype.onMainmenuTimeFieldChange = function(evt){
+    var field = evt.target._metaScore,
+      time = field.getValue();
+    
+    this.player.media.setCurrentTime(time);
+  };
+  
+  Editor.prototype.onTimeFieldIn = function(evt){
+    var field = evt.target._metaScore,
+      time = this.player.media.getCurrentTime();
+    
+    field.setValue(time, true);
+  };
+  
+  Editor.prototype.onTimeFieldOut = function(evt){
+    var field = evt.target._metaScore,
+      time = field.getValue();
+    
+    this.player.media.setCurrentTime(time);
   };
   
   Editor.prototype.onBlockSet = function(evt){
@@ -2332,38 +2377,47 @@ metaScore.Editor = (function(){
         }
         break;
     }
+  };
+  
+  Editor.prototype.onPlayerTimeUpdate = function(evt){
+    var currentTime = evt.detail.media.getCurrentTime();
     
-    evt.stopPropagation();
+    this.mainmenu.timefield.setValue(currentTime);
   };
   
   Editor.prototype.onComponentClick = function(evt){
-    if(!this.editing){
+  
+    var component;
+  
+    if(!this.isEditing()){
       return;
     }
     
-    if(evt.detail.component instanceof metaScore.player.component.Block){
+    component = evt.target._metaScore;
+    
+    if(component instanceof metaScore.player.component.Block){
       this.element_panel.unsetComponent();
-      this.block_panel.setComponent(evt.detail.component);
+      this.block_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Controller){
+    else if(component instanceof metaScore.player.component.Controller){
       this.element_panel.unsetComponent();
-      this.block_panel.setComponent(evt.detail.component);
+      this.block_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Media){
+    else if(component instanceof metaScore.player.component.Media){
       this.element_panel.unsetComponent();
-      this.block_panel.setComponent(evt.detail.component);
+      this.block_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Page){
+    else if(component instanceof metaScore.player.component.Page){
       this.element_panel.unsetComponent();
-      this.page_panel.setComponent(evt.detail.component);
+      this.page_panel.setComponent(component);
     }
-    else if(evt.detail.component instanceof metaScore.player.component.Element){
-      this.element_panel.setComponent(evt.detail.component);
-    }    
+    else if(component instanceof metaScore.player.component.Element){
+      this.element_panel.setComponent(component);
+    }
   };
   
   Editor.prototype.onPlayerClick = function(evt){
-    if(!this.editing){
+    if(!this.isEditing()){
       return;
     }
     
@@ -2373,7 +2427,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPageActivated = function(evt){  
-    if(!this.editing){
+    if(!this.isEditing()){
       return;
     }
     
@@ -2650,6 +2704,9 @@ metaScore.editor.Field = (function () {
     // call the super constructor.
     metaScore.Dom.call(this, this.configs.tag, this.configs.attributes);
     
+    // keep a reference to this class instance in the DOM node
+    this.get(0)._metaScore = this;
+    
     this.disabled = false;
     
     if(this.configs.value !== null){
@@ -2690,9 +2747,13 @@ metaScore.editor.Field = (function () {
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  Field.prototype.setValue = function(value){    
+  Field.prototype.setValue = function(value, triggerChange){    
     this.val(value);
     this.value = value;
+    
+    if(triggerChange === true){
+      this.triggerEvent('change');
+    }
   };
   
   Field.prototype.getValue = function(){  
@@ -2910,19 +2971,21 @@ metaScore.editor.MainMenu = (function(){
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('download')
-      })
-      .data('action', 'download')
-      .appendTo(left);
-    
-    new metaScore.editor.Button()
-      .attr({
         'title': metaScore.String.t('delete')
       })
       .data('action', 'delete')
       .appendTo(left);
     
-    new metaScore.editor.field.Time()
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.String.t('download')
+      })
+      .data('action', 'download')
+      .appendTo(left);
+    
+    this.timefield = new metaScore.editor.field.Time({
+        buttons: false
+      })
       .attr({
         'title': metaScore.String.t('time')
       })
@@ -2949,6 +3012,14 @@ metaScore.editor.MainMenu = (function(){
       })
       .data('action', 'redo')
       .appendTo(left);
+      
+    
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.String.t('edit toggle')
+      })
+      .data('action', 'edit-toggle')
+      .appendTo(right);
       
     
     new metaScore.editor.Button()
@@ -3701,7 +3772,7 @@ metaScore.editor.field.Color = (function () {
   
   metaScore.editor.Field.extend(ColorField);
   
-  ColorField.prototype.setValue = function(val, refillAlpha, updatePositions, updateInputs){
+  ColorField.prototype.setValue = function(val, triggerChange, refillAlpha, updatePositions, updateInputs){
   
     var hsv;
   
@@ -3747,6 +3818,10 @@ metaScore.editor.field.Color = (function () {
     this.fillCurrent();
     
     this.button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
+    
+    if(triggerChange === true){
+      this.triggerEvent('change');
+    }
   
   };
   
@@ -3770,11 +3845,11 @@ metaScore.editor.field.Color = (function () {
       'g': this.overlay.controls.g.val(),
       'b': this.overlay.controls.b.val(),
       'a': this.overlay.controls.a.val()
-    }, true, true, false);  
+    }, false, true, true, false);  
   };
   
   ColorField.prototype.onCancelClick = function(evt){  
-    this.setValue(this.previous_value);
+    this.setValue(this.previous_value, false);
     this.overlay.hide();
   
     evt.stopPropagation();
@@ -3876,7 +3951,7 @@ metaScore.editor.field.Color = (function () {
     value.g = imageData.data[1];
     value.b =  imageData.data[2];
     
-    this.setValue(value, true, false);
+    this.setValue(value, false, true, false);
     
     evt.stopPropagation();
   };
@@ -3906,7 +3981,7 @@ metaScore.editor.field.Color = (function () {
     
     value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
     
-    this.setValue(value, false, false);
+    this.setValue(value, false, false, false);
     
     evt.stopPropagation();
   };
@@ -4185,6 +4260,8 @@ metaScore.namespace('editor.field');
 metaScore.editor.field.Time = (function () {
   
   function TimeField(configs) {
+    var buttons;
+  
     this.configs = this.getConfigs(configs);
     
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
@@ -4208,6 +4285,18 @@ metaScore.editor.field.Time = (function () {
     new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
     
     this.centiseconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
+    
+    if(this.configs.buttons){
+      buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this);
+      
+      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
+        .addListener('click', metaScore.Function.proxy(this.onInClick, this))
+        .appendTo(buttons);
+      
+      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
+        .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
+        .appendTo(buttons);    
+    }
   }
   
   TimeField.defaults = {
@@ -4235,12 +4324,18 @@ metaScore.editor.field.Time = (function () {
     
     attributes: {
       'class': 'field timefield'
-    }
+    },
+    
+    buttons: true
   };
   
   metaScore.editor.Field.extend(TimeField);
   
-  TimeField.prototype.onInput = function(evt){  
+  TimeField.prototype.onChange = function(evt){
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+  };
+  
+  TimeField.prototype.onInput = function(evt){
     var centiseconds_val = parseInt(this.centiseconds.val(), 10),
       seconds_val = parseInt(this.seconds.val(), 10),
       minutes_val = parseInt(this.minutes.val(), 10),
@@ -4249,11 +4344,17 @@ metaScore.editor.field.Time = (function () {
     evt.stopPropagation();
     
     this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  TimeField.prototype.setValue = function(milliseconds){      
+  TimeField.prototype.onInClick = function(evt){
+    this.triggerEvent('valuein');
+  };
+  
+  TimeField.prototype.onOutClick = function(evt){
+    this.triggerEvent('valueout');
+  };
+  
+  TimeField.prototype.setValue = function(milliseconds, triggerChange){      
     var centiseconds_val, seconds_val, minutes_val, hours_val;
     
     this.value = milliseconds;
@@ -4274,6 +4375,10 @@ metaScore.editor.field.Time = (function () {
     this.seconds.val(seconds_val);
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
+    
+    if(triggerChange === true){
+      this.triggerEvent('change');
+    }
   };
 
   /**
@@ -4477,7 +4582,7 @@ metaScore.editor.panel.Element = (function () {
     // call parent function
     ElementPanel.parent.prototype.setComponent.call(this, component, supressEvent);
     
-    if(component.data('type') === 'text'){
+    if(component.getProperty('type') === 'Text'){
       component.setEditable(true);
     }
     
@@ -4796,6 +4901,7 @@ metaScore.Player = (function () {
     Player.parent.call(this);
     
     this.id = this.configs.id || metaScore.String.uuid();
+    this.editing = false;
     
     this.media = new metaScore.player.component.Media(this.configs.media)
       .data('player-id', this.id)
@@ -4807,7 +4913,7 @@ metaScore.Player = (function () {
     this.controller = new metaScore.player.component.Controller(this.configs.controller)
       .data('player-id', this.id)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.configs.container);   
+      .appendTo(this.configs.container);
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
       this.addBlock(metaScore.Object.extend({}, configs, {
@@ -4857,9 +4963,15 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onMediaTimeUpdate = function(evt){
-    var currentTime = this.media.getCurrentTime();
+    var currentTime = evt.detail.media.getCurrentTime();
   
     this.controller.updateTime(currentTime);
+  };
+  
+  Player.prototype.onElementTime = function(evt){  
+    if(!this.editing){
+      this.media.setCurrentTime(evt.detail.value);
+    }    
   };
   
   Player.prototype.onComponenetPropChange = function(evt){
@@ -4881,6 +4993,7 @@ metaScore.Player = (function () {
     }
     else{
       block = new metaScore.player.component.Block(configs)
+        .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))
         .data('player-id', this.id);
     }
     
@@ -4934,8 +5047,6 @@ metaScore.player.Component = (function () {
       this.appendTo(this.configs.container);
     }
     
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-    
     metaScore.Object.each(this.configs.listeners, function(key, value){
       this.addListener(key, value);
     }, this);
@@ -4953,17 +5064,7 @@ metaScore.player.Component = (function () {
     'properties': {}
   };
   
-  Component.prototype.setupDOM = function(){
-  
-  };
-  
-  Component.prototype.onClick = function(evt){
-    if(evt instanceof MouseEvent){
-      this.triggerEvent('click', {'component': this});
-    
-      evt.stopPropagation();
-    }
-  };
+  Component.prototype.setupDOM = function(){};
   
   Component.prototype.getProperty = function(name){
     if(name in this.configs.properties && 'getter' in this.configs.properties[name]){
@@ -5534,6 +5635,15 @@ metaScore.player.component.Element = (function () {
           this.data('name', value);
         }
       },
+      'type': {
+        'editable':false,
+        'getter': function(){
+          return this.data('type');
+        },
+        'setter': function(value){
+          this.data('type', value);
+        }
+      },
       'x': {
         'type': 'Integer',
         'label': metaScore.String.t('X'),
@@ -5642,33 +5752,13 @@ metaScore.player.component.Element = (function () {
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       },
-      'rounded-conrners': {
+      'corners': {
         'type': 'Corner',
-        'label': metaScore.String.t('Rounded conrners'),
+        'label': metaScore.String.t('Corners'),
         'getter': function(){
         
         },
         'setter': function(value){
-        }
-      },
-      'start-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('Start time'),
-        'getter': function(){
-          return parseInt(this.data('start-time'), 10);
-        },
-        'setter': function(value){
-          this.data('start-time', value);
-        }
-      },
-      'end-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('End time'),
-        'getter': function(){
-          return parseInt(this.data('end-time'), 10);
-        },
-        'setter': function(value){
-          this.data('end-time', value);
         }
       }
     }
@@ -5802,11 +5892,12 @@ metaScore.player.component.Media = (function () {
   };
   
   Media.prototype.onTimeUpdate = function(evt){
-    if(this.configs.useFrameAnimation && !(evt instanceof CustomEvent)){
+    if(!(evt instanceof CustomEvent)){
       evt.stopPropagation();
     }
-    else{
-      this.triggerEvent('timeupdate');
+    
+    if(!this.configs.useFrameAnimation){
+      this.triggerTimeUpdate(false);
     }
   };
   
@@ -5850,21 +5941,25 @@ metaScore.player.component.Media = (function () {
     this.setCurrentTime(0);
     this.pause(true);
     
+    this.triggerTimeUpdate(false);
+    
     if(supressEvent !== true){
       this.triggerEvent('stop');
     }
   };
   
-  Media.prototype.triggerTimeUpdate = function() {
-    if(this.isPlaying()){
+  Media.prototype.triggerTimeUpdate = function(loop) {
+    if(loop !== false && this.isPlaying()){
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
     
-    this.triggerEvent('timeupdate');
+    this.triggerEvent('timeupdate', {'media': this});
   };
   
   Media.prototype.setCurrentTime = function(time) {
     this.dom.currentTime = parseFloat(time) / 1000;
+    
+    this.triggerTimeUpdate(false);
   };
   
   Media.prototype.getCurrentTime = function() {
@@ -6043,8 +6138,7 @@ metaScore.player.component.element.Cursor = (function () {
   metaScore.player.component.Element.extend(Cursor);
   
   Cursor.defaults = {
-    'acceleration': 1,
-    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {    
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -6061,6 +6155,16 @@ metaScore.player.component.element.Cursor = (function () {
         },
         'setter': function(value){
           this.data('direction', value);
+        }
+      },
+      'acceleration': {
+        'type': 'Integer',
+        'label': metaScore.String.t('Acceleration'),
+        'getter': function(){
+          return this.data('accel');
+        },
+        'setter': function(value){
+          this.data('accel', value);
         }
       },
       'cursor-width': {
@@ -6083,6 +6187,26 @@ metaScore.player.component.element.Cursor = (function () {
           var color = metaScore.Color.parse(value);
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+        'getter': function(){
+          return parseInt(this.data('start-time'), 10);
+        },
+        'setter': function(value){
+          this.data('start-time', value);
+        }
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+        'getter': function(){
+          return parseInt(this.data('end-time'), 10);
+        },
+        'setter': function(value){
+          this.data('end-time', value);
+        }
       }
     })
   };
@@ -6095,6 +6219,45 @@ metaScore.player.component.element.Cursor = (function () {
     
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
+      
+    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+  };
+  
+  Cursor.prototype.onClick = function(evt){
+    console.log('Cursor.prototype.onClick');
+  
+    var pos, time,    
+      inTime = this.getProperty('start-time'),
+      outTime = this.getProperty('end-time'),
+      direction = this.getProperty('direction'),
+      acceleration = this.getProperty('acceleration'),    
+      rect = evt.target.getBoundingClientRect();
+
+    switch(direction){
+      case 'left':
+        pos = (rect.right - evt.clientX) / this.getProperty('width');
+        break;
+        
+      case 'bottom':
+        pos = (evt.clientY - rect.top) / this.getProperty('height');
+        break;
+        
+      case 'top':
+        pos = (rect.bottom - evt.clientY) / this.getProperty('height');
+        break;
+        
+      default:
+        pos = (evt.clientX - rect.left) / this.getProperty('width');
+    }
+    
+    if(!acceleration || acceleration === 1){
+        time = inTime + ((outTime - inTime) * pos);
+    }
+    else{
+        time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
+    }
+    
+    this.triggerEvent('time', {'element': this, 'value': time});
   };
   
   Cursor.prototype.setCuePoint = function(configs){
@@ -6119,23 +6282,39 @@ metaScore.player.component.element.Cursor = (function () {
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width,
-      inTime, outTime,
-      curX;
+      inTime, outTime, curX,
+      direction = this.getProperty('direction'),
+      acceleration = this.getProperty('acceleration');
     
     width = this.getProperty('width');
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
         
-    if(this.configs.acceleration === 1){
+    if(!acceleration || acceleration === 1){
       curX = width * (curTime - inTime)  / (outTime - inTime);
     }
     else{
-      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), this.configs.acceleration);
+      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
     }
     
     curX = Math.min(curX, width);
 
-    this.cursor.css('left', curX +'px');
+    switch(direction){
+      case 'left':
+        this.cursor.css('right', curX +'px');
+        break;
+        
+      case 'bottom':
+        this.cursor.css('top', curX +'px');
+        break;
+        
+      case 'top':
+        this.cursor.css('bottom', curX +'px');
+        break;
+        
+      default:
+        this.cursor.css('left', curX +'px');
+    }
   };
   
   Cursor.prototype.onCuePointEnd = function(cuepoint){
@@ -6191,6 +6370,26 @@ metaScore.player.component.element.Text = (function () {
   
   Text.defaults = {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
+      'text': {
+        'editable':false,
+        'getter': function(){
+          return this.contents.text();
+        },
+        'setter': function(value){
+          this.contents.text(value);
+        }
+      },
+      'text-color': {
+        'type': 'Color',
+        'label': metaScore.String.t('Text color'),
+        'getter': function(){
+          return this.css('color');
+        },
+        'setter': function(value){
+          var color = metaScore.Color.parse(value);
+          this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
       'font-family': {
         'type': 'Select',
         'label': metaScore.String.t('Font'),
@@ -6214,17 +6413,6 @@ metaScore.player.component.element.Text = (function () {
         'setter': function(value){
           this.css('font-family', value);
         }
-      },
-      'text-color': {
-        'type': 'Color',
-        'label': metaScore.String.t('Text color'),
-        'getter': function(){
-          return this.css('color');
-        },
-        'setter': function(value){
-          var color = metaScore.Color.parse(value);
-          this.css('color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
-        }
       }
     })
   };
@@ -6234,13 +6422,10 @@ metaScore.player.component.element.Text = (function () {
     Text.parent.prototype.setupDOM.call(this);
     
     this.data('type', 'text');
-    
-    this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-      .appendTo(this.contents);
   };
   
   Text.prototype.setEditable = function(editable){
-    this.text.attr('contenteditable', editable ? 'true' : 'null');
+    this.contents.attr('contenteditable', editable ? 'true' : 'null');
   };
     
   return Text;

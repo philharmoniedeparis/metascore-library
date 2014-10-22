@@ -113,11 +113,12 @@ metaScore.player.component.Media = (function () {
   };
   
   Media.prototype.onTimeUpdate = function(evt){
-    if(this.configs.useFrameAnimation && !(evt instanceof CustomEvent)){
+    if(!(evt instanceof CustomEvent)){
       evt.stopPropagation();
     }
-    else{
-      this.triggerEvent('timeupdate');
+    
+    if(!this.configs.useFrameAnimation){
+      this.triggerTimeUpdate(false);
     }
   };
   
@@ -161,21 +162,25 @@ metaScore.player.component.Media = (function () {
     this.setCurrentTime(0);
     this.pause(true);
     
+    this.triggerTimeUpdate(false);
+    
     if(supressEvent !== true){
       this.triggerEvent('stop');
     }
   };
   
-  Media.prototype.triggerTimeUpdate = function() {
-    if(this.isPlaying()){
+  Media.prototype.triggerTimeUpdate = function(loop) {
+    if(loop !== false && this.isPlaying()){
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
     
-    this.triggerEvent('timeupdate');
+    this.triggerEvent('timeupdate', {'media': this});
   };
   
   Media.prototype.setCurrentTime = function(time) {
     this.dom.currentTime = parseFloat(time) / 1000;
+    
+    this.triggerTimeUpdate(false);
   };
   
   Media.prototype.getCurrentTime = function() {

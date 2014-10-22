@@ -74,7 +74,7 @@ metaScore.editor.panel.Element = (function () {
     // call parent function
     ElementPanel.parent.prototype.setComponent.call(this, component, supressEvent);
     
-    if(component.data('type') === 'text'){
+    if(component.getProperty('type') === 'Text'){
       component.setEditable(true);
     }
     

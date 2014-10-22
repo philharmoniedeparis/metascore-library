@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeremyckahn/lib-tmpl.git"
+    "url": "git@vps31816.ovh.net:/home/git/metaScore/Library.git"
   },
   "devDependencies": {
     "grunt": "~0.4.0",

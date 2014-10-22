@@ -92,6 +92,25 @@
     .separator{
       font-size: 0.8em;
     }
+    .buttons{
+      float: right;
+      height: 100%;
+      
+      button{
+        display: inline-block;
+        width: 15px;
+        height: 100%;
+        margin-left: 5px;
+        
+        &[data-action="in"]{
+          background: transparent url('img/editor/field/time/in.png') no-repeat center center;
+        }
+        
+        &[data-action="out"]{
+          background: transparent url('img/editor/field/time/out.png') no-repeat center center;
+        }
+      }
+    }
   }
   
   .colorfield{
@@ -100,7 +119,7 @@
     button{
       width: 100%;
       height: 100%;
-      background-image: url('img/editor/colorfield-picker.png');
+      background-image: url('img/editor/field/color/picker.png');
       background-position: left center;
       background-size: contain;
       
@@ -115,7 +134,7 @@
       }
     }
   }
-    
+  
   .workspace{
     position: absolute;
     left: 0;
@@ -128,6 +147,7 @@
     
     .grid{
       position: absolute;
+      display: none;
       width: 100%;
       height: 100%;
       pointer-events: none;
@@ -171,6 +191,7 @@
       height: 18px;
       margin: 10px;
       vertical-align: middle;
+      background-size: contain;
       
       &[data-action="new"]{
         background-image: url('img/editor/main-menu/new.png');
@@ -178,15 +199,19 @@
       &[data-action="open"]{
         background-image: url('img/editor/main-menu/open.png');
       }
+      &[data-action="edit"]{
+        background-image: url('img/editor/main-menu/edit.png');
+      }
       &[data-action="save"]{
         background-image: url('img/editor/main-menu/save.png');
-      }
-      &[data-action="download"]{
-        background-image: url('img/editor/main-menu/download.png');
       }
       &[data-action="delete"]{
         margin-right: 50px;
         background-image: url('img/editor/main-menu/delete.png');
+      }
+      &[data-action="download"]{
+        margin-right: 50px;
+        background-image: url('img/editor/main-menu/download.png');
       }
       &[data-action="revert"]{
         margin-left: 50px;
@@ -198,9 +223,10 @@
       &[data-action="redo"]{
         margin-right: 50px;
         background-image: url('img/editor/main-menu/redo.png');
-      }      
-      &[data-action="edit"]{
-        background-image: url('img/editor/main-menu/edit.png');
+      }
+      &[data-action="edit-toggle"]{
+        margin-right: 50px;
+        background-image: url('img/editor/main-menu/edit-toggle.png');
       }
       &[data-action="settings"]{
         background-image: url('img/editor/main-menu/settings.png');
@@ -577,6 +603,22 @@
             background: #EEE;
           }
         }
+      }
+    }
+  }
+  
+  &.editing{
+    .main-menu{
+       button{
+          &[data-action="edit-toggle"]{
+            .opacity(0.5);
+          }
+       }
+    }
+  
+    .workspace{
+      .grid{
+        display: block;
       }
     }
   }
