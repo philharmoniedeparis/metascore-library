@@ -102,8 +102,6 @@ metaScore.player.component.element.Cursor = (function () {
   };
   
   Cursor.prototype.onClick = function(evt){
-    console.log('Cursor.prototype.onClick');
-  
     var pos, time,    
       inTime = this.getProperty('start-time'),
       outTime = this.getProperty('end-time'),
@@ -159,39 +157,44 @@ metaScore.player.component.element.Cursor = (function () {
   };
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
-    var width,
-      inTime, outTime, curX,
+    var width, height,
+      inTime, outTime, pos,
       direction = this.getProperty('direction'),
       acceleration = this.getProperty('acceleration');
     
-    width = this.getProperty('width');
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
         
     if(!acceleration || acceleration === 1){
-      curX = width * (curTime - inTime)  / (outTime - inTime);
+      pos = (curTime - inTime)  / (outTime - inTime);
     }
     else{
-      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
+      pos = Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
     }
-    
-    curX = Math.min(curX, width);
 
     switch(direction){
       case 'left':
-        this.cursor.css('right', curX +'px');
+        width = this.getProperty('width');
+        pos = Math.min(width * pos, width);
+        this.cursor.css('right', pos +'px');
         break;
         
       case 'bottom':
-        this.cursor.css('top', curX +'px');
+        height = this.getProperty('height');
+        pos = Math.min(height * pos, height);
+        this.cursor.css('top', pos +'px');
         break;
         
       case 'top':
-        this.cursor.css('bottom', curX +'px');
+        height = this.getProperty('height');
+        pos = Math.min(height * pos, height);
+        this.cursor.css('bottom', pos +'px');
         break;
         
       default:
-        this.cursor.css('left', curX +'px');
+        width = this.getProperty('width');
+        pos = Math.min(width * pos, width);
+        this.cursor.css('left', pos +'px');
     }
   };
   

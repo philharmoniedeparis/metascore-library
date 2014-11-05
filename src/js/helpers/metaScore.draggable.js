@@ -68,11 +68,15 @@ metaScore.Draggable = (function () {
   Draggable.prototype.enable = function(){
     this.configs.target.addClass('draggable');
     
+    this.configs.handle.addClass('drag-handle');
+    
     return this;  
   };
   
   Draggable.prototype.disable = function(){  
     this.configs.target.removeClass('draggable');
+    
+    this.configs.handle.removeClass('drag-handle');
     
     return this;  
   };

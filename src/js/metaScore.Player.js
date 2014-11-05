@@ -12,7 +12,6 @@ metaScore.Player = (function () {
     Player.parent.call(this);
     
     this.id = this.configs.id || metaScore.String.uuid();
-    this.editing = false;
     
     this.media = new metaScore.player.component.Media(this.configs.media)
       .data('player-id', this.id)
@@ -80,7 +79,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onElementTime = function(evt){  
-    if(!this.editing){
+    if(metaScore.editing !== true){
       this.media.setCurrentTime(evt.detail.value);
     }    
   };

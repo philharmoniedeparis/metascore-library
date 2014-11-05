@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-10-22 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-11-05 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -570,44 +570,48 @@ metaScore.Color = (function () {
   Color.parse = function(color){ 
     var rgba = {}, matches;
     
-    if(color === null){
-      return rgba;
+    if(metaScore.Var.is(color, 'object')){
+      rgba.r = color.r || 0;
+      rgba.g = color.g || 0;
+      rgba.b = color.b || 0;
+      rgba.a = color.r || 1;
     }
+    else if(metaScore.Var.is(color, 'string')){
+      color = color.replace(/\s\s*/g,''); // Remove all spaces
       
-    color = color.replace(/\s\s*/g,''); // Remove all spaces
-    
-    // Checks for 6 digit hex and converts string to integer
-    if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
-      rgba.r = parseInt(matches[1], 16);
-      rgba.g = parseInt(matches[2], 16);
-      rgba.b = parseInt(matches[3], 16);
-      rgba.a = 1;
-    }
-        
-    // Checks for 3 digit hex and converts string to integer
-    else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
-      rgba.r = parseInt(matches[1], 16) * 17;
-      rgba.g = parseInt(matches[2], 16) * 17;
-      rgba.b = parseInt(matches[3], 16) * 17;
-      rgba.a = 1;
-    }
-        
-    // Checks for rgba and converts string to
-    // integer/float using unary + operator to save bytes
-    else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
-      rgba.r = +matches[1];
-      rgba.g = +matches[2];
-      rgba.b = +matches[3];
-      rgba.a = +matches[4];
-    }
-        
-    // Checks for rgb and converts string to
-    // integer/float using unary + operator to save bytes
-    else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
-      rgba.r = +matches[1];
-      rgba.g = +matches[2];
-      rgba.b = +matches[3];
-      rgba.a = 1;
+      // Checks for 6 digit hex and converts string to integer
+      if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
+        rgba.r = parseInt(matches[1], 16);
+        rgba.g = parseInt(matches[2], 16);
+        rgba.b = parseInt(matches[3], 16);
+        rgba.a = 1;
+      }
+          
+      // Checks for 3 digit hex and converts string to integer
+      else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
+        rgba.r = parseInt(matches[1], 16) * 17;
+        rgba.g = parseInt(matches[2], 16) * 17;
+        rgba.b = parseInt(matches[3], 16) * 17;
+        rgba.a = 1;
+      }
+          
+      // Checks for rgba and converts string to
+      // integer/float using unary + operator to save bytes
+      else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
+        rgba.r = +matches[1];
+        rgba.g = +matches[2];
+        rgba.b = +matches[3];
+        rgba.a = +matches[4];
+      }
+          
+      // Checks for rgb and converts string to
+      // integer/float using unary + operator to save bytes
+      else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
+        rgba.r = +matches[1];
+        rgba.g = +matches[2];
+        rgba.b = +matches[3];
+        rgba.a = 1;
+      }
     }
     
     return rgba;
@@ -1058,8 +1062,8 @@ metaScore.Dom = (function () {
   * @param {string} the selector
   * @returns {boolean} true if the element matches the selector, false otherwise
   */
-  Dom.is = function(element, selector){    
-    return element.matches(selector);    
+  Dom.is = function(element, selector){
+    return element.matches && element.matches(selector);
   };
   
   Dom.prototype.add = function(elements){
@@ -1184,12 +1188,24 @@ metaScore.Dom = (function () {
     return this;        
   };
   
-  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {  
+  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
     scope = scope || this;
     
     return this.addListener(type, function(evt){
-      if(Dom.is(evt.target, selector)){
-        callback.call(scope, evt);
+      var element = evt.target,
+        match;
+    
+      while (element) {
+        if(Dom.is(element, selector)){
+          match = element;
+          break;
+        }
+        
+        element = element.parentNode;
+      }
+      
+      if(match){
+        callback.call(scope, evt, match);
       }
     }, useCapture);    
   };
@@ -1415,11 +1431,15 @@ metaScore.Draggable = (function () {
   Draggable.prototype.enable = function(){
     this.configs.target.addClass('draggable');
     
+    this.configs.handle.addClass('drag-handle');
+    
     return this;  
   };
   
   Draggable.prototype.disable = function(){  
     this.configs.target.removeClass('draggable');
+    
+    this.configs.handle.removeClass('drag-handle');
     
     return this;  
   };
@@ -1906,9 +1926,6 @@ metaScore.Editor = (function(){
       metaScore.Editor.instance = this;
     }
     
-    this.editing = false;
-    this.editToggle = false;
-    
     if(this.configs.container){
       this.appendTo(this.configs.container);
     }
@@ -1986,18 +2003,10 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.setEditing = function(editing){
-    this.editing = editing;
+    metaScore.editing = editing;
     
-    if(this.player){
-      this.player.editing = this.editing;
-    }
-    
-    this.toggleClass('editing', this.editing);
-    this.player_body.toggleClass('editing', this.editing);
-  };
-  
-  Editor.prototype.isEditing = function(editing){
-    return this.editing;
+    this.toggleClass('editing', editing);
+    this.player_body.toggleClass('editing', editing);
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -2385,15 +2394,15 @@ metaScore.Editor = (function(){
     this.mainmenu.timefield.setValue(currentTime);
   };
   
-  Editor.prototype.onComponentClick = function(evt){
+  Editor.prototype.onComponentClick = function(evt, dom){
   
     var component;
   
-    if(!this.isEditing()){
+    if(metaScore.editing !== true){
       return;
     }
     
-    component = evt.target._metaScore;
+    component = dom._metaScore;
     
     if(component instanceof metaScore.player.component.Block){
       this.element_panel.unsetComponent();
@@ -2417,7 +2426,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPlayerClick = function(evt){
-    if(!this.isEditing()){
+    if(metaScore.editing !== true){
       return;
     }
     
@@ -2427,7 +2436,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPageActivated = function(evt){  
-    if(!this.isEditing()){
+    if(metaScore.editing !== true){
       return;
     }
     
@@ -3341,7 +3350,7 @@ metaScore.editor.Panel = (function(){
     return this;    
   };
   
-  Panel.prototype.unsetComponent = function(supressEvent){  
+  Panel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
       
     this.disable();
@@ -4901,7 +4910,6 @@ metaScore.Player = (function () {
     Player.parent.call(this);
     
     this.id = this.configs.id || metaScore.String.uuid();
-    this.editing = false;
     
     this.media = new metaScore.player.component.Media(this.configs.media)
       .data('player-id', this.id)
@@ -4969,7 +4977,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onElementTime = function(evt){  
-    if(!this.editing){
+    if(metaScore.editing !== true){
       this.media.setCurrentTime(evt.detail.value);
     }    
   };
@@ -6224,8 +6232,6 @@ metaScore.player.component.element.Cursor = (function () {
   };
   
   Cursor.prototype.onClick = function(evt){
-    console.log('Cursor.prototype.onClick');
-  
     var pos, time,    
       inTime = this.getProperty('start-time'),
       outTime = this.getProperty('end-time'),
@@ -6281,39 +6287,44 @@ metaScore.player.component.element.Cursor = (function () {
   };
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
-    var width,
-      inTime, outTime, curX,
+    var width, height,
+      inTime, outTime, pos,
       direction = this.getProperty('direction'),
       acceleration = this.getProperty('acceleration');
     
-    width = this.getProperty('width');
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
         
     if(!acceleration || acceleration === 1){
-      curX = width * (curTime - inTime)  / (outTime - inTime);
+      pos = (curTime - inTime)  / (outTime - inTime);
     }
     else{
-      curX = width * Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
+      pos = Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
     }
-    
-    curX = Math.min(curX, width);
 
     switch(direction){
       case 'left':
-        this.cursor.css('right', curX +'px');
+        width = this.getProperty('width');
+        pos = Math.min(width * pos, width);
+        this.cursor.css('right', pos +'px');
         break;
         
       case 'bottom':
-        this.cursor.css('top', curX +'px');
+        height = this.getProperty('height');
+        pos = Math.min(height * pos, height);
+        this.cursor.css('top', pos +'px');
         break;
         
       case 'top':
-        this.cursor.css('bottom', curX +'px');
+        height = this.getProperty('height');
+        pos = Math.min(height * pos, height);
+        this.cursor.css('bottom', pos +'px');
         break;
         
       default:
-        this.cursor.css('left', curX +'px');
+        width = this.getProperty('width');
+        pos = Math.min(width * pos, width);
+        this.cursor.css('left', pos +'px');
     }
   };
   

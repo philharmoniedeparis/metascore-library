@@ -199,7 +199,7 @@ metaScore.editor.Panel = (function(){
     return this;    
   };
   
-  Panel.prototype.unsetComponent = function(supressEvent){  
+  Panel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
       
     this.disable();

@@ -52,44 +52,48 @@ metaScore.Color = (function () {
   Color.parse = function(color){ 
     var rgba = {}, matches;
     
-    if(color === null){
-      return rgba;
+    if(metaScore.Var.is(color, 'object')){
+      rgba.r = color.r || 0;
+      rgba.g = color.g || 0;
+      rgba.b = color.b || 0;
+      rgba.a = color.r || 1;
     }
+    else if(metaScore.Var.is(color, 'string')){
+      color = color.replace(/\s\s*/g,''); // Remove all spaces
       
-    color = color.replace(/\s\s*/g,''); // Remove all spaces
-    
-    // Checks for 6 digit hex and converts string to integer
-    if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
-      rgba.r = parseInt(matches[1], 16);
-      rgba.g = parseInt(matches[2], 16);
-      rgba.b = parseInt(matches[3], 16);
-      rgba.a = 1;
-    }
-        
-    // Checks for 3 digit hex and converts string to integer
-    else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
-      rgba.r = parseInt(matches[1], 16) * 17;
-      rgba.g = parseInt(matches[2], 16) * 17;
-      rgba.b = parseInt(matches[3], 16) * 17;
-      rgba.a = 1;
-    }
-        
-    // Checks for rgba and converts string to
-    // integer/float using unary + operator to save bytes
-    else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
-      rgba.r = +matches[1];
-      rgba.g = +matches[2];
-      rgba.b = +matches[3];
-      rgba.a = +matches[4];
-    }
-        
-    // Checks for rgb and converts string to
-    // integer/float using unary + operator to save bytes
-    else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
-      rgba.r = +matches[1];
-      rgba.g = +matches[2];
-      rgba.b = +matches[3];
-      rgba.a = 1;
+      // Checks for 6 digit hex and converts string to integer
+      if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
+        rgba.r = parseInt(matches[1], 16);
+        rgba.g = parseInt(matches[2], 16);
+        rgba.b = parseInt(matches[3], 16);
+        rgba.a = 1;
+      }
+          
+      // Checks for 3 digit hex and converts string to integer
+      else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
+        rgba.r = parseInt(matches[1], 16) * 17;
+        rgba.g = parseInt(matches[2], 16) * 17;
+        rgba.b = parseInt(matches[3], 16) * 17;
+        rgba.a = 1;
+      }
+          
+      // Checks for rgba and converts string to
+      // integer/float using unary + operator to save bytes
+      else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
+        rgba.r = +matches[1];
+        rgba.g = +matches[2];
+        rgba.b = +matches[3];
+        rgba.a = +matches[4];
+      }
+          
+      // Checks for rgb and converts string to
+      // integer/float using unary + operator to save bytes
+      else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
+        rgba.r = +matches[1];
+        rgba.g = +matches[2];
+        rgba.b = +matches[3];
+        rgba.a = 1;
+      }
     }
     
     return rgba;

@@ -21,9 +21,6 @@ metaScore.Editor = (function(){
       metaScore.Editor.instance = this;
     }
     
-    this.editing = false;
-    this.editToggle = false;
-    
     if(this.configs.container){
       this.appendTo(this.configs.container);
     }
@@ -101,18 +98,10 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.setEditing = function(editing){
-    this.editing = editing;
+    metaScore.editing = editing;
     
-    if(this.player){
-      this.player.editing = this.editing;
-    }
-    
-    this.toggleClass('editing', this.editing);
-    this.player_body.toggleClass('editing', this.editing);
-  };
-  
-  Editor.prototype.isEditing = function(editing){
-    return this.editing;
+    this.toggleClass('editing', editing);
+    this.player_body.toggleClass('editing', editing);
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -500,15 +489,15 @@ metaScore.Editor = (function(){
     this.mainmenu.timefield.setValue(currentTime);
   };
   
-  Editor.prototype.onComponentClick = function(evt){
+  Editor.prototype.onComponentClick = function(evt, dom){
   
     var component;
   
-    if(!this.isEditing()){
+    if(metaScore.editing !== true){
       return;
     }
     
-    component = evt.target._metaScore;
+    component = dom._metaScore;
     
     if(component instanceof metaScore.player.component.Block){
       this.element_panel.unsetComponent();
@@ -532,7 +521,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPlayerClick = function(evt){
-    if(!this.isEditing()){
+    if(metaScore.editing !== true){
       return;
     }
     
@@ -542,7 +531,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPageActivated = function(evt){  
-    if(!this.isEditing()){
+    if(metaScore.editing !== true){
       return;
     }
     

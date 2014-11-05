@@ -424,5 +424,5 @@
   outline-style: dashed;
 }
 .metaScore-player-wrapper.editing .metaScore-component.element .contents {
-  pointer-events: none;
+  display: block;
 }

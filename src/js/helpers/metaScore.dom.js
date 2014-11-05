@@ -440,8 +440,8 @@ metaScore.Dom = (function () {
   * @param {string} the selector
   * @returns {boolean} true if the element matches the selector, false otherwise
   */
-  Dom.is = function(element, selector){    
-    return element.matches(selector);    
+  Dom.is = function(element, selector){
+    return element.matches && element.matches(selector);
   };
   
   Dom.prototype.add = function(elements){
@@ -566,12 +566,24 @@ metaScore.Dom = (function () {
     return this;        
   };
   
-  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {  
+  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
     scope = scope || this;
     
     return this.addListener(type, function(evt){
-      if(Dom.is(evt.target, selector)){
-        callback.call(scope, evt);
+      var element = evt.target,
+        match;
+    
+      while (element) {
+        if(Dom.is(element, selector)){
+          match = element;
+          break;
+        }
+        
+        element = element.parentNode;
+      }
+      
+      if(match){
+        callback.call(scope, evt, match);
       }
     }, useCapture);    
   };
