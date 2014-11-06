@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-11-05 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-11-06 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -2711,7 +2711,9 @@ metaScore.editor.Field = (function () {
     this.configs = this.getConfigs(configs);
     
     // call the super constructor.
-    metaScore.Dom.call(this, this.configs.tag, this.configs.attributes);
+    metaScore.Dom.call(this, '<div/>', {'class': 'field'});
+    
+    this.setupUI();
     
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
@@ -2725,8 +2727,6 @@ metaScore.editor.Field = (function () {
     if(this.configs.disabled){
       this.disable();
     }
-    
-    this.addListener('change', metaScore.Function.proxy(this.onChange, this));
   }
   
   Field.defaults = {
@@ -2738,30 +2738,29 @@ metaScore.editor.Field = (function () {
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
-    
-    tag: '<input/>'
+    disabled: false
   };
   
   metaScore.Dom.extend(Field);
   
-  Field.prototype.attributes = {
-    'type': 'text',
-    'class': 'field'
+  Field.prototype.setupUI = function(){  
+    this.input = new metaScore.Dom('<input/>', {'type': 'text'})
+      .addListener('change', metaScore.Function.proxy(this.onChange, this))
+      .appendTo(this);    
   };
   
   Field.prototype.onChange = function(evt){
-    this.value = this.val();
+    this.value = this.input.val();
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
   Field.prototype.setValue = function(value, triggerChange){    
-    this.val(value);
+    this.input.val(value);
     this.value = value;
     
     if(triggerChange === true){
-      this.triggerEvent('change');
+      this.input.triggerEvent('change');
     }
   };
   
@@ -2777,7 +2776,7 @@ metaScore.editor.Field = (function () {
     this.disabled = true;
     
     this.addClass('disabled');
-    this.attr('disabled', 'disabled');
+    this.input.attr('disabled', 'disabled');
     
     return this;
   };
@@ -2792,7 +2791,7 @@ metaScore.editor.Field = (function () {
     this.disabled = false;
     
     this.removeClass('disabled');
-    this.attr('disabled', null);
+    this.input.attr('disabled', null);
     
     return this;
   };
@@ -2998,7 +2997,23 @@ metaScore.editor.MainMenu = (function(){
       .attr({
         'title': metaScore.String.t('time')
       })
-      .data('action', 'time')
+      .addClass('time')
+      .appendTo(left);
+    
+    this.rindexfield = new metaScore.editor.field.Integer({
+        min: 0
+      })
+      .attr({
+        'title': metaScore.String.t('reading index')
+      })
+      .addClass('r-index')
+      .appendTo(left);
+    
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.String.t('edit toggle')
+      })
+      .data('action', 'edit-toggle')
       .appendTo(left);
     
     new metaScore.editor.Button()
@@ -3021,14 +3036,6 @@ metaScore.editor.MainMenu = (function(){
       })
       .data('action', 'redo')
       .appendTo(left);
-      
-    
-    new metaScore.editor.Button()
-      .attr({
-        'title': metaScore.String.t('edit toggle')
-      })
-      .data('action', 'edit-toggle')
-      .appendTo(right);
       
     
     new metaScore.editor.Button()
@@ -3583,9 +3590,11 @@ metaScore.editor.field.Boolean = (function () {
     
     // call parent constructor
     BooleanField.parent.call(this, this.configs);
+        
+    this.addClass('booleanfield');
     
     if(this.configs.checked){
-      this.attr('checked', 'checked');
+      this.input.attr('checked', 'checked');
     }
   }
 
@@ -3603,29 +3612,25 @@ metaScore.editor.field.Boolean = (function () {
     /**
     * Defines whether the field is checked by default
     */
-    checked: false,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    attributes: {
-      'type': 'checkbox',
-      'class': 'field booleanfield'
-    }
+    checked: false
   };
   
   metaScore.editor.Field.extend(BooleanField);
   
+  BooleanField.prototype.setupUI = function(){  
+    this.input = new metaScore.Dom('<input/>', {'type': 'checkbox'})
+      .addListener('change', metaScore.Function.proxy(this.onChange, this))
+      .appendTo(this);    
+  };
+  
   BooleanField.prototype.onChange = function(evt){      
-    this.value = this.is(":checked") ? this.val() : this.configs.unchecked_value;
+    this.value = this.input.is(":checked") ? this.input.val() : this.configs.unchecked_value;
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
   };
   
-  BooleanField.prototype.setChecked = function(checked){  
-    this.attr('checked', checked ? 'checked' : '');  
+  BooleanField.prototype.setChecked = function(checked){
+    this.input.attr('checked', checked ? 'checked' : '');  
   };
     
   return BooleanField;
@@ -3646,6 +3651,8 @@ metaScore.editor.field.Button = (function () {
     
     // call parent constructor
     ButtonField.parent.call(this, this.configs);
+    
+    this.addClass('buttonfield');
   }
   
   metaScore.editor.Field.extend(ButtonField);
@@ -3666,6 +3673,28 @@ metaScore.editor.field.Color = (function () {
   
   function ColorField(configs) {
     this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    ColorField.parent.call(this, this.configs);
+    
+    this.addClass('colorfield');
+  }
+  
+  ColorField.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: {
+      r: 255,
+      g: 255,
+      b: 255,
+      a: 1
+    }
+  };
+  
+  metaScore.editor.Field.extend(ColorField);
+  
+  ColorField.prototype.setupUI = function(){
       
     // fix event handlers scope
     this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
@@ -3745,41 +3774,10 @@ metaScore.editor.field.Color = (function () {
           
     this.overlay.mask.addListener('click', metaScore.Function.proxy(this.onApplyClick, this));
     
-    // call parent constructor
-    ColorField.parent.call(this, this.configs);
-    
-    new metaScore.Dom('<div/>', {'class': 'icon'})
-      .appendTo(this);
-    
     this.button.appendTo(this);
     
     this.fillGradient();
-  }
-  
-  ColorField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 1
-    },
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    tag: '<div/>',
-    
-    attributes: {
-      'class': 'field colorfield'
-    }
   };
-  
-  metaScore.editor.Field.extend(ColorField);
   
   ColorField.prototype.setValue = function(val, triggerChange, refillAlpha, updatePositions, updateInputs){
   
@@ -4015,19 +4013,9 @@ metaScore.editor.field.Corner = (function () {
     
     // call parent constructor
     CornerField.parent.call(this, this.configs);
-  }
-  
-  CornerField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
     
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false
-  };
+    this.addClass('cornerfield');
+  }
   
   metaScore.editor.Field.extend(CornerField);
     
@@ -4051,26 +4039,12 @@ metaScore.editor.field.Image = (function () {
     // call parent constructor
     ImageField.parent.call(this, this.configs);
     
-    this.attr('readonly', 'readonly');
-    
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    this.addClass('imagefield');
+        
+    this.input
+      .attr('readonly', 'readonly')
+      .addListener('click', metaScore.Function.proxy(this.onClick, this));
   }
-  
-  ImageField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    attributes: {
-      'class': 'field imagefield'
-    }
-  };
   
   metaScore.editor.Field.extend(ImageField);
   
@@ -4080,8 +4054,7 @@ metaScore.editor.field.Image = (function () {
   
   ImageField.prototype.onFileSelect = function(files){
     if(files.length > 0){
-      this.setValue(files[0].url +'?fid='+ files[0].fid);
-      this.triggerEvent('change');
+      this.setValue(files[0].url +'?fid='+ files[0].fid, true);
     }
   };
     
@@ -4103,6 +4076,8 @@ metaScore.editor.field.Integer = (function () {
     
     // call parent constructor
     IntegerField.parent.call(this, this.configs);
+    
+    this.addClass('integerfield');
   }
   
   IntegerField.defaults = {
@@ -4112,11 +4087,6 @@ metaScore.editor.field.Integer = (function () {
     value: 0,
     
     /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    /**
     * Defines the minimum value allowed
     */
     min: null,
@@ -4124,15 +4094,16 @@ metaScore.editor.field.Integer = (function () {
     /**
     * Defines the maximum value allowed
     */
-    max: null,
-    
-    attributes: {
-      'type': 'number',
-      'class': 'field integerfield'
-    }
+    max: null
   };
   
   metaScore.editor.Field.extend(IntegerField);
+  
+  IntegerField.prototype.setupUI = function(){  
+    this.input = new metaScore.Dom('<input/>', {'type': 'number'})
+      .addListener('change', metaScore.Function.proxy(this.onChange, this))
+      .appendTo(this);    
+  };
     
   return IntegerField;
   
@@ -4153,68 +4124,26 @@ metaScore.editor.field.Select = (function () {
     // call parent constructor
     SelectField.parent.call(this, this.configs);
     
-    this.setOptions(this.configs.options);
+    this.addClass('selectfield');
   }
   
-  SelectField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
+  SelectField.defaults = {    
     /**
     * Defines the maximum value allowed
     */
-    options: {},
-    
-    tag: '<select/>',
-    
-    attributes: {
-      'class': 'field selectfield'
-    }
+    options: {}
   };
   
   metaScore.editor.Field.extend(SelectField);
   
-  SelectField.prototype.setOptions = function(options){  
-    metaScore.Object.each(options, function(key, value){    
-      this.append(new metaScore.Dom('<option/>', {'text': value, 'value': key}));
-    }, this);    
-  };
-
-  /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
-  SelectField.prototype.disable = function(){
-    this.disabled = true;
-    
-    this
-      .attr('disabled', 'disabled')
-      .addClass('disabled');
-    
-    return this;
-  };
-
-  /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
-  SelectField.prototype.enable = function(){
-    this.disabled = false;
-    
-    this
-      .attr('disabled', null)
-      .removeClass('disabled');
-    
-    return this;
+  SelectField.prototype.setupUI = function(){  
+    this.input = new metaScore.Dom('<select/>')
+      .addListener('change', metaScore.Function.proxy(this.onChange, this))
+      .appendTo(this);
+      
+      metaScore.Object.each(this.configs.options, function(key, value){    
+        this.input.append(new metaScore.Dom('<option/>', {'text': value, 'value': key}));
+      }, this);  
   };
     
   return SelectField;
@@ -4235,22 +4164,15 @@ metaScore.editor.field.Text = (function () {
     
     // call parent constructor
     TextField.parent.call(this, this.configs);
+    
+    this.addClass('textfield');
   }
 
   TextField.defaults = {
     /**
     * Defines the default value
     */
-    value: '',
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    attributes: {
-      'class': 'field textfield'
-    }
+    value: ''
   };
   
   metaScore.editor.Field.extend(TextField);
@@ -4268,44 +4190,13 @@ metaScore.namespace('editor.field');
 
 metaScore.editor.field.Time = (function () {
   
-  function TimeField(configs) {
-    var buttons;
-  
+  function TimeField(configs) {  
     this.configs = this.getConfigs(configs);
-    
-    this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
-    this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
-    this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
-    this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
   
     // call parent constructor
     TimeField.parent.call(this, this.configs);
     
-    this.hours.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    this.minutes.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    this.seconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
-    
-    this.centiseconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    if(this.configs.buttons){
-      buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this);
-      
-      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
-        .addListener('click', metaScore.Function.proxy(this.onInClick, this))
-        .appendTo(buttons);
-      
-      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
-        .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
-        .appendTo(buttons);    
-    }
+    this.addClass('timefield');
   }
   
   TimeField.defaults = {
@@ -4313,11 +4204,6 @@ metaScore.editor.field.Time = (function () {
     * Defines the default value
     */
     value: 0,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
     
     /**
     * Defines the minimum value allowed
@@ -4329,16 +4215,51 @@ metaScore.editor.field.Time = (function () {
     */
     max: null,
     
-    tag: '<div/>',
-    
-    attributes: {
-      'class': 'field timefield'
-    },
-    
     buttons: true
   };
   
   metaScore.editor.Field.extend(TimeField);
+  
+  TimeField.prototype.setupUI = function(){    
+    this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
+      .appendTo(this);
+    
+    this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+      
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
+      .appendTo(this);
+      
+    this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+      
+    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'})
+      .appendTo(this);
+      
+    this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+    
+    if(this.configs.buttons){      
+      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
+        .addListener('click', metaScore.Function.proxy(this.onInClick, this));
+      
+      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
+        .addListener('click', metaScore.Function.proxy(this.onOutClick, this));
+
+      new metaScore.Dom('<div/>', {'class': 'buttons'})
+        .append(this.in)
+        .append(this.out)
+        .appendTo(this);
+    }
+    
+  };
   
   TimeField.prototype.onChange = function(evt){
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);

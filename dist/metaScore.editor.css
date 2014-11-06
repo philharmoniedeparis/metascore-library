@@ -140,11 +140,21 @@
   height: 100%;
   border: none;
 }
-.metaScore-editor .timefield {
+.metaScore-editor .field input {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.metaScore-editor .field input[type="checkbox"] {
+  width: auto;
+}
+.metaScore-editor .field.timefield {
   display: inline-block;
   vertical-align: top;
 }
-.metaScore-editor .timefield input {
+.metaScore-editor .field.timefield input {
   width: 1em;
   height: 100%;
   margin: 0;
@@ -154,44 +164,51 @@
   font-family: Tahoma, Geneva, sans-serif;
   -moz-appearance: textfield;
 }
-.metaScore-editor .timefield input::-webkit-outer-spin-button,
-.metaScore-editor .timefield input::-webkit-inner-spin-button {
+.metaScore-editor .field.timefield input::-webkit-outer-spin-button,
+.metaScore-editor .field.timefield input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
-.metaScore-editor .timefield .separator {
+.metaScore-editor .field.timefield .separator {
   font-size: 0.8em;
 }
-.metaScore-editor .timefield .buttons {
+.metaScore-editor .field.timefield .buttons {
   float: right;
   height: 100%;
 }
-.metaScore-editor .timefield .buttons button {
+.metaScore-editor .field.timefield .buttons button {
   display: inline-block;
   width: 15px;
   height: 100%;
   margin-left: 5px;
 }
-.metaScore-editor .timefield .buttons button[data-action="in"] {
+.metaScore-editor .field.timefield .buttons button[data-action="in"] {
   background: transparent url('img/editor/field/time/in.png') no-repeat center center;
 }
-.metaScore-editor .timefield .buttons button[data-action="out"] {
+.metaScore-editor .field.timefield .buttons button[data-action="out"] {
   background: transparent url('img/editor/field/time/out.png') no-repeat center center;
 }
-.metaScore-editor .colorfield {
+.metaScore-editor .field.colorfield {
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .colorfield button {
+.metaScore-editor .field.colorfield button {
+  display: block;
   width: 100%;
   height: 100%;
   background-image: url('img/editor/field/color/picker.png');
   background-position: left center;
   background-size: contain;
 }
-.metaScore-editor .colorfield button:hover {
+.metaScore-editor .field.colorfield button:hover {
   opacity: 1;
 }
-.metaScore-editor .colorfield.disabled button {
+.metaScore-editor .field.colorfield.disabled button {
   cursor: default;
+}
+.metaScore-editor .field.selectfield select {
+  display: block;
+  height: 100%;
+  margin: 0;
+  border: none;
 }
 .metaScore-editor .workspace {
   position: absolute;
@@ -295,15 +312,33 @@
 .metaScore-editor .main-menu button[data-action="help"] {
   background-image: url('img/editor/main-menu/help.png');
 }
-.metaScore-editor .main-menu .timefield {
+.metaScore-editor .main-menu .time {
+  display: inline-block;
   height: 18px;
   margin: 10px;
   font-size: 1.3em;
   padding-left: 18px;
   background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
 }
-.metaScore-editor .main-menu .timefield input {
+.metaScore-editor .main-menu .time input {
   color: #505050;
+}
+.metaScore-editor .main-menu .r-index {
+  display: inline-block;
+  height: 18px;
+  margin: 10px;
+  font-size: 1.3em;
+  padding-left: 18px;
+  background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
+}
+.metaScore-editor .main-menu .r-index input {
+  width: 2em;
+  height: 100%;
+  color: #505050;
+  border: none;
+  background: none;
+  text-align: right;
+  font-family: Tahoma, Geneva, sans-serif;
 }
 .metaScore-editor .sidebar {
   position: fixed;
@@ -428,14 +463,8 @@
   border-right: 1px solid #d7d7d7;
 }
 .metaScore-editor .sidebar .panel .fields .field-wrapper td .field {
-  width: 100%;
   height: 100%;
-  margin: 0;
-  border: none;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.booleanfield {
-  width: auto;
-  height: auto;
+  width: 100%;
 }
 .metaScore-editor .sidebar .panel.collapsed .toolbar .title,
 .metaScore-editor .sidebar .panel.disabled .toolbar .title {

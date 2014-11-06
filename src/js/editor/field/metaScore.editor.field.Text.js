@@ -13,22 +13,15 @@ metaScore.editor.field.Text = (function () {
     
     // call parent constructor
     TextField.parent.call(this, this.configs);
+    
+    this.addClass('textfield');
   }
 
   TextField.defaults = {
     /**
     * Defines the default value
     */
-    value: '',
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    attributes: {
-      'class': 'field textfield'
-    }
+    value: ''
   };
   
   metaScore.editor.Field.extend(TextField);

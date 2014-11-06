@@ -15,26 +15,12 @@ metaScore.editor.field.Image = (function () {
     // call parent constructor
     ImageField.parent.call(this, this.configs);
     
-    this.attr('readonly', 'readonly');
-    
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    this.addClass('imagefield');
+        
+    this.input
+      .attr('readonly', 'readonly')
+      .addListener('click', metaScore.Function.proxy(this.onClick, this));
   }
-  
-  ImageField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    attributes: {
-      'class': 'field imagefield'
-    }
-  };
   
   metaScore.editor.Field.extend(ImageField);
   
@@ -44,8 +30,7 @@ metaScore.editor.field.Image = (function () {
   
   ImageField.prototype.onFileSelect = function(files){
     if(files.length > 0){
-      this.setValue(files[0].url +'?fid='+ files[0].fid);
-      this.triggerEvent('change');
+      this.setValue(files[0].url +'?fid='+ files[0].fid, true);
     }
   };
     

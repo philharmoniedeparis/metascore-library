@@ -8,44 +8,13 @@ metaScore.namespace('editor.field');
 
 metaScore.editor.field.Time = (function () {
   
-  function TimeField(configs) {
-    var buttons;
-  
+  function TimeField(configs) {  
     this.configs = this.getConfigs(configs);
-    
-    this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'});
-    this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'});
-    this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'});
-    this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'});
   
     // call parent constructor
     TimeField.parent.call(this, this.configs);
     
-    this.hours.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    this.minutes.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'}).appendTo(this);
-    
-    this.seconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'}).appendTo(this);
-    
-    this.centiseconds.addListener('input', metaScore.Function.proxy(this.onInput, this)).appendTo(this);
-    
-    if(this.configs.buttons){
-      buttons = new metaScore.Dom('<div/>', {'class': 'buttons'}).appendTo(this);
-      
-      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
-        .addListener('click', metaScore.Function.proxy(this.onInClick, this))
-        .appendTo(buttons);
-      
-      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
-        .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
-        .appendTo(buttons);    
-    }
+    this.addClass('timefield');
   }
   
   TimeField.defaults = {
@@ -53,11 +22,6 @@ metaScore.editor.field.Time = (function () {
     * Defines the default value
     */
     value: 0,
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
     
     /**
     * Defines the minimum value allowed
@@ -69,16 +33,51 @@ metaScore.editor.field.Time = (function () {
     */
     max: null,
     
-    tag: '<div/>',
-    
-    attributes: {
-      'class': 'field timefield'
-    },
-    
     buttons: true
   };
   
   metaScore.editor.Field.extend(TimeField);
+  
+  TimeField.prototype.setupUI = function(){    
+    this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+    
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
+      .appendTo(this);
+    
+    this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+      
+    new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
+      .appendTo(this);
+      
+    this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+      
+    new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'})
+      .appendTo(this);
+      
+    this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'})
+      .addListener('input', metaScore.Function.proxy(this.onInput, this))
+      .appendTo(this);
+    
+    if(this.configs.buttons){      
+      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
+        .addListener('click', metaScore.Function.proxy(this.onInClick, this));
+      
+      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
+        .addListener('click', metaScore.Function.proxy(this.onOutClick, this));
+
+      new metaScore.Dom('<div/>', {'class': 'buttons'})
+        .append(this.in)
+        .append(this.out)
+        .appendTo(this);
+    }
+    
+  };
   
   TimeField.prototype.onChange = function(evt){
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);

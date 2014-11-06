@@ -13,6 +13,8 @@ metaScore.editor.field.Integer = (function () {
     
     // call parent constructor
     IntegerField.parent.call(this, this.configs);
+    
+    this.addClass('integerfield');
   }
   
   IntegerField.defaults = {
@@ -22,11 +24,6 @@ metaScore.editor.field.Integer = (function () {
     value: 0,
     
     /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    /**
     * Defines the minimum value allowed
     */
     min: null,
@@ -34,15 +31,16 @@ metaScore.editor.field.Integer = (function () {
     /**
     * Defines the maximum value allowed
     */
-    max: null,
-    
-    attributes: {
-      'type': 'number',
-      'class': 'field integerfield'
-    }
+    max: null
   };
   
   metaScore.editor.Field.extend(IntegerField);
+  
+  IntegerField.prototype.setupUI = function(){  
+    this.input = new metaScore.Dom('<input/>', {'type': 'number'})
+      .addListener('change', metaScore.Function.proxy(this.onChange, this))
+      .appendTo(this);    
+  };
     
   return IntegerField;
   

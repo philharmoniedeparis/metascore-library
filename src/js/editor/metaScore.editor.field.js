@@ -12,7 +12,9 @@ metaScore.editor.Field = (function () {
     this.configs = this.getConfigs(configs);
     
     // call the super constructor.
-    metaScore.Dom.call(this, this.configs.tag, this.configs.attributes);
+    metaScore.Dom.call(this, '<div/>', {'class': 'field'});
+    
+    this.setupUI();
     
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
@@ -26,8 +28,6 @@ metaScore.editor.Field = (function () {
     if(this.configs.disabled){
       this.disable();
     }
-    
-    this.addListener('change', metaScore.Function.proxy(this.onChange, this));
   }
   
   Field.defaults = {
@@ -39,30 +39,29 @@ metaScore.editor.Field = (function () {
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
-    
-    tag: '<input/>'
+    disabled: false
   };
   
   metaScore.Dom.extend(Field);
   
-  Field.prototype.attributes = {
-    'type': 'text',
-    'class': 'field'
+  Field.prototype.setupUI = function(){  
+    this.input = new metaScore.Dom('<input/>', {'type': 'text'})
+      .addListener('change', metaScore.Function.proxy(this.onChange, this))
+      .appendTo(this);    
   };
   
   Field.prototype.onChange = function(evt){
-    this.value = this.val();
+    this.value = this.input.val();
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
   Field.prototype.setValue = function(value, triggerChange){    
-    this.val(value);
+    this.input.val(value);
     this.value = value;
     
     if(triggerChange === true){
-      this.triggerEvent('change');
+      this.input.triggerEvent('change');
     }
   };
   
@@ -78,7 +77,7 @@ metaScore.editor.Field = (function () {
     this.disabled = true;
     
     this.addClass('disabled');
-    this.attr('disabled', 'disabled');
+    this.input.attr('disabled', 'disabled');
     
     return this;
   };
@@ -93,7 +92,7 @@ metaScore.editor.Field = (function () {
     this.disabled = false;
     
     this.removeClass('disabled');
-    this.attr('disabled', null);
+    this.input.attr('disabled', null);
     
     return this;
   };

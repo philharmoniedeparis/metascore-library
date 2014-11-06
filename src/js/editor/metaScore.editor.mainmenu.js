@@ -75,7 +75,23 @@ metaScore.editor.MainMenu = (function(){
       .attr({
         'title': metaScore.String.t('time')
       })
-      .data('action', 'time')
+      .addClass('time')
+      .appendTo(left);
+    
+    this.rindexfield = new metaScore.editor.field.Integer({
+        min: 0
+      })
+      .attr({
+        'title': metaScore.String.t('reading index')
+      })
+      .addClass('r-index')
+      .appendTo(left);
+    
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.String.t('edit toggle')
+      })
+      .data('action', 'edit-toggle')
       .appendTo(left);
     
     new metaScore.editor.Button()
@@ -98,14 +114,6 @@ metaScore.editor.MainMenu = (function(){
       })
       .data('action', 'redo')
       .appendTo(left);
-      
-    
-    new metaScore.editor.Button()
-      .attr({
-        'title': metaScore.String.t('edit toggle')
-      })
-      .data('action', 'edit-toggle')
-      .appendTo(right);
       
     
     new metaScore.editor.Button()

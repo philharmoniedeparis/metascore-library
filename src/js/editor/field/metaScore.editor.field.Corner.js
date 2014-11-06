@@ -13,19 +13,9 @@ metaScore.editor.field.Corner = (function () {
     
     // call parent constructor
     CornerField.parent.call(this, this.configs);
-  }
-  
-  CornerField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: null,
     
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false
-  };
+    this.addClass('cornerfield');
+  }
   
   metaScore.editor.Field.extend(CornerField);
     

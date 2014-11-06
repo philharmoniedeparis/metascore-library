@@ -11,6 +11,28 @@ metaScore.editor.field.Color = (function () {
   
   function ColorField(configs) {
     this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    ColorField.parent.call(this, this.configs);
+    
+    this.addClass('colorfield');
+  }
+  
+  ColorField.defaults = {
+    /**
+    * Defines the default value
+    */
+    value: {
+      r: 255,
+      g: 255,
+      b: 255,
+      a: 1
+    }
+  };
+  
+  metaScore.editor.Field.extend(ColorField);
+  
+  ColorField.prototype.setupUI = function(){
       
     // fix event handlers scope
     this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
@@ -90,41 +112,10 @@ metaScore.editor.field.Color = (function () {
           
     this.overlay.mask.addListener('click', metaScore.Function.proxy(this.onApplyClick, this));
     
-    // call parent constructor
-    ColorField.parent.call(this, this.configs);
-    
-    new metaScore.Dom('<div/>', {'class': 'icon'})
-      .appendTo(this);
-    
     this.button.appendTo(this);
     
     this.fillGradient();
-  }
-  
-  ColorField.defaults = {
-    /**
-    * Defines the default value
-    */
-    value: {
-      r: 255,
-      g: 255,
-      b: 255,
-      a: 1
-    },
-    
-    /**
-    * Defines whether the field is disabled by default
-    */
-    disabled: false,
-    
-    tag: '<div/>',
-    
-    attributes: {
-      'class': 'field colorfield'
-    }
   };
-  
-  metaScore.editor.Field.extend(ColorField);
   
   ColorField.prototype.setValue = function(val, triggerChange, refillAlpha, updatePositions, updateInputs){
   

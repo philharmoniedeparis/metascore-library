@@ -13,6 +13,8 @@ metaScore.editor.field.Button = (function () {
     
     // call parent constructor
     ButtonField.parent.call(this, this.configs);
+    
+    this.addClass('buttonfield');
   }
   
   metaScore.editor.Field.extend(ButtonField);
