@@ -38,6 +38,7 @@ metaScore.Editor = (function(){
     this.player_head = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.head);
     this.player_body = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
+    this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
     
     // add player style sheets    

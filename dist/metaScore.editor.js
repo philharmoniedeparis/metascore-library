@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-11-06 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-11-07 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -88,8 +88,14 @@ var metaScore = {
 
   version: "0.0.1",
   
+  revision: "e08249",
+  
   getVersion: function(){
     return this.version;
+  },
+  
+  getRevision: function(){
+    return this.revision;
   },
   
   namespace: function(str){  
@@ -1943,6 +1949,7 @@ metaScore.Editor = (function(){
     this.player_head = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.head);
     this.player_body = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
+    this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
     
     // add player style sheets    

@@ -51,6 +51,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-git-rev-parse');
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-jsdoc');
 
@@ -83,14 +84,26 @@ module.exports = function(grunt) {
         banner: BANNER
       }
     },
+    'git-rev-parse': {
+      all: {},
+      options: {
+        prop: 'git.revision'
+      }
+    },
     replace: {
-      version: {
+      tokens: {
         src: sub('dist/*.js'),
         overwrite: true,
-        replacements: [{
-          from: "[[VERSION]]",
-          to: "<%= pkg.version %>"
-        }]
+        replacements: [
+          {
+            from: "[[VERSION]]",
+            to: "<%= pkg.version %>"
+          },
+          {
+            from: "[[REVISION]]",
+            to: "<%= git.revision %>"
+          }
+        ]
       }
     },
     less: {
@@ -170,13 +183,15 @@ module.exports = function(grunt) {
   });
   
   // Register tasks
+  
   grunt.registerTask('build', [
-    'jshint:all',
+    'jshint',
     'clean:dist',
     'concat:dist',
     'uglify:dist',
     'concat:dev',
-    'replace:version',
+    'git-rev-parse',
+    'replace',
     'less',
     'copy:dist'
   ]);

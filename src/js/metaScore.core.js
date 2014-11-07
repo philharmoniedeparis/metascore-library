@@ -5,8 +5,14 @@ var metaScore = {
 
   version: "[[VERSION]]",
   
+  revision: "[[REVISION]]",
+  
   getVersion: function(){
     return this.version;
+  },
+  
+  getRevision: function(){
+    return this.revision;
   },
   
   namespace: function(str){  
