@@ -252,6 +252,10 @@
   height: 50px;
   min-width: 5px;
   border: 0 solid #000000;
+  display: none;
+}
+.metaScore-component.element[data-r-index="0"] {
+  display: block;
 }
 .metaScore-component.element .contents {
   position: absolute;

@@ -24,6 +24,10 @@ metaScore.Player = (function () {
       .data('player-id', this.id)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .appendTo(this.configs.container);
+      
+    this.rindex_css = new metaScore.StyleSheet({
+      container: this.configs.container
+    });
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
       this.addBlock(metaScore.Object.extend({}, configs, {
@@ -120,6 +124,12 @@ metaScore.Player = (function () {
     }, this);
     
     return components;
+  };
+  
+  Player.prototype.setReadingIndex = function(index){
+    this.rindex_css
+      .removeRules()
+      .addRule('.metaScore-component.block[data-player-id="'+ this.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;');
   };
   
   Player.prototype.destroy = function(parent){

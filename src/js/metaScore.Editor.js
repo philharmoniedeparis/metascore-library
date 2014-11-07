@@ -51,7 +51,8 @@ metaScore.Editor = (function(){
     // add event listeners    
     this.mainmenu
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
-      .addDelegate('.timefield', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this));
+      .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
+      .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
     
     this.sidebar
       .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
@@ -130,28 +131,34 @@ metaScore.Editor = (function(){
   
   };
   
-  Editor.prototype.onKeydown = function(evt){
+  Editor.prototype.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
-        this.setEditing(!this.editToggle);
+        if(!evt.repeat){
+          this.setEditing(!this.editToggle);
+          evt.preventDefault();
+        }
         break;
       case 90: //z
         if(evt.ctrlKey){
           this.history.undo();
+          evt.preventDefault();
         }
         break;
       case 89: //y
         if(evt.ctrlKey){
           this.history.redo();
+          evt.preventDefault();
         }
         break;
     }  
   };
   
-  Editor.prototype.onKeyup = function(evt){
+  Editor.prototype.onKeyup = function(evt){    
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(this.editToggle);
+        evt.preventDefault();
         break;
     }
   };
@@ -201,6 +208,13 @@ metaScore.Editor = (function(){
       time = field.getValue();
     
     this.player.media.setCurrentTime(time);
+  };
+  
+  Editor.prototype.onMainmenuRindexFieldChange = function(evt){   
+    var field = evt.target._metaScore,
+      value = field.getValue();
+      
+    this.player.setReadingIndex(value);
   };
   
   Editor.prototype.onTimeFieldIn = function(evt){

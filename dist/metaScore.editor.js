@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "e08249",
+  revision: "359b40",
   
   getVersion: function(){
     return this.version;
@@ -1861,6 +1861,112 @@ metaScore.String = (function () {
   
 })();
 /**
+ * StyleSheet
+ *
+ * @requires ../metaScore.base.js
+ */
+ 
+metaScore.StyleSheet = (function () {
+  
+  function StyleSheet(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call the super constructor.
+    metaScore.Dom.call(this, '<style/>', this.configs.attributes);
+    
+    // WebKit hack :(
+    this.text("");
+    
+    this.appendTo(this.configs.container);
+    
+    this.sheet = this.get(0).sheet;
+  }
+  
+  metaScore.Dom.extend(StyleSheet);
+  
+  StyleSheet.defaults = {
+    /**
+    * Defines the default document to add the sheet to
+    */
+    container: window.document.head,
+    
+    /**
+    * Defines the default attributes
+    */
+    attributes: {}
+  };
+
+  /**
+  * Adds a CSS rule to the style sheet
+  * @param {string} a selector on which the rule should apply
+  * @param {string} the CSS rule(s)
+  * @param {number} an optional index specifying the position to insert the new rule in
+  * @returns {number} the index specifying the position in which the rule was inserted
+  */
+  StyleSheet.prototype.addRule = function(selector, rules, index) {
+    if(index === undefined){
+      index = this.sheet.cssRules.length;
+    }
+  
+    if("insertRule" in this.sheet) {
+      return this.sheet.insertRule(selector + "{" + rules + "}", index);
+    }
+    else if("addRule" in this.sheet) {
+      return this.sheet.addRule(selector, rules, index);
+    }
+  };
+
+  /**
+  * Removes a CSS rule from the style sheet
+  * @param {number} the index specifying the position of the rule
+  */
+  StyleSheet.prototype.removeRule = function(index) {
+    if("deleteRule" in this.sheet) {
+      this.sheet.deleteRule(index);
+    }
+    else if("removeRule" in this.sheet) {
+      this.sheet.removeRule(index);
+    }
+    
+    return this;
+  };
+
+  /**
+  * Removes the first CSS rule that matches a selector
+  * @param {string} the selector to match
+  */
+  StyleSheet.prototype.removeRulesBySelector = function(selector) {
+    var rules = this.sheet.cssRules || this.sheet.rules;
+      
+    selector = selector.toLowerCase();
+  
+    for (var i=0; i<rules.length; i++){
+      if(rules[i].selectorText.toLowerCase() === selector){
+        this.removeRule(i);
+        break;
+      }
+    }
+    
+    return this;
+  };
+
+  /**
+  * Removes all CSS rule from the style sheet
+  */
+  StyleSheet.prototype.removeRules = function() {
+    var rules = this.sheet.cssRules || this.sheet.rules;
+  
+    while(rules.length > 0){
+      this.removeRule(0);
+    }
+    
+    return this;
+  };
+    
+  return StyleSheet;
+  
+})();
+/**
  * Variable
  *
  * @requires ../metaScore.base.js
@@ -1962,7 +2068,8 @@ metaScore.Editor = (function(){
     // add event listeners    
     this.mainmenu
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
-      .addDelegate('.timefield', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this));
+      .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
+      .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
     
     this.sidebar
       .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
@@ -2041,28 +2148,34 @@ metaScore.Editor = (function(){
   
   };
   
-  Editor.prototype.onKeydown = function(evt){
+  Editor.prototype.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
-        this.setEditing(!this.editToggle);
+        if(!evt.repeat){
+          this.setEditing(!this.editToggle);
+          evt.preventDefault();
+        }
         break;
       case 90: //z
         if(evt.ctrlKey){
           this.history.undo();
+          evt.preventDefault();
         }
         break;
       case 89: //y
         if(evt.ctrlKey){
           this.history.redo();
+          evt.preventDefault();
         }
         break;
     }  
   };
   
-  Editor.prototype.onKeyup = function(evt){
+  Editor.prototype.onKeyup = function(evt){    
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(this.editToggle);
+        evt.preventDefault();
         break;
     }
   };
@@ -2112,6 +2225,13 @@ metaScore.Editor = (function(){
       time = field.getValue();
     
     this.player.media.setCurrentTime(time);
+  };
+  
+  Editor.prototype.onMainmenuRindexFieldChange = function(evt){   
+    var field = evt.target._metaScore,
+      value = field.getValue();
+      
+    this.player.setReadingIndex(value);
   };
   
   Editor.prototype.onTimeFieldIn = function(evt){
@@ -4850,6 +4970,10 @@ metaScore.Player = (function () {
       .data('player-id', this.id)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .appendTo(this.configs.container);
+      
+    this.rindex_css = new metaScore.StyleSheet({
+      container: this.configs.container
+    });
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
       this.addBlock(metaScore.Object.extend({}, configs, {
@@ -4946,6 +5070,12 @@ metaScore.Player = (function () {
     }, this);
     
     return components;
+  };
+  
+  Player.prototype.setReadingIndex = function(index){
+    this.rindex_css
+      .removeRules()
+      .addRule('.metaScore-component.block[data-player-id="'+ this.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;');
   };
   
   Player.prototype.destroy = function(parent){
