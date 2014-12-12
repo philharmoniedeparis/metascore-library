@@ -24,7 +24,11 @@ metaScore.Draggable = (function () {
   
   metaScore.Class.extend(Draggable);
   
-  Draggable.prototype.onMouseDown = function(evt){  
+  Draggable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+
     this.start_state = {
       'left': parseInt(this.configs.target.css('left'), 10) - evt.clientX,
       'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
@@ -70,6 +74,8 @@ metaScore.Draggable = (function () {
     
     this.configs.handle.addClass('drag-handle');
     
+    this.enabled = true;
+    
     return this;  
   };
   
@@ -77,6 +83,8 @@ metaScore.Draggable = (function () {
     this.configs.target.removeClass('draggable');
     
     this.configs.handle.removeClass('drag-handle');
+    
+    this.enabled = false;
     
     return this;  
   };

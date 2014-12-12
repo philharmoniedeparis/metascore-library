@@ -153,13 +153,14 @@ metaScore.player.component.Element = (function () {
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       },
-      'corners': {
-        'type': 'Corner',
-        'label': metaScore.String.t('Corners'),
+      'border-radius': {
+        'type': 'BorderRadius',
+        'label': metaScore.String.t('Border radius'),
         'getter': function(){
-        
+          return this.css('border-radius');
         },
         'setter': function(value){
+          this.css('border-radius', value);
         }
       }
     }

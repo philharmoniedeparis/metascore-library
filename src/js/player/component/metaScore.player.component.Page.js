@@ -126,14 +126,19 @@ metaScore.player.component.Page = (function () {
     this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
       'inTime': this.getProperty('start-time'),
       'outTime': this.getProperty('end-time'),
-      'onStart': metaScore.Function.proxy(this.onCuePointStart, this)
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
+      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
     }));
     
     return this.cuepoint;
   };
   
   Page.prototype.onCuePointStart = function(cuepoint){
-    this.addClass('active');
+    this.triggerEvent('cuepointstart');
+  };
+  
+  Page.prototype.onCuePointEnd = function(cuepoint){
+    this.triggerEvent('cuepointend');
   };
   
   Page.prototype.destroy = function(){

@@ -103,6 +103,7 @@
   width: 90px;
   height: 100px;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
   color: #dddddd;
   background: #cccccc;
@@ -148,8 +149,8 @@
   background-position: -94px 0;
 }
 .metaScore-component.block {
-  min-width: 200px;
-  min-height: 100px;
+  min-width: 50px;
+  min-height: 50px;
   width: 200px;
   height: 200px;
   overflow: vissible;
@@ -254,7 +255,8 @@
   border: 0 solid #000000;
   display: none;
 }
-.metaScore-component.element[data-r-index="0"] {
+.metaScore-component.element[data-r-index="0"],
+.metaScore-component.element.active {
   display: block;
 }
 .metaScore-component.element .contents {
@@ -264,14 +266,16 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  display: none;
 }
-.metaScore-component.element.active .contents {
-  display: block;
+.metaScore-component.element[data-type="Cursor"] .contents {
+  display: none;
 }
 .metaScore-component.element[data-type="Cursor"] .cursor {
   position: absolute;
   background: #000000;
+}
+.metaScore-component.element[data-type="Cursor"].active .contents {
+  display: block;
 }
 .metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
   width: 1px;
@@ -426,7 +430,4 @@
 .metaScore-player-wrapper.editing .metaScore-component.element {
   outline-width: 1px;
   outline-style: dashed;
-}
-.metaScore-player-wrapper.editing .metaScore-component.element .contents {
-  display: block;
 }

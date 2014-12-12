@@ -82,10 +82,17 @@ metaScore.Player = (function () {
     this.controller.updateTime(currentTime);
   };
   
-  Player.prototype.onElementTime = function(evt){  
-    if(metaScore.editing !== true){
-      this.media.setCurrentTime(evt.detail.value);
-    }    
+  Player.prototype.onPageActivate = function(evt){
+    var block = evt.target._metaScore,
+      page = evt.detail.page;
+    
+    if(block.getProperty('synched')){
+      this.media.setCurrentTime(page.getProperty('start-time'));
+    }
+  };
+  
+  Player.prototype.onElementTime = function(evt){
+    this.media.setCurrentTime(evt.detail.value);
   };
   
   Player.prototype.onComponenetPropChange = function(evt){
@@ -107,6 +114,7 @@ metaScore.Player = (function () {
     }
     else{
       block = new metaScore.player.component.Block(configs)
+        .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
         .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))
         .data('player-id', this.id);
     }

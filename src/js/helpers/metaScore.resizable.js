@@ -44,7 +44,11 @@ metaScore.Resizable = (function () {
   
   metaScore.Class.extend(Resizable);
   
-  Resizable.prototype.onMouseDown = function(evt){  
+  Resizable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+    
     this.start_state = {
       'handle': evt.target,
       'x': evt.clientX,
@@ -137,11 +141,15 @@ metaScore.Resizable = (function () {
   Resizable.prototype.enable = function(){  
     this.configs.target.addClass('resizable');
     
+    this.enabled = true;
+    
     return this;
   };
   
   Resizable.prototype.disable = function(){  
     this.configs.target.removeClass('resizable');
+    
+    this.enabled = false;
     
     return this;  
   };

@@ -38,7 +38,7 @@ metaScore.editor.field.Time = (function () {
   
   metaScore.editor.Field.extend(TimeField);
   
-  TimeField.prototype.setupUI = function(){    
+  TimeField.prototype.setupUI = function(){
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
       .appendTo(this);
@@ -77,13 +77,15 @@ metaScore.editor.field.Time = (function () {
         .appendTo(this);
     }
     
+    this.addListener('change', metaScore.Function.proxy(this.onChange, this));
+    
   };
   
   TimeField.prototype.onChange = function(evt){
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  TimeField.prototype.onInput = function(evt){
+  TimeField.prototype.onInput = function(evt){  
     var centiseconds_val = parseInt(this.centiseconds.val(), 10),
       seconds_val = parseInt(this.seconds.val(), 10),
       minutes_val = parseInt(this.minutes.val(), 10),
@@ -102,7 +104,7 @@ metaScore.editor.field.Time = (function () {
     this.triggerEvent('valueout');
   };
   
-  TimeField.prototype.setValue = function(milliseconds, triggerChange){      
+  TimeField.prototype.setValue = function(milliseconds, supressEvent){
     var centiseconds_val, seconds_val, minutes_val, hours_val;
     
     this.value = milliseconds;
@@ -124,7 +126,7 @@ metaScore.editor.field.Time = (function () {
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
     
-    if(triggerChange === true){
+    if(supressEvent !== true){
       this.triggerEvent('change');
     }
   };

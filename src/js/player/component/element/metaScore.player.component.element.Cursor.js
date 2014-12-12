@@ -49,7 +49,7 @@ metaScore.player.component.element.Cursor = (function () {
         'type': 'Integer',
         'label': metaScore.String.t('Cursor width'),
         'getter': function(){
-          return this.cursor.css('width');
+          return parseInt(this.cursor.css('width'), 10);
         },
         'setter': function(value){
           this.cursor.css('width', value +'px');
@@ -98,16 +98,26 @@ metaScore.player.component.element.Cursor = (function () {
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
       
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    this
+      .addListener('click', metaScore.Function.proxy(this.onClick, this))
+      .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
   };
   
   Cursor.prototype.onClick = function(evt){
     var pos, time,    
-      inTime = this.getProperty('start-time'),
-      outTime = this.getProperty('end-time'),
-      direction = this.getProperty('direction'),
-      acceleration = this.getProperty('acceleration'),    
-      rect = evt.target.getBoundingClientRect();
+      inTime, outTime,
+      direction, acceleration,    
+      rect;
+    
+    if(metaScore.editing === true && evt.type !== 'dblclick'){
+      return;
+    }
+    
+    inTime = this.getProperty('start-time');
+    outTime = this.getProperty('end-time');
+    direction = this.getProperty('direction');
+    acceleration = this.getProperty('acceleration');    
+    rect = evt.target.getBoundingClientRect();
 
     switch(direction){
       case 'left':

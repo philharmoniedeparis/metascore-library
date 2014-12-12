@@ -48,7 +48,7 @@ metaScore.Editor = (function(){
       }, this);
     }
       
-    // add event listeners    
+    // add event listeners
     this.mainmenu
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
@@ -91,6 +91,8 @@ metaScore.Editor = (function(){
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
       
     this.block_panel.unsetComponent();
+    
+    metaScore.editing = false;
   }
   
   metaScore.Dom.extend(Editor);
@@ -99,8 +101,10 @@ metaScore.Editor = (function(){
     'ajax': {}
   };
   
-  Editor.prototype.setEditing = function(editing){
-    metaScore.editing = editing;
+  Editor.prototype.setEditing = function(editing, sticky){
+    if(sticky !== false){
+      metaScore.editing = editing;
+    }
     
     this.toggleClass('editing', editing);
     this.player_body.toggleClass('editing', editing);
@@ -113,6 +117,8 @@ metaScore.Editor = (function(){
     this.addPlayer(data);
     
     this.loadmask.hide();
+    
+    this.setEditing(true);
     
     delete this.loadmask;
   };
@@ -135,7 +141,7 @@ metaScore.Editor = (function(){
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
-          this.setEditing(!this.editToggle);
+          this.setEditing(!metaScore.editing, false);
           evt.preventDefault();
         }
         break;
@@ -157,7 +163,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onKeyup = function(evt){    
     switch(evt.keyCode){
       case 18: //alt
-        this.setEditing(this.editToggle);
+        this.setEditing(metaScore.editing, false);
         evt.preventDefault();
         break;
     }
@@ -193,8 +199,7 @@ metaScore.Editor = (function(){
         this.history.redo();
         break;
       case 'edit-toggle':
-        this.editToggle = !this.editToggle;
-        this.setEditing(this.editToggle);
+        this.setEditing(!metaScore.editing);
         break;
       case 'settings':
         break;
@@ -501,7 +506,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getCurrentTime();
     
-    this.mainmenu.timefield.setValue(currentTime);
+    this.mainmenu.timefield.setValue(currentTime, true);
   };
   
   Editor.prototype.onComponentClick = function(evt, dom){

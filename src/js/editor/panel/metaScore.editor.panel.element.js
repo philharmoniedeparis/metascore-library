@@ -69,17 +69,6 @@ metaScore.editor.panel.Element = (function () {
       'container': component.parents()
     };
   };
-  
-  ElementPanel.prototype.setComponent = function(component, supressEvent){    
-    // call parent function
-    ElementPanel.parent.prototype.setComponent.call(this, component, supressEvent);
-    
-    if(component.getProperty('type') === 'Text'){
-      component.setEditable(true);
-    }
-    
-    return this;
-  };
     
   return ElementPanel;
   

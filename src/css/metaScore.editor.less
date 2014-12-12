@@ -202,6 +202,7 @@
     right: 0;
     min-width: 900px;
     height: 40px;
+    overflow: hidden;
     z-index: 9999;  
     padding: 0 10px;
     .gradient(#DADADA, #DADADA, #C8C8C8);
@@ -278,6 +279,7 @@
       display: inline-block;
       height: 18px;
       margin: 10px;
+      vertical-align: middle;
       font-size: 1.3em;
       padding-left: 18px; 
       background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
@@ -291,6 +293,7 @@
       display: inline-block;
       height: 18px;
       margin: 10px;
+      vertical-align: middle;
       font-size: 1.3em;
       padding-left: 18px; 
       background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
@@ -618,13 +621,23 @@
     }
     
     &.guide-selector{
+    
       .contents{
+        max-width: 500px;
+        max-height: 500px;
+        overflow: auto;
+        
         tr.guide{
           cursor: pointer;
         
           td.thumbnail{
             padding-right: 10px;
-            padding-bottom: 10px;
+            
+            img{
+              width: 155px;
+              height: 123px;
+              background: #DADADA url('img/editor/default-thumbnail.png') no-repeat center center;
+            }
           }
         
           td.details{

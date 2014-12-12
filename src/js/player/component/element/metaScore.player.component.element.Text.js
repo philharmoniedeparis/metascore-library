@@ -11,6 +11,11 @@ metaScore.player.component.element.Text = (function () {
   function Text(configs) {  
     // call parent constructor
     Text.parent.call(this, configs);
+      
+    // fix event handlers scope
+    this.onContentsClick = metaScore.Function.proxy(this.onContentsClick, this);
+    this.onContentsDblClick = metaScore.Function.proxy(this.onContentsDblClick, this);
+    this.onContentsBlur = metaScore.Function.proxy(this.onContentsBlur, this);
   }
   
   metaScore.player.component.Element.extend(Text);
@@ -69,6 +74,33 @@ metaScore.player.component.element.Text = (function () {
     Text.parent.prototype.setupDOM.call(this);
     
     this.data('type', 'text');
+      
+    this.contents
+      .addListener('dblclick', metaScore.Function.proxy(this.onContentsDblClick, this))
+      .addListener('blur', metaScore.Function.proxy(this.onContentsBlur, this));
+  };
+  
+  Text.prototype.onContentsClick = function(evt){
+    evt.stopPropagation();
+  };
+  
+  Text.prototype.onContentsDblClick = function(evt){    
+    if(this._draggable){
+      this._draggable.disable();
+    }
+    
+    this.contents.addListener('click', this.onContentsClick);
+    this.setEditable(true);
+    this.contents.get(0).focus();
+  };
+  
+  Text.prototype.onContentsBlur = function(evt){
+    this.contents.removeListener('click', this.onContentsClick);
+    this.setEditable(false);
+    
+    if(this._draggable){
+      this._draggable.enable();
+    }
   };
   
   Text.prototype.setEditable = function(editable){

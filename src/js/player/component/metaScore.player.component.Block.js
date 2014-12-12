@@ -162,6 +162,7 @@ metaScore.player.component.Block = (function () {
     this.addClass('block');
           
     this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
+      .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
       .appendTo(this);
       
     this.pager = new metaScore.player.Pager()
@@ -169,9 +170,13 @@ metaScore.player.component.Block = (function () {
       .appendTo(this);
   };
   
+  Block.prototype.onPageCuePointStart = function(evt){    
+    this.setActivePage(evt.target._metaScore, true);
+  };
+  
   Block.prototype.onPagerClick = function(evt){
     var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
-      action, index;
+      action;
       
     if(active){
       action = metaScore.Dom.data(evt.target, 'action');
@@ -236,7 +241,7 @@ metaScore.player.component.Block = (function () {
     return this.getPages().count();  
   };
   
-  Block.prototype.setActivePage = function(page){    
+  Block.prototype.setActivePage = function(page, supressEvent){    
     var pages = this.getPages();
       
     if(metaScore.Var.is(page, "number")){
@@ -249,7 +254,9 @@ metaScore.player.component.Block = (function () {
     
     this.updatePager();
     
-    this.triggerEvent('pageactivate', {'page': page});
+    if(supressEvent !== true){
+      this.triggerEvent('pageactivate', {'page': page});
+    }
   };
   
   Block.prototype.updatePager = function(){  

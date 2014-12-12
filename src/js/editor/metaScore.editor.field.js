@@ -44,10 +44,10 @@ metaScore.editor.Field = (function () {
   
   metaScore.Dom.extend(Field);
   
-  Field.prototype.setupUI = function(){  
+  Field.prototype.setupUI = function(){
     this.input = new metaScore.Dom('<input/>', {'type': 'text'})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
-      .appendTo(this);    
+      .appendTo(this);
   };
   
   Field.prototype.onChange = function(evt){
@@ -56,7 +56,7 @@ metaScore.editor.Field = (function () {
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  Field.prototype.setValue = function(value, triggerChange){    
+  Field.prototype.setValue = function(value, triggerChange){
     this.input.val(value);
     this.value = value;
     

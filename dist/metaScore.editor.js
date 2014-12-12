@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-11-07 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2014-12-12 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "359b40",
+  revision: "53729b",
   
   getVersion: function(){
     return this.version;
@@ -1393,7 +1393,11 @@ metaScore.Draggable = (function () {
   
   metaScore.Class.extend(Draggable);
   
-  Draggable.prototype.onMouseDown = function(evt){  
+  Draggable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+
     this.start_state = {
       'left': parseInt(this.configs.target.css('left'), 10) - evt.clientX,
       'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
@@ -1439,6 +1443,8 @@ metaScore.Draggable = (function () {
     
     this.configs.handle.addClass('drag-handle');
     
+    this.enabled = true;
+    
     return this;  
   };
   
@@ -1446,6 +1452,8 @@ metaScore.Draggable = (function () {
     this.configs.target.removeClass('draggable');
     
     this.configs.handle.removeClass('drag-handle');
+    
+    this.enabled = false;
     
     return this;  
   };
@@ -1626,7 +1634,11 @@ metaScore.Resizable = (function () {
   
   metaScore.Class.extend(Resizable);
   
-  Resizable.prototype.onMouseDown = function(evt){  
+  Resizable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+    
     this.start_state = {
       'handle': evt.target,
       'x': evt.clientX,
@@ -1719,11 +1731,15 @@ metaScore.Resizable = (function () {
   Resizable.prototype.enable = function(){  
     this.configs.target.addClass('resizable');
     
+    this.enabled = true;
+    
     return this;
   };
   
   Resizable.prototype.disable = function(){  
     this.configs.target.removeClass('resizable');
+    
+    this.enabled = false;
     
     return this;  
   };
@@ -2065,7 +2081,7 @@ metaScore.Editor = (function(){
       }, this);
     }
       
-    // add event listeners    
+    // add event listeners
     this.mainmenu
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
@@ -2108,6 +2124,8 @@ metaScore.Editor = (function(){
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
       
     this.block_panel.unsetComponent();
+    
+    metaScore.editing = false;
   }
   
   metaScore.Dom.extend(Editor);
@@ -2116,8 +2134,10 @@ metaScore.Editor = (function(){
     'ajax': {}
   };
   
-  Editor.prototype.setEditing = function(editing){
-    metaScore.editing = editing;
+  Editor.prototype.setEditing = function(editing, sticky){
+    if(sticky !== false){
+      metaScore.editing = editing;
+    }
     
     this.toggleClass('editing', editing);
     this.player_body.toggleClass('editing', editing);
@@ -2130,6 +2150,8 @@ metaScore.Editor = (function(){
     this.addPlayer(data);
     
     this.loadmask.hide();
+    
+    this.setEditing(true);
     
     delete this.loadmask;
   };
@@ -2152,7 +2174,7 @@ metaScore.Editor = (function(){
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
-          this.setEditing(!this.editToggle);
+          this.setEditing(!metaScore.editing, false);
           evt.preventDefault();
         }
         break;
@@ -2174,7 +2196,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onKeyup = function(evt){    
     switch(evt.keyCode){
       case 18: //alt
-        this.setEditing(this.editToggle);
+        this.setEditing(metaScore.editing, false);
         evt.preventDefault();
         break;
     }
@@ -2210,8 +2232,7 @@ metaScore.Editor = (function(){
         this.history.redo();
         break;
       case 'edit-toggle':
-        this.editToggle = !this.editToggle;
-        this.setEditing(this.editToggle);
+        this.setEditing(!metaScore.editing);
         break;
       case 'settings':
         break;
@@ -2518,7 +2539,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getCurrentTime();
     
-    this.mainmenu.timefield.setValue(currentTime);
+    this.mainmenu.timefield.setValue(currentTime, true);
   };
   
   Editor.prototype.onComponentClick = function(evt, dom){
@@ -2870,10 +2891,10 @@ metaScore.editor.Field = (function () {
   
   metaScore.Dom.extend(Field);
   
-  Field.prototype.setupUI = function(){  
+  Field.prototype.setupUI = function(){
     this.input = new metaScore.Dom('<input/>', {'type': 'text'})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
-      .appendTo(this);    
+      .appendTo(this);
   };
   
   Field.prototype.onChange = function(evt){
@@ -2882,7 +2903,7 @@ metaScore.editor.Field = (function () {
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  Field.prototype.setValue = function(value, triggerChange){    
+  Field.prototype.setValue = function(value, triggerChange){
     this.input.val(value);
     this.value = value;
     
@@ -3442,7 +3463,7 @@ metaScore.editor.Panel = (function(){
     var draggable, resizable;
   
     if(component === this.getComponent()){
-      return;
+      return this;
     }
     
     this.unsetComponent(supressEvent);
@@ -3459,7 +3480,7 @@ metaScore.editor.Panel = (function(){
     
     draggable = this.getDraggable();
     if(draggable){
-      component._draggable = new metaScore.Draggable(draggable).enable();
+      component._draggable = new metaScore.Draggable(draggable);
       component
         .addListener('dragstart', this.onComponentDragStart)
         .addListener('drag', this.onComponentDrag)
@@ -3468,7 +3489,7 @@ metaScore.editor.Panel = (function(){
     
     resizable = this.getResizable();
     if(resizable){
-      component._resizable = new metaScore.Resizable(resizable).enable();      
+      component._resizable = new metaScore.Resizable(resizable);      
       component
         .addListener('resizestart', this.onComponentResizeStart)
         .addListener('resize', this.onComponentResize)
@@ -3514,6 +3535,8 @@ metaScore.editor.Panel = (function(){
       component.removeClass('selected');
       
       this.component = null;
+      
+      return this;
     }
       
     if(supressEvent !== true){
@@ -3761,6 +3784,30 @@ metaScore.editor.field.Boolean = (function () {
   };
     
   return BooleanField;
+  
+})();
+/**
+ * BorderRadiusrField
+ *
+ * @requires ../metaScore.editor.field.js
+ */
+ 
+metaScore.namespace('editor.field');
+
+metaScore.editor.field.BorderRadius = (function () {
+  
+  function BorderRadiusrField(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    BorderRadiusrField.parent.call(this, this.configs);
+    
+    this.addClass('borderradiusrfield');
+  }
+  
+  metaScore.editor.Field.extend(BorderRadiusrField);
+    
+  return BorderRadiusrField;
   
 })();
 /**
@@ -4125,30 +4172,6 @@ metaScore.editor.field.Color = (function () {
   return ColorField;
   
 })();
-/**
- * CornerField
- *
- * @requires ../metaScore.editor.field.js
- */
- 
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Corner = (function () {
-  
-  function CornerField(configs) {
-    this.configs = this.getConfigs(configs);
-    
-    // call parent constructor
-    CornerField.parent.call(this, this.configs);
-    
-    this.addClass('cornerfield');
-  }
-  
-  metaScore.editor.Field.extend(CornerField);
-    
-  return CornerField;
-  
-})();
 /* global Drupal */
 /**
  * ImageField
@@ -4347,7 +4370,7 @@ metaScore.editor.field.Time = (function () {
   
   metaScore.editor.Field.extend(TimeField);
   
-  TimeField.prototype.setupUI = function(){    
+  TimeField.prototype.setupUI = function(){
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
       .appendTo(this);
@@ -4386,13 +4409,15 @@ metaScore.editor.field.Time = (function () {
         .appendTo(this);
     }
     
+    this.addListener('change', metaScore.Function.proxy(this.onChange, this));
+    
   };
   
   TimeField.prototype.onChange = function(evt){
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
   
-  TimeField.prototype.onInput = function(evt){
+  TimeField.prototype.onInput = function(evt){  
     var centiseconds_val = parseInt(this.centiseconds.val(), 10),
       seconds_val = parseInt(this.seconds.val(), 10),
       minutes_val = parseInt(this.minutes.val(), 10),
@@ -4411,7 +4436,7 @@ metaScore.editor.field.Time = (function () {
     this.triggerEvent('valueout');
   };
   
-  TimeField.prototype.setValue = function(milliseconds, triggerChange){      
+  TimeField.prototype.setValue = function(milliseconds, supressEvent){
     var centiseconds_val, seconds_val, minutes_val, hours_val;
     
     this.value = milliseconds;
@@ -4433,7 +4458,7 @@ metaScore.editor.field.Time = (function () {
     this.minutes.val(minutes_val);
     this.hours.val(hours_val);
     
-    if(triggerChange === true){
+    if(supressEvent !== true){
       this.triggerEvent('change');
     }
   };
@@ -4633,17 +4658,6 @@ metaScore.editor.panel.Element = (function () {
       'target': component,
       'container': component.parents()
     };
-  };
-  
-  ElementPanel.prototype.setComponent = function(component, supressEvent){    
-    // call parent function
-    ElementPanel.parent.prototype.setComponent.call(this, component, supressEvent);
-    
-    if(component.getProperty('type') === 'Text'){
-      component.setEditable(true);
-    }
-    
-    return this;
   };
     
   return ElementPanel;
@@ -5028,10 +5042,17 @@ metaScore.Player = (function () {
     this.controller.updateTime(currentTime);
   };
   
-  Player.prototype.onElementTime = function(evt){  
-    if(metaScore.editing !== true){
-      this.media.setCurrentTime(evt.detail.value);
-    }    
+  Player.prototype.onPageActivate = function(evt){
+    var block = evt.target._metaScore,
+      page = evt.detail.page;
+    
+    if(block.getProperty('synched')){
+      this.media.setCurrentTime(page.getProperty('start-time'));
+    }
+  };
+  
+  Player.prototype.onElementTime = function(evt){
+    this.media.setCurrentTime(evt.detail.value);
   };
   
   Player.prototype.onComponenetPropChange = function(evt){
@@ -5053,6 +5074,7 @@ metaScore.Player = (function () {
     }
     else{
       block = new metaScore.player.component.Block(configs)
+        .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
         .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))
         .data('player-id', this.id);
     }
@@ -5478,6 +5500,7 @@ metaScore.player.component.Block = (function () {
     this.addClass('block');
           
     this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
+      .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
       .appendTo(this);
       
     this.pager = new metaScore.player.Pager()
@@ -5485,9 +5508,13 @@ metaScore.player.component.Block = (function () {
       .appendTo(this);
   };
   
+  Block.prototype.onPageCuePointStart = function(evt){    
+    this.setActivePage(evt.target._metaScore, true);
+  };
+  
   Block.prototype.onPagerClick = function(evt){
     var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
-      action, index;
+      action;
       
     if(active){
       action = metaScore.Dom.data(evt.target, 'action');
@@ -5552,7 +5579,7 @@ metaScore.player.component.Block = (function () {
     return this.getPages().count();  
   };
   
-  Block.prototype.setActivePage = function(page){    
+  Block.prototype.setActivePage = function(page, supressEvent){    
     var pages = this.getPages();
       
     if(metaScore.Var.is(page, "number")){
@@ -5565,7 +5592,9 @@ metaScore.player.component.Block = (function () {
     
     this.updatePager();
     
-    this.triggerEvent('pageactivate', {'page': page});
+    if(supressEvent !== true){
+      this.triggerEvent('pageactivate', {'page': page});
+    }
   };
   
   Block.prototype.updatePager = function(){  
@@ -5818,13 +5847,14 @@ metaScore.player.component.Element = (function () {
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       },
-      'corners': {
-        'type': 'Corner',
-        'label': metaScore.String.t('Corners'),
+      'border-radius': {
+        'type': 'BorderRadius',
+        'label': metaScore.String.t('Border radius'),
         'getter': function(){
-        
+          return this.css('border-radius');
         },
         'setter': function(value){
+          this.css('border-radius', value);
         }
       }
     }
@@ -6167,14 +6197,19 @@ metaScore.player.component.Page = (function () {
     this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
       'inTime': this.getProperty('start-time'),
       'outTime': this.getProperty('end-time'),
-      'onStart': metaScore.Function.proxy(this.onCuePointStart, this)
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
+      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
     }));
     
     return this.cuepoint;
   };
   
   Page.prototype.onCuePointStart = function(cuepoint){
-    this.addClass('active');
+    this.triggerEvent('cuepointstart');
+  };
+  
+  Page.prototype.onCuePointEnd = function(cuepoint){
+    this.triggerEvent('cuepointend');
   };
   
   Page.prototype.destroy = function(){
@@ -6237,7 +6272,7 @@ metaScore.player.component.element.Cursor = (function () {
         'type': 'Integer',
         'label': metaScore.String.t('Cursor width'),
         'getter': function(){
-          return this.cursor.css('width');
+          return parseInt(this.cursor.css('width'), 10);
         },
         'setter': function(value){
           this.cursor.css('width', value +'px');
@@ -6286,16 +6321,26 @@ metaScore.player.component.element.Cursor = (function () {
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
       
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    this
+      .addListener('click', metaScore.Function.proxy(this.onClick, this))
+      .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
   };
   
   Cursor.prototype.onClick = function(evt){
     var pos, time,    
-      inTime = this.getProperty('start-time'),
-      outTime = this.getProperty('end-time'),
-      direction = this.getProperty('direction'),
-      acceleration = this.getProperty('acceleration'),    
-      rect = evt.target.getBoundingClientRect();
+      inTime, outTime,
+      direction, acceleration,    
+      rect;
+    
+    if(metaScore.editing === true && evt.type !== 'dblclick'){
+      return;
+    }
+    
+    inTime = this.getProperty('start-time');
+    outTime = this.getProperty('end-time');
+    direction = this.getProperty('direction');
+    acceleration = this.getProperty('acceleration');    
+    rect = evt.target.getBoundingClientRect();
 
     switch(direction){
       case 'left':
@@ -6433,6 +6478,11 @@ metaScore.player.component.element.Text = (function () {
   function Text(configs) {  
     // call parent constructor
     Text.parent.call(this, configs);
+      
+    // fix event handlers scope
+    this.onContentsClick = metaScore.Function.proxy(this.onContentsClick, this);
+    this.onContentsDblClick = metaScore.Function.proxy(this.onContentsDblClick, this);
+    this.onContentsBlur = metaScore.Function.proxy(this.onContentsBlur, this);
   }
   
   metaScore.player.component.Element.extend(Text);
@@ -6491,6 +6541,33 @@ metaScore.player.component.element.Text = (function () {
     Text.parent.prototype.setupDOM.call(this);
     
     this.data('type', 'text');
+      
+    this.contents
+      .addListener('dblclick', metaScore.Function.proxy(this.onContentsDblClick, this))
+      .addListener('blur', metaScore.Function.proxy(this.onContentsBlur, this));
+  };
+  
+  Text.prototype.onContentsClick = function(evt){
+    evt.stopPropagation();
+  };
+  
+  Text.prototype.onContentsDblClick = function(evt){    
+    if(this._draggable){
+      this._draggable.disable();
+    }
+    
+    this.contents.addListener('click', this.onContentsClick);
+    this.setEditable(true);
+    this.contents.get(0).focus();
+  };
+  
+  Text.prototype.onContentsBlur = function(evt){
+    this.contents.removeListener('click', this.onContentsClick);
+    this.setEditable(false);
+    
+    if(this._draggable){
+      this._draggable.enable();
+    }
   };
   
   Text.prototype.setEditable = function(editable){

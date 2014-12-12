@@ -157,7 +157,7 @@ metaScore.editor.Panel = (function(){
     var draggable, resizable;
   
     if(component === this.getComponent()){
-      return;
+      return this;
     }
     
     this.unsetComponent(supressEvent);
@@ -174,7 +174,7 @@ metaScore.editor.Panel = (function(){
     
     draggable = this.getDraggable();
     if(draggable){
-      component._draggable = new metaScore.Draggable(draggable).enable();
+      component._draggable = new metaScore.Draggable(draggable);
       component
         .addListener('dragstart', this.onComponentDragStart)
         .addListener('drag', this.onComponentDrag)
@@ -183,7 +183,7 @@ metaScore.editor.Panel = (function(){
     
     resizable = this.getResizable();
     if(resizable){
-      component._resizable = new metaScore.Resizable(resizable).enable();      
+      component._resizable = new metaScore.Resizable(resizable);      
       component
         .addListener('resizestart', this.onComponentResizeStart)
         .addListener('resize', this.onComponentResize)
@@ -229,6 +229,8 @@ metaScore.editor.Panel = (function(){
       component.removeClass('selected');
       
       this.component = null;
+      
+      return this;
     }
       
     if(supressEvent !== true){
