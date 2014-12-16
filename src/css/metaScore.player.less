@@ -1,6 +1,7 @@
 @import "../../vendor/prefixer.less";
 
 @block-outline: rgb(51,49,47);
+@controller-outline: rgb(0, 0, 254);
 @cursor-outline: rgb(255,0,60);
 @image-outline: rgb(255,138,0);
 @text-outline: rgb(0,193,118);
@@ -303,7 +304,7 @@
   }
   
   .draggable{
-    &.dragging{
+    .drag-handle{
       cursor: move;
     }
   }
@@ -366,14 +367,8 @@
   }
   
   .metaScore-component{    
-    &.controller{
-      &.selected{
-        border: none;
-      }
-    }
-    
     &.element{
-      &[data-type="cursor"]{
+      &[data-type="Cursor"]{
         outline-color: @cursor-outline;
         
         &.resizable .resize-handle{
@@ -381,7 +376,7 @@
         }
       }
       
-      &[data-type="image"]{
+      &[data-type="Image"]{
         outline-color: @image-outline;
         
         &.resizable .resize-handle{
@@ -389,7 +384,7 @@
         }
       }
       
-      &[data-type="text"]{
+      &[data-type="Text"]{
         outline-color: @text-outline;
         
         &.resizable .resize-handle{
@@ -418,6 +413,10 @@
       }
       &.controller{
         .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
+        
+        &.selected{
+          .box-shadow(@controller-outline 0px 0px 4px 0px);
+        }
       }
       &.element{
         outline-width: 1px;

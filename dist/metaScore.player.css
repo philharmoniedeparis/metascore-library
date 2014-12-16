@@ -331,7 +331,7 @@
   -webkit-user-select: none;
   user-select: none;
 }
-.metaScore-player-wrapper .draggable.dragging {
+.metaScore-player-wrapper .draggable .drag-handle {
   cursor: move;
 }
 .metaScore-player-wrapper .resizable .resize-handle {
@@ -386,25 +386,22 @@
   right: -6px;
   cursor: se-resize;
 }
-.metaScore-player-wrapper .metaScore-component.controller.selected {
-  border: none;
-}
-.metaScore-player-wrapper .metaScore-component.element[data-type="cursor"] {
+.metaScore-player-wrapper .metaScore-component.element[data-type="Cursor"] {
   outline-color: #ff003c;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="cursor"].resizable .resize-handle {
+.metaScore-player-wrapper .metaScore-component.element[data-type="Cursor"].resizable .resize-handle {
   background: rgba(255, 0, 60, 0.5);
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="image"] {
+.metaScore-player-wrapper .metaScore-component.element[data-type="Image"] {
   outline-color: #ff8a00;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="image"].resizable .resize-handle {
+.metaScore-player-wrapper .metaScore-component.element[data-type="Image"].resizable .resize-handle {
   background: rgba(255, 138, 0, 0.5);
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="text"] {
+.metaScore-player-wrapper .metaScore-component.element[data-type="Text"] {
   outline-color: #00c176;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="text"].resizable .resize-handle {
+.metaScore-player-wrapper .metaScore-component.element[data-type="Text"].resizable .resize-handle {
   background: rgba(0, 193, 118, 0.5);
 }
 .metaScore-player-wrapper.editing .resizable .resize-handle {
@@ -426,6 +423,11 @@
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
+}
+.metaScore-player-wrapper.editing .metaScore-component.controller.selected {
+  -webkit-box-shadow: #0000fe 0px 0px 4px 0px;
+  -moz-box-shadow: #0000fe 0px 0px 4px 0px;
+  box-shadow: #0000fe 0px 0px 4px 0px;
 }
 .metaScore-player-wrapper.editing .metaScore-component.element {
   outline-width: 1px;

@@ -162,10 +162,6 @@ metaScore.player.component.element.Cursor = (function () {
     return this.cuepoint;
   };
   
-  Cursor.prototype.onCuePointStart = function(cuepoint){
-    this.addClass('active');
-  };
-  
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width, height,
       inTime, outTime, pos,
@@ -206,10 +202,6 @@ metaScore.player.component.element.Cursor = (function () {
         pos = Math.min(width * pos, width);
         this.cursor.css('left', pos +'px');
     }
-  };
-  
-  Cursor.prototype.onCuePointEnd = function(cuepoint){
-    this.removeClass('active');
   };
     
   return Cursor;

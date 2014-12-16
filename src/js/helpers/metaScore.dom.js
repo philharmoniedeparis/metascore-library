@@ -431,7 +431,9 @@ metaScore.Dom = (function () {
   * @returns {void}
   */
   Dom.remove = function(element){
-    element.parentElement.removeChild(element);
+    if(element.parentElement){
+      element.parentElement.removeChild(element);
+    }
   };
 
   /**
@@ -532,6 +534,17 @@ metaScore.Dom = (function () {
     scope = scope || this;
   
     metaScore.Array.each(this.elements, callback, scope);
+  };
+  
+  Dom.prototype.hasClass = function(className) {
+    var found;
+  
+    this.each(function(index, element) {
+      found = Dom.hasClass(element, className);
+      return !found;
+    }, this);
+    
+    return found;
   };
   
   Dom.prototype.addClass = function(className) {  

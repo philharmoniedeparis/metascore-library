@@ -226,7 +226,7 @@ metaScore.Editor = (function(){
     var field = evt.target._metaScore,
       time = this.player.media.getCurrentTime();
     
-    field.setValue(time, true);
+    field.setValue(time);
   };
   
   Editor.prototype.onTimeFieldOut = function(evt){
@@ -364,7 +364,7 @@ metaScore.Editor = (function(){
         page = this.page_panel.getComponent();
         
         if(page){
-          page.destroy();
+          block.removePage(page).destroy();
           this.page_panel.unsetComponent();
             
           this.history.add({

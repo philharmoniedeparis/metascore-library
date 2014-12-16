@@ -53,10 +53,10 @@ metaScore.Color = (function () {
     var rgba = {}, matches;
     
     if(metaScore.Var.is(color, 'object')){
-      rgba.r = color.r || 0;
-      rgba.g = color.g || 0;
-      rgba.b = color.b || 0;
-      rgba.a = color.r || 1;
+      rgba.r = 'r' in color ? color.r : 0;
+      rgba.g = 'g' in color ? color.g : 0;
+      rgba.b = 'b' in color ? color.b : 0;
+      rgba.a = 'a' in color ? color.a : 1;
     }
     else if(metaScore.Var.is(color, 'string')){
       color = color.replace(/\s\s*/g,''); // Remove all spaces

@@ -162,6 +162,26 @@ metaScore.player.component.Element = (function () {
         'setter': function(value){
           this.css('border-radius', value);
         }
+      },
+      'start-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('Start time'),
+        'getter': function(){
+          return parseInt(this.data('start-time'), 10);
+        },
+        'setter': function(value){
+          this.data('start-time', value);
+        }
+      },
+      'end-time': {
+        'type': 'Time',
+        'label': metaScore.String.t('End time'),
+        'getter': function(){
+          return parseInt(this.data('end-time'), 10);
+        },
+        'setter': function(value){
+          this.data('end-time', value);
+        }
       }
     }
   };
@@ -174,6 +194,29 @@ metaScore.player.component.Element = (function () {
     
     this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
       .appendTo(this);
+  };
+  
+  Element.prototype.setCuePoint = function(configs){
+    if(this.cuepoint){
+      this.cuepoint.stop(false);
+    }
+  
+    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
+      'inTime': this.getProperty('start-time'),
+      'outTime': this.getProperty('end-time'),
+      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
+      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
+    }));
+    
+    return this.cuepoint;
+  };
+  
+  Element.prototype.onCuePointStart = function(cuepoint){
+    this.addClass('active');
+  };
+  
+  Element.prototype.onCuePointEnd = function(cuepoint){
+    this.removeClass('active');
   };
     
   return Element;

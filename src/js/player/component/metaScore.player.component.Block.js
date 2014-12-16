@@ -170,7 +170,7 @@ metaScore.player.component.Block = (function () {
       .appendTo(this);
   };
   
-  Block.prototype.onPageCuePointStart = function(evt){    
+  Block.prototype.onPageCuePointStart = function(evt){
     this.setActivePage(evt.target._metaScore, true);
   };
   
@@ -197,8 +197,8 @@ metaScore.player.component.Block = (function () {
     evt.stopPropagation();
   };
   
-  Block.prototype.getPages = function(){  
-    return this.pages.children('.page');  
+  Block.prototype.getPages = function(){
+    return this.pages.children('.page');
   };
   
   Block.prototype.addPage = function(configs){
@@ -214,12 +214,28 @@ metaScore.player.component.Block = (function () {
       }));
     }
     
-    this.setActivePage(this.getPages().count() - 1);
+    this.setActivePage(page);
     
     return page;
   };
   
-  Block.prototype.getActivePage = function(){    
+  Block.prototype.removePage = function(page){
+    var index;
+    
+    page.remove();
+    
+    if(this.getPageCount() <= 0){
+      this.addPage();
+    }
+    else if(page.hasClass('active')){
+      index = Math.max(0, this.getActivePageIndex() - 1);
+      this.setActivePage(index);   
+    }
+    
+    return page;
+  };
+  
+  Block.prototype.getActivePage = function(){
     var pages = this.getPages(),
       index = this.getActivePageIndex();
   
@@ -230,7 +246,7 @@ metaScore.player.component.Block = (function () {
     return this.getPages().get(index)._metaScore;
   };
   
-  Block.prototype.getActivePageIndex = function(){    
+  Block.prototype.getActivePageIndex = function(){
     var pages = this.getPages(),
       index = pages.index('.active');
   
@@ -241,7 +257,7 @@ metaScore.player.component.Block = (function () {
     return this.getPages().count();  
   };
   
-  Block.prototype.setActivePage = function(page, supressEvent){    
+  Block.prototype.setActivePage = function(page, supressEvent){
     var pages = this.getPages();
       
     if(metaScore.Var.is(page, "number")){
@@ -263,7 +279,7 @@ metaScore.player.component.Block = (function () {
     var index = this.getActivePageIndex();
     var count = this.getPageCount();
   
-    this.pager.updateCount(index, count);  
+    this.pager.updateCount(index, count);
   };
     
   return Block;
