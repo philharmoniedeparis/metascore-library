@@ -34,6 +34,7 @@ metaScore.Editor = (function(){
     this.block_panel = new metaScore.editor.panel.Block().appendTo(this.sidebar);
     this.page_panel = new metaScore.editor.panel.Page().appendTo(this.sidebar);
     this.element_panel = new metaScore.editor.panel.Element().appendTo(this.sidebar);
+    this.text_panel = new metaScore.editor.panel.Text().appendTo(this.sidebar);
     this.player_wrapper = new metaScore.Dom('<iframe/>', {'class': 'player-wrapper'}).appendTo(this.workspace);
     this.player_head = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.head);
     this.player_body = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
@@ -71,6 +72,7 @@ metaScore.Editor = (function(){
     
     this.element_panel
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
+      .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
     
     this.player_body
@@ -241,8 +243,8 @@ metaScore.Editor = (function(){
     
     if(block instanceof metaScore.player.component.Block){
       this.page_panel.setComponent(block.getActivePage(), true);
-      this.page_panel.getMenu().enableItems('[data-action="new"]');
-      this.element_panel.getMenu().enableItems('[data-action="new"]');
+      this.page_panel.toggleMenuItems('[data-action="new"]', true);
+      this.element_panel.toggleMenuItems('[data-action="new"]', true);
     }    
       
     evt.stopPropagation();
@@ -250,7 +252,7 @@ metaScore.Editor = (function(){
   
   Editor.prototype.onBlockUnset = function(evt){
     this.page_panel.unsetComponent();
-    this.page_panel.getMenu().disableItems('[data-action="new"]');
+    this.page_panel.toggleMenuItems('[data-action="new"]', false);
   };
   
   Editor.prototype.onBlockPanelValueChange = function(evt){
@@ -333,20 +335,19 @@ metaScore.Editor = (function(){
       block = page.parents().parents().get(0)._metaScore;
     
     this.block_panel.setComponent(block, true);
-    this.page_panel.getMenu().enableItems('[data-action="new"]');
-    this.element_panel.getMenu().enableItems('[data-action="new"]');
+    this.page_panel.toggleMenuItems('[data-action="new"]', true);
+    this.element_panel.toggleMenuItems('[data-action="new"]', true);
       
     evt.stopPropagation();
   };
   
   Editor.prototype.onPageUnset = function(evt){
     this.element_panel.unsetComponent();
-    this.element_panel.getMenu().disableItems('[data-action="new"]');
+    this.element_panel.toggleMenuItems('[data-action="new"]', false);
   };
   
   Editor.prototype.onPagePanelToolbarClick = function(evt){
-    var block, page,
-      dom, count, index;
+    var block, page, dom, count, index;
   
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -425,13 +426,22 @@ metaScore.Editor = (function(){
     
     this.page_panel.setComponent(page, true);
     this.block_panel.setComponent(block, true);
+    
+    if(element.getProperty('type') === 'Text'){
+      this.text_panel.setComponent(element);
+    }
+      
+    evt.stopPropagation();
+  };
+  
+  Editor.prototype.onElementUnset = function(evt){    
+    this.text_panel.unsetComponent();
       
     evt.stopPropagation();
   };
   
   Editor.prototype.onElementPanelToolbarClick = function(evt){
-    var page, element,
-      dom, count, index;
+    var page, element, dom, count, index;
   
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -509,8 +519,7 @@ metaScore.Editor = (function(){
     this.mainmenu.timefield.setValue(currentTime, true);
   };
   
-  Editor.prototype.onComponentClick = function(evt, dom){
-  
+  Editor.prototype.onComponentClick = function(evt, dom){  
     var component;
   
     if(metaScore.editing !== true){

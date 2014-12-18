@@ -5,9 +5,7 @@
  * @requires ../../helpers/metaScore.object.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Color = (function () {
+metaScore.namespace('editor.field').Color = (function () {
   
   function ColorField(configs) {
     this.configs = this.getConfigs(configs);

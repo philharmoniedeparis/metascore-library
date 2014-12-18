@@ -4,9 +4,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.namespace('player');
-
-metaScore.player.Pager = (function () {
+metaScore.namespace('player').Pager = (function () {
 
   function Pager(configs) {
     this.configs = this.getConfigs(configs);

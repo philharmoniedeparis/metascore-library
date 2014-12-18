@@ -4,9 +4,7 @@
  * @requires ./metaScore.editor.overlay.js
  */
  
-metaScore.namespace('editor.overlay');
-
-metaScore.editor.overlay.Popup = (function () {
+metaScore.namespace('editor.overlay').Popup = (function () {
   
   function Popup(configs) {
     this.configs = this.getConfigs(configs);

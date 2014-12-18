@@ -5,9 +5,7 @@
  * @requires ../helpers/metaScore.string.js
  */
  
-metaScore.namespace('player.component');
-
-metaScore.player.component.Controller = (function () {
+metaScore.namespace('player.component').Controller = (function () {
 
   function Controller(configs) {    
     // call parent constructor

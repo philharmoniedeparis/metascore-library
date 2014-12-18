@@ -4,9 +4,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.namespace('editor');
- 
-metaScore.editor.DropDownMenu = (function () {
+metaScore.namespace('editor').DropDownMenu = (function () {
   
   function DropDownMenu(configs) {  
     this.configs = this.getConfigs(configs);

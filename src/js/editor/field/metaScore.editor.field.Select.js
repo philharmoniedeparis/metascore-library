@@ -4,9 +4,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Select = (function () {
+metaScore.namespace('editor.field').Select = (function () {
   
   function SelectField(configs) {
     this.configs = this.getConfigs(configs);

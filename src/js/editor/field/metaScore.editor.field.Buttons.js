@@ -1,24 +1,44 @@
 /**
- * ButtonField
+ * ButtonsField
  *
  * @requires ../metaScore.editor.field.js
  */
- 
-metaScore.namespace('editor.field');
 
-metaScore.editor.field.Button = (function () {
+metaScore.namespace('editor.field').Buttons = (function () {
   
-  function ButtonField(configs) {
+  function ButtonsField(configs) {
     this.configs = this.getConfigs(configs);
+      
+    // fix event handlers scope
+    this.onClick = metaScore.Function.proxy(this.onClick, this);
     
     // call parent constructor
-    ButtonField.parent.call(this, this.configs);
+    ButtonsField.parent.call(this, this.configs);
     
-    this.addClass('buttonfield');
+    this.addClass('buttonsfield');
   }
   
-  metaScore.editor.Field.extend(ButtonField);
+  ButtonsField.defaults = {
+    buttons: {}
+  };
+  
+  metaScore.editor.Field.extend(ButtonsField);
+  
+  ButtonsField.prototype.setValue = function(){
+  };
+  
+  ButtonsField.prototype.setupUI = function(){
+    var field = this;
+  
+    metaScore.Object.each(this.configs.buttons, function(key, attr){    
+      new metaScore.Dom('<button/>', attr)
+        .addListener('click', function(){
+          field.triggerEvent('valuechange', {'field': field, 'value': key}, true, false);
+        })
+        .appendTo(this);
+    }, this);
+  };
     
-  return ButtonField;
+  return ButtonsField;
   
 })();

@@ -4,7 +4,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.editor.Toolbar = (function(){
+metaScore.namespace('editor').Toolbar = (function(){
 
   /**
   * Initialize

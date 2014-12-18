@@ -5,9 +5,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Image = (function () {
+metaScore.namespace('editor.field').Image = (function () {
   
   function ImageField(configs) {
     this.configs = this.getConfigs(configs);

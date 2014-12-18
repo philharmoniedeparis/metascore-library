@@ -3,7 +3,8 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
-metaScore.editor.Overlay = (function(){
+ 
+metaScore.namespace('editor').Overlay = (function(){
 
   /**
   * Initialize

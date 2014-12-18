@@ -444,7 +444,53 @@
             .field{
               height: 100%;
               width: 100%;
+              
+              &.selectfield{
+                select{
+                  width: 100%;
+                }
+              }
+              
+              &.buttonsfield{
+                button{
+                  width: 23px;
+                  height: 23px;
+                  margin-right: 2px;                  
+                  .gradient(#EAEAEA, #FFFFFF, #EAEAEA);
+                  background-repeat: no-repeat;
+                  background-position: center center;
+                  
+                  &[data-action="bold"]{
+                    background-image: url('img/editor/wysiwyg/bold.png');
+                  }
+                  &[data-action="italic"]{
+                    background-image: url('img/editor/wysiwyg/italic.png');
+                  }
+                  &[data-action="strikethrough"]{
+                    background-image: url('img/editor/wysiwyg/strikethrough.png');
+                  }
+                  &[data-action="underline"]{
+                    background-image: url('img/editor/wysiwyg/underline.png');
+                  }
+                  &[data-action="subscript"]{
+                    background-image: url('img/editor/wysiwyg/subscript.png');
+                  }
+                  &[data-action="superscript"]{
+                    background-image: url('img/editor/wysiwyg/superscript.png');
+                  }
+                  &[data-action="link"]{
+                    background-image: url('img/editor/wysiwyg/link.png');
+                  }
+                  &[data-action="unlink"]{
+                    background-image: url('img/editor/wysiwyg/unlink.png');
+                  }
+                }
+              }
             }
+          }
+        
+          &.font-style{
+            border-bottom: none;
           }
         }
       }

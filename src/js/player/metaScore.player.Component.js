@@ -5,9 +5,7 @@
  * @requires ../helpers/metaScore.string.js
  */
  
-metaScore.namespace('player');
-
-metaScore.player.Component = (function () {
+metaScore.namespace('player').Component = (function () {
 
   function Component(configs) {  
     this.configs = this.getConfigs(configs);

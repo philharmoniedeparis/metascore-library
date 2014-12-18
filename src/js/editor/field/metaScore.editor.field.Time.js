@@ -4,9 +4,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Time = (function () {
+metaScore.namespace('editor.field').Time = (function () {
   
   function TimeField(configs) {  
     this.configs = this.getConfigs(configs);

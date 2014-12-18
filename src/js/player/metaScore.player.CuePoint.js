@@ -7,9 +7,7 @@
  * @requires ../helpers/metaScore.var.js
  */
  
-metaScore.namespace('player');
-
-metaScore.player.CuePoint = (function () {
+metaScore.namespace('player').CuePoint = (function () {
   
   function CuePoint(configs) {
     this.configs = this.getConfigs(configs);

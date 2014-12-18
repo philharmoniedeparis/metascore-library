@@ -6,7 +6,7 @@
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
-metaScore.editor.MainMenu = (function(){
+metaScore.namespace('editor').MainMenu = (function(){
 
   function MainMenu() {
     // call parent constructor

@@ -4,19 +4,13 @@
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.component.element');
-
-metaScore.player.component.element.Cursor = (function () {
+metaScore.namespace('player.component.element').Cursor = (function () {
 
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
-  }
-  
-  metaScore.player.component.Element.extend(Cursor);
-  
-  Cursor.defaults = {
-    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
+    
+    metaScore.Object.extend(this.configs.properties, {
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -86,8 +80,10 @@ metaScore.player.component.element.Cursor = (function () {
           this.data('end-time', value);
         }
       }
-    })
-  };
+    });
+  }
+  
+  metaScore.player.component.Element.extend(Cursor);
   
   Cursor.prototype.setupDOM = function(){
     // call parent function

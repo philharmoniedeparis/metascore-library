@@ -4,7 +4,7 @@
  * @requires ../metaScore.evented.js
  */
  
-metaScore.editor.History = (function(){
+metaScore.namespace('editor').History = (function(){
   
   function History(configs) {
     this.configs = this.getConfigs(configs);

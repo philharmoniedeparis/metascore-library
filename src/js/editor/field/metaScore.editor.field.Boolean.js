@@ -4,9 +4,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Boolean = (function () {
+metaScore.namespace('editor.field').Boolean = (function () {
   
   function BooleanField(configs) {
     this.configs = this.getConfigs(configs);

@@ -4,9 +4,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.namespace('player.component');
-
-metaScore.player.component.Element = (function () {
+metaScore.namespace('player.component').Element = (function () {
 
   function Element(configs) {
     // call parent constructor
@@ -128,7 +126,7 @@ metaScore.player.component.Element = (function () {
         'setter': function(value){
           if(metaScore.Var.is(value, "string")){
            value = 'url('+ value +')';
-          }        
+          }
           this.css('background-image', value);
         }
       },

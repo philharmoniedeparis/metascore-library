@@ -5,9 +5,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.namespace('player.component');
-
-metaScore.player.component.Page = (function () {
+metaScore.namespace('player.component').Page = (function () {
 
   function Page(configs) {    
     // call parent constructor

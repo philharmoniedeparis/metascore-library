@@ -5,9 +5,7 @@
  * @requires ../metaScore.dom.js
  */
  
-metaScore.namespace('player.component');
-
-metaScore.player.component.Media = (function () {
+metaScore.namespace('player.component').Media = (function () {
   
   function Media(configs){
     // call parent constructor

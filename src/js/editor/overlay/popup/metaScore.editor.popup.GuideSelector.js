@@ -5,9 +5,7 @@
  * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.overlay.popup');
-
-metaScore.editor.overlay.popup.GuideSelector = (function () {
+metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
   
   function GuideSelector(configs) {
     this.configs = this.getConfigs(configs);

@@ -4,9 +4,7 @@
  * @requires ../metaScore.player.element.js
  */
  
-metaScore.namespace('player.component.element');
-
-metaScore.player.component.element.Image = (function () {
+metaScore.namespace('player.component.element').Image = (function () {
 
   function Image(configs) {
     // call parent constructor

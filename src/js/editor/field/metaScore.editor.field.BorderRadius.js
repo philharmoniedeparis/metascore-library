@@ -4,9 +4,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.BorderRadius = (function () {
+metaScore.namespace('editor.field').BorderRadius = (function () {
   
   function BorderRadiusrField(configs) {
     this.configs = this.getConfigs(configs);

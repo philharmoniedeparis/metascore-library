@@ -4,9 +4,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Integer = (function () {
+metaScore.namespace('editor.field').Integer = (function () {
   
   function IntegerField(configs) {
     this.configs = this.getConfigs(configs);

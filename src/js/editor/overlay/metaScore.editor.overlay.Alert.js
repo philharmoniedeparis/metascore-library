@@ -4,9 +4,7 @@
  * @requires ./metaScore.editor.Overlay.js
  */
  
-metaScore.namespace('editor.overlay');
-
-metaScore.editor.overlay.Alert = (function () {
+metaScore.namespace('editor.overlay').Alert = (function () {
   
   function Alert(configs) {
     this.configs = this.getConfigs(configs);

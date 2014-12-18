@@ -4,9 +4,7 @@
  * @requires ../metaScore.editor.field.js
  */
  
-metaScore.namespace('editor.field');
-
-metaScore.editor.field.Text = (function () {
+metaScore.namespace('editor.field').Text = (function () {
   
   function TextField(configs) {
     this.configs = this.getConfigs(configs);

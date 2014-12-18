@@ -7,9 +7,7 @@
  * @requires ../helpers/metaScore.string.js
  */
  
-metaScore.namespace('player.component');
-
-metaScore.player.component.Block = (function () {
+metaScore.namespace('player.component').Block = (function () {
 
   function Block(configs) {  
     // call parent constructor

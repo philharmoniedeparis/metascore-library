@@ -480,6 +480,50 @@
   height: 100%;
   width: 100%;
 }
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.selectfield select {
+  width: 100%;
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button {
+  width: 23px;
+  height: 23px;
+  margin-right: 2px;
+  background-color: #eaeaea;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100% #eaeaea));
+  background-image: -webkit-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: -ms-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: -o-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="bold"] {
+  background-image: url('img/editor/wysiwyg/bold.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="italic"] {
+  background-image: url('img/editor/wysiwyg/italic.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="strikethrough"] {
+  background-image: url('img/editor/wysiwyg/strikethrough.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="underline"] {
+  background-image: url('img/editor/wysiwyg/underline.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="subscript"] {
+  background-image: url('img/editor/wysiwyg/subscript.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="superscript"] {
+  background-image: url('img/editor/wysiwyg/superscript.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="link"] {
+  background-image: url('img/editor/wysiwyg/link.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="unlink"] {
+  background-image: url('img/editor/wysiwyg/unlink.png');
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper.font-style {
+  border-bottom: none;
+}
 .metaScore-editor .sidebar .panel.collapsed .toolbar .title,
 .metaScore-editor .sidebar .panel.disabled .toolbar .title {
   background-image: url('img/editor/panel/collapsed.png');

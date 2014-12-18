@@ -4,9 +4,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.namespace('editor');
- 
-metaScore.editor.Button = (function () {
+metaScore.namespace('editor').Button = (function () {
   
   function Button(configs) {
     this.configs = this.getConfigs(configs);

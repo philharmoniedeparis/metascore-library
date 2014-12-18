@@ -4,9 +4,7 @@
  * @requires ../helpers/metaScore.dom.js
  */
  
-metaScore.namespace('editor');
- 
-metaScore.editor.Field = (function () {
+metaScore.namespace('editor').Field = (function () {
   
   function Field(configs) {
     this.configs = this.getConfigs(configs);

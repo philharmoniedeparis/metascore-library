@@ -11,9 +11,7 @@
  * @requires ../../helpers/metaScore.resizable.js
  */
  
-metaScore.namespace('editor.panel');
-
-metaScore.editor.panel.Element = (function () {
+metaScore.namespace('editor.panel').Element = (function () {
   
   function ElementPanel(configs) {    
     // call parent constructor

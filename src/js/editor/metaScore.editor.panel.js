@@ -6,7 +6,8 @@
  * @requires ../helpers/metaScore.string.js
  * @requires ../helpers/metaScore.function.js
  */
-metaScore.editor.Panel = (function(){
+
+metaScore.namespace('editor').Panel = (function(){
   
   function Panel(configs) {
     this.configs = this.getConfigs(configs);
@@ -21,12 +22,6 @@ metaScore.editor.Panel = (function(){
     this.onComponentResizeStart = metaScore.Function.proxy(this.onComponentResizeStart, this);
     this.onComponentResize = metaScore.Function.proxy(this.onComponentResize, this);
     this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
-    
-    this.menu = new metaScore.editor.DropDownMenu();
-    
-    metaScore.Array.each(this.configs.menuItems, function(index, item){
-      this.menu.addItem(item);
-    }, this);
   
     this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
       .appendTo(this);
@@ -38,8 +33,16 @@ metaScore.editor.Panel = (function(){
       this.toolbar.addButton(action);
     }, this);
     
-    this.toolbar.addButton('menu')
-      .append(this.menu);
+    if(this.configs.menuItems.length > 0){
+      this.menu = new metaScore.editor.DropDownMenu();
+      
+      metaScore.Array.each(this.configs.menuItems, function(index, item){
+        this.menu.addItem(item);
+      }, this);
+      
+      this.toolbar.addButton('menu')
+        .append(this.menu);
+    }
     
     this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
       .appendTo(this);
@@ -63,13 +66,13 @@ metaScore.editor.Panel = (function(){
   
   metaScore.Dom.extend(Panel);
   
-  Panel.prototype.setupFields = function(){
+  Panel.prototype.setupFields = function(properties){
     var row, uuid, configs, fieldType, field;
      
     this.fields = {};
     this.contents.empty();
     
-    metaScore.Object.each(this.component.configs.properties, function(key, prop){
+    metaScore.Object.each(properties, function(key, prop){
       if(prop.editable !== false){        
         row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key})
           .appendTo(this.contents);
@@ -156,41 +159,39 @@ metaScore.editor.Panel = (function(){
   Panel.prototype.setComponent = function(component, supressEvent){
     var draggable, resizable;
   
-    if(component === this.getComponent()){
-      return this;
+    if(component !== this.getComponent()){
+      this.unsetComponent(true);
+      
+      this.component = component;
+      
+      this.setupFields(this.component.configs.properties);
+      this.enable();
+      this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
+      
+      if(!(component instanceof metaScore.player.component.Controller)){
+        this.toggleMenuItems('[data-action="delete"]', true);
+      }
+      
+      draggable = this.getDraggable();
+      if(draggable){
+        component._draggable = new metaScore.Draggable(draggable);
+        component
+          .addListener('dragstart', this.onComponentDragStart)
+          .addListener('drag', this.onComponentDrag)
+          .addListener('dragend', this.onComponentDragEnd);
+      }
+      
+      resizable = this.getResizable();
+      if(resizable){
+        component._resizable = new metaScore.Resizable(resizable);      
+        component
+          .addListener('resizestart', this.onComponentResizeStart)
+          .addListener('resize', this.onComponentResize)
+          .addListener('resizeend', this.onComponentResizeEnd);
+      }
+      
+      component.addClass('selected');
     }
-    
-    this.unsetComponent(supressEvent);
-    
-    this.component = component;
-    
-    this.setupFields();
-    this.enable();
-    this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
-    
-    if(!(component instanceof metaScore.player.component.Controller)){
-      this.getMenu().enableItems('[data-action="delete"]');
-    }
-    
-    draggable = this.getDraggable();
-    if(draggable){
-      component._draggable = new metaScore.Draggable(draggable);
-      component
-        .addListener('dragstart', this.onComponentDragStart)
-        .addListener('drag', this.onComponentDrag)
-        .addListener('dragend', this.onComponentDragEnd);
-    }
-    
-    resizable = this.getResizable();
-    if(resizable){
-      component._resizable = new metaScore.Resizable(resizable);      
-      component
-        .addListener('resizestart', this.onComponentResizeStart)
-        .addListener('resize', this.onComponentResize)
-        .addListener('resizeend', this.onComponentResizeEnd);
-    }
-    
-    component.addClass('selected');
       
     if(supressEvent !== true){
       this.triggerEvent('componentset', {'component': component}, false);
@@ -203,7 +204,7 @@ metaScore.editor.Panel = (function(){
     var component = this.getComponent();
       
     this.disable();
-    this.getMenu().disableItems('[data-action="delete"]');
+    this.toggleMenuItems('[data-action="delete"]', false);
     
     if(component){
       if(component._draggable){
@@ -216,7 +217,7 @@ metaScore.editor.Panel = (function(){
           .removeListener('dragend', this.onComponentDragEnd);
       }
       
-      if(component._resizable){      
+      if(component._resizable){     
         component._resizable.destroy();
         delete component._resizable;
         
@@ -229,8 +230,6 @@ metaScore.editor.Panel = (function(){
       component.removeClass('selected');
       
       this.component = null;
-      
-      return this;
     }
       
     if(supressEvent !== true){
@@ -238,6 +237,19 @@ metaScore.editor.Panel = (function(){
     }
     
     return this;    
+  };
+  
+  Panel.prototype.toggleMenuItems = function(items, enable){
+    var menu = this.getMenu();
+    
+    if(menu){
+      if(enable){
+        menu.enableItems(items);
+      }
+      else{
+        menu.disableItems(items);
+      }
+    }
   };
   
   Panel.prototype.onComponentDragStart = function(evt){
