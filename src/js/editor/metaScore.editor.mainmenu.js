@@ -70,7 +70,8 @@ metaScore.namespace('editor').MainMenu = (function(){
       .appendTo(left);
     
     this.timefield = new metaScore.editor.field.Time({
-        buttons: false
+        inButton: false,
+        outButton: false
       })
       .attr({
         'title': metaScore.String.t('time')

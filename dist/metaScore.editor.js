@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2014-12-18 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2015-01-07 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "93d5d2",
+  revision: "83ae44",
   
   getVersion: function(){
     return this.version;
@@ -2047,13 +2047,14 @@ metaScore.Var = (function () {
 /**
  * Editor
  *
- * @requires ../helpers/metaScore.dom.js
- * @requires metaScore.editor.history.js
- * @requires metaScore.editor.mainmenu.js
- * @requires panel/metaScore.editor.panel.block.js
- * @requires panel/metaScore.editor.panel.page.js
- * @requires panel/metaScore.editor.panel.element.js
- * @requires ../player/metaScore.player.js
+ * @requires ../helpers/metaScore.Dom.js
+ * @requires ../player/metaScore.Player.js
+ * @requires metaScore.editor.MainMenu.js
+ * @requires metaScore.editor.History.js
+ * @requires panel/metaScore.editor.panel.Block.js
+ * @requires panel/metaScore.editor.panel.Page.js
+ * @requires panel/metaScore.editor.panel.Element.js
+ * @requires panel/metaScore.editor.panel.Text.js
  */
 metaScore.Editor = (function(){
   
@@ -2071,7 +2072,7 @@ metaScore.Editor = (function(){
       this.appendTo(this.configs.container);
     }
   
-    // add components    
+    // add components
     this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
     this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
     this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
@@ -2095,15 +2096,15 @@ metaScore.Editor = (function(){
       }, this);
     }
       
-    // add event listeners
+    // add event listeners    
+    this
+      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
+      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
+      
     this.mainmenu
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
       .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
-    
-    this.sidebar
-      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
-      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
     
     this.block_panel
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
@@ -2164,10 +2165,9 @@ metaScore.Editor = (function(){
     this.removePlayer();
     this.addPlayer(data);
     
-    this.loadmask.hide();
-    
     this.setEditing(true);
     
+    this.loadmask.hide();
     delete this.loadmask;
   };
   
@@ -2175,9 +2175,8 @@ metaScore.Editor = (function(){
   
   };
   
-  Editor.prototype.onGuideSaveSuccess = function(xhr){    
+  Editor.prototype.onGuideSaveSuccess = function(xhr){
     this.loadmask.hide();
-    
     delete this.loadmask;
   };
   
@@ -2222,12 +2221,11 @@ metaScore.Editor = (function(){
       case 'new':
         break;
       case 'open':
-        new metaScore.editor.overlay.popup.GuideSelector({
+        new metaScore.editor.overlay.GuideSelector({
           'url': this.configs.api_url +'guide.json',
           'selectCallback': metaScore.Function.proxy(this.openGuide, this),
           'autoShow': true
-        })
-        .show();
+        });
         break;
       case 'edit':
         break;
@@ -2691,8 +2689,7 @@ metaScore.Editor = (function(){
   Editor.prototype.openGuide = function(guide){
     var options;
   
-    this.loadmask = new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('Loading...'),
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
     
@@ -2733,8 +2730,7 @@ metaScore.Editor = (function(){
       'error': metaScore.Function.proxy(this.onGuideSaveError, this)
     }, this.configs.ajax);
   
-    this.loadmask = new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('Saving...'),
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
   
@@ -3156,7 +3152,8 @@ metaScore.namespace('editor').MainMenu = (function(){
       .appendTo(left);
     
     this.timefield = new metaScore.editor.field.Time({
-        buttons: false
+        inButton: false,
+        outButton: false
       })
       .attr({
         'title': metaScore.String.t('time')
@@ -3264,13 +3261,24 @@ metaScore.namespace('editor').Overlay = (function(){
       this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
     }
     
-    if(this.configs.draggable){
-      this.draggable = new metaScore.Draggable({'target': this, 'handle': this});
-    }  
-    
     if(this.configs.autoShow){
       this.show();
-    }    
+    }
+    
+    if(this.configs.toolbar){
+      this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+        .appendTo(this);
+        
+      this.toolbar.addButton('close')
+        .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    }
+    
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);
+    
+    if(this.configs.draggable){
+      this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
+    }
   }
   
   Overlay.defaults = {
@@ -3293,7 +3301,17 @@ metaScore.namespace('editor').Overlay = (function(){
     /**
     * True to show automatically
     */
-    autoShow: false
+    autoShow: false,
+    
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: false,
+    
+    /**
+    * The overlay's title
+    */
+    title: ''
   };
   
   metaScore.Dom.extend(Overlay);
@@ -3316,6 +3334,18 @@ metaScore.namespace('editor').Overlay = (function(){
     this.remove();
     
     return this;    
+  };
+  
+  Overlay.prototype.getToolbar = function(){    
+    return this.toolbar;    
+  };
+  
+  Overlay.prototype.getContents = function(){    
+    return this.contents;    
+  };
+  
+  Overlay.prototype.onCloseClick = function(){
+    this.hide();
   };
     
   return Overlay;
@@ -3914,303 +3944,44 @@ metaScore.namespace('editor.field').Color = (function () {
   ColorField.prototype.setupUI = function(){
       
     // fix event handlers scope
-    this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
-    this.onAlphaMousemove = metaScore.Function.proxy(this.onAlphaMousemove, this);
+    this.onColorSelect = metaScore.Function.proxy(this.onColorSelect, this);
   
     this.button = new metaScore.editor.Button()
       .addListener('click', metaScore.Function.proxy(this.onClick, this));
     
-    this.overlay = new metaScore.editor.Overlay()
-      .addClass('colorfield-overlay');
-    
-    this.overlay.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.overlay);
-    this.overlay.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
-      .addListener('click', metaScore.Function.proxy(this.onGradientClick, this))
-      .addListener('mousedown', metaScore.Function.proxy(this.onGradientMousedown, this))
-      .addListener('mouseup', metaScore.Function.proxy(this.onGradientMouseup, this))
-      .appendTo(this.overlay.gradient);
-    this.overlay.gradient.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.overlay.gradient);
-        
-    this.overlay.alpha = new metaScore.Dom('<div/>', {'class': 'alpha'}).appendTo(this.overlay);
-    this.overlay.alpha.canvas = new metaScore.Dom('<canvas/>', {'width': '20', 'height': '255'})
-      .addListener('click', metaScore.Function.proxy(this.onAlphaClick, this))
-      .addListener('mousedown', metaScore.Function.proxy(this.onAlphaMousedown, this))
-      .addListener('mouseup', metaScore.Function.proxy(this.onAlphaMouseup, this))
-      .appendTo(this.overlay.alpha);
-    this.overlay.alpha.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.overlay.alpha);
-    
-    this.overlay.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(this.overlay);
-    
-    this.overlay.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
-      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
-      .append(this.overlay.controls.r)
-      .appendTo(this.overlay.controls);
-      
-    this.overlay.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
-      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
-      .append(this.overlay.controls.g)
-      .appendTo(this.overlay.controls);
-      
-    this.overlay.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
-      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
-      .append(this.overlay.controls.b)
-      .appendTo(this.overlay.controls);
-      
-    this.overlay.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
-      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
-    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
-      .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
-      .append(this.overlay.controls.a)
-      .appendTo(this.overlay.controls);
-      
-    this.overlay.controls.current = new metaScore.Dom('<canvas/>');
-    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
-      .append(this.overlay.controls.current)
-      .appendTo(this.overlay.controls);
-    
-    this.overlay.controls.previous = new metaScore.Dom('<canvas/>');
-    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
-      .append(this.overlay.controls.previous)
-      .appendTo(this.overlay.controls);
-      
-    this.overlay.controls.cancel = new metaScore.editor.Button({'label': 'Cancel'})
-      .addClass('cancel')
-      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
-      .appendTo(this.overlay.controls);
-      
-    this.overlay.controls.apply = new metaScore.editor.Button({'label': 'Apply'})
-      .addClass('apply')
-      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
-      .appendTo(this.overlay.controls);
-          
-    this.overlay.mask.addListener('click', metaScore.Function.proxy(this.onApplyClick, this));
+    this.overlay = new metaScore.editor.overlay.ColorSelector({
+      selectCallback: this.onColorSelect
+    });
     
     this.button.appendTo(this);
-    
-    this.fillGradient();
   };
   
-  ColorField.prototype.setValue = function(val, triggerChange, refillAlpha, updatePositions, updateInputs){
-  
-    var hsv;
-  
-    this.value = this.value || {};
+  ColorField.prototype.setValue = function(val, supressEvent){
     
-    if(!metaScore.Var.is(val, 'object')){
-      val = metaScore.Color.parse(val);
-    }
-  
-    if('r' in val){
-      this.value.r = parseInt(val.r, 10);
-    }
-    if('g' in val){
-      this.value.g = parseInt(val.g, 10);
-    }
-    if('b' in val){
-      this.value.b = parseInt(val.b, 10);
-    }
-    if('a' in val){
-      this.value.a = parseFloat(val.a);
-    }
-    
-    if(refillAlpha !== false){
-      this.fillAlpha();
-    }
-    
-    if(updateInputs !== false){
-      this.overlay.controls.r.val(this.value.r);
-      this.overlay.controls.g.val(this.value.g);
-      this.overlay.controls.b.val(this.value.b);
-      this.overlay.controls.a.val(this.value.a);
-    }
-    
-    if(updatePositions !== false){
-      hsv = metaScore.Color.rgb2hsv(this.value);
-      
-      this.overlay.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
-      this.overlay.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
-      
-      this.overlay.alpha.position.css('top', ((1 - this.value.a) * 255) +'px');
-    }
-    
-    this.fillCurrent();
+    this.value = metaScore.Color.parse(val);
     
     this.button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
     
-    if(triggerChange === true){
-      this.triggerEvent('change');
+    if(supressEvent !== true){
+      this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
   
   };
   
-  ColorField.prototype.onClick = function(evt){  
+  ColorField.prototype.onClick = function(evt){
     if(this.disabled){
       return;
     }
-  
-    this.previous_value = metaScore.Object.copy(this.value);
     
-    this.fillPrevious();
-  
-    this.overlay.show();  
+    this.overlay
+      .setValue(metaScore.Object.copy(this.value))
+      .show();  
   };
   
-  ColorField.prototype.onControlInput = function(evt){  
-    var rgba, hsv;
-    
-    this.setValue({
-      'r': this.overlay.controls.r.val(),
-      'g': this.overlay.controls.g.val(),
-      'b': this.overlay.controls.b.val(),
-      'a': this.overlay.controls.a.val()
-    }, false, true, true, false);  
+  ColorField.prototype.onColorSelect = function(value, overlay){
+    this.setValue(value);
+    overlay.hide();
   };
-  
-  ColorField.prototype.onCancelClick = function(evt){  
-    this.setValue(this.previous_value, false);
-    this.overlay.hide();
-  
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onApplyClick = function(evt){  
-    this.overlay.hide();
-    
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
-  
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.fillPrevious = function(){  
-    var context = this.overlay.controls.previous.get(0).getContext('2d');
-    
-    context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
-  };
-  
-  ColorField.prototype.fillCurrent = function(){  
-    var context = this.overlay.controls.current.get(0).getContext('2d');
-    
-    context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
-  };
-  
-  ColorField.prototype.fillGradient = function(){  
-    var context = this.overlay.gradient.canvas.get(0).getContext('2d'),
-      fill;
-      
-    // Create color gradient
-    fill = context.createLinearGradient(0, 0, context.canvas.width, 0);
-    fill.addColorStop(0, "rgb(255, 0, 0)");
-    fill.addColorStop(0.15, "rgb(255, 0, 255)");
-    fill.addColorStop(0.33, "rgb(0, 0, 255)");
-    fill.addColorStop(0.49, "rgb(0, 255, 255)");
-    fill.addColorStop(0.67, "rgb(0, 255, 0)");
-    fill.addColorStop(0.84, "rgb(255, 255, 0)");
-    fill.addColorStop(1, "rgb(255, 0, 0)");
-   
-    // Apply gradient to canvas
-    context.fillStyle = fill;
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    
-    // Create semi transparent gradient (white -> trans. -> black)
-    fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
-    fill.addColorStop(0, "rgba(255, 255, 255, 1)");
-    fill.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-    fill.addColorStop(0.5, "rgba(0, 0, 0, 0)");
-    fill.addColorStop(1, "rgba(0, 0, 0, 1)");
-   
-    // Apply gradient to canvas
-    context.fillStyle = fill;
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
-  };
-  
-  ColorField.prototype.fillAlpha = function(){  
-    var context = this.overlay.alpha.canvas.get(0).getContext('2d'),
-      fill;
-      
-    // Create color gradient
-    fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
-    fill.addColorStop(0, "rgb("+ this.value.r +","+ this.value.g +","+ this.value.b +")");
-    fill.addColorStop(1, "transparent");
-   
-    // Apply gradient to canvas
-    context.fillStyle = fill;
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);    
-  };
-  
-  ColorField.prototype.onGradientMousedown = function(evt){   
-    this.overlay.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
-    
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onGradientMouseup = function(evt){
-    this.overlay.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
-    
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onGradientClick = function(evt){
-    var offset = evt.target.getBoundingClientRect(),
-      colorX = evt.pageX - offset.left,
-      colorY = evt.pageY - offset.top,
-      context = this.overlay.gradient.canvas.get(0).getContext('2d'),
-      imageData = context.getImageData(colorX, colorY, 1, 1),
-      value = this.value;
-      
-    this.overlay.gradient.position.css('left', colorX +'px');
-    this.overlay.gradient.position.css('top', colorY +'px');
-    
-    value.r = imageData.data[0];
-    value.g = imageData.data[1];
-    value.b =  imageData.data[2];
-    
-    this.setValue(value, false, true, false);
-    
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onGradientMousemove = ColorField.prototype.onGradientClick;
-  
-  ColorField.prototype.onAlphaMousedown = function(evt){   
-    this.overlay.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
-    
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onAlphaMouseup = function(evt){
-    this.overlay.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
-    
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onAlphaClick = function(evt){
-    var offset = evt.target.getBoundingClientRect(),
-      colorY = evt.pageY - offset.top,
-      context = this.overlay.alpha.canvas.get(0).getContext('2d'),
-      imageData = context.getImageData(0, colorY, 1, 1),
-      value = this.value;
-      
-    this.overlay.alpha.position.css('top', colorY +'px');
-    
-    value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
-    
-    this.setValue(value, false, false, false);
-    
-    evt.stopPropagation();
-  };
-  
-  ColorField.prototype.onAlphaMousemove = ColorField.prototype.onAlphaClick;
     
   return ColorField;
   
@@ -4398,12 +4169,16 @@ metaScore.namespace('editor.field').Time = (function () {
     */
     max: null,
     
-    buttons: true
+    inButton: true,
+    
+    outButton: true
   };
   
   metaScore.editor.Field.extend(TimeField);
   
   TimeField.prototype.setupUI = function(){
+    var buttons;
+  
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
       .appendTo(this);
@@ -4429,17 +4204,21 @@ metaScore.namespace('editor.field').Time = (function () {
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
       .appendTo(this);
     
-    if(this.configs.buttons){      
-      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
-        .addListener('click', metaScore.Function.proxy(this.onInClick, this));
-      
-      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
-        .addListener('click', metaScore.Function.proxy(this.onOutClick, this));
-
-      new metaScore.Dom('<div/>', {'class': 'buttons'})
-        .append(this.in)
-        .append(this.out)
+    if(this.configs.inButton || this.configs.outButton){
+      buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
         .appendTo(this);
+        
+      if(this.configs.inButton){
+        this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in'})
+          .addListener('click', metaScore.Function.proxy(this.onInClick, this))
+          .appendTo(buttons);
+      }
+      
+      if(this.configs.outButton){
+        this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out'})
+          .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
+          .appendTo(buttons);
+      }
     }
     
     this.addListener('change', metaScore.Function.proxy(this.onChange, this));
@@ -4756,6 +4535,10 @@ metaScore.namespace('editor.panel').Text = (function () {
     // fix event handlers scope
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
+    
+    this.linkOverlay = new metaScore.editor.overlay.LinkEditor({
+      sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this)
+    });
   }
 
   TextPanel.defaults = {
@@ -4867,7 +4650,7 @@ metaScore.namespace('editor.panel').Text = (function () {
         },
         'setter': function(value){
           if(value === 'link'){
-            //createLink
+            this.linkOverlay.show();
           }
           else{
             this.execCommand(value);
@@ -4959,14 +4742,18 @@ metaScore.namespace('editor.panel').Text = (function () {
     evt.stopPropagation();
   };
   
+  TextPanel.prototype.onLinkOverlaySubmit = function(url, overlay){
+    this.execCommand('createLink', url);
+  };
+  
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
       contents =  component.contents.get(0),
       document = contents.ownerDocument;
       
     contents.focus();
-    document.execCommand(command, false, value);
     
+    return document.execCommand(command, false, value);
   };
     
   return TextPanel;
@@ -4988,37 +4775,22 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     
     this.addClass('alert');
     
-    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-      .appendTo(this);
-      
-    if(this.configs.buttons){
-      
-    }
-    
     this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-      .appendTo(this);
+      .appendTo(this.contents);
       
     if(this.configs.text){
       this.setText(this.configs.text);
     }
+    
+    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this.contents);
+      
+    if(this.configs.buttons){
+      
+    }
   }
 
-  Alert.defaults = {
-    /**
-    * The popup's title
-    */
-    title: '',
-    
-    /**
-    * The parent element in which the overlay will be appended
-    */
-    parent: '.metaScore-editor',
-    
-    /**
-    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-    */
-    modal: true,
-    
+  Alert.defaults = {    
     /**
     * True to make this draggable
     */
@@ -5042,36 +4814,30 @@ metaScore.namespace('editor.overlay').Alert = (function () {
   
 })();
 /**
- * Popup
+ * ColorSelector
  *
- * @requires ./metaScore.editor.overlay.js
+ * @requires ../metaScore.editor.overlay.js
+ * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.overlay').Popup = (function () {
+metaScore.namespace('editor.overlay').ColorSelector = (function () {
   
-  function Popup(configs) {
+  function ColorSelector(configs) {
     this.configs = this.getConfigs(configs);
-  
+    
     // call parent constructor
-    Popup.parent.call(this, this.configs);
+    ColorSelector.parent.call(this, this.configs);
     
-    this.addClass('popup');
-  
-    this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
-      .appendTo(this);
+    this.addClass('color-selector');
       
-    this.toolbar.addButton('close')
-      .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    // fix event handlers scope
+    this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
+    this.onAlphaMousemove = metaScore.Function.proxy(this.onAlphaMousemove, this);
     
-    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);
+    this.setupUI();
   }
 
-  Popup.defaults = {
-    /**
-    * The popup's title
-    */
-    title: '',
+  ColorSelector.defaults = {
     
     /**
     * The parent element in which the overlay will be appended
@@ -5079,41 +4845,311 @@ metaScore.namespace('editor.overlay').Popup = (function () {
     parent: '.metaScore-editor',
     
     /**
-    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-    */
-    modal: true,
-    
-    /**
     * True to make this draggable
     */
-    draggable: false
+    draggable: false,
+    
+    /**
+    * A function to call when a color is selected
+    */
+    selectCallback: metaScore.Function.emptyFn,
+    
+    /**
+    * A function to call when the selection is canceled
+    */
+    cancelCallback: metaScore.Function.emptyFn
   };
   
-  metaScore.editor.Overlay.extend(Popup);
+  metaScore.editor.Overlay.extend(ColorSelector);
   
-  Popup.prototype.getToolbar = function(){    
-    return this.toolbar;    
+  ColorSelector.prototype.setupUI = function(){
+    
+    this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
+    this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
+      .addListener('click', metaScore.Function.proxy(this.onGradientClick, this))
+      .addListener('mousedown', metaScore.Function.proxy(this.onGradientMousedown, this))
+      .addListener('mouseup', metaScore.Function.proxy(this.onGradientMouseup, this))
+      .appendTo(this.gradient);
+    this.gradient.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.gradient);
+        
+    this.alpha = new metaScore.Dom('<div/>', {'class': 'alpha'}).appendTo(this.contents);
+    this.alpha.canvas = new metaScore.Dom('<canvas/>', {'width': '20', 'height': '255'})
+      .addListener('click', metaScore.Function.proxy(this.onAlphaClick, this))
+      .addListener('mousedown', metaScore.Function.proxy(this.onAlphaMousedown, this))
+      .addListener('mouseup', metaScore.Function.proxy(this.onAlphaMouseup, this))
+      .appendTo(this.alpha);
+    this.alpha.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.alpha);
+    
+    this.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(this.contents);
+    
+    this.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
+      .append(this.controls.r)
+      .appendTo(this.controls);
+      
+    this.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
+      .append(this.controls.g)
+      .appendTo(this.controls);
+      
+    this.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
+      .append(this.controls.b)
+      .appendTo(this.controls);
+      
+    this.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
+      .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+    new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
+      .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
+      .append(this.controls.a)
+      .appendTo(this.controls);
+      
+    this.controls.current = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
+      .append(this.controls.current)
+      .appendTo(this.controls);
+    
+    this.controls.previous = new metaScore.Dom('<canvas/>');
+    new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
+      .append(this.controls.previous)
+      .appendTo(this.controls);
+      
+    this.controls.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
+      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
+      .appendTo(this.controls);
+      
+    this.controls.apply = new metaScore.editor.Button({'label': 'Apply'})
+      .addClass('apply')
+      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
+      .appendTo(this.controls);
+      
+    this.fillGradient();
+    
   };
   
-  Popup.prototype.getContents = function(){    
-    return this.contents;    
+  ColorSelector.prototype.setValue = function(val){
+    this.previous_value = val;
+    
+    this.fillPrevious();
+    
+    this.updateValue(val);
+    
+    return this;
   };
   
-  Popup.prototype.onCloseClick = function(){
+  ColorSelector.prototype.updateValue = function(val, refillAlpha, updatePositions, updateInputs){
+  
+    var hsv;
+  
+    this.value = this.value || {};
+    
+    if(!metaScore.Var.is(val, 'object')){
+      val = metaScore.Color.parse(val);
+    }
+  
+    if('r' in val){
+      this.value.r = parseInt(val.r, 10);
+    }
+    if('g' in val){
+      this.value.g = parseInt(val.g, 10);
+    }
+    if('b' in val){
+      this.value.b = parseInt(val.b, 10);
+    }
+    if('a' in val){
+      this.value.a = parseFloat(val.a);
+    }
+    
+    if(refillAlpha !== false){
+      this.fillAlpha();
+    }
+    
+    if(updateInputs !== false){
+      this.controls.r.val(this.value.r);
+      this.controls.g.val(this.value.g);
+      this.controls.b.val(this.value.b);
+      this.controls.a.val(this.value.a);
+    }
+    
+    if(updatePositions !== false){
+      hsv = metaScore.Color.rgb2hsv(this.value);
+      
+      this.gradient.position.css('left', ((1 - hsv.h) * 255) +'px');
+      this.gradient.position.css('top', (hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2)) +'px');
+      
+      this.alpha.position.css('top', ((1 - this.value.a) * 255) +'px');
+    }
+    
+    this.fillCurrent();
+  
+  };
+  
+  ColorSelector.prototype.fillPrevious = function(){  
+    var context = this.controls.previous.get(0).getContext('2d');
+    
+    context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
+  };
+  
+  ColorSelector.prototype.fillCurrent = function(){  
+    var context = this.controls.current.get(0).getContext('2d');
+    
+    context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
+  };
+  
+  ColorSelector.prototype.fillGradient = function(){  
+    var context = this.gradient.canvas.get(0).getContext('2d'),
+      fill;
+      
+    // Create color gradient
+    fill = context.createLinearGradient(0, 0, context.canvas.width, 0);
+    fill.addColorStop(0, "rgb(255, 0, 0)");
+    fill.addColorStop(0.15, "rgb(255, 0, 255)");
+    fill.addColorStop(0.33, "rgb(0, 0, 255)");
+    fill.addColorStop(0.49, "rgb(0, 255, 255)");
+    fill.addColorStop(0.67, "rgb(0, 255, 0)");
+    fill.addColorStop(0.84, "rgb(255, 255, 0)");
+    fill.addColorStop(1, "rgb(255, 0, 0)");
+   
+    // Apply gradient to canvas
+    context.fillStyle = fill;
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+    
+    // Create semi transparent gradient (white -> trans. -> black)
+    fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
+    fill.addColorStop(0, "rgba(255, 255, 255, 1)");
+    fill.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+    fill.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+    fill.addColorStop(1, "rgba(0, 0, 0, 1)");
+   
+    // Apply gradient to canvas
+    context.fillStyle = fill;
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);  
+  };
+  
+  ColorSelector.prototype.fillAlpha = function(){  
+    var context = this.alpha.canvas.get(0).getContext('2d'),
+      fill;
+      
+    // Create color gradient
+    fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
+    fill.addColorStop(0, "rgb("+ this.value.r +","+ this.value.g +","+ this.value.b +")");
+    fill.addColorStop(1, "transparent");
+   
+    // Apply gradient to canvas
+    context.fillStyle = fill;
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.fillRect(0, 0, context.canvas.width, context.canvas.height);    
+  };
+  
+  ColorSelector.prototype.onControlInput = function(evt){  
+    var rgba, hsv;
+    
+    this.updateValue({
+      'r': this.controls.r.val(),
+      'g': this.controls.g.val(),
+      'b': this.controls.b.val(),
+      'a': this.controls.a.val()
+    }, true, true, false);  
+  };
+  
+  ColorSelector.prototype.onGradientMousedown = function(evt){   
+    this.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
+    
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onGradientMouseup = function(evt){
+    this.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
+    
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onGradientClick = function(evt){
+    var offset = evt.target.getBoundingClientRect(),
+      colorX = evt.pageX - offset.left,
+      colorY = evt.pageY - offset.top,
+      context = this.gradient.canvas.get(0).getContext('2d'),
+      imageData = context.getImageData(colorX, colorY, 1, 1),
+      value = this.value;
+      
+    this.gradient.position.css('left', colorX +'px');
+    this.gradient.position.css('top', colorY +'px');
+    
+    value.r = imageData.data[0];
+    value.g = imageData.data[1];
+    value.b =  imageData.data[2];
+    
+    this.updateValue(value, true, false);
+    
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onGradientMousemove = ColorSelector.prototype.onGradientClick;
+  
+  ColorSelector.prototype.onAlphaMousedown = function(evt){   
+    this.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
+    
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onAlphaMouseup = function(evt){
+    this.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
+    
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onAlphaClick = function(evt){
+    var offset = evt.target.getBoundingClientRect(),
+      colorY = evt.pageY - offset.top,
+      context = this.alpha.canvas.get(0).getContext('2d'),
+      imageData = context.getImageData(0, colorY, 1, 1),
+      value = this.value;
+      
+    this.alpha.position.css('top', colorY +'px');
+    
+    value.a = Math.round(imageData.data[3] / 255 * 100) / 100;
+    
+    this.updateValue(value, false, false);
+    
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onAlphaMousemove = ColorSelector.prototype.onAlphaClick;
+  
+  ColorSelector.prototype.onApplyClick = function(evt){ 
+    this.configs.selectCallback(this.value, this);
+  
+    evt.stopPropagation();
+  };
+  
+  ColorSelector.prototype.onCancelClick = function(evt){
     this.hide();
+  
+    evt.stopPropagation();
   };
     
-  return Popup;
+  return ColorSelector;
   
 })();
 /**
  * GuideSelector
  *
- * @requires ../metaScore.editor.popup.js
+ * @requires ../metaScore.editor.overlay.js
  * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
+metaScore.namespace('editor.overlay').GuideSelector = (function () {
   
   function GuideSelector(configs) {
     this.configs = this.getConfigs(configs);
@@ -5121,37 +5157,19 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
     // call parent constructor
     GuideSelector.parent.call(this, this.configs);
     
-    this.addClass('guide-selector loading');
-    
-    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
-      .appendTo(this.getContents());
-    
-    metaScore.Ajax.get(this.configs.url, {
-      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
-      'error': metaScore.Function.proxy(this.onLoadError, this)
-    });
+    this.addClass('guide-selector');
   }
 
-  GuideSelector.defaults = {
+  GuideSelector.defaults = {    
     /**
-    * The popup's title
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+    
+    /**
+    * The overlay's title
     */
     title: metaScore.String.t('Select a guide'),
-    
-    /**
-    * The parent element in which the overlay will be appended
-    */
-    parent: '.metaScore-editor',
-    
-    /**
-    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-    */
-    modal: true,
-    
-    /**
-    * True to make this draggable
-    */
-    draggable: false,
     
     /**
     * The url from which to retreive the list of guides
@@ -5164,22 +5182,28 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
     selectCallback: metaScore.Function.emptyFn,
     
     /**
-    * Whether to automatically hide the popup when a guide is selected
+    * Whether to automatically hide the overlay when a guide is selected
     */
     hideOnSelect: true
   };
   
-  metaScore.editor.overlay.Popup.extend(GuideSelector);
+  metaScore.editor.Overlay.extend(GuideSelector);
+  
+  GuideSelector.prototype.show = function(){    
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      'autoShow': true
+    });
+    
+    metaScore.Ajax.get(this.configs.url, {
+      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+      'error': metaScore.Function.proxy(this.onLoadError, this)
+    });
+  };
   
   GuideSelector.prototype.onLoadSuccess = function(xhr){
-  
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
       table, row;
-      
-    this.removeClass('loading');
-      
-    contents.empty();
       
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
       .appendTo(contents);
@@ -5198,8 +5222,16 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
         .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
         .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
         .appendTo(row);
-        
-    }, this);    
+    }, this);
+  
+    this.loadmask.hide();
+    delete this.loadmask;
+    
+    if(this.configs.modal){
+      this.mask.appendTo(this.configs.parent);
+    }
+    
+    this.appendTo(this.configs.parent);
   };
   
   GuideSelector.prototype.onLoadError = function(){    
@@ -5214,6 +5246,242 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
   };
     
   return GuideSelector;
+  
+})();
+/**
+ * LinkEditor
+ *
+ * @requires ../metaScore.editor.Ovelay.js
+ * @requires ../../helpers/metaScore.ajax.js
+ */
+ 
+metaScore.namespace('editor.overlay').LinkEditor = (function () {
+  
+  function LinkEditor(configs) {
+    this.configs = this.getConfigs(configs);
+    
+    // call parent constructor
+    LinkEditor.parent.call(this, this.configs);
+    
+    this.addClass('link-editor');
+    
+    this.setupUI();
+    this.updateFields();
+  }
+
+  LinkEditor.defaults = {    
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+    
+    /**
+    * The overlay's title
+    */
+    title: metaScore.String.t('Link editor'),
+    
+    /**
+    * The url from which to retreive the list of guides
+    */
+    url: null,
+    
+    /**
+    * A function to call when finished
+    */
+    sumbitCallback: metaScore.Function.emptyFn
+  };
+  
+  metaScore.editor.Overlay.extend(LinkEditor);
+  
+  LinkEditor.prototype.setupUI = function(){
+  
+    var contents = this.getContents();
+    
+    this.fields = new metaScore.Dom('<div/>', {'class': 'fields'})
+      .appendTo(contents);
+    
+    this.type = new metaScore.Dom('<div/>', {'class': 'field-wrapper type'})
+      .appendTo(this.fields);
+    this.type.label = new metaScore.Dom('<label/>', {'for': 'type', 'text': metaScore.String.t('Type')})
+      .appendTo(this.type);
+    this.type.field = new metaScore.editor.field.Select({
+        options: {
+          url: metaScore.String.t('URL'),
+          page: metaScore.String.t('Page'),
+          time: metaScore.String.t('Time'),
+        }
+      })
+      .attr('id', 'type')
+      .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
+      .appendTo(this.type);
+    
+    // URL
+    this.urlwrapper = new metaScore.Dom('<div/>', {'class': 'url-wrapper'})
+      .appendTo(this.fields);
+    
+    this.url = new metaScore.Dom('<div/>', {'class': 'field-wrapper url'})
+      .appendTo(this.urlwrapper);
+    this.url.label = new metaScore.Dom('<label/>', {'for': 'url', 'text': metaScore.String.t('URL')})
+      .appendTo(this.url);
+    this.url.field = new metaScore.editor.field.Text()
+      .attr('id', 'url')
+      .appendTo(this.url);
+    
+    /*this.target = new metaScore.Dom('<div/>', {'class': 'field-wrapper target'}).appendTo(this.urlwrapper);
+    this.target.label = new metaScore.Dom('<label/>', {'for': 'target', 'text': metaScore.String.t('Target')}).appendTo(this.target);
+    this.target.field = new metaScore.Dom('<select/>', {'id': 'target'}).appendTo(this.target);
+    new metaScore.Dom('<option/>', {'value': '', 'text': metaScore.String.t('<not set>')}).appendTo(this.target.field);
+    new metaScore.Dom('<option/>', {'value': '_blank', 'text': metaScore.String.t('New Window (_blank)')}).appendTo(this.target.field);
+    new metaScore.Dom('<option/>', {'value': '_top', 'text': metaScore.String.t('Topmost Window (_top)')}).appendTo(this.target.field);
+    new metaScore.Dom('<option/>', {'value': '_self', 'text': metaScore.String.t('Same Window (_self)')}).appendTo(this.target.field);
+    new metaScore.Dom('<option/>', {'value': '_parent', 'text': metaScore.String.t('Parent Window (_parent)')}).appendTo(this.target.field);*/
+    
+    // Page
+    this.pagewrapper = new metaScore.Dom('<div/>', {'class': 'page-wrapper'})
+      .appendTo(this.fields);
+    
+    this.page = new metaScore.Dom('<div/>', {'class': 'field-wrapper page'})
+      .appendTo(this.pagewrapper);
+    this.page.label = new metaScore.Dom('<label/>', {'for': 'page', 'text': metaScore.String.t('Page')})
+      .appendTo(this.page);
+    this.page.field = new metaScore.editor.field.Integer()
+      .attr('id', 'page')
+      .appendTo(this.page);
+    
+    // Time
+    this.timewrapper = new metaScore.Dom('<div/>', {'class': 'page-wrapper'}).appendTo(this.fields);
+    
+    this.inTime = new metaScore.Dom('<div/>', {'class': 'field-wrapper inTime'})
+      .appendTo(this.timewrapper);
+    this.inTime.label = new metaScore.Dom('<label/>', {'for': 'inTime', 'text': metaScore.String.t('Start time')})
+      .appendTo(this.inTime);
+    this.inTime.field = new metaScore.editor.field.Time({
+        outButton: false
+      })
+      .attr('id', 'inTime')
+      .appendTo(this.inTime);
+    
+    this.outTime = new metaScore.Dom('<div/>', {'class': 'field-wrapper outTime'})
+      .appendTo(this.timewrapper);
+    this.outTime.label = new metaScore.Dom('<label/>', {'for': 'outTime', 'text': metaScore.String.t('End time')})
+      .appendTo(this.outTime);
+    this.outTime.field = new metaScore.editor.field.Time({
+        outButton: false
+      })
+      .attr('id', 'outTime')
+      .appendTo(this.outTime);
+    
+    this.rIndex = new metaScore.Dom('<div/>', {'class': 'field-wrapper rIndex'})
+      .appendTo(this.timewrapper);
+    this.rIndex.label = new metaScore.Dom('<label/>', {'for': 'rIndex', 'text': metaScore.String.t('Reading index')})
+      .appendTo(this.rIndex);
+    this.rIndex.field = new metaScore.editor.field.Integer()
+      .attr('id', 'rIndex')
+      .appendTo(this.rIndex);
+    
+    // Buttons      
+    this.apply = new metaScore.editor.Button({'label': 'Apply'})
+      .addClass('apply')
+      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
+      .appendTo(contents);
+      
+    this.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
+      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
+      .appendTo(contents);
+  
+  };
+  
+  LinkEditor.prototype.updateFields = function(){
+    var type = this.type.field.getValue();
+    
+    switch(type){
+      case 'page':
+        this.urlwrapper.hide();
+        this.pagewrapper.show();
+        this.timewrapper.hide();
+        break;
+        
+      case 'time':
+        this.urlwrapper.hide();
+        this.pagewrapper.hide();
+        this.timewrapper.show();
+        break;
+        
+      default:
+        this.urlwrapper.show();
+        this.pagewrapper.hide();
+        this.timewrapper.hide();
+    }
+  
+  };
+  
+  LinkEditor.prototype.onTypeChange = function(evt){
+    this.updateFields();
+  };
+  
+  LinkEditor.prototype.onApplyClick = function(evt){
+    var type = this.type.field.val(),
+      url;
+  
+    switch(type){
+      case 'page':
+        url = '#p='+ this.page.field.val();
+        break;
+        
+      case 'time':
+        url = '#t='+ this.inTime.field.val() +','+ this.outTime.field.val();
+        url = '&#r='+ this.rIndex.field.val();
+        break;
+        
+      default:
+        url = this.url.field.val();
+    }
+    
+    this.hide();
+    
+    this.configs.sumbitCallback(url, this);
+  };
+  
+  LinkEditor.prototype.onCancelClick = function(evt){
+    this.hide();
+  };
+    
+  return LinkEditor;
+  
+})();
+/**
+ * LoadMask
+ *
+ * @requires ./metaScore.editor.Overlay.js
+ */
+ 
+metaScore.namespace('editor.overlay').LoadMask = (function () {
+  
+  function LoadMask(configs) {
+    this.configs = this.getConfigs(configs);
+  
+    // call parent constructor
+    LoadMask.parent.call(this, this.configs);
+    
+    this.addClass('loadmask');
+    
+    this.text = new metaScore.Dom('<div/>', {'class': 'text', 'text': this.configs.text})
+      .appendTo(this.contents);
+  }
+
+  LoadMask.defaults = {    
+    /**
+    * True to make this draggable
+    */
+    draggable: false,
+    
+    text: metaScore.String.t('Loading...')
+  };
+  
+  metaScore.editor.Overlay.extend(LoadMask);
+    
+  return LoadMask;
   
 })();
 /**

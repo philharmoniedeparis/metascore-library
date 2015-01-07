@@ -1,11 +1,11 @@
 /**
  * GuideSelector
  *
- * @requires ../metaScore.editor.popup.js
+ * @requires ../metaScore.editor.overlay.js
  * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
+metaScore.namespace('editor.overlay').GuideSelector = (function () {
   
   function GuideSelector(configs) {
     this.configs = this.getConfigs(configs);
@@ -13,37 +13,19 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
     // call parent constructor
     GuideSelector.parent.call(this, this.configs);
     
-    this.addClass('guide-selector loading');
-    
-    new metaScore.Dom('<div/>', {'class': 'loading', 'text': metaScore.String.t('Loading...')})
-      .appendTo(this.getContents());
-    
-    metaScore.Ajax.get(this.configs.url, {
-      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
-      'error': metaScore.Function.proxy(this.onLoadError, this)
-    });
+    this.addClass('guide-selector');
   }
 
-  GuideSelector.defaults = {
+  GuideSelector.defaults = {    
     /**
-    * The popup's title
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+    
+    /**
+    * The overlay's title
     */
     title: metaScore.String.t('Select a guide'),
-    
-    /**
-    * The parent element in which the overlay will be appended
-    */
-    parent: '.metaScore-editor',
-    
-    /**
-    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-    */
-    modal: true,
-    
-    /**
-    * True to make this draggable
-    */
-    draggable: false,
     
     /**
     * The url from which to retreive the list of guides
@@ -56,22 +38,28 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
     selectCallback: metaScore.Function.emptyFn,
     
     /**
-    * Whether to automatically hide the popup when a guide is selected
+    * Whether to automatically hide the overlay when a guide is selected
     */
     hideOnSelect: true
   };
   
-  metaScore.editor.overlay.Popup.extend(GuideSelector);
+  metaScore.editor.Overlay.extend(GuideSelector);
+  
+  GuideSelector.prototype.show = function(){    
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      'autoShow': true
+    });
+    
+    metaScore.Ajax.get(this.configs.url, {
+      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+      'error': metaScore.Function.proxy(this.onLoadError, this)
+    });
+  };
   
   GuideSelector.prototype.onLoadSuccess = function(xhr){
-  
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
       table, row;
-      
-    this.removeClass('loading');
-      
-    contents.empty();
       
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
       .appendTo(contents);
@@ -90,8 +78,16 @@ metaScore.namespace('editor.overlay.popup').GuideSelector = (function () {
         .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
         .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
         .appendTo(row);
-        
-    }, this);    
+    }, this);
+  
+    this.loadmask.hide();
+    delete this.loadmask;
+    
+    if(this.configs.modal){
+      this.mask.appendTo(this.configs.parent);
+    }
+    
+    this.appendTo(this.configs.parent);
   };
   
   GuideSelector.prototype.onLoadError = function(){    

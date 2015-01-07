@@ -31,12 +31,16 @@ metaScore.namespace('editor.field').Time = (function () {
     */
     max: null,
     
-    buttons: true
+    inButton: true,
+    
+    outButton: true
   };
   
   metaScore.editor.Field.extend(TimeField);
   
   TimeField.prototype.setupUI = function(){
+    var buttons;
+  
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
       .appendTo(this);
@@ -62,17 +66,21 @@ metaScore.namespace('editor.field').Time = (function () {
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
       .appendTo(this);
     
-    if(this.configs.buttons){      
-      this.in = new metaScore.Dom('<button/>', {'data-action': 'in'})
-        .addListener('click', metaScore.Function.proxy(this.onInClick, this));
-      
-      this.out = new metaScore.Dom('<button/>', {'data-action': 'out'})
-        .addListener('click', metaScore.Function.proxy(this.onOutClick, this));
-
-      new metaScore.Dom('<div/>', {'class': 'buttons'})
-        .append(this.in)
-        .append(this.out)
+    if(this.configs.inButton || this.configs.outButton){
+      buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
         .appendTo(this);
+        
+      if(this.configs.inButton){
+        this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in'})
+          .addListener('click', metaScore.Function.proxy(this.onInClick, this))
+          .appendTo(buttons);
+      }
+      
+      if(this.configs.outButton){
+        this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out'})
+          .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
+          .appendTo(buttons);
+      }
     }
     
     this.addListener('change', metaScore.Function.proxy(this.onChange, this));

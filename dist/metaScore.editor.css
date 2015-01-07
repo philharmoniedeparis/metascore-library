@@ -140,24 +140,13 @@
   height: 100%;
   border: none;
 }
-.metaScore-editor .field input {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-.metaScore-editor .field input[type="checkbox"] {
-  width: auto;
-}
 .metaScore-editor .field.timefield {
   display: inline-block;
   vertical-align: top;
 }
 .metaScore-editor .field.timefield input {
-  width: 1em;
+  width: 1em !important;
   height: 100%;
-  margin: 0;
   border: none;
   background: none;
   text-align: right;
@@ -180,6 +169,8 @@
   width: 15px;
   height: 100%;
   margin-left: 5px;
+  overflow: hidden;
+  text-indent: 999px;
 }
 .metaScore-editor .field.timefield .buttons button[data-action="in"] {
   background: transparent url('img/editor/field/time/in.png') no-repeat center center;
@@ -203,12 +194,6 @@
 }
 .metaScore-editor .field.colorfield.disabled button {
   cursor: default;
-}
-.metaScore-editor .field.selectfield select {
-  display: block;
-  height: 100%;
-  margin: 0;
-  border: none;
 }
 .metaScore-editor .workspace {
   position: absolute;
@@ -480,8 +465,22 @@
   height: 100%;
   width: 100%;
 }
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.selectfield select {
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field input {
   width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field input[type="checkbox"] {
+  width: auto;
+}
+.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.selectfield select {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
 }
 .metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button {
   width: 23px;
@@ -549,7 +548,37 @@
   -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.metaScore-editor .overlay.colorfield-overlay {
+.metaScore-editor .overlay .toolbar {
+  padding: 10px 16px;
+  border-bottom: 2px solid #B2B2B2;
+  background-color: #dadada;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
+  background-image: -webkit-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: -moz-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: -ms-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: -o-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+  background-image: linear-gradient(top, #dadada 0%, #c8c8c8 100%);
+}
+.metaScore-editor .overlay .toolbar .title {
+  float: left;
+  font-weight: bold;
+  color: #5D5D5D;
+}
+.metaScore-editor .overlay .toolbar .buttons {
+  margin-left: 16px;
+  float: right;
+}
+.metaScore-editor .overlay .toolbar .buttons button {
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  vertical-align: middle;
+}
+.metaScore-editor .overlay .toolbar .buttons button[data-action="close"] {
+  background-image: url('img/editor/popup/close.png');
+}
+.metaScore-editor .overlay.color-selector {
   padding: 10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
@@ -562,15 +591,15 @@
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-.metaScore-editor .overlay.colorfield-overlay canvas {
+.metaScore-editor .overlay.color-selector canvas {
   display: block;
 }
-.metaScore-editor .overlay.colorfield-overlay .gradient {
+.metaScore-editor .overlay.color-selector .gradient {
   position: relative;
   float: left;
   cursor: crosshair;
 }
-.metaScore-editor .overlay.colorfield-overlay .gradient .position {
+.metaScore-editor .overlay.color-selector .gradient .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -586,12 +615,12 @@
   background-clip: padding-box;
   pointer-events: none;
 }
-.metaScore-editor .overlay.colorfield-overlay .alpha {
+.metaScore-editor .overlay.color-selector .alpha {
   position: relative;
   float: left;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .overlay.colorfield-overlay .alpha .position {
+.metaScore-editor .overlay.color-selector .alpha .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -601,43 +630,109 @@
   background: #000;
   pointer-events: none;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls {
+.metaScore-editor .overlay.color-selector .controls {
   width: 80px;
   float: left;
   margin-left: 10px;
   pointer-events: none;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls input[type=number] {
+.metaScore-editor .overlay.color-selector .controls input[type=number] {
   width: 3em;
   margin: 0.25em 0.5em;
   border: 2px inset;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls button {
+.metaScore-editor .overlay.color-selector .controls button {
   width: 100%;
   padding: 0.5em;
   background: #ccc;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls button.cancel {
+.metaScore-editor .overlay.color-selector .controls button.cancel {
   background: #eee;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper {
+.metaScore-editor .overlay.color-selector .controls .canvas-wrapper {
   height: 40px;
   border: 1px solid #ccc;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper.current {
+.metaScore-editor .overlay.color-selector .controls .canvas-wrapper.current {
   margin-top: 5px;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper.previous {
+.metaScore-editor .overlay.color-selector .controls .canvas-wrapper.previous {
   height: 10px;
   margin-bottom: 5px;
   margin-top: -1px;
 }
-.metaScore-editor .overlay.colorfield-overlay .controls .canvas-wrapper canvas {
+.metaScore-editor .overlay.color-selector .controls .canvas-wrapper canvas {
   width: 100%;
   height: 100%;
+}
+.metaScore-editor .overlay.guide-selector .contents {
+  max-width: 500px;
+  max-height: 500px;
+  padding: 12px 16px;
+  overflow: auto;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide {
+  cursor: pointer;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail {
+  padding-right: 10px;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail img {
+  width: 155px;
+  height: 123px;
+  background: #dadada url('img/editor/default-thumbnail.png') no-repeat center center;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details {
+  padding-bottom: 10px;
+  vertical-align: top;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .description {
+  margin: 0;
+  font-size: 11px;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .author {
+  margin: 0;
+  font-size: 11px;
+  font-weight: normal;
+  color: #B2B2B2;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide:hover {
+  background: #EEE;
+}
+.metaScore-editor .overlay.link-editor .contents {
+  min-width: 300px;
+  padding: 12px 16px;
+}
+.metaScore-editor .overlay.link-editor .contents .field-wrapper {
+  display: block;
+  margin-bottom: 1em;
+}
+.metaScore-editor .overlay.link-editor .contents .field-wrapper label {
+  display: block;
+}
+.metaScore-editor .overlay.link-editor .contents button {
+  margin-right: 0.5em;
+  padding: 0.5em;
+  background: #ccc;
+  pointer-events: auto;
+}
+.metaScore-editor .overlay.link-editor .contents button.cancel {
+  background: #eee;
+}
+.metaScore-editor .overlay.alert .contents {
+  padding: 12px 16px;
+}
+.metaScore-editor .overlay.loadmask .contents {
+  padding: 12px 16px 12px 45px;
+  background: #ffffff url('img/editor/loader.gif') no-repeat 16px center;
 }
 .metaScore-editor .overlay-mask {
   position: absolute;
@@ -647,80 +742,6 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 99999;
-}
-.metaScore-editor .alert {
-  padding: 12px 16px;
-}
-.metaScore-editor .popup .toolbar {
-  padding: 10px 16px;
-  border-bottom: 2px solid #B2B2B2;
-  background-color: #dadada;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
-  background-image: -webkit-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
-  background-image: -moz-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
-  background-image: -ms-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
-  background-image: -o-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
-  background-image: linear-gradient(top, #dadada 0%, #c8c8c8 100%);
-}
-.metaScore-editor .popup .toolbar .title {
-  float: left;
-  font-weight: bold;
-  color: #5D5D5D;
-}
-.metaScore-editor .popup .toolbar .buttons {
-  margin-left: 16px;
-  float: right;
-}
-.metaScore-editor .popup .toolbar .buttons button {
-  width: 16px;
-  height: 16px;
-  background-repeat: no-repeat;
-  background-position: center center;
-  vertical-align: middle;
-}
-.metaScore-editor .popup .toolbar .buttons button[data-action="close"] {
-  background-image: url('img/editor/popup/close.png');
-}
-.metaScore-editor .popup .contents {
-  padding: 12px 16px;
-}
-.metaScore-editor .popup.guide-selector .contents {
-  max-width: 500px;
-  max-height: 500px;
-  overflow: auto;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide {
-  cursor: pointer;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide td.thumbnail {
-  padding-right: 10px;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide td.thumbnail img {
-  width: 155px;
-  height: 123px;
-  background: #dadada url('img/editor/default-thumbnail.png') no-repeat center center;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide td.details {
-  padding-bottom: 10px;
-  vertical-align: top;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide td.details .title {
-  margin: 0;
-  font-size: 12px;
-  font-weight: normal;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide td.details .description {
-  margin: 0;
-  font-size: 11px;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide td.details .author {
-  margin: 0;
-  font-size: 11px;
-  font-weight: normal;
-  color: #B2B2B2;
-}
-.metaScore-editor .popup.guide-selector .contents tr.guide:hover {
-  background: #EEE;
 }
 .metaScore-editor.editing .main-menu button[data-action="edit-toggle"] {
   opacity: 0.5;

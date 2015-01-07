@@ -19,6 +19,10 @@ metaScore.namespace('editor.panel').Text = (function () {
     // fix event handlers scope
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
+    
+    this.linkOverlay = new metaScore.editor.overlay.LinkEditor({
+      sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this)
+    });
   }
 
   TextPanel.defaults = {
@@ -130,7 +134,7 @@ metaScore.namespace('editor.panel').Text = (function () {
         },
         'setter': function(value){
           if(value === 'link'){
-            //createLink
+            this.linkOverlay.show();
           }
           else{
             this.execCommand(value);
@@ -222,14 +226,18 @@ metaScore.namespace('editor.panel').Text = (function () {
     evt.stopPropagation();
   };
   
+  TextPanel.prototype.onLinkOverlaySubmit = function(url, overlay){
+    this.execCommand('createLink', url);
+  };
+  
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
       contents =  component.contents.get(0),
       document = contents.ownerDocument;
       
     contents.focus();
-    document.execCommand(command, false, value);
     
+    return document.execCommand(command, false, value);
   };
     
   return TextPanel;

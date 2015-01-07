@@ -14,37 +14,22 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     
     this.addClass('alert');
     
-    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-      .appendTo(this);
-      
-    if(this.configs.buttons){
-      
-    }
-    
     this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-      .appendTo(this);
+      .appendTo(this.contents);
       
     if(this.configs.text){
       this.setText(this.configs.text);
     }
+    
+    this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .appendTo(this.contents);
+      
+    if(this.configs.buttons){
+      
+    }
   }
 
-  Alert.defaults = {
-    /**
-    * The popup's title
-    */
-    title: '',
-    
-    /**
-    * The parent element in which the overlay will be appended
-    */
-    parent: '.metaScore-editor',
-    
-    /**
-    * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-    */
-    modal: true,
-    
+  Alert.defaults = {    
     /**
     * True to make this draggable
     */

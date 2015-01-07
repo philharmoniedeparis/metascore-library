@@ -1,13 +1,14 @@
 /**
  * Editor
  *
- * @requires ../helpers/metaScore.dom.js
- * @requires metaScore.editor.history.js
- * @requires metaScore.editor.mainmenu.js
- * @requires panel/metaScore.editor.panel.block.js
- * @requires panel/metaScore.editor.panel.page.js
- * @requires panel/metaScore.editor.panel.element.js
- * @requires ../player/metaScore.player.js
+ * @requires ../helpers/metaScore.Dom.js
+ * @requires ../player/metaScore.Player.js
+ * @requires metaScore.editor.MainMenu.js
+ * @requires metaScore.editor.History.js
+ * @requires panel/metaScore.editor.panel.Block.js
+ * @requires panel/metaScore.editor.panel.Page.js
+ * @requires panel/metaScore.editor.panel.Element.js
+ * @requires panel/metaScore.editor.panel.Text.js
  */
 metaScore.Editor = (function(){
   
@@ -25,7 +26,7 @@ metaScore.Editor = (function(){
       this.appendTo(this.configs.container);
     }
   
-    // add components    
+    // add components
     this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
     this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
     this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
@@ -49,15 +50,15 @@ metaScore.Editor = (function(){
       }, this);
     }
       
-    // add event listeners
+    // add event listeners    
+    this
+      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
+      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
+      
     this.mainmenu
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
       .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
-    
-    this.sidebar
-      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
-      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
     
     this.block_panel
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
@@ -118,10 +119,9 @@ metaScore.Editor = (function(){
     this.removePlayer();
     this.addPlayer(data);
     
-    this.loadmask.hide();
-    
     this.setEditing(true);
     
+    this.loadmask.hide();
     delete this.loadmask;
   };
   
@@ -129,9 +129,8 @@ metaScore.Editor = (function(){
   
   };
   
-  Editor.prototype.onGuideSaveSuccess = function(xhr){    
+  Editor.prototype.onGuideSaveSuccess = function(xhr){
     this.loadmask.hide();
-    
     delete this.loadmask;
   };
   
@@ -176,12 +175,11 @@ metaScore.Editor = (function(){
       case 'new':
         break;
       case 'open':
-        new metaScore.editor.overlay.popup.GuideSelector({
+        new metaScore.editor.overlay.GuideSelector({
           'url': this.configs.api_url +'guide.json',
           'selectCallback': metaScore.Function.proxy(this.openGuide, this),
           'autoShow': true
-        })
-        .show();
+        });
         break;
       case 'edit':
         break;
@@ -645,8 +643,7 @@ metaScore.Editor = (function(){
   Editor.prototype.openGuide = function(guide){
     var options;
   
-    this.loadmask = new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('Loading...'),
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
     
@@ -687,8 +684,7 @@ metaScore.Editor = (function(){
       'error': metaScore.Function.proxy(this.onGuideSaveError, this)
     }, this.configs.ajax);
   
-    this.loadmask = new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('Saving...'),
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
   

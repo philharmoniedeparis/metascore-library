@@ -21,13 +21,24 @@ metaScore.namespace('editor').Overlay = (function(){
       this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
     }
     
-    if(this.configs.draggable){
-      this.draggable = new metaScore.Draggable({'target': this, 'handle': this});
-    }  
-    
     if(this.configs.autoShow){
       this.show();
-    }    
+    }
+    
+    if(this.configs.toolbar){
+      this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+        .appendTo(this);
+        
+      this.toolbar.addButton('close')
+        .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    }
+    
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);
+    
+    if(this.configs.draggable){
+      this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
+    }
   }
   
   Overlay.defaults = {
@@ -50,7 +61,17 @@ metaScore.namespace('editor').Overlay = (function(){
     /**
     * True to show automatically
     */
-    autoShow: false
+    autoShow: false,
+    
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: false,
+    
+    /**
+    * The overlay's title
+    */
+    title: ''
   };
   
   metaScore.Dom.extend(Overlay);
@@ -73,6 +94,18 @@ metaScore.namespace('editor').Overlay = (function(){
     this.remove();
     
     return this;    
+  };
+  
+  Overlay.prototype.getToolbar = function(){    
+    return this.toolbar;    
+  };
+  
+  Overlay.prototype.getContents = function(){    
+    return this.contents;    
+  };
+  
+  Overlay.prototype.onCloseClick = function(){
+    this.hide();
   };
     
   return Overlay;
