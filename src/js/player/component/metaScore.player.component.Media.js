@@ -176,7 +176,17 @@ metaScore.namespace('player.component').Media = (function () {
   };
   
   Media.prototype.setCurrentTime = function(time) {
+    var playing = this.isPlaying();
+  
+    if(playing){
+      this.pause(true);
+    }
+    
     this.dom.currentTime = parseFloat(time) / 1000;
+  
+    if(playing){
+      this.play(true);
+    }
     
     this.triggerTimeUpdate(false);
   };

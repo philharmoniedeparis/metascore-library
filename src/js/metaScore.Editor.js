@@ -78,8 +78,8 @@ metaScore.Editor = (function(){
     
     this.player_body
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
@@ -138,7 +138,7 @@ metaScore.Editor = (function(){
   
   };
   
-  Editor.prototype.onKeydown = function(evt){  
+  Editor.prototype.onPlayerKeydown = Editor.prototype.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
@@ -161,7 +161,7 @@ metaScore.Editor = (function(){
     }  
   };
   
-  Editor.prototype.onKeyup = function(evt){    
+  Editor.prototype.onPlayerKeyup = Editor.prototype.onKeyup = function(evt){    
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(metaScore.editing, false);
@@ -219,7 +219,7 @@ metaScore.Editor = (function(){
     var field = evt.target._metaScore,
       value = field.getValue();
       
-    this.player.setReadingIndex(value);
+    this.player.setReadingIndex(value, true);
   };
   
   Editor.prototype.onTimeFieldIn = function(evt){
@@ -512,9 +512,15 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPlayerTimeUpdate = function(evt){
-    var currentTime = evt.detail.media.getCurrentTime();
+    var time = evt.detail.media.getCurrentTime();
     
-    this.mainmenu.timefield.setValue(currentTime, true);
+    this.mainmenu.timefield.setValue(time, true);
+  };
+  
+  Editor.prototype.onPlayerReadingIndex = function(evt){
+    var rindex = evt.detail.value;
+    
+    this.mainmenu.rindexfield.setValue(rindex, true);
   };
   
   Editor.prototype.onComponentClick = function(evt, dom){  
@@ -598,8 +604,9 @@ metaScore.Editor = (function(){
   
   Editor.prototype.addPlayer = function(configs){  
     this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
-      'container': this.player_body
-    }));
+        'container': this.player_body
+      }))
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this));
   };
   
   Editor.prototype.removePlayer = function(){

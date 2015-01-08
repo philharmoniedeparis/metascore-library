@@ -181,7 +181,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
         
       case 'time':
         url = '#t='+ this.inTime.field.val() +','+ this.outTime.field.val();
-        url = '&#r='+ this.rIndex.field.val();
+        url = '&r='+ this.rIndex.field.val();
         break;
         
       default:

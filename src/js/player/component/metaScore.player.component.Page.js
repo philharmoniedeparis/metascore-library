@@ -43,9 +43,12 @@ metaScore.namespace('player.component').Page = (function () {
           return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
-          if(metaScore.Var.is(value, "string")){
+          if(!value){
+            value = 'none';
+          }
+          else if(metaScore.Var.is(value, "string")){
            value = 'url('+ value +')';
-          }        
+          }
           this.css('background-image', value);
         }
       },
@@ -53,20 +56,20 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
         'getter': function(){
-          return parseInt(this.data('start-time'), 10);
+          return this.data('start-time');
         },
         'setter': function(value){
-          this.data('start-time', value);
+          this.data('start-time', isNaN(value) ? null : value);
         }
       },
       'end-time': {
         'type': 'Time',
         'label': metaScore.String.t('End time'),
         'getter': function(){
-          return parseInt(this.data('end-time'), 10);
+          return this.data('end-time');
         },
         'setter': function(value){
-          this.data('end-time', value);
+          this.data('end-time', isNaN(value) ? null : value);
         }
       },
       'elements': {
@@ -118,7 +121,7 @@ metaScore.namespace('player.component').Page = (function () {
   
   Page.prototype.setCuePoint = function(configs){
     if(this.cuepoint){
-      this.cuepoint.stop(false);
+      this.cuepoint.destroy();
     }
   
     this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {

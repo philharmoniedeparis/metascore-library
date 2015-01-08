@@ -249,7 +249,6 @@
   display: block;
 }
 .metaScore-component.element {
-  display: none;
   width: 50px;
   height: 50px;
   min-width: 5px;
@@ -257,11 +256,8 @@
   background-position: left top;
   border: 0 solid #000000;
 }
-.metaScore-component.element[data-r-index="0"],
-.metaScore-component.element.active {
-  display: block;
-}
 .metaScore-component.element .contents {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -269,16 +265,15 @@
   height: 100%;
   overflow: hidden;
 }
-.metaScore-component.element[data-type="Cursor"] .contents {
-  display: none;
+.metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
+.metaScore-component.element[data-r-index="0"].active .contents {
+  display: block;
 }
 .metaScore-component.element[data-type="Cursor"] .cursor {
   position: absolute;
   background: #000000;
 }
-.metaScore-component.element[data-type="Cursor"].active .contents {
-  display: block;
-}
+.metaScore-component.element[data-type="Cursor"]:not([data-direction]) .cursor,
 .metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
   width: 1px;
   height: 100% !important;
@@ -431,7 +426,7 @@
   -moz-box-shadow: #0000fe 0px 0px 4px 0px;
   box-shadow: #0000fe 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .metaScore-component.element {
+.metaScore-player-wrapper.editing .metaScore-component.element:hover {
   outline-width: 1px;
   outline-style: dashed;
 }

@@ -95,6 +95,11 @@ metaScore.namespace('player').CuePoint = (function () {
     
     this.running = false;
   };
+  
+  CuePoint.prototype.destroy = function(){
+    this.stop(false);
+    this.configs.media.removeListener('timeupdate', this.onMediaTimeUpdate);
+  };
     
   return CuePoint;
   

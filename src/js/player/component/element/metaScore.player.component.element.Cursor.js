@@ -59,26 +59,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
           var color = metaScore.Color.parse(value);
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
-      },
-      'start-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('Start time'),
-        'getter': function(){
-          return parseInt(this.data('start-time'), 10);
-        },
-        'setter': function(value){
-          this.data('start-time', value);
-        }
-      },
-      'end-time': {
-        'type': 'Time',
-        'label': metaScore.String.t('End time'),
-        'getter': function(){
-          return parseInt(this.data('end-time'), 10);
-        },
-        'setter': function(value){
-          this.data('end-time', value);
-        }
       }
     });
   }
@@ -144,7 +124,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
   
   Cursor.prototype.setCuePoint = function(configs){
     if(this.cuepoint){
-      this.cuepoint.stop(false);
+      this.cuepoint.destroy();
     }
   
     this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
