@@ -56,7 +56,8 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
         'getter': function(){
-          return this.data('start-time');
+          var value = parseFloat(this.data('start-time'));          
+          return isNaN(value) ? null : value;
         },
         'setter': function(value){
           this.data('start-time', isNaN(value) ? null : value);
@@ -66,7 +67,8 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'label': metaScore.String.t('End time'),
         'getter': function(){
-          return this.data('end-time');
+          var value = parseFloat(this.data('end-time'));          
+          return isNaN(value) ? null : value;
         },
         'setter': function(value){
           this.data('end-time', isNaN(value) ? null : value);

@@ -5,49 +5,53 @@
  */
 metaScore.Player = (function () {
   
-  function Player(configs) {
+  function Player(configs) {  
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    Player.parent.call(this);
+    Player.parent.call(this, '<iframe></iframe>', {'class': 'metaScore-player'});
     
-    this.id = this.configs.id || metaScore.String.uuid();
+    this.appendTo(this.configs.container);
+    
+    this.head = new metaScore.Dom(this.get(0).contentDocument.head);
+    this.body = new metaScore.Dom(this.get(0).contentDocument.body)
+      .data('id', this.configs.id);
+    
+    // add player style sheets    
+    if(this.configs.css){
+      metaScore.Array.each(this.configs.css, function(index, url) {
+        this.addCSS(url);
+      }, this);
+    }
     
     this.media = new metaScore.player.component.Media(this.configs.media)
-      .data('player-id', this.id)
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
-      .appendTo(this.configs.container);
+      .appendTo(this.getBody());
     
     this.controller = new metaScore.player.component.Controller(this.configs.controller)
-      .data('player-id', this.id)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.configs.container);
+      .appendTo(this.getBody());
       
     this.rindex_css = new metaScore.StyleSheet({
-      container: this.configs.container
+      container: this.getBody()
     });
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
-      this.addBlock(metaScore.Object.extend({}, configs, {
-        'container': this.configs.container,
-        'listeners': {
-          'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
-        }
-      }));
+      this.addBlock(configs);
     }, this);
     
     this.media.reset();
   }
   
   Player.defaults = {
-    'container': 'body',
     'blocks': [],
     'keyboard': true
   };
   
-  metaScore.Evented.extend(Player);
+  
+  metaScore.Dom.extend(Player);
   
   Player.prototype.onControllerButtonClick = function(evt){  
     var action = metaScore.Dom.data(evt.target, 'action');
@@ -79,7 +83,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onMediaTimeUpdate = function(evt){
-    var currentTime = evt.detail.media.getCurrentTime();
+    var currentTime = evt.detail.media.getTime();
   
     this.controller.updateTime(currentTime);
   };
@@ -89,23 +93,28 @@ metaScore.Player = (function () {
       page = evt.detail.page;
     
     if(block.getProperty('synched')){
-      this.media.setCurrentTime(page.getProperty('start-time'));
+      this.media.setTime(page.getProperty('start-time'));
     }
   };
   
   Player.prototype.onElementTime = function(evt){
-    this.media.setCurrentTime(evt.detail.in);
-    this.media.play();
-    
     if(this.linkcuepoint){
       this.linkcuepoint.destroy();
     }
-  
-    this.linkcuepoint = new metaScore.player.CuePoint({
-      media: this.media,
-      inTime: evt.detail.out,
-      onStart: metaScore.Function.proxy(this.onLinkCuePointStart, this)
-    });
+    
+    this.media.setTime(evt.detail.value);
+    
+    if(evt.detail.forcePlay){
+      this.media.play();
+    }
+    
+    if(evt.detail.stop){
+      this.linkcuepoint = new metaScore.player.CuePoint({
+        media: this.media,
+        inTime: evt.detail.stop,
+        onStart: metaScore.Function.proxy(this.onLinkCuePointStart, this)
+      });
+    }
   };
   
   Player.prototype.onLinkCuePointStart = function(cuepoint){
@@ -133,6 +142,28 @@ metaScore.Player = (function () {
     }
   };
   
+  Player.prototype.getId = function(){
+    return this.date('id');
+  };
+  
+  Player.prototype.getHead = function(){
+    return this.head;
+  };
+  
+  Player.prototype.getBody = function(){
+    return this.body;
+  };
+  
+  Player.prototype.getComponents = function(type){
+    var selector = '.metaScore-component';
+      
+    if(type){
+      selector += '.'+ type;
+    }
+    
+    return this.getBody().children(selector);
+  };
+  
   Player.prototype.addBlock = function(configs){
     var block, page;
   
@@ -140,11 +171,15 @@ metaScore.Player = (function () {
       block = configs;
     }
     else{
-      block = new metaScore.player.component.Block(configs)
+      block = new metaScore.player.component.Block(metaScore.Object.extend({}, configs, {
+          'container': this.getBody(),
+          'listeners': {
+            'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
+          }
+        }))
         .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
         .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))          
-        .addDelegate('.element', 'rindex', metaScore.Function.proxy(this.onElementReadingIndex, this))
-        .data('player-id', this.id);
+        .addDelegate('.element', 'rindex', metaScore.Function.proxy(this.onElementReadingIndex, this));
     }
     
     this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
@@ -152,35 +187,21 @@ metaScore.Player = (function () {
     return block;
   };
   
-  Player.prototype.getComponents = function(parent){
-    var components = [];
-    
-    new metaScore.Dom('.metaScore-component[data-player-id="'+ this.id +'"]', parent).each(function(index, component){
-      components.push(component._metaScore);
-    }, this);
-    
-    return components;
+  Player.prototype.addCSS = function(url){
+    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.getHead());
   };
   
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
     
     if(index !== 0){
-      this.rindex_css.addRule('.metaScore-component.block[data-player-id="'+ this.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-      this.rindex_css.addRule('.metaScore-component.block[data-player-id="'+ this.id +'"] .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-player[data-id="'+ this.configs.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-player[data-id="'+ this.configs.id +'"] .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
     }
     
     if(supressEvent !== true){
       this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
     }
-  };
-  
-  Player.prototype.destroy = function(parent){
-    var components = this.getComponents(parent);
-    
-    metaScore.Array.each(components, function(index, component){
-      component.destroy();
-    }, this);
   };
     
   return Player;

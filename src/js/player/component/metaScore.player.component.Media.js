@@ -133,7 +133,7 @@ metaScore.namespace('player.component').Media = (function () {
   };
 
   Media.prototype.reset = function(supressEvent) {
-    this.setCurrentTime(0);
+    this.setTime(0);
     
     if(supressEvent !== true){
       this.triggerEvent('reset');
@@ -157,7 +157,7 @@ metaScore.namespace('player.component').Media = (function () {
   };
   
   Media.prototype.stop = function(supressEvent) {
-    this.setCurrentTime(0);
+    this.setTime(0);
     this.pause(true);
     
     this.triggerTimeUpdate(false);
@@ -175,7 +175,7 @@ metaScore.namespace('player.component').Media = (function () {
     this.triggerEvent('timeupdate', {'media': this});
   };
   
-  Media.prototype.setCurrentTime = function(time) {
+  Media.prototype.setTime = function(time) {
     var playing = this.isPlaying();
   
     if(playing){
@@ -191,7 +191,7 @@ metaScore.namespace('player.component').Media = (function () {
     this.triggerTimeUpdate(false);
   };
   
-  Media.prototype.getCurrentTime = function() {
+  Media.prototype.getTime = function() {
     return parseFloat(this.dom.currentTime) * 1000;
   };
   

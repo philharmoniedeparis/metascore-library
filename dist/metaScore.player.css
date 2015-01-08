@@ -153,7 +153,7 @@
   min-height: 50px;
   width: 200px;
   height: 200px;
-  overflow: vissible;
+  overflow: hidden;
   color: #424242;
   background-repeat: no-repeat;
   background-position: 0 0;
@@ -319,19 +319,19 @@
 /*
 * Special styles when embedded in editor
 */
-.metaScore-player-wrapper {
+body.in-editor {
   margin: 0;
 }
-.metaScore-player-wrapper div {
+body.in-editor div {
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
   user-select: none;
 }
-.metaScore-player-wrapper .draggable .drag-handle {
+body.in-editor .draggable .drag-handle {
   cursor: move;
 }
-.metaScore-player-wrapper .resizable .resize-handle {
+body.in-editor .resizable .resize-handle {
   position: absolute;
   display: none;
   width: 10px;
@@ -339,94 +339,94 @@
   background: rgba(51, 49, 47, 0.5);
   z-index: 9999;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="top"] {
+body.in-editor .resizable .resize-handle[data-direction="top"] {
   top: -6px;
   left: 50%;
   margin-left: -5px;
   cursor: n-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="right"] {
+body.in-editor .resizable .resize-handle[data-direction="right"] {
   right: -6px;
   top: 50%;
   margin-top: -5px;
   cursor: e-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="bottom"] {
+body.in-editor .resizable .resize-handle[data-direction="bottom"] {
   bottom: -6px;
   left: 50%;
   margin-left: -5px;
   cursor: s-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="left"] {
+body.in-editor .resizable .resize-handle[data-direction="left"] {
   left: -6px;
   top: 50%;
   margin-top: -5px;
   cursor: w-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="top-right"] {
+body.in-editor .resizable .resize-handle[data-direction="top-right"] {
   top: -6px;
   right: -6px;
   cursor: ne-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="top-left"] {
+body.in-editor .resizable .resize-handle[data-direction="top-left"] {
   top: -6px;
   left: -6px;
   cursor: nw-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="bottom-left"] {
+body.in-editor .resizable .resize-handle[data-direction="bottom-left"] {
   bottom: -6px;
   left: -6px;
   cursor: sw-resize;
 }
-.metaScore-player-wrapper .resizable .resize-handle[data-direction="bottom-right"] {
+body.in-editor .resizable .resize-handle[data-direction="bottom-right"] {
   bottom: -6px;
   right: -6px;
   cursor: se-resize;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="Cursor"] {
+body.in-editor .metaScore-component.element[data-type="Cursor"] {
   outline-color: #ff003c;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="Cursor"].resizable .resize-handle {
+body.in-editor .metaScore-component.element[data-type="Cursor"].resizable .resize-handle {
   background: rgba(255, 0, 60, 0.5);
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="Image"] {
+body.in-editor .metaScore-component.element[data-type="Image"] {
   outline-color: #ff8a00;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="Image"].resizable .resize-handle {
+body.in-editor .metaScore-component.element[data-type="Image"].resizable .resize-handle {
   background: rgba(255, 138, 0, 0.5);
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="Text"] {
+body.in-editor .metaScore-component.element[data-type="Text"] {
   outline-color: #00c176;
 }
-.metaScore-player-wrapper .metaScore-component.element[data-type="Text"].resizable .resize-handle {
+body.in-editor .metaScore-component.element[data-type="Text"].resizable .resize-handle {
   background: rgba(0, 193, 118, 0.5);
 }
-.metaScore-player-wrapper.editing .resizable .resize-handle {
+body.in-editor.editing .resizable .resize-handle {
   display: block;
 }
-.metaScore-player-wrapper.editing .metaScore-component.block {
+body.in-editor.editing .metaScore-component.block {
   border: 1px dashed rgba(51, 49, 47, 0.5);
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .metaScore-component.block.selected {
+body.in-editor.editing .metaScore-component.block.selected {
   border: 1px dashed #33312f;
   -webkit-box-shadow: #33312f 0px 0px 4px 0px;
   -moz-box-shadow: #33312f 0px 0px 4px 0px;
   box-shadow: #33312f 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .metaScore-component.controller {
+body.in-editor.editing .metaScore-component.controller {
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
   box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .metaScore-component.controller.selected {
+body.in-editor.editing .metaScore-component.controller.selected {
   -webkit-box-shadow: #0000fe 0px 0px 4px 0px;
   -moz-box-shadow: #0000fe 0px 0px 4px 0px;
   box-shadow: #0000fe 0px 0px 4px 0px;
 }
-.metaScore-player-wrapper.editing .metaScore-component.element:hover {
+body.in-editor.editing .metaScore-component.element {
   outline-width: 1px;
   outline-style: dashed;
 }

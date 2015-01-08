@@ -66,12 +66,6 @@ metaScore.namespace('player').Component = (function () {
   
   Element.prototype.setCuePoint = function(configs){
   };
-  
-  Component.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
-  };
     
   return Component;
   

@@ -132,7 +132,7 @@
   filter: alpha(opacity=(25));
   cursor: default;
 }
-.metaScore-editor .player-wrapper {
+.metaScore-editor .metaScore-player {
   position: absolute;
   left: 0;
   top: 0;
@@ -195,11 +195,28 @@
 .metaScore-editor .field.colorfield.disabled button {
   cursor: default;
 }
-.metaScore-editor .workspace {
+.metaScore-editor .ruler {
   position: absolute;
+}
+.metaScore-editor .ruler.horizontal {
   left: 0;
   right: 285px;
   top: 42px;
+  height: 19px;
+  background: url('img/editor/ruler-h.png') no-repeat top left;
+}
+.metaScore-editor .ruler.vertical {
+  left: 0;
+  top: 42px;
+  bottom: 0;
+  width: 19px;
+  background: url('img/editor/ruler-v.png') no-repeat top left;
+}
+.metaScore-editor .workspace {
+  position: absolute;
+  left: 19px;
+  right: 285px;
+  top: 61px;
   bottom: 0;
   min-width: 700px;
   overflow: auto;
@@ -210,6 +227,7 @@
   display: none;
   width: 100%;
   height: 100%;
+  z-index: 999;
   pointer-events: none;
   background: url('img/editor/grid.png');
   background-size: 10px 10px;
@@ -219,7 +237,8 @@
 .metaScore-editor .workspace .version {
   position: absolute;
   bottom: 5px;
-  right: 5px;
+  right: 25px;
+  z-index: 999;
   font-size: 0.75em;
   opacity: 0.75;
   -moz-user-select: initial;

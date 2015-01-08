@@ -92,7 +92,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
     direction = this.getProperty('direction');
-    acceleration = this.getProperty('acceleration');    
+    acceleration = this.getProperty('acceleration');
     rect = evt.target.getBoundingClientRect();
 
     switch(direction){
@@ -113,10 +113,10 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     }
     
     if(!acceleration || acceleration === 1){
-        time = inTime + ((outTime - inTime) * pos);
+      time = inTime + ((outTime - inTime) * pos);
     }
     else{
-        time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
+      time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
     }
     
     this.triggerEvent('time', {'element': this, 'value': time});

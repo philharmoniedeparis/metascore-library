@@ -37,7 +37,7 @@ metaScore.namespace('player').CuePoint = (function () {
   };
   
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
-    var curTime = this.configs.media.getCurrentTime();
+    var curTime = this.configs.media.getTime();
      
     if(!this.running){
       if((!this.inTimer) && (curTime >= this.configs.inTime - 0.5) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){

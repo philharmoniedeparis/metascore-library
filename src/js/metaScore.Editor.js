@@ -27,28 +27,18 @@ metaScore.Editor = (function(){
     }
   
     // add components
+    this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
+    this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
     this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
-    this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
-    this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
     this.mainmenu = new metaScore.editor.MainMenu().appendTo(this);     
     this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);    
     this.block_panel = new metaScore.editor.panel.Block().appendTo(this.sidebar);
     this.page_panel = new metaScore.editor.panel.Page().appendTo(this.sidebar);
     this.element_panel = new metaScore.editor.panel.Element().appendTo(this.sidebar);
     this.text_panel = new metaScore.editor.panel.Text().appendTo(this.sidebar);
-    this.player_wrapper = new metaScore.Dom('<iframe/>', {'class': 'player-wrapper'}).appendTo(this.workspace);
-    this.player_head = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.head);
-    this.player_body = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
-    
-    // add player style sheets    
-    if(this.configs.palyer_css){
-      metaScore.Array.each(this.configs.palyer_css, function(index, url) {
-        this.addPlayerCSS(url);
-      }, this);
-    }
       
     // add event listeners    
     this
@@ -75,14 +65,6 @@ metaScore.Editor = (function(){
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
-    
-    this.player_body
-      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
       
     this.history
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -110,7 +92,7 @@ metaScore.Editor = (function(){
     }
     
     this.toggleClass('editing', editing);
-    this.player_body.toggleClass('editing', editing);
+    this.player.getBody().toggleClass('editing', editing);
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -212,7 +194,7 @@ metaScore.Editor = (function(){
     var field = evt.target._metaScore,
       time = field.getValue();
     
-    this.player.media.setCurrentTime(time);
+    this.player.media.setTime(time);
   };
   
   Editor.prototype.onMainmenuRindexFieldChange = function(evt){   
@@ -224,7 +206,7 @@ metaScore.Editor = (function(){
   
   Editor.prototype.onTimeFieldIn = function(evt){
     var field = evt.target._metaScore,
-      time = this.player.media.getCurrentTime();
+      time = this.player.media.getTime();
     
     field.setValue(time);
   };
@@ -233,7 +215,7 @@ metaScore.Editor = (function(){
     var field = evt.target._metaScore,
       time = field.getValue();
     
-    this.player.media.setCurrentTime(time);
+    this.player.media.setTime(time);
   };
   
   Editor.prototype.onBlockSet = function(evt){
@@ -265,12 +247,11 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var block,
-      dom, count, index;
+    var blocks, block, count, index;
   
     switch(metaScore.Dom.data(evt.target, 'action')){        
       case 'new':
-        block = this.addBlock({'container': this.player_body});
+        block = this.player.addBlock();
             
         this.history.add({
           'undo': metaScore.Function.proxy(block.destroy, this),
@@ -293,32 +274,32 @@ metaScore.Editor = (function(){
         break;
         
       case 'previous':
-        dom = new metaScore.Dom('.metaScore-block', this.player_body);
-        count = dom.count();
+        blocks = this.player.getComponents('block');
+        count = blocks.count();
         
         if(count > 0){
-          index = dom.index('.selected') - 1;          
+          index = blocks.index('.selected') - 1;          
           if(index < 0){
             index = count - 1;
           }
           
-          block = dom.get(index)._metaScore;
+          block = blocks.get(index)._metaScore;
           
           this.block_panel.setComponent(block);
         }
         break;
         
       case 'next':
-        dom = new metaScore.Dom('.metaScore-block', this.player_body);
-        count = dom.count();
+        blocks = this.player.getComponents('block');
+        count = blocks.count();
         
         if(count > 0){
-          index = dom.index('.selected') + 1;          
+          index = blocks.index('.selected') + 1;          
           if(index >= count){
             index = 0;
           }
           
-          block = dom.get(index)._metaScore;
+          block = blocks.get(index)._metaScore;
           
           this.block_panel.setComponent(block);
         }
@@ -512,7 +493,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPlayerTimeUpdate = function(evt){
-    var time = evt.detail.media.getCurrentTime();
+    var time = evt.detail.media.getTime();
     
     this.mainmenu.timefield.setValue(time, true);
   };
@@ -598,23 +579,27 @@ metaScore.Editor = (function(){
     this.mainmenu.enableItems('[data-action="undo"]');
   };
   
-  Editor.prototype.addPlayerCSS = function(url){
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.player_head);
-  };
-  
   Editor.prototype.addPlayer = function(configs){  
     this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
-        'container': this.player_body
-      }))
-      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this));
+      container: this.workspace
+    }));
+      
+    this.player.getBody()
+      .addClass('in-editor')
+      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
   };
   
   Editor.prototype.removePlayer = function(){
     if(this.player){
-      this.player.destroy(this.player_body);
+      this.player.remove();
+      delete this.player;
     }
-    
-    delete this.player;
   };
   
   Editor.prototype.addBlock = function(block){
@@ -663,12 +648,14 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.saveGuide = function(){
-    var components = this.player.getComponents(this.player_body),
-      id = this.player.id,
-      options,
+    var components = this.player.getComponents(),
+      id = this.player.getId(),
+      component,  options,
       data = {};
     
-    metaScore.Array.each(components, function(index, component){
+    components.each(function(index, dom){
+      component = dom._metaScore;
+      
       if(component instanceof metaScore.player.component.Media){
         data['media'] = component.getProperties();
       }      

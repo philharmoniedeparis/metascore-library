@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "750c72",
+  revision: "5be076",
   
   getVersion: function(){
     return this.version;
@@ -2073,28 +2073,18 @@ metaScore.Editor = (function(){
     }
   
     // add components
+    this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
+    this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
     this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
-    this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
-    this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
     this.mainmenu = new metaScore.editor.MainMenu().appendTo(this);     
     this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);    
     this.block_panel = new metaScore.editor.panel.Block().appendTo(this.sidebar);
     this.page_panel = new metaScore.editor.panel.Page().appendTo(this.sidebar);
     this.element_panel = new metaScore.editor.panel.Element().appendTo(this.sidebar);
     this.text_panel = new metaScore.editor.panel.Text().appendTo(this.sidebar);
-    this.player_wrapper = new metaScore.Dom('<iframe/>', {'class': 'player-wrapper'}).appendTo(this.workspace);
-    this.player_head = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.head);
-    this.player_body = new metaScore.Dom(this.player_wrapper.get(0).contentDocument.body).addClass('metaScore-player-wrapper');
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
-    
-    // add player style sheets    
-    if(this.configs.palyer_css){
-      metaScore.Array.each(this.configs.palyer_css, function(index, url) {
-        this.addPlayerCSS(url);
-      }, this);
-    }
       
     // add event listeners    
     this
@@ -2121,14 +2111,6 @@ metaScore.Editor = (function(){
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
-    
-    this.player_body
-      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
       
     this.history
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -2156,7 +2138,7 @@ metaScore.Editor = (function(){
     }
     
     this.toggleClass('editing', editing);
-    this.player_body.toggleClass('editing', editing);
+    this.player.getBody().toggleClass('editing', editing);
   };
   
   Editor.prototype.onGuideLoadSuccess = function(xhr){  
@@ -2258,7 +2240,7 @@ metaScore.Editor = (function(){
     var field = evt.target._metaScore,
       time = field.getValue();
     
-    this.player.media.setCurrentTime(time);
+    this.player.media.setTime(time);
   };
   
   Editor.prototype.onMainmenuRindexFieldChange = function(evt){   
@@ -2270,7 +2252,7 @@ metaScore.Editor = (function(){
   
   Editor.prototype.onTimeFieldIn = function(evt){
     var field = evt.target._metaScore,
-      time = this.player.media.getCurrentTime();
+      time = this.player.media.getTime();
     
     field.setValue(time);
   };
@@ -2279,7 +2261,7 @@ metaScore.Editor = (function(){
     var field = evt.target._metaScore,
       time = field.getValue();
     
-    this.player.media.setCurrentTime(time);
+    this.player.media.setTime(time);
   };
   
   Editor.prototype.onBlockSet = function(evt){
@@ -2311,12 +2293,11 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var block,
-      dom, count, index;
+    var blocks, block, count, index;
   
     switch(metaScore.Dom.data(evt.target, 'action')){        
       case 'new':
-        block = this.addBlock({'container': this.player_body});
+        block = this.player.addBlock();
             
         this.history.add({
           'undo': metaScore.Function.proxy(block.destroy, this),
@@ -2339,32 +2320,32 @@ metaScore.Editor = (function(){
         break;
         
       case 'previous':
-        dom = new metaScore.Dom('.metaScore-block', this.player_body);
-        count = dom.count();
+        blocks = this.player.getComponents('block');
+        count = blocks.count();
         
         if(count > 0){
-          index = dom.index('.selected') - 1;          
+          index = blocks.index('.selected') - 1;          
           if(index < 0){
             index = count - 1;
           }
           
-          block = dom.get(index)._metaScore;
+          block = blocks.get(index)._metaScore;
           
           this.block_panel.setComponent(block);
         }
         break;
         
       case 'next':
-        dom = new metaScore.Dom('.metaScore-block', this.player_body);
-        count = dom.count();
+        blocks = this.player.getComponents('block');
+        count = blocks.count();
         
         if(count > 0){
-          index = dom.index('.selected') + 1;          
+          index = blocks.index('.selected') + 1;          
           if(index >= count){
             index = 0;
           }
           
-          block = dom.get(index)._metaScore;
+          block = blocks.get(index)._metaScore;
           
           this.block_panel.setComponent(block);
         }
@@ -2558,7 +2539,7 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onPlayerTimeUpdate = function(evt){
-    var time = evt.detail.media.getCurrentTime();
+    var time = evt.detail.media.getTime();
     
     this.mainmenu.timefield.setValue(time, true);
   };
@@ -2644,23 +2625,27 @@ metaScore.Editor = (function(){
     this.mainmenu.enableItems('[data-action="undo"]');
   };
   
-  Editor.prototype.addPlayerCSS = function(url){
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.player_head);
-  };
-  
   Editor.prototype.addPlayer = function(configs){  
     this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
-        'container': this.player_body
-      }))
-      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this));
+      container: this.workspace
+    }));
+      
+    this.player.getBody()
+      .addClass('in-editor')
+      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
   };
   
   Editor.prototype.removePlayer = function(){
     if(this.player){
-      this.player.destroy(this.player_body);
+      this.player.remove();
+      delete this.player;
     }
-    
-    delete this.player;
   };
   
   Editor.prototype.addBlock = function(block){
@@ -2709,12 +2694,14 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.saveGuide = function(){
-    var components = this.player.getComponents(this.player_body),
-      id = this.player.id,
-      options,
+    var components = this.player.getComponents(),
+      id = this.player.getId(),
+      component,  options,
       data = {};
     
-    metaScore.Array.each(components, function(index, component){
+    components.each(function(index, dom){
+      component = dom._metaScore;
+      
       if(component instanceof metaScore.player.component.Media){
         data['media'] = component.getProperties();
       }      
@@ -5498,49 +5485,53 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
  */
 metaScore.Player = (function () {
   
-  function Player(configs) {
+  function Player(configs) {  
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    Player.parent.call(this);
+    Player.parent.call(this, '<iframe></iframe>', {'class': 'metaScore-player'});
     
-    this.id = this.configs.id || metaScore.String.uuid();
+    this.appendTo(this.configs.container);
+    
+    this.head = new metaScore.Dom(this.get(0).contentDocument.head);
+    this.body = new metaScore.Dom(this.get(0).contentDocument.body)
+      .data('id', this.configs.id);
+    
+    // add player style sheets    
+    if(this.configs.css){
+      metaScore.Array.each(this.configs.css, function(index, url) {
+        this.addCSS(url);
+      }, this);
+    }
     
     this.media = new metaScore.player.component.Media(this.configs.media)
-      .data('player-id', this.id)
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
-      .appendTo(this.configs.container);
+      .appendTo(this.getBody());
     
     this.controller = new metaScore.player.component.Controller(this.configs.controller)
-      .data('player-id', this.id)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.configs.container);
+      .appendTo(this.getBody());
       
     this.rindex_css = new metaScore.StyleSheet({
-      container: this.configs.container
+      container: this.getBody()
     });
     
     metaScore.Array.each(this.configs.blocks, function(index, configs){
-      this.addBlock(metaScore.Object.extend({}, configs, {
-        'container': this.configs.container,
-        'listeners': {
-          'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
-        }
-      }));
+      this.addBlock(configs);
     }, this);
     
     this.media.reset();
   }
   
   Player.defaults = {
-    'container': 'body',
     'blocks': [],
     'keyboard': true
   };
   
-  metaScore.Evented.extend(Player);
+  
+  metaScore.Dom.extend(Player);
   
   Player.prototype.onControllerButtonClick = function(evt){  
     var action = metaScore.Dom.data(evt.target, 'action');
@@ -5572,7 +5563,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onMediaTimeUpdate = function(evt){
-    var currentTime = evt.detail.media.getCurrentTime();
+    var currentTime = evt.detail.media.getTime();
   
     this.controller.updateTime(currentTime);
   };
@@ -5582,23 +5573,28 @@ metaScore.Player = (function () {
       page = evt.detail.page;
     
     if(block.getProperty('synched')){
-      this.media.setCurrentTime(page.getProperty('start-time'));
+      this.media.setTime(page.getProperty('start-time'));
     }
   };
   
   Player.prototype.onElementTime = function(evt){
-    this.media.setCurrentTime(evt.detail.in);
-    this.media.play();
-    
     if(this.linkcuepoint){
       this.linkcuepoint.destroy();
     }
-  
-    this.linkcuepoint = new metaScore.player.CuePoint({
-      media: this.media,
-      inTime: evt.detail.out,
-      onStart: metaScore.Function.proxy(this.onLinkCuePointStart, this)
-    });
+    
+    this.media.setTime(evt.detail.value);
+    
+    if(evt.detail.forcePlay){
+      this.media.play();
+    }
+    
+    if(evt.detail.stop){
+      this.linkcuepoint = new metaScore.player.CuePoint({
+        media: this.media,
+        inTime: evt.detail.stop,
+        onStart: metaScore.Function.proxy(this.onLinkCuePointStart, this)
+      });
+    }
   };
   
   Player.prototype.onLinkCuePointStart = function(cuepoint){
@@ -5626,6 +5622,28 @@ metaScore.Player = (function () {
     }
   };
   
+  Player.prototype.getId = function(){
+    return this.date('id');
+  };
+  
+  Player.prototype.getHead = function(){
+    return this.head;
+  };
+  
+  Player.prototype.getBody = function(){
+    return this.body;
+  };
+  
+  Player.prototype.getComponents = function(type){
+    var selector = '.metaScore-component';
+      
+    if(type){
+      selector += '.'+ type;
+    }
+    
+    return this.getBody().children(selector);
+  };
+  
   Player.prototype.addBlock = function(configs){
     var block, page;
   
@@ -5633,11 +5651,15 @@ metaScore.Player = (function () {
       block = configs;
     }
     else{
-      block = new metaScore.player.component.Block(configs)
+      block = new metaScore.player.component.Block(metaScore.Object.extend({}, configs, {
+          'container': this.getBody(),
+          'listeners': {
+            'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
+          }
+        }))
         .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
         .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))          
-        .addDelegate('.element', 'rindex', metaScore.Function.proxy(this.onElementReadingIndex, this))
-        .data('player-id', this.id);
+        .addDelegate('.element', 'rindex', metaScore.Function.proxy(this.onElementReadingIndex, this));
     }
     
     this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
@@ -5645,35 +5667,21 @@ metaScore.Player = (function () {
     return block;
   };
   
-  Player.prototype.getComponents = function(parent){
-    var components = [];
-    
-    new metaScore.Dom('.metaScore-component[data-player-id="'+ this.id +'"]', parent).each(function(index, component){
-      components.push(component._metaScore);
-    }, this);
-    
-    return components;
+  Player.prototype.addCSS = function(url){
+    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.getHead());
   };
   
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
     
     if(index !== 0){
-      this.rindex_css.addRule('.metaScore-component.block[data-player-id="'+ this.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-      this.rindex_css.addRule('.metaScore-component.block[data-player-id="'+ this.id +'"] .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-player[data-id="'+ this.configs.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-player[data-id="'+ this.configs.id +'"] .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
     }
     
     if(supressEvent !== true){
       this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
     }
-  };
-  
-  Player.prototype.destroy = function(parent){
-    var components = this.getComponents(parent);
-    
-    metaScore.Array.each(components, function(index, component){
-      component.destroy();
-    }, this);
   };
     
   return Player;
@@ -5747,12 +5755,6 @@ metaScore.namespace('player').Component = (function () {
   
   Element.prototype.setCuePoint = function(configs){
   };
-  
-  Component.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
-  };
     
   return Component;
   
@@ -5796,7 +5798,7 @@ metaScore.namespace('player').CuePoint = (function () {
   };
   
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
-    var curTime = this.configs.media.getCurrentTime();
+    var curTime = this.configs.media.getTime();
      
     if(!this.running){
       if((!this.inTimer) && (curTime >= this.configs.inTime - 0.5) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
@@ -6446,7 +6448,8 @@ metaScore.namespace('player.component').Element = (function () {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
         'getter': function(){
-          return this.data('start-time');
+          var value = parseFloat(this.data('start-time'));          
+          return isNaN(value) ? null : value;
         },
         'setter': function(value){
           this.data('start-time', isNaN(value) ? null : value);
@@ -6456,7 +6459,8 @@ metaScore.namespace('player.component').Element = (function () {
         'type': 'Time',
         'label': metaScore.String.t('End time'),
         'getter': function(){
-          return this.data('end-time');
+          var value = parseFloat(this.data('end-time'));          
+          return isNaN(value) ? null : value;
         },
         'setter': function(value){
           this.data('end-time', isNaN(value) ? null : value);
@@ -6636,7 +6640,7 @@ metaScore.namespace('player.component').Media = (function () {
   };
 
   Media.prototype.reset = function(supressEvent) {
-    this.setCurrentTime(0);
+    this.setTime(0);
     
     if(supressEvent !== true){
       this.triggerEvent('reset');
@@ -6660,7 +6664,7 @@ metaScore.namespace('player.component').Media = (function () {
   };
   
   Media.prototype.stop = function(supressEvent) {
-    this.setCurrentTime(0);
+    this.setTime(0);
     this.pause(true);
     
     this.triggerTimeUpdate(false);
@@ -6678,7 +6682,7 @@ metaScore.namespace('player.component').Media = (function () {
     this.triggerEvent('timeupdate', {'media': this});
   };
   
-  Media.prototype.setCurrentTime = function(time) {
+  Media.prototype.setTime = function(time) {
     var playing = this.isPlaying();
   
     if(playing){
@@ -6694,7 +6698,7 @@ metaScore.namespace('player.component').Media = (function () {
     this.triggerTimeUpdate(false);
   };
   
-  Media.prototype.getCurrentTime = function() {
+  Media.prototype.getTime = function() {
     return parseFloat(this.dom.currentTime) * 1000;
   };
   
@@ -6763,7 +6767,8 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
         'getter': function(){
-          return this.data('start-time');
+          var value = parseFloat(this.data('start-time'));          
+          return isNaN(value) ? null : value;
         },
         'setter': function(value){
           this.data('start-time', isNaN(value) ? null : value);
@@ -6773,7 +6778,8 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'label': metaScore.String.t('End time'),
         'getter': function(){
-          return this.data('end-time');
+          var value = parseFloat(this.data('end-time'));          
+          return isNaN(value) ? null : value;
         },
         'setter': function(value){
           this.data('end-time', isNaN(value) ? null : value);
@@ -6952,7 +6958,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
     direction = this.getProperty('direction');
-    acceleration = this.getProperty('acceleration');    
+    acceleration = this.getProperty('acceleration');
     rect = evt.target.getBoundingClientRect();
 
     switch(direction){
@@ -6973,10 +6979,10 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     }
     
     if(!acceleration || acceleration === 1){
-        time = inTime + ((outTime - inTime) * pos);
+      time = inTime + ((outTime - inTime) * pos);
     }
     else{
-        time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
+      time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
     }
     
     this.triggerEvent('time', {'element': this, 'value': time});
@@ -7115,7 +7121,7 @@ metaScore.namespace('player.component.element').Text = (function () {
       evt.preventDefault();
     }
     else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'in': matches[1], 'out': matches[2]});
+      this.triggerEvent('time', {'element': this, 'value': matches[1], 'stop': matches[2], 'forcePlay': true});
       this.triggerEvent('rindex', {'element': this, 'value': matches[3]});
       
       evt.preventDefault();

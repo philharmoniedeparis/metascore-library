@@ -1,10 +1,5 @@
 @import "../../vendor/prefixer.less";
-
-@block-outline: rgb(51,49,47);
-@controller-outline: rgb(0, 0, 254);
-@cursor-outline: rgb(255,0,60);
-@image-outline: rgb(255,138,0);
-@text-outline: rgb(0,193,118);
+@import "variables.less";
 
 .metaScore-component{
   position: absolute;
@@ -92,7 +87,7 @@
     min-height: 50px;
     width: 200px;
     height: 200px;
-    overflow: vissible;
+    overflow: hidden;
     color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: 0 0;
@@ -286,11 +281,10 @@
   }
 }
 
-
 /*
 * Special styles when embedded in editor
 */
-.metaScore-player-wrapper{
+body.in-editor{
   margin: 0;
   
   div{
@@ -416,10 +410,8 @@
         }
       }
       &.element{
-        &:hover{
-          outline-width: 1px;
-          outline-style: dashed;
-        }
+        outline-width: 1px;
+        outline-style: dashed;
       }
     }
   }

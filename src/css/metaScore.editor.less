@@ -60,7 +60,7 @@
     }
   }
   
-  .player-wrapper{
+  .metaScore-player{
     position: absolute;
     left: 0;
     top: 0;
@@ -140,11 +140,31 @@
     }
   }
   
+  .ruler{
+    position: absolute;
+    
+    &.horizontal{
+      left: 0;
+      right: 285px;
+      top: 42px;
+      height: 19px;
+      background: url('img/editor/ruler-h.png') no-repeat top left;
+    }
+    
+    &.vertical{
+      left: 0;
+      top: 42px;
+      bottom: 0;
+      width: 19px;
+      background: url('img/editor/ruler-v.png') no-repeat top left;
+    }
+  }
+  
   .workspace{
     position: absolute;
-    left: 0;
+    left: 19px;
     right: 285px;
-    top: 42px;
+    top: 61px;
     bottom: 0;
     min-width: 700px;
     overflow: auto;
@@ -155,6 +175,7 @@
       display: none;
       width: 100%;
       height: 100%;
+      z-index: 999;
       pointer-events: none;
       background: url('img/editor/grid.png');
       background-size: 10px 10px;
@@ -164,7 +185,8 @@
     .version{
       position: absolute;
       bottom: 5px;
-      right: 5px;
+      right: 25px;
+      z-index: 999;
       font-size: 0.75em;
       opacity: 0.75;
       
