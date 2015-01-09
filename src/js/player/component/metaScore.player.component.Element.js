@@ -168,7 +168,7 @@ metaScore.namespace('player.component').Element = (function () {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
         'getter': function(){
-          var value = parseFloat(this.data('start-time'));          
+          var value = parseFloat(this.data('start-time'));      
           return isNaN(value) ? null : value;
         },
         'setter': function(value){

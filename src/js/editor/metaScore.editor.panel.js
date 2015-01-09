@@ -315,19 +315,8 @@ metaScore.namespace('editor').Panel = (function(){
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
-  Panel.prototype.updateFieldValue = function(name, value, supressEvent){  
-    var field = this.getField(name);
-    
-    if(field instanceof metaScore.editor.field.Boolean){
-      field.setChecked(value);
-    }
-    else{
-      field.setValue(value);
-    }
-    
-    if(supressEvent !== true){
-      field.triggerEvent('change');
-    }
+  Panel.prototype.updateFieldValue = function(name, value, supressEvent){    
+    this.getField(name).setValue(value, supressEvent);
   };
   
   Panel.prototype.updateFieldValues = function(values, supressEvent){    

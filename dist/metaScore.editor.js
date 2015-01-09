@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2015-01-08 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2015-01-09 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "5be076",
+  revision: "bc9720",
   
   getVersion: function(){
     return this.version;
@@ -3662,19 +3662,8 @@ metaScore.namespace('editor').Panel = (function(){
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
-  Panel.prototype.updateFieldValue = function(name, value, supressEvent){  
-    var field = this.getField(name);
-    
-    if(field instanceof metaScore.editor.field.Boolean){
-      field.setChecked(value);
-    }
-    else{
-      field.setValue(value);
-    }
-    
-    if(supressEvent !== true){
-      field.triggerEvent('change');
-    }
+  Panel.prototype.updateFieldValue = function(name, value, supressEvent){    
+    this.getField(name).setValue(value, supressEvent);
   };
   
   Panel.prototype.updateFieldValues = function(values, supressEvent){    
@@ -3806,6 +3795,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
     value: true,
     
     /**
+    * Defines the value when checked
+    */
+    checked_value: true,
+    
+    /**
     * Defines the value when unchecked
     */
     unchecked_value: false,
@@ -3827,11 +3821,15 @@ metaScore.namespace('editor.field').Boolean = (function () {
   BooleanField.prototype.onChange = function(evt){      
     this.value = this.input.is(":checked") ? this.input.val() : this.configs.unchecked_value;
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);  
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value ? this.configs.checked_value : this.configs.unchecked_value}, true, false);
   };
   
-  BooleanField.prototype.setChecked = function(checked){
-    this.input.attr('checked', checked ? 'checked' : '');  
+  BooleanField.prototype.setValue = function(value, supressEvent){
+    this.input.attr('checked', value ? 'checked' : '');
+    
+    if(supressEvent !== true){
+      this.input.triggerEvent('change');
+    }
   };
     
   return BooleanField;
@@ -6448,7 +6446,7 @@ metaScore.namespace('player.component').Element = (function () {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
         'getter': function(){
-          var value = parseFloat(this.data('start-time'));          
+          var value = parseFloat(this.data('start-time'));      
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
