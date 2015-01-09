@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "b0a2af",
+  revision: "8dd0ee",
   
   getVersion: function(){
     return this.version;
@@ -2490,9 +2490,7 @@ metaScore.Editor = (function(){
       case 'new':
         page = this.page_panel.getComponent();
         element = this.addElement(page, {'type': metaScore.Dom.data(evt.target, 'type')});
-    
-        this.element_panel.setComponent(element);
-            
+                
         this.history.add({
           'undo': metaScore.Function.proxy(element.remove, this),
           'redo': metaScore.Function.proxy(this.addElement, this, [page, element])
@@ -6897,8 +6895,12 @@ metaScore.namespace('player.component.element').Cursor = (function () {
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
-    
-    metaScore.Object.extend(this.configs.properties, {
+  }
+  
+  metaScore.player.component.Element.extend(Cursor);
+  
+  Cursor.defaults = {
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -6948,10 +6950,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       }
-    });
-  }
-  
-  metaScore.player.component.Element.extend(Cursor);
+    })
+  };
   
   Cursor.prototype.setupDOM = function(){
     // call parent function
@@ -7081,7 +7081,7 @@ metaScore.namespace('player.component.element').Image = (function () {
 
   function Image(configs) {
     // call parent constructor
-    Image.parent.call(this, configs);   
+    Image.parent.call(this, configs);
   }
   
   metaScore.player.component.Element.extend(Image);

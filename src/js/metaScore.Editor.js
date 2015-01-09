@@ -426,9 +426,7 @@ metaScore.Editor = (function(){
       case 'new':
         page = this.page_panel.getComponent();
         element = this.addElement(page, {'type': metaScore.Dom.data(evt.target, 'type')});
-    
-        this.element_panel.setComponent(element);
-            
+                
         this.history.add({
           'undo': metaScore.Function.proxy(element.remove, this),
           'redo': metaScore.Function.proxy(this.addElement, this, [page, element])

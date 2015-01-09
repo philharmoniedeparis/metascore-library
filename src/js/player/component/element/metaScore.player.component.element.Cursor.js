@@ -9,8 +9,12 @@ metaScore.namespace('player.component.element').Cursor = (function () {
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
-    
-    metaScore.Object.extend(this.configs.properties, {
+  }
+  
+  metaScore.player.component.Element.extend(Cursor);
+  
+  Cursor.defaults = {
+    'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
         'type': 'Select',
         'label': metaScore.String.t('Direction'),
@@ -60,10 +64,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       }
-    });
-  }
-  
-  metaScore.player.component.Element.extend(Cursor);
+    })
+  };
   
   Cursor.prototype.setupDOM = function(){
     // call parent function
