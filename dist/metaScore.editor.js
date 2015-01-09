@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "8dd0ee",
+  revision: "d5a419",
   
   getVersion: function(){
     return this.version;
@@ -5649,7 +5649,7 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.getId = function(){
-    return this.date('id');
+    return this.getBody().data('id');
   };
   
   Player.prototype.getHead = function(){
@@ -5701,8 +5701,8 @@ metaScore.Player = (function () {
     this.rindex_css.removeRules();
     
     if(index !== 0){
-      this.rindex_css.addRule('.metaScore-player[data-id="'+ this.configs.id +'"] .metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-      this.rindex_css.addRule('.metaScore-player[data-id="'+ this.configs.id +'"] .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
     }
     
     if(supressEvent !== true){
