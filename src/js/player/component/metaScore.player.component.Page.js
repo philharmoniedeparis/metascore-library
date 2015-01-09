@@ -143,12 +143,6 @@ metaScore.namespace('player.component').Page = (function () {
   Page.prototype.onCuePointEnd = function(cuepoint){
     this.triggerEvent('cuepointend');
   };
-  
-  Page.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
-  };
     
   return Page;
   

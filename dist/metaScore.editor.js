@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "633256",
+  revision: "b0a2af",
   
   getVersion: function(){
     return this.version;
@@ -2318,7 +2318,7 @@ metaScore.Editor = (function(){
         block = this.player.addBlock();
             
         this.history.add({
-          'undo': metaScore.Function.proxy(block.destroy, this),
+          'undo': metaScore.Function.proxy(block.remove, this),
           'redo': metaScore.Function.proxy(this.addBlock, this, [block])
         });
         break;
@@ -2327,12 +2327,12 @@ metaScore.Editor = (function(){
         block = this.block_panel.getComponent();
         
         if(block){
-          block.destroy();
+          block.remove();
           this.block_panel.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addBlock, this, [block]),
-            'redo': metaScore.Function.proxy(block.destroy, this)
+            'redo': metaScore.Function.proxy(block.remove, this)
           });
         }
         break;
@@ -2398,7 +2398,7 @@ metaScore.Editor = (function(){
         page = this.addPage(block);
             
         this.history.add({
-          'undo': metaScore.Function.proxy(page.destroy, this),
+          'undo': metaScore.Function.proxy(page.remove, this),
           'redo': metaScore.Function.proxy(this.addPage, this, [block, page])
         });
         break;
@@ -2408,12 +2408,12 @@ metaScore.Editor = (function(){
         page = this.page_panel.getComponent();
         
         if(page){
-          block.removePage(page).destroy();
+          block.removePage(page).remove();
           this.page_panel.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addPage, this, [block, page]),
-            'redo': metaScore.Function.proxy(page.destroy, this)
+            'redo': metaScore.Function.proxy(page.remove, this)
           });
         }
         break;
@@ -2494,7 +2494,7 @@ metaScore.Editor = (function(){
         this.element_panel.setComponent(element);
             
         this.history.add({
-          'undo': metaScore.Function.proxy(element.destroy, this),
+          'undo': metaScore.Function.proxy(element.remove, this),
           'redo': metaScore.Function.proxy(this.addElement, this, [page, element])
         });
         break;
@@ -2504,12 +2504,12 @@ metaScore.Editor = (function(){
         element = this.element_panel.getComponent();
         
         if(element){
-          element.destroy();
+          element.remove();
           this.element_panel.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addElement, this, [page, element]),
-            'redo': metaScore.Function.proxy(element.destroy, this)
+            'redo': metaScore.Function.proxy(element.remove, this)
           });
         }
         break;
@@ -6881,12 +6881,6 @@ metaScore.namespace('player.component').Page = (function () {
   
   Page.prototype.onCuePointEnd = function(cuepoint){
     this.triggerEvent('cuepointend');
-  };
-  
-  Page.prototype.destroy = function(){
-    this.remove();
-    
-    this.triggerEvent('destroy');
   };
     
   return Page;
