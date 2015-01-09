@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "d5a419",
+  revision: "77ad98",
   
   getVersion: function(){
     return this.version;
@@ -4555,10 +4555,6 @@ metaScore.namespace('editor.panel').Text = (function () {
     // fix event handlers scope
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
-    
-    this.linkOverlay = new metaScore.editor.overlay.LinkEditor({
-      sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this)
-    });
   }
 
   TextPanel.defaults = {
@@ -4670,7 +4666,13 @@ metaScore.namespace('editor.panel').Text = (function () {
         },
         'setter': function(value){
           if(value === 'link'){
-            this.linkOverlay.show();
+            var link = this.getSelectedElement();
+            
+            new metaScore.editor.overlay.LinkEditor({
+              sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this),
+              autoShow: true,
+              link: link
+            });
           }
           else{
             this.execCommand(value);
@@ -4764,6 +4766,26 @@ metaScore.namespace('editor.panel').Text = (function () {
   
   TextPanel.prototype.onLinkOverlaySubmit = function(url, overlay){
     this.execCommand('createLink', url);
+  };
+  
+  TextPanel.prototype.getSelectedElement = function(){
+     var component = this.getComponent(),
+      contents =  component.contents.get(0),
+      document = contents.ownerDocument,
+      selection , element;
+      
+    if(document.selection){
+      selection = document.selection;
+    	element = selection.createRange().parentElement();
+    }
+    else{
+    	selection = document.getSelection();
+    	if(selection.rangeCount > 0){
+        element = selection.getRangeAt(0).startContainer.parentNode;
+      }
+    }
+    
+    return element;
   };
   
   TextPanel.prototype.execCommand = function(command, value){
@@ -5287,6 +5309,10 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     
     this.setupUI();
     this.updateFields();
+    
+    if(this.configs.link){
+      this.setValuesFromLink(this.configs.link);
+    }
   }
 
   LinkEditor.defaults = {    
@@ -5301,9 +5327,9 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     title: metaScore.String.t('Link editor'),
     
     /**
-    * The url from which to retreive the list of guides
+    * The current link
     */
-    url: null,
+    link: null,
     
     /**
     * A function to call when finished
@@ -5346,15 +5372,6 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.url.field = new metaScore.editor.field.Text()
       .attr('id', 'url')
       .appendTo(this.url);
-    
-    /*this.target = new metaScore.Dom('<div/>', {'class': 'field-wrapper target'}).appendTo(this.urlwrapper);
-    this.target.label = new metaScore.Dom('<label/>', {'for': 'target', 'text': metaScore.String.t('Target')}).appendTo(this.target);
-    this.target.field = new metaScore.Dom('<select/>', {'id': 'target'}).appendTo(this.target);
-    new metaScore.Dom('<option/>', {'value': '', 'text': metaScore.String.t('<not set>')}).appendTo(this.target.field);
-    new metaScore.Dom('<option/>', {'value': '_blank', 'text': metaScore.String.t('New Window (_blank)')}).appendTo(this.target.field);
-    new metaScore.Dom('<option/>', {'value': '_top', 'text': metaScore.String.t('Topmost Window (_top)')}).appendTo(this.target.field);
-    new metaScore.Dom('<option/>', {'value': '_self', 'text': metaScore.String.t('Same Window (_self)')}).appendTo(this.target.field);
-    new metaScore.Dom('<option/>', {'value': '_parent', 'text': metaScore.String.t('Parent Window (_parent)')}).appendTo(this.target.field);*/
     
     // Page
     this.pagewrapper = new metaScore.Dom('<div/>', {'class': 'page-wrapper'})
@@ -5412,6 +5429,29 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
   
   };
   
+  LinkEditor.prototype.setValuesFromLink = function(link){    
+    var matches;
+    
+    if(!metaScore.Dom.is(link, 'a')){
+      return;
+    }
+  
+    if(matches = link.hash.match(/^#p=(\d+)/)){
+      this.type.field.setValue('page');
+      this.page.field.setValue(matches[1]);
+    }
+    else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
+      this.type.field.setValue('time');
+      this.inTime.field.setValue(matches[1]);
+      this.outTime.field.setValue(matches[2]);
+      this.rIndex.field.setValue(matches[3]);
+    }
+    else{
+      this.type.field.setValue('url');
+      this.url.field.setValue(link.href);
+    }
+  };
+  
   LinkEditor.prototype.updateFields = function(){
     var type = this.type.field.getValue();
     
@@ -5441,26 +5481,26 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
   };
   
   LinkEditor.prototype.onApplyClick = function(evt){
-    var type = this.type.field.val(),
+    var type = this.type.field.getValue(),
       url;
   
     switch(type){
       case 'page':
-        url = '#p='+ this.page.field.val();
+        url = '#p='+ this.page.field.getValue();
         break;
         
       case 'time':
-        url = '#t='+ this.inTime.field.val() +','+ this.outTime.field.val();
-        url = '&r='+ this.rIndex.field.val();
+        url = '#t='+ this.inTime.field.getValue() +','+ this.outTime.field.getValue();
+        url = '&r='+ this.rIndex.field.getValue();
         break;
         
       default:
-        url = this.url.field.val();
+        url = this.url.field.getValue();
     }
     
-    this.hide();
-    
     this.configs.sumbitCallback(url, this);
+    
+    this.hide();
   };
   
   LinkEditor.prototype.onCancelClick = function(evt){
@@ -7145,9 +7185,12 @@ metaScore.namespace('player.component.element').Text = (function () {
     else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
       this.triggerEvent('time', {'element': this, 'value': matches[1], 'stop': matches[2], 'forcePlay': true});
       this.triggerEvent('rindex', {'element': this, 'value': matches[3]});
-      
-      evt.preventDefault();
     }
+    else{
+      window.open(link.href,'_blank');
+    }
+    
+    evt.preventDefault();
     
   };
     

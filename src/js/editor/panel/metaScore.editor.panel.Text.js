@@ -19,10 +19,6 @@ metaScore.namespace('editor.panel').Text = (function () {
     // fix event handlers scope
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
-    
-    this.linkOverlay = new metaScore.editor.overlay.LinkEditor({
-      sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this)
-    });
   }
 
   TextPanel.defaults = {
@@ -134,7 +130,13 @@ metaScore.namespace('editor.panel').Text = (function () {
         },
         'setter': function(value){
           if(value === 'link'){
-            this.linkOverlay.show();
+            var link = this.getSelectedElement();
+            
+            new metaScore.editor.overlay.LinkEditor({
+              sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this),
+              autoShow: true,
+              link: link
+            });
           }
           else{
             this.execCommand(value);
@@ -228,6 +230,26 @@ metaScore.namespace('editor.panel').Text = (function () {
   
   TextPanel.prototype.onLinkOverlaySubmit = function(url, overlay){
     this.execCommand('createLink', url);
+  };
+  
+  TextPanel.prototype.getSelectedElement = function(){
+     var component = this.getComponent(),
+      contents =  component.contents.get(0),
+      document = contents.ownerDocument,
+      selection , element;
+      
+    if(document.selection){
+      selection = document.selection;
+    	element = selection.createRange().parentElement();
+    }
+    else{
+    	selection = document.getSelection();
+    	if(selection.rangeCount > 0){
+        element = selection.getRangeAt(0).startContainer.parentNode;
+      }
+    }
+    
+    return element;
   };
   
   TextPanel.prototype.execCommand = function(command, value){

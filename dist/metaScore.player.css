@@ -91,7 +91,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: #000000;
+  background-color: #000000;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
@@ -106,7 +106,7 @@
   min-height: 0;
   overflow: hidden;
   color: #dddddd;
-  background: #cccccc;
+  background-color: #cccccc;
   font-weight: bold;
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 11px;
@@ -120,7 +120,7 @@
 .metaScore-component.controller .timer {
   text-align: center;
   line-height: 30px;
-  background: #0000fe;
+  background-color: #0000fe;
 }
 .metaScore-component.controller .buttons {
   position: relative;
@@ -129,7 +129,8 @@
   position: absolute;
   border: none;
   outline: none;
-  background: transparent url('img/player/controller-buttons.png') no-repeat;
+  background-image: url('img/player/controller-buttons.png');
+  background-repeat: no-repeat;
 }
 .metaScore-component.controller .buttons button[data-action="rewind"] {
   top: 22px;
@@ -157,7 +158,7 @@
   color: #424242;
   background-repeat: no-repeat;
   background-position: left top;
-  background: #eeeeee;
+  background-color: #eeeeee;
   border: 1px solid #cccccc;
   font: normal 12px / normal Verdana, Arial, Helvetica, sans-serif;
   -webkit-border-radius: 10px;
@@ -177,7 +178,7 @@
   left: 0;
   width: 100%;
   height: 20px;
-  background: rgba(214, 214, 214, 0.6);
+  background-color: rgba(214, 214, 214, 0.6);
   text-align: right;
   -webkit-border-radius: 10px 10px 0 0;
   -moz-border-radius: 10px 10px 0 0;
@@ -205,7 +206,9 @@
   width: 17px;
   height: 17px;
   margin: 1px 2px;
-  background: #ffffff url('img/player/pager-buttons.png') no-repeat;
+  background-color: #ffffff;
+  background-image: url('img/player/pager-buttons.png');
+  background-repeat: no-repeat;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
@@ -270,9 +273,12 @@
 .metaScore-component.element[data-r-index="0"].active .contents {
   display: block;
 }
+.metaScore-component.element[data-type="Cursor"] {
+  z-index: 9999;
+}
 .metaScore-component.element[data-type="Cursor"] .cursor {
   position: absolute;
-  background: #000000;
+  background-color: #000000;
 }
 .metaScore-component.element[data-type="Cursor"]:not([data-direction]) .cursor,
 .metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
@@ -337,70 +343,60 @@ body.in-editor .resizable .resize-handle {
   display: none;
   width: 10px;
   height: 10px;
-  background: rgba(51, 49, 47, 0.5);
   z-index: 9999;
 }
 body.in-editor .resizable .resize-handle[data-direction="top"] {
-  top: -6px;
+  top: 0px;
   left: 50%;
   margin-left: -5px;
   cursor: n-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="right"] {
-  right: -6px;
+  right: 0px;
   top: 50%;
   margin-top: -5px;
   cursor: e-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="bottom"] {
-  bottom: -6px;
+  bottom: 0px;
   left: 50%;
   margin-left: -5px;
   cursor: s-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="left"] {
-  left: -6px;
+  left: px;
   top: 50%;
   margin-top: -5px;
   cursor: w-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="top-right"] {
-  top: -6px;
-  right: -6px;
+  top: 0px;
+  right: 0px;
   cursor: ne-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="top-left"] {
-  top: -6px;
-  left: -6px;
+  top: 0px;
+  left: 0px;
   cursor: nw-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="bottom-left"] {
-  bottom: -6px;
-  left: -6px;
+  bottom: 0px;
+  left: 0px;
   cursor: sw-resize;
 }
 body.in-editor .resizable .resize-handle[data-direction="bottom-right"] {
-  bottom: -6px;
-  right: -6px;
+  bottom: 0px;
+  right: 0px;
   cursor: se-resize;
 }
 body.in-editor .metaScore-component.element[data-type="Cursor"] {
   outline-color: #ff003c;
 }
-body.in-editor .metaScore-component.element[data-type="Cursor"].resizable .resize-handle {
-  background: rgba(255, 0, 60, 0.5);
-}
 body.in-editor .metaScore-component.element[data-type="Image"] {
   outline-color: #ff8a00;
 }
-body.in-editor .metaScore-component.element[data-type="Image"].resizable .resize-handle {
-  background: rgba(255, 138, 0, 0.5);
-}
 body.in-editor .metaScore-component.element[data-type="Text"] {
   outline-color: #00c176;
-}
-body.in-editor .metaScore-component.element[data-type="Text"].resizable .resize-handle {
-  background: rgba(0, 193, 118, 0.5);
 }
 body.in-editor.editing .resizable .resize-handle {
   display: block;
@@ -413,9 +409,9 @@ body.in-editor.editing .metaScore-component.block {
 }
 body.in-editor.editing .metaScore-component.block.selected {
   border: 1px dashed #33312f;
-  -webkit-box-shadow: #33312f 0px 0px 4px 0px;
-  -moz-box-shadow: #33312f 0px 0px 4px 0px;
-  box-shadow: #33312f 0px 0px 4px 0px;
+  -webkit-box-shadow: #33312f 0px 0px 4px 1px;
+  -moz-box-shadow: #33312f 0px 0px 4px 1px;
+  box-shadow: #33312f 0px 0px 4px 1px;
 }
 body.in-editor.editing .metaScore-component.controller {
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
@@ -423,11 +419,26 @@ body.in-editor.editing .metaScore-component.controller {
   box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
 }
 body.in-editor.editing .metaScore-component.controller.selected {
-  -webkit-box-shadow: #0000fe 0px 0px 4px 0px;
-  -moz-box-shadow: #0000fe 0px 0px 4px 0px;
-  box-shadow: #0000fe 0px 0px 4px 0px;
+  -webkit-box-shadow: #0000fe 0px 0px 4px 1px;
+  -moz-box-shadow: #0000fe 0px 0px 4px 1px;
+  box-shadow: #0000fe 0px 0px 4px 1px;
 }
 body.in-editor.editing .metaScore-component.element {
   outline-width: 1px;
   outline-style: dashed;
+}
+body.in-editor.editing .metaScore-component.element.selected[data-type="Cursor"] {
+  -webkit-box-shadow: #ff003c 0px 0px 4px 1px;
+  -moz-box-shadow: #ff003c 0px 0px 4px 1px;
+  box-shadow: #ff003c 0px 0px 4px 1px;
+}
+body.in-editor.editing .metaScore-component.element.selected[data-type="Image"] {
+  -webkit-box-shadow: #ff8a00 0px 0px 4px 1px;
+  -moz-box-shadow: #ff8a00 0px 0px 4px 1px;
+  box-shadow: #ff8a00 0px 0px 4px 1px;
+}
+body.in-editor.editing .metaScore-component.element.selected[data-type="Text"] {
+  -webkit-box-shadow: #00c176 0px 0px 4px 1px;
+  -moz-box-shadow: #00c176 0px 0px 4px 1px;
+  box-shadow: #00c176 0px 0px 4px 1px;
 }

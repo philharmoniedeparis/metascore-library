@@ -47,9 +47,12 @@ metaScore.namespace('player.component.element').Text = (function () {
     else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
       this.triggerEvent('time', {'element': this, 'value': matches[1], 'stop': matches[2], 'forcePlay': true});
       this.triggerEvent('rindex', {'element': this, 'value': matches[3]});
-      
-      evt.preventDefault();
     }
+    else{
+      window.open(link.href,'_blank');
+    }
+    
+    evt.preventDefault();
     
   };
     

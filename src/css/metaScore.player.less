@@ -19,7 +19,7 @@
         display: block;
         width: 100%;
         height: 100%;
-        background: rgb(0, 0, 0);
+        background-color: rgb(0, 0, 0);
         .border-radius(10px);
       }
     }
@@ -32,7 +32,7 @@
     min-height: 0;
     overflow: hidden;
     color: rgb(221,221,221);
-    background: rgb(204,204,204);
+    background-color: rgb(204,204,204);
     font-weight: bold;
     font-family: Verdana, Arial, Helvetica, sans-serif;
     font-size: 11px;
@@ -41,7 +41,7 @@
     .timer{
       text-align: center;
       line-height: 30px;
-      background: rgb(0,0,254);
+      background-color: rgb(0,0,254);
     }
     
     .buttons{
@@ -51,7 +51,8 @@
         position: absolute;
         border: none;
         outline: none;
-        background: transparent url('img/player/controller-buttons.png') no-repeat;
+        background-image: url('img/player/controller-buttons.png');
+        background-repeat: no-repeat;
       
         &[data-action="rewind"]{
           top: 22px;
@@ -91,7 +92,7 @@
     color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: left top;
-    background: rgb(238, 238, 238);
+    background-color: rgb(238, 238, 238);
     border: 1px solid rgb(204, 204, 204);
     font: normal 12px/normal Verdana, Arial, Helvetica, sans-serif;
     .border-radius(10px);
@@ -107,7 +108,7 @@
       left: 0;
       width: 100%;
       height: 20px;
-      background: rgba(214, 214, 214, 0.6);
+      background-color: rgba(214, 214, 214, 0.6);
       text-align: right;
       .border-radius(10px 10px 0 0);
       
@@ -131,7 +132,9 @@
           width: 17px;
           height: 17px;
           margin: 1px 2px;
-          background: rgb(255, 255, 255) url('img/player/pager-buttons.png') no-repeat;
+          background-color: rgb(255, 255, 255);
+          background-image: url('img/player/pager-buttons.png');
+          background-repeat: no-repeat;
           .border-radius(10px);
           cursor: pointer;
             
@@ -212,10 +215,12 @@
       }
     }
     
-    &[data-type="Cursor"]{    
+    &[data-type="Cursor"]{
+      z-index: 9999;
+      
       .cursor{
         position: absolute;
-        background: rgb(0, 0, 0);
+        background-color: rgb(0, 0, 0);
       }
         
       &:not([data-direction]),
@@ -307,52 +312,51 @@ body.in-editor{
       display: none;
       width: 10px;
       height: 10px;
-      background: fade(@block-outline, 50%);
       z-index: 9999;
       
       &[data-direction="top"]{
-        top: -6px;
+        top: 0px;
         left: 50%;
         margin-left: -5px;
         cursor: n-resize;
       }
       &[data-direction="right"]{
-        right: -6px;
+        right: 0px;
         top: 50%;
         margin-top: -5px;
         cursor: e-resize;
       }
       &[data-direction="bottom"]{
-        bottom: -6px;
+        bottom: 0px;
         left: 50%;
         margin-left: -5px;
         cursor: s-resize;
       }
       &[data-direction="left"]{
-        left: -6px;
+        left: px;
         top: 50%;
         margin-top: -5px;
         cursor: w-resize;
       }
       
       &[data-direction="top-right"]{
-        top: -6px;
-        right: -6px;
+        top: 0px;
+        right: 0px;
         cursor: ne-resize;
       }
       &[data-direction="top-left"]{
-        top: -6px;
-        left: -6px;
+        top: 0px;
+        left: 0px;
         cursor: nw-resize;
       }
       &[data-direction="bottom-left"]{
-        bottom: -6px;
-        left: -6px;
+        bottom: 0px;
+        left: 0px;
         cursor: sw-resize;
       }
       &[data-direction="bottom-right"]{
-        bottom: -6px;
-        right: -6px;
+        bottom: 0px;
+        right: 0px;
         cursor: se-resize;
       }
     }
@@ -362,26 +366,14 @@ body.in-editor{
     &.element{
       &[data-type="Cursor"]{
         outline-color: @cursor-outline;
-        
-        &.resizable .resize-handle{
-          background: fade(@cursor-outline, 50%);
-        }
       }
       
       &[data-type="Image"]{
         outline-color: @image-outline;
-        
-        &.resizable .resize-handle{
-          background: fade(@image-outline, 50%);
-        }
       }
       
       &[data-type="Text"]{
         outline-color: @text-outline;
-        
-        &.resizable .resize-handle{
-          background: fade(@text-outline, 50%);
-        }
       }
     }
   }
@@ -400,19 +392,33 @@ body.in-editor{
         
         &.selected{
           border: 1px dashed @block-outline;
-          .box-shadow(@block-outline 0px 0px 4px 0px);
+          .box-shadow(@block-outline 0px 0px 4px 1px);
         }
       }
       &.controller{
         .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
         
         &.selected{
-          .box-shadow(@controller-outline 0px 0px 4px 0px);
+          .box-shadow(@controller-outline 0px 0px 4px 1px);
         }
       }
       &.element{
         outline-width: 1px;
         outline-style: dashed;
+        
+        &.selected{
+          &[data-type="Cursor"]{
+            .box-shadow(@cursor-outline 0px 0px 4px 1px);
+          }
+          
+          &[data-type="Image"]{
+            .box-shadow(@image-outline 0px 0px 4px 1px);
+          }
+          
+          &[data-type="Text"]{
+            .box-shadow(@text-outline 0px 0px 4px 1px);
+          }
+        }
       }
     }
   }
