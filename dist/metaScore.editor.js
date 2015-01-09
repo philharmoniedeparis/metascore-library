@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "bc9720",
+  revision: "633256",
   
   getVersion: function(){
     return this.version;
@@ -1404,6 +1404,16 @@ metaScore.Draggable = (function () {
     this.enable();
   }
   
+  Draggable.defaults = {
+    /**
+    * The limits of the dragging
+    */
+    limits: {
+      top: null,
+      left: null
+    }
+  };
+  
   metaScore.Class.extend(Draggable);
   
   Draggable.prototype.onMouseDown = function(evt){
@@ -1430,6 +1440,14 @@ metaScore.Draggable = (function () {
   Draggable.prototype.onMouseMove = function(evt){  
     var left = evt.clientX + this.start_state.left,
       top = evt.clientY + this.start_state.top;
+      
+    if(!isNaN(this.configs.limits.top)){
+      top = Math.max(top, this.configs.limits.top);
+    }
+    
+    if(!isNaN(this.configs.limits.left)){
+      left = Math.max(left, this.configs.limits.left);
+    }
     
     this.configs.target
       .css('left', left + 'px')
@@ -4353,21 +4371,33 @@ metaScore.namespace('editor.panel').Block = (function () {
       return {
         'target': component,
         'handle': component.child('.timer'),
-        'container': component.parents()
+        'container': component.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
       };
     }    
     else if(component instanceof metaScore.player.component.Media){
       return {
         'target': component,
         'handle': component.child('video'),
-        'container': component.parents()
+        'container': component.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
       };
     }
     else if(component instanceof metaScore.player.component.Block){
       return {
         'target': component,
         'handle': component.child('.pager'),
-        'container': component.parents()
+        'container': component.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
       };
     }
     

@@ -45,21 +45,33 @@ metaScore.namespace('editor.panel').Block = (function () {
       return {
         'target': component,
         'handle': component.child('.timer'),
-        'container': component.parents()
+        'container': component.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
       };
     }    
     else if(component instanceof metaScore.player.component.Media){
       return {
         'target': component,
         'handle': component.child('video'),
-        'container': component.parents()
+        'container': component.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
       };
     }
     else if(component instanceof metaScore.player.component.Block){
       return {
         'target': component,
         'handle': component.child('.pager'),
-        'container': component.parents()
+        'container': component.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
       };
     }
     
