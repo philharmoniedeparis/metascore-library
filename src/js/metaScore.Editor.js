@@ -31,11 +31,12 @@ metaScore.Editor = (function(){
     this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
     this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
     this.mainmenu = new metaScore.editor.MainMenu().appendTo(this);     
-    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);    
-    this.block_panel = new metaScore.editor.panel.Block().appendTo(this.sidebar);
-    this.page_panel = new metaScore.editor.panel.Page().appendTo(this.sidebar);
-    this.element_panel = new metaScore.editor.panel.Element().appendTo(this.sidebar);
-    this.text_panel = new metaScore.editor.panel.Text().appendTo(this.sidebar);
+    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);
+    this.panels = {};
+    this.panels.block = new metaScore.editor.panel.Block().appendTo(this.sidebar);
+    this.panels.page = new metaScore.editor.panel.Page().appendTo(this.sidebar);
+    this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar);
+    this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
@@ -50,18 +51,18 @@ metaScore.Editor = (function(){
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
       .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
     
-    this.block_panel
+    this.panels.block
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onBlockUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onBlockPanelValueChange, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this));
     
-    this.page_panel
+    this.panels.page
       .addListener('componentset', metaScore.Function.proxy(this.onPageSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onPageUnset, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
     
-    this.element_panel
+    this.panels.element
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
@@ -74,10 +75,8 @@ metaScore.Editor = (function(){
     new metaScore.Dom('body')
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
-      
-    this.block_panel.unsetComponent();
     
-    metaScore.editing = false;
+    this.setEditing(false);
   }
   
   metaScore.Dom.extend(Editor);
@@ -91,24 +90,20 @@ metaScore.Editor = (function(){
       metaScore.editing = editing;
     }
     
+    metaScore.Object.each(this.panels, function(key, panel){
+      if(editing){
+        panel.enable();
+      }
+      else{
+        panel.disable();
+      }
+    });
+    
     this.toggleClass('editing', editing);
-    this.player.getBody().toggleClass('editing', editing);
-  };
-  
-  Editor.prototype.onGuideLoadSuccess = function(xhr){  
-    var data = JSON.parse(xhr.response);
     
-    this.removePlayer();
-    this.addPlayer(data);
-    
-    this.setEditing(true);
-    
-    this.loadmask.hide();
-    delete this.loadmask;
-  };
-  
-  Editor.prototype.onGuideLoadError = function(xhr){
-  
+    if(this.player){
+      this.player.getBody().toggleClass('editing', editing);
+    }
   };
   
   Editor.prototype.onGuideSaveSuccess = function(xhr){
@@ -222,17 +217,17 @@ metaScore.Editor = (function(){
     var block = evt.detail.component;
     
     if(block instanceof metaScore.player.component.Block){
-      this.page_panel.setComponent(block.getActivePage(), true);
-      this.page_panel.toggleMenuItems('[data-action="new"]', true);
-      this.element_panel.toggleMenuItems('[data-action="new"]', true);
+      this.panels.page.setComponent(block.getActivePage(), true);
+      this.panels.page.toggleMenuItems('[data-action="new"]', true);
+      this.panels.element.toggleMenuItems('[data-action="new"]', true);
     }    
       
     evt.stopPropagation();
   };
   
   Editor.prototype.onBlockUnset = function(evt){
-    this.page_panel.unsetComponent();
-    this.page_panel.toggleMenuItems('[data-action="new"]', false);
+    this.panels.page.unsetComponent();
+    this.panels.page.toggleMenuItems('[data-action="new"]', false);
   };
   
   Editor.prototype.onBlockPanelValueChange = function(evt){
@@ -241,8 +236,8 @@ metaScore.Editor = (function(){
       new_values = evt.detail.new_values;
      
     this.history.add({
-      'undo': metaScore.Function.proxy(this.block_panel.updateProperties, this.block_panel, [block, old_values]),
-      'redo': metaScore.Function.proxy(this.block_panel.updateProperties, this.block_panel, [block, new_values])
+      'undo': metaScore.Function.proxy(this.panels.block.updateProperties, this.panels.block, [block, old_values]),
+      'redo': metaScore.Function.proxy(this.panels.block.updateProperties, this.panels.block, [block, new_values])
     });
   };
   
@@ -260,11 +255,11 @@ metaScore.Editor = (function(){
         break;
         
       case 'delete':
-        block = this.block_panel.getComponent();
+        block = this.panels.block.getComponent();
         
         if(block){
           block.remove();
-          this.block_panel.unsetComponent();
+          this.panels.block.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addBlock, this, [block]),
@@ -285,7 +280,7 @@ metaScore.Editor = (function(){
           
           block = blocks.get(index)._metaScore;
           
-          this.block_panel.setComponent(block);
+          this.panels.block.setComponent(block);
         }
         break;
         
@@ -301,7 +296,7 @@ metaScore.Editor = (function(){
           
           block = blocks.get(index)._metaScore;
           
-          this.block_panel.setComponent(block);
+          this.panels.block.setComponent(block);
         }
         break;
     }
@@ -313,16 +308,16 @@ metaScore.Editor = (function(){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
     
-    this.block_panel.setComponent(block, true);
-    this.page_panel.toggleMenuItems('[data-action="new"]', true);
-    this.element_panel.toggleMenuItems('[data-action="new"]', true);
+    this.panels.block.setComponent(block, true);
+    this.panels.page.toggleMenuItems('[data-action="new"]', true);
+    this.panels.element.toggleMenuItems('[data-action="new"]', true);
       
     evt.stopPropagation();
   };
   
   Editor.prototype.onPageUnset = function(evt){
-    this.element_panel.unsetComponent();
-    this.element_panel.toggleMenuItems('[data-action="new"]', false);
+    this.panels.element.unsetComponent();
+    this.panels.element.toggleMenuItems('[data-action="new"]', false);
   };
   
   Editor.prototype.onPagePanelToolbarClick = function(evt){
@@ -330,7 +325,7 @@ metaScore.Editor = (function(){
   
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
-        block = this.block_panel.getComponent();
+        block = this.panels.block.getComponent();
         page = this.addPage(block);
             
         this.history.add({
@@ -340,12 +335,12 @@ metaScore.Editor = (function(){
         break;
         
       case 'delete':
-        block = this.block_panel.getComponent();
-        page = this.page_panel.getComponent();
+        block = this.panels.block.getComponent();
+        page = this.panels.page.getComponent();
         
         if(page){
           block.removePage(page).remove();
-          this.page_panel.unsetComponent();
+          this.panels.page.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addPage, this, [block, page]),
@@ -355,7 +350,7 @@ metaScore.Editor = (function(){
         break;
         
       case 'previous':
-        block = this.block_panel.getComponent();
+        block = this.panels.block.getComponent();
         
         if(block){
           dom = new metaScore.Dom('.page', block);
@@ -375,7 +370,7 @@ metaScore.Editor = (function(){
         break;
         
       case 'next':
-        block = this.block_panel.getComponent();
+        block = this.panels.block.getComponent();
         
         if(block){
           dom = new metaScore.Dom('.page', block);
@@ -403,18 +398,18 @@ metaScore.Editor = (function(){
       page = element.parents().get(0)._metaScore,
       block = page.parents().parents().get(0)._metaScore;
     
-    this.page_panel.setComponent(page, true);
-    this.block_panel.setComponent(block, true);
+    this.panels.page.setComponent(page, true);
+    this.panels.block.setComponent(block, true);
     
     if(element.getProperty('type') === 'Text'){
-      this.text_panel.setComponent(element);
+      this.panels.text.setComponent(element);
     }
       
     evt.stopPropagation();
   };
   
   Editor.prototype.onElementUnset = function(evt){    
-    this.text_panel.unsetComponent();
+    this.panels.text.unsetComponent();
       
     evt.stopPropagation();
   };
@@ -424,7 +419,7 @@ metaScore.Editor = (function(){
   
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
-        page = this.page_panel.getComponent();
+        page = this.panels.page.getComponent();
         element = this.addElement(page, {'type': metaScore.Dom.data(evt.target, 'type')});
                 
         this.history.add({
@@ -434,12 +429,12 @@ metaScore.Editor = (function(){
         break;
         
       case 'delete':
-        page = this.page_panel.getComponent();
-        element = this.element_panel.getComponent();
+        page = this.panels.page.getComponent();
+        element = this.panels.element.getComponent();
         
         if(element){
           element.remove();
-          this.element_panel.unsetComponent();
+          this.panels.element.unsetComponent();
             
           this.history.add({
             'undo': metaScore.Function.proxy(this.addElement, this, [page, element]),
@@ -449,7 +444,7 @@ metaScore.Editor = (function(){
         break;
         
       case 'previous':
-        page = this.page_panel.getComponent();
+        page = this.panels.page.getComponent();
         
         if(page){
           dom = new metaScore.Dom('.element', page);
@@ -463,13 +458,13 @@ metaScore.Editor = (function(){
             
             element = dom.get(index)._metaScore;
             
-            this.element_panel.setComponent(element);
+            this.panels.element.setComponent(element);
           }
         }
         break;
         
       case 'next':
-        page = this.page_panel.getComponent();
+        page = this.panels.page.getComponent();
         
         if(page){
           dom = new metaScore.Dom('.element', page);
@@ -483,7 +478,7 @@ metaScore.Editor = (function(){
             
             element = dom.get(index)._metaScore;
             
-            this.element_panel.setComponent(element);
+            this.panels.element.setComponent(element);
           }
         }
         break;
@@ -502,6 +497,18 @@ metaScore.Editor = (function(){
     this.mainmenu.rindexfield.setValue(rindex, true);
   };
   
+  Editor.prototype.onPlayerLoadSuccess = function(evt){    
+    this.setEditing(true);
+    
+    this.loadmask.hide();
+    delete this.loadmask;
+  };
+  
+  Editor.prototype.onPlayerLoadError = function(evt){
+    this.loadmask.hide();
+    delete this.loadmask;
+  };
+  
   Editor.prototype.onComponentClick = function(evt, dom){  
     var component;
   
@@ -512,23 +519,19 @@ metaScore.Editor = (function(){
     component = dom._metaScore;
     
     if(component instanceof metaScore.player.component.Block){
-      this.element_panel.unsetComponent();
-      this.block_panel.setComponent(component);
+      this.panels.block.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Controller){
-      this.element_panel.unsetComponent();
-      this.block_panel.setComponent(component);
+      this.panels.block.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Media){
-      this.element_panel.unsetComponent();
-      this.block_panel.setComponent(component);
+      this.panels.block.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Page){
-      this.element_panel.unsetComponent();
-      this.page_panel.setComponent(component);
+      this.panels.page.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Element){
-      this.element_panel.setComponent(component);
+      this.panels.element.setComponent(component);
     }
   };
   
@@ -537,7 +540,7 @@ metaScore.Editor = (function(){
       return;
     }
     
-    this.block_panel.unsetComponent();
+    this.panels.block.unsetComponent();
     
     evt.stopPropagation();
   };
@@ -547,7 +550,7 @@ metaScore.Editor = (function(){
       return;
     }
     
-    this.page_panel.setComponent(evt.detail.page);
+    this.panels.page.setComponent(evt.detail.page);
   };
   
   Editor.prototype.onHistoryAdd = function(evt){
@@ -577,20 +580,27 @@ metaScore.Editor = (function(){
     this.mainmenu.enableItems('[data-action="undo"]');
   };
   
-  Editor.prototype.addPlayer = function(configs){  
+  Editor.prototype.addPlayer = function(configs){
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      'autoShow': true
+    });
+  
     this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
-      container: this.workspace
-    }));
+        container: this.workspace
+      }))
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+      .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
       
     this.player.getBody()
-      .addClass('in-editor')
-      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
-      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
+        .addClass('in-editor')
+        .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+        .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
+        .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
+        .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+        .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+        .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+        .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
   };
   
   Editor.prototype.removePlayer = function(){
@@ -605,7 +615,7 @@ metaScore.Editor = (function(){
       block = this.player.addBlock(block);
     }
 
-    this.block_panel.setComponent(block);
+    this.panels.block.setComponent(block);
     
     return block;
   };
@@ -615,7 +625,7 @@ metaScore.Editor = (function(){
       page = block.addPage(page);
     }
     
-    this.page_panel.setComponent(page);
+    this.panels.page.setComponent(page);
     
     return page;
   };
@@ -625,24 +635,17 @@ metaScore.Editor = (function(){
       element = page.addElement(element);
     }
     
-    this.element_panel.setComponent(element);
+    this.panels.element.setComponent(element);
     
     return element;
   };
   
-  Editor.prototype.openGuide = function(guide){
-    var options;
-  
-    this.loadmask = new metaScore.editor.overlay.LoadMask({
-      'autoShow': true
-    });
+  Editor.prototype.openGuide = function(guide){    
+    this.removePlayer();
     
-    options = metaScore.Object.extend({}, {
-      'success': metaScore.Function.proxy(this.onGuideLoadSuccess, this),
-      'error': metaScore.Function.proxy(this.onGuideLoadError, this)
-    }, this.configs.ajax);
-  
-    metaScore.Ajax.get(this.configs.api_url +'guide/'+ guide.id +'.json', options);
+    this.addPlayer({
+      'url': this.configs.api_url +'guide/'+ guide.id +'.json'
+    });
   };
   
   Editor.prototype.saveGuide = function(){
@@ -680,7 +683,7 @@ metaScore.Editor = (function(){
       'autoShow': true
     });
   
-    metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);    
+    metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);
   };
     
   return Editor;

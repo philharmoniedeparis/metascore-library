@@ -45,12 +45,17 @@ metaScore.namespace('player').Component = (function () {
     }
   };
   
-  Component.prototype.getProperties = function(){
-    var values = {};
+  Component.prototype.getProperties = function(skipDefaults){
+    var values = {},
+      value;
   
     metaScore.Object.each(this.configs.properties, function(name, prop){
       if('getter' in prop){
-        values[name] = prop.getter.call(this);
+        value = prop.getter.call(this, skipDefaults);
+        
+        if(value !== null){
+          values[name] = value;
+        }
       }
     }, this);
     

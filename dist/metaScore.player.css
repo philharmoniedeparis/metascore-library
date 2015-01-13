@@ -75,19 +75,26 @@
 /* Text Shadow */
 /* Transforms */
 /* Transitions */
-.metaScore-component {
+body {
+  font-size: 12px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  /*
+  * Special styles when embedded in editor
+  */
+}
+body .metaScore-component {
   position: absolute;
   top: 0;
   left: 0;
 }
-.metaScore-component.media.audio {
+body .metaScore-component.media.audio {
   display: none;
 }
-.metaScore-component.media.video {
+body .metaScore-component.media.video {
   min-width: 50px;
   min-height: 50px;
 }
-.metaScore-component.media.video video {
+body .metaScore-component.media.video video {
   display: block;
   width: 100%;
   height: 100%;
@@ -99,7 +106,7 @@
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-.metaScore-component.controller {
+body .metaScore-component.controller {
   width: 90px;
   height: 100px;
   min-width: 0;
@@ -108,7 +115,6 @@
   color: #dddddd;
   background-color: #cccccc;
   font-weight: bold;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 11px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -117,39 +123,39 @@
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-.metaScore-component.controller .timer {
+body .metaScore-component.controller .timer {
   text-align: center;
   line-height: 30px;
   background-color: #0000fe;
 }
-.metaScore-component.controller .buttons {
+body .metaScore-component.controller .buttons {
   position: relative;
 }
-.metaScore-component.controller .buttons button {
+body .metaScore-component.controller .buttons button {
   position: absolute;
   border: none;
   outline: none;
   background-image: url('img/player/controller-buttons.png');
   background-repeat: no-repeat;
 }
-.metaScore-component.controller .buttons button[data-action="rewind"] {
+body .metaScore-component.controller .buttons button[data-action="rewind"] {
   top: 22px;
   left: 10px;
   width: 10px;
   height: 11px;
   background-position: -16px -17px;
 }
-.metaScore-component.controller .buttons button[data-action="play"] {
+body .metaScore-component.controller .buttons button[data-action="play"] {
   top: 5px;
   left: 23px;
   width: 43px;
   height: 43px;
   background-position: -47px 0;
 }
-.metaScore-component.controller.playing .buttons button[data-action="play"] {
+body .metaScore-component.controller.playing .buttons button[data-action="play"] {
   background-position: -94px 0;
 }
-.metaScore-component.block {
+body .metaScore-component.block {
   min-width: 50px;
   min-height: 50px;
   width: 200px;
@@ -168,10 +174,10 @@
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-.metaScore-component.block button {
+body .metaScore-component.block button {
   padding: 0;
 }
-.metaScore-component.block .pager {
+body .metaScore-component.block .pager {
   display: none;
   position: absolute;
   top: 0;
@@ -187,7 +193,7 @@
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-.metaScore-component.block .pager .count {
+body .metaScore-component.block .pager .count {
   display: inline-block;
   margin-right: 10px;
   color: #636363;
@@ -196,12 +202,12 @@
   vertical-align: middle;
   cursor: default;
 }
-.metaScore-component.block .pager .buttons {
+body .metaScore-component.block .pager .buttons {
   display: inline-block;
   margin-right: 2px;
   vertical-align: middle;
 }
-.metaScore-component.block .pager .buttons .button {
+body .metaScore-component.block .pager .buttons .button {
   display: inline-block;
   width: 17px;
   height: 17px;
@@ -217,31 +223,31 @@
   background-clip: padding-box;
   cursor: pointer;
 }
-.metaScore-component.block .pager .buttons .button.inactive {
+body .metaScore-component.block .pager .buttons .button.inactive {
   cursor: default;
 }
-.metaScore-component.block .pager .buttons .button[data-action="first"] {
+body .metaScore-component.block .pager .buttons .button[data-action="first"] {
   background-position: 4px 4px;
 }
-.metaScore-component.block .pager .buttons .button[data-action="first"].inactive {
+body .metaScore-component.block .pager .buttons .button[data-action="first"].inactive {
   background-position: 4px -14px;
 }
-.metaScore-component.block .pager .buttons .button[data-action="previous"] {
+body .metaScore-component.block .pager .buttons .button[data-action="previous"] {
   background-position: -14px 4px;
 }
-.metaScore-component.block .pager .buttons .button[data-action="previous"].inactive {
+body .metaScore-component.block .pager .buttons .button[data-action="previous"].inactive {
   background-position: -14px -14px;
 }
-.metaScore-component.block .pager .buttons .button[data-action="next"] {
+body .metaScore-component.block .pager .buttons .button[data-action="next"] {
   background-position: -33px 4px;
 }
-.metaScore-component.block .pager .buttons .button[data-action="next"].inactive {
+body .metaScore-component.block .pager .buttons .button[data-action="next"].inactive {
   background-position: -33px -14px;
 }
-.metaScore-component:hover .pager {
+body .metaScore-component:hover .pager {
   display: block;
 }
-.metaScore-component.page {
+body .metaScore-component.page {
   display: none;
   width: 100%;
   height: 100%;
@@ -249,18 +255,15 @@
   background-repeat: no-repeat;
   background-position: left top;
 }
-.metaScore-component.page.active {
+body .metaScore-component.page.active {
   display: block;
 }
-.metaScore-component.element {
+body .metaScore-component.element {
   width: 50px;
   height: 50px;
   min-width: 5px;
-  background-repeat: no-repeat;
-  background-position: left top;
-  border: 0 solid #000000;
 }
-.metaScore-component.element .contents {
+body .metaScore-component.element .contents {
   display: none;
   position: absolute;
   top: 0;
@@ -268,20 +271,28 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: left top;
+  border: 0 solid #000000;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
-.metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
-.metaScore-component.element[data-r-index="0"].active .contents {
+body .metaScore-component.element:not([data-r-inde]):not([data-start-time]) .contents,
+body .metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
+body .metaScore-component.element:not([data-r-inde]).active .contents,
+body .metaScore-component.element[data-r-index="0"].active .contents {
   display: block;
 }
-.metaScore-component.element[data-type="Cursor"] {
+body .metaScore-component.element[data-type="Cursor"] {
   z-index: 9999;
 }
-.metaScore-component.element[data-type="Cursor"] .cursor {
+body .metaScore-component.element[data-type="Cursor"] .cursor {
   position: absolute;
   background-color: #000000;
 }
-.metaScore-component.element[data-type="Cursor"]:not([data-direction]) .cursor,
-.metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
+body .metaScore-component.element[data-type="Cursor"]:not([data-direction]) .cursor,
+body .metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
   width: 1px;
   height: 100% !important;
   top: initial !important;
@@ -289,7 +300,7 @@
   bottom: initial !important;
   left: 0;
 }
-.metaScore-component.element[data-type="Cursor"][data-direction="left"] .cursor {
+body .metaScore-component.element[data-type="Cursor"][data-direction="left"] .cursor {
   width: 1px;
   height: 100% !important;
   top: initial !important;
@@ -297,7 +308,7 @@
   bottom: initial !important;
   left: initial !important;
 }
-.metaScore-component.element[data-type="Cursor"][data-direction="bottom"] .cursor {
+body .metaScore-component.element[data-type="Cursor"][data-direction="bottom"] .cursor {
   width: 100% !important;
   height: 1px;
   top: 0;
@@ -305,7 +316,7 @@
   bottom: initial !important;
   left: initial !important;
 }
-.metaScore-component.element[data-type="Cursor"][data-direction="top"] .cursor {
+body .metaScore-component.element[data-type="Cursor"][data-direction="top"] .cursor {
   width: 100% !important;
   height: 1px;
   top: initial !important;
@@ -313,19 +324,16 @@
   bottom: 0;
   left: initial !important;
 }
-.metaScore-component.element[data-type="Text"] .contents {
+body .metaScore-component.element[data-type="Text"] .contents {
   overflow: auto;
 }
-.metaScore-component.element[data-type="Text"] .contents .text {
+body .metaScore-component.element[data-type="Text"] .contents .text {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
-/*
-* Special styles when embedded in editor
-*/
 body.in-editor {
   margin: 0;
 }
@@ -426,6 +434,9 @@ body.in-editor.editing .metaScore-component.controller.selected {
 body.in-editor.editing .metaScore-component.element {
   outline-width: 1px;
   outline-style: dashed;
+}
+body.in-editor.editing .metaScore-component.element.selected .contents {
+  display: block;
 }
 body.in-editor.editing .metaScore-component.element.selected[data-type="Cursor"] {
   -webkit-box-shadow: #ff003c 0px 0px 4px 1px;

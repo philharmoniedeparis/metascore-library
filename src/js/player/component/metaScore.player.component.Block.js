@@ -19,19 +19,10 @@ metaScore.namespace('player.component').Block = (function () {
   Block.defaults = {
     'container': null,
     'properties': {
-      'id': {
-        'editable':false,
-        'getter': function(){
-          return this.data('id');
-        },
-        'setter': function(value){
-          this.data('id', value);
-        }
-      },
       'name': {
         'type': 'Text',
         'label': metaScore.String.t('Name'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return this.data('name');
         },
         'setter': function(value){
@@ -39,9 +30,9 @@ metaScore.namespace('player.component').Block = (function () {
         }
       },
       'x': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('X'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
         'setter': function(value){
@@ -49,9 +40,9 @@ metaScore.namespace('player.component').Block = (function () {
         }
       },
       'y': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Y'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
         'setter': function(value){
@@ -59,9 +50,9 @@ metaScore.namespace('player.component').Block = (function () {
         },
       },
       'width': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Width'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
         'setter': function(value){
@@ -69,9 +60,9 @@ metaScore.namespace('player.component').Block = (function () {
         }
       },
       'height': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Height'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
         'setter': function(value){
@@ -81,8 +72,8 @@ metaScore.namespace('player.component').Block = (function () {
       'background-color': {
         'type': 'Color',
         'label': metaScore.String.t('Background color'),
-        'getter': function(){
-          return this.css('background-color');
+        'getter': function(skipDefault){
+          return this.css('background-color', undefined, skipDefault);
         },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
@@ -92,21 +83,26 @@ metaScore.namespace('player.component').Block = (function () {
       'background-image': {
         'type':'Image',
         'label': metaScore.String.t('Background image'),
-        'getter': function(){
-          return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        'getter': function(skipDefault){
+          var value = this.css('background-image', undefined, skipDefault);
+          
+          if(value === 'none' || !metaScore.Var.is(value, "string")){
+            return null;
+          }
+          
+          return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
-          if(metaScore.Var.is(value, "string")){
-           value = 'url('+ value +')';
-          }        
+          value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.css('background-image', value);
         }
       },
       'border-width': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Border width'),
-        'getter': function(){
-          return parseInt(this.css('border-width'), 10);
+        'getter': function(skipDefault){
+          var value = this.css('border-width', undefined, skipDefault);
+          return value !== null ? parseInt(value, 10) : null;
         },
         'setter': function(value){
           this.css('border-width', value +'px');
@@ -115,8 +111,8 @@ metaScore.namespace('player.component').Block = (function () {
       'border-color': {
         'type': 'Color',
         'label': metaScore.String.t('Border color'),
-        'getter': function(){
-          return this.css('border-color');
+        'getter': function(skipDefault){
+          return this.css('border-color', undefined, skipDefault);
         },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
@@ -126,7 +122,7 @@ metaScore.namespace('player.component').Block = (function () {
       'synched': {
         'type': 'Boolean',
         'label': metaScore.String.t('Synchronized pages ?'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return this.data('synched') === "true";
         },
         'setter': function(value){
@@ -135,11 +131,11 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'pages': {
         'editable':false,
-        'getter': function(){
+        'getter': function(skipDefault){
           var pages = [];
                 
           this.getPages().each(function(index, page){            
-            pages.push(page._metaScore.getProperties());
+            pages.push(page._metaScore.getProperties(skipDefault));
           }, this);
           
           return pages;
@@ -148,6 +144,8 @@ metaScore.namespace('player.component').Block = (function () {
           metaScore.Array.each(value, function(index, configs){
             this.addPage(configs);
           }, this);
+          
+          this.setActivePage(0);
         }
       }
     }
@@ -232,7 +230,7 @@ metaScore.namespace('player.component').Block = (function () {
     }
     else if(page.hasClass('active')){
       index = Math.max(0, this.getActivePageIndex() - 1);
-      this.setActivePage(index);   
+      this.setActivePage(index);
     }
     
     return page;
@@ -262,19 +260,19 @@ metaScore.namespace('player.component').Block = (function () {
   
   Block.prototype.setActivePage = function(page, supressEvent){
     var pages = this.getPages();
-      
+  
     if(!(page instanceof metaScore.player.component.Page)){
       page = pages.get(parseInt(page, 10))._metaScore;
     }
-  
-    pages.removeClass('active');
     
-    page.addClass('active');
+    if(page){
+      pages.removeClass('active');
+      page.addClass('active');
+      this.updatePager();
     
-    this.updatePager();
-    
-    if(supressEvent !== true){
-      this.triggerEvent('pageactivate', {'page': page});
+      if(supressEvent !== true){
+        this.triggerEvent('pageactivate', {'page': page});
+      }
     }
   };
   

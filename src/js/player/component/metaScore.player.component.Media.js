@@ -22,9 +22,9 @@ metaScore.namespace('player.component').Media = (function () {
     'useFrameAnimation': true,
     'properties': {
       'x': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('X'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
         'setter': function(value){
@@ -32,9 +32,9 @@ metaScore.namespace('player.component').Media = (function () {
         }
       },
       'y': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Y'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
         'setter': function(value){
@@ -42,9 +42,9 @@ metaScore.namespace('player.component').Media = (function () {
         },
       },
       'width': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Width'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
         'setter': function(value){
@@ -52,9 +52,9 @@ metaScore.namespace('player.component').Media = (function () {
         }
       },
       'height': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Height'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
         'setter': function(value){

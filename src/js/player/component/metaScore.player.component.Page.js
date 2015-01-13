@@ -16,20 +16,11 @@ metaScore.namespace('player.component').Page = (function () {
   
   Page.defaults = {
     'properties': {
-      'id': {
-        'editable':false,
-        'getter': function(){
-          return this.data('id');
-        },
-        'setter': function(value){
-          this.data('id', value);
-        }
-      },
       'background-color': {
         'type': 'Color',
         'label': metaScore.String.t('Background color'),
-        'getter': function(){
-          return this.css('background-color');
+        'getter': function(skipDefault){
+          return this.css('background-color', undefined, skipDefault);
         },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
@@ -39,23 +30,29 @@ metaScore.namespace('player.component').Page = (function () {
       'background-image': {
         'type': 'Image',
         'label': metaScore.String.t('Background image'),
-        'getter': function(){
-          return this.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        'getter': function(skipDefault){
+          var value = this.css('background-image', undefined, skipDefault);
+          
+          if(value === 'none' || !metaScore.Var.is(value, "string")){
+            return null;
+          }
+          
+          return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
-          if(!value){
-            value = 'none';
-          }
-          else if(metaScore.Var.is(value, "string")){
-           value = 'url('+ value +')';
-          }
+          value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.css('background-image', value);
         }
       },
       'start-time': {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
-        'getter': function(){
+        'configs': {
+          'checkbox': true,
+          'inButton': true,
+          'outButton': true
+        },
+        'getter': function(skipDefault){
           var value = parseFloat(this.data('start-time'));          
           return isNaN(value) ? null : value;
         },
@@ -66,7 +63,12 @@ metaScore.namespace('player.component').Page = (function () {
       'end-time': {
         'type': 'Time',
         'label': metaScore.String.t('End time'),
-        'getter': function(){
+        'configs': {
+          'checkbox': true,
+          'inButton': true,
+          'outButton': true
+        },
+        'getter': function(skipDefault){
           var value = parseFloat(this.data('end-time'));          
           return isNaN(value) ? null : value;
         },
@@ -76,11 +78,11 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'elements': {
         'editable': false,
-        'getter': function(){
+        'getter': function(skipDefault){
           var elements = [];
           
           this.getElements().each(function(index, element){
-            elements.push(element._metaScore.getProperties());
+            elements.push(element._metaScore.getProperties(skipDefault));
           }, this);
           
           return elements;        

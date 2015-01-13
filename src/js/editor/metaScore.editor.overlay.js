@@ -26,7 +26,7 @@ metaScore.namespace('editor').Overlay = (function(){
     }
     
     if(this.configs.toolbar){
-      this.toolbar = new metaScore.editor.Toolbar({'title': this.configs.title})
+      this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
         .appendTo(this);
         
       this.toolbar.addButton('close')

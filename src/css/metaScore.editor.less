@@ -74,7 +74,11 @@
       display: inline-block;
       vertical-align: top;
       
-      input{
+      input[type="checkbox"]{
+        float: left;
+      }
+      
+      input[type="number"]{
         width: 1em !important;
         height: 100%;
         border: none;
@@ -136,6 +140,27 @@
         button{
           cursor: default;
         }
+      }
+    }
+    
+    &.imagefield{
+      position: relative;
+      
+      input{
+        padding-right: 15px !important;
+        .box-sizing(border-box);
+      }
+      
+      button[data-action="clear"]{
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 15px;
+        height: 100%;
+        background-image: url('img/editor/field/image/clear.png');
+        background-position: center center;
+        overflow: hidden;
+        text-indent: 999px;
       }
     }
   }
@@ -322,7 +347,7 @@
     background: #f2f2f2;
     border-left: 1px solid #b2b2b2;
     
-    .panel{
+    .panel{    
       .toolbar{
         padding: 5px;
         border-bottom: 1px solid #d7d7d7;
@@ -333,6 +358,7 @@
           padding-left: 18px;
           font-weight: bold;
           background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
+          /*text-indent: -999px;*/
           cursor: pointer;
           .opacity(0.8);
         }
@@ -514,6 +540,7 @@
       }
       
       &.collapsed,
+      &:not(.has-component),
       &.disabled{
         .toolbar{
           .title{
@@ -524,14 +551,20 @@
         .fields{
           display: none;
         }
-        
-        &.disabled{
-          .toolbar{
-            .title{
-              pointer-events: none;
-            }
+      }
+      
+      &:not(.has-component),
+      &.disabled{
+        .toolbar{
+          .title{
+            pointer-events: none;
           }
         }
+      }
+      
+      &.disabled{
+        pointer-events: none;
+        opacity: 0.5;
       }
     }
   }

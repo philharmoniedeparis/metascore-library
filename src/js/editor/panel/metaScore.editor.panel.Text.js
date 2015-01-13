@@ -27,7 +27,7 @@ metaScore.namespace('editor.panel').Text = (function () {
     */
     title: metaScore.String.t('Text'),
     
-    toolbarButtons: {},
+    toolbarButtons: [],
     
     properties: {
       'fore-color': {
@@ -134,8 +134,8 @@ metaScore.namespace('editor.panel').Text = (function () {
             
             new metaScore.editor.overlay.LinkEditor({
               sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this),
-              autoShow: true,
-              link: link
+              link: metaScore.Dom.is(link, 'a') ? link : null,
+              autoShow: true
             });
           }
           else{
@@ -167,12 +167,13 @@ metaScore.namespace('editor.panel').Text = (function () {
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
   
-  TextPanel.prototype.setComponent = function(component, supressEvent){
-  
+  TextPanel.prototype.setComponent = function(component, supressEvent){  
     if(component !== this.getComponent()){
       this.unsetComponent(true);
       
       this.component = component;
+      
+      this.addClass('has-component');
       
       component.contents.addListener('dblclick',this.onComponentContentsDblClick);
     }
@@ -185,15 +186,15 @@ metaScore.namespace('editor.panel').Text = (function () {
   };
   
   TextPanel.prototype.unsetComponent = function(supressEvent){
-    var component = this.getComponent();    
+    var component = this.getComponent();
+    
+    this.removeClass('has-component');
     
     if(component){
       component.contents
         .attr('contenteditable', 'null')
         .removeListener('dblclick', this.onComponentContentsDblClick)
         .removeListener('click', this.onComponentContentsClick);
-      
-      this.disable();
       
       this.component = null;
         

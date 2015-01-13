@@ -26,7 +26,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
             'top': metaScore.String.t('Bottom > Top'),
           }
         },
-        'getter': function(){
+        'getter': function(skipDefault){
           return this.data('direction');
         },
         'setter': function(value){
@@ -34,9 +34,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         }
       },
       'acceleration': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Acceleration'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return this.data('accel');
         },
         'setter': function(value){
@@ -44,10 +44,11 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         }
       },
       'cursor-width': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Cursor width'),
-        'getter': function(){
-          return parseInt(this.cursor.css('width'), 10);
+        'getter': function(skipDefault){
+          var value = this.cursor.css('width', undefined, skipDefault);
+          return value !== null ? parseInt(value, 10) : null;
         },
         'setter': function(value){
           this.cursor.css('width', value +'px');
@@ -56,8 +57,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       'cursor-color': {
         'type': 'Color',
         'label': metaScore.String.t('Cursor color'),
-        'getter': function(){
-           return this.cursor.css('background-color');
+        'getter': function(skipDefault){
+           return this.cursor.css('background-color', undefined, skipDefault);
         },
         'setter': function(value){
           var color = metaScore.Color.parse(value);

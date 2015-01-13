@@ -15,19 +15,10 @@ metaScore.namespace('player.component').Element = (function () {
   
   Element.defaults = {
     'properties': {
-      'id': {
-        'editable':false,
-        'getter': function(){
-          return this.data('id');
-        },
-        'setter': function(value){
-          this.data('id', value);
-        }
-      },
       'name': {
         'type': 'Text',
         'label': metaScore.String.t('Name'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return this.data('name');
         },
         'setter': function(value){
@@ -36,7 +27,7 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'type': {
         'editable':false,
-        'getter': function(){
+        'getter': function(skipDefault){
           return this.data('type');
         },
         'setter': function(value){
@@ -44,9 +35,9 @@ metaScore.namespace('player.component').Element = (function () {
         }
       },
       'x': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('X'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
         'setter': function(value){
@@ -54,9 +45,9 @@ metaScore.namespace('player.component').Element = (function () {
         }
       },
       'y': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Y'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
         'setter': function(value){
@@ -64,9 +55,9 @@ metaScore.namespace('player.component').Element = (function () {
         }
       },
       'width': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Width'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
         'setter': function(value){
@@ -74,9 +65,9 @@ metaScore.namespace('player.component').Element = (function () {
         }
       },
       'height': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Height'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
         'setter': function(value){
@@ -84,23 +75,25 @@ metaScore.namespace('player.component').Element = (function () {
         }
       },
       'r-index': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Reading index'),
         'configs': {
           'min': 0
         },
-        'getter': function(){
-          return parseInt(this.data('r-index'), 10);
+        'getter': function(skipDefault){
+          var value = this.data('r-index');
+          return value !== null ? parseInt(value, 10) : null;
         },
         'setter': function(value){
           this.data('r-index', value);
         }
       },
       'z-index': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Display index'),
-        'getter': function(){
-          return parseInt(this.css('z-index'), 10);
+        'getter': function(skipDefault){
+          var value = this.css('z-index', undefined, skipDefault);
+          return value !== null ? parseInt(value, 10) : null;
         },
         'setter': function(value){
           this.css('z-index', value);
@@ -109,8 +102,8 @@ metaScore.namespace('player.component').Element = (function () {
       'background-color': {
         'type': 'Color',
         'label': metaScore.String.t('Background color'),
-        'getter': function(){
-          return this.contents.css('background-color');
+        'getter': function(skipDefault){
+          return this.contents.css('background-color', undefined, skipDefault);
         },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
@@ -120,24 +113,26 @@ metaScore.namespace('player.component').Element = (function () {
       'background-image': {
         'type': 'Image',
         'label': metaScore.String.t('Background image'),
-        'getter': function(){
-          return this.contents.css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        'getter': function(skipDefault){
+          var value = this.contents.css('background-image', undefined, skipDefault);
+          
+          if(value === 'none' || !metaScore.Var.is(value, "string")){
+            return null;
+          }
+          
+          return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
-          if(!value){
-            value = 'none';
-          }
-          else if(metaScore.Var.is(value, "string")){
-           value = 'url('+ value +')';
-          }
+          value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.contents.css('background-image', value);
         }
       },
       'border-width': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Border width'),
-        'getter': function(){
-          return parseInt(this.contents.css('border-width'), 10);
+        'getter': function(skipDefault){
+          var value = this.contents.css('border-width', undefined, skipDefault);
+          return value !== null ? parseInt(value, 10) : null;
         },
         'setter': function(value){
           this.contents.css('border-width', value +'px');
@@ -146,8 +141,8 @@ metaScore.namespace('player.component').Element = (function () {
       'border-color': {
         'type': 'Color',
         'label': metaScore.String.t('Border color'),
-        'getter': function(){
-          return this.contents.css('border-color');
+        'getter': function(skipDefault){
+          return this.contents.css('border-color', undefined, skipDefault);
         },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
@@ -157,18 +152,38 @@ metaScore.namespace('player.component').Element = (function () {
       'border-radius': {
         'type': 'BorderRadius',
         'label': metaScore.String.t('Border radius'),
-        'getter': function(){
-          return this.contents.css('border-radius');
+        'getter': function(skipDefault){
+          return this.contents.css('border-radius', undefined, skipDefault);
         },
         'setter': function(value){
           this.contents.css('border-radius', value);
         }
       },
+      'opacity': {
+        'type': 'Number',
+        'label': metaScore.String.t('Opacity'),
+        'configs': {
+          'min': 0,
+          'max': 1,
+          'step': 0.1
+        },
+        'getter': function(skipDefault){
+          return this.contents.css('opacity', undefined, skipDefault);
+        },
+        'setter': function(value){
+          this.contents.css('opacity', value);
+        }
+      },
       'start-time': {
         'type': 'Time',
         'label': metaScore.String.t('Start time'),
-        'getter': function(){
-          var value = parseFloat(this.data('start-time'));      
+        'configs': {
+          'checkbox': true,
+          'inButton': true,
+          'outButton': true
+        },
+        'getter': function(skipDefault){
+          var value = parseFloat(this.data('start-time'));          
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -178,7 +193,12 @@ metaScore.namespace('player.component').Element = (function () {
       'end-time': {
         'type': 'Time',
         'label': metaScore.String.t('End time'),
-        'getter': function(){
+        'configs': {
+          'checkbox': true,
+          'inButton': true,
+          'outButton': true
+        },
+        'getter': function(skipDefault){
           var value = parseFloat(this.data('end-time'));          
           return isNaN(value) ? null : value;
         },

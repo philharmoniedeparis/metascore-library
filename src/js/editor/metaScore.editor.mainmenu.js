@@ -69,17 +69,14 @@ metaScore.namespace('editor').MainMenu = (function(){
       .data('action', 'download')
       .appendTo(left);
     
-    this.timefield = new metaScore.editor.field.Time({
-        inButton: false,
-        outButton: false
-      })
+    this.timefield = new metaScore.editor.field.Time()
       .attr({
         'title': metaScore.String.t('time')
       })
       .addClass('time')
       .appendTo(left);
     
-    this.rindexfield = new metaScore.editor.field.Integer({
+    this.rindexfield = new metaScore.editor.field.Number({
         min: 0
       })
       .attr({

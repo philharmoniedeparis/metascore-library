@@ -16,19 +16,10 @@ metaScore.namespace('player.component').Controller = (function () {
   
   Controller.defaults = {
     'properties': {
-      'id': {
-        'editable':false,
-        'getter': function(){
-          return this.data('id');
-        },
-        'setter': function(value){
-          this.data('id', value);
-        }
-      },
       'x': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('X'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
         'setter': function(value){
@@ -36,9 +27,9 @@ metaScore.namespace('player.component').Controller = (function () {
         }
       },
       'y': {
-        'type': 'Integer',
+        'type': 'Number',
         'label': metaScore.String.t('Y'),
-        'getter': function(){
+        'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
         'setter': function(value){

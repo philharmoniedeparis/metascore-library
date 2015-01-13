@@ -14,39 +14,17 @@ metaScore.Player = (function () {
     this.appendTo(this.configs.container);
     
     this.head = new metaScore.Dom(this.get(0).contentDocument.head);
-    this.body = new metaScore.Dom(this.get(0).contentDocument.body)
-      .data('id', this.configs.id);
+    this.body = new metaScore.Dom(this.get(0).contentDocument.body);
     
-    // add player style sheets    
-    if(this.configs.css){
-      metaScore.Array.each(this.configs.css, function(index, url) {
-        this.addCSS(url);
-      }, this);
+    if(this.configs.url){
+      this.load();
     }
     
-    this.media = new metaScore.player.component.Media(this.configs.media)
-      .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
-      .appendTo(this.getBody());
-    
-    this.controller = new metaScore.player.component.Controller(this.configs.controller)
-      .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.getBody());
-      
-    this.rindex_css = new metaScore.StyleSheet({
-      container: this.getBody()
-    });
-    
-    metaScore.Array.each(this.configs.blocks, function(index, configs){
-      this.addBlock(configs);
-    }, this);
-    
-    this.media.reset();
   }
   
   Player.defaults = {
-    'blocks': [],
+    'url': '',
+    'ajax': {},
     'keyboard': true
   };
   
@@ -142,6 +120,65 @@ metaScore.Player = (function () {
     }
   };
   
+  Player.prototype.load = function(url){
+    var options;
+    
+    this.getBody().addClass('loading');
+    
+    options = metaScore.Object.extend({}, {
+      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+      'error': metaScore.Function.proxy(this.onLoadError, this)
+    }, this.configs.ajax);
+    
+  
+    metaScore.Ajax.get(this.configs.url, options);
+  };
+  
+  Player.prototype.onLoadSuccess = function(xhr){  
+    var data = JSON.parse(xhr.response);
+    
+    this.getBody().data('id', data.id);
+    
+    // add player style sheets    
+    if(data.css){
+      metaScore.Array.each(data.css, function(index, css) {
+        this.addCSS(css);
+      }, this);
+    }
+    
+    this.media = new metaScore.player.component.Media(data.media)
+      .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+      .appendTo(this.getBody());
+    
+    this.controller = new metaScore.player.component.Controller(data.controller)
+      .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
+      .appendTo(this.getBody());
+      
+    this.rindex_css = new metaScore.StyleSheet({
+      container: this.getBody()
+    });
+    
+    metaScore.Array.each(data.blocks, function(index, block){
+      this.addBlock(block);
+    }, this);
+    
+    this.media.reset();
+    
+    this.getBody().removeClass('loading');
+    
+    this.triggerEvent('loadsuccess', {'player': this}, true, false);
+  };
+  
+  Player.prototype.onLoadError = function(xhr){
+    
+    this.getBody().removeClass('loading');
+    
+    this.triggerEvent('loaderror', {'player': this}, true, false);
+  
+  };
+  
   Player.prototype.getId = function(){
     return this.getBody().data('id');
   };
@@ -187,8 +224,12 @@ metaScore.Player = (function () {
     return block;
   };
   
-  Player.prototype.addCSS = function(url){
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': url}).appendTo(this.getHead());
+  Player.prototype.addCSS = function(attr){
+    new metaScore.Dom('<link/>', metaScore.Object.extend({}, attr, {
+        'rel': 'stylesheet',
+        'type': 'text/css'
+      }))
+      .appendTo(this.getHead());
   };
   
   Player.prototype.setReadingIndex = function(index, supressEvent){

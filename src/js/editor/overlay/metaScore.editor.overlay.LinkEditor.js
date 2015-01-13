@@ -89,7 +89,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
       .appendTo(this.pagewrapper);
     this.page.label = new metaScore.Dom('<label/>', {'for': 'page', 'text': metaScore.String.t('Page')})
       .appendTo(this.page);
-    this.page.field = new metaScore.editor.field.Integer()
+    this.page.field = new metaScore.editor.field.Number()
       .attr('id', 'page')
       .appendTo(this.page);
     
@@ -101,7 +101,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.inTime.label = new metaScore.Dom('<label/>', {'for': 'inTime', 'text': metaScore.String.t('Start time')})
       .appendTo(this.inTime);
     this.inTime.field = new metaScore.editor.field.Time({
-        outButton: false
+        inButton: true
       })
       .attr('id', 'inTime')
       .appendTo(this.inTime);
@@ -111,7 +111,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.outTime.label = new metaScore.Dom('<label/>', {'for': 'outTime', 'text': metaScore.String.t('End time')})
       .appendTo(this.outTime);
     this.outTime.field = new metaScore.editor.field.Time({
-        outButton: false
+        inButton: true
       })
       .attr('id', 'outTime')
       .appendTo(this.outTime);
@@ -120,7 +120,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
       .appendTo(this.timewrapper);
     this.rIndex.label = new metaScore.Dom('<label/>', {'for': 'rIndex', 'text': metaScore.String.t('Reading index')})
       .appendTo(this.rIndex);
-    this.rIndex.field = new metaScore.editor.field.Integer()
+    this.rIndex.field = new metaScore.editor.field.Number()
       .attr('id', 'rIndex')
       .appendTo(this.rIndex);
     
@@ -139,10 +139,6 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
   
   LinkEditor.prototype.setValuesFromLink = function(link){    
     var matches;
-    
-    if(!metaScore.Dom.is(link, 'a')){
-      return;
-    }
   
     if(matches = link.hash.match(/^#p=(\d+)/)){
       this.type.field.setValue('page');
@@ -199,7 +195,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
         
       case 'time':
         url = '#t='+ this.inTime.field.getValue() +','+ this.outTime.field.getValue();
-        url = '&r='+ this.rIndex.field.getValue();
+        url += '&r='+ this.rIndex.field.getValue();
         break;
         
       default:

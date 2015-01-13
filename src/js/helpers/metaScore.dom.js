@@ -364,7 +364,7 @@ metaScore.Dom = (function () {
   * @param {string} an optional value to set
   * @returns {string} the value of the property
   */
-  Dom.css = function(element, name, value){
+  Dom.css = function(element, name, value, inline){
     var camel, style;
 
     camel = this.camel(name);
@@ -373,7 +373,7 @@ metaScore.Dom = (function () {
       element.style[camel] = value;
     }
     
-    style = window.getComputedStyle(element);
+    style = inline === true ? element.style : window.getComputedStyle(element);
     
     return style.getPropertyValue(name);
   };
@@ -654,15 +654,15 @@ metaScore.Dom = (function () {
     }
   };
   
-  Dom.prototype.css = function(name, value) {
+  Dom.prototype.css = function(name, value, inline) {
     if(value !== undefined){
       this.each(function(index, element) {
-        Dom.css(element, name, value);
+        Dom.css(element, name, value, inline);
       }, this);
       return this;
     }
     else{
-      return Dom.css(this.get(0), name);
+      return Dom.css(this.get(0), name, value, inline);
     }
   };
   

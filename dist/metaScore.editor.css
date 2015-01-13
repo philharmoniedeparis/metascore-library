@@ -144,7 +144,10 @@
   display: inline-block;
   vertical-align: top;
 }
-.metaScore-editor .field.timefield input {
+.metaScore-editor .field.timefield input[type="checkbox"] {
+  float: left;
+}
+.metaScore-editor .field.timefield input[type="number"] {
   width: 1em !important;
   height: 100%;
   border: none;
@@ -153,8 +156,8 @@
   font-family: Tahoma, Geneva, sans-serif;
   -moz-appearance: textfield;
 }
-.metaScore-editor .field.timefield input::-webkit-outer-spin-button,
-.metaScore-editor .field.timefield input::-webkit-inner-spin-button {
+.metaScore-editor .field.timefield input[type="number"]::-webkit-outer-spin-button,
+.metaScore-editor .field.timefield input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 .metaScore-editor .field.timefield .separator {
@@ -194,6 +197,26 @@
 }
 .metaScore-editor .field.colorfield.disabled button {
   cursor: default;
+}
+.metaScore-editor .field.imagefield {
+  position: relative;
+}
+.metaScore-editor .field.imagefield input {
+  padding-right: 15px !important;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.metaScore-editor .field.imagefield button[data-action="clear"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 100%;
+  background-image: url('img/editor/field/image/clear.png');
+  background-position: center center;
+  overflow: hidden;
+  text-indent: 999px;
 }
 .metaScore-editor .ruler {
   position: absolute;
@@ -384,6 +407,7 @@
   padding-left: 18px;
   font-weight: bold;
   background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
+  /*text-indent: -999px;*/
   cursor: pointer;
   opacity: 0.8;
   filter: alpha(opacity=(80));
@@ -543,16 +567,22 @@
   border-bottom: none;
 }
 .metaScore-editor .sidebar .panel.collapsed .toolbar .title,
+.metaScore-editor .sidebar .panel:not(.has-component) .toolbar .title,
 .metaScore-editor .sidebar .panel.disabled .toolbar .title {
   background-image: url('img/editor/panel/collapsed.png');
 }
 .metaScore-editor .sidebar .panel.collapsed .fields,
+.metaScore-editor .sidebar .panel:not(.has-component) .fields,
 .metaScore-editor .sidebar .panel.disabled .fields {
   display: none;
 }
-.metaScore-editor .sidebar .panel.collapsed.disabled .toolbar .title,
-.metaScore-editor .sidebar .panel.disabled.disabled .toolbar .title {
+.metaScore-editor .sidebar .panel:not(.has-component) .toolbar .title,
+.metaScore-editor .sidebar .panel.disabled .toolbar .title {
   pointer-events: none;
+}
+.metaScore-editor .sidebar .panel.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 .metaScore-editor .overlay {
   position: absolute;
