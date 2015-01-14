@@ -161,6 +161,7 @@ body .metaScore-component.block {
   width: 200px;
   height: 200px;
   overflow: hidden;
+  z-index: 99999;
   color: #424242;
   background-repeat: no-repeat;
   background-position: left top;
@@ -246,6 +247,10 @@ body .metaScore-component.block .pager .buttons .button[data-action="next"].inac
 }
 body .metaScore-component:hover .pager {
   display: block;
+}
+body .metaScore-component:hover .pager[data-count="0"],
+body .metaScore-component:hover .pager[data-count="1"] {
+  display: none;
 }
 body .metaScore-component.page {
   display: none;
@@ -420,6 +425,9 @@ body.in-editor.editing .metaScore-component.block.selected {
   -webkit-box-shadow: #33312f 0px 0px 4px 1px;
   -moz-box-shadow: #33312f 0px 0px 4px 1px;
   box-shadow: #33312f 0px 0px 4px 1px;
+}
+body.in-editor.editing .metaScore-component.block:hover .pager {
+  display: block !important;
 }
 body.in-editor.editing .metaScore-component.controller {
   -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;

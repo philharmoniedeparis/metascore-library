@@ -43,6 +43,27 @@ metaScore.Var = (function () {
   Var.is = function(obj, type) {
     return Var.type(obj) === type.toLowerCase();
   };
+
+  /**
+  * Checks if a variable is empty
+  * @param {mixed} the variable
+  * @returns {boolean} true if the variable is empty, false otherwise
+  */
+  Var.isEmpty = function(obj) {
+    if(obj === undefined || obj == null){
+      return true;
+    }
+    
+    if(obj.hasOwnProperty('length')){
+      return obj.length <= 0;
+    }
+    
+    if(metaScore.Var.is(obj, 'object')){
+      return Object.keys(obj).length <= 0;
+    }
+    
+    return false;
+  };
     
   return Var;
   

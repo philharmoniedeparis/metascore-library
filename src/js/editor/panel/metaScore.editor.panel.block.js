@@ -24,16 +24,10 @@ metaScore.namespace('editor.panel').Block = (function () {
     */
     title: metaScore.String.t('Block'),
     
-    menuItems: [
-      {
-        'text': metaScore.String.t('Add a new block'),
-        'data-action': 'new'
-      },
-      {
-        'text': metaScore.String.t('Delete the active block'),
-        'data-action': 'delete'
-      }
-    ]
+    menuItems: {
+      'new': metaScore.String.t('Add a new block'),
+      'delete': metaScore.String.t('Delete the active block')
+    }
   };
   
   metaScore.editor.Panel.extend(BlockPanel);

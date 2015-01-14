@@ -76,6 +76,7 @@ metaScore.Editor = (function(){
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
     
+    this.updateMainmenu();
     this.setEditing(false);
   }
   
@@ -112,7 +113,54 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onGuideSaveError = function(xhr){
+    this.loadmask.hide();
+    delete this.loadmask;
+    
+    new metaScore.editor.overlay.Alert({
+      'text': metaScore.String.t('An error occured while trying to save the guide. Please try again.'),
+      'buttons': {
+        'ok': metaScore.String.t('OK'),
+      },
+      'autoShow': true
+    });
+  };
   
+  Editor.prototype.onGuideDeleteConfirm = function(){
+    var id = this.player.getId(),
+      component,  options;
+    
+    options = metaScore.Object.extend({}, {
+      'dataType': 'json',
+      'method': 'DELETE',
+      'success': metaScore.Function.proxy(this.onGuideDeleteSuccess, this),
+      'error': metaScore.Function.proxy(this.onGuideDeleteError, this)
+    }, this.configs.ajax);
+  
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      'autoShow': true
+    });
+  
+    metaScore.Ajax.send(this.configs.api_url +'guide/'+ id +'.json', options);
+  };
+  
+  Editor.prototype.onGuideDeleteSuccess = function(xhr){
+    this.removePlayer();
+  
+    this.loadmask.hide();
+    delete this.loadmask;
+  };
+  
+  Editor.prototype.onGuideDeleteError = function(xhr){  
+    this.loadmask.hide();
+    delete this.loadmask;
+    
+    new metaScore.editor.overlay.Alert({
+      'text': metaScore.String.t('An error occured while trying to delete the guide. Please try again.'),
+      'buttons': {
+        'ok': metaScore.String.t('OK'),
+      },
+      'autoShow': true
+    });  
   };
   
   Editor.prototype.onPlayerKeydown = Editor.prototype.onKeydown = function(evt){  
@@ -166,6 +214,7 @@ metaScore.Editor = (function(){
       case 'download':
         break;
       case 'delete':
+        this.deleteGuide();
         break;
       case 'revert':
         break;
@@ -218,8 +267,11 @@ metaScore.Editor = (function(){
     
     if(block instanceof metaScore.player.component.Block){
       this.panels.page.setComponent(block.getActivePage(), true);
-      this.panels.page.toggleMenuItems('[data-action="new"]', true);
-      this.panels.element.toggleMenuItems('[data-action="new"]', true);
+      this.panels.page.toggleMenuItem('new', true);
+      
+      this.panels.element.toggleMenuItem('Cursor', true);
+      this.panels.element.toggleMenuItem('Image', true);
+      this.panels.element.toggleMenuItem('Text', true);
     }    
       
     evt.stopPropagation();
@@ -227,7 +279,7 @@ metaScore.Editor = (function(){
   
   Editor.prototype.onBlockUnset = function(evt){
     this.panels.page.unsetComponent();
-    this.panels.page.toggleMenuItems('[data-action="new"]', false);
+    this.panels.page.toggleMenuItem('new', false);
   };
   
   Editor.prototype.onBlockPanelValueChange = function(evt){
@@ -308,16 +360,22 @@ metaScore.Editor = (function(){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
     
-    this.panels.block.setComponent(block, true);
-    this.panels.page.toggleMenuItems('[data-action="new"]', true);
-    this.panels.element.toggleMenuItems('[data-action="new"]', true);
+    this.panels.block.setComponent(block);
+    
+    this.panels.page.toggleMenuItem('new', true);
+    
+    this.panels.element.toggleMenuItem('Cursor', true);
+    this.panels.element.toggleMenuItem('Image', true);
+    this.panels.element.toggleMenuItem('Text', true);
       
     evt.stopPropagation();
   };
   
   Editor.prototype.onPageUnset = function(evt){
     this.panels.element.unsetComponent();
-    this.panels.element.toggleMenuItems('[data-action="new"]', false);
+    this.panels.element.toggleMenuItem('Cursor', false);
+    this.panels.element.toggleMenuItem('Image', false);
+    this.panels.element.toggleMenuItem('Text', false);
   };
   
   Editor.prototype.onPagePanelToolbarClick = function(evt){
@@ -339,7 +397,7 @@ metaScore.Editor = (function(){
         page = this.panels.page.getComponent();
         
         if(page){
-          block.removePage(page).remove();
+          block.removePage(page);
           this.panels.page.unsetComponent();
             
           this.history.add({
@@ -398,8 +456,8 @@ metaScore.Editor = (function(){
       page = element.parents().get(0)._metaScore,
       block = page.parents().parents().get(0)._metaScore;
     
-    this.panels.page.setComponent(page, true);
-    this.panels.block.setComponent(block, true);
+    this.panels.page.setComponent(page);
+    this.panels.block.setComponent(block);
     
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
@@ -415,12 +473,15 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onElementPanelToolbarClick = function(evt){
-    var page, element, dom, count, index;
+    var page, element, dom, count, index,
+      action = metaScore.Dom.data(evt.target, 'action');
   
-    switch(metaScore.Dom.data(evt.target, 'action')){
-      case 'new':
+    switch(action){
+      case 'Cursor':
+      case 'Image':
+      case 'Text':      
         page = this.panels.page.getComponent();
-        element = this.addElement(page, {'type': metaScore.Dom.data(evt.target, 'type')});
+        element = this.addElement(page, {'type': action});
                 
         this.history.add({
           'undo': metaScore.Function.proxy(element.remove, this),
@@ -507,6 +568,14 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerLoadError = function(evt){
     this.loadmask.hide();
     delete this.loadmask;
+    
+    new metaScore.editor.overlay.Alert({
+      'text': metaScore.String.t('An error occured while trying to load the guide. Please try again.'),
+      'buttons': {
+        'ok': metaScore.String.t('OK'),
+      },
+      'autoShow': true
+    });
   };
   
   Editor.prototype.onComponentClick = function(evt, dom){  
@@ -554,30 +623,28 @@ metaScore.Editor = (function(){
   };
   
   Editor.prototype.onHistoryAdd = function(evt){
-    this.mainmenu.enableItems('[data-action="undo"]');
-    this.mainmenu.disableItems('[data-action="redo"]');
+    this.updateMainmenu();
   };
   
   Editor.prototype.onHistoryUndo = function(evt){
-    if(this.history.hasUndo()){
-      this.mainmenu.enableItems('[data-action="undo"]');
-    }
-    else{
-      this.mainmenu.disableItems('[data-action="undo"]');
-    }
-    
-    this.mainmenu.enableItems('[data-action="redo"]');
+    this.updateMainmenu();
   };
   
   Editor.prototype.onHistoryRedo = function(evt){
-    if(this.history.hasRedo()){
-      this.mainmenu.enableItems('[data-action="redo"]');
-    }
-    else{
-      this.mainmenu.disableItems('[data-action="redo"]');
-    }
+    this.updateMainmenu();
+  };
+  
+  Editor.prototype.updateMainmenu = function(){
+    var hasPlayer = this.hasOwnProperty('player');
+  
+    this.mainmenu.toggleButton('edit', hasPlayer);
+    this.mainmenu.toggleButton('save', hasPlayer);
+    this.mainmenu.toggleButton('delete', hasPlayer);
+    this.mainmenu.toggleButton('download', hasPlayer);
     
-    this.mainmenu.enableItems('[data-action="undo"]');
+    this.mainmenu.toggleButton('undo', this.history.hasUndo());
+    this.mainmenu.toggleButton('redo', this.history.hasRedo());
+    this.mainmenu.toggleButton('revert', hasPlayer);
   };
   
   Editor.prototype.addPlayer = function(configs){
@@ -601,6 +668,8 @@ metaScore.Editor = (function(){
         .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
         .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
         .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
+        
+    this.updateMainmenu();
   };
   
   Editor.prototype.removePlayer = function(){
@@ -608,6 +677,8 @@ metaScore.Editor = (function(){
       this.player.remove();
       delete this.player;
     }
+    
+    this.updateMainmenu();
   };
   
   Editor.prototype.addBlock = function(block){
@@ -684,6 +755,18 @@ metaScore.Editor = (function(){
     });
   
     metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);
+  };
+  
+  Editor.prototype.deleteGuide = function(){  
+    new metaScore.editor.overlay.Alert({
+        'text': metaScore.String.t('Are you sure you want to delete this guide ?'),
+        'buttons': {
+          'confirm': metaScore.String.t('Yes'),
+          'cancel': metaScore.String.t('No')
+        },
+        'autoShow': true
+      })
+      .addListener('confirmclick', metaScore.Function.proxy(this.onGuideDeleteConfirm, this));  
   };
     
   return Editor;

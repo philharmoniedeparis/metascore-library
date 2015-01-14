@@ -130,24 +130,10 @@ metaScore.namespace('editor').MainMenu = (function(){
     
   };
   
-  MainMenu.prototype.enableItems = function(selector){
+  MainMenu.prototype.toggleButton = function(action, state){
+    this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
   
-    var items = this.children(selector);
-    
-    items.removeClass('disabled');
-  
-    return items;
-  
-  };
-  
-  MainMenu.prototype.disableItems = function(selector){
-  
-    var items = this.children(selector);
-    
-    items.addClass('disabled');
-  
-    return items;
-  
+    return this;
   };
     
   return MainMenu;

@@ -22,10 +22,13 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     }
     
     this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+      .addDelegate('button', 'click', metaScore.Function.proxy(this.onButtonClick, this))
       .appendTo(this.contents);
       
     if(this.configs.buttons){
-      
+      metaScore.Object.each(this.configs.buttons, function(action, label){
+        this.addButton(action, label);
+      }, this);
     }
   }
 
@@ -46,7 +49,23 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     this.text.text(str);
   };
   
-  Alert.prototype.setButtons = function(){
+  Alert.prototype.addButton = function(action, label){
+    var button = new metaScore.editor.Button()
+      .setLabel(label)
+      .data('action', action)
+      .appendTo(this.buttons);
+  
+    return button;
+  };
+  
+  Alert.prototype.onButtonClick = function(evt){
+    var action = new metaScore.Dom(evt.target).data('action');
+    
+    this.hide();
+    
+    this.triggerEvent(action +'click', {'alert': this}, false);
+    
+    evt.stopPropagation();
   };
     
   return Alert;

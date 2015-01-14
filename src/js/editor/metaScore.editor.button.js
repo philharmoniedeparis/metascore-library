@@ -42,7 +42,9 @@ metaScore.namespace('editor').Button = (function () {
         .appendTo(this);
     }
     
-    this.label.text(text);    
+    this.label.text(text);
+    
+    return this;
   };
 
   /**

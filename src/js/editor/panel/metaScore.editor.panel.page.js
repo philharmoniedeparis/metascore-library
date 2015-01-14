@@ -24,16 +24,10 @@ metaScore.namespace('editor.panel').Page = (function () {
     */
     title: metaScore.String.t('Page'),
     
-    menuItems: [
-      {
-        'text': metaScore.String.t('Add a new page'),
-        'data-action': 'new'
-      },
-      {
-        'text': metaScore.String.t('Delete the active page'),
-        'data-action': 'delete'
-      }
-    ]
+    menuItems: {
+      'new': metaScore.String.t('Add a new page'),
+      'delete': metaScore.String.t('Delete the active page')
+    }
   };
   
   metaScore.editor.Panel.extend(PagePanel);

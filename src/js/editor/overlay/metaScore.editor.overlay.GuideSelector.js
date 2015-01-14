@@ -28,6 +28,11 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     title: metaScore.String.t('Select a guide'),
     
     /**
+    * The text to display when no guides are available
+    */
+    emptyText: metaScore.String.t('No guides available'),
+    
+    /**
     * The url from which to retreive the list of guides
     */
     url: null,
@@ -63,22 +68,27 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
       
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
       .appendTo(contents);
-    
-    metaScore.Object.each(data, function(key, guide){
-      row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
-        .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide]))
-        .appendTo(table);
       
-      new metaScore.Dom('<td/>', {'class': 'thumbnail'})
-        .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail}))
-        .appendTo(row);
+    if(metaScore.Var.isEmpty(data)){
+      contents.text(this.configs.emptyText);
+    }
+    else{
+      metaScore.Object.each(data, function(key, guide){
+        row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
+          .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide]))
+          .appendTo(table);
         
-      new metaScore.Dom('<td/>', {'class': 'details'})
-        .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
-        .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
-        .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
-        .appendTo(row);
-    }, this);
+        new metaScore.Dom('<td/>', {'class': 'thumbnail'})
+          .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail}))
+          .appendTo(row);
+          
+        new metaScore.Dom('<td/>', {'class': 'details'})
+          .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
+          .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
+          .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
+          .appendTo(row);
+      }, this);
+    }
   
     this.loadmask.hide();
     delete this.loadmask;

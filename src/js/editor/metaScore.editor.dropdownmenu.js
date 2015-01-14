@@ -15,27 +15,17 @@ metaScore.namespace('editor').DropDownMenu = (function () {
   
   metaScore.Dom.extend(DropDownMenu);
   
-  DropDownMenu.prototype.addItem = function(attr){  
-    var item = new metaScore.Dom('<li/>', attr)
+  DropDownMenu.prototype.addItem = function(action, label){  
+    var item = new metaScore.Dom('<li/>', {'data-action': action, 'text': label})
       .appendTo(this);    
   
     return item;  
   };
   
-  DropDownMenu.prototype.enableItems = function(selector){  
-    var items = this.children(selector);
-    
-    items.removeClass('disabled');
+  DropDownMenu.prototype.toggleItem = function(action, state){
+    this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
   
-    return items;  
-  };
-  
-  DropDownMenu.prototype.disableItems = function(selector){  
-    var items = this.children(selector);
-    
-    items.addClass('disabled');
-  
-    return items;  
+    return this;
   };
     
   return DropDownMenu;

@@ -92,6 +92,7 @@ body{
       width: 200px;
       height: 200px;
       overflow: hidden;
+      z-index: 99999;
       color: rgb(66, 66, 66);
       background-repeat: no-repeat;
       background-position: left top;
@@ -174,6 +175,11 @@ body{
     &:hover{
       .pager{
         display: block;
+    
+        &[data-count="0"],
+        &[data-count="1"]{
+          display: none;
+        }
       }
     }
     
@@ -399,6 +405,12 @@ body{
             border: 1px dashed @block-outline;
             .box-shadow(@block-outline 0px 0px 4px 1px);
           }
+    
+          &:hover{
+            .pager{
+              display: block !important;
+            }
+          }
         }
         &.controller{
           .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
@@ -407,6 +419,7 @@ body{
             .box-shadow(@controller-outline 0px 0px 4px 1px);
           }
         }
+        
         &.element{
           outline-width: 1px;
           outline-style: dashed;

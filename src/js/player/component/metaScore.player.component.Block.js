@@ -141,6 +141,8 @@ metaScore.namespace('player.component').Block = (function () {
           return pages;
         },
         'setter': function(value){
+          this.getPages().remove();
+          
           metaScore.Array.each(value, function(index, configs){
             this.addPage(configs);
           }, this);
@@ -165,6 +167,8 @@ metaScore.namespace('player.component').Block = (function () {
     this.pager = new metaScore.player.Pager()
       .addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this))
       .appendTo(this);
+    
+    this.addPage();
   };
   
   Block.prototype.onPageCuePointStart = function(evt){

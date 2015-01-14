@@ -33,11 +33,11 @@ metaScore.namespace('editor').Panel = (function(){
       this.toolbar.addButton(action);
     }, this);
     
-    if(this.configs.menuItems.length > 0){
+    if(!metaScore.Var.isEmpty(this.configs.menuItems)){
       this.menu = new metaScore.editor.DropDownMenu();
       
-      metaScore.Array.each(this.configs.menuItems, function(index, item){
-        this.menu.addItem(item);
+      metaScore.Object.each(this.configs.menuItems, function(action, label){
+        this.menu.addItem(action, label);
       }, this);
       
       this.toolbar.addButton('menu')
@@ -63,7 +63,7 @@ metaScore.namespace('editor').Panel = (function(){
       'next'
     ],
     
-    menuItems: []
+    menuItems: {}
   };
   
   metaScore.Dom.extend(Panel);
@@ -170,7 +170,7 @@ metaScore.namespace('editor').Panel = (function(){
         .addClass('has-component');
       
       if(!(component instanceof metaScore.player.component.Controller)){
-        this.toggleMenuItems('[data-action="delete"]', true);
+        this.toggleMenuItem('delete', true);
       }
       
       draggable = this.getDraggable();
@@ -192,10 +192,10 @@ metaScore.namespace('editor').Panel = (function(){
       }
       
       component.addClass('selected');
-    }
       
-    if(supressEvent !== true){
-      this.triggerEvent('componentset', {'component': component}, false);
+      if(supressEvent !== true){
+        this.triggerEvent('componentset', {'component': component}, false);
+      }
     }
     
     return this;    
@@ -205,7 +205,7 @@ metaScore.namespace('editor').Panel = (function(){
     var component = this.getComponent();
       
     this
-      .toggleMenuItems('[data-action="delete"]', false)
+      .toggleMenuItem('delete', false)
       .removeClass('has-component');
     
     if(component){
@@ -232,25 +232,20 @@ metaScore.namespace('editor').Panel = (function(){
       component.removeClass('selected');
       
       this.component = null;
-    }
       
-    if(supressEvent !== true){
-      this.triggerEvent('componentunset', {'component': component}, false);
+      if(supressEvent !== true){
+        this.triggerEvent('componentunset', {'component': component}, false);
+      }
     }
     
     return this;    
   };
   
-  Panel.prototype.toggleMenuItems = function(items, enable){
+  Panel.prototype.toggleMenuItem = function(action, state){
     var menu = this.getMenu();
     
     if(menu){
-      if(enable){
-        menu.enableItems(items);
-      }
-      else{
-        menu.disableItems(items);
-      }
+      menu.toggleItem(action, state);
     }
     
     return this;  

@@ -24,27 +24,13 @@ metaScore.namespace('editor.panel').Element = (function () {
     */
     title: metaScore.String.t('Element'),
     
-    menuItems: [
-      {
-        'text': metaScore.String.t('Add a new cursor'),
-        'data-action': 'new',
-        'data-type': 'Cursor'
-      },
-      {
-        'text': metaScore.String.t('Add a new image'),
-        'data-action': 'new',
-        'data-type': 'Image'
-      },
-      {
-        'text': metaScore.String.t('Add a new text element'),
-        'data-action': 'new',
-        'data-type': 'Text'
-      },
-      {
-        'text': metaScore.String.t('Delete the active element'),
-        'data-action': 'delete'
-      }
-    ]
+    menuItems: {
+      'Cursor': metaScore.String.t('Add a new cursor'),
+      'Image': metaScore.String.t('Add a new image'),
+      'Text': metaScore.String.t('Add a new text element'),
+      'delete': metaScore.String.t('Delete the active element')
+    }
+    
   };
   
   metaScore.editor.Panel.extend(ElementPanel);
