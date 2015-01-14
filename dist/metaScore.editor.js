@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "30d970",
+  revision: "4d66b5",
   
   getVersion: function(){
     return this.version;
@@ -7418,8 +7418,8 @@ metaScore.namespace('player.component.element').Text = (function () {
       this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
     }
-    else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'value': parseInt(matches[1]), 'stop': parseInt(matches[2]), 'forcePlay': true});
+    else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
+      this.triggerEvent('time', {'element': this, 'value': parseFloat(matches[1]), 'stop': parseFloat(matches[2]), 'forcePlay': true});
       this.triggerEvent('rindex', {'element': this, 'value': parseInt(matches[3])});
     }
     else{
