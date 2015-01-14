@@ -41,12 +41,12 @@ metaScore.namespace('player.component.element').Text = (function () {
       matches;
   
     if(matches = link.hash.match(/^#p=(\d+)/)){
-      this.triggerEvent('page', {'element': this, 'value': matches[1]});
+      this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
     }
     else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'value': matches[1], 'stop': matches[2], 'forcePlay': true});
-      this.triggerEvent('rindex', {'element': this, 'value': matches[3]});
+      this.triggerEvent('time', {'element': this, 'value': parseInt(matches[1]), 'stop': parseInt(matches[2]), 'forcePlay': true});
+      this.triggerEvent('rindex', {'element': this, 'value': parseInt(matches[3])});
     }
     else{
       window.open(link.href,'_blank');

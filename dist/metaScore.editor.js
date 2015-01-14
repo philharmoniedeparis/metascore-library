@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2015-01-13 - Oussama Mubarak */
+/*! metaScore - v0.0.1 - 2015-01-14 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -88,7 +88,7 @@ var metaScore = {
 
   version: "0.0.1",
   
-  revision: "831c97",
+  revision: "30d970",
   
   getVersion: function(){
     return this.version;
@@ -7415,12 +7415,12 @@ metaScore.namespace('player.component.element').Text = (function () {
       matches;
   
     if(matches = link.hash.match(/^#p=(\d+)/)){
-      this.triggerEvent('page', {'element': this, 'value': matches[1]});
+      this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
     }
     else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'value': matches[1], 'stop': matches[2], 'forcePlay': true});
-      this.triggerEvent('rindex', {'element': this, 'value': matches[3]});
+      this.triggerEvent('time', {'element': this, 'value': parseInt(matches[1]), 'stop': parseInt(matches[2]), 'forcePlay': true});
+      this.triggerEvent('rindex', {'element': this, 'value': parseInt(matches[3])});
     }
     else{
       window.open(link.href,'_blank');
