@@ -1,5 +1,5 @@
 metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {
-	"player.Pager.count": "page !current/!count', {'!current': (index + 1), '!count",
+	"player.Pager.count": "page !current/!count",
 	"player.component.Block.name": "Name",
 	"player.component.Block.x": "X",
 	"player.component.Block.y": "Y",

@@ -92,7 +92,7 @@ metaScore = global.metaScore = {
 
   version: "0.0.2",
   
-  revision: "80b538",
+  revision: "cfa6c1",
   
   locale: 'fr',
   
@@ -2125,7 +2125,7 @@ metaScore.Locale = (function () {
 metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {});
 
 metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {
-	"player.Pager.count": "page !current/!count', {'!current': (index + 1), '!count",
+	"player.Pager.count": "page !current/!count",
 	"player.component.Block.name": "Name",
 	"player.component.Block.x": "X",
 	"player.component.Block.y": "Y",
@@ -2184,12 +2184,19 @@ metaScore.Player = (function () {
     this.configs = this.getConfigs(configs);
     
     iframe = new metaScore.Dom('<iframe></iframe>', {'class': 'metaScore-player'})
+      .css('width', this.configs.width)
+      .css('height', this.configs.height)
+      .css('border', 'none')
       .appendTo(this.configs.container);
       
     document = iframe.get(0).contentDocument;
     
     // call parent constructor
     Player.parent.call(this, document.body);
+    
+    if(this.configs.keyboard){      
+      this.addListener('keydown', metaScore.Function.proxy(this.onKeydown, this));
+    }
     
     this.iframe = iframe;
     this.head = new metaScore.Dom(document.head);
@@ -2199,11 +2206,36 @@ metaScore.Player = (function () {
   
   Player.defaults = {
     'url': '',
+    'width': '100%',
+    'height': '100%',
+    'container': 'body',
     'ajax': {},
     'keyboard': true
   };
   
   metaScore.Dom.extend(Player);
+  
+  Player.prototype.onKeydown = function(evt){  
+    switch(evt.keyCode){
+      case 32: //space-bar
+        if(this.media.isPlaying()){
+          this.media.pause();
+        }
+        else{
+          this.media.play();
+        }
+        evt.preventDefault();
+        break;
+      case 37: //left
+        this.child('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
+        evt.preventDefault();
+        break;
+      case 39: //right
+        this.child('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
+        evt.preventDefault();
+        break;
+    }  
+  };
   
   Player.prototype.onControllerButtonClick = function(evt){  
     var action = metaScore.Dom.data(evt.target, 'action');

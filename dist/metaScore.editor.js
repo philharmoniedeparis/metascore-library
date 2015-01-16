@@ -39,13 +39,13 @@ metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.f
 	"editor.onGuideSaveError.msg": "An error occured while trying to save the guide. Please try again.",
 	"editor.onGuideSaveError.ok": "OK",
 	"editor.onGuideDeleteError.msg": "An error occured while trying to delete the guide. Please try again.",
-	"editor.onMainmenuClick.open.msg": "Are you sure you want to open another guide ?\\nAny unsaved data will be lost.",
+	"editor.onMainmenuClick.open.msg": "Are you sure you want to open another guide ?\nAny unsaved data will be lost.",
 	"editor.onMainmenuClick.open.yes": "Yes",
 	"editor.onMainmenuClick.open.no": "No",
 	"editor.onMainmenuClick.delete.msg": "Are you sure you want to delete this guide ?",
 	"editor.onMainmenuClick.delete.yes": "Yes",
 	"editor.onMainmenuClick.delete.no": "No",
-	"editor.onMainmenuClick.revert.msg": "Are you sure you want to revert back to the last saved version ?\\nAny unsaved data will be lost.",
+	"editor.onMainmenuClick.revert.msg": "Are you sure you want to revert back to the last saved version ?\nAny unsaved data will be lost.",
 	"editor.onMainmenuClick.revert.yes": "Yes",
 	"editor.onMainmenuClick.revert.no": "No",
 	"editor.onPlayerLoadError.msg": "An error occured while trying to load the guide. Please try again.",
@@ -123,7 +123,7 @@ metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.f
  */
 metaScore.Editor = (function(){
   
-  function Editor(configs) {
+  function Editor(configs) {  
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
@@ -193,6 +193,7 @@ metaScore.Editor = (function(){
     
     this.updateMainmenu();
     this.setEditing(false);
+    this.loadPlayerFromHash();
   }
   
   metaScore.Dom.extend(Editor);
@@ -221,6 +222,14 @@ metaScore.Editor = (function(){
     
     if(this.player){
       this.player.toggleClass('editing', metaScore.editing);
+    }
+  };
+  
+  Editor.prototype.loadPlayerFromHash = function(){
+    var match;
+  
+    if(match = window.location.hash.match(/(#|&)guide=(\d+)/)){
+      this.addPlayer(match[2]);
     }
   };
   
@@ -320,7 +329,7 @@ metaScore.Editor = (function(){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         break;
-      case 'open':      
+      case 'open':
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
               'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
@@ -723,6 +732,8 @@ metaScore.Editor = (function(){
     this.setEditing(true);
     this.updateMainmenu();
     this.detailsOverlay.setValues(data);
+    
+    window.history.replaceState(null, null, '#guide='+ player.getId());
     
     this.loadmask.hide();
     delete this.loadmask;

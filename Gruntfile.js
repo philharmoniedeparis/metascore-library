@@ -210,7 +210,7 @@ module.exports = function(grunt) {
         builtInParser: null,
         customParser:  {
           getRegexpList: function(){
-            return [/metaScore\.Locale\.t\('(.*)', ?'(.*)'/gm];
+            return [/metaScore\.Locale\.t\('(.+?)', ?'(.*?)'/gm];
           },
           parseMatch: function(match){
             return {

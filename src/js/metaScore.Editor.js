@@ -12,7 +12,7 @@
  */
 metaScore.Editor = (function(){
   
-  function Editor(configs) {
+  function Editor(configs) {  
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
@@ -82,6 +82,7 @@ metaScore.Editor = (function(){
     
     this.updateMainmenu();
     this.setEditing(false);
+    this.loadPlayerFromHash();
   }
   
   metaScore.Dom.extend(Editor);
@@ -110,6 +111,14 @@ metaScore.Editor = (function(){
     
     if(this.player){
       this.player.toggleClass('editing', metaScore.editing);
+    }
+  };
+  
+  Editor.prototype.loadPlayerFromHash = function(){
+    var match;
+  
+    if(match = window.location.hash.match(/(#|&)guide=(\d+)/)){
+      this.addPlayer(match[2]);
     }
   };
   
@@ -209,7 +218,7 @@ metaScore.Editor = (function(){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         break;
-      case 'open':      
+      case 'open':
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
               'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
@@ -612,6 +621,8 @@ metaScore.Editor = (function(){
     this.setEditing(true);
     this.updateMainmenu();
     this.detailsOverlay.setValues(data);
+    
+    window.history.replaceState(null, null, '#guide='+ player.getId());
     
     this.loadmask.hide();
     delete this.loadmask;
