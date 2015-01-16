@@ -1,6 +1,6 @@
 {
   "name": "metaScore",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "metaScore",
   "author": "Oussama Mubarak",
   "directories": {
@@ -23,6 +23,7 @@
     "grunt-contrib-watch": "~0.6.1",
     "grunt-git-rev-parse": "^0.1.4",
     "grunt-jsdoc": "~0.5.6",
-    "grunt-text-replace": "~0.3.11"
+    "grunt-text-replace": "~0.3.11",
+    "grunt-translate-extract": "0.0.2"
   }
 }

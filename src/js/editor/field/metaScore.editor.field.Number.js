@@ -34,8 +34,15 @@ metaScore.namespace('editor.field').Number = (function () {
   
   metaScore.editor.Field.extend(NumberField);
   
-  NumberField.prototype.setupUI = function(){  
-    this.input = new metaScore.Dom('<input/>', {'type': 'number', 'min': this.configs.min, 'max': this.configs.max, 'step': this.configs.step})
+  NumberField.prototype.setupUI = function(){
+    var uid = 'field-'+ metaScore.String.uuid(5);
+  
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
+        .appendTo(this);
+    }
+    
+    this.input = new metaScore.Dom('<input/>', {'type': 'number', 'id': uid, 'min': this.configs.min, 'max': this.configs.max, 'step': this.configs.step})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this);
   };

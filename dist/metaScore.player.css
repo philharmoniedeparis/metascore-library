@@ -78,23 +78,20 @@
 body {
   font-size: 12px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  /*
-  * Special styles when embedded in editor
-  */
 }
-body .metaScore-component {
+.metaScore-component {
   position: absolute;
   top: 0;
   left: 0;
 }
-body .metaScore-component.media.audio {
+.metaScore-component.media.audio {
   display: none;
 }
-body .metaScore-component.media.video {
+.metaScore-component.media.video {
   min-width: 50px;
   min-height: 50px;
 }
-body .metaScore-component.media.video video {
+.metaScore-component.media.video video {
   display: block;
   width: 100%;
   height: 100%;
@@ -106,11 +103,9 @@ body .metaScore-component.media.video video {
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-body .metaScore-component.controller {
+.metaScore-component.controller {
   width: 90px;
   height: 100px;
-  min-width: 0;
-  min-height: 0;
   overflow: hidden;
   color: #dddddd;
   background-color: #cccccc;
@@ -123,39 +118,40 @@ body .metaScore-component.controller {
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-body .metaScore-component.controller .timer {
+.metaScore-component.controller .timer {
   text-align: center;
   line-height: 30px;
   background-color: #0000fe;
 }
-body .metaScore-component.controller .buttons {
+.metaScore-component.controller .buttons {
   position: relative;
 }
-body .metaScore-component.controller .buttons button {
+.metaScore-component.controller .buttons button {
   position: absolute;
   border: none;
   outline: none;
+  background-color: transparent;
   background-image: url('img/player/controller-buttons.png');
   background-repeat: no-repeat;
 }
-body .metaScore-component.controller .buttons button[data-action="rewind"] {
+.metaScore-component.controller .buttons button[data-action="rewind"] {
   top: 22px;
   left: 10px;
   width: 10px;
   height: 11px;
   background-position: -16px -17px;
 }
-body .metaScore-component.controller .buttons button[data-action="play"] {
+.metaScore-component.controller .buttons button[data-action="play"] {
   top: 5px;
   left: 23px;
   width: 43px;
   height: 43px;
   background-position: -47px 0;
 }
-body .metaScore-component.controller.playing .buttons button[data-action="play"] {
+.metaScore-component.controller.playing .buttons button[data-action="play"] {
   background-position: -94px 0;
 }
-body .metaScore-component.block {
+.metaScore-component.block {
   min-width: 50px;
   min-height: 50px;
   width: 200px;
@@ -175,10 +171,10 @@ body .metaScore-component.block {
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-body .metaScore-component.block button {
+.metaScore-component.block button {
   padding: 0;
 }
-body .metaScore-component.block .pager {
+.metaScore-component.block .pager {
   display: none;
   position: absolute;
   top: 0;
@@ -187,6 +183,7 @@ body .metaScore-component.block .pager {
   height: 20px;
   background-color: rgba(214, 214, 214, 0.6);
   text-align: right;
+  z-index: 99998;
   -webkit-border-radius: 10px 10px 0 0;
   -moz-border-radius: 10px 10px 0 0;
   border-radius: 10px 10px 0 0;
@@ -194,7 +191,7 @@ body .metaScore-component.block .pager {
   -moz-background-clip: padding;
   background-clip: padding-box;
 }
-body .metaScore-component.block .pager .count {
+.metaScore-component.block .pager .count {
   display: inline-block;
   margin-right: 10px;
   color: #636363;
@@ -203,12 +200,12 @@ body .metaScore-component.block .pager .count {
   vertical-align: middle;
   cursor: default;
 }
-body .metaScore-component.block .pager .buttons {
+.metaScore-component.block .pager .buttons {
   display: inline-block;
   margin-right: 2px;
   vertical-align: middle;
 }
-body .metaScore-component.block .pager .buttons .button {
+.metaScore-component.block .pager .buttons .button {
   display: inline-block;
   width: 17px;
   height: 17px;
@@ -224,35 +221,35 @@ body .metaScore-component.block .pager .buttons .button {
   background-clip: padding-box;
   cursor: pointer;
 }
-body .metaScore-component.block .pager .buttons .button.inactive {
+.metaScore-component.block .pager .buttons .button.inactive {
   cursor: default;
 }
-body .metaScore-component.block .pager .buttons .button[data-action="first"] {
+.metaScore-component.block .pager .buttons .button[data-action="first"] {
   background-position: 4px 4px;
 }
-body .metaScore-component.block .pager .buttons .button[data-action="first"].inactive {
+.metaScore-component.block .pager .buttons .button[data-action="first"].inactive {
   background-position: 4px -14px;
 }
-body .metaScore-component.block .pager .buttons .button[data-action="previous"] {
+.metaScore-component.block .pager .buttons .button[data-action="previous"] {
   background-position: -14px 4px;
 }
-body .metaScore-component.block .pager .buttons .button[data-action="previous"].inactive {
+.metaScore-component.block .pager .buttons .button[data-action="previous"].inactive {
   background-position: -14px -14px;
 }
-body .metaScore-component.block .pager .buttons .button[data-action="next"] {
+.metaScore-component.block .pager .buttons .button[data-action="next"] {
   background-position: -33px 4px;
 }
-body .metaScore-component.block .pager .buttons .button[data-action="next"].inactive {
+.metaScore-component.block .pager .buttons .button[data-action="next"].inactive {
   background-position: -33px -14px;
 }
-body .metaScore-component:hover .pager {
+.metaScore-component:hover .pager {
   display: block;
 }
-body .metaScore-component:hover .pager[data-count="0"],
-body .metaScore-component:hover .pager[data-count="1"] {
+.metaScore-component:hover[data-page-count="0"] .pager,
+.metaScore-component:hover[data-page-count="1"] .pager {
   display: none;
 }
-body .metaScore-component.page {
+.metaScore-component.page {
   display: none;
   width: 100%;
   height: 100%;
@@ -260,15 +257,15 @@ body .metaScore-component.page {
   background-repeat: no-repeat;
   background-position: left top;
 }
-body .metaScore-component.page.active {
+.metaScore-component.page.active {
   display: block;
 }
-body .metaScore-component.element {
+.metaScore-component.element {
   width: 50px;
   height: 50px;
   min-width: 5px;
 }
-body .metaScore-component.element .contents {
+.metaScore-component.element .contents {
   display: none;
   position: absolute;
   top: 0;
@@ -283,21 +280,21 @@ body .metaScore-component.element .contents {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-body .metaScore-component.element:not([data-r-inde]):not([data-start-time]) .contents,
-body .metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
-body .metaScore-component.element:not([data-r-inde]).active .contents,
-body .metaScore-component.element[data-r-index="0"].active .contents {
+.metaScore-component.element:not([data-r-inde]):not([data-start-time]) .contents,
+.metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
+.metaScore-component.element:not([data-r-inde]).active .contents,
+.metaScore-component.element[data-r-index="0"].active .contents {
   display: block;
 }
-body .metaScore-component.element[data-type="Cursor"] {
+.metaScore-component.element[data-type="Cursor"] {
   z-index: 9999;
 }
-body .metaScore-component.element[data-type="Cursor"] .cursor {
+.metaScore-component.element[data-type="Cursor"] .cursor {
   position: absolute;
   background-color: #000000;
 }
-body .metaScore-component.element[data-type="Cursor"]:not([data-direction]) .cursor,
-body .metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
+.metaScore-component.element[data-type="Cursor"]:not([data-direction]) .cursor,
+.metaScore-component.element[data-type="Cursor"][data-direction="right"] .cursor {
   width: 1px;
   height: 100% !important;
   top: initial !important;
@@ -305,7 +302,7 @@ body .metaScore-component.element[data-type="Cursor"][data-direction="right"] .c
   bottom: initial !important;
   left: 0;
 }
-body .metaScore-component.element[data-type="Cursor"][data-direction="left"] .cursor {
+.metaScore-component.element[data-type="Cursor"][data-direction="left"] .cursor {
   width: 1px;
   height: 100% !important;
   top: initial !important;
@@ -313,7 +310,7 @@ body .metaScore-component.element[data-type="Cursor"][data-direction="left"] .cu
   bottom: initial !important;
   left: initial !important;
 }
-body .metaScore-component.element[data-type="Cursor"][data-direction="bottom"] .cursor {
+.metaScore-component.element[data-type="Cursor"][data-direction="bottom"] .cursor {
   width: 100% !important;
   height: 1px;
   top: 0;
@@ -321,7 +318,7 @@ body .metaScore-component.element[data-type="Cursor"][data-direction="bottom"] .
   bottom: initial !important;
   left: initial !important;
 }
-body .metaScore-component.element[data-type="Cursor"][data-direction="top"] .cursor {
+.metaScore-component.element[data-type="Cursor"][data-direction="top"] .cursor {
   width: 100% !important;
   height: 1px;
   top: initial !important;
@@ -329,16 +326,19 @@ body .metaScore-component.element[data-type="Cursor"][data-direction="top"] .cur
   bottom: 0;
   left: initial !important;
 }
-body .metaScore-component.element[data-type="Text"] .contents {
+.metaScore-component.element[data-type="Text"] .contents {
   overflow: auto;
 }
-body .metaScore-component.element[data-type="Text"] .contents .text {
+.metaScore-component.element[data-type="Text"] .contents .text {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
 }
+/*
+* Special styles when embedded in editor
+*/
 body.in-editor {
   margin: 0;
 }
@@ -356,7 +356,7 @@ body.in-editor .resizable .resize-handle {
   display: none;
   width: 10px;
   height: 10px;
-  z-index: 9999;
+  z-index: 99997;
 }
 body.in-editor .resizable .resize-handle[data-direction="top"] {
   top: 0px;
@@ -426,7 +426,8 @@ body.in-editor.editing .metaScore-component.block.selected {
   -moz-box-shadow: #33312f 0px 0px 4px 1px;
   box-shadow: #33312f 0px 0px 4px 1px;
 }
-body.in-editor.editing .metaScore-component.block:hover .pager {
+body.in-editor.editing .metaScore-component.block:hover .pager,
+body.in-editor.editing .metaScore-component.block.dragging .pager {
   display: block !important;
 }
 body.in-editor.editing .metaScore-component.controller {

@@ -88,7 +88,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       direction, acceleration,    
       rect;
     
-    if(metaScore.editing === true && evt.type !== 'dblclick'){
+    if(metaScore.editing && evt.type !== 'dblclick'){
       return;
     }
     
@@ -123,22 +123,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     }
     
     this.triggerEvent('time', {'element': this, 'value': time});
-  };
-  
-  Cursor.prototype.setCuePoint = function(configs){
-    if(this.cuepoint){
-      this.cuepoint.destroy();
-    }
-  
-    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
-      'inTime': this.getProperty('start-time'),
-      'outTime': this.getProperty('end-time'),
-      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
-      'onUpdate': metaScore.Function.proxy(this.onCuePointUpdate, this),
-      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
-    }));
-    
-    return this.cuepoint;
   };
   
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){

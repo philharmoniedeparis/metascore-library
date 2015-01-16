@@ -751,17 +751,24 @@
       }
     }
     
+    &.guide-details,
     &.link-editor{
       .contents{
         min-width: 300px;
         padding: 12px 16px;
         
-        .field-wrapper{
+        .field{
           display: block;
           margin-bottom: 1em;
           
           label{
             display: block;
+            font-weight: bold;
+          }
+          
+          textarea{
+            width: 100%;
+            min-height: 5em;
           }
         }
         
@@ -777,6 +784,12 @@
         }
       }
     }
+    
+    &.guide-details{
+      .contents{
+        min-width: 500px;
+      }
+    }
   
     &.alert{
       .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
@@ -784,6 +797,10 @@
         
       .contents{
         padding: 12px 16px;
+        
+        .text{
+          white-space: pre-wrap;
+        }
         
         .buttons{
           margin-top: 1em;

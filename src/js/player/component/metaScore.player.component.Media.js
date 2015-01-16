@@ -175,18 +175,8 @@ metaScore.namespace('player.component').Media = (function () {
     this.triggerEvent('timeupdate', {'media': this});
   };
   
-  Media.prototype.setTime = function(time) {
-    var playing = this.isPlaying();
-  
-    if(playing){
-      this.pause(true);
-    }
-    
+  Media.prototype.setTime = function(time) {    
     this.dom.currentTime = parseFloat(time) / 1000;
-  
-    if(playing){
-      this.play(true);
-    }
     
     this.triggerTimeUpdate(false);
   };

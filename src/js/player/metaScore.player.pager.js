@@ -12,16 +12,21 @@ metaScore.namespace('player').Pager = (function () {
     // call parent constructor
     Pager.parent.call(this, '<div/>', {'class': 'pager'});
     
-    this.count = new metaScore.Dom('<div/>', {'class': 'count'}).appendTo(this);   
+    this.count = new metaScore.Dom('<div/>', {'class': 'count'})
+      .appendTo(this);
     
     this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
       .addListener('mousedown', function(evt){
         evt.stopPropagation();
       })
-      .appendTo(this);    
-    this.buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'}).appendTo(this.buttons);      
-    this.buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'}).appendTo(this.buttons);      
-    this.buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'}).appendTo(this.buttons);
+      .appendTo(this);
+      
+    this.buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'})
+      .appendTo(this.buttons);
+    this.buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'})
+      .appendTo(this.buttons);
+    this.buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'})
+      .appendTo(this.buttons);
   }
   
   metaScore.Dom.extend(Pager);
@@ -32,8 +37,6 @@ metaScore.namespace('player').Pager = (function () {
     this.buttons.first.toggleClass('inactive', index === 0);
     this.buttons.previous.toggleClass('inactive', index === 0);
     this.buttons.next.toggleClass('inactive', index >= count - 1);
-    
-    this.data('count', count);
   };
     
   return Pager;

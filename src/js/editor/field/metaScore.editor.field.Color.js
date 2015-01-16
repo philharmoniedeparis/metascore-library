@@ -30,17 +30,17 @@ metaScore.namespace('editor.field').Color = (function () {
   
   metaScore.editor.Field.extend(ColorField);
   
-  ColorField.prototype.setupUI = function(){
-      
-    // fix event handlers scope
-    this.onColorSelect = metaScore.Function.proxy(this.onColorSelect, this);
+  ColorField.prototype.setupUI = function(){  
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
+        .appendTo(this);
+    }
   
     this.button = new metaScore.editor.Button()
       .addListener('click', metaScore.Function.proxy(this.onClick, this));
     
-    this.overlay = new metaScore.editor.overlay.ColorSelector({
-      selectCallback: this.onColorSelect
-    });
+    this.overlay = new metaScore.editor.overlay.ColorSelector()
+      .addListener('select', metaScore.Function.proxy(this.onColorSelect, this));
     
     this.button.appendTo(this);
   };
@@ -67,9 +67,11 @@ metaScore.namespace('editor.field').Color = (function () {
       .show();  
   };
   
-  ColorField.prototype.onColorSelect = function(value, overlay){
+  ColorField.prototype.onColorSelect = function(evt){
+    var value = evt.detail.value,
+      overlay = evt.detail.overlay;
+      
     this.setValue(value);
-    overlay.hide();
   };
     
   return ColorField;

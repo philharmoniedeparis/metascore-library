@@ -43,7 +43,14 @@ metaScore.namespace('editor').Field = (function () {
   metaScore.Dom.extend(Field);
   
   Field.prototype.setupUI = function(){
-    this.input = new metaScore.Dom('<input/>', {'type': 'text'})
+    var uid = 'field-'+ metaScore.String.uuid(5);
+  
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
+        .appendTo(this);
+    }
+      
+    this.input = new metaScore.Dom('<input/>', {'type': 'text', 'id': uid})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this);
   };

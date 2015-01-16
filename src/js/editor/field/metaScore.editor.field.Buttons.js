@@ -30,6 +30,11 @@ metaScore.namespace('editor.field').Buttons = (function () {
   ButtonsField.prototype.setupUI = function(){
     var field = this;
   
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
+        .appendTo(this);
+    }
+  
     metaScore.Object.each(this.configs.buttons, function(key, attr){    
       new metaScore.Dom('<button/>', attr)
         .addListener('click', function(){

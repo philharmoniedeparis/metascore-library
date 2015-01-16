@@ -43,6 +43,11 @@ metaScore.namespace('editor.field').Time = (function () {
   TimeField.prototype.setupUI = function(){
     var buttons;
   
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
+        .appendTo(this);
+    }
+  
     if(this.configs.checkbox){
       this.checkbox = new metaScore.Dom('<input/>', {'type': 'checkbox'})
         .addListener('change', metaScore.Function.proxy(this.onInput, this))

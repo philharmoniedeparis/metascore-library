@@ -5,21 +5,23 @@
  */
 metaScore.Player = (function () {
   
-  function Player(configs) {  
+  function Player(configs) {
+    var iframe, document;
+  
     this.configs = this.getConfigs(configs);
     
+    iframe = new metaScore.Dom('<iframe></iframe>', {'class': 'metaScore-player'})
+      .appendTo(this.configs.container);
+      
+    document = iframe.get(0).contentDocument;
+    
     // call parent constructor
-    Player.parent.call(this, '<iframe></iframe>', {'class': 'metaScore-player'});
+    Player.parent.call(this, document.body);
     
-    this.appendTo(this.configs.container);
+    this.iframe = iframe;
+    this.head = new metaScore.Dom(document.head);
     
-    this.head = new metaScore.Dom(this.get(0).contentDocument.head);
-    this.body = new metaScore.Dom(this.get(0).contentDocument.body);
-    
-    if(this.configs.url){
-      this.load();
-    }
-    
+    this.load();
   }
   
   Player.defaults = {
@@ -27,7 +29,6 @@ metaScore.Player = (function () {
     'ajax': {},
     'keyboard': true
   };
-  
   
   metaScore.Dom.extend(Player);
   
@@ -110,10 +111,12 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onComponenetPropChange = function(evt){
+    var component = evt.detail.component;
+  
     switch(evt.detail.property){
       case 'start-time':
       case 'end-time':
-        evt.detail.component.setCuePoint({
+        component.setCuePoint({
           'media': this.media
         });        
         break;
@@ -123,7 +126,7 @@ metaScore.Player = (function () {
   Player.prototype.load = function(url){
     var options;
     
-    this.getBody().addClass('loading');
+    this.addClass('loading');
     
     options = metaScore.Object.extend({}, {
       'success': metaScore.Function.proxy(this.onLoadSuccess, this),
@@ -135,60 +138,70 @@ metaScore.Player = (function () {
   };
   
   Player.prototype.onLoadSuccess = function(xhr){  
-    var data = JSON.parse(xhr.response);
+    this.json = JSON.parse(xhr.response);
     
-    this.getBody().data('id', data.id);
+    this.data('id', this.json.id);
     
-    // add player style sheets    
-    if(data.css){
-      metaScore.Array.each(data.css, function(index, css) {
-        this.addCSS(css);
-      }, this);
+    // setup the base url
+    if(this.json.base_url){
+      new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
+        .appendTo(this.getHead());
     }
     
-    this.media = new metaScore.player.component.Media(data.media)
+    // add style sheets
+    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': this.json.library_css})
+      .appendTo(this.getHead());
+      
+    this.css = new metaScore.StyleSheet()
+      .setInternalValue(this.json.css)
+      .appendTo(this.getHead());
+      
+    this.rindex_css = new metaScore.StyleSheet()
+      .appendTo(this.getHead());
+    
+    this.media = new metaScore.player.component.Media(this.json.media)
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
-      .appendTo(this.getBody());
+      .appendTo(this);
     
-    this.controller = new metaScore.player.component.Controller(data.controller)
+    this.controller = new metaScore.player.component.Controller(this.json.controller)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.getBody());
-      
-    this.rindex_css = new metaScore.StyleSheet({
-      container: this.getBody()
-    });
+      .appendTo(this);
     
-    metaScore.Array.each(data.blocks, function(index, block){
+    metaScore.Array.each(this.json.blocks, function(index, block){
       this.addBlock(block);
     }, this);
     
     this.media.reset();
     
-    this.getBody().removeClass('loading');
+    this.removeClass('loading');
     
-    this.triggerEvent('loadsuccess', {'player': this}, true, false);
+    this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
   };
   
   Player.prototype.onLoadError = function(xhr){
     
-    this.getBody().removeClass('loading');
+    this.removeClass('loading');
     
     this.triggerEvent('loaderror', {'player': this}, true, false);
   
   };
   
   Player.prototype.getId = function(){
-    return this.getBody().data('id');
+    return this.data('id');
   };
   
   Player.prototype.getHead = function(){
     return this.head;
   };
   
-  Player.prototype.getBody = function(){
-    return this.body;
+  Player.prototype.getIFrame = function(){
+    return this.iframe;
+  };
+  
+  Player.prototype.getData = function(){
+    return this.json;
   };
   
   Player.prototype.getComponents = function(type){
@@ -198,10 +211,10 @@ metaScore.Player = (function () {
       selector += '.'+ type;
     }
     
-    return this.getBody().children(selector);
+    return this.children(selector);
   };
   
-  Player.prototype.addBlock = function(configs){
+  Player.prototype.addBlock = function(configs, supressEvent){
     var block, page;
   
     if(configs instanceof metaScore.player.component.Block){
@@ -209,7 +222,7 @@ metaScore.Player = (function () {
     }
     else{
       block = new metaScore.player.component.Block(metaScore.Object.extend({}, configs, {
-          'container': this.getBody(),
+          'container': this,
           'listeners': {
             'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
           }
@@ -219,17 +232,15 @@ metaScore.Player = (function () {
         .addDelegate('.element', 'rindex', metaScore.Function.proxy(this.onElementReadingIndex, this));
     }
     
-    this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
+    if(supressEvent === true){
+      this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
+    }
     
     return block;
   };
   
-  Player.prototype.addCSS = function(attr){
-    new metaScore.Dom('<link/>', metaScore.Object.extend({}, attr, {
-        'rel': 'stylesheet',
-        'type': 'text/css'
-      }))
-      .appendTo(this.getHead());
+  Player.prototype.updateCSS = function(value){
+    this.css.setInternalValue(value);
   };
   
   Player.prototype.setReadingIndex = function(index, supressEvent){
@@ -243,6 +254,10 @@ metaScore.Player = (function () {
     if(supressEvent !== true){
       this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
     }
+  };
+  
+  Player.prototype.remove = function(){
+    this.getIFrame().remove();
   };
     
   return Player;

@@ -1,7 +1,7 @@
 /**
 * Core
 */
-var metaScore = {
+metaScore = global.metaScore = {
 
   version: "[[VERSION]]",
   

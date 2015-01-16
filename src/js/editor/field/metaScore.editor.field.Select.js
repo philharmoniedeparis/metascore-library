@@ -25,7 +25,14 @@ metaScore.namespace('editor.field').Select = (function () {
   metaScore.editor.Field.extend(SelectField);
   
   SelectField.prototype.setupUI = function(){  
-    this.input = new metaScore.Dom('<select/>')
+    var uid = 'field-'+ metaScore.String.uuid(5);
+  
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
+        .appendTo(this);
+    }
+    
+    this.input = new metaScore.Dom('<select/>', {'id': uid})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this);
       

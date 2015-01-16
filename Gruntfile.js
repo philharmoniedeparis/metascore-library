@@ -43,17 +43,18 @@ module.exports = function(grunt) {
 
 
   // Load plugins
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-qunit');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-git-rev-parse');
-  grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-jsdoc');
+  grunt.loadNpmTasks('grunt-text-replace');
+  grunt.loadNpmTasks('grunt-translate-extract');
 
   // Configure grunt
   grunt.initConfig({
@@ -72,15 +73,23 @@ module.exports = function(grunt) {
       }
     },
     concat: {
-      dist: {
-        src: DIST_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, PLAYER_LIST, TAIL_LIST),
+      'player': {
+        src: DIST_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
+        dest: sub('dist/%s.player.js')
+      },
+      'editor': {
+        src: DIST_HEAD_LIST.concat(EDITOR_LIST, TAIL_LIST),
         dest: sub('dist/%s.editor.js')
       },
-      dev: {
-        src: DEV_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, PLAYER_LIST, TAIL_LIST),
+      'player-dev': {
+        src: DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
+        dest: sub('dist/%s.player.js')
+      },
+      'editor-dev': {
+        src: DEV_HEAD_LIST.concat(EDITOR_LIST, TAIL_LIST),
         dest: sub('dist/%s.editor.js')
       },
-      options: {
+      'options': {
         banner: BANNER
       }
     },
@@ -125,7 +134,8 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         files: {
-          'dist/metaScore.editor.min.js': 'dist/metaScore.editor.js',
+          'dist/metaScore.player.min.js': 'dist/metaScore.player.js',
+          'dist/metaScore.editor.min.js': 'dist/metaScore.editor.js'
         }
       },
       options: {
@@ -171,6 +181,38 @@ module.exports = function(grunt) {
         }
       }
     },
+    translate_extract: {
+      player: {
+        src: PLAYER_LIST,
+        options: {
+          outputExtension: ".player.json"
+        }
+      },
+      editor: {
+        src: EDITOR_LIST,
+        options: {
+          outputExtension: ".editor.json"
+        }
+      },
+      options: {
+        locales: ["en", "fr"],
+        outputDir: "src/locale",
+        builtInParser: null,
+        customParser:  {
+          getRegexpList: function(){
+            return [/metaScore\.String\.t\('(.*)'/gm];
+          },
+          parseMatch: function(match){
+            console.log(match);
+            return {
+              'key': match[1],
+              'text': match[1]
+            };
+          }        
+        },
+        errorOnDuplicatedKeys: false
+      }
+    },
     watch: {
       scripts: {
         files: ['Gruntfile.js'].concat('src/**'),
@@ -187,9 +229,11 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
     'jshint',
     'clean:dist',
-    'concat:dist',
+    'concat:player',
+    'concat:editor',
     'uglify:dist',
-    'concat:dev',
+    'concat:player-dev',
+    'concat:editor-dev',
     'git-rev-parse',
     'replace',
     'less',

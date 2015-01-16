@@ -134,7 +134,7 @@ metaScore.namespace('player.component').Block = (function () {
         'getter': function(skipDefault){
           var pages = [];
                 
-          this.getPages().each(function(index, page){            
+          this.getPages().each(function(index, page){
             pages.push(page._metaScore.getProperties(skipDefault));
           }, this);
           
@@ -285,6 +285,8 @@ metaScore.namespace('player.component').Block = (function () {
     var count = this.getPageCount();
   
     this.pager.updateCount(index, count);
+    
+    this.data('page-count', count);
   };
     
   return Block;

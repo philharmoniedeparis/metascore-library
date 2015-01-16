@@ -53,7 +53,7 @@ metaScore.namespace('player.component').Page = (function () {
           'outButton': true
         },
         'getter': function(skipDefault){
-          var value = parseFloat(this.data('start-time'));          
+          var value = parseFloat(this.data('start-time'));
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -69,7 +69,7 @@ metaScore.namespace('player.component').Page = (function () {
           'outButton': true
         },
         'getter': function(skipDefault){
-          var value = parseFloat(this.data('end-time'));          
+          var value = parseFloat(this.data('end-time'));
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -85,7 +85,7 @@ metaScore.namespace('player.component').Page = (function () {
             elements.push(element._metaScore.getProperties(skipDefault));
           }, this);
           
-          return elements;        
+          return elements;
         },
         'setter': function(value){
           metaScore.Array.each(value, function(index, configs){
@@ -116,26 +116,11 @@ metaScore.namespace('player.component').Page = (function () {
       }));
     }
     
-    return element;  
+    return element;
   };
   
-  Page.prototype.getElements = function(){  
+  Page.prototype.getElements = function(){
     return this.children('.element');
-  };
-  
-  Page.prototype.setCuePoint = function(configs){
-    if(this.cuepoint){
-      this.cuepoint.destroy();
-    }
-  
-    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
-      'inTime': this.getProperty('start-time'),
-      'outTime': this.getProperty('end-time'),
-      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
-      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
-    }));
-    
-    return this.cuepoint;
   };
   
   Page.prototype.onCuePointStart = function(cuepoint){

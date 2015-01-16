@@ -231,7 +231,7 @@ metaScore.namespace('editor').Panel = (function(){
   
       component.removeClass('selected');
       
-      this.component = null;
+      delete this.component;
       
       if(supressEvent !== true){
         this.triggerEvent('componentunset', {'component': component}, false);

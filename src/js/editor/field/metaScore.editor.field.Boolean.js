@@ -43,8 +43,15 @@ metaScore.namespace('editor.field').Boolean = (function () {
   
   metaScore.editor.Field.extend(BooleanField);
   
-  BooleanField.prototype.setupUI = function(){  
-    this.input = new metaScore.Dom('<input/>', {'type': 'checkbox'})
+  BooleanField.prototype.setupUI = function(){
+    var uid = 'field-'+ metaScore.String.uuid(5);
+  
+    if(this.configs.label){
+      this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
+        .appendTo(this);
+    }
+    
+    this.input = new metaScore.Dom('<input/>', {'type': 'checkbox', 'id': uid})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this);    
   };

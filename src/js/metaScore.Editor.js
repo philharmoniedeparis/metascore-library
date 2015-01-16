@@ -40,6 +40,7 @@ metaScore.Editor = (function(){
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
+    this.detailsOverlay = new metaScore.editor.overlay.GuideDetails();
       
     // add event listeners    
     this
@@ -71,6 +72,9 @@ metaScore.Editor = (function(){
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
       .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
       .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
+      
+    this.detailsOverlay
+      .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this));
 
     new metaScore.Dom('body')
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
@@ -86,13 +90,15 @@ metaScore.Editor = (function(){
     'ajax': {}
   };
   
-  Editor.prototype.setEditing = function(editing, sticky){
+  Editor.prototype.setEditing = function(editing, sticky){    
+    metaScore.editing = editing !== false;
+    
     if(sticky !== false){
-      metaScore.editing = editing;
+      this.persistentEditing = metaScore.editing;
     }
     
     metaScore.Object.each(this.panels, function(key, panel){
-      if(editing){
+      if(metaScore.editing){
         panel.enable();
       }
       else{
@@ -100,10 +106,10 @@ metaScore.Editor = (function(){
       }
     });
     
-    this.toggleClass('editing', editing);
+    this.toggleClass('editing', metaScore.editing);
     
     if(this.player){
-      this.player.getBody().toggleClass('editing', editing);
+      this.player.toggleClass('editing', metaScore.editing);
     }
   };
   
@@ -163,11 +169,15 @@ metaScore.Editor = (function(){
     });  
   };
   
+  Editor.prototype.onGuideRevertConfirm = function(){
+    this.addPlayer(this.player.getId());
+  };
+  
   Editor.prototype.onPlayerKeydown = Editor.prototype.onKeydown = function(evt){  
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
-          this.setEditing(!metaScore.editing, false);
+          this.setEditing(!this.persistentEditing, false);
           evt.preventDefault();
         }
         break;
@@ -189,7 +199,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerKeyup = Editor.prototype.onKeyup = function(evt){    
     switch(evt.keyCode){
       case 18: //alt
-        this.setEditing(metaScore.editing, false);
+        this.setEditing(this.persistentEditing, false);
         evt.preventDefault();
         break;
     }
@@ -199,14 +209,24 @@ metaScore.Editor = (function(){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
         break;
-      case 'open':
-        new metaScore.editor.overlay.GuideSelector({
-          'url': this.configs.api_url +'guide.json',
-          'selectCallback': metaScore.Function.proxy(this.openGuide, this),
-          'autoShow': true
-        });
+      case 'open':      
+        if(this.hasOwnProperty('player')){
+          new metaScore.editor.overlay.Alert({
+              'text': metaScore.String.t('Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
+              'buttons': {
+                'confirm': metaScore.String.t('Yes'),
+                'cancel': metaScore.String.t('No')
+              },
+              'autoShow': true
+            })
+            .addListener('confirmclick', metaScore.Function.proxy(this.openGuideSelector, this));
+        }
+        else{
+          this.openGuideSelector();
+        }
         break;
       case 'edit':
+        this.detailsOverlay.show();
         break;
       case 'save':
         this.saveGuide();
@@ -214,9 +234,26 @@ metaScore.Editor = (function(){
       case 'download':
         break;
       case 'delete':
-        this.deleteGuide();
+        new metaScore.editor.overlay.Alert({
+            'text': metaScore.String.t('Are you sure you want to delete this guide ?'),
+            'buttons': {
+              'confirm': metaScore.String.t('Yes'),
+              'cancel': metaScore.String.t('No')
+            },
+            'autoShow': true
+          })
+          .addListener('confirmclick', metaScore.Function.proxy(this.onGuideDeleteConfirm, this));
         break;
       case 'revert':
+        new metaScore.editor.overlay.Alert({
+            'text': metaScore.String.t('Are you sure you want to revert back to the last saved version ?\nAny unsaved data will be lost.'),
+            'buttons': {
+              'confirm': metaScore.String.t('Yes'),
+              'cancel': metaScore.String.t('No')
+            },
+            'autoShow': true
+          })
+          .addListener('confirmclick', metaScore.Function.proxy(this.onGuideRevertConfirm, this));
         break;
       case 'undo':
         this.history.undo();
@@ -558,8 +595,23 @@ metaScore.Editor = (function(){
     this.mainmenu.rindexfield.setValue(rindex, true);
   };
   
-  Editor.prototype.onPlayerLoadSuccess = function(evt){    
+  Editor.prototype.onPlayerLoadSuccess = function(evt){
+    var player = evt.detail.player,
+      data = evt.detail.data;
+    
+    this.player = player;
+    
+    this.player
+      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
+  
     this.setEditing(true);
+    this.updateMainmenu();
+    this.detailsOverlay.setValues(data);
     
     this.loadmask.hide();
     delete this.loadmask;
@@ -634,6 +686,12 @@ metaScore.Editor = (function(){
     this.updateMainmenu();
   };
   
+  Editor.prototype.onDetailsOverlaySubmit = function(evt){
+    var values = evt.detail.values;
+    
+    this.player.updateCSS(values.css);
+  };
+  
   Editor.prototype.updateMainmenu = function(){
     var hasPlayer = this.hasOwnProperty('player');
   
@@ -647,29 +705,21 @@ metaScore.Editor = (function(){
     this.mainmenu.toggleButton('revert', hasPlayer);
   };
   
-  Editor.prototype.addPlayer = function(configs){
+  Editor.prototype.addPlayer = function(id){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
+    
+    this.removePlayer();
   
-    this.player = new metaScore.Player(metaScore.Object.extend({}, configs, {
-        container: this.workspace
-      }))
+    new metaScore.Player({
+        container: this.workspace,
+        url: this.configs.api_url +'guide/'+ id +'.json'
+      })
+      .addClass('in-editor')
       .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
       .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
       .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
-      
-    this.player.getBody()
-        .addClass('in-editor')
-        .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-        .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
-        .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
-        .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-        .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
-        .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-        .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
-        
-    this.updateMainmenu();
   };
   
   Editor.prototype.removePlayer = function(){
@@ -678,6 +728,7 @@ metaScore.Editor = (function(){
       delete this.player;
     }
     
+    this.panels.block.unsetComponent();
     this.updateMainmenu();
   };
   
@@ -711,19 +762,23 @@ metaScore.Editor = (function(){
     return element;
   };
   
-  Editor.prototype.openGuide = function(guide){    
-    this.removePlayer();
-    
-    this.addPlayer({
-      'url': this.configs.api_url +'guide/'+ guide.id +'.json'
-    });
+  Editor.prototype.openGuideSelector = function(){    
+    new metaScore.editor.overlay.GuideSelector({
+        'url': this.configs.api_url +'guide.json',
+        'autoShow': true
+      })
+      .addListener('select', metaScore.Function.proxy(this.openGuide, this));
+  };
+  
+  Editor.prototype.openGuide = function(evt){    
+    this.addPlayer(evt.detail.guide.id);
   };
   
   Editor.prototype.saveGuide = function(){
     var components = this.player.getComponents(),
       id = this.player.getId(),
       component,  options,
-      data = {};
+      data = this.detailsOverlay.getValues();
     
     components.each(function(index, dom){
       component = dom._metaScore;
@@ -755,18 +810,6 @@ metaScore.Editor = (function(){
     });
   
     metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);
-  };
-  
-  Editor.prototype.deleteGuide = function(){  
-    new metaScore.editor.overlay.Alert({
-        'text': metaScore.String.t('Are you sure you want to delete this guide ?'),
-        'buttons': {
-          'confirm': metaScore.String.t('Yes'),
-          'cancel': metaScore.String.t('No')
-        },
-        'autoShow': true
-      })
-      .addListener('confirmclick', metaScore.Function.proxy(this.onGuideDeleteConfirm, this));  
   };
     
   return Editor;

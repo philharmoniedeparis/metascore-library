@@ -219,21 +219,6 @@ metaScore.namespace('player.component').Element = (function () {
       .appendTo(this);
   };
   
-  Element.prototype.setCuePoint = function(configs){
-    if(this.cuepoint){
-      this.cuepoint.destroy();
-    }
-  
-    this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
-      'inTime': this.getProperty('start-time'),
-      'outTime': this.getProperty('end-time'),
-      'onStart': metaScore.Function.proxy(this.onCuePointStart, this),
-      'onEnd': metaScore.Function.proxy(this.onCuePointEnd, this)
-    }));
-    
-    return this.cuepoint;
-  };
-  
   Element.prototype.onCuePointStart = function(cuepoint){
     this.addClass('active');
   };

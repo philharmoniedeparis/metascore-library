@@ -133,10 +133,10 @@ metaScore.namespace('editor.panel').Text = (function () {
             var link = this.getSelectedElement();
             
             new metaScore.editor.overlay.LinkEditor({
-              sumbitCallback: metaScore.Function.proxy(this.onLinkOverlaySubmit, this),
-              link: metaScore.Dom.is(link, 'a') ? link : null,
-              autoShow: true
-            });
+                link: link && metaScore.Dom.is(link, 'a') ? link : null,
+                autoShow: true
+              })
+              .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
           }
           else{
             this.execCommand(value);
@@ -229,7 +229,9 @@ metaScore.namespace('editor.panel').Text = (function () {
     evt.stopPropagation();
   };
   
-  TextPanel.prototype.onLinkOverlaySubmit = function(url, overlay){
+  TextPanel.prototype.onLinkOverlaySubmit = function(evt){
+    var url = evt.detail.url;
+    
     this.execCommand('createLink', url);
   };
   

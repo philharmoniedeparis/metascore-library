@@ -16,7 +16,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.addClass('link-editor');
     
     this.setupUI();
-    this.updateFields();
+    this.toggleFields();
     
     if(this.configs.link){
       this.setValuesFromLink(this.configs.link);
@@ -37,12 +37,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The current link
     */
-    link: null,
-    
-    /**
-    * A function to call when finished
-    */
-    sumbitCallback: metaScore.Function.emptyFn
+    link: null
   };
   
   metaScore.editor.Overlay.extend(LinkEditor);
@@ -51,86 +46,57 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
   
     var contents = this.getContents();
     
-    this.fields = new metaScore.Dom('<div/>', {'class': 'fields'})
-      .appendTo(contents);
+    this.fields = {};    
+    this.buttons = {};
     
-    this.type = new metaScore.Dom('<div/>', {'class': 'field-wrapper type'})
-      .appendTo(this.fields);
-    this.type.label = new metaScore.Dom('<label/>', {'for': 'type', 'text': metaScore.String.t('Type')})
-      .appendTo(this.type);
-    this.type.field = new metaScore.editor.field.Select({
+    this.fields.type = new metaScore.editor.field.Select({
+        label: metaScore.String.t('Type'),
         options: {
           url: metaScore.String.t('URL'),
           page: metaScore.String.t('Page'),
           time: metaScore.String.t('Time'),
         }
       })
-      .attr('id', 'type')
       .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
-      .appendTo(this.type);
+      .appendTo(contents);
     
     // URL
-    this.urlwrapper = new metaScore.Dom('<div/>', {'class': 'url-wrapper'})
-      .appendTo(this.fields);
-    
-    this.url = new metaScore.Dom('<div/>', {'class': 'field-wrapper url'})
-      .appendTo(this.urlwrapper);
-    this.url.label = new metaScore.Dom('<label/>', {'for': 'url', 'text': metaScore.String.t('URL')})
-      .appendTo(this.url);
-    this.url.field = new metaScore.editor.field.Text()
-      .attr('id', 'url')
-      .appendTo(this.url);
+    this.fields.url = new metaScore.editor.field.Text({
+        label: metaScore.String.t('URL')
+      })
+      .appendTo(contents);
     
     // Page
-    this.pagewrapper = new metaScore.Dom('<div/>', {'class': 'page-wrapper'})
-      .appendTo(this.fields);
-    
-    this.page = new metaScore.Dom('<div/>', {'class': 'field-wrapper page'})
-      .appendTo(this.pagewrapper);
-    this.page.label = new metaScore.Dom('<label/>', {'for': 'page', 'text': metaScore.String.t('Page')})
-      .appendTo(this.page);
-    this.page.field = new metaScore.editor.field.Number()
-      .attr('id', 'page')
-      .appendTo(this.page);
+    this.fields.page = new metaScore.editor.field.Number({
+        label: metaScore.String.t('Page')
+      })
+      .appendTo(contents);
     
     // Time
-    this.timewrapper = new metaScore.Dom('<div/>', {'class': 'page-wrapper'}).appendTo(this.fields);
-    
-    this.inTime = new metaScore.Dom('<div/>', {'class': 'field-wrapper inTime'})
-      .appendTo(this.timewrapper);
-    this.inTime.label = new metaScore.Dom('<label/>', {'for': 'inTime', 'text': metaScore.String.t('Start time')})
-      .appendTo(this.inTime);
-    this.inTime.field = new metaScore.editor.field.Time({
+    this.fields.inTime = new metaScore.editor.field.Time({
+        label: metaScore.String.t('Start time'),
         inButton: true
       })
-      .attr('id', 'inTime')
-      .appendTo(this.inTime);
+      .appendTo(contents);
     
-    this.outTime = new metaScore.Dom('<div/>', {'class': 'field-wrapper outTime'})
-      .appendTo(this.timewrapper);
-    this.outTime.label = new metaScore.Dom('<label/>', {'for': 'outTime', 'text': metaScore.String.t('End time')})
-      .appendTo(this.outTime);
-    this.outTime.field = new metaScore.editor.field.Time({
+    this.fields.outTime = new metaScore.editor.field.Time({
+        label: metaScore.String.t('End time'),
         inButton: true
       })
-      .attr('id', 'outTime')
-      .appendTo(this.outTime);
+      .appendTo(contents);
     
-    this.rIndex = new metaScore.Dom('<div/>', {'class': 'field-wrapper rIndex'})
-      .appendTo(this.timewrapper);
-    this.rIndex.label = new metaScore.Dom('<label/>', {'for': 'rIndex', 'text': metaScore.String.t('Reading index')})
-      .appendTo(this.rIndex);
-    this.rIndex.field = new metaScore.editor.field.Number()
-      .attr('id', 'rIndex')
-      .appendTo(this.rIndex);
+    this.fields.rIndex = new metaScore.editor.field.Number({
+        label: metaScore.String.t('Reading index')
+      })
+      .appendTo(contents);
     
     // Buttons      
-    this.apply = new metaScore.editor.Button({'label': 'Apply'})
+    this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
       .addClass('apply')
       .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
       .appendTo(contents);
       
-    this.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+    this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
       .addClass('cancel')
       .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
       .appendTo(contents);
@@ -141,68 +107,74 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     var matches;
   
     if(matches = link.hash.match(/^#p=(\d+)/)){
-      this.type.field.setValue('page');
-      this.page.field.setValue(matches[1]);
+      this.fields.type.setValue('page');
+      this.fields.page.setValue(matches[1]);
     }
     else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
-      this.type.field.setValue('time');
-      this.inTime.field.setValue(matches[1]);
-      this.outTime.field.setValue(matches[2]);
-      this.rIndex.field.setValue(matches[3]);
+      this.fields.type.setValue('time');
+      this.fields.inTime.setValue(matches[1]);
+      this.fields.outTime.setValue(matches[2]);
+      this.fields.rIndex.setValue(matches[3]);
     }
     else{
-      this.type.field.setValue('url');
-      this.url.field.setValue(link.href);
+      this.fields.type.setValue('url');
+      this.fields.url.setValue(link.href);
     }
   };
   
-  LinkEditor.prototype.updateFields = function(){
-    var type = this.type.field.getValue();
+  LinkEditor.prototype.toggleFields = function(){
+    var type = this.fields.type.getValue();
     
     switch(type){
       case 'page':
-        this.urlwrapper.hide();
-        this.pagewrapper.show();
-        this.timewrapper.hide();
+        this.fields.url.hide();
+        this.fields.page.show();
+        this.fields.inTime.hide();
+        this.fields.outTime.hide();
+        this.fields.rIndex.hide();
         break;
         
       case 'time':
-        this.urlwrapper.hide();
-        this.pagewrapper.hide();
-        this.timewrapper.show();
+        this.fields.url.hide();
+        this.fields.page.hide();
+        this.fields.inTime.show();
+        this.fields.outTime.show();
+        this.fields.rIndex.show();
         break;
         
       default:
-        this.urlwrapper.show();
-        this.pagewrapper.hide();
-        this.timewrapper.hide();
+        this.fields.url.show();
+        this.fields.page.hide();
+        this.fields.inTime.hide();
+        this.fields.outTime.hide();
+        this.fields.rIndex.hide();
     }
   
   };
   
   LinkEditor.prototype.onTypeChange = function(evt){
-    this.updateFields();
+    this.toggleFields();
   };
   
   LinkEditor.prototype.onApplyClick = function(evt){
-    var type = this.type.field.getValue(),
+    var type = this.fields.type.getValue(),
       url;
   
     switch(type){
       case 'page':
-        url = '#p='+ this.page.field.getValue();
+        url = '#p='+ this.fields.page.getValue();
         break;
         
       case 'time':
-        url = '#t='+ this.inTime.field.getValue() +','+ this.outTime.field.getValue();
-        url += '&r='+ this.rIndex.field.getValue();
+        url = '#t='+ this.fields.inTime.getValue() +','+ this.fields.outTime.getValue();
+        url += '&r='+ this.fields.rIndex.getValue();
         break;
         
       default:
-        url = this.url.field.getValue();
+        url = this.fields.url.getValue();
     }
     
-    this.configs.sumbitCallback(url, this);
+    this.triggerEvent('submit', {'overlay': this, 'url': url}, true, false);
     
     this.hide();
   };

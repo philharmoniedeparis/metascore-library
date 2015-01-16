@@ -22,7 +22,7 @@ metaScore.namespace('editor.field').Image = (function () {
   
   metaScore.editor.Field.extend(ImageField);
   
-  ImageField.prototype.setupUI = function(){
+  ImageField.prototype.setupUI = function(){    
     ImageField.parent.prototype.setupUI.call(this);
   
     this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})

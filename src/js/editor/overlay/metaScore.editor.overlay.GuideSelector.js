@@ -35,17 +35,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     /**
     * The url from which to retreive the list of guides
     */
-    url: null,
-    
-    /**
-    * A function to call when a guide is selected
-    */
-    selectCallback: metaScore.Function.emptyFn,
-    
-    /**
-    * Whether to automatically hide the overlay when a guide is selected
-    */
-    hideOnSelect: true
+    url: null
   };
   
   metaScore.editor.Overlay.extend(GuideSelector);
@@ -104,11 +94,9 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
   };
   
   GuideSelector.prototype.onGuideClick = function(guide){
-    this.configs.selectCallback(guide);
+    this.triggerEvent('select', {'overlay': this, 'guide': guide}, true, false);
     
-    if(this.configs.hideOnSelect){
-      this.hide();
-    }
+    this.hide();
   };
     
   return GuideSelector;

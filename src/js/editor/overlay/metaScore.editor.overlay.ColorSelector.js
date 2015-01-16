@@ -32,17 +32,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     /**
     * True to make this draggable
     */
-    draggable: false,
-    
-    /**
-    * A function to call when a color is selected
-    */
-    selectCallback: metaScore.Function.emptyFn,
-    
-    /**
-    * A function to call when the selection is canceled
-    */
-    cancelCallback: metaScore.Function.emptyFn
+    draggable: false
   };
   
   metaScore.editor.Overlay.extend(ColorSelector);
@@ -312,16 +302,14 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
   
   ColorSelector.prototype.onAlphaMousemove = ColorSelector.prototype.onAlphaClick;
   
-  ColorSelector.prototype.onApplyClick = function(evt){ 
-    this.configs.selectCallback(this.value, this);
-  
-    evt.stopPropagation();
+  ColorSelector.prototype.onApplyClick = function(evt){
+    this.triggerEvent('select', {'overlay': this, 'value': this.value}, true, false);
+    
+    this.hide();
   };
   
   ColorSelector.prototype.onCancelClick = function(evt){
     this.hide();
-  
-    evt.stopPropagation();
   };
     
   return ColorSelector;

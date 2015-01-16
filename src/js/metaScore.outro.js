@@ -1,4 +1,3 @@
 
-  global.metaScore = metaScore;
 
 } (this));

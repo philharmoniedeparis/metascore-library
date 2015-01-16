@@ -10,29 +10,16 @@ metaScore.StyleSheet = (function () {
     this.configs = this.getConfigs(configs);
     
     // call the super constructor.
-    metaScore.Dom.call(this, '<style/>', this.configs.attributes);
+    metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
+    
+    this.el = this.get(0);
+    this.sheet = this.el.sheet;
     
     // WebKit hack :(
-    this.text("");
-    
-    this.appendTo(this.configs.container);
-    
-    this.sheet = this.get(0).sheet;
+    this.setInternalValue("");
   }
   
   metaScore.Dom.extend(StyleSheet);
-  
-  StyleSheet.defaults = {
-    /**
-    * Defines the default document to add the sheet to
-    */
-    container: window.document.head,
-    
-    /**
-    * Defines the default attributes
-    */
-    attributes: {}
-  };
 
   /**
   * Adds a CSS rule to the style sheet
@@ -96,6 +83,20 @@ metaScore.StyleSheet = (function () {
   
     while(rules.length > 0){
       this.removeRule(0);
+    }
+    
+    return this;
+  };
+
+  /**
+  * Set the internal text value
+  */
+  StyleSheet.prototype.setInternalValue = function(value) {
+    if(this.el.styleSheet){
+      this.el.styleSheet.cssText = value;
+    }
+    else{
+      this.text(value);
     }
     
     return this;

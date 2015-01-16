@@ -69,7 +69,25 @@ metaScore.namespace('player').Component = (function () {
     }
   };
   
-  Element.prototype.setCuePoint = function(configs){
+  Component.prototype.setCuePoint = function(configs){
+    var inTime = this.getProperty('start-time'),
+      outTime = this.getProperty('end-time');
+      
+    if(this.cuepoint){
+      this.cuepoint.destroy();
+    }
+    
+    if(inTime != null || outTime != null){
+      this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
+        'inTime': inTime,
+        'outTime': outTime - 1,
+        'onStart': this.onCuePointStart ? metaScore.Function.proxy(this.onCuePointStart, this) : null,
+        'onUpdate': this.onCuePointUpdate ? metaScore.Function.proxy(this.onCuePointUpdate, this) : null,
+        'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null
+      }));
+    }
+    
+    return this.cuepoint;
   };
     
   return Component;
