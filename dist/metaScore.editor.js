@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.1 - 2015-01-15 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-16 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -34,6 +34,80 @@ if (typeof DEBUG === 'undefined') DEBUG = true;
 
 var metaScore = global.metaScore;
 
+
+metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {
+	"editor.onGuideSaveError.msg": "An error occured while trying to save the guide. Please try again.",
+	"editor.onGuideSaveError.ok": "OK",
+	"editor.onGuideDeleteError.msg": "An error occured while trying to delete the guide. Please try again.",
+	"editor.onMainmenuClick.open.msg": "Are you sure you want to open another guide ?\\nAny unsaved data will be lost.",
+	"editor.onMainmenuClick.open.yes": "Yes",
+	"editor.onMainmenuClick.open.no": "No",
+	"editor.onMainmenuClick.delete.msg": "Are you sure you want to delete this guide ?",
+	"editor.onMainmenuClick.delete.yes": "Yes",
+	"editor.onMainmenuClick.delete.no": "No",
+	"editor.onMainmenuClick.revert.msg": "Are you sure you want to revert back to the last saved version ?\\nAny unsaved data will be lost.",
+	"editor.onMainmenuClick.revert.yes": "Yes",
+	"editor.onMainmenuClick.revert.no": "No",
+	"editor.onPlayerLoadError.msg": "An error occured while trying to load the guide. Please try again.",
+	"editor.onPlayerLoadError.ok": "OK",
+	"editor.MainMenu.new": "New",
+	"editor.MainMenu.open": "Open",
+	"editor.MainMenu.edit": "Edit",
+	"editor.MainMenu.save": "Save",
+	"editor.MainMenu.delete": "Delete",
+	"editor.MainMenu.download": "Download",
+	"editor.MainMenu.time": "Time",
+	"editor.MainMenu.r-index": "Reading index",
+	"editor.MainMenu.edit-toggle": "Toggle edit mode",
+	"editor.MainMenu.revert": "Revert",
+	"editor.MainMenu.undo": "Undo",
+	"editor.MainMenu.redo": "Redo",
+	"editor.MainMenu.settings": "Settings",
+	"editor.MainMenu.help": "Help",
+	"editor.panel.Block.title": "Block",
+	"editor.panel.Block.menuItems.new": "Add a new block",
+	"editor.panel.Block.menuItems.delete": "Delete the active block",
+	"editor.panel.Element.title": "Element",
+	"editor.panel.Element.menuItems.Cursor": "Add a new cursor",
+	"editor.panel.Element.menuItems.Image": "Add a new image",
+	"editor.panel.Element.menuItems.Text": "Add a new text element",
+	"editor.panel.Element.menuItems.delete": "Delete the active element",
+	"editor.panel.Page.title": "Page",
+	"editor.panel.Page.menuItems.new": "Add a new page",
+	"editor.panel.Page.menuItems.delete": "Delete the active page",
+	"editor.panel.Text.title": "Text",
+	"editor.panel.Text.fore-color": "Font color",
+	"editor.panel.Text.back-color": "Background color",
+	"editor.panel.Text.font": "Font",
+	"editor.panel.Text.font-style": "Font style",
+	"editor.panel.Text.font-style.bold": "Bold",
+	"editor.panel.Text.font-style.italic": "Italic",
+	"editor.panel.Text.font-style.strikeThrough": "Strikethrough",
+	"editor.panel.Text.font-style.underline": "Underline",
+	"editor.panel.Text.font-style.subscript": "Subscript",
+	"editor.panel.Text.font-style.superscript": "Superscript",
+	"editor.panel.Text.link": "Link",
+	"editor.panel.Text.link.link": "Link",
+	"editor.panel.Text.link.unlink": "Unlink",
+	"editor.overlay.GuideInfo.title": "Guide info",
+	"editor.overlay.GuideInfo.fields.title": "Title",
+	"editor.overlay.GuideInfo.fields.description": "Description",
+	"editor.overlay.GuideInfo.fields.thumbnail": "Thumbnail",
+	"editor.overlay.GuideInfo.fields.css": "CSS",
+	"editor.overlay.GuideSelector.title": "Select a guide",
+	"editor.overlay.GuideSelector.emptyText": "No guides available",
+	"editor.overlay.LinkEditor.title": "Link editor",
+	"editor.overlay.LinkEditor.fields.type": "Type",
+	"editor.overlay.LinkEditor.fields.type.url": "URL",
+	"editor.overlay.LinkEditor.fields.type.page": "Page",
+	"editor.overlay.LinkEditor.fields.type.time": "Time",
+	"editor.overlay.LinkEditor.fields.url": "URL",
+	"editor.overlay.LinkEditor.fields.page": "Page",
+	"editor.overlay.LinkEditor.fields.in-time": "Start time",
+	"editor.overlay.LinkEditor.fields.out-time": "End time",
+	"editor.overlay.LinkEditor.fields.r-index": "Reading index",
+	"editor.overlay.LoadMask.text": "Loading..."
+});
 
 /**
  * Editor
@@ -77,7 +151,7 @@ metaScore.Editor = (function(){
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
-    this.detailsOverlay = new metaScore.editor.overlay.GuideDetails();
+    this.detailsOverlay = new metaScore.editor.overlay.GuideInfo();
       
     // add event listeners    
     this
@@ -160,9 +234,9 @@ metaScore.Editor = (function(){
     delete this.loadmask;
     
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('An error occured while trying to save the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'An error occured while trying to save the guide. Please try again.'),
       'buttons': {
-        'ok': metaScore.String.t('OK'),
+        'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
       },
       'autoShow': true
     });
@@ -198,9 +272,9 @@ metaScore.Editor = (function(){
     delete this.loadmask;
     
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('An error occured while trying to delete the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'An error occured while trying to delete the guide. Please try again.'),
       'buttons': {
-        'ok': metaScore.String.t('OK'),
+        'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
       },
       'autoShow': true
     });  
@@ -249,10 +323,10 @@ metaScore.Editor = (function(){
       case 'open':      
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
-              'text': metaScore.String.t('Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
+              'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
               'buttons': {
-                'confirm': metaScore.String.t('Yes'),
-                'cancel': metaScore.String.t('No')
+                'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                'cancel': metaScore.Locale.t('editor.onMainmenuClick.open.no', 'No')
               },
               'autoShow': true
             })
@@ -272,10 +346,10 @@ metaScore.Editor = (function(){
         break;
       case 'delete':
         new metaScore.editor.overlay.Alert({
-            'text': metaScore.String.t('Are you sure you want to delete this guide ?'),
+            'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide ?'),
             'buttons': {
-              'confirm': metaScore.String.t('Yes'),
-              'cancel': metaScore.String.t('No')
+              'confirm': metaScore.Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
+              'cancel': metaScore.Locale.t('editor.onMainmenuClick.delete.no', 'No')
             },
             'autoShow': true
           })
@@ -283,10 +357,10 @@ metaScore.Editor = (function(){
         break;
       case 'revert':
         new metaScore.editor.overlay.Alert({
-            'text': metaScore.String.t('Are you sure you want to revert back to the last saved version ?\nAny unsaved data will be lost.'),
+            'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version ?\nAny unsaved data will be lost.'),
             'buttons': {
-              'confirm': metaScore.String.t('Yes'),
-              'cancel': metaScore.String.t('No')
+              'confirm': metaScore.Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
+              'cancel': metaScore.Locale.t('editor.onMainmenuClick.revert.no', 'No')
             },
             'autoShow': true
           })
@@ -659,9 +733,9 @@ metaScore.Editor = (function(){
     delete this.loadmask;
     
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('An error occured while trying to load the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
       'buttons': {
-        'ok': metaScore.String.t('OK'),
+        'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
       },
       'autoShow': true
     });
@@ -1222,49 +1296,49 @@ metaScore.namespace('editor').MainMenu = (function(){
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('New')
+        'title': metaScore.Locale.t('editor.MainMenu.new', 'New')
       })
       .data('action', 'new')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('Open')
+        'title': metaScore.Locale.t('editor.MainMenu.open', 'Open')
       })
       .data('action', 'open')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('edit')
+        'title': metaScore.Locale.t('editor.MainMenu.edit', 'Edit')
       })
       .data('action', 'edit')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('save')
+        'title': metaScore.Locale.t('editor.MainMenu.save', 'Save')
       })
       .data('action', 'save')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('delete')
+        'title': metaScore.Locale.t('editor.MainMenu.delete', 'Delete')
       })
       .data('action', 'delete')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('download')
+        'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
       })
       .data('action', 'download')
       .appendTo(left);
     
     this.timefield = new metaScore.editor.field.Time()
       .attr({
-        'title': metaScore.String.t('time')
+        'title': metaScore.Locale.t('editor.MainMenu.time', 'Time')
       })
       .addClass('time')
       .appendTo(left);
@@ -1273,35 +1347,35 @@ metaScore.namespace('editor').MainMenu = (function(){
         min: 0
       })
       .attr({
-        'title': metaScore.String.t('reading index')
+        'title': metaScore.Locale.t('editor.MainMenu.r-index', 'Reading index')
       })
       .addClass('r-index')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('edit toggle')
+        'title': metaScore.Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
       })
       .data('action', 'edit-toggle')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('revert')
+        'title': metaScore.Locale.t('editor.MainMenu.revert', 'Revert')
       })
       .data('action', 'revert')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('undo')
+        'title': metaScore.Locale.t('editor.MainMenu.undo', 'Undo')
       })
       .data('action', 'undo')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('redo')
+        'title': metaScore.Locale.t('editor.MainMenu.redo', 'Redo')
       })
       .data('action', 'redo')
       .appendTo(left);
@@ -1309,14 +1383,14 @@ metaScore.namespace('editor').MainMenu = (function(){
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('settings')
+        'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')
       })
       .data('action', 'settings')
       .appendTo(right);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('help')
+        'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
       })
       .data('action', 'help')
       .appendTo(right);
@@ -2564,11 +2638,11 @@ metaScore.namespace('editor.panel').Block = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Block'),
+    title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
     
     menuItems: {
-      'new': metaScore.String.t('Add a new block'),
-      'delete': metaScore.String.t('Delete the active block')
+      'new': metaScore.Locale.t('editor.panel.Block.menuItems.new', 'Add a new block'),
+      'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
     }
   };
   
@@ -2654,13 +2728,13 @@ metaScore.namespace('editor.panel').Element = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Element'),
+    title: metaScore.Locale.t('editor.panel.Element.title', 'Element'),
     
     menuItems: {
-      'Cursor': metaScore.String.t('Add a new cursor'),
-      'Image': metaScore.String.t('Add a new image'),
-      'Text': metaScore.String.t('Add a new text element'),
-      'delete': metaScore.String.t('Delete the active element')
+      'Cursor': metaScore.Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
+      'Image': metaScore.Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
+      'Text': metaScore.Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
+      'delete': metaScore.Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
     }
     
   };
@@ -2713,11 +2787,11 @@ metaScore.namespace('editor.panel').Page = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Page'),
+    title: metaScore.Locale.t('editor.panel.Page.title', 'Page'),
     
     menuItems: {
-      'new': metaScore.String.t('Add a new page'),
-      'delete': metaScore.String.t('Delete the active page')
+      'new': metaScore.Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
+      'delete': metaScore.Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
     }
   };
   
@@ -2753,14 +2827,14 @@ metaScore.namespace('editor.panel').Text = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Text'),
+    title: metaScore.Locale.t('editor.panel.Text.title', 'Text'),
     
     toolbarButtons: [],
     
     properties: {
       'fore-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Font color'),
+        'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color'),
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.execCommand('foreColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -2768,7 +2842,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'back-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Background color'),
+        'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color'),
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.execCommand('backColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -2776,7 +2850,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font': {
         'type': 'Select',
-        'label': metaScore.String.t('Font'),
+        'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
         'configs': {
           'options': {
             'Georgia, serif': 'Georgia',
@@ -2797,16 +2871,16 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font-style': {
         'type': 'Buttons',
-        'label': metaScore.String.t('Font style'),
+        'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
         'configs': {
           'buttons': {
             'bold': {
               'data-action': 'bold',
-              'title': metaScore.String.t('Bold')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.bold', 'Bold')
             },
             'italic': {
               'data-action': 'italic',
-              'title': metaScore.String.t('Italic')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.italic', 'Italic')
             }
           }
         },
@@ -2821,19 +2895,19 @@ metaScore.namespace('editor.panel').Text = (function () {
           'buttons': {
             'strikeThrough': {
               'data-action': 'strikethrough',
-              'title': metaScore.String.t('Strikethrough')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.strikeThrough', 'Strikethrough')
             },
             'underline': {
               'data-action': 'underline',
-              'title': metaScore.String.t('Underline')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.underline', 'Underline')
             },
             'subscript': {
               'data-action': 'subscript',
-              'title': metaScore.String.t('Subscript')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.subscript', 'Subscript')
             },
             'superscript': {
               'data-action': 'superscript',
-              'title': metaScore.String.t('Superscript')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.superscript', 'Superscript')
             }
           }
         },
@@ -2843,16 +2917,16 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'link': {
         'type': 'Buttons',
-        'label': metaScore.String.t('Link'),
+        'label': metaScore.Locale.t('editor.panel.Text.link', 'Link'),
         'configs': {
           'buttons': {
             'link': {
               'data-action': 'link',
-              'title': metaScore.String.t('Link')
+              'title': metaScore.Locale.t('editor.panel.Text.link.link', 'Link')
             },
             'unlink': {
               'data-action': 'unlink',
-              'title': metaScore.String.t('Unlink')
+              'title': metaScore.Locale.t('editor.panel.Text.link.unlink', 'Unlink')
             }
           }
         },
@@ -3447,26 +3521,26 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
   
 })();
 /**
- * GuideDetails
+ * GuideInfo
  *
  * @requires ../metaScore.editor.Ovelay.js
  * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.overlay').GuideDetails = (function () {
+metaScore.namespace('editor.overlay').GuideInfo = (function () {
   
-  function GuideDetails(configs) {
+  function GuideInfo(configs) {
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    GuideDetails.parent.call(this, this.configs);
+    GuideInfo.parent.call(this, this.configs);
     
     this.addClass('guide-details');
     
     this.setupUI();
   }
 
-  GuideDetails.defaults = {    
+  GuideInfo.defaults = {    
     /**
     * True to add a toolbar with title and close button
     */
@@ -3475,12 +3549,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.String.t('Edit')
+    title: metaScore.Locale.t('editor.overlay.GuideInfo.title', 'Guide info')
   };
   
-  metaScore.editor.Overlay.extend(GuideDetails);
+  metaScore.editor.Overlay.extend(GuideInfo);
   
-  GuideDetails.prototype.setupUI = function(){
+  GuideInfo.prototype.setupUI = function(){
   
     var contents = this.getContents();
     
@@ -3488,22 +3562,22 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     this.buttons = {};
     
     this.fields.title = new metaScore.editor.field.Text({
-        label: metaScore.String.t('Title')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.title', 'Title')
       })
       .appendTo(contents);
     
     this.fields.description = new metaScore.editor.field.Textarea({
-        label: metaScore.String.t('Description')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.description', 'Description')
       })
       .appendTo(contents);
     
     /*this.fields.thumbnail = new metaScore.editor.field.Image({
-        label: metaScore.String.t('Thumbnail')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.thumbnail', 'Thumbnail')
       })
       .appendTo(contents);*/
     
     this.fields.css = new metaScore.editor.field.Textarea({
-        label: metaScore.String.t('CSS')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.css', 'CSS')
       })
       .appendTo(contents);
     
@@ -3520,14 +3594,14 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
   
   };
   
-  GuideDetails.prototype.setValues = function(data){
+  GuideInfo.prototype.setValues = function(data){
     this.fields.title.setValue(data.title || null);
     this.fields.description.setValue(data.description || null);
     //this.fields.thumbnail.setValue(data.thumbnail || null);
     this.fields.css.setValue(data.css || null);
   };
   
-  GuideDetails.prototype.getValues = function(){
+  GuideInfo.prototype.getValues = function(){
     return {
       'title': this.fields.title.getValue(),
       'description': this.fields.description.getValue(),
@@ -3536,23 +3610,23 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };  
   };
   
-  GuideDetails.prototype.onApplyClick = function(evt){    
+  GuideInfo.prototype.onApplyClick = function(evt){    
     this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);    
     this.hide();
   };
   
-  GuideDetails.prototype.onCancelClick = GuideDetails.prototype.onCloseClick = function(evt){
+  GuideInfo.prototype.onCancelClick = GuideInfo.prototype.onCloseClick = function(evt){
     this.setValues(this.previousValues);    
     this.hide();
   };
   
-  GuideDetails.prototype.show = function(){
+  GuideInfo.prototype.show = function(){
     this.previousValues = this.getValues();
   
-    return GuideDetails.parent.prototype.show.call(this);
+    return GuideInfo.parent.prototype.show.call(this);
   };
     
-  return GuideDetails;
+  return GuideInfo;
   
 })();
 /**
@@ -3582,12 +3656,12 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.String.t('Select a guide'),
+    title: metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
     
     /**
     * The text to display when no guides are available
     */
-    emptyText: metaScore.String.t('No guides available'),
+    emptyText: metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
     
     /**
     * The url from which to retreive the list of guides
@@ -3693,7 +3767,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.String.t('Link editor'),
+    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link editor'),
     
     /**
     * The current link
@@ -3711,11 +3785,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.buttons = {};
     
     this.fields.type = new metaScore.editor.field.Select({
-        label: metaScore.String.t('Type'),
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type', 'Type'),
         options: {
-          url: metaScore.String.t('URL'),
-          page: metaScore.String.t('Page'),
-          time: metaScore.String.t('Time'),
+          url: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.url', 'URL'),
+          page: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.page', 'Page'),
+          time: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.time', 'Time'),
         }
       })
       .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
@@ -3723,31 +3797,31 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     
     // URL
     this.fields.url = new metaScore.editor.field.Text({
-        label: metaScore.String.t('URL')
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.url', 'URL')
       })
       .appendTo(contents);
     
     // Page
     this.fields.page = new metaScore.editor.field.Number({
-        label: metaScore.String.t('Page')
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.page', 'Page')
       })
       .appendTo(contents);
     
     // Time
     this.fields.inTime = new metaScore.editor.field.Time({
-        label: metaScore.String.t('Start time'),
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.in-time', 'Start time'),
         inButton: true
       })
       .appendTo(contents);
     
     this.fields.outTime = new metaScore.editor.field.Time({
-        label: metaScore.String.t('End time'),
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.out-time', 'End time'),
         inButton: true
       })
       .appendTo(contents);
     
     this.fields.rIndex = new metaScore.editor.field.Number({
-        label: metaScore.String.t('Reading index')
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.r-index', 'Reading index')
       })
       .appendTo(contents);
     
@@ -3873,7 +3947,7 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
     */
     draggable: false,
     
-    text: metaScore.String.t('Loading...')
+    text: metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
   };
   
   metaScore.editor.Overlay.extend(LoadMask);

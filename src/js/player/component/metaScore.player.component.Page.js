@@ -18,7 +18,7 @@ metaScore.namespace('player.component').Page = (function () {
     'properties': {
       'background-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Background color'),
+        'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color'),
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
@@ -29,7 +29,7 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'background-image': {
         'type': 'Image',
-        'label': metaScore.String.t('Background image'),
+        'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
           
@@ -46,7 +46,7 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'start-time': {
         'type': 'Time',
-        'label': metaScore.String.t('Start time'),
+        'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
         'configs': {
           'checkbox': true,
           'inButton': true,
@@ -62,7 +62,7 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'end-time': {
         'type': 'Time',
-        'label': metaScore.String.t('End time'),
+        'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
         'configs': {
           'checkbox': true,
           'inButton': true,

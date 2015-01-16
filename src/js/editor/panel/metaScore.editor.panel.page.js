@@ -22,11 +22,11 @@ metaScore.namespace('editor.panel').Page = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Page'),
+    title: metaScore.Locale.t('editor.panel.Page.title', 'Page'),
     
     menuItems: {
-      'new': metaScore.String.t('Add a new page'),
-      'delete': metaScore.String.t('Delete the active page')
+      'new': metaScore.Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
+      'delete': metaScore.Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
     }
   };
   

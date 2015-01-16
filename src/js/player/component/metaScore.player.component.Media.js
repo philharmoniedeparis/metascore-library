@@ -23,7 +23,7 @@ metaScore.namespace('player.component').Media = (function () {
     'properties': {
       'x': {
         'type': 'Number',
-        'label': metaScore.String.t('X'),
+        'label': metaScore.Locale.t('player.component.Media.x', 'X'),
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -33,7 +33,7 @@ metaScore.namespace('player.component').Media = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.String.t('Y'),
+        'label': metaScore.Locale.t('player.component.Media.y', 'Y'),
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
@@ -43,7 +43,7 @@ metaScore.namespace('player.component').Media = (function () {
       },
       'width': {
         'type': 'Number',
-        'label': metaScore.String.t('Width'),
+        'label': metaScore.Locale.t('player.component.Media.width', 'Width'),
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
@@ -53,7 +53,7 @@ metaScore.namespace('player.component').Media = (function () {
       },
       'height': {
         'type': 'Number',
-        'label': metaScore.String.t('Height'),
+        'label': metaScore.Locale.t('player.component.Media.height', 'Height'),
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },

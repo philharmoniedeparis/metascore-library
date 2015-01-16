@@ -25,14 +25,14 @@ metaScore.namespace('editor.panel').Text = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Text'),
+    title: metaScore.Locale.t('editor.panel.Text.title', 'Text'),
     
     toolbarButtons: [],
     
     properties: {
       'fore-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Font color'),
+        'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color'),
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.execCommand('foreColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -40,7 +40,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'back-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Background color'),
+        'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color'),
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.execCommand('backColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -48,7 +48,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font': {
         'type': 'Select',
-        'label': metaScore.String.t('Font'),
+        'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
         'configs': {
           'options': {
             'Georgia, serif': 'Georgia',
@@ -69,16 +69,16 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font-style': {
         'type': 'Buttons',
-        'label': metaScore.String.t('Font style'),
+        'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
         'configs': {
           'buttons': {
             'bold': {
               'data-action': 'bold',
-              'title': metaScore.String.t('Bold')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.bold', 'Bold')
             },
             'italic': {
               'data-action': 'italic',
-              'title': metaScore.String.t('Italic')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.italic', 'Italic')
             }
           }
         },
@@ -93,19 +93,19 @@ metaScore.namespace('editor.panel').Text = (function () {
           'buttons': {
             'strikeThrough': {
               'data-action': 'strikethrough',
-              'title': metaScore.String.t('Strikethrough')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.strikeThrough', 'Strikethrough')
             },
             'underline': {
               'data-action': 'underline',
-              'title': metaScore.String.t('Underline')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.underline', 'Underline')
             },
             'subscript': {
               'data-action': 'subscript',
-              'title': metaScore.String.t('Subscript')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.subscript', 'Subscript')
             },
             'superscript': {
               'data-action': 'superscript',
-              'title': metaScore.String.t('Superscript')
+              'title': metaScore.Locale.t('editor.panel.Text.font-style.superscript', 'Superscript')
             }
           }
         },
@@ -115,16 +115,16 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'link': {
         'type': 'Buttons',
-        'label': metaScore.String.t('Link'),
+        'label': metaScore.Locale.t('editor.panel.Text.link', 'Link'),
         'configs': {
           'buttons': {
             'link': {
               'data-action': 'link',
-              'title': metaScore.String.t('Link')
+              'title': metaScore.Locale.t('editor.panel.Text.link.link', 'Link')
             },
             'unlink': {
               'data-action': 'unlink',
-              'title': metaScore.String.t('Unlink')
+              'title': metaScore.Locale.t('editor.panel.Text.link.unlink', 'Unlink')
             }
           }
         },

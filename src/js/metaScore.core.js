@@ -7,12 +7,22 @@ metaScore = global.metaScore = {
   
   revision: "[[REVISION]]",
   
+  locale: 'fr',
+  
   getVersion: function(){
     return this.version;
   },
   
   getRevision: function(){
     return this.revision;
+  },
+  
+  setLocale: function(locale){
+    this.locale = locale;
+  },
+  
+  getLocale: function(){
+    return this.locale;
   },
   
   namespace: function(str){  

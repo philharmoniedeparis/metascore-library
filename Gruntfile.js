@@ -12,9 +12,12 @@ module.exports = function(grunt) {
         sub('src/js/%s.core.js'),
         sub('src/js/%s.Class.js'),
         sub('src/js/%s.Evented.js'),
-        sub('src/js/helpers/%s.*.js')
+        sub('src/js/helpers/%s.*.js'),
+        sub('src/js/%s.Locale.js'),
+        sub('src/js/locale/core/%s.*.js'),
       ],
       PLAYER_LIST = [
+        sub('src/js/locale/player/%s.*.js'),
         sub('src/js/%s.Player.js'),
         sub('src/js/player/%s.player.*.js'),
         sub('src/js/player/component/%s.*.js'),
@@ -22,6 +25,7 @@ module.exports = function(grunt) {
         sub('src/js/player/media/%s.*.js'),
       ],
       EDITOR_LIST = [
+        sub('src/js/locale/editor/%s.*.js'),
         sub('src/js/%s.Editor.js'),
         sub('src/js/editor/%s.editor.*.js'),
         sub('src/js/editor/field/%s.*.js'),
@@ -67,6 +71,7 @@ module.exports = function(grunt) {
     },
     clean: {
       dist: ['dist/*'],
+      i18n: ['src/js/locale/*'],
       drupal: ['../Drupal.git/sites/default/libraries/metaScore'],
       options: {
         force: true
@@ -182,40 +187,58 @@ module.exports = function(grunt) {
       }
     },
     translate_extract: {
+      core: {
+        src: CORE_LIST,
+        options:{
+          outputDir: "src/locale/core"
+        }
+      },
       player: {
         src: PLAYER_LIST,
-        options: {
-          outputExtension: ".player.json"
+        options:{
+          outputDir: "src/locale/player"
         }
       },
       editor: {
         src: EDITOR_LIST,
-        options: {
-          outputExtension: ".editor.json"
+        options:{
+          outputDir: "src/locale/editor"
         }
       },
       options: {
-        locales: ["en", "fr"],
-        outputDir: "src/locale",
+        locales: ["fr"],
         builtInParser: null,
         customParser:  {
           getRegexpList: function(){
-            return [/metaScore\.String\.t\('(.*)'/gm];
+            return [/metaScore\.Locale\.t\('(.*)', ?'(.*)'/gm];
           },
           parseMatch: function(match){
-            console.log(match);
             return {
               'key': match[1],
-              'text': match[1]
+              'text': match[2]
             };
-          }        
+          }
         },
         errorOnDuplicatedKeys: false
       }
     },
+    translate_copy: {
+      core: {
+        src: ['src/locale/core/*.json'],
+        dest: "src/js/locale/core/"
+      },
+      player: {
+        src: ['src/locale/player/*.json'],
+        dest: "src/js/locale/player/"
+      },
+      editor: {
+        src: ['src/locale/editor/*.json'],
+        dest: "src/js/locale/editor/"
+      }
+    },
     watch: {
       scripts: {
-        files: ['Gruntfile.js'].concat('src/**'),
+        files: ['Gruntfile.js'].concat('src/**', '!src/locale/**', '!src/js/locale/**'),
         tasks: ['build', 'drupal'],
         options: {
           interrupt: true
@@ -226,9 +249,36 @@ module.exports = function(grunt) {
   
   // Register tasks
   
+  grunt.registerMultiTask('translate_copy', 'Copy translations to javascript', function() {
+    var path = require('path'),
+      fs = require('fs');
+      
+    this.files.forEach(function(file){
+      file.src.forEach(function(f){
+        var lang = path.basename(f, '.json'),
+          strings = fs.readFileSync(f, 'utf8'),
+          dest = file.dest +'metaScore.locale.'+ lang.toUpperCase() +'.js',
+          key = 'metaScore.Locale.strings.'+ lang;
+          
+        if (!fs.existsSync(file.dest)){
+          fs.mkdirSync(file.dest);
+        }
+        
+        fs.writeFileSync(dest, key +' = metaScore.Object.extend('+ key +', '+ strings +');\n');
+      });
+    });
+  });
+  
+  grunt.registerTask('i18n', [
+    'clean:i18n',
+    'translate_extract',
+    'translate_copy'
+  ]);
+  
   grunt.registerTask('build', [
     'jshint',
     'clean:dist',
+    'i18n',
     'concat:player',
     'concat:editor',
     'uglify:dist',

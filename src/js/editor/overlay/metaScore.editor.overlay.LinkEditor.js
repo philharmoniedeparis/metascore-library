@@ -32,7 +32,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.String.t('Link editor'),
+    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link editor'),
     
     /**
     * The current link
@@ -50,11 +50,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.buttons = {};
     
     this.fields.type = new metaScore.editor.field.Select({
-        label: metaScore.String.t('Type'),
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type', 'Type'),
         options: {
-          url: metaScore.String.t('URL'),
-          page: metaScore.String.t('Page'),
-          time: metaScore.String.t('Time'),
+          url: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.url', 'URL'),
+          page: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.page', 'Page'),
+          time: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.time', 'Time'),
         }
       })
       .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
@@ -62,31 +62,31 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     
     // URL
     this.fields.url = new metaScore.editor.field.Text({
-        label: metaScore.String.t('URL')
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.url', 'URL')
       })
       .appendTo(contents);
     
     // Page
     this.fields.page = new metaScore.editor.field.Number({
-        label: metaScore.String.t('Page')
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.page', 'Page')
       })
       .appendTo(contents);
     
     // Time
     this.fields.inTime = new metaScore.editor.field.Time({
-        label: metaScore.String.t('Start time'),
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.in-time', 'Start time'),
         inButton: true
       })
       .appendTo(contents);
     
     this.fields.outTime = new metaScore.editor.field.Time({
-        label: metaScore.String.t('End time'),
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.out-time', 'End time'),
         inButton: true
       })
       .appendTo(contents);
     
     this.fields.rIndex = new metaScore.editor.field.Number({
-        label: metaScore.String.t('Reading index')
+        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.r-index', 'Reading index')
       })
       .appendTo(contents);
     

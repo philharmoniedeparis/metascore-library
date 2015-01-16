@@ -18,7 +18,7 @@ metaScore.namespace('player.component').Controller = (function () {
     'properties': {
       'x': {
         'type': 'Number',
-        'label': metaScore.String.t('X'),
+        'label': metaScore.Locale.t('player.component.Controller.x', 'X'),
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -28,7 +28,7 @@ metaScore.namespace('player.component').Controller = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.String.t('Y'),
+        'label': metaScore.Locale.t('player.component.Controller.y', 'Y'),
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },

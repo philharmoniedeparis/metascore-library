@@ -24,7 +24,7 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
     */
     draggable: false,
     
-    text: metaScore.String.t('Loading...')
+    text: metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
   };
   
   metaScore.editor.Overlay.extend(LoadMask);

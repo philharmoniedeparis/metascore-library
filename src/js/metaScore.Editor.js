@@ -40,7 +40,7 @@ metaScore.Editor = (function(){
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     this.history = new metaScore.editor.History();
-    this.detailsOverlay = new metaScore.editor.overlay.GuideDetails();
+    this.detailsOverlay = new metaScore.editor.overlay.GuideInfo();
       
     // add event listeners    
     this
@@ -123,9 +123,9 @@ metaScore.Editor = (function(){
     delete this.loadmask;
     
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('An error occured while trying to save the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'An error occured while trying to save the guide. Please try again.'),
       'buttons': {
-        'ok': metaScore.String.t('OK'),
+        'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
       },
       'autoShow': true
     });
@@ -161,9 +161,9 @@ metaScore.Editor = (function(){
     delete this.loadmask;
     
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('An error occured while trying to delete the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'An error occured while trying to delete the guide. Please try again.'),
       'buttons': {
-        'ok': metaScore.String.t('OK'),
+        'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
       },
       'autoShow': true
     });  
@@ -212,10 +212,10 @@ metaScore.Editor = (function(){
       case 'open':      
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
-              'text': metaScore.String.t('Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
+              'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?\nAny unsaved data will be lost.'),
               'buttons': {
-                'confirm': metaScore.String.t('Yes'),
-                'cancel': metaScore.String.t('No')
+                'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                'cancel': metaScore.Locale.t('editor.onMainmenuClick.open.no', 'No')
               },
               'autoShow': true
             })
@@ -235,10 +235,10 @@ metaScore.Editor = (function(){
         break;
       case 'delete':
         new metaScore.editor.overlay.Alert({
-            'text': metaScore.String.t('Are you sure you want to delete this guide ?'),
+            'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide ?'),
             'buttons': {
-              'confirm': metaScore.String.t('Yes'),
-              'cancel': metaScore.String.t('No')
+              'confirm': metaScore.Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
+              'cancel': metaScore.Locale.t('editor.onMainmenuClick.delete.no', 'No')
             },
             'autoShow': true
           })
@@ -246,10 +246,10 @@ metaScore.Editor = (function(){
         break;
       case 'revert':
         new metaScore.editor.overlay.Alert({
-            'text': metaScore.String.t('Are you sure you want to revert back to the last saved version ?\nAny unsaved data will be lost.'),
+            'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version ?\nAny unsaved data will be lost.'),
             'buttons': {
-              'confirm': metaScore.String.t('Yes'),
-              'cancel': metaScore.String.t('No')
+              'confirm': metaScore.Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
+              'cancel': metaScore.Locale.t('editor.onMainmenuClick.revert.no', 'No')
             },
             'autoShow': true
           })
@@ -622,9 +622,9 @@ metaScore.Editor = (function(){
     delete this.loadmask;
     
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.String.t('An error occured while trying to load the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
       'buttons': {
-        'ok': metaScore.String.t('OK'),
+        'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
       },
       'autoShow': true
     });

@@ -21,7 +21,7 @@ metaScore.namespace('player.component').Block = (function () {
     'properties': {
       'name': {
         'type': 'Text',
-        'label': metaScore.String.t('Name'),
+        'label': metaScore.Locale.t('player.component.Block.name', 'Name'),
         'getter': function(skipDefault){
           return this.data('name');
         },
@@ -31,7 +31,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'x': {
         'type': 'Number',
-        'label': metaScore.String.t('X'),
+        'label': metaScore.Locale.t('player.component.Block.x', 'X'),
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -41,7 +41,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.String.t('Y'),
+        'label': metaScore.Locale.t('player.component.Block.y', 'Y'),
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
@@ -51,7 +51,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'width': {
         'type': 'Number',
-        'label': metaScore.String.t('Width'),
+        'label': metaScore.Locale.t('player.component.Block.width', 'Width'),
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
@@ -61,7 +61,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'height': {
         'type': 'Number',
-        'label': metaScore.String.t('Height'),
+        'label': metaScore.Locale.t('player.component.Block.height', 'Height'),
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
@@ -71,7 +71,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'background-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Background color'),
+        'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color'),
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
@@ -82,7 +82,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'background-image': {
         'type':'Image',
-        'label': metaScore.String.t('Background image'),
+        'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
           
@@ -99,7 +99,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'border-width': {
         'type': 'Number',
-        'label': metaScore.String.t('Border width'),
+        'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width'),
         'getter': function(skipDefault){
           var value = this.css('border-width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
@@ -110,7 +110,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'border-color': {
         'type': 'Color',
-        'label': metaScore.String.t('Border color'),
+        'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color'),
         'getter': function(skipDefault){
           return this.css('border-color', undefined, skipDefault);
         },
@@ -121,7 +121,7 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'synched': {
         'type': 'Boolean',
-        'label': metaScore.String.t('Synchronized pages ?'),
+        'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),
         'getter': function(skipDefault){
           return this.data('synched') === "true";
         },

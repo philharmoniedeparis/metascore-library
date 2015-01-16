@@ -29,49 +29,49 @@ metaScore.namespace('editor').MainMenu = (function(){
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('New')
+        'title': metaScore.Locale.t('editor.MainMenu.new', 'New')
       })
       .data('action', 'new')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('Open')
+        'title': metaScore.Locale.t('editor.MainMenu.open', 'Open')
       })
       .data('action', 'open')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('edit')
+        'title': metaScore.Locale.t('editor.MainMenu.edit', 'Edit')
       })
       .data('action', 'edit')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('save')
+        'title': metaScore.Locale.t('editor.MainMenu.save', 'Save')
       })
       .data('action', 'save')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('delete')
+        'title': metaScore.Locale.t('editor.MainMenu.delete', 'Delete')
       })
       .data('action', 'delete')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('download')
+        'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
       })
       .data('action', 'download')
       .appendTo(left);
     
     this.timefield = new metaScore.editor.field.Time()
       .attr({
-        'title': metaScore.String.t('time')
+        'title': metaScore.Locale.t('editor.MainMenu.time', 'Time')
       })
       .addClass('time')
       .appendTo(left);
@@ -80,35 +80,35 @@ metaScore.namespace('editor').MainMenu = (function(){
         min: 0
       })
       .attr({
-        'title': metaScore.String.t('reading index')
+        'title': metaScore.Locale.t('editor.MainMenu.r-index', 'Reading index')
       })
       .addClass('r-index')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('edit toggle')
+        'title': metaScore.Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
       })
       .data('action', 'edit-toggle')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('revert')
+        'title': metaScore.Locale.t('editor.MainMenu.revert', 'Revert')
       })
       .data('action', 'revert')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('undo')
+        'title': metaScore.Locale.t('editor.MainMenu.undo', 'Undo')
       })
       .data('action', 'undo')
       .appendTo(left);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('redo')
+        'title': metaScore.Locale.t('editor.MainMenu.redo', 'Redo')
       })
       .data('action', 'redo')
       .appendTo(left);
@@ -116,14 +116,14 @@ metaScore.namespace('editor').MainMenu = (function(){
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('settings')
+        'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')
       })
       .data('action', 'settings')
       .appendTo(right);
     
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.String.t('help')
+        'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
       })
       .data('action', 'help')
       .appendTo(right);

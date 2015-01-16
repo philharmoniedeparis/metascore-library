@@ -1,24 +1,24 @@
 /**
- * GuideDetails
+ * GuideInfo
  *
  * @requires ../metaScore.editor.Ovelay.js
  * @requires ../../helpers/metaScore.ajax.js
  */
  
-metaScore.namespace('editor.overlay').GuideDetails = (function () {
+metaScore.namespace('editor.overlay').GuideInfo = (function () {
   
-  function GuideDetails(configs) {
+  function GuideInfo(configs) {
     this.configs = this.getConfigs(configs);
     
     // call parent constructor
-    GuideDetails.parent.call(this, this.configs);
+    GuideInfo.parent.call(this, this.configs);
     
     this.addClass('guide-details');
     
     this.setupUI();
   }
 
-  GuideDetails.defaults = {    
+  GuideInfo.defaults = {    
     /**
     * True to add a toolbar with title and close button
     */
@@ -27,12 +27,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.String.t('Edit')
+    title: metaScore.Locale.t('editor.overlay.GuideInfo.title', 'Guide info')
   };
   
-  metaScore.editor.Overlay.extend(GuideDetails);
+  metaScore.editor.Overlay.extend(GuideInfo);
   
-  GuideDetails.prototype.setupUI = function(){
+  GuideInfo.prototype.setupUI = function(){
   
     var contents = this.getContents();
     
@@ -40,22 +40,22 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     this.buttons = {};
     
     this.fields.title = new metaScore.editor.field.Text({
-        label: metaScore.String.t('Title')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.title', 'Title')
       })
       .appendTo(contents);
     
     this.fields.description = new metaScore.editor.field.Textarea({
-        label: metaScore.String.t('Description')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.description', 'Description')
       })
       .appendTo(contents);
     
     /*this.fields.thumbnail = new metaScore.editor.field.Image({
-        label: metaScore.String.t('Thumbnail')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.thumbnail', 'Thumbnail')
       })
       .appendTo(contents);*/
     
     this.fields.css = new metaScore.editor.field.Textarea({
-        label: metaScore.String.t('CSS')
+        label: metaScore.Locale.t('editor.overlay.GuideInfo.fields.css', 'CSS')
       })
       .appendTo(contents);
     
@@ -72,14 +72,14 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
   
   };
   
-  GuideDetails.prototype.setValues = function(data){
+  GuideInfo.prototype.setValues = function(data){
     this.fields.title.setValue(data.title || null);
     this.fields.description.setValue(data.description || null);
     //this.fields.thumbnail.setValue(data.thumbnail || null);
     this.fields.css.setValue(data.css || null);
   };
   
-  GuideDetails.prototype.getValues = function(){
+  GuideInfo.prototype.getValues = function(){
     return {
       'title': this.fields.title.getValue(),
       'description': this.fields.description.getValue(),
@@ -88,22 +88,22 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };  
   };
   
-  GuideDetails.prototype.onApplyClick = function(evt){    
+  GuideInfo.prototype.onApplyClick = function(evt){    
     this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);    
     this.hide();
   };
   
-  GuideDetails.prototype.onCancelClick = GuideDetails.prototype.onCloseClick = function(evt){
+  GuideInfo.prototype.onCancelClick = GuideInfo.prototype.onCloseClick = function(evt){
     this.setValues(this.previousValues);    
     this.hide();
   };
   
-  GuideDetails.prototype.show = function(){
+  GuideInfo.prototype.show = function(){
     this.previousValues = this.getValues();
   
-    return GuideDetails.parent.prototype.show.call(this);
+    return GuideInfo.parent.prototype.show.call(this);
   };
     
-  return GuideDetails;
+  return GuideInfo;
   
 })();

@@ -22,13 +22,13 @@ metaScore.namespace('editor.panel').Element = (function () {
     /**
     * The panel's title
     */
-    title: metaScore.String.t('Element'),
+    title: metaScore.Locale.t('editor.panel.Element.title', 'Element'),
     
     menuItems: {
-      'Cursor': metaScore.String.t('Add a new cursor'),
-      'Image': metaScore.String.t('Add a new image'),
-      'Text': metaScore.String.t('Add a new text element'),
-      'delete': metaScore.String.t('Delete the active element')
+      'Cursor': metaScore.Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
+      'Image': metaScore.Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
+      'Text': metaScore.Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
+      'delete': metaScore.Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
     }
     
   };

@@ -25,12 +25,12 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.String.t('Select a guide'),
+    title: metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
     
     /**
     * The text to display when no guides are available
     */
-    emptyText: metaScore.String.t('No guides available'),
+    emptyText: metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
     
     /**
     * The url from which to retreive the list of guides
