@@ -3,7 +3,7 @@
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Var = (function () {
 
   /**
@@ -19,10 +19,10 @@ metaScore.Var = (function () {
     "[object RegExp]": "regexp",
     "[object Object]": "object"
   };
-  
+
   function Var() {
   }
-  
+
   metaScore.Class.extend(Var);
 
   /**
@@ -53,18 +53,18 @@ metaScore.Var = (function () {
     if(obj === undefined || obj == null){
       return true;
     }
-    
+
     if(obj.hasOwnProperty('length')){
       return obj.length <= 0;
     }
-    
+
     if(metaScore.Var.is(obj, 'object')){
       return Object.keys(obj).length <= 0;
     }
-    
+
     return false;
   };
-    
+
   return Var;
-  
+
 })();

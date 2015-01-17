@@ -390,6 +390,7 @@
   overflow: auto;
   background: #f2f2f2;
   border-left: 1px solid #b2b2b2;
+  overflow-y: scroll;
 }
 .metaScore-editor .sidebar .panel .toolbar {
   padding: 5px;
@@ -405,12 +406,24 @@
 .metaScore-editor .sidebar .panel .toolbar .title {
   float: left;
   padding-left: 18px;
+  margin-right: 5px;
   font-weight: bold;
+  line-height: 18px;
   background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
-  /*text-indent: -999px;*/
   cursor: pointer;
   opacity: 0.8;
   filter: alpha(opacity=(80));
+}
+.metaScore-editor .sidebar .panel .toolbar .selector {
+  float: right;
+}
+.metaScore-editor .sidebar .panel .toolbar .selector select {
+  width: 100px;
+  background: none;
+  border: none;
+}
+.metaScore-editor .sidebar .panel .toolbar .selector select:empty {
+  display: none;
 }
 .metaScore-editor .sidebar .panel .toolbar .buttons {
   float: right;

@@ -3,18 +3,18 @@
  *
  * @requires ../metaScore.player.element.js
  */
- 
+
 metaScore.namespace('player.component.element').Text = (function () {
 
-  function Text(configs) {  
+  function Text(configs) {
     // call parent constructor
     Text.parent.call(this, configs);
-          
+
     this.addDelegate('a', 'click', metaScore.Function.proxy(this.onLinkClick, this));
   }
-  
+
   metaScore.player.component.Element.extend(Text);
-  
+
   Text.defaults = {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'text': {
@@ -28,18 +28,18 @@ metaScore.namespace('player.component.element').Text = (function () {
       }
     })
   };
-  
+
   Text.prototype.setupDOM = function(){
     // call parent function
     Text.parent.prototype.setupDOM.call(this);
-    
+
     this.data('type', 'text');
   };
-  
+
   Text.prototype.onLinkClick = function(evt){
     var link = evt.target,
       matches;
-  
+
     if(matches = link.hash.match(/^#p=(\d+)/)){
       this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
@@ -51,11 +51,11 @@ metaScore.namespace('player.component.element').Text = (function () {
     else{
       window.open(link.href,'_blank');
     }
-    
+
     evt.preventDefault();
-    
+
   };
-    
+
   return Text;
-  
+
 })();

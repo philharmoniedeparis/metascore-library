@@ -10,31 +10,29 @@
  * @requires ../../helpers/metaScore.resizable.js
  * @requires ../../helpers/metaScore.resizable.js
  */
- 
+
 metaScore.namespace('editor.panel').Block = (function () {
-  
-  function BlockPanel(configs) {    
+
+  function BlockPanel(configs) {
     // call parent constructor
     BlockPanel.parent.call(this, configs);
   }
 
   BlockPanel.defaults = {
-    /**
-    * The panel's title
-    */
-    title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
-    
-    menuItems: {
-      'new': metaScore.Locale.t('editor.panel.Block.menuItems.new', 'Add a new block'),
-      'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
-    }
+    toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
+      title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
+      menuItems: {
+        'new': metaScore.Locale.t('editor.panel.Block.menuItems.new', 'Add a new block'),
+        'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
+      }
+    })
   };
-  
+
   metaScore.editor.Panel.extend(BlockPanel);
-  
+
   BlockPanel.prototype.getDraggable = function(){
-    var component = this.getComponent();    
-    
+    var component = this.getComponent();
+
     if(component instanceof metaScore.player.component.Controller){
       return {
         'target': component,
@@ -45,7 +43,7 @@ metaScore.namespace('editor.panel').Block = (function () {
           'left': 0
         }
       };
-    }    
+    }
     else if(component instanceof metaScore.player.component.Media){
       return {
         'target': component,
@@ -68,23 +66,23 @@ metaScore.namespace('editor.panel').Block = (function () {
         }
       };
     }
-    
+
     return false;
   };
-  
-  BlockPanel.prototype.getResizable = function(){  
+
+  BlockPanel.prototype.getResizable = function(){
     var component = this.getComponent();
-    
+
     if(component instanceof metaScore.player.component.Controller){
       return false;
     }
-    
+
     return {
       'target': component,
       'container': component.parents()
     };
   };
-    
+
   return BlockPanel;
-  
+
 })();

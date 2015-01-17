@@ -3,14 +3,14 @@
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Locale = (function () {
-  
+
   function Locale() {
   }
-  
+
   metaScore.Class.extend(Locale);
-  
+
   Locale.strings = {};
 
   /**
@@ -21,11 +21,11 @@ metaScore.Locale = (function () {
   */
   Locale.t = function(key, str, args){
     var locale = metaScore.getLocale();
-      
+
     if(this.strings.hasOwnProperty(locale) && this.strings[locale].hasOwnProperty(key)){
       str = this.strings[locale][key];
     }
-    
+
     return Locale.formatString(str, args);
   };
 
@@ -35,14 +35,14 @@ metaScore.Locale = (function () {
   * @param {object} string replacements
   * @returns {string} the formatted string
   */
-  Locale.formatString = function(str, args) {  
+  Locale.formatString = function(str, args) {
     metaScore.Object.each(args, function(key, value){
       str = str.replace(key, args[key]);
     }, this);
-    
+
     return str;
   };
-    
+
   return Locale;
-  
+
 })();

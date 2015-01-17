@@ -3,16 +3,16 @@
  *
  * @requires ../helpers/metaScore.dom.js
  */
- 
+
 metaScore.namespace('player.component').Element = (function () {
 
   function Element(configs) {
     // call parent constructor
     Element.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Element);
-  
+
   Element.defaults = {
     'properties': {
       'name': {
@@ -115,11 +115,11 @@ metaScore.namespace('player.component').Element = (function () {
         'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.contents.css('background-image', undefined, skipDefault);
-          
+
           if(value === 'none' || !metaScore.Var.is(value, "string")){
             return null;
           }
-          
+
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
@@ -183,7 +183,7 @@ metaScore.namespace('player.component').Element = (function () {
           'outButton': true
         },
         'getter': function(skipDefault){
-          var value = parseFloat(this.data('start-time'));          
+          var value = parseFloat(this.data('start-time'));
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -199,7 +199,7 @@ metaScore.namespace('player.component').Element = (function () {
           'outButton': true
         },
         'getter': function(skipDefault){
-          var value = parseFloat(this.data('end-time'));          
+          var value = parseFloat(this.data('end-time'));
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -208,25 +208,25 @@ metaScore.namespace('player.component').Element = (function () {
       }
     }
   };
-  
+
   Element.prototype.setupDOM = function(){
     // call parent function
     Element.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('element');
-    
+
     this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
       .appendTo(this);
   };
-  
+
   Element.prototype.onCuePointStart = function(cuepoint){
     this.addClass('active');
   };
-  
+
   Element.prototype.onCuePointEnd = function(cuepoint){
     this.removeClass('active');
   };
-    
+
   return Element;
-  
+
 })();

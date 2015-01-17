@@ -16,11 +16,11 @@ body{
     &.audio{
       display: none;
     }
-  
+
     &.video{
       min-width: 50px;
       min-height: 50px;
-      
+
       video{
         display: block;
         width: 100%;
@@ -40,16 +40,16 @@ body{
     font-weight: bold;
     font-size: 11px;
     .border-radius(10px);
-    
+
     .timer{
       text-align: center;
       line-height: 30px;
       background-color: rgb(0,0,254);
     }
-    
+
     .buttons{
       position: relative;
-      
+
       button{
         position: absolute;
         border: none;
@@ -57,7 +57,7 @@ body{
         background-color: transparent;
         background-image: url('img/player/controller-buttons.png');
         background-repeat: no-repeat;
-      
+
         &[data-action="rewind"]{
           top: 22px;
           left: 10px;
@@ -65,7 +65,7 @@ body{
           height: 11px;
           background-position: -16px -17px;
         }
-        
+
         &[data-action="play"]{
           top: 5px;
           left: 23px;
@@ -75,7 +75,7 @@ body{
         }
       }
     }
-    
+
     &.playing{
       .buttons{
         button{
@@ -86,7 +86,7 @@ body{
       }
     }
   }
-    
+
   &.block{
     min-width: 50px;
     min-height: 50px;
@@ -101,11 +101,11 @@ body{
     border: 1px solid rgb(204, 204, 204);
     font: normal 12px/normal Verdana, Arial, Helvetica, sans-serif;
     .border-radius(10px);
-    
+
     button{
       padding: 0;
     }
-    
+
     .pager{
       display: none;
       position: absolute;
@@ -117,7 +117,7 @@ body{
       text-align: right;
       z-index: 99998;
       .border-radius(10px 10px 0 0);
-      
+
       .count{
         display: inline-block;
         margin-right: 10px;
@@ -127,12 +127,12 @@ body{
         vertical-align: middle;
         cursor: default;
       }
-      
+
       .buttons{
         display: inline-block;
-        margin-right:  2px; 
+        margin-right:  2px;
         vertical-align: middle;
-          
+
         .button{
           display: inline-block;
           width: 17px;
@@ -143,28 +143,28 @@ body{
           background-repeat: no-repeat;
           .border-radius(10px);
           cursor: pointer;
-            
+
           &.inactive{
             cursor: default;
           }
-          
+
           &[data-action="first"]{
             background-position: 4px 4px;
-            
+
             &.inactive{
               background-position: 4px -14px;
             }
           }
           &[data-action="previous"]{
             background-position: -14px 4px;
-            
+
             &.inactive{
               background-position: -14px -14px;
             }
           }
           &[data-action="next"]{
             background-position: -33px 4px;
-            
+
             &.inactive{
               background-position: -33px -14px;
             }
@@ -173,12 +173,12 @@ body{
       }
     }
   }
-  
+
   &:hover{
     .pager{
       display: block;
     }
-  
+
     &[data-page-count="0"],
     &[data-page-count="1"]{
       .pager{
@@ -186,7 +186,7 @@ body{
       }
     }
   }
-  
+
   &.page{
     display: none;
     width: 100%;
@@ -194,18 +194,18 @@ body{
     overflow: auto;
     background-repeat: no-repeat;
     background-position: left top;
-    
+
     &.active{
       display: block;
     }
   }
-  
+
   &.element{
     width: 50px;
     height: 50px;
     min-width: 5px;
     min-width: 5px;
-    
+
     .contents{
       display: none;
       position: absolute;
@@ -219,7 +219,7 @@ body{
       border: 0 solid rgb(0, 0, 0);
       .box-sizing(border-box);
     }
-    
+
     &:not([data-r-inde]),
     &[data-r-index="0"]{
       &:not([data-start-time]),
@@ -229,15 +229,15 @@ body{
         }
       }
     }
-    
+
     &[data-type="Cursor"]{
       z-index: 9999;
-      
+
       .cursor{
         position: absolute;
         background-color: rgb(0, 0, 0);
       }
-        
+
       &:not([data-direction]),
       &[data-direction="right"]{
         .cursor{
@@ -249,7 +249,7 @@ body{
           left: 0;
         }
       }
-        
+
       &[data-direction="left"]{
         .cursor{
           width: 1px;
@@ -260,7 +260,7 @@ body{
           left: initial !important;
         }
       }
-      
+
       &[data-direction="bottom"]{
         .cursor{
           width: 100% !important;
@@ -271,11 +271,11 @@ body{
           left: initial !important;
         }
       }
-      
+
       &[data-direction="top"]{
         .cursor{
           width: 100% !important;
-          height: 1px;          
+          height: 1px;
           top: initial !important;
           right: initial !important;
           bottom: 0;
@@ -284,12 +284,12 @@ body{
       }
     }
     &[data-type="Image"]{
-      
+
     }
     &[data-type="Text"]{
       .contents{
         overflow: auto;
-        
+
         .text{
           position: absolute;
           top: 0;
@@ -307,20 +307,20 @@ body{
 */
 body.in-editor{
   margin: 0;
-  
+
   div{
     -moz-user-select: none;
     -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
   }
-  
+
   .draggable{
     .drag-handle{
       cursor: move;
     }
   }
-  
+
   .resizable{
     .resize-handle{
       position: absolute;
@@ -328,7 +328,7 @@ body.in-editor{
       width: 10px;
       height: 10px;
       z-index: 99997;
-      
+
       &[data-direction="top"]{
         top: 0px;
         left: 50%;
@@ -353,7 +353,7 @@ body.in-editor{
         margin-top: -5px;
         cursor: w-resize;
       }
-      
+
       &[data-direction="top-right"]{
         top: 0px;
         right: 0px;
@@ -376,40 +376,40 @@ body.in-editor{
       }
     }
   }
-  
-  .metaScore-component{    
+
+  .metaScore-component{
     &.element{
       &[data-type="Cursor"]{
         outline-color: @cursor-outline;
       }
-      
+
       &[data-type="Image"]{
         outline-color: @image-outline;
       }
-      
+
       &[data-type="Text"]{
         outline-color: @text-outline;
       }
     }
   }
-  
+
   &.editing{
     .resizable{
       .resize-handle{
         display: block;
       }
     }
-    
+
     .metaScore-component{
       &.block{
         border: 1px dashed fade(@block-outline, 50%);
         .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
-        
+
         &.selected{
           border: 1px dashed @block-outline;
           .box-shadow(@block-outline 0px 0px 4px 1px);
         }
-  
+
         &:hover,
         &.dragging{
           .pager{
@@ -419,29 +419,29 @@ body.in-editor{
       }
       &.controller{
         .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
-        
+
         &.selected{
           .box-shadow(@controller-outline 0px 0px 4px 1px);
         }
       }
-      
+
       &.element{
         outline-width: 1px;
         outline-style: dashed;
-        
+
         &.selected{
           .contents{
             display: block;
           }
-          
+
           &[data-type="Cursor"]{
             .box-shadow(@cursor-outline 0px 0px 4px 1px);
           }
-          
+
           &[data-type="Image"]{
             .box-shadow(@image-outline 0px 0px 4px 1px);
           }
-          
+
           &[data-type="Text"]{
             .box-shadow(@text-outline 0px 0px 4px 1px);
           }

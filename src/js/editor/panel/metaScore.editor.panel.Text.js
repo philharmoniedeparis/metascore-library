@@ -9,26 +9,25 @@
  * @requires ../../helpers/metaScore.Function.js
  * @requires ../../helpers/metaScore.Color.js
  */
- 
+
 metaScore.namespace('editor.panel').Text = (function () {
-  
-  function TextPanel(configs) {    
+
+  function TextPanel(configs) {
     // call parent constructor
     TextPanel.parent.call(this, configs);
-      
+
     // fix event handlers scope
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
   }
 
   TextPanel.defaults = {
-    /**
-    * The panel's title
-    */
-    title: metaScore.Locale.t('editor.panel.Text.title', 'Text'),
-    
-    toolbarButtons: [],
-    
+    toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
+      title: metaScore.Locale.t('editor.panel.Text.title', 'Text'),
+      buttons: [],
+      selector: false
+    }),
+
     properties: {
       'fore-color': {
         'type': 'Color',
@@ -120,18 +119,18 @@ metaScore.namespace('editor.panel').Text = (function () {
           'buttons': {
             'link': {
               'data-action': 'link',
-              'title': metaScore.Locale.t('editor.panel.Text.link.link', 'Link')
+              'title': metaScore.Locale.t('editor.panel.Text.link.link', 'Add/Modify')
             },
             'unlink': {
               'data-action': 'unlink',
-              'title': metaScore.Locale.t('editor.panel.Text.link.unlink', 'Unlink')
+              'title': metaScore.Locale.t('editor.panel.Text.link.unlink', 'Remove')
             }
           }
         },
         'setter': function(value){
           if(value === 'link'){
             var link = this.getSelectedElement();
-            
+
             new metaScore.editor.overlay.LinkEditor({
                 link: link && metaScore.Dom.is(link, 'a') ? link : null,
                 autoShow: true
@@ -145,102 +144,102 @@ metaScore.namespace('editor.panel').Text = (function () {
       }
     }
   };
-  
+
   metaScore.editor.Panel.extend(TextPanel);
-  
+
   TextPanel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
       name, value, old_values;
-      
+
     if(!component){
       return;
     }
-    
+
     name = evt.detail.field.data('name');
     value = evt.detail.value;
-    old_values = this.getValues([name]);    
-    
+    old_values = this.getValues([name]);
+
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
     }
-    
+
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
-  
-  TextPanel.prototype.setComponent = function(component, supressEvent){  
+
+  TextPanel.prototype.setComponent = function(component, supressEvent){
     if(component !== this.getComponent()){
       this.unsetComponent(true);
-      
+
       this.component = component;
-      
+
       this.addClass('has-component');
-      
+
       component.contents.addListener('dblclick',this.onComponentContentsDblClick);
     }
-      
+
     if(supressEvent !== true){
       this.triggerEvent('componentset', {'component': component}, false);
     }
-  
-    return this;  
+
+    return this;
   };
-  
+
   TextPanel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
-    
+
     this.removeClass('has-component');
-    
+
     if(component){
       component.contents
         .attr('contenteditable', 'null')
         .removeListener('dblclick', this.onComponentContentsDblClick)
         .removeListener('click', this.onComponentContentsClick);
-      
+
       this.component = null;
-        
+
       if(supressEvent !== true){
         this.triggerEvent('componentunset', {'component': component}, false);
       }
     }
-      
-    return this;    
+
+    return this;
   };
-  
+
   TextPanel.prototype.onComponentContentsDblClick = function(evt){
     var component = this.getComponent();
-    
+
     if(component._draggable){
       component._draggable.disable();
     }
-    
+
     component.contents
       .attr('contenteditable', 'true')
       .removeListener('dblclick', this.onComponentContentsDblClick)
       .addListener('click', this.onComponentContentsClick);
-      
+
     this.execCommand("styleWithCSS", true);
-      
+
     this.setupFields(this.configs.properties);
     this.enable();
     this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
   };
-  
+
   TextPanel.prototype.onComponentContentsClick = function(evt){
     evt.stopPropagation();
   };
-  
+
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){
     var url = evt.detail.url;
-    
+
     this.execCommand('createLink', url);
   };
-  
+
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
       contents =  component.contents.get(0),
       document = contents.ownerDocument,
       selection , element;
-      
+
     if(document.selection){
       selection = document.selection;
     	element = selection.createRange().parentElement();
@@ -251,20 +250,20 @@ metaScore.namespace('editor.panel').Text = (function () {
         element = selection.getRangeAt(0).startContainer.parentNode;
       }
     }
-    
+
     return element;
   };
-  
+
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
       contents =  component.contents.get(0),
       document = contents.ownerDocument;
-      
+
     contents.focus();
-    
+
     return document.execCommand(command, false, value);
   };
-    
+
   return TextPanel;
-  
+
 })();

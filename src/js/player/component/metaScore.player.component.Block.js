@@ -6,16 +6,16 @@
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
- 
+
 metaScore.namespace('player.component').Block = (function () {
 
-  function Block(configs) {  
+  function Block(configs) {
     // call parent constructor
     Block.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Block);
-  
+
   Block.defaults = {
     'container': null,
     'properties': {
@@ -85,11 +85,11 @@ metaScore.namespace('player.component').Block = (function () {
         'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
-          
+
           if(value === 'none' || !metaScore.Var.is(value, "string")){
             return null;
           }
-          
+
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
@@ -133,59 +133,59 @@ metaScore.namespace('player.component').Block = (function () {
         'editable':false,
         'getter': function(skipDefault){
           var pages = [];
-                
+
           this.getPages().each(function(index, page){
             pages.push(page._metaScore.getProperties(skipDefault));
           }, this);
-          
+
           return pages;
         },
         'setter': function(value){
           this.getPages().remove();
-          
+
           metaScore.Array.each(value, function(index, configs){
             this.addPage(configs);
           }, this);
-          
+
           this.setActivePage(0);
         }
       }
     }
   };
-  
+
   Block.prototype.setupDOM = function(){
     // call parent function
     Block.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('block');
-          
+
     this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
       .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
       .addDelegate('.element', 'page', metaScore.Function.proxy(this.onElementPage, this))
       .appendTo(this);
-      
+
     this.pager = new metaScore.player.Pager()
       .addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this))
       .appendTo(this);
-    
+
     this.addPage();
   };
-  
+
   Block.prototype.onPageCuePointStart = function(evt){
     this.setActivePage(evt.target._metaScore, true);
   };
-  
+
   Block.prototype.onElementPage = function(evt){
     this.setActivePage(evt.detail.value);
   };
-  
+
   Block.prototype.onPagerClick = function(evt){
     var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
       action;
-      
+
     if(active){
       action = metaScore.Dom.data(evt.target, 'action');
-    
+
       switch(action){
         case 'first':
           this.setActivePage(0);
@@ -198,17 +198,17 @@ metaScore.namespace('player.component').Block = (function () {
           break;
       }
     }
-    
+
     evt.stopPropagation();
   };
-  
+
   Block.prototype.getPages = function(){
     return this.pages.children('.page');
   };
-  
+
   Block.prototype.addPage = function(configs){
     var page;
-    
+
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
       page.appendTo(this.pages);
@@ -218,17 +218,17 @@ metaScore.namespace('player.component').Block = (function () {
         'container': this.pages
       }));
     }
-    
+
     this.setActivePage(page);
-    
+
     return page;
   };
-  
+
   Block.prototype.removePage = function(page){
     var index;
-    
+
     page.remove();
-    
+
     if(this.getPageCount() <= 0){
       this.addPage();
     }
@@ -236,59 +236,59 @@ metaScore.namespace('player.component').Block = (function () {
       index = Math.max(0, this.getActivePageIndex() - 1);
       this.setActivePage(index);
     }
-    
+
     return page;
   };
-  
+
   Block.prototype.getActivePage = function(){
     var pages = this.getPages(),
       index = this.getActivePageIndex();
-  
+
     if(index < 0){
       return null;
     }
-  
+
     return this.getPages().get(index)._metaScore;
   };
-  
+
   Block.prototype.getActivePageIndex = function(){
     var pages = this.getPages(),
       index = pages.index('.active');
-  
-    return index;  
+
+    return index;
   };
-  
-  Block.prototype.getPageCount = function(){  
-    return this.getPages().count();  
+
+  Block.prototype.getPageCount = function(){
+    return this.getPages().count();
   };
-  
+
   Block.prototype.setActivePage = function(page, supressEvent){
     var pages = this.getPages();
-  
+
     if(!(page instanceof metaScore.player.component.Page)){
       page = pages.get(parseInt(page, 10))._metaScore;
     }
-    
+
     if(page){
       pages.removeClass('active');
       page.addClass('active');
       this.updatePager();
-    
+
       if(supressEvent !== true){
         this.triggerEvent('pageactivate', {'page': page});
       }
     }
   };
-  
-  Block.prototype.updatePager = function(){  
+
+  Block.prototype.updatePager = function(){
     var index = this.getActivePageIndex();
     var count = this.getPageCount();
-  
+
     this.pager.updateCount(index, count);
-    
+
     this.data('page-count', count);
   };
-    
+
   return Block;
-  
+
 })();

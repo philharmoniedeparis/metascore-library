@@ -7,34 +7,34 @@
  * @requires metaScore.object.js
  * @requires metaScore.var.js
  */
- 
+
 metaScore.Dom = (function () {
-  
-  function Dom() { 
+
+  function Dom() {
     var elements;
-  
+
     this.elements = [];
-    
+
     if(arguments.length > 0){
       if(elements = metaScore.Dom.elementsFromString.apply(this, arguments)){
         this.add(elements);
-        
+
         if(arguments.length > 1){
           this.attr(arguments[1]);
         }
       }
       else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){
         this.add(elements);
-        
+
         if(arguments.length > 2){
           this.attr(arguments[2]);
         }
       }
-    }    
+    }
   }
-  
+
   metaScore.Class.extend(Dom);
-  
+
   /**
   * Regular expression that matches an element's string
   */
@@ -78,12 +78,12 @@ metaScore.Dom = (function () {
   /**
   * Select a single element by selecor
   * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements 
+  * @param {object} an optional parent to constrain the matched elements
   * @returns {object} an HTML element
   */
-  Dom.selectElement = function (selector, parent) {      
+  Dom.selectElement = function (selector, parent) {
     var element;
-    
+
     if(!parent){
       parent = document;
     }
@@ -104,12 +104,12 @@ metaScore.Dom = (function () {
   /**
   * Select elements by selecor
   * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements 
+  * @param {object} an optional parent to constrain the matched elements
   * @returns {array} an array of HTML elements
   */
-  Dom.selectElements = function (selector, parent) {      
+  Dom.selectElements = function (selector, parent) {
     var elements;
-    
+
     if(!parent){
       parent = document;
     }
@@ -156,23 +156,23 @@ metaScore.Dom = (function () {
       element = document.createElement('div'),
       match = /<\s*\w.*?>/g.exec(html),
       tag, map, j;
-      
+
     if(match != null){
       tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
-      
+
       map = wrapMap[tag] || wrapMap['_default'];
       html = map[1] + html + map[2];
       element.innerHTML = html;
-      
+
       // Descend through wrappers to the right content
       j = map[0];
       while(j--) {
         element = element.lastChild;
       }
-      
+
       return element.childNodes;
     }
-    
+
     return null;
   };
 
@@ -181,7 +181,7 @@ metaScore.Dom = (function () {
   * @param {object} the dom element
   * @param {string} the class to check
   * @returns {boolean} true if the element has the given class, false otherwise
-  */     
+  */
   Dom.hasClass = function(element, className){
     return element.classList.contains(className);
   };
@@ -195,7 +195,7 @@ metaScore.Dom = (function () {
   Dom.addClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
-    
+
     for(; i<l; i++){
       element.classList.add(classNames[i]);
     }
@@ -210,7 +210,7 @@ metaScore.Dom = (function () {
   Dom.removeClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
-    
+
     for(; i<l; i++){
       element.classList.remove(classNames[i]);
     }
@@ -226,7 +226,7 @@ metaScore.Dom = (function () {
   Dom.toggleClass = function(element, className, force){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
-    
+
     if(force === undefined){
       for(; i<l; i++){
         element.classList.toggle(classNames[i]);
@@ -267,7 +267,7 @@ metaScore.Dom = (function () {
     if(useCapture === undefined){
       useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
     }
-    
+
     return element.removeEventListener(type, callback, useCapture);
   };
 
@@ -279,13 +279,13 @@ metaScore.Dom = (function () {
   * @param {boolean} whether the event is cancelable
   * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
   */
-  Dom.triggerEvent = function(element, type, data, bubbles, cancelable){  
+  Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
     var event = new CustomEvent(type, {
       'detail': data,
       'bubbles': bubbles !== false,
       'cancelable': cancelable !== false
     });
-    
+
     return element.dispatchEvent(event);
   };
 
@@ -299,7 +299,7 @@ metaScore.Dom = (function () {
     if(value !== undefined){
       element.innerHTML = value;
     }
-    
+
     return element.innerHTML;
   };
 
@@ -313,7 +313,7 @@ metaScore.Dom = (function () {
     if(value !== undefined){
       element.value = value;
     }
-    
+
     return element.value;
   };
 
@@ -325,7 +325,7 @@ metaScore.Dom = (function () {
   * @returns {void}
   */
   Dom.attr = function(element, name, value){
-    
+
     if(metaScore.Var.is(name, 'object')){
       metaScore.Object.each(name, function(key, value){
         Dom.attr(element, key, value);
@@ -336,11 +336,11 @@ metaScore.Dom = (function () {
         case 'class':
           this.addClass(element, value);
           break;
-          
+
         case 'text':
           this.text(element, value);
           break;
-          
+
         default:
           if(value === null){
             element.removeAttribute(name);
@@ -349,7 +349,7 @@ metaScore.Dom = (function () {
             if(value !== undefined){
               element.setAttribute(name, value);
             }
-            
+
             return element.getAttribute(name);
           }
           break;
@@ -372,9 +372,9 @@ metaScore.Dom = (function () {
     if(value !== undefined){
       element.style[camel] = value;
     }
-    
+
     style = inline === true ? element.style : window.getComputedStyle(element);
-    
+
     return style.getPropertyValue(name);
   };
 
@@ -394,7 +394,7 @@ metaScore.Dom = (function () {
     else if(value !== undefined){
       element.dataset[name] = value;
     }
-    
+
     return element.dataset[name];
   };
 
@@ -408,7 +408,7 @@ metaScore.Dom = (function () {
     if (!metaScore.Var.is(children, 'array')) {
       children = [children];
     }
-    
+
     metaScore.Array.each(children, function(index, child){
       element.appendChild(child);
     }, this);
@@ -445,7 +445,7 @@ metaScore.Dom = (function () {
   Dom.is = function(element, selector){
     return element.matches && element.matches(selector);
   };
-  
+
   Dom.prototype.add = function(elements){
     if('length' in elements){
       for(var i = 0; i < elements.length; i++ ) {
@@ -456,170 +456,170 @@ metaScore.Dom = (function () {
       this.elements.push(elements);
     }
   };
-  
+
   Dom.prototype.count = function(){
     return this.elements.length;
   };
-  
+
   Dom.prototype.get = function(index){
     return this.elements[index];
   };
-  
-  Dom.prototype.filter = function(selector){  
+
+  Dom.prototype.filter = function(selector){
     var filtered = [];
-    
+
     this.each(function(index, element) {
       if(Dom.is(element, selector)){
         filtered.push(element);
       }
     }, this);
-  
+
     this.elements = filtered;
-    
+
     return this;
   };
-  
-  Dom.prototype.index = function(selector){  
+
+  Dom.prototype.index = function(selector){
     var found = -1;
-    
+
     this.each(function(index, element) {
       if(Dom.is(element, selector)){
         found = index;
         return false;
       }
     }, this);
-    
-    return found;  
+
+    return found;
   };
-  
-  Dom.prototype.child = function(selector){  
+
+  Dom.prototype.child = function(selector){
     var children = new Dom(),
      child;
-  
+
     this.each(function(index, element) {
       if(child = Dom.selectElement.call(this, selector, element)){
         children.add(child);
         return false;
       }
     }, this);
-    
-    return children;  
+
+    return children;
   };
-  
-  Dom.prototype.children = function(selector){  
+
+  Dom.prototype.children = function(selector){
     var children = new Dom();
-  
+
     this.each(function(index, element) {
       children.add(Dom.selectElements.call(this, selector, element));
     }, this);
-    
-    return children;  
+
+    return children;
   };
-  
-  Dom.prototype.parents = function(selector){  
+
+  Dom.prototype.parents = function(selector){
     var parents = new Dom();
-  
+
     this.each(function(index, element) {
       parents.add(element.parentElement);
     }, this);
-      
+
     if(selector){
       parents.filter(selector);
     }
-    
+
     return parents;
   };
-  
+
   Dom.prototype.each = function(callback, scope){
     scope = scope || this;
-  
+
     metaScore.Array.each(this.elements, callback, scope);
   };
-  
+
   Dom.prototype.hasClass = function(className) {
     var found;
-  
+
     this.each(function(index, element) {
       found = Dom.hasClass(element, className);
       return !found;
     }, this);
-    
+
     return found;
   };
-  
-  Dom.prototype.addClass = function(className) {  
+
+  Dom.prototype.addClass = function(className) {
     this.each(function(index, element) {
       Dom.addClass(element, className);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
-  Dom.prototype.removeClass = function(className) {  
+
+  Dom.prototype.removeClass = function(className) {
     this.each(function(index, element) {
       Dom.removeClass(element, className);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
-  Dom.prototype.toggleClass = function(className, force) {  
+
+  Dom.prototype.toggleClass = function(className, force) {
     this.each(function(index, element) {
       Dom.toggleClass(element, className, force);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
-  Dom.prototype.addListener = function(type, callback, useCapture) {  
+
+  Dom.prototype.addListener = function(type, callback, useCapture) {
    this.each(function(index, element) {
       Dom.addListener(element, type, callback, useCapture);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
+
   Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
     scope = scope || this;
-    
+
     return this.addListener(type, function(evt){
       var element = evt.target,
         match;
-    
+
       while (element) {
         if(Dom.is(element, selector)){
           match = element;
           break;
         }
-        
+
         element = element.parentNode;
       }
-      
+
       if(match){
         callback.call(scope, evt, match);
       }
-    }, useCapture);    
+    }, useCapture);
   };
-  
-  Dom.prototype.removeListener = function(type, callback, useCapture) {  
+
+  Dom.prototype.removeListener = function(type, callback, useCapture) {
     this.each(function(index, element) {
       Dom.removeListener(element, type, callback, useCapture);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
+
   Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
-  
+
     this.each(function(index, element) {
       return_value = Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
     }, this);
-    
+
     return return_value;
   };
-  
-  Dom.prototype.text = function(value) {  
+
+  Dom.prototype.text = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
         Dom.text(element, value);
@@ -629,7 +629,7 @@ metaScore.Dom = (function () {
       return Dom.text(this.get(0));
     }
   };
-  
+
   Dom.prototype.val = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -641,7 +641,7 @@ metaScore.Dom = (function () {
       return Dom.val(this.get(0));
     }
   };
-  
+
   Dom.prototype.attr = function(name, value) {
     if(value !== undefined || metaScore.Var.is(name, 'object')){
       this.each(function(index, element) {
@@ -653,7 +653,7 @@ metaScore.Dom = (function () {
       return Dom.attr(this.get(0), name);
     }
   };
-  
+
   Dom.prototype.css = function(name, value, inline) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -665,7 +665,7 @@ metaScore.Dom = (function () {
       return Dom.css(this.get(0), name, value, inline);
     }
   };
-  
+
   Dom.prototype.data = function(name, value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -677,55 +677,55 @@ metaScore.Dom = (function () {
       return Dom.data(this.get(0), name);
     }
   };
-  
+
   Dom.prototype.append = function(children){
     if(children instanceof Dom){
       children = children.elements;
     }
-    
+
     Dom.append(this.get(0), children);
-    
+
     return this;
   };
-  
-  Dom.prototype.appendTo = function(parent){    
+
+  Dom.prototype.appendTo = function(parent){
     if(!(parent instanceof Dom)){
       parent = new Dom(parent);
     }
-    
+
     parent = parent.get(0);
-    
+
     this.each(function(index, element) {
       Dom.append(parent, element);
     }, this);
-    
+
     return this;
   };
-  
-  Dom.prototype.empty = function(){    
+
+  Dom.prototype.empty = function(){
     this.each(function(index, element) {
       Dom.empty(element);
     }, this);
-    
+
     return this;
   };
-  
+
   Dom.prototype.show = function(){
     this.each(function(index, element) {
       this.css('display', '');
     }, this);
-    
+
     return this;
   };
-  
+
   Dom.prototype.hide = function(){
     this.each(function(index, element) {
       this.css('display', 'none');
     }, this);
-    
+
     return this;
   };
-  
+
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       this.each(function(index, element) {
@@ -734,21 +734,21 @@ metaScore.Dom = (function () {
         Dom.triggerEvent(parent, 'childremoved', {'child': element});
       }, this);
     }
-    
+
     return this;
   };
-  
+
   Dom.prototype.is = function(selector){
     var found;
-  
+
     this.each(function(index, element) {
       found = Dom.is(element, selector);
       return found;
     }, this);
-    
+
     return found;
   };
-    
+
   return Dom;
-  
+
 })();

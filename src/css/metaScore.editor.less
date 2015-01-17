@@ -6,7 +6,7 @@
   margin: 0;
   padding: 0;
   font: normal 12px/normal Verdana, Geneva, sans-serif;
-  
+
   .clearfix:after{
     visibility: hidden;
     display: block;
@@ -15,31 +15,31 @@
     clear: both;
     height: 0;
   }
-  
+
   div{
     -moz-user-select: none;
     -khtml-user-select: none;
     -webkit-user-select: none;
     user-select: none;
   }
-  
+
   table{
     margin: 0;
     border: none;
     border-collapse: collapse;
     border-spacing: 0;
-  
+
     td, th{
       padding: 0;
       border: 0;
     }
   }
-  
+
   label{
     display: inline-block;
     font-weight: normal;
   }
-      
+
   button{
     border: none;
     outline: none;
@@ -47,7 +47,7 @@
     background-position: center center;
     background-repeat: no-repeat;
     cursor: pointer;
-    
+
     &:hover{
       .opacity(0.75);
     }
@@ -58,27 +58,27 @@
       .opacity(0.25);
       cursor: default;
     }
-    
+
     span{
       pointer-events: none;
     }
   }
-  
+
   .metaScore-player{
     position: absolute;
     left: 0;
     top: 0;
   }
-  
-  .field{    
+
+  .field{
     &.timefield{
       display: inline-block;
       vertical-align: top;
-      
+
       input[type="checkbox"]{
         float: left;
       }
-      
+
       input[type="number"]{
         width: 1em !important;
         height: 100%;
@@ -86,22 +86,22 @@
         background: none;
         text-align: right;
         font-family: Tahoma, Geneva, sans-serif;
-        
-        -moz-appearance: textfield;      
+
+        -moz-appearance: textfield;
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
           -webkit-appearance: none;
         }
       }
-      
+
       .separator{
         font-size: 0.8em;
       }
-      
+
       .buttons{
         float: right;
         height: 100%;
-        
+
         button{
           display: inline-block;
           width: 15px;
@@ -109,21 +109,21 @@
           margin-left: 5px;
           overflow: hidden;
           text-indent: 999px;
-          
+
           &[data-action="in"]{
             background: transparent url('img/editor/field/time/in.png') no-repeat center center;
           }
-          
+
           &[data-action="out"]{
             background: transparent url('img/editor/field/time/out.png') no-repeat center center;
           }
         }
       }
     }
-    
+
     &.colorfield{
       background: url('img/editor/transparency-grid.png') repeat left top;
-    
+
       button{
         display: block;
         width: 100%;
@@ -131,27 +131,27 @@
         background-image: url('img/editor/field/color/picker.png');
         background-position: left center;
         background-size: contain;
-        
+
         &:hover{
           opacity: 1;
         }
       }
-      
+
       &.disabled{
         button{
           cursor: default;
         }
       }
     }
-    
+
     &.imagefield{
       position: relative;
-      
+
       input{
         padding-right: 15px !important;
         .box-sizing(border-box);
       }
-      
+
       button[data-action="clear"]{
         position: absolute;
         top: 0;
@@ -165,10 +165,10 @@
       }
     }
   }
-  
+
   .ruler{
     position: absolute;
-    
+
     &.horizontal{
       left: 0;
       right: 285px;
@@ -176,7 +176,7 @@
       height: 19px;
       background: url('img/editor/ruler-h.png') no-repeat top left;
     }
-    
+
     &.vertical{
       left: 0;
       top: 42px;
@@ -185,7 +185,7 @@
       background: url('img/editor/ruler-v.png') no-repeat top left;
     }
   }
-  
+
   .workspace{
     position: absolute;
     left: 19px;
@@ -195,7 +195,7 @@
     min-width: 700px;
     overflow: auto;
     background: #fff;
-    
+
     .grid{
       position: absolute;
       display: none;
@@ -207,7 +207,7 @@
       background-size: 10px 10px;
       .opacity(0.2);
     }
-    
+
     .version{
       position: absolute;
       bottom: 5px;
@@ -215,7 +215,7 @@
       z-index: 999;
       font-size: 0.75em;
       opacity: 0.75;
-      
+
       -moz-user-select: initial;
       -khtml-user-select: initial;
       -webkit-user-select: initial;
@@ -231,18 +231,18 @@
     min-width: 900px;
     height: 40px;
     overflow: hidden;
-    z-index: 9999;  
+    z-index: 9999;
     padding: 0 10px;
     .gradient(#DADADA, #DADADA, #C8C8C8);
     border-bottom: 2px solid #B2B2B2;
-    
+
     .left{
       float: left;
-    }    
+    }
     .right{
       float: right;
     }
-    
+
     .logo-philharmonie{
       display: inline-block;
       width: 102px;
@@ -252,14 +252,14 @@
       vertical-align: middle;
       background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
     }
-      
+
     button{
       width: 20px;
       height: 18px;
       margin: 10px;
       vertical-align: middle;
       background-size: contain;
-      
+
       &[data-action="new"]{
         background-image: url('img/editor/main-menu/new.png');
       }
@@ -302,30 +302,30 @@
         background-image: url('img/editor/main-menu/help.png');
       }
     }
-    
+
     .time{
       display: inline-block;
       height: 18px;
       margin: 10px;
       vertical-align: middle;
       font-size: 1.3em;
-      padding-left: 18px; 
+      padding-left: 18px;
       background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
-      
+
       input{
         color: #505050;
       }
     }
-    
+
     .r-index{
       display: inline-block;
       height: 18px;
       margin: 10px;
       vertical-align: middle;
       font-size: 1.3em;
-      padding-left: 18px; 
+      padding-left: 18px;
       background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
-      
+
       input{
         width: 2em;
         height: 100%;
@@ -337,7 +337,7 @@
       }
     }
   }
-  
+
   .sidebar{
     position: fixed;
     right: 0;
@@ -347,33 +347,49 @@
     overflow: auto;
     background: #f2f2f2;
     border-left: 1px solid #b2b2b2;
-    
-    .panel{    
+    overflow-y: scroll;
+
+    .panel{
       .toolbar{
         padding: 5px;
         border-bottom: 1px solid #d7d7d7;
         .linear-gradient-top(#fefefe, #fefefe, 0%, #fcfcfc, 32%, #fafafa, 36%, #f3f3f3, 100%);
-        
+
         .title{
           float: left;
           padding-left: 18px;
+          margin-right: 5px;
           font-weight: bold;
+          line-height: 18px;
           background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
-          /*text-indent: -999px;*/
           cursor: pointer;
           .opacity(0.8);
         }
-        
+
+        .selector{
+          float: right;
+
+          select{
+            width: 100px;
+            background: none;
+            border: none;
+
+            &:empty{
+              display: none;
+            }
+          }
+        }
+
         .buttons{
           float: right;
-          
+
           button{
             width: 16px;
             height: 16px;
             background-repeat: no-repeat;
             background-position: center center;
             vertical-align: middle;
-          
+
             &[data-action="previous"]{
               background-image: url('img/editor/panel/previous.png');
             }
@@ -385,7 +401,7 @@
               position: relative;
               margin-left: 10px;
               padding-bottom: 2px;
-              
+
               &:after {
                 content: "";
                 position: absolute;
@@ -395,7 +411,7 @@
                 right: 0;
                 background: url('img/editor/panel/menu.png') no-repeat center center;
               }
-              
+
               .dropdown-menu{
                 display: none;
                 position: absolute;
@@ -407,7 +423,7 @@
                 list-style-type: none;
                 background: #fff;
                 z-index: 999;
-                
+
                 li{
                   min-width: 50px;
                   margin-bottom: -1px;
@@ -416,15 +432,15 @@
                   border: 1px solid #ccc;
                   text-align: right;
                   white-space: nowrap;
-                  
+
                   &:hover{
                     background: #eee;
                   }
-                  
+
                   &:active{
                     opacity: 0.75;
                   }
-                  
+
                   &.disabled{
                     pointer-events: none;
                     background: none;
@@ -433,59 +449,59 @@
                   }
                 }
               }
-              
+
               &:hover{
                 opacity: 1;
-                
+
                 &:after {
                   opacity: 0.75;
                 }
-                
+
                 .dropdown-menu{
                   display: block;
                 }
               }
-            }          
+            }
           }
         }
       }
-      
+
       .fields{
         width: 100%;
         font-size: 0.9em;
         background: #fff;
-            
+
         .field-wrapper{
           border-bottom: 1px solid #b2b2b2;
-          
+
           td{
             width: 50%;
             height: 1px;
             white-space: nowrap;
-        
+
             label{
               display: block;
               padding: 5px;
               color: #7b7b7b;
               border-right: 1px solid #d7d7d7;
             }
-            
+
             .field{
               height: 100%;
               width: 100%;
-  
+
               input{
                 width: 100%;
                 height: 100%;
                 margin: 0;
                 padding: 0;
                 border: none;
-                
+
                 &[type="checkbox"]{
                   width: auto;
                 }
               }
-                        
+
               &.selectfield{
                 select{
                   display: block;
@@ -495,16 +511,16 @@
                   border: none;
                 }
               }
-              
+
               &.buttonsfield{
                 button{
                   width: 23px;
                   height: 23px;
-                  margin-right: 2px;                  
+                  margin-right: 2px;
                   .gradient(#EAEAEA, #FFFFFF, #EAEAEA);
                   background-repeat: no-repeat;
                   background-position: center center;
-                  
+
                   &[data-action="bold"]{
                     background-image: url('img/editor/wysiwyg/bold.png');
                   }
@@ -533,13 +549,13 @@
               }
             }
           }
-        
+
           &.font-style{
             border-bottom: none;
           }
         }
       }
-      
+
       &.collapsed,
       &:not(.has-component),
       &.disabled{
@@ -548,12 +564,12 @@
             background-image: url('img/editor/panel/collapsed.png');
           }
         }
-        
+
         .fields{
           display: none;
         }
       }
-      
+
       &:not(.has-component),
       &.disabled{
         .toolbar{
@@ -562,7 +578,7 @@
           }
         }
       }
-      
+
       &.disabled{
         pointer-events: none;
         opacity: 0.5;
@@ -578,42 +594,42 @@
     background: #fff;
     z-index: 99999;
     .transform(translate(-50%, -50%));
-    
+
     .toolbar{
       padding: 10px 16px;
       border-bottom: 2px solid #B2B2B2;
       .gradient(#DADADA, #DADADA, #C8C8C8);
-      
+
       .title{
         float: left;
         font-weight: bold;
         color: #5D5D5D;
       }
-      
+
       .buttons{
         margin-left: 16px;
         float: right;
-        
+
         button{
           width: 16px;
           height: 16px;
           background-repeat: no-repeat;
           background-position: center center;
           vertical-align: middle;
-        
+
           &[data-action="close"]{
             background-image: url('img/editor/popup/close.png');
           }
         }
       }
     }
-    
+
     &.color-selector{
       padding: 10px;
       border: 1px solid rgba(0, 0, 0, 0.2);
       .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
       .border-radius(10px);
-      
+
       canvas{
         display: block;
       }
@@ -622,7 +638,7 @@
         position: relative;
         float: left;
         cursor: crosshair;
-        
+
         .position{
           position: absolute;
           left: 0;
@@ -639,7 +655,7 @@
         position: relative;
         float: left;
         background: url('img/editor/transparency-grid.png') repeat left top;
-        
+
         .position{
           position: absolute;
           left: 0;
@@ -656,40 +672,40 @@
         float: left;
         margin-left: 10px;
         pointer-events: none;
-        
+
         input[type=number]{
           width: 3em;
           margin: 0.25em 0.5em;
           border: 2px inset;
           pointer-events: auto;
         }
-        
+
         button{
           width: 100%;
           padding: 0.5em;
           background: #ccc;
           pointer-events: auto;
-          
+
           &.cancel{
             background: #eee;
           }
         }
-        
+
         .canvas-wrapper{
           height: 40px;
           border: 1px solid #ccc;
           background: url('img/editor/transparency-grid.png') repeat left top;
-          
+
           &.current{
             margin-top: 5px;
           }
-          
+
           &.previous{
             height: 10px;
             margin-bottom: 5px;
             margin-top: -1px;
           }
-          
+
           canvas{
             width: 100%;
             height: 100%;
@@ -697,42 +713,42 @@
         }
       }
     }
-    
-    &.guide-selector{    
+
+    &.guide-selector{
       .contents{
         max-width: 500px;
         max-height: 500px;
         padding: 12px 16px;
         overflow: auto;
-        
+
         tr.guide{
           cursor: pointer;
-        
+
           td.thumbnail{
             padding-right: 10px;
-            
+
             img{
               width: 155px;
               height: 123px;
               background: #DADADA url('img/editor/default-thumbnail.png') no-repeat center center;
             }
           }
-        
+
           td.details{
             padding-bottom: 10px;
             vertical-align: top;
-            
+
             .title{
               margin: 0;
               font-size: 12px;
               font-weight: normal;
             }
-            
+
             .description{
               margin: 0;
               font-size: 11px;
             }
-            
+
             .author{
               margin: 0;
               font-size: 11px;
@@ -740,74 +756,74 @@
               color: #B2B2B2;
             }
           }
-          
+
           &:hover{
             background: #EEE;
           }
         }
       }
     }
-    
+
     &.guide-details,
     &.link-editor{
       .contents{
         min-width: 300px;
         padding: 12px 16px;
-        
+
         .field{
           display: block;
           margin-bottom: 1em;
-          
+
           label{
             display: block;
             font-weight: bold;
           }
-          
+
           textarea{
             width: 100%;
             min-height: 5em;
           }
         }
-        
+
         button{
           margin-right: 0.5em;
           padding: 0.5em;
           background: #ccc;
           pointer-events: auto;
-          
+
           &.cancel{
             background: #eee;
           }
         }
       }
     }
-    
+
     &.guide-details{
       .contents{
         min-width: 500px;
       }
     }
-  
+
     &.alert{
       .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
       .border-radius(10px);
-        
+
       .contents{
         padding: 12px 16px;
-        
+
         .text{
           white-space: pre-wrap;
         }
-        
+
         .buttons{
           margin-top: 1em;
           text-align: right;
-        
+
           button{
             margin-right: 0.5em;
             padding: 0.5em;
             background: #ccc;
-            
+
             &[data-action="cancel"]{
               background: #eee;
             }
@@ -815,7 +831,7 @@
         }
       }
     }
-  
+
     &.loadmask{
       .contents{
         padding: 12px 16px 12px 45px;
@@ -833,7 +849,7 @@
     background: rgba(0, 0, 0, 0.5);
     z-index: 99999;
   }
-  
+
   &.editing{
     .main-menu{
        button{
@@ -842,7 +858,7 @@
           }
        }
     }
-  
+
     .workspace{
       .grid{
         display: block;

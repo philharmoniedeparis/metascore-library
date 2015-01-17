@@ -3,25 +3,25 @@
  *
  * @requires metaScore.class.js
  */
- 
+
 metaScore.Evented = (function () {
-  
+
   function Evented() {
     // call parent constructor
     Evented.parent.call(this);
-  
+
     this.listeners = {};
   }
-  
+
   metaScore.Class.extend(Evented);
-  
+
   Evented.prototype.addListener = function(type, listener){
     if (typeof this.listeners[type] === "undefined"){
       this.listeners[type] = [];
     }
 
     this.listeners[type].push(listener);
-    
+
     return this;
   };
 
@@ -35,7 +35,7 @@ metaScore.Evented = (function () {
         }
       }
     }
-    
+
     return this;
   };
 
@@ -44,7 +44,7 @@ metaScore.Evented = (function () {
 
     if (this.listeners[type] instanceof Array){
       listeners = this.listeners[type];
-      
+
       event = {
         'target': this,
         'type': type,
@@ -52,15 +52,15 @@ metaScore.Evented = (function () {
         'bubbles': bubbling !== false,
         'cancelable': cancelable !== false
       };
-      
+
       metaScore.Object.each(listeners, function(index, listener){
         listener.call(this, event);
       }, this);
     }
-    
+
     return this;
   };
-    
+
   return Evented;
-  
+
 })();

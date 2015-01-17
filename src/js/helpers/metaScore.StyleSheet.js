@@ -3,22 +3,22 @@
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.StyleSheet = (function () {
-  
+
   function StyleSheet(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     // call the super constructor.
     metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
-    
+
     this.el = this.get(0);
     this.sheet = this.el.sheet;
-    
+
     // WebKit hack :(
     this.setInternalValue("");
   }
-  
+
   metaScore.Dom.extend(StyleSheet);
 
   /**
@@ -32,7 +32,7 @@ metaScore.StyleSheet = (function () {
     if(index === undefined){
       index = this.sheet.cssRules.length;
     }
-  
+
     if("insertRule" in this.sheet) {
       return this.sheet.insertRule(selector + "{" + rules + "}", index);
     }
@@ -52,7 +52,7 @@ metaScore.StyleSheet = (function () {
     else if("removeRule" in this.sheet) {
       this.sheet.removeRule(index);
     }
-    
+
     return this;
   };
 
@@ -62,16 +62,16 @@ metaScore.StyleSheet = (function () {
   */
   StyleSheet.prototype.removeRulesBySelector = function(selector) {
     var rules = this.sheet.cssRules || this.sheet.rules;
-      
+
     selector = selector.toLowerCase();
-  
+
     for (var i=0; i<rules.length; i++){
       if(rules[i].selectorText.toLowerCase() === selector){
         this.removeRule(i);
         break;
       }
     }
-    
+
     return this;
   };
 
@@ -80,11 +80,11 @@ metaScore.StyleSheet = (function () {
   */
   StyleSheet.prototype.removeRules = function() {
     var rules = this.sheet.cssRules || this.sheet.rules;
-  
+
     while(rules.length > 0){
       this.removeRule(0);
     }
-    
+
     return this;
   };
 
@@ -98,10 +98,10 @@ metaScore.StyleSheet = (function () {
     else{
       this.text(value);
     }
-    
+
     return this;
   };
-    
+
   return StyleSheet;
-  
+
 })();

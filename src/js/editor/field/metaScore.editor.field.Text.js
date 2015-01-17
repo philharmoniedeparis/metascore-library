@@ -3,15 +3,15 @@
  *
  * @requires ../metaScore.editor.field.js
  */
- 
+
 metaScore.namespace('editor.field').Text = (function () {
-  
+
   function TextField(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     // call parent constructor
     TextField.parent.call(this, this.configs);
-    
+
     this.addClass('textfield');
   }
 
@@ -21,9 +21,9 @@ metaScore.namespace('editor.field').Text = (function () {
     */
     value: ''
   };
-  
+
   metaScore.editor.Field.extend(TextField);
-    
+
   return TextField;
-  
+
 })();

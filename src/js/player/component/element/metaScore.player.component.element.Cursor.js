@@ -3,16 +3,16 @@
  *
  * @requires ../metaScore.player.element.js
  */
- 
+
 metaScore.namespace('player.component.element').Cursor = (function () {
 
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
   }
-  
+
   metaScore.player.component.Element.extend(Cursor);
-  
+
   Cursor.defaults = {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
@@ -67,31 +67,31 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       }
     })
   };
-  
+
   Cursor.prototype.setupDOM = function(){
     // call parent function
     Cursor.parent.prototype.setupDOM.call(this);
-  
+
     this.data('type', 'cursor');
-    
+
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
-      
+
     this
       .addListener('click', metaScore.Function.proxy(this.onClick, this))
       .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
   };
-  
+
   Cursor.prototype.onClick = function(evt){
-    var pos, time,    
+    var pos, time,
       inTime, outTime,
-      direction, acceleration,    
+      direction, acceleration,
       rect;
-    
+
     if(metaScore.editing && evt.type !== 'dblclick'){
       return;
     }
-    
+
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
     direction = this.getProperty('direction');
@@ -102,38 +102,38 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       case 'left':
         pos = (rect.right - evt.clientX) / this.getProperty('width');
         break;
-        
+
       case 'bottom':
         pos = (evt.clientY - rect.top) / this.getProperty('height');
         break;
-        
+
       case 'top':
         pos = (rect.bottom - evt.clientY) / this.getProperty('height');
         break;
-        
+
       default:
         pos = (evt.clientX - rect.left) / this.getProperty('width');
     }
-    
+
     if(!acceleration || acceleration === 1){
       time = inTime + ((outTime - inTime) * pos);
     }
     else{
       time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
     }
-    
+
     this.triggerEvent('time', {'element': this, 'value': time});
   };
-  
+
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width, height,
       inTime, outTime, pos,
       direction = this.getProperty('direction'),
       acceleration = this.getProperty('acceleration');
-    
+
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
-        
+
     if(!acceleration || acceleration === 1){
       pos = (curTime - inTime)  / (outTime - inTime);
     }
@@ -147,26 +147,26 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         pos = Math.min(width * pos, width);
         this.cursor.css('right', pos +'px');
         break;
-        
+
       case 'bottom':
         height = this.getProperty('height');
         pos = Math.min(height * pos, height);
         this.cursor.css('top', pos +'px');
         break;
-        
+
       case 'top':
         height = this.getProperty('height');
         pos = Math.min(height * pos, height);
         this.cursor.css('bottom', pos +'px');
         break;
-        
+
       default:
         width = this.getProperty('width');
         pos = Math.min(width * pos, width);
         this.cursor.css('left', pos +'px');
     }
   };
-    
+
   return Cursor;
-  
+
 })();

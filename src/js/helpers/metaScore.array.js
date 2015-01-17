@@ -3,12 +3,12 @@
  *
  * @requires ../metaScore.class.js
  */
- 
+
 metaScore.Array = (function () {
-  
+
   function Array() {
   }
-  
+
   metaScore.Class.extend(Array);
 
   /**
@@ -103,12 +103,12 @@ metaScore.Array = (function () {
 
     for(; i < l; i++) {
       value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
-      
+
       if (value === false) {
         break;
       }
     }
-    
+
     return arr;
 
   };
@@ -123,13 +123,13 @@ metaScore.Array = (function () {
     var index = Array.inArray(element, arr);
 
     while(index > -1){
-      arr.splice(index, 1);    
+      arr.splice(index, 1);
       index = Array.inArray(element, arr);
     }
-    
+
     return arr;
   };
-    
+
   return Array;
-  
+
 })();

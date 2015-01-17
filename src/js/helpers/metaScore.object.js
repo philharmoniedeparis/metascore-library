@@ -3,12 +3,12 @@
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Object = (function () {
-  
+
   function Object() {
   }
-  
+
   metaScore.Class.extend(Object);
 
   /**
@@ -22,20 +22,20 @@ metaScore.Object = (function () {
       i = 1,
       length = arguments.length,
       key, src, copy;
-      
+
     for (; i < length; i++ ) {
       if ((options = arguments[i]) != null) {
-        for ( key in options ) {            
+        for ( key in options ) {
           src = target[key];
           copy = options[key];
-          
+
           if(src !== copy && copy !== undefined ) {
             target[key] = copy;
           }
         }
       }
     }
-      
+
     return target;
 
   };
@@ -46,7 +46,7 @@ metaScore.Object = (function () {
   * @returns {object} a copy of the original object
   */
   Object.copy = function(obj) {
-      
+
     return Object.extend({}, obj);
 
   };
@@ -62,19 +62,19 @@ metaScore.Object = (function () {
 
     var key, value,
       scope_provided = scope !== undefined;
-    
+
     for (key in obj) {
       value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
-    
+
       if (value === false) {
         break;
       }
     }
-    
+
     return obj;
 
   };
-    
+
   return Object;
-  
+
 })();

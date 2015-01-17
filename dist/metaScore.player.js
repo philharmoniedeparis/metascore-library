@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-17 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -41,16 +41,16 @@ var metaScore = global.metaScore;
 if(Element){
   (function(ElementPrototype) {
     ElementPrototype.matches = ElementPrototype.matchesSelector =
-    ElementPrototype.matchesSelector || 
+    ElementPrototype.matchesSelector ||
     ElementPrototype.webkitMatchesSelector ||
     ElementPrototype.mozMatchesSelector ||
     ElementPrototype.msMatchesSelector ||
     ElementPrototype.oMatchesSelector ||
     function (selector) {
       var nodes = (this.parentNode || this.document).querySelectorAll(selector), i = -1;
- 
+
       while (nodes[++i] && nodes[i] !== this){}
- 
+
       return !!nodes[i];
     };
   })(Element.prototype);
@@ -90,119 +90,113 @@ if(Element){
 */
 metaScore = global.metaScore = {
 
-  version: "0.0.2",
-  
-  revision: "cfa6c1",
-  
-  locale: 'fr',
-  
   getVersion: function(){
-    return this.version;
+    return "0.0.2";
   },
-  
+
   getRevision: function(){
-    return this.revision;
+    return "78b580";
   },
-  
+
+  getLocale: function(){
+    return this.locale || 'fr';
+  },
+
   setLocale: function(locale){
     this.locale = locale;
   },
-  
-  getLocale: function(){
-    return this.locale;
-  },
-  
-  namespace: function(str){  
+
+  namespace: function(str){
     var parent = this,
       parts = str.split('.'),
       part;
-        
+
     for(var i = 0, length = parts.length; i < length; i++) {
       part = parts[i];
       parent[part] = parent[part] || {};
       parent = parent[part];
     }
-    
+
     return parent;
   }
-  
+
 };
 /**
  * Base Class
  *
  * @requires metaScore.core.js
  */
- 
+
 metaScore.Class = (function () {
- 
+
   /**
    * @constructor
    */
-  function Class(){    
+  function Class(){
   }
 
   Class.defaults = {};
-      
+
   Class.extend = function(child){
     child.prototype = Object.create(this.prototype, {
       constructor: {
         value: child
       }
     });
-    
+
     child.parent = this;
     child.extend = this.extend;
-    
+
     if(!('defaults' in child)){
       child.defaults = {};
     }
-    
+
     for(var prop in this.defaults){
       if(!(prop in child.defaults)){
         child.defaults[prop] = this.defaults[prop];
       }
-    } 
+    }
   };
-  
+
   Class.prototype.getConfigs = function(configs){
     configs = configs || {};
-  
+
     for(var prop in this.constructor.defaults){
       if(!(prop in configs)){
         configs[prop] = this.constructor.defaults[prop];
       }
     }
-  
-    return configs;  
+
+    return configs;
   };
-  
+
   return Class;
-  
+
 })();
 /**
  * Evented
  *
  * @requires metaScore.class.js
  */
- 
+
 metaScore.Evented = (function () {
-  
+
   function Evented() {
     // call parent constructor
     Evented.parent.call(this);
-  
+
     this.listeners = {};
   }
-  
+
   metaScore.Class.extend(Evented);
-  
+
   Evented.prototype.addListener = function(type, listener){
     if (typeof this.listeners[type] === "undefined"){
       this.listeners[type] = [];
     }
 
     this.listeners[type].push(listener);
-    
+
     return this;
   };
 
@@ -216,7 +210,7 @@ metaScore.Evented = (function () {
         }
       }
     }
-    
+
     return this;
   };
 
@@ -225,7 +219,7 @@ metaScore.Evented = (function () {
 
     if (this.listeners[type] instanceof Array){
       listeners = this.listeners[type];
-      
+
       event = {
         'target': this,
         'type': type,
@@ -233,17 +227,17 @@ metaScore.Evented = (function () {
         'bubbles': bubbling !== false,
         'cancelable': cancelable !== false
       };
-      
+
       metaScore.Object.each(listeners, function(index, listener){
         listener.call(this, event);
       }, this);
     }
-    
+
     return this;
   };
-    
+
   return Evented;
-  
+
 })();
 /**
  * Ajax
@@ -252,12 +246,12 @@ metaScore.Evented = (function () {
  * @requires metaScore.object.js
  * @requires metaScore.var.js
  */
- 
+
 metaScore.Ajax = (function () {
-  
+
   function Ajax() {
   }
-  
+
   metaScore.Class.extend(Ajax);
 
   /**
@@ -288,9 +282,9 @@ metaScore.Ajax = (function () {
         catch (e) {}
       }
     }
-    
+
     throw new Error("XMLHttp object could be created.");
-    
+
   };
 
   /**
@@ -314,27 +308,27 @@ metaScore.Ajax = (function () {
         'error': null,
         'scope': this
       };
-    
+
     options = metaScore.Object.extend({}, defaults, options);
-    
+
     if((options.method === 'POST' || options.method === 'PUT') && !('Content-type' in options.headers)){
       switch(options.dataType){
         case 'json':
           options.headers['Content-type'] = 'application/json;charset=UTF-8';
           break;
-          
+
         default:
           options.headers['Content-type'] = 'application/x-www-form-urlencoded';
       }
     }
-    
+
     xhr.open(options.method, url, options.async);
-    
+
     metaScore.Object.each(options.headers, function(key, value){
       xhr.setRequestHeader(key, value);
     });
-    
-    xhr.onreadystatechange = function() {        
+
+    xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if(metaScore.Var.is(options.complete, 'function')){
           options.complete.call(options.scope, xhr);
@@ -349,11 +343,11 @@ metaScore.Ajax = (function () {
         }
       }
     };
-    
+
     xhr.send(options.data);
-    
+
     return xhr;
-    
+
   };
 
   /**
@@ -363,11 +357,11 @@ metaScore.Ajax = (function () {
   * @returns {object} the XMLHttp object
   */
   Ajax.get = function(url, options) {
-    
+
     metaScore.Object.extend(options, {'method': 'GET'});
-    
+
     return Ajax.send(url, options);
-    
+
   };
 
   /**
@@ -377,11 +371,11 @@ metaScore.Ajax = (function () {
   * @returns {object} the XMLHttp object
   */
   Ajax.post = function(url, options) {
-    
+
     metaScore.Object.extend(options, {'method': 'POST'});
-    
+
     return Ajax.send(url, options);
-    
+
   };
 
   /**
@@ -391,27 +385,27 @@ metaScore.Ajax = (function () {
   * @returns {object} the XMLHttp object
   */
   Ajax.put = function(url, options) {
-    
+
     metaScore.Object.extend(options, {'method': 'PUT'});
-    
+
     return Ajax.send(url, options);
-    
+
   };
-    
+
   return Ajax;
-  
+
 })();
 /**
  * Array
  *
  * @requires ../metaScore.class.js
  */
- 
+
 metaScore.Array = (function () {
-  
+
   function Array() {
   }
-  
+
   metaScore.Class.extend(Array);
 
   /**
@@ -506,12 +500,12 @@ metaScore.Array = (function () {
 
     for(; i < l; i++) {
       value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
-      
+
       if (value === false) {
         break;
       }
     }
-    
+
     return arr;
 
   };
@@ -526,36 +520,36 @@ metaScore.Array = (function () {
     var index = Array.inArray(element, arr);
 
     while(index > -1){
-      arr.splice(index, 1);    
+      arr.splice(index, 1);
       index = Array.inArray(element, arr);
     }
-    
+
     return arr;
   };
-    
+
   return Array;
-  
+
 })();
 /**
  * Color
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Color = (function () {
-  
+
   function Color() {
   }
-  
+
   metaScore.Class.extend(Color);
-  
-  Color.rgb2hsv = function (rgb){    
+
+  Color.rgb2hsv = function (rgb){
     var r = rgb.r, g = rgb.g, b = rgb.b,
       max = Math.max(r, g, b),
       min = Math.min(r, g, b),
       d = max - min,
       h, s, v;
-      
+
     s = max === 0 ? 0 : d / max;
     v = max;
 
@@ -567,29 +561,29 @@ metaScore.Color = (function () {
         case r:
           h = (g - b) / d + (g < b ? 6 : 0);
           break;
-          
+
         case g:
           h = (b - r) / d + 2;
           break;
-          
+
         case b:
           h = (r - g) / d + 4;
           break;
       }
-      
+
       h /= 6;
     }
-    
+
     return {
       'h': h,
       's': s,
       'v': v
     };
   };
-  
-  Color.parse = function(color){ 
+
+  Color.parse = function(color){
     var rgba = {}, matches;
-    
+
     if(metaScore.Var.is(color, 'object')){
       rgba.r = 'r' in color ? color.r : 0;
       rgba.g = 'g' in color ? color.g : 0;
@@ -598,7 +592,7 @@ metaScore.Color = (function () {
     }
     else if(metaScore.Var.is(color, 'string')){
       color = color.replace(/\s\s*/g,''); // Remove all spaces
-      
+
       // Checks for 6 digit hex and converts string to integer
       if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
         rgba.r = parseInt(matches[1], 16);
@@ -606,7 +600,7 @@ metaScore.Color = (function () {
         rgba.b = parseInt(matches[3], 16);
         rgba.a = 1;
       }
-          
+
       // Checks for 3 digit hex and converts string to integer
       else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
         rgba.r = parseInt(matches[1], 16) * 17;
@@ -614,7 +608,7 @@ metaScore.Color = (function () {
         rgba.b = parseInt(matches[3], 16) * 17;
         rgba.a = 1;
       }
-          
+
       // Checks for rgba and converts string to
       // integer/float using unary + operator to save bytes
       else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
@@ -623,7 +617,7 @@ metaScore.Color = (function () {
         rgba.b = +matches[3];
         rgba.a = +matches[4];
       }
-          
+
       // Checks for rgb and converts string to
       // integer/float using unary + operator to save bytes
       else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
@@ -633,12 +627,12 @@ metaScore.Color = (function () {
         rgba.a = 1;
       }
     }
-    
+
     return rgba;
   };
-    
+
   return Color;
-  
+
 })();
 /**
  * Dom
@@ -649,34 +643,34 @@ metaScore.Color = (function () {
  * @requires metaScore.object.js
  * @requires metaScore.var.js
  */
- 
+
 metaScore.Dom = (function () {
-  
-  function Dom() { 
+
+  function Dom() {
     var elements;
-  
+
     this.elements = [];
-    
+
     if(arguments.length > 0){
       if(elements = metaScore.Dom.elementsFromString.apply(this, arguments)){
         this.add(elements);
-        
+
         if(arguments.length > 1){
           this.attr(arguments[1]);
         }
       }
       else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){
         this.add(elements);
-        
+
         if(arguments.length > 2){
           this.attr(arguments[2]);
         }
       }
-    }    
+    }
   }
-  
+
   metaScore.Class.extend(Dom);
-  
+
   /**
   * Regular expression that matches an element's string
   */
@@ -720,12 +714,12 @@ metaScore.Dom = (function () {
   /**
   * Select a single element by selecor
   * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements 
+  * @param {object} an optional parent to constrain the matched elements
   * @returns {object} an HTML element
   */
-  Dom.selectElement = function (selector, parent) {      
+  Dom.selectElement = function (selector, parent) {
     var element;
-    
+
     if(!parent){
       parent = document;
     }
@@ -746,12 +740,12 @@ metaScore.Dom = (function () {
   /**
   * Select elements by selecor
   * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements 
+  * @param {object} an optional parent to constrain the matched elements
   * @returns {array} an array of HTML elements
   */
-  Dom.selectElements = function (selector, parent) {      
+  Dom.selectElements = function (selector, parent) {
     var elements;
-    
+
     if(!parent){
       parent = document;
     }
@@ -798,23 +792,23 @@ metaScore.Dom = (function () {
       element = document.createElement('div'),
       match = /<\s*\w.*?>/g.exec(html),
       tag, map, j;
-      
+
     if(match != null){
       tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
-      
+
       map = wrapMap[tag] || wrapMap['_default'];
       html = map[1] + html + map[2];
       element.innerHTML = html;
-      
+
       // Descend through wrappers to the right content
       j = map[0];
       while(j--) {
         element = element.lastChild;
       }
-      
+
       return element.childNodes;
     }
-    
+
     return null;
   };
 
@@ -823,7 +817,7 @@ metaScore.Dom = (function () {
   * @param {object} the dom element
   * @param {string} the class to check
   * @returns {boolean} true if the element has the given class, false otherwise
-  */     
+  */
   Dom.hasClass = function(element, className){
     return element.classList.contains(className);
   };
@@ -837,7 +831,7 @@ metaScore.Dom = (function () {
   Dom.addClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
-    
+
     for(; i<l; i++){
       element.classList.add(classNames[i]);
     }
@@ -852,7 +846,7 @@ metaScore.Dom = (function () {
   Dom.removeClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
-    
+
     for(; i<l; i++){
       element.classList.remove(classNames[i]);
     }
@@ -868,7 +862,7 @@ metaScore.Dom = (function () {
   Dom.toggleClass = function(element, className, force){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
-    
+
     if(force === undefined){
       for(; i<l; i++){
         element.classList.toggle(classNames[i]);
@@ -909,7 +903,7 @@ metaScore.Dom = (function () {
     if(useCapture === undefined){
       useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
     }
-    
+
     return element.removeEventListener(type, callback, useCapture);
   };
 
@@ -921,13 +915,13 @@ metaScore.Dom = (function () {
   * @param {boolean} whether the event is cancelable
   * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
   */
-  Dom.triggerEvent = function(element, type, data, bubbles, cancelable){  
+  Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
     var event = new CustomEvent(type, {
       'detail': data,
       'bubbles': bubbles !== false,
       'cancelable': cancelable !== false
     });
-    
+
     return element.dispatchEvent(event);
   };
 
@@ -941,7 +935,7 @@ metaScore.Dom = (function () {
     if(value !== undefined){
       element.innerHTML = value;
     }
-    
+
     return element.innerHTML;
   };
 
@@ -955,7 +949,7 @@ metaScore.Dom = (function () {
     if(value !== undefined){
       element.value = value;
     }
-    
+
     return element.value;
   };
 
@@ -967,7 +961,7 @@ metaScore.Dom = (function () {
   * @returns {void}
   */
   Dom.attr = function(element, name, value){
-    
+
     if(metaScore.Var.is(name, 'object')){
       metaScore.Object.each(name, function(key, value){
         Dom.attr(element, key, value);
@@ -978,11 +972,11 @@ metaScore.Dom = (function () {
         case 'class':
           this.addClass(element, value);
           break;
-          
+
         case 'text':
           this.text(element, value);
           break;
-          
+
         default:
           if(value === null){
             element.removeAttribute(name);
@@ -991,7 +985,7 @@ metaScore.Dom = (function () {
             if(value !== undefined){
               element.setAttribute(name, value);
             }
-            
+
             return element.getAttribute(name);
           }
           break;
@@ -1014,9 +1008,9 @@ metaScore.Dom = (function () {
     if(value !== undefined){
       element.style[camel] = value;
     }
-    
+
     style = inline === true ? element.style : window.getComputedStyle(element);
-    
+
     return style.getPropertyValue(name);
   };
 
@@ -1036,7 +1030,7 @@ metaScore.Dom = (function () {
     else if(value !== undefined){
       element.dataset[name] = value;
     }
-    
+
     return element.dataset[name];
   };
 
@@ -1050,7 +1044,7 @@ metaScore.Dom = (function () {
     if (!metaScore.Var.is(children, 'array')) {
       children = [children];
     }
-    
+
     metaScore.Array.each(children, function(index, child){
       element.appendChild(child);
     }, this);
@@ -1087,7 +1081,7 @@ metaScore.Dom = (function () {
   Dom.is = function(element, selector){
     return element.matches && element.matches(selector);
   };
-  
+
   Dom.prototype.add = function(elements){
     if('length' in elements){
       for(var i = 0; i < elements.length; i++ ) {
@@ -1098,170 +1092,170 @@ metaScore.Dom = (function () {
       this.elements.push(elements);
     }
   };
-  
+
   Dom.prototype.count = function(){
     return this.elements.length;
   };
-  
+
   Dom.prototype.get = function(index){
     return this.elements[index];
   };
-  
-  Dom.prototype.filter = function(selector){  
+
+  Dom.prototype.filter = function(selector){
     var filtered = [];
-    
+
     this.each(function(index, element) {
       if(Dom.is(element, selector)){
         filtered.push(element);
       }
     }, this);
-  
+
     this.elements = filtered;
-    
+
     return this;
   };
-  
-  Dom.prototype.index = function(selector){  
+
+  Dom.prototype.index = function(selector){
     var found = -1;
-    
+
     this.each(function(index, element) {
       if(Dom.is(element, selector)){
         found = index;
         return false;
       }
     }, this);
-    
-    return found;  
+
+    return found;
   };
-  
-  Dom.prototype.child = function(selector){  
+
+  Dom.prototype.child = function(selector){
     var children = new Dom(),
      child;
-  
+
     this.each(function(index, element) {
       if(child = Dom.selectElement.call(this, selector, element)){
         children.add(child);
         return false;
       }
     }, this);
-    
-    return children;  
+
+    return children;
   };
-  
-  Dom.prototype.children = function(selector){  
+
+  Dom.prototype.children = function(selector){
     var children = new Dom();
-  
+
     this.each(function(index, element) {
       children.add(Dom.selectElements.call(this, selector, element));
     }, this);
-    
-    return children;  
+
+    return children;
   };
-  
-  Dom.prototype.parents = function(selector){  
+
+  Dom.prototype.parents = function(selector){
     var parents = new Dom();
-  
+
     this.each(function(index, element) {
       parents.add(element.parentElement);
     }, this);
-      
+
     if(selector){
       parents.filter(selector);
     }
-    
+
     return parents;
   };
-  
+
   Dom.prototype.each = function(callback, scope){
     scope = scope || this;
-  
+
     metaScore.Array.each(this.elements, callback, scope);
   };
-  
+
   Dom.prototype.hasClass = function(className) {
     var found;
-  
+
     this.each(function(index, element) {
       found = Dom.hasClass(element, className);
       return !found;
     }, this);
-    
+
     return found;
   };
-  
-  Dom.prototype.addClass = function(className) {  
+
+  Dom.prototype.addClass = function(className) {
     this.each(function(index, element) {
       Dom.addClass(element, className);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
-  Dom.prototype.removeClass = function(className) {  
+
+  Dom.prototype.removeClass = function(className) {
     this.each(function(index, element) {
       Dom.removeClass(element, className);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
-  Dom.prototype.toggleClass = function(className, force) {  
+
+  Dom.prototype.toggleClass = function(className, force) {
     this.each(function(index, element) {
       Dom.toggleClass(element, className, force);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
-  Dom.prototype.addListener = function(type, callback, useCapture) {  
+
+  Dom.prototype.addListener = function(type, callback, useCapture) {
    this.each(function(index, element) {
       Dom.addListener(element, type, callback, useCapture);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
+
   Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
     scope = scope || this;
-    
+
     return this.addListener(type, function(evt){
       var element = evt.target,
         match;
-    
+
       while (element) {
         if(Dom.is(element, selector)){
           match = element;
           break;
         }
-        
+
         element = element.parentNode;
       }
-      
+
       if(match){
         callback.call(scope, evt, match);
       }
-    }, useCapture);    
+    }, useCapture);
   };
-  
-  Dom.prototype.removeListener = function(type, callback, useCapture) {  
+
+  Dom.prototype.removeListener = function(type, callback, useCapture) {
     this.each(function(index, element) {
       Dom.removeListener(element, type, callback, useCapture);
     }, this);
-    
-    return this;        
+
+    return this;
   };
-  
+
   Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
-  
+
     this.each(function(index, element) {
       return_value = Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
     }, this);
-    
+
     return return_value;
   };
-  
-  Dom.prototype.text = function(value) {  
+
+  Dom.prototype.text = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
         Dom.text(element, value);
@@ -1271,7 +1265,7 @@ metaScore.Dom = (function () {
       return Dom.text(this.get(0));
     }
   };
-  
+
   Dom.prototype.val = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1283,7 +1277,7 @@ metaScore.Dom = (function () {
       return Dom.val(this.get(0));
     }
   };
-  
+
   Dom.prototype.attr = function(name, value) {
     if(value !== undefined || metaScore.Var.is(name, 'object')){
       this.each(function(index, element) {
@@ -1295,7 +1289,7 @@ metaScore.Dom = (function () {
       return Dom.attr(this.get(0), name);
     }
   };
-  
+
   Dom.prototype.css = function(name, value, inline) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1307,7 +1301,7 @@ metaScore.Dom = (function () {
       return Dom.css(this.get(0), name, value, inline);
     }
   };
-  
+
   Dom.prototype.data = function(name, value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1319,55 +1313,55 @@ metaScore.Dom = (function () {
       return Dom.data(this.get(0), name);
     }
   };
-  
+
   Dom.prototype.append = function(children){
     if(children instanceof Dom){
       children = children.elements;
     }
-    
+
     Dom.append(this.get(0), children);
-    
+
     return this;
   };
-  
-  Dom.prototype.appendTo = function(parent){    
+
+  Dom.prototype.appendTo = function(parent){
     if(!(parent instanceof Dom)){
       parent = new Dom(parent);
     }
-    
+
     parent = parent.get(0);
-    
+
     this.each(function(index, element) {
       Dom.append(parent, element);
     }, this);
-    
+
     return this;
   };
-  
-  Dom.prototype.empty = function(){    
+
+  Dom.prototype.empty = function(){
     this.each(function(index, element) {
       Dom.empty(element);
     }, this);
-    
+
     return this;
   };
-  
+
   Dom.prototype.show = function(){
     this.each(function(index, element) {
       this.css('display', '');
     }, this);
-    
+
     return this;
   };
-  
+
   Dom.prototype.hide = function(){
     this.each(function(index, element) {
       this.css('display', 'none');
     }, this);
-    
+
     return this;
   };
-  
+
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       this.each(function(index, element) {
@@ -1376,23 +1370,23 @@ metaScore.Dom = (function () {
         Dom.triggerEvent(parent, 'childremoved', {'child': element});
       }, this);
     }
-    
+
     return this;
   };
-  
+
   Dom.prototype.is = function(selector){
     var found;
-  
+
     this.each(function(index, element) {
       found = Dom.is(element, selector);
       return found;
     }, this);
-    
+
     return found;
   };
-    
+
   return Dom;
-  
+
 })();
 /**
  * Dom
@@ -1400,24 +1394,24 @@ metaScore.Dom = (function () {
  * @requires ../metaScore.class.js
  * @requires metaScore.dom.js
  */
- 
+
 metaScore.Draggable = (function () {
 
   function Draggable(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     this.configs.container = this.configs.container || new metaScore.Dom('body');
-      
+
     // fix event handlers scope
     this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
     this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
     this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
-    
+
     this.configs.handle.addListener('mousedown', this.onMouseDown);
-    
+
     this.enable();
   }
-  
+
   Draggable.defaults = {
     /**
     * The limits of the dragging
@@ -1427,9 +1421,9 @@ metaScore.Draggable = (function () {
       left: null
     }
   };
-  
+
   metaScore.Class.extend(Draggable);
-  
+
   Draggable.prototype.onMouseDown = function(evt){
     if(!this.enabled){
       return;
@@ -1439,80 +1433,80 @@ metaScore.Draggable = (function () {
       'left': parseInt(this.configs.target.css('left'), 10) - evt.clientX,
       'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
     };
-    
+
     this.configs.container
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
-    
+
     this.configs.target
       .addClass('dragging')
       .triggerEvent('dragstart', null, false, true);
-    
-    evt.stopPropagation();    
+
+    evt.stopPropagation();
   };
-  
-  Draggable.prototype.onMouseMove = function(evt){  
+
+  Draggable.prototype.onMouseMove = function(evt){
     var left = evt.clientX + this.start_state.left,
       top = evt.clientY + this.start_state.top;
-      
+
     if(!isNaN(this.configs.limits.top)){
       top = Math.max(top, this.configs.limits.top);
     }
-    
+
     if(!isNaN(this.configs.limits.left)){
       left = Math.max(left, this.configs.limits.left);
     }
-    
+
     this.configs.target
       .css('left', left + 'px')
       .css('top', top + 'px')
       .triggerEvent('drag', null, false, true);
-    
-    evt.stopPropagation();      
+
+    evt.stopPropagation();
   };
-  
+
   Draggable.prototype.onMouseUp = function(evt){
     this.configs.container
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
-    
+
     this.configs.target
       .removeClass('dragging')
       .triggerEvent('dragend', null, false, true);
-    
-    evt.stopPropagation();    
+
+    evt.stopPropagation();
   };
-  
+
   Draggable.prototype.enable = function(){
     this.configs.target.addClass('draggable');
-    
+
     this.configs.handle.addClass('drag-handle');
-    
+
     this.enabled = true;
-    
-    return this;  
+
+    return this;
   };
-  
-  Draggable.prototype.disable = function(){  
+
+  Draggable.prototype.disable = function(){
     this.configs.target.removeClass('draggable');
-    
+
     this.configs.handle.removeClass('drag-handle');
-    
+
     this.enabled = false;
-    
-    return this;  
+
+    return this;
   };
-  
+
   Draggable.prototype.destroy = function(){
     this.disable();
-    
+
     this.configs.handle.removeListener('mousedown', this.onMouseDown);
-    
-    return this;    
+
+    return this;
   };
-    
+
   return Draggable;
-  
+
 })();
 /**
  * Function
@@ -1520,12 +1514,12 @@ metaScore.Draggable = (function () {
  * @requires ../metaScore.base.js
  * @requires metaScore.var.js
  */
- 
+
 metaScore.Function = (function () {
-  
+
   function Function() {
   }
-  
+
   metaScore.Class.extend(Function);
 
   /**
@@ -1539,8 +1533,8 @@ metaScore.Function = (function () {
     if (!metaScore.Var.type(fn, 'function')){
       return undefined;
     }
-    
-    return function () {    
+
+    return function () {
       return fn.apply(scope || this, args || arguments);
     };
   };
@@ -1549,21 +1543,21 @@ metaScore.Function = (function () {
   * A reusable empty function
   */
   Function.emptyFn = function(){};
-    
+
   return Function;
-  
+
 })();
 /**
  * Object
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Object = (function () {
-  
+
   function Object() {
   }
-  
+
   metaScore.Class.extend(Object);
 
   /**
@@ -1577,20 +1571,20 @@ metaScore.Object = (function () {
       i = 1,
       length = arguments.length,
       key, src, copy;
-      
+
     for (; i < length; i++ ) {
       if ((options = arguments[i]) != null) {
-        for ( key in options ) {            
+        for ( key in options ) {
           src = target[key];
           copy = options[key];
-          
+
           if(src !== copy && copy !== undefined ) {
             target[key] = copy;
           }
         }
       }
     }
-      
+
     return target;
 
   };
@@ -1601,7 +1595,7 @@ metaScore.Object = (function () {
   * @returns {object} a copy of the original object
   */
   Object.copy = function(obj) {
-      
+
     return Object.extend({}, obj);
 
   };
@@ -1617,21 +1611,21 @@ metaScore.Object = (function () {
 
     var key, value,
       scope_provided = scope !== undefined;
-    
+
     for (key in obj) {
       value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
-    
+
       if (value === false) {
         break;
       }
     }
-    
+
     return obj;
 
   };
-    
+
   return Object;
-  
+
 })();
 /**
  * Dom
@@ -1639,31 +1633,31 @@ metaScore.Object = (function () {
  * @requires ../metaScore.base.js
  * @requires metaScore.dom.js
  */
- 
+
 metaScore.Resizable = (function () {
 
   function Resizable(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     this.configs.container = this.configs.container || new metaScore.Dom('body');
-    
+
     this.handles = {};
-      
+
     // fix event handlers scope
     this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
     this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
     this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
-    
+
     metaScore.Array.each(this.configs.directions, function(index, direction){
       this.handles[direction] = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
         .data('direction', direction)
         .addListener('mousedown', this.onMouseDown)
         .appendTo(this.configs.target);
     }, this);
-      
-    this.enable();  
+
+    this.enable();
   }
-  
+
   Resizable.defaults = {
     directions: [
       'top',
@@ -1676,14 +1670,14 @@ metaScore.Resizable = (function () {
       'bottom-right'
     ]
   };
-  
+
   metaScore.Class.extend(Resizable);
-  
+
   Resizable.prototype.onMouseDown = function(evt){
     if(!this.enabled){
       return;
     }
-    
+
     this.start_state = {
       'handle': evt.target,
       'x': evt.clientX,
@@ -1693,22 +1687,22 @@ metaScore.Resizable = (function () {
       'w': parseInt(this.configs.target.css('width'), 10),
       'h': parseInt(this.configs.target.css('height'), 10)
     };
-    
+
     this.configs.container
       .addListener('mousemove', this.onMouseMove, this)
       .addListener('mouseup', this.onMouseUp, this);
-    
+
     this.configs.target
       .addClass('resizing')
       .triggerEvent('resizestart', null, false, true);
-    
-    evt.stopPropagation();      
+
+    evt.stopPropagation();
   };
 
-  Resizable.prototype.onMouseMove = function(evt){  
+  Resizable.prototype.onMouseMove = function(evt){
     var handle = new metaScore.Dom(this.start_state.handle),
       w, h, top, left;
-    
+
     switch(handle.data('direction')){
       case 'top':
         h = this.start_state.h - evt.clientY + this.start_state.y;
@@ -1745,74 +1739,74 @@ metaScore.Resizable = (function () {
         h = this.start_state.h + evt.clientY - this.start_state.y;
         break;
     }
-      
+
     if(top !== undefined){
       this.configs.target.css('top', top +'px');
     }
     if(left !== undefined){
       this.configs.target.css('left', left +'px');
     }
-    
+
     this.configs.target
       .css('width', w +'px')
       .css('height', h +'px')
       .triggerEvent('resize', null, false, true);
-    
-    evt.stopPropagation();    
+
+    evt.stopPropagation();
   };
 
-  Resizable.prototype.onMouseUp = function(evt){  
+  Resizable.prototype.onMouseUp = function(evt){
     this.configs.container
       .removeListener('mousemove', this.onMouseMove, this)
       .removeListener('mouseup', this.onMouseUp, this);
-    
+
     this.configs.target
       .removeClass('resizing')
       .triggerEvent('resizeend', null, false, true);
-    
+
     evt.stopPropagation();
   };
-  
-  Resizable.prototype.enable = function(){  
+
+  Resizable.prototype.enable = function(){
     this.configs.target.addClass('resizable');
-    
+
     this.enabled = true;
-    
+
     return this;
   };
-  
-  Resizable.prototype.disable = function(){  
+
+  Resizable.prototype.disable = function(){
     this.configs.target.removeClass('resizable');
-    
+
     this.enabled = false;
-    
-    return this;  
+
+    return this;
   };
-  
-  Resizable.prototype.destroy = function(){  
+
+  Resizable.prototype.destroy = function(){
     this.disable();
-  
+
     metaScore.Object.each(this.handles, function(index, handle){
       handle.remove();
     }, this);
-    
-    return this;  
+
+    return this;
   };
-    
+
   return Resizable;
-  
+
 })();
 /**
  * String
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.String = (function () {
-  
+
   function String() {
   }
-  
+
   metaScore.Class.extend(String);
 
   /**
@@ -1833,7 +1827,7 @@ metaScore.String = (function () {
   String.uuid = function(len, radix) {
     var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
       uuid = [], i;
-    
+
     radix = radix || chars.length;
 
     if (len) {
@@ -1862,19 +1856,19 @@ metaScore.String = (function () {
 
     return uuid.join('');
   };
- 
+
   String.pad = function(str, len, pad, dir) {
     var right, left,
       padlen;
-  
+
     if (typeof(len) === "undefined") { len = 0; }
     if (typeof(pad) === "undefined") { pad = ' '; }
     if (typeof(dir) === "undefined") { dir = 'right'; }
-    
+
     str = str +'';
- 
-    if (len + 1 >= str.length) { 
-      switch (dir){ 
+
+    if (len + 1 >= str.length) {
+      switch (dir){
         case 'left':
           str = Array(len + 1 - str.length).join(pad) + str;
           break;
@@ -1889,35 +1883,35 @@ metaScore.String = (function () {
         default:
           str = str + Array(len + 1 - str.length).join(pad);
           break;
-      } 
-    } 
-    return str; 
+      }
+    }
+    return str;
   };
-    
+
   return String;
-  
+
 })();
 /**
  * StyleSheet
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.StyleSheet = (function () {
-  
+
   function StyleSheet(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     // call the super constructor.
     metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
-    
+
     this.el = this.get(0);
     this.sheet = this.el.sheet;
-    
+
     // WebKit hack :(
     this.setInternalValue("");
   }
-  
+
   metaScore.Dom.extend(StyleSheet);
 
   /**
@@ -1931,7 +1925,7 @@ metaScore.StyleSheet = (function () {
     if(index === undefined){
       index = this.sheet.cssRules.length;
     }
-  
+
     if("insertRule" in this.sheet) {
       return this.sheet.insertRule(selector + "{" + rules + "}", index);
     }
@@ -1951,7 +1945,7 @@ metaScore.StyleSheet = (function () {
     else if("removeRule" in this.sheet) {
       this.sheet.removeRule(index);
     }
-    
+
     return this;
   };
 
@@ -1961,16 +1955,16 @@ metaScore.StyleSheet = (function () {
   */
   StyleSheet.prototype.removeRulesBySelector = function(selector) {
     var rules = this.sheet.cssRules || this.sheet.rules;
-      
+
     selector = selector.toLowerCase();
-  
+
     for (var i=0; i<rules.length; i++){
       if(rules[i].selectorText.toLowerCase() === selector){
         this.removeRule(i);
         break;
       }
     }
-    
+
     return this;
   };
 
@@ -1979,11 +1973,11 @@ metaScore.StyleSheet = (function () {
   */
   StyleSheet.prototype.removeRules = function() {
     var rules = this.sheet.cssRules || this.sheet.rules;
-  
+
     while(rules.length > 0){
       this.removeRule(0);
     }
-    
+
     return this;
   };
 
@@ -1997,19 +1991,19 @@ metaScore.StyleSheet = (function () {
     else{
       this.text(value);
     }
-    
+
     return this;
   };
-    
+
   return StyleSheet;
-  
+
 })();
 /**
  * Variable
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Var = (function () {
 
   /**
@@ -2025,10 +2019,10 @@ metaScore.Var = (function () {
     "[object RegExp]": "regexp",
     "[object Object]": "object"
   };
-  
+
   function Var() {
   }
-  
+
   metaScore.Class.extend(Var);
 
   /**
@@ -2059,34 +2053,34 @@ metaScore.Var = (function () {
     if(obj === undefined || obj == null){
       return true;
     }
-    
+
     if(obj.hasOwnProperty('length')){
       return obj.length <= 0;
     }
-    
+
     if(metaScore.Var.is(obj, 'object')){
       return Object.keys(obj).length <= 0;
     }
-    
+
     return false;
   };
-    
+
   return Var;
-  
+
 })();
 /**
  * Locale
  *
  * @requires ../metaScore.base.js
  */
- 
+
 metaScore.Locale = (function () {
-  
+
   function Locale() {
   }
-  
+
   metaScore.Class.extend(Locale);
-  
+
   Locale.strings = {};
 
   /**
@@ -2097,11 +2091,11 @@ metaScore.Locale = (function () {
   */
   Locale.t = function(key, str, args){
     var locale = metaScore.getLocale();
-      
+
     if(this.strings.hasOwnProperty(locale) && this.strings[locale].hasOwnProperty(key)){
       str = this.strings[locale][key];
     }
-    
+
     return Locale.formatString(str, args);
   };
 
@@ -2111,64 +2105,64 @@ metaScore.Locale = (function () {
   * @param {object} string replacements
   * @returns {string} the formatted string
   */
-  Locale.formatString = function(str, args) {  
+  Locale.formatString = function(str, args) {
     metaScore.Object.each(args, function(key, value){
       str = str.replace(key, args[key]);
     }, this);
-    
+
     return str;
   };
-    
+
   return Locale;
-  
+
 })();
 metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {});
 
 metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {
 	"player.Pager.count": "page !current/!count",
-	"player.component.Block.name": "Name",
+	"player.component.Block.name": "Nom",
 	"player.component.Block.x": "X",
 	"player.component.Block.y": "Y",
-	"player.component.Block.width": "Width",
-	"player.component.Block.height": "Height",
-	"player.component.Block.background-color": "Background color",
-	"player.component.Block.background-image": "Background image",
-	"player.component.Block.border-width": "Border width",
-	"player.component.Block.border-color": "Border color",
-	"player.component.Block.synched": "Synchronized pages ?",
+	"player.component.Block.width": "Largeur",
+	"player.component.Block.height": "Hauteur",
+	"player.component.Block.background-color": "Couleur de fond",
+	"player.component.Block.background-image": "Image de fond",
+	"player.component.Block.border-width": "Largeur de bordure",
+	"player.component.Block.border-color": "Couleur de bordure",
+	"player.component.Block.synched": "Pages synchronisées ?",
 	"player.component.Controller.x": "X",
 	"player.component.Controller.y": "Y",
-	"player.component.Element.name": "Name",
+	"player.component.Element.name": "Nom",
 	"player.component.Element.x": "X",
 	"player.component.Element.y": "Y",
-	"player.component.Element.width": "Width",
-	"player.component.Element.height": "Height",
-	"player.component.Element.r-index": "Reading index",
-	"player.component.Element.z-index": "Display index",
-	"player.component.Element.background-color": "Background color",
-	"player.component.Element.background-image": "Background image",
-	"player.component.Element.border-width": "Border width",
-	"player.component.Element.border-color": "Border color",
-	"player.component.Element.border-radius": "Border radius",
-	"player.component.Element.opacity": "Opacity",
-	"player.component.Element.start-time": "Start time",
-	"player.component.Element.end-time": "End time",
+	"player.component.Element.width": "Largeur",
+	"player.component.Element.height": "Hauteur",
+	"player.component.Element.r-index": "Indice de lecture",
+	"player.component.Element.z-index": "Indice d'affichage",
+	"player.component.Element.background-color": "Couleur de fond",
+	"player.component.Element.background-image": "Image de fond",
+	"player.component.Element.border-width": "Largeur de bordure",
+	"player.component.Element.border-color": "Couleur de bordure",
+	"player.component.Element.border-radius": "Rayon de bordure",
+	"player.component.Element.opacity": "Opacité",
+	"player.component.Element.start-time": "Temps de début",
+	"player.component.Element.end-time": "Temps de fin",
 	"player.component.Media.x": "X",
 	"player.component.Media.y": "Y",
-	"player.component.Media.width": "Width",
-	"player.component.Media.height": "Height",
-	"player.component.Page.background-color": "Background color",
-	"player.component.Page.background-image": "Background image",
-	"player.component.Page.start-time": "Start time",
-	"player.component.Page.end-time": "End time",
+	"player.component.Media.width": "Largeur",
+	"player.component.Media.height": "Hauteur",
+	"player.component.Page.background-color": "Couleur de fond",
+	"player.component.Page.background-image": "Image de fond",
+	"player.component.Page.start-time": "Temps de début",
+	"player.component.Page.end-time": "Temps de fin",
 	"player.component.element.Cursor.direction": "Direction",
-	"player.component.element.Cursor.direction.right": "Left > Right",
-	"player.component.element.Cursor.direction.left": "Right > Left",
-	"player.component.element.Cursor.direction.bottom": "Top > Bottom",
-	"player.component.element.Cursor.direction.top": "Bottom > Top",
-	"player.component.element.Cursor.acceleration": "Acceleration",
-	"player.component.element.Cursor.cursor-width": "Cursor width",
-	"player.component.element.Cursor.cursor-color": "Cursor color"
+	"player.component.element.Cursor.direction.right": "Gauche > Droite",
+	"player.component.element.Cursor.direction.left": "Droite > Gauche",
+	"player.component.element.Cursor.direction.bottom": "Haut > Bas",
+	"player.component.element.Cursor.direction.top": "Bas > Haut",
+	"player.component.element.Cursor.acceleration": "Accélération",
+	"player.component.element.Cursor.cursor-width": "Largeur du curseur",
+	"player.component.element.Cursor.cursor-color": "Couleur du curseur"
 });
 
 /**
@@ -2177,33 +2171,33 @@ metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.f
  * @requires ../metaScore.base.js
  */
 metaScore.Player = (function () {
-  
+
   function Player(configs) {
     var iframe, document;
-  
+
     this.configs = this.getConfigs(configs);
-    
+
     iframe = new metaScore.Dom('<iframe></iframe>', {'class': 'metaScore-player'})
       .css('width', this.configs.width)
       .css('height', this.configs.height)
       .css('border', 'none')
       .appendTo(this.configs.container);
-      
+
     document = iframe.get(0).contentDocument;
-    
+
     // call parent constructor
     Player.parent.call(this, document.body);
-    
-    if(this.configs.keyboard){      
+
+    if(this.configs.keyboard){
       this.addListener('keydown', metaScore.Function.proxy(this.onKeydown, this));
     }
-    
+
     this.iframe = iframe;
     this.head = new metaScore.Dom(document.head);
-    
+
     this.load();
   }
-  
+
   Player.defaults = {
     'url': '',
     'width': '100%',
@@ -2212,10 +2206,10 @@ metaScore.Player = (function () {
     'ajax': {},
     'keyboard': true
   };
-  
+
   metaScore.Dom.extend(Player);
-  
-  Player.prototype.onKeydown = function(evt){  
+
+  Player.prototype.onKeydown = function(evt){
     switch(evt.keyCode){
       case 32: //space-bar
         if(this.media.isPlaying()){
@@ -2234,17 +2228,17 @@ metaScore.Player = (function () {
         this.child('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
         evt.preventDefault();
         break;
-    }  
+    }
   };
-  
-  Player.prototype.onControllerButtonClick = function(evt){  
+
+  Player.prototype.onControllerButtonClick = function(evt){
     var action = metaScore.Dom.data(evt.target, 'action');
-    
+
     switch(action){
       case 'rewind':
         this.media.reset();
         break;
-        
+
       case 'play':
         if(this.media.isPlaying()){
           this.media.pause();
@@ -2254,44 +2248,44 @@ metaScore.Player = (function () {
         }
         break;
     }
-    
+
     evt.stopPropagation();
   };
-  
+
   Player.prototype.onMediaPlay = function(evt){
     this.controller.addClass('playing');
   };
-  
+
   Player.prototype.onMediaPause = function(evt){
     this.controller.removeClass('playing');
   };
-  
+
   Player.prototype.onMediaTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getTime();
-  
+
     this.controller.updateTime(currentTime);
   };
-  
+
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
       page = evt.detail.page;
-    
+
     if(block.getProperty('synched')){
       this.media.setTime(page.getProperty('start-time'));
     }
   };
-  
+
   Player.prototype.onElementTime = function(evt){
     if(this.linkcuepoint){
       this.linkcuepoint.destroy();
     }
-    
+
     this.media.setTime(evt.detail.value);
-    
+
     if(evt.detail.forcePlay){
       this.media.play();
     }
-    
+
     if(evt.detail.stop){
       this.linkcuepoint = new metaScore.player.CuePoint({
         media: this.media,
@@ -2300,128 +2294,146 @@ metaScore.Player = (function () {
       });
     }
   };
-  
+
   Player.prototype.onLinkCuePointStart = function(cuepoint){
     cuepoint.destroy();
-      
+
     this.setReadingIndex(0);
-    
+
     this.media.pause();
   };
-  
+
   Player.prototype.onElementReadingIndex = function(evt){
     this.setReadingIndex(evt.detail.value);
-    
+
     evt.stopPropagation();
   };
-  
+
   Player.prototype.onComponenetPropChange = function(evt){
     var component = evt.detail.component;
-  
+
     switch(evt.detail.property){
       case 'start-time':
       case 'end-time':
         component.setCuePoint({
           'media': this.media
-        });        
+        });
         break;
     }
   };
-  
+
   Player.prototype.load = function(url){
     var options;
-    
+
     this.addClass('loading');
-    
+
     options = metaScore.Object.extend({}, {
       'success': metaScore.Function.proxy(this.onLoadSuccess, this),
       'error': metaScore.Function.proxy(this.onLoadError, this)
     }, this.configs.ajax);
-    
-  
+
+
     metaScore.Ajax.get(this.configs.url, options);
   };
-  
-  Player.prototype.onLoadSuccess = function(xhr){  
+
+  Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
-    
+
     this.data('id', this.json.id);
-    
+
     // setup the base url
     if(this.json.base_url){
       new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
         .appendTo(this.getHead());
     }
-    
+
     // add style sheets
     new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': this.json.library_css})
       .appendTo(this.getHead());
-      
+
     this.css = new metaScore.StyleSheet()
       .setInternalValue(this.json.css)
       .appendTo(this.getHead());
-      
+
     this.rindex_css = new metaScore.StyleSheet()
       .appendTo(this.getHead());
-    
-    this.media = new metaScore.player.component.Media(this.json.media)
+
+    this.addMedia(this.json.media);
+    this.addController(this.json.controller);
+
+    metaScore.Array.each(this.json.blocks, function(index, block){
+      this.addBlock(block);
+    }, this);
+
+    this.media.reset();
+
+    this.removeClass('loading');
+
+    this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
+  };
+
+  Player.prototype.onLoadError = function(xhr){
+
+    this.removeClass('loading');
+
+    this.triggerEvent('loaderror', {'player': this}, true, false);
+
+  };
+
+  Player.prototype.getId = function(){
+    return this.data('id');
+  };
+
+  Player.prototype.getHead = function(){
+    return this.head;
+  };
+
+  Player.prototype.getIFrame = function(){
+    return this.iframe;
+  };
+
+  Player.prototype.getData = function(){
+    return this.json;
+  };
+
+  Player.prototype.getComponents = function(type){
+    var selector = '.metaScore-component';
+
+    if(metaScore.Var.is(type, 'array')){
+      selector += '.'+ type.join(', '+ selector +'.');
+    }
+    else if(type){
+      selector += '.'+ type;
+    }
+
+    return this.children(selector);
+  };
+
+  Player.prototype.addMedia = function(configs, supressEvent){
+    this.media = new metaScore.player.component.Media(configs)
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this);
-    
-    this.controller = new metaScore.player.component.Controller(this.json.controller)
+
+    if(supressEvent !== true){
+      this.triggerEvent('mediaadd', {'player': this, 'media': this.media}, true, false);
+    }
+  };
+
+  Player.prototype.addController = function(configs, supressEvent){
+    this.controller = new metaScore.player.component.Controller(configs)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .appendTo(this);
-    
-    metaScore.Array.each(this.json.blocks, function(index, block){
-      this.addBlock(block);
-    }, this);
-    
-    this.media.reset();
-    
-    this.removeClass('loading');
-    
-    this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
-  };
-  
-  Player.prototype.onLoadError = function(xhr){
-    
-    this.removeClass('loading');
-    
-    this.triggerEvent('loaderror', {'player': this}, true, false);
-  
-  };
-  
-  Player.prototype.getId = function(){
-    return this.data('id');
-  };
-  
-  Player.prototype.getHead = function(){
-    return this.head;
-  };
-  
-  Player.prototype.getIFrame = function(){
-    return this.iframe;
-  };
-  
-  Player.prototype.getData = function(){
-    return this.json;
-  };
-  
-  Player.prototype.getComponents = function(type){
-    var selector = '.metaScore-component';
-      
-    if(type){
-      selector += '.'+ type;
+
+    if(supressEvent !== true){
+      this.triggerEvent('controlleradd', {'player': this, 'controller': this.controller}, true, false);
     }
-    
-    return this.children(selector);
   };
-  
+
   Player.prototype.addBlock = function(configs, supressEvent){
     var block, page;
-  
+
     if(configs instanceof metaScore.player.component.Block){
       block = configs;
     }
@@ -2433,40 +2445,40 @@ metaScore.Player = (function () {
           }
         }))
         .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
-        .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))          
+        .addDelegate('.element', 'time', metaScore.Function.proxy(this.onElementTime, this))
         .addDelegate('.element', 'rindex', metaScore.Function.proxy(this.onElementReadingIndex, this));
     }
-    
-    if(supressEvent === true){
+
+    if(supressEvent !== true){
       this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
     }
-    
+
     return block;
   };
-  
+
   Player.prototype.updateCSS = function(value){
     this.css.setInternalValue(value);
   };
-  
+
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
-    
+
     if(index !== 0){
       this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
       this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
     }
-    
+
     if(supressEvent !== true){
       this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
     }
   };
-  
+
   Player.prototype.remove = function(){
     this.getIFrame().remove();
   };
-    
+
   return Player;
-  
+
 })();
 /**
  * Player Component
@@ -2474,79 +2486,87 @@ metaScore.Player = (function () {
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
- 
+
 metaScore.namespace('player').Component = (function () {
 
-  function Component(configs) {  
+  function Component(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     // call parent constructor
-    Component.parent.call(this, '<div/>', {'class': 'metaScore-component'});
-    
+    Component.parent.call(this, '<div/>', {'class': 'metaScore-component', 'id': 'componenet-'+ metaScore.String.uuid(5)});
+
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
-    
+
     if(this.configs.container){
       this.appendTo(this.configs.container);
     }
-    
+
     metaScore.Object.each(this.configs.listeners, function(key, value){
       this.addListener(key, value);
     }, this);
-    
+
     this.setupDOM();
-    
+
     metaScore.Object.each(this.configs, function(key, value){
       this.setProperty(key, value);
     }, this);
   }
-  
+
   metaScore.Dom.extend(Component);
-  
+
   Component.defaults = {
     'properties': {}
   };
-  
+
   Component.prototype.setupDOM = function(){};
-  
+
+  Component.prototype.getId = function(){
+    return this.attr('id');
+  };
+
+  Component.prototype.getName = function(){
+    return this.getProperty('name');
+  };
+
   Component.prototype.getProperty = function(name){
     if(name in this.configs.properties && 'getter' in this.configs.properties[name]){
       return this.configs.properties[name].getter.call(this);
     }
   };
-  
+
   Component.prototype.getProperties = function(skipDefaults){
     var values = {},
       value;
-  
+
     metaScore.Object.each(this.configs.properties, function(name, prop){
       if('getter' in prop){
         value = prop.getter.call(this, skipDefaults);
-        
+
         if(value !== null){
           values[name] = value;
         }
       }
     }, this);
-    
+
     return values;
   };
-  
+
   Component.prototype.setProperty = function(name, value){
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
       this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
     }
   };
-  
+
   Component.prototype.setCuePoint = function(configs){
     var inTime = this.getProperty('start-time'),
       outTime = this.getProperty('end-time');
-      
+
     if(this.cuepoint){
       this.cuepoint.destroy();
     }
-    
+
     if(inTime != null || outTime != null){
       this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
         'inTime': inTime,
@@ -2556,12 +2576,12 @@ metaScore.namespace('player').Component = (function () {
         'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null
       }));
     }
-    
+
     return this.cuepoint;
   };
-    
+
   return Component;
-  
+
 })();
 /**
  * CuePoints
@@ -2571,27 +2591,27 @@ metaScore.namespace('player').Component = (function () {
  * @requires ../helpers/metaScore.object.js
  * @requires ../helpers/metaScore.var.js
  */
- 
+
 metaScore.namespace('player').CuePoint = (function () {
-  
+
   function CuePoint(configs) {
     this.configs = this.getConfigs(configs);
-    
+
     this.id = metaScore.String.uuid();
-    
+
     this.running = false;
     this.inTimer = null;
     this.outTimer = null;
-    
+
     this.launch = metaScore.Function.proxy(this.launch, this);
     this.stop = metaScore.Function.proxy(this.stop, this);
     this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
-    
+
     this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
   }
-  
+
   metaScore.Evented.extend(CuePoint);
-  
+
   CuePoint.defaults = {
     'media': null,
     'inTime': null,
@@ -2600,10 +2620,10 @@ metaScore.namespace('player').CuePoint = (function () {
     'onUpdate': null,
     'onEnd': null
   };
-  
+
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
     var curTime = this.configs.media.getTime();
-     
+
     if(!this.running){
       if((!this.inTimer) && (curTime >= this.configs.inTime - 0.5) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
         this.inTimer = setTimeout(this.launch, Math.max(0, this.configs.inTime - curTime));
@@ -2613,27 +2633,27 @@ metaScore.namespace('player').CuePoint = (function () {
       if((!this.outTimer) && (this.configs.outTime !== null) && (curTime >= this.configs.outTime - 0.5)){
         this.outTimer = setTimeout(this.stop, Math.max(0, this.configs.outTime - curTime));
       }
-      
+
       if(metaScore.Var.is(this.configs.onUpdate, 'function')){
         this.configs.onUpdate(this, curTime);
       }
     }
   };
-  
+
   CuePoint.prototype.launch = function(){
     if(this.running){
       return;
     }
-  
+
     if(this.inTimer){
       clearTimeout(this.inTimer);
       this.inTimer = null;
     }
-    
+
     if(metaScore.Var.is(this.configs.onStart, 'function')){
       this.configs.onStart(this);
     }
-    
+
     // stop the cuepoint if it doesn't have an outTime or doesn't have onUpdate and onEnd callbacks
     if((this.configs.outTime === null) || (!(this.configs.onUpdate) && !(this.configs.onEnd))){
       this.stop();
@@ -2642,56 +2662,56 @@ metaScore.namespace('player').CuePoint = (function () {
       this.running = true;
     }
   };
-  
+
   CuePoint.prototype.stop = function(launchCallback){
     if(this.inTimer){
       clearTimeout(this.inTimer);
       this.inTimer = null;
     }
-    
+
     if(this.outTimer){
       clearTimeout(this.outTimer);
       this.outTimer = null;
     }
-    
+
     if(launchCallback !== false && metaScore.Var.is(this.configs.onEnd, 'function')){
       this.configs.onEnd(this);
     }
-    
+
     this.running = false;
   };
-  
+
   CuePoint.prototype.destroy = function(){
     this.stop(false);
     this.configs.media.removeListener('timeupdate', this.onMediaTimeUpdate);
   };
-    
+
   return CuePoint;
-  
+
 })();
 /**
  * Player Page
  *
  * @requires ../helpers/metaScore.dom.js
  */
- 
+
 metaScore.namespace('player').Pager = (function () {
 
   function Pager(configs) {
     this.configs = this.getConfigs(configs);
-  
+
     // call parent constructor
     Pager.parent.call(this, '<div/>', {'class': 'pager'});
-    
+
     this.count = new metaScore.Dom('<div/>', {'class': 'count'})
       .appendTo(this);
-    
+
     this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
       .addListener('mousedown', function(evt){
         evt.stopPropagation();
       })
       .appendTo(this);
-      
+
     this.buttons.first = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'first'})
       .appendTo(this.buttons);
     this.buttons.previous = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'previous'})
@@ -2699,19 +2719,19 @@ metaScore.namespace('player').Pager = (function () {
     this.buttons.next = new metaScore.Dom('<div/>', {'class': 'button', 'data-action': 'next'})
       .appendTo(this.buttons);
   }
-  
+
   metaScore.Dom.extend(Pager);
-  
+
   Pager.prototype.updateCount = function(index, count){
     this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
-    
+
     this.buttons.first.toggleClass('inactive', index === 0);
     this.buttons.previous.toggleClass('inactive', index === 0);
     this.buttons.next.toggleClass('inactive', index >= count - 1);
   };
-    
+
   return Pager;
-  
+
 })();
 /**
  * Player Block
@@ -2721,16 +2741,16 @@ metaScore.namespace('player').Pager = (function () {
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
- 
+
 metaScore.namespace('player.component').Block = (function () {
 
-  function Block(configs) {  
+  function Block(configs) {
     // call parent constructor
     Block.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Block);
-  
+
   Block.defaults = {
     'container': null,
     'properties': {
@@ -2800,11 +2820,11 @@ metaScore.namespace('player.component').Block = (function () {
         'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
-          
+
           if(value === 'none' || !metaScore.Var.is(value, "string")){
             return null;
           }
-          
+
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
@@ -2848,59 +2868,59 @@ metaScore.namespace('player.component').Block = (function () {
         'editable':false,
         'getter': function(skipDefault){
           var pages = [];
-                
+
           this.getPages().each(function(index, page){
             pages.push(page._metaScore.getProperties(skipDefault));
           }, this);
-          
+
           return pages;
         },
         'setter': function(value){
           this.getPages().remove();
-          
+
           metaScore.Array.each(value, function(index, configs){
             this.addPage(configs);
           }, this);
-          
+
           this.setActivePage(0);
         }
       }
     }
   };
-  
+
   Block.prototype.setupDOM = function(){
     // call parent function
     Block.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('block');
-          
+
     this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
       .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
       .addDelegate('.element', 'page', metaScore.Function.proxy(this.onElementPage, this))
       .appendTo(this);
-      
+
     this.pager = new metaScore.player.Pager()
       .addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this))
       .appendTo(this);
-    
+
     this.addPage();
   };
-  
+
   Block.prototype.onPageCuePointStart = function(evt){
     this.setActivePage(evt.target._metaScore, true);
   };
-  
+
   Block.prototype.onElementPage = function(evt){
     this.setActivePage(evt.detail.value);
   };
-  
+
   Block.prototype.onPagerClick = function(evt){
     var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
       action;
-      
+
     if(active){
       action = metaScore.Dom.data(evt.target, 'action');
-    
+
       switch(action){
         case 'first':
           this.setActivePage(0);
@@ -2913,17 +2933,17 @@ metaScore.namespace('player.component').Block = (function () {
           break;
       }
     }
-    
+
     evt.stopPropagation();
   };
-  
+
   Block.prototype.getPages = function(){
     return this.pages.children('.page');
   };
-  
+
   Block.prototype.addPage = function(configs){
     var page;
-    
+
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
       page.appendTo(this.pages);
@@ -2933,17 +2953,17 @@ metaScore.namespace('player.component').Block = (function () {
         'container': this.pages
       }));
     }
-    
+
     this.setActivePage(page);
-    
+
     return page;
   };
-  
+
   Block.prototype.removePage = function(page){
     var index;
-    
+
     page.remove();
-    
+
     if(this.getPageCount() <= 0){
       this.addPage();
     }
@@ -2951,61 +2971,61 @@ metaScore.namespace('player.component').Block = (function () {
       index = Math.max(0, this.getActivePageIndex() - 1);
       this.setActivePage(index);
     }
-    
+
     return page;
   };
-  
+
   Block.prototype.getActivePage = function(){
     var pages = this.getPages(),
       index = this.getActivePageIndex();
-  
+
     if(index < 0){
       return null;
     }
-  
+
     return this.getPages().get(index)._metaScore;
   };
-  
+
   Block.prototype.getActivePageIndex = function(){
     var pages = this.getPages(),
       index = pages.index('.active');
-  
-    return index;  
+
+    return index;
   };
-  
-  Block.prototype.getPageCount = function(){  
-    return this.getPages().count();  
+
+  Block.prototype.getPageCount = function(){
+    return this.getPages().count();
   };
-  
+
   Block.prototype.setActivePage = function(page, supressEvent){
     var pages = this.getPages();
-  
+
     if(!(page instanceof metaScore.player.component.Page)){
       page = pages.get(parseInt(page, 10))._metaScore;
     }
-    
+
     if(page){
       pages.removeClass('active');
       page.addClass('active');
       this.updatePager();
-    
+
       if(supressEvent !== true){
         this.triggerEvent('pageactivate', {'page': page});
       }
     }
   };
-  
-  Block.prototype.updatePager = function(){  
+
+  Block.prototype.updatePager = function(){
     var index = this.getActivePageIndex();
     var count = this.getPageCount();
-  
+
     this.pager.updateCount(index, count);
-    
+
     this.data('page-count', count);
   };
-    
+
   return Block;
-  
+
 })();
 /**
  * Player Controller
@@ -3013,16 +3033,16 @@ metaScore.namespace('player.component').Block = (function () {
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
- 
+
 metaScore.namespace('player.component').Controller = (function () {
 
-  function Controller(configs) {    
+  function Controller(configs) {
     // call parent constructor
     Controller.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Controller);
-  
+
   Controller.defaults = {
     'properties': {
       'x': {
@@ -3047,54 +3067,58 @@ metaScore.namespace('player.component').Controller = (function () {
       }
     }
   };
-  
+
   Controller.prototype.setupDOM = function(){
     // call parent function
     Controller.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('controller');
-          
+
     this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00:00.00'})
       .appendTo(this);
-          
+
     this.rewind_btn = new metaScore.Dom('<button/>')
       .data('action', 'rewind');
-          
+
     this.play_btn = new metaScore.Dom('<button/>')
       .data('action', 'play');
-      
+
     new metaScore.Dom('<div/>', {'class': 'buttons'})
       .append(this.rewind_btn)
       .append(this.play_btn)
       .appendTo(this);
   };
-  
+
+  Controller.prototype.getName = function(){
+    return '[controller]';
+  };
+
   Controller.prototype.updateTime = function(time){
     var centiseconds = metaScore.String.pad(parseInt((time / 10) % 100, 10), 2, '0', 'left'),
       seconds = metaScore.String.pad(parseInt((time / 1000) % 60, 10), 2, '0', 'left'),
       minutes = metaScore.String.pad(parseInt((time / 60000), 10), 2, '0', 'left');
-  
+
     this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
   };
-    
+
   return Controller;
-  
+
 })();
 /**
  * Player Element
  *
  * @requires ../helpers/metaScore.dom.js
  */
- 
+
 metaScore.namespace('player.component').Element = (function () {
 
   function Element(configs) {
     // call parent constructor
     Element.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Element);
-  
+
   Element.defaults = {
     'properties': {
       'name': {
@@ -3197,11 +3221,11 @@ metaScore.namespace('player.component').Element = (function () {
         'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.contents.css('background-image', undefined, skipDefault);
-          
+
           if(value === 'none' || !metaScore.Var.is(value, "string")){
             return null;
           }
-          
+
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
@@ -3265,7 +3289,7 @@ metaScore.namespace('player.component').Element = (function () {
           'outButton': true
         },
         'getter': function(skipDefault){
-          var value = parseFloat(this.data('start-time'));          
+          var value = parseFloat(this.data('start-time'));
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -3281,7 +3305,7 @@ metaScore.namespace('player.component').Element = (function () {
           'outButton': true
         },
         'getter': function(skipDefault){
-          var value = parseFloat(this.data('end-time'));          
+          var value = parseFloat(this.data('end-time'));
           return isNaN(value) ? null : value;
         },
         'setter': function(value){
@@ -3290,27 +3314,27 @@ metaScore.namespace('player.component').Element = (function () {
       }
     }
   };
-  
+
   Element.prototype.setupDOM = function(){
     // call parent function
     Element.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('element');
-    
+
     this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
       .appendTo(this);
   };
-  
+
   Element.prototype.onCuePointStart = function(cuepoint){
     this.addClass('active');
   };
-  
+
   Element.prototype.onCuePointEnd = function(cuepoint){
     this.removeClass('active');
   };
-    
+
   return Element;
-  
+
 })();
 /**
  * Media
@@ -3318,16 +3342,16 @@ metaScore.namespace('player.component').Element = (function () {
  * @requires metaScore.player.js
  * @requires ../metaScore.dom.js
  */
- 
+
 metaScore.namespace('player.component').Media = (function () {
-  
+
   function Media(configs){
     // call parent constructor
     Media.parent.call(this, configs);
-    
+
     this.playing = false;
   }
-  
+
   metaScore.player.Component.extend(Media);
 
   Media.defaults = {
@@ -3377,24 +3401,24 @@ metaScore.namespace('player.component').Media = (function () {
       }
     }
   };
-  
+
   Media.prototype.setupDOM = function(){
     var sources = '';
-    
+
     // call parent function
     Media.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('media '+ this.configs.type);
-    
+
     metaScore.Array.each(this.configs.sources, function(index, source) {
       sources += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
     });
-    
+
     this.el = new metaScore.Dom('<'+ this.configs.type +'>'+ sources +'</'+ this.configs.type +'>', {'preload': 'auto'})
       .appendTo(this);
-      
+
     this.dom = this.el.get(0);
-    
+
     this.el
       .addListener('canplay', metaScore.Function.proxy(this.onCanPlay, this))
       .addListener('play', metaScore.Function.proxy(this.onPlay, this))
@@ -3402,53 +3426,57 @@ metaScore.namespace('player.component').Media = (function () {
       .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
       .addListener('volumechange', metaScore.Function.proxy(this.onVolumeChange, this))
       .addListener('ended', metaScore.Function.proxy(this.onEnded, this));
-      
+
     if(this.configs.useFrameAnimation){
       this.el.addListener('play', metaScore.Function.proxy(this.triggerTimeUpdate, this));
-    } 
+    }
   };
-  
+
+  Media.prototype.getName = function(){
+    return '[media]';
+  };
+
   Media.prototype.onCanPlay = function() {
     this.triggerEvent('canplay');
   };
-  
+
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
-    
+
     this.triggerEvent('play');
   };
-  
+
   Media.prototype.onPause = function(evt) {
     this.playing = false;
-    
+
     this.triggerEvent('pause');
   };
-  
+
   Media.prototype.onTimeUpdate = function(evt){
     if(!(evt instanceof CustomEvent)){
       evt.stopPropagation();
     }
-    
+
     if(!this.configs.useFrameAnimation){
       this.triggerTimeUpdate(false);
     }
   };
-  
+
   Media.prototype.onVolumeChange = function(evt) {
     this.triggerEvent('volumechange');
   };
-  
+
   Media.prototype.onEnded = function(evt) {
     this.triggerEvent('ended');
   };
-  
+
   Media.prototype.isPlaying = function() {
     return this.playing;
   };
 
   Media.prototype.reset = function(supressEvent) {
     this.setTime(0);
-    
+
     if(supressEvent !== true){
       this.triggerEvent('reset');
     }
@@ -3456,55 +3484,55 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.prototype.play = function(supressEvent) {
     this.dom.play();
-    
+
     if(supressEvent !== true){
       this.triggerEvent('play');
     }
   };
-  
+
   Media.prototype.pause = function(supressEvent) {
     this.dom.pause();
-    
+
     if(supressEvent !== true){
       this.triggerEvent('pause');
     }
   };
-  
+
   Media.prototype.stop = function(supressEvent) {
     this.setTime(0);
     this.pause(true);
-    
+
     this.triggerTimeUpdate(false);
-    
+
     if(supressEvent !== true){
       this.triggerEvent('stop');
     }
   };
-  
+
   Media.prototype.triggerTimeUpdate = function(loop) {
     if(loop !== false && this.isPlaying()){
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
-    
+
     this.triggerEvent('timeupdate', {'media': this});
   };
-  
-  Media.prototype.setTime = function(time) {    
+
+  Media.prototype.setTime = function(time) {
     this.dom.currentTime = parseFloat(time) / 1000;
-    
+
     this.triggerTimeUpdate(false);
   };
-  
+
   Media.prototype.getTime = function() {
     return parseFloat(this.dom.currentTime) * 1000;
   };
-  
+
   Media.prototype.getDuration = function() {
     return parseFloat(this.dom.duration) * 1000;
   };
-  
+
   return Media;
-  
+
 })();
 /**
  * Player Page
@@ -3512,16 +3540,16 @@ metaScore.namespace('player.component').Media = (function () {
  * @requires metaScore.player.element.js
  * @requires ../helpers/metaScore.dom.js
  */
- 
+
 metaScore.namespace('player.component').Page = (function () {
 
-  function Page(configs) {    
+  function Page(configs) {
     // call parent constructor
     Page.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Page);
-  
+
   Page.defaults = {
     'properties': {
       'background-color': {
@@ -3540,11 +3568,11 @@ metaScore.namespace('player.component').Page = (function () {
         'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image'),
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
-          
+
           if(value === 'none' || !metaScore.Var.is(value, "string")){
             return null;
           }
-          
+
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
         'setter': function(value){
@@ -3588,11 +3616,11 @@ metaScore.namespace('player.component').Page = (function () {
         'editable': false,
         'getter': function(skipDefault){
           var elements = [];
-          
+
           this.getElements().each(function(index, element){
             elements.push(element._metaScore.getProperties(skipDefault));
           }, this);
-          
+
           return elements;
         },
         'setter': function(value){
@@ -3603,17 +3631,17 @@ metaScore.namespace('player.component').Page = (function () {
       }
     }
   };
-  
+
   Page.prototype.setupDOM = function(){
     // call parent function
     Page.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('page');
   };
-  
+
   Page.prototype.addElement = function(configs){
     var element;
-    
+
     if(configs instanceof metaScore.player.component.Element){
       element = configs;
       element.appendTo(this);
@@ -3623,40 +3651,40 @@ metaScore.namespace('player.component').Page = (function () {
         'container': this
       }));
     }
-    
+
     return element;
   };
-  
+
   Page.prototype.getElements = function(){
     return this.children('.element');
   };
-  
+
   Page.prototype.onCuePointStart = function(cuepoint){
     this.triggerEvent('cuepointstart');
   };
-  
+
   Page.prototype.onCuePointEnd = function(cuepoint){
     this.triggerEvent('cuepointend');
   };
-    
+
   return Page;
-  
+
 })();
 /**
  * Cursor
  *
  * @requires ../metaScore.player.element.js
  */
- 
+
 metaScore.namespace('player.component.element').Cursor = (function () {
 
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
   }
-  
+
   metaScore.player.component.Element.extend(Cursor);
-  
+
   Cursor.defaults = {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
@@ -3711,31 +3739,31 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       }
     })
   };
-  
+
   Cursor.prototype.setupDOM = function(){
     // call parent function
     Cursor.parent.prototype.setupDOM.call(this);
-  
+
     this.data('type', 'cursor');
-    
+
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
-      
+
     this
       .addListener('click', metaScore.Function.proxy(this.onClick, this))
       .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
   };
-  
+
   Cursor.prototype.onClick = function(evt){
-    var pos, time,    
+    var pos, time,
       inTime, outTime,
-      direction, acceleration,    
+      direction, acceleration,
       rect;
-    
+
     if(metaScore.editing && evt.type !== 'dblclick'){
       return;
     }
-    
+
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
     direction = this.getProperty('direction');
@@ -3746,38 +3774,38 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       case 'left':
         pos = (rect.right - evt.clientX) / this.getProperty('width');
         break;
-        
+
       case 'bottom':
         pos = (evt.clientY - rect.top) / this.getProperty('height');
         break;
-        
+
       case 'top':
         pos = (rect.bottom - evt.clientY) / this.getProperty('height');
         break;
-        
+
       default:
         pos = (evt.clientX - rect.left) / this.getProperty('width');
     }
-    
+
     if(!acceleration || acceleration === 1){
       time = inTime + ((outTime - inTime) * pos);
     }
     else{
       time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
     }
-    
+
     this.triggerEvent('time', {'element': this, 'value': time});
   };
-  
+
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width, height,
       inTime, outTime, pos,
       direction = this.getProperty('direction'),
       acceleration = this.getProperty('acceleration');
-    
+
     inTime = this.getProperty('start-time');
     outTime = this.getProperty('end-time');
-        
+
     if(!acceleration || acceleration === 1){
       pos = (curTime - inTime)  / (outTime - inTime);
     }
@@ -3791,71 +3819,71 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         pos = Math.min(width * pos, width);
         this.cursor.css('right', pos +'px');
         break;
-        
+
       case 'bottom':
         height = this.getProperty('height');
         pos = Math.min(height * pos, height);
         this.cursor.css('top', pos +'px');
         break;
-        
+
       case 'top':
         height = this.getProperty('height');
         pos = Math.min(height * pos, height);
         this.cursor.css('bottom', pos +'px');
         break;
-        
+
       default:
         width = this.getProperty('width');
         pos = Math.min(width * pos, width);
         this.cursor.css('left', pos +'px');
     }
   };
-    
+
   return Cursor;
-  
+
 })();
 /**
  * Image
  *
  * @requires ../metaScore.player.element.js
  */
- 
+
 metaScore.namespace('player.component.element').Image = (function () {
 
   function Image(configs) {
     // call parent constructor
     Image.parent.call(this, configs);
   }
-  
+
   metaScore.player.component.Element.extend(Image);
-  
+
   Image.prototype.setupDOM = function(){
     // call parent function
     Image.parent.prototype.setupDOM.call(this);
-    
+
     this.data('type', 'image');
   };
-    
+
   return Image;
-  
+
 })();
 /**
  * Text
  *
  * @requires ../metaScore.player.element.js
  */
- 
+
 metaScore.namespace('player.component.element').Text = (function () {
 
-  function Text(configs) {  
+  function Text(configs) {
     // call parent constructor
     Text.parent.call(this, configs);
-          
+
     this.addDelegate('a', 'click', metaScore.Function.proxy(this.onLinkClick, this));
   }
-  
+
   metaScore.player.component.Element.extend(Text);
-  
+
   Text.defaults = {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'text': {
@@ -3869,18 +3897,18 @@ metaScore.namespace('player.component.element').Text = (function () {
       }
     })
   };
-  
+
   Text.prototype.setupDOM = function(){
     // call parent function
     Text.parent.prototype.setupDOM.call(this);
-    
+
     this.data('type', 'text');
   };
-  
+
   Text.prototype.onLinkClick = function(evt){
     var link = evt.target,
       matches;
-  
+
     if(matches = link.hash.match(/^#p=(\d+)/)){
       this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
@@ -3892,13 +3920,13 @@ metaScore.namespace('player.component.element').Text = (function () {
     else{
       window.open(link.href,'_blank');
     }
-    
+
     evt.preventDefault();
-    
+
   };
-    
+
   return Text;
-  
+
 })();
 
 

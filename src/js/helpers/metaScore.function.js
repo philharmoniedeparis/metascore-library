@@ -4,12 +4,12 @@
  * @requires ../metaScore.base.js
  * @requires metaScore.var.js
  */
- 
+
 metaScore.Function = (function () {
-  
+
   function Function() {
   }
-  
+
   metaScore.Class.extend(Function);
 
   /**
@@ -23,8 +23,8 @@ metaScore.Function = (function () {
     if (!metaScore.Var.type(fn, 'function')){
       return undefined;
     }
-    
-    return function () {    
+
+    return function () {
       return fn.apply(scope || this, args || arguments);
     };
   };
@@ -33,7 +33,7 @@ metaScore.Function = (function () {
   * A reusable empty function
   */
   Function.emptyFn = function(){};
-    
+
   return Function;
-  
+
 })();

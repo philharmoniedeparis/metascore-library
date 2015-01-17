@@ -5,12 +5,12 @@
  * @requires metaScore.object.js
  * @requires metaScore.var.js
  */
- 
+
 metaScore.Ajax = (function () {
-  
+
   function Ajax() {
   }
-  
+
   metaScore.Class.extend(Ajax);
 
   /**
@@ -41,9 +41,9 @@ metaScore.Ajax = (function () {
         catch (e) {}
       }
     }
-    
+
     throw new Error("XMLHttp object could be created.");
-    
+
   };
 
   /**
@@ -67,27 +67,27 @@ metaScore.Ajax = (function () {
         'error': null,
         'scope': this
       };
-    
+
     options = metaScore.Object.extend({}, defaults, options);
-    
+
     if((options.method === 'POST' || options.method === 'PUT') && !('Content-type' in options.headers)){
       switch(options.dataType){
         case 'json':
           options.headers['Content-type'] = 'application/json;charset=UTF-8';
           break;
-          
+
         default:
           options.headers['Content-type'] = 'application/x-www-form-urlencoded';
       }
     }
-    
+
     xhr.open(options.method, url, options.async);
-    
+
     metaScore.Object.each(options.headers, function(key, value){
       xhr.setRequestHeader(key, value);
     });
-    
-    xhr.onreadystatechange = function() {        
+
+    xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if(metaScore.Var.is(options.complete, 'function')){
           options.complete.call(options.scope, xhr);
@@ -102,11 +102,11 @@ metaScore.Ajax = (function () {
         }
       }
     };
-    
+
     xhr.send(options.data);
-    
+
     return xhr;
-    
+
   };
 
   /**
@@ -116,11 +116,11 @@ metaScore.Ajax = (function () {
   * @returns {object} the XMLHttp object
   */
   Ajax.get = function(url, options) {
-    
+
     metaScore.Object.extend(options, {'method': 'GET'});
-    
+
     return Ajax.send(url, options);
-    
+
   };
 
   /**
@@ -130,11 +130,11 @@ metaScore.Ajax = (function () {
   * @returns {object} the XMLHttp object
   */
   Ajax.post = function(url, options) {
-    
+
     metaScore.Object.extend(options, {'method': 'POST'});
-    
+
     return Ajax.send(url, options);
-    
+
   };
 
   /**
@@ -144,13 +144,13 @@ metaScore.Ajax = (function () {
   * @returns {object} the XMLHttp object
   */
   Ajax.put = function(url, options) {
-    
+
     metaScore.Object.extend(options, {'method': 'PUT'});
-    
+
     return Ajax.send(url, options);
-    
+
   };
-    
+
   return Ajax;
-  
+
 })();

@@ -4,16 +4,16 @@
  * @requires ../helpers/metaScore.dom.js
  * @requires ../helpers/metaScore.string.js
  */
- 
+
 metaScore.namespace('player.component').Controller = (function () {
 
-  function Controller(configs) {    
+  function Controller(configs) {
     // call parent constructor
     Controller.parent.call(this, configs);
   }
-  
+
   metaScore.player.Component.extend(Controller);
-  
+
   Controller.defaults = {
     'properties': {
       'x': {
@@ -38,36 +38,40 @@ metaScore.namespace('player.component').Controller = (function () {
       }
     }
   };
-  
+
   Controller.prototype.setupDOM = function(){
     // call parent function
     Controller.parent.prototype.setupDOM.call(this);
-    
+
     this.addClass('controller');
-          
+
     this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00:00.00'})
       .appendTo(this);
-          
+
     this.rewind_btn = new metaScore.Dom('<button/>')
       .data('action', 'rewind');
-          
+
     this.play_btn = new metaScore.Dom('<button/>')
       .data('action', 'play');
-      
+
     new metaScore.Dom('<div/>', {'class': 'buttons'})
       .append(this.rewind_btn)
       .append(this.play_btn)
       .appendTo(this);
   };
-  
+
+  Controller.prototype.getName = function(){
+    return '[controller]';
+  };
+
   Controller.prototype.updateTime = function(time){
     var centiseconds = metaScore.String.pad(parseInt((time / 10) % 100, 10), 2, '0', 'left'),
       seconds = metaScore.String.pad(parseInt((time / 1000) % 60, 10), 2, '0', 'left'),
       minutes = metaScore.String.pad(parseInt((time / 60000), 10), 2, '0', 'left');
-  
+
     this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
   };
-    
+
   return Controller;
-  
+
 })();
