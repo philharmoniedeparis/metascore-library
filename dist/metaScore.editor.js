@@ -98,11 +98,13 @@ metaScore.Editor = (function(){
     this.panels.page
       .addListener('componentset', metaScore.Function.proxy(this.onPageSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onPageUnset, this))
+      .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
 
     this.panels.element
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
+      .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
       .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
 
     this.history
@@ -467,6 +469,17 @@ metaScore.Editor = (function(){
       .toggleMenuItem('Text', false);
   };
 
+  Editor.prototype.onPagePanelValueChange = function(evt){
+    var page = evt.detail.component,
+      old_values = evt.detail.old_values,
+      new_values = evt.detail.new_values;
+
+    this.history.add({
+      'undo': metaScore.Function.proxy(this.panels.page.updateProperties, this.panels.page, [page, old_values]),
+      'redo': metaScore.Function.proxy(this.panels.page.updateProperties, this.panels.page, [page, new_values])
+    });
+  };
+
   Editor.prototype.onPagePanelToolbarClick = function(evt){
     var block, page, dom, count, index;
 
@@ -559,6 +572,17 @@ metaScore.Editor = (function(){
     this.panels.text.unsetComponent();
 
     evt.stopPropagation();
+  };
+
+  Editor.prototype.onElementPanelValueChange = function(evt){
+    var element = evt.detail.component,
+      old_values = evt.detail.old_values,
+      new_values = evt.detail.new_values;
+
+    this.history.add({
+      'undo': metaScore.Function.proxy(this.panels.element.updateProperties, this.panels.element, [element, old_values]),
+      'redo': metaScore.Function.proxy(this.panels.element.updateProperties, this.panels.element, [element, new_values])
+    });
   };
 
   Editor.prototype.onElementPanelToolbarClick = function(evt){

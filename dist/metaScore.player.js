@@ -95,7 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "c5f159";
+    return "94ebd6";
   },
 
   namespace: function(str){

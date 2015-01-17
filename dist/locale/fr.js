@@ -1,4 +1,4 @@
-metaScoreLocale = {
+var metaScoreLocale = {
 	"editor.onGuideSaveError.msg": "Une erreur est survenue en essayant de sauver le guide. Veuillez ré-essayer.",
 	"editor.onGuideSaveError.ok": "OK",
 	"editor.onGuideDeleteError.msg": "Une erreur est survenue en essayant de supprimer le guide. Veuillez ré-essayer.",

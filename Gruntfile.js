@@ -241,7 +241,7 @@ module.exports = function(grunt) {
           fs.mkdirSync(file.dest);
         }
         
-        fs.writeFileSync(dest, 'metaScoreLocale = '+ strings +';\n');
+        fs.writeFileSync(dest, 'var metaScoreLocale = '+ strings +';\n');
       });
     });
   });
