@@ -187,26 +187,12 @@ module.exports = function(grunt) {
       }
     },
     translate_extract: {
-      core: {
-        src: CORE_LIST,
-        options:{
-          outputDir: "src/locale/core"
-        }
-      },
-      player: {
-        src: PLAYER_LIST,
-        options:{
-          outputDir: "src/locale/player"
-        }
-      },
-      editor: {
-        src: EDITOR_LIST,
-        options:{
-          outputDir: "src/locale/editor"
-        }
+      all: {
+        src: CORE_LIST.concat(EDITOR_LIST, PLAYER_LIST)
       },
       options: {
-        locales: ["fr"],
+        locales: ["en", "fr"],
+        outputDir: "src/locale",
         builtInParser: null,
         customParser:  {
           getRegexpList: function(){
@@ -223,17 +209,9 @@ module.exports = function(grunt) {
       }
     },
     translate_copy: {
-      core: {
-        src: ['src/locale/core/*.json'],
-        dest: "src/js/locale/core/"
-      },
-      player: {
-        src: ['src/locale/player/*.json'],
-        dest: "src/js/locale/player/"
-      },
-      editor: {
-        src: ['src/locale/editor/*.json'],
-        dest: "src/js/locale/editor/"
+      all: {
+        src: ['src/locale/*.json'],
+        dest: "dist/locale/"
       }
     },
     watch: {
@@ -257,28 +235,21 @@ module.exports = function(grunt) {
       file.src.forEach(function(f){
         var lang = path.basename(f, '.json'),
           strings = fs.readFileSync(f, 'utf8'),
-          dest = file.dest +'metaScore.locale.'+ lang.toUpperCase() +'.js',
-          key = 'metaScore.Locale.strings.'+ lang;
+          dest = file.dest + lang +'.js';
           
         if (!fs.existsSync(file.dest)){
           fs.mkdirSync(file.dest);
         }
         
-        fs.writeFileSync(dest, key +' = metaScore.Object.extend('+ key +', '+ strings +');\n');
+        fs.writeFileSync(dest, 'metaScoreLocale = '+ strings +';\n');
       });
     });
   });
   
-  grunt.registerTask('i18n', [
-    'clean:i18n',
-    'translate_extract',
-    'translate_copy'
-  ]);
-  
   grunt.registerTask('build', [
     'jshint',
     'clean:dist',
-    'i18n',
+    'translate_extract',
     'concat:player',
     'concat:editor',
     'uglify:dist',
@@ -287,7 +258,8 @@ module.exports = function(grunt) {
     'git-rev-parse',
     'replace',
     'less',
-    'copy:dist'
+    'copy:dist',
+    'translate_copy'
   ]);
   
   grunt.registerTask('test', [

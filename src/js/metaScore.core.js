@@ -11,14 +11,6 @@ metaScore = global.metaScore = {
     return "[[REVISION]]";
   },
 
-  getLocale: function(){
-    return this.locale || 'fr';
-  },
-
-  setLocale: function(locale){
-    this.locale = locale;
-  },
-
   namespace: function(str){
     var parent = this,
       parts = str.split('.'),

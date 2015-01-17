@@ -4,6 +4,7 @@
     "define": true,
     "DEBUG": true,
     "metaScore": true,
+    "metaScoreLocale": true,
     "ActiveXObject": true,
     "console": true,
     "require": true,

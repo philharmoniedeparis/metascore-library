@@ -95,15 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "78b580";
-  },
-
-  getLocale: function(){
-    return this.locale || 'fr';
-  },
-
-  setLocale: function(locale){
-    this.locale = locale;
+    return "c5f159";
   },
 
   namespace: function(str){
@@ -2081,8 +2073,6 @@ metaScore.Locale = (function () {
 
   metaScore.Class.extend(Locale);
 
-  Locale.strings = {};
-
   /**
   * Translate a string
   * @param {string} the original string
@@ -2090,10 +2080,8 @@ metaScore.Locale = (function () {
   * @returns {string} the translated string
   */
   Locale.t = function(key, str, args){
-    var locale = metaScore.getLocale();
-
-    if(this.strings.hasOwnProperty(locale) && this.strings[locale].hasOwnProperty(key)){
-      str = this.strings[locale][key];
+    if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
+      str = metaScoreLocale[key];
     }
 
     return Locale.formatString(str, args);
@@ -2116,55 +2104,6 @@ metaScore.Locale = (function () {
   return Locale;
 
 })();
-metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {});
-
-metaScore.Locale.strings.fr = metaScore.Object.extend(metaScore.Locale.strings.fr, {
-	"player.Pager.count": "page !current/!count",
-	"player.component.Block.name": "Nom",
-	"player.component.Block.x": "X",
-	"player.component.Block.y": "Y",
-	"player.component.Block.width": "Largeur",
-	"player.component.Block.height": "Hauteur",
-	"player.component.Block.background-color": "Couleur de fond",
-	"player.component.Block.background-image": "Image de fond",
-	"player.component.Block.border-width": "Largeur de bordure",
-	"player.component.Block.border-color": "Couleur de bordure",
-	"player.component.Block.synched": "Pages synchronisées ?",
-	"player.component.Controller.x": "X",
-	"player.component.Controller.y": "Y",
-	"player.component.Element.name": "Nom",
-	"player.component.Element.x": "X",
-	"player.component.Element.y": "Y",
-	"player.component.Element.width": "Largeur",
-	"player.component.Element.height": "Hauteur",
-	"player.component.Element.r-index": "Indice de lecture",
-	"player.component.Element.z-index": "Indice d'affichage",
-	"player.component.Element.background-color": "Couleur de fond",
-	"player.component.Element.background-image": "Image de fond",
-	"player.component.Element.border-width": "Largeur de bordure",
-	"player.component.Element.border-color": "Couleur de bordure",
-	"player.component.Element.border-radius": "Rayon de bordure",
-	"player.component.Element.opacity": "Opacité",
-	"player.component.Element.start-time": "Temps de début",
-	"player.component.Element.end-time": "Temps de fin",
-	"player.component.Media.x": "X",
-	"player.component.Media.y": "Y",
-	"player.component.Media.width": "Largeur",
-	"player.component.Media.height": "Hauteur",
-	"player.component.Page.background-color": "Couleur de fond",
-	"player.component.Page.background-image": "Image de fond",
-	"player.component.Page.start-time": "Temps de début",
-	"player.component.Page.end-time": "Temps de fin",
-	"player.component.element.Cursor.direction": "Direction",
-	"player.component.element.Cursor.direction.right": "Gauche > Droite",
-	"player.component.element.Cursor.direction.left": "Droite > Gauche",
-	"player.component.element.Cursor.direction.bottom": "Haut > Bas",
-	"player.component.element.Cursor.direction.top": "Bas > Haut",
-	"player.component.element.Cursor.acceleration": "Accélération",
-	"player.component.element.Cursor.cursor-width": "Largeur du curseur",
-	"player.component.element.Cursor.cursor-color": "Couleur du curseur"
-});
-
 /**
  * Player
  *

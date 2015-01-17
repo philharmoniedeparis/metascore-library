@@ -11,8 +11,6 @@ metaScore.Locale = (function () {
 
   metaScore.Class.extend(Locale);
 
-  Locale.strings = {};
-
   /**
   * Translate a string
   * @param {string} the original string
@@ -20,10 +18,8 @@ metaScore.Locale = (function () {
   * @returns {string} the translated string
   */
   Locale.t = function(key, str, args){
-    var locale = metaScore.getLocale();
-
-    if(this.strings.hasOwnProperty(locale) && this.strings[locale].hasOwnProperty(key)){
-      str = this.strings[locale][key];
+    if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
+      str = metaScoreLocale[key];
     }
 
     return Locale.formatString(str, args);
