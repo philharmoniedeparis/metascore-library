@@ -32,7 +32,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link editor'),
+    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link Editor'),
 
     /**
     * The current link

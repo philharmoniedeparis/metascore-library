@@ -730,6 +730,58 @@
   width: 100%;
   height: 100%;
 }
+.metaScore-editor .overlay.border-radius .contents {
+  padding: 12px 16px;
+}
+.metaScore-editor .overlay.border-radius .contents .preview {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 50px 75px;
+  border: 2px solid #0000fe;
+}
+.metaScore-editor .overlay.border-radius .contents .field {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.metaScore-editor .overlay.border-radius .contents .field input {
+  width: 40px;
+}
+.metaScore-editor .overlay.border-radius .contents .field.tlw,
+.metaScore-editor .overlay.border-radius .contents .field.trw {
+  top: -30px;
+}
+.metaScore-editor .overlay.border-radius .contents .field.tlh,
+.metaScore-editor .overlay.border-radius .contents .field.blh {
+  left: -52px;
+}
+.metaScore-editor .overlay.border-radius .contents .field.trw,
+.metaScore-editor .overlay.border-radius .contents .field.brw {
+  left: 158px;
+}
+.metaScore-editor .overlay.border-radius .contents .field.trh,
+.metaScore-editor .overlay.border-radius .contents .field.brh {
+  left: 210px;
+}
+.metaScore-editor .overlay.border-radius .contents .field.brw,
+.metaScore-editor .overlay.border-radius .contents .field.blw {
+  top: 210px;
+}
+.metaScore-editor .overlay.border-radius .contents .field.brh,
+.metaScore-editor .overlay.border-radius .contents .field.blh {
+  top: 178px;
+}
+.metaScore-editor .overlay.border-radius .contents button {
+  min-width: 60px;
+  margin-right: 0.5em;
+  padding: 0.5em;
+  background: #ccc;
+  pointer-events: auto;
+}
+.metaScore-editor .overlay.border-radius .contents button.cancel {
+  background: #eee;
+}
 .metaScore-editor .overlay.guide-selector .contents {
   max-width: 500px;
   max-height: 500px;
@@ -791,6 +843,7 @@
 }
 .metaScore-editor .overlay.guide-details .contents button,
 .metaScore-editor .overlay.link-editor .contents button {
+  min-width: 60px;
   margin-right: 0.5em;
   padding: 0.5em;
   background: #ccc;

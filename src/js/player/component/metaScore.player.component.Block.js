@@ -119,6 +119,16 @@ metaScore.namespace('player.component').Block = (function () {
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
         }
       },
+      'border-radius': {
+        'type': 'BorderRadius',
+        'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius'),
+        'getter': function(skipDefault){
+          return this.css('border-radius', undefined, skipDefault);
+        },
+        'setter': function(value){
+          this.css('border-radius', value);
+        }
+      },
       'synched': {
         'type': 'Boolean',
         'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),

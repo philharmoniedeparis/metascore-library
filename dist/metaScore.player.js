@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-17 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-20 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -95,7 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "94ebd6";
+    return "6bd339";
   },
 
   namespace: function(str){
@@ -2791,6 +2791,16 @@ metaScore.namespace('player.component').Block = (function () {
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+        }
+      },
+      'border-radius': {
+        'type': 'BorderRadius',
+        'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius'),
+        'getter': function(skipDefault){
+          return this.css('border-radius', undefined, skipDefault);
+        },
+        'setter': function(value){
+          this.css('border-radius', value);
         }
       },
       'synched': {

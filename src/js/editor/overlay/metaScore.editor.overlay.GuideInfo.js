@@ -27,7 +27,7 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.Locale.t('editor.overlay.GuideInfo.title', 'Guide info')
+    title: metaScore.Locale.t('editor.overlay.GuideInfo.title', 'Guide Info')
   };
 
   metaScore.editor.Overlay.extend(GuideInfo);

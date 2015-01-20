@@ -14,16 +14,16 @@ metaScore.namespace('editor.field').Image = (function () {
     ImageField.parent.call(this, this.configs);
 
     this.addClass('imagefield');
-
-    this.input
-      .attr('readonly', 'readonly')
-      .addListener('click', metaScore.Function.proxy(this.onClick, this));
   }
 
   metaScore.editor.Field.extend(ImageField);
 
   ImageField.prototype.setupUI = function(){
     ImageField.parent.prototype.setupUI.call(this);
+
+    this.input
+      .attr('readonly', 'readonly')
+      .addListener('click', metaScore.Function.proxy(this.onClick, this));
 
     this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
       .addListener('click', metaScore.Function.proxy(this.onClearClick, this))

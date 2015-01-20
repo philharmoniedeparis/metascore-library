@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-17 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-20 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1944,6 +1944,48 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
 
   metaScore.editor.Field.extend(BorderRadiusrField);
 
+  BorderRadiusrField.prototype.setupUI = function(){
+    BorderRadiusrField.parent.prototype.setupUI.call(this);
+
+    this.input
+      .attr('readonly', 'readonly')
+      .addListener('click', metaScore.Function.proxy(this.onClick, this));
+
+    this.overlay = new metaScore.editor.overlay.BorderRadius()
+      .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
+
+    this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
+      .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
+      .appendTo(this);
+  };
+
+  BorderRadiusrField.prototype.setValue = function(value, supressEvent){
+    BorderRadiusrField.parent.prototype.setValue.call(this, value, supressEvent);
+
+    this.input.attr('title', value);
+  };
+
+  BorderRadiusrField.prototype.onClick = function(evt){
+    if(this.disabled){
+      return;
+    }
+
+    this.overlay
+      .setValue(this.value)
+      .show();
+  };
+
+  BorderRadiusrField.prototype.onOverlaySubmit = function(evt){
+    var value = evt.detail.value,
+      overlay = evt.detail.overlay;
+
+    this.setValue(value);
+  };
+
+  BorderRadiusrField.prototype.onClearClick = function(evt){
+    this.setValue(null);
+  };
+
   return BorderRadiusrField;
 
 })();
@@ -2091,16 +2133,16 @@ metaScore.namespace('editor.field').Image = (function () {
     ImageField.parent.call(this, this.configs);
 
     this.addClass('imagefield');
-
-    this.input
-      .attr('readonly', 'readonly')
-      .addListener('click', metaScore.Function.proxy(this.onClick, this));
   }
 
   metaScore.editor.Field.extend(ImageField);
 
   ImageField.prototype.setupUI = function(){
     ImageField.parent.prototype.setupUI.call(this);
+
+    this.input
+      .attr('readonly', 'readonly')
+      .addListener('click', metaScore.Function.proxy(this.onClick, this));
 
     this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
       .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
@@ -3229,6 +3271,190 @@ metaScore.namespace('editor.overlay').Alert = (function () {
 
 })();
 /**
+ * BorderRadius
+ *
+ * @requires ../metaScore.editor.Ovelay.js
+ */
+
+metaScore.namespace('editor.overlay').BorderRadius = (function () {
+
+  function BorderRadius(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call parent constructor
+    BorderRadius.parent.call(this, this.configs);
+
+    this.addClass('border-radius');
+
+    this.setupUI();
+  }
+
+  BorderRadius.defaults = {
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+
+    /**
+    * The overlay's title
+    */
+    title: metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
+  };
+
+  metaScore.editor.Overlay.extend(BorderRadius);
+
+  BorderRadius.prototype.setupUI = function(){
+
+    var contents = this.getContents();
+
+    this.fields = {};
+    this.buttons = {};
+
+    this.preview = new metaScore.Dom('<div/>', {'class': 'preview'})
+      .appendTo(contents);
+
+    this.fields.tlw = new metaScore.editor.field.Number({min: 0})
+      .addClass('tlw')
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .appendTo(this.preview);
+
+    this.fields.tlh = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('tlh')
+      .appendTo(this.preview);
+
+    this.fields.trw = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('trw')
+      .appendTo(this.preview);
+
+    this.fields.trh = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('trh')
+      .appendTo(this.preview);
+
+    this.fields.brw = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('brw')
+      .appendTo(this.preview);
+
+    this.fields.brh = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('brh')
+      .appendTo(this.preview);
+
+    this.fields.blw = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('blw')
+      .appendTo(this.preview);
+
+    this.fields.blh = new metaScore.editor.field.Number({min: 0})
+      .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
+      .addClass('blh')
+      .appendTo(this.preview);
+
+    // Buttons
+    this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
+      .addClass('apply')
+      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
+      .appendTo(contents);
+
+    this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
+      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
+      .appendTo(contents);
+
+  };
+
+  BorderRadius.prototype.onValueChange = function(){  
+    var radius  = '';
+    
+    radius += this.fields.tlw.getValue() +'px ';
+    radius += this.fields.trw.getValue() +'px ';
+    radius += this.fields.brw.getValue() +'px ';
+    radius += this.fields.blw.getValue() +'px ';
+    radius += '/ ';
+    radius += this.fields.tlh.getValue() +'px ';
+    radius += this.fields.trh.getValue() +'px ';
+    radius += this.fields.brh.getValue() +'px ';
+    radius += this.fields.blh.getValue() +'px';
+    
+    this.preview.css('border-radius', radius);
+  };
+
+  BorderRadius.prototype.setValue = function(val){
+    var matches,
+      values = {
+        tlw: 0, tlh: 0,
+        trw: 0, trh: 0,
+        blw: 0, blh: 0,
+        brw: 0, brh: 0
+      };
+    
+    this.preview.css('border-radius', val);
+    
+    if(matches = this.preview.css('border-top-left-radius', undefined, true).match(/(\d*)px/g)){
+      if(matches.length > 1){
+        values.tlw = matches[0];
+        values.tlh = matches[1];
+      }
+      else{
+        values.tlw = values.tlh = matches[0];
+      }
+    }
+    
+    if(matches = this.preview.css('border-top-right-radius', undefined, true).match(/(\d*)px/g)){
+      if(matches.length > 1){
+        values.trw = matches[0];
+        values.trh = matches[1];
+      }
+      else{
+        values.trw = values.trh = matches[0];
+      }
+    }
+    
+    if(matches = this.preview.css('border-bottom-left-radius', undefined, true).match(/(\d*)px/g)){
+      if(matches.length > 1){
+        values.blw = matches[0];
+        values.blh = matches[1];
+      }
+      else{
+        values.blw = values.blh = matches[0];
+      }
+    }
+    
+    if(matches = this.preview.css('border-bottom-right-radius', undefined, true).match(/(\d*)px/g)){
+      if(matches.length > 1){
+        values.brw = matches[0];
+        values.brh = matches[1];
+      }
+      else{
+        values.brw = values.brh = matches[0];
+      }
+    }
+    
+    metaScore.Object.each(this.fields, function(key, field){
+      field.setValue(parseInt(values[key], 10), true);
+    });
+    
+    return this;
+  };
+
+  BorderRadius.prototype.getValue = function(){
+    return this.preview.css('border-radius');
+  };
+
+  BorderRadius.prototype.onApplyClick = function(evt){  
+    this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
+    this.hide();
+  };
+
+  BorderRadius.prototype.onCancelClick = BorderRadius.prototype.onCloseClick;
+
+  return BorderRadius;
+
+})();
+/**
  * ColorSelector
  *
  * @requires ../metaScore.editor.overlay.js
@@ -3574,7 +3800,7 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.Locale.t('editor.overlay.GuideInfo.title', 'Guide info')
+    title: metaScore.Locale.t('editor.overlay.GuideInfo.title', 'Guide Info')
   };
 
   metaScore.editor.Overlay.extend(GuideInfo);
@@ -3792,7 +4018,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link editor'),
+    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link Editor'),
 
     /**
     * The current link
