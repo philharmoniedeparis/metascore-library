@@ -18,7 +18,9 @@ metaScore.namespace('player.component').Page = (function () {
     'properties': {
       'background-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color')
+        },
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
@@ -29,7 +31,9 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'background-image': {
         'type': 'Image',
-        'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image')
+        },
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
 
@@ -46,8 +50,8 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'start-time': {
         'type': 'Time',
-        'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
           'checkbox': true,
           'inButton': true,
           'outButton': true
@@ -62,8 +66,8 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'end-time': {
         'type': 'Time',
-        'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
           'checkbox': true,
           'inButton': true,
           'outButton': true

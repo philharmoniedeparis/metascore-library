@@ -31,7 +31,9 @@ metaScore.namespace('editor.panel').Text = (function () {
     properties: {
       'fore-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color'),
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color')
+        },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.execCommand('foreColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -39,7 +41,9 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'back-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color'),
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color')
+        },
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.execCommand('backColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -47,8 +51,8 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font': {
         'type': 'Select',
-        'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
         'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
           'options': {
             'Georgia, serif': 'Georgia',
             '"Times New Roman", Times, serif': 'Times New Roman',
@@ -68,8 +72,8 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font-style': {
         'type': 'Buttons',
-        'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
         'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
           'buttons': {
             'bold': {
               'data-action': 'bold',
@@ -87,8 +91,8 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'font-style2': {
         'type': 'Buttons',
-        'label': '&nbsp;',
         'configs': {
+          'label': '&nbsp;',
           'buttons': {
             'strikeThrough': {
               'data-action': 'strikethrough',
@@ -114,8 +118,8 @@ metaScore.namespace('editor.panel').Text = (function () {
       },
       'link': {
         'type': 'Buttons',
-        'label': metaScore.Locale.t('editor.panel.Text.link', 'Link'),
         'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.link', 'Link'),
           'buttons': {
             'link': {
               'data-action': 'link',

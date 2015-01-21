@@ -47,41 +47,44 @@ metaScore.namespace('editor.field').Time = (function () {
       this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
         .appendTo(this);
     }
+      
+    this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
+      .appendTo(this);
 
     if(this.configs.checkbox){
       this.checkbox = new metaScore.Dom('<input/>', {'type': 'checkbox'})
         .addListener('change', metaScore.Function.proxy(this.onInput, this))
-        .appendTo(this);
+        .appendTo(this.input_wrapper);
      }
 
     this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'})
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'})
       .addListener('input', metaScore.Function.proxy(this.onInput, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
 
     if(this.configs.inButton || this.configs.outButton){
       buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-        .appendTo(this);
+        .appendTo(this.input_wrapper);
 
       if(this.configs.inButton){
         this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in'})

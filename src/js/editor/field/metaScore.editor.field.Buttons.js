@@ -34,13 +34,16 @@ metaScore.namespace('editor.field').Buttons = (function () {
       this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
         .appendTo(this);
     }
+      
+    this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
+      .appendTo(this);
 
     metaScore.Object.each(this.configs.buttons, function(key, attr){
       new metaScore.Dom('<button/>', attr)
         .addListener('click', function(){
           field.triggerEvent('valuechange', {'field': field, 'value': key}, true, false);
         })
-        .appendTo(this);
+        .appendTo(this.input_wrapper);
     }, this);
   };
 

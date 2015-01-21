@@ -41,10 +41,13 @@ metaScore.namespace('editor.field').Number = (function () {
       this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
         .appendTo(this);
     }
+      
+    this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
+      .appendTo(this);
 
     this.input = new metaScore.Dom('<input/>', {'type': 'number', 'id': uid, 'min': this.configs.min, 'max': this.configs.max, 'step': this.configs.step})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
   };
 
   return NumberField;

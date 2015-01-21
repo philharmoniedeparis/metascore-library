@@ -31,25 +31,30 @@ metaScore.namespace('editor.field').Color = (function () {
   metaScore.editor.Field.extend(ColorField);
 
   ColorField.prototype.setupUI = function(){
-    if(this.configs.label){
-      this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
-        .appendTo(this);
-    }
+    ColorField.parent.prototype.setupUI.call(this);
 
-    this.button = new metaScore.editor.Button()
+    this.input
+      .attr('readonly', 'readonly')
       .addListener('click', metaScore.Function.proxy(this.onClick, this));
+
+    this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
+      .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
+      .appendTo(this.input_wrapper);
 
     this.overlay = new metaScore.editor.overlay.ColorSelector()
       .addListener('select', metaScore.Function.proxy(this.onColorSelect, this));
-
-    this.button.appendTo(this);
   };
 
-  ColorField.prototype.setValue = function(val, supressEvent){
+  ColorField.prototype.setValue = function(value, supressEvent){
+    var rgba;
+  
+    this.value = metaScore.Color.parse(value);
+    
+    rgba = 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')';
 
-    this.value = metaScore.Color.parse(val);
-
-    this.button.css('background-color', 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')');
+    this.input
+      .attr('title', rgba)
+      .css('background-color', rgba);
 
     if(supressEvent !== true){
       this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
@@ -72,6 +77,10 @@ metaScore.namespace('editor.field').Color = (function () {
       overlay = evt.detail.overlay;
 
     this.setValue(value);
+  };
+
+  ColorField.prototype.onClearClick = function(evt){
+    this.setValue(null);
   };
 
   return ColorField;

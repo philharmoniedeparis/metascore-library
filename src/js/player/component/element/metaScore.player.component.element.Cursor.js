@@ -17,8 +17,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
         'type': 'Select',
-        'label': metaScore.Locale.t('player.component.element.Cursor.direction', 'Direction'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.direction', 'Direction'),
           'options': {
             'right': metaScore.Locale.t('player.component.element.Cursor.direction.right', 'Left > Right'),
             'left': metaScore.Locale.t('player.component.element.Cursor.direction.left', 'Right > Left'),
@@ -35,7 +35,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       },
       'acceleration': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
+        },
         'getter': function(skipDefault){
           return this.data('accel');
         },
@@ -45,7 +47,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       },
       'cursor-width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
+        },
         'getter': function(skipDefault){
           var value = this.cursor.css('width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
@@ -56,7 +60,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       },
       'cursor-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
+        },
         'getter': function(skipDefault){
            return this.cursor.css('background-color', undefined, skipDefault);
         },

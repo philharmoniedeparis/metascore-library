@@ -29,7 +29,7 @@ metaScore.namespace('editor').Panel = (function(){
     this.toolbar.getTitle()
       .addListener('click', metaScore.Function.proxy(this.toggleState, this));
 
-    this.contents = new metaScore.Dom('<table/>', {'class': 'fields'})
+    this.contents = new metaScore.Dom('<div/>', {'class': 'fields'})
       .appendTo(this);
 
     this
@@ -49,31 +49,18 @@ metaScore.namespace('editor').Panel = (function(){
   metaScore.Dom.extend(Panel);
 
   Panel.prototype.setupFields = function(properties){
-    var row, uuid, configs, fieldType, field;
+    var configs, fieldType, field;
 
     this.fields = {};
     this.contents.empty();
 
     metaScore.Object.each(properties, function(key, prop){
       if(prop.editable !== false){
-        row = new metaScore.Dom('<tr/>', {'class': 'field-wrapper '+ key})
-          .appendTo(this.contents);
-
-        uuid = 'field-'+ metaScore.String.uuid(5);
-
         configs = prop.configs || {};
 
         field = new metaScore.editor.field[prop.type](configs)
-          .attr('id', uuid)
-          .data('name', key);
-
-        new metaScore.Dom('<td/>')
-          .appendTo(row)
-          .append(new metaScore.Dom('<label/>', {'text': prop.label, 'for': uuid}));
-
-        new metaScore.Dom('<td/>')
-          .appendTo(row)
-          .append(field);
+          .data('name', key)
+          .appendTo(this.contents);
 
         this.fields[key] = field;
       }
@@ -100,12 +87,12 @@ metaScore.namespace('editor').Panel = (function(){
     }, this);
   };
 
-  Panel.prototype.showField = function(key){
-    this.contents.children('tr.field-wrapper.'+ key).show();
+  Panel.prototype.showField = function(name){
+    this.getField(name).show();
   };
 
-  Panel.prototype.hideField = function(key){
-    this.contents.children('tr.field-wrapper.'+ key).hide();
+  Panel.prototype.hideField = function(name){
+    this.getField(name).hide();
   };
 
   Panel.prototype.toggleState = function(){
@@ -143,31 +130,14 @@ metaScore.namespace('editor').Panel = (function(){
       this
         .setupFields(this.component.configs.properties)
         .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
-        .addClass('has-component');
+        .updateDraggable()
+        .updateResizable()
+        .addClass('has-component')
+        .getToolbar().setComponent(component, true);
 
       if(!(component instanceof metaScore.player.component.Controller)){
         this.getToolbar().toggleMenuItem('delete', true);
       }
-
-      draggable = this.getDraggable();
-      if(draggable){
-        component._draggable = new metaScore.Draggable(draggable);
-        component
-          .addListener('dragstart', this.onComponentDragStart)
-          .addListener('drag', this.onComponentDrag)
-          .addListener('dragend', this.onComponentDragEnd);
-      }
-
-      resizable = this.getResizable();
-      if(resizable){
-        component._resizable = new metaScore.Resizable(resizable);
-        component
-          .addListener('resizestart', this.onComponentResizeStart)
-          .addListener('resize', this.onComponentResize)
-          .addListener('resizeend', this.onComponentResizeEnd);
-      }
-
-      this.getToolbar().setComponent(component, true);
 
       component.addClass('selected');
 
@@ -182,33 +152,17 @@ metaScore.namespace('editor').Panel = (function(){
   Panel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
 
-    this.getToolbar().toggleMenuItem('delete', false);
-    this.removeClass('has-component');
+    this
+      .removeClass('has-component')
+      .getToolbar().toggleMenuItem('delete', false);
 
     if(component){
-      if(component._draggable){
-        component._draggable.destroy();
-        delete component._draggable;
-
-        component
-          .removeListener('dragstart', this.onComponentDragStart)
-          .removeListener('drag', this.onComponentDrag)
-          .removeListener('dragend', this.onComponentDragEnd);
-      }
-
-      if(component._resizable){
-        component._resizable.destroy();
-        delete component._resizable;
-
-        component
-          .removeListener('resizestart', this.onComponentResizeStart)
-          .removeListener('resize', this.onComponentResize)
-          .removeListener('resizeend', this.onComponentResizeEnd);
-      }
+      this
+        .updateDraggable(false)
+        .updateResizable(false)
+        .getToolbar().setComponent(null, true);
 
       component.removeClass('selected');
-
-      this.getToolbar().setComponent(null, true);
 
       delete this.component;
 
@@ -217,6 +171,68 @@ metaScore.namespace('editor').Panel = (function(){
       }
     }
 
+    return this;
+  };
+
+  Panel.prototype.updateDraggable = function(draggable){
+    var component = this.getComponent();
+      
+    if(draggable === undefined){
+      draggable = this.getDraggable();
+    }
+    
+    if(draggable){
+      if(!component._draggable){
+        component._draggable = new metaScore.Draggable(draggable);
+        component
+          .addListener('dragstart', this.onComponentDragStart)
+          .addListener('drag', this.onComponentDrag)
+          .addListener('dragend', this.onComponentDragEnd);
+      }
+    }
+    else if(component._draggable){
+      component._draggable.destroy();
+      delete component._draggable;
+      
+      component
+        .removeListener('dragstart', this.onComponentDragStart)
+        .removeListener('drag', this.onComponentDrag)
+        .removeListener('dragend', this.onComponentDragEnd);
+    }
+    
+    this.toggleFields(['x', 'y'], draggable);
+    
+    return this;
+  };
+
+  Panel.prototype.updateResizable = function(resizable){
+    var component = this.getComponent();
+      
+    if(resizable === undefined){
+      resizable = this.getResizable();
+    }
+    
+    if(resizable){
+      if(!component._resizable){
+        component._resizable = new metaScore.Resizable(resizable);
+        component
+          .addListener('resizestart', this.onComponentResizeStart)
+          .addListener('resize', this.onComponentResize)
+          .addListener('resizeend', this.onComponentResizeEnd);
+      }
+    }
+    else if(component._resizable){
+      component._resizable.destroy();
+      delete component._resizable;
+      
+      component
+        .removeListener('resizestart', this.onComponentResizeStart)
+        .removeListener('resize', this.onComponentResize)
+        .removeListener('resizeend', this.onComponentResizeEnd);
+    }
+    
+    this.toggleFields(['width', 'height'], resizable);
+    
     return this;
   };
 
@@ -310,6 +326,23 @@ metaScore.namespace('editor').Panel = (function(){
     }, this);
 
     this.updateFieldValues(values, true);
+
+    return this;
+  };
+
+  Panel.prototype.toggleFields = function(names, toggle){
+    var field;
+  
+    metaScore.Array.each(names, function(index, name){
+      if(field = this.getField(name)){
+        if(toggle){
+          field.enable();
+        }
+        else{
+          field.disable();
+        }
+      }
+    }, this);
 
     return this;
   };

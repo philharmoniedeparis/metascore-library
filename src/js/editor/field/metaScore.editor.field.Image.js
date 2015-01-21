@@ -27,7 +27,7 @@ metaScore.namespace('editor.field').Image = (function () {
 
     this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
       .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
   };
 
   ImageField.prototype.setValue = function(value, supressEvent){
@@ -37,6 +37,10 @@ metaScore.namespace('editor.field').Image = (function () {
   };
 
   ImageField.prototype.onClick = function(evt){
+    if(this.disabled){
+      return;
+    }
+    
     Drupal.media.popups.mediaBrowser(metaScore.Function.proxy(this.onFileSelect, this));
   };
 

@@ -23,7 +23,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
     /**
     * Defines the default value
     */
-    value: true,
+    value: false,
 
     /**
     * Defines the value when checked
@@ -50,20 +50,23 @@ metaScore.namespace('editor.field').Boolean = (function () {
       this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
         .appendTo(this);
     }
+      
+    this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
+      .appendTo(this);
 
     this.input = new metaScore.Dom('<input/>', {'type': 'checkbox', 'id': uid})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
-      .appendTo(this);
+      .appendTo(this.input_wrapper);
   };
 
   BooleanField.prototype.onChange = function(evt){
-    this.value = this.input.is(":checked") ? this.input.val() : this.configs.unchecked_value;
+    this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
 
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value ? this.configs.checked_value : this.configs.unchecked_value}, true, false);
+    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
   BooleanField.prototype.setValue = function(value, supressEvent){
-    this.input.attr('checked', value ? 'checked' : '');
+    this.input.attr('checked', value === this.configs.checked_value ? 'checked' : null);
 
     if(supressEvent !== true){
       this.input.triggerEvent('change');

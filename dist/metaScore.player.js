@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-20 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-21 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -95,7 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "6bd339";
+    return "fcd033";
   },
 
   namespace: function(str){
@@ -574,7 +574,14 @@ metaScore.Color = (function () {
   };
 
   Color.parse = function(color){
-    var rgba = {}, matches;
+    var rgba, matches;
+    
+    rgba = {
+      r: 0,
+      g: 0,
+      b: 0,
+      a: 0,
+    };
 
     if(metaScore.Var.is(color, 'object')){
       rgba.r = 'r' in color ? color.r : 0;
@@ -2468,8 +2475,12 @@ metaScore.namespace('player').Component = (function () {
     return this.getProperty('name');
   };
 
+  Component.prototype.hasProperty = function(name){
+    return name in this.configs.properties;
+  };
+
   Component.prototype.getProperty = function(name){
-    if(name in this.configs.properties && 'getter' in this.configs.properties[name]){
+    if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
       return this.configs.properties[name].getter.call(this);
     }
   };
@@ -2695,7 +2706,9 @@ metaScore.namespace('player.component').Block = (function () {
     'properties': {
       'name': {
         'type': 'Text',
-        'label': metaScore.Locale.t('player.component.Block.name', 'Name'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.name', 'Name')
+        },
         'getter': function(skipDefault){
           return this.data('name');
         },
@@ -2705,7 +2718,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'x': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Block.x', 'X'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.x', 'X')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -2715,7 +2730,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Block.y', 'Y'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.y', 'Y')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
@@ -2725,7 +2742,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Block.width', 'Width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.width', 'Width')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
@@ -2735,7 +2754,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'height': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Block.height', 'Height'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.height', 'Height')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
@@ -2745,7 +2766,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'background-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
+        },
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
@@ -2756,7 +2779,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'background-image': {
         'type':'Image',
-        'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
+        },
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
 
@@ -2773,7 +2798,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'border-width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
+        },
         'getter': function(skipDefault){
           var value = this.css('border-width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
@@ -2784,7 +2811,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'border-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
+        },
         'getter': function(skipDefault){
           return this.css('border-color', undefined, skipDefault);
         },
@@ -2795,7 +2824,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'border-radius': {
         'type': 'BorderRadius',
-        'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius')
+        },
         'getter': function(skipDefault){
           return this.css('border-radius', undefined, skipDefault);
         },
@@ -2805,7 +2836,9 @@ metaScore.namespace('player.component').Block = (function () {
       },
       'synched': {
         'type': 'Boolean',
-        'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?')
+        },
         'getter': function(skipDefault){
           return this.data('synched') === "true";
         },
@@ -2996,7 +3029,9 @@ metaScore.namespace('player.component').Controller = (function () {
     'properties': {
       'x': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Controller.x', 'X'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Controller.x', 'X')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -3006,7 +3041,9 @@ metaScore.namespace('player.component').Controller = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Controller.y', 'Y'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Controller.y', 'Y')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
@@ -3072,7 +3109,9 @@ metaScore.namespace('player.component').Element = (function () {
     'properties': {
       'name': {
         'type': 'Text',
-        'label': metaScore.Locale.t('player.component.Element.name', 'Name'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.name', 'Name')
+        },
         'getter': function(skipDefault){
           return this.data('name');
         },
@@ -3091,7 +3130,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'x': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.x', 'X'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.x', 'X')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -3101,7 +3142,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.y', 'Y'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.y', 'Y')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
@@ -3111,7 +3154,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.width', 'Width')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
@@ -3121,7 +3166,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'height': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.height', 'Height')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
@@ -3131,8 +3178,8 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'r-index': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.r-index', 'Reading index'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Element.r-index', 'Reading index'),
           'min': 0
         },
         'getter': function(skipDefault){
@@ -3145,7 +3192,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'z-index': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+        },
         'getter': function(skipDefault){
           var value = this.css('z-index', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
@@ -3156,7 +3205,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'background-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.Element.background-color', 'Background color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.background-color', 'Background color')
+        },
         'getter': function(skipDefault){
           return this.contents.css('background-color', undefined, skipDefault);
         },
@@ -3167,7 +3218,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'background-image': {
         'type': 'Image',
-        'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image')
+        },
         'getter': function(skipDefault){
           var value = this.contents.css('background-image', undefined, skipDefault);
 
@@ -3184,7 +3237,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'border-width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width')
+        },
         'getter': function(skipDefault){
           var value = this.contents.css('border-width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
@@ -3195,7 +3250,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'border-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.Element.border-color', 'Border color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.border-color', 'Border color')
+        },
         'getter': function(skipDefault){
           return this.contents.css('border-color', undefined, skipDefault);
         },
@@ -3206,7 +3263,9 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'border-radius': {
         'type': 'BorderRadius',
-        'label': metaScore.Locale.t('player.component.Element.border-radius', 'Border radius'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.border-radius', 'Border radius')
+        },
         'getter': function(skipDefault){
           return this.contents.css('border-radius', undefined, skipDefault);
         },
@@ -3216,8 +3275,8 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'opacity': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Element.opacity', 'Opacity'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Element.opacity', 'Opacity'),
           'min': 0,
           'max': 1,
           'step': 0.1
@@ -3231,8 +3290,8 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'start-time': {
         'type': 'Time',
-        'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
           'checkbox': true,
           'inButton': true,
           'outButton': true
@@ -3247,8 +3306,8 @@ metaScore.namespace('player.component').Element = (function () {
       },
       'end-time': {
         'type': 'Time',
-        'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
           'checkbox': true,
           'inButton': true,
           'outButton': true
@@ -3310,7 +3369,9 @@ metaScore.namespace('player.component').Media = (function () {
     'properties': {
       'x': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Media.x', 'X'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.x', 'X')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
@@ -3320,7 +3381,9 @@ metaScore.namespace('player.component').Media = (function () {
       },
       'y': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Media.y', 'Y'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.y', 'Y')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
@@ -3330,7 +3393,9 @@ metaScore.namespace('player.component').Media = (function () {
       },
       'width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Media.width', 'Width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.width', 'Width')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
@@ -3340,7 +3405,9 @@ metaScore.namespace('player.component').Media = (function () {
       },
       'height': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.Media.height', 'Height'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.height', 'Height')
+        },
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
@@ -3503,7 +3570,9 @@ metaScore.namespace('player.component').Page = (function () {
     'properties': {
       'background-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color')
+        },
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
@@ -3514,7 +3583,9 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'background-image': {
         'type': 'Image',
-        'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image')
+        },
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
 
@@ -3531,8 +3602,8 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'start-time': {
         'type': 'Time',
-        'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
           'checkbox': true,
           'inButton': true,
           'outButton': true
@@ -3547,8 +3618,8 @@ metaScore.namespace('player.component').Page = (function () {
       },
       'end-time': {
         'type': 'Time',
-        'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
           'checkbox': true,
           'inButton': true,
           'outButton': true
@@ -3638,8 +3709,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'direction': {
         'type': 'Select',
-        'label': metaScore.Locale.t('player.component.element.Cursor.direction', 'Direction'),
         'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.direction', 'Direction'),
           'options': {
             'right': metaScore.Locale.t('player.component.element.Cursor.direction.right', 'Left > Right'),
             'left': metaScore.Locale.t('player.component.element.Cursor.direction.left', 'Right > Left'),
@@ -3656,7 +3727,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       },
       'acceleration': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
+        },
         'getter': function(skipDefault){
           return this.data('accel');
         },
@@ -3666,7 +3739,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       },
       'cursor-width': {
         'type': 'Number',
-        'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
+        },
         'getter': function(skipDefault){
           var value = this.cursor.css('width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
@@ -3677,7 +3752,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       },
       'cursor-color': {
         'type': 'Color',
-        'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color'),
+        'configs': {
+          'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
+        },
         'getter': function(skipDefault){
            return this.cursor.css('background-color', undefined, skipDefault);
         },

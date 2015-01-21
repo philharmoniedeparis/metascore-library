@@ -140,14 +140,14 @@
   left: 0;
   top: 0;
 }
-.metaScore-editor .field.timefield {
+.metaScore-editor .field.timefield .input-wrapper {
   display: inline-block;
   vertical-align: top;
 }
-.metaScore-editor .field.timefield input[type="checkbox"] {
+.metaScore-editor .field.timefield .input-wrapper input[type="checkbox"] {
   float: left;
 }
-.metaScore-editor .field.timefield input[type="number"] {
+.metaScore-editor .field.timefield .input-wrapper input[type="number"] {
   width: 1em !important;
   height: 100%;
   border: none;
@@ -156,18 +156,18 @@
   font-family: Tahoma, Geneva, sans-serif;
   -moz-appearance: textfield;
 }
-.metaScore-editor .field.timefield input[type="number"]::-webkit-outer-spin-button,
-.metaScore-editor .field.timefield input[type="number"]::-webkit-inner-spin-button {
+.metaScore-editor .field.timefield .input-wrapper input[type="number"]::-webkit-outer-spin-button,
+.metaScore-editor .field.timefield .input-wrapper input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
-.metaScore-editor .field.timefield .separator {
+.metaScore-editor .field.timefield .input-wrapper .separator {
   font-size: 0.8em;
 }
-.metaScore-editor .field.timefield .buttons {
+.metaScore-editor .field.timefield .input-wrapper .buttons {
   float: right;
   height: 100%;
 }
-.metaScore-editor .field.timefield .buttons button {
+.metaScore-editor .field.timefield .input-wrapper .buttons button {
   display: inline-block;
   width: 15px;
   height: 100%;
@@ -175,45 +175,49 @@
   overflow: hidden;
   text-indent: 999px;
 }
-.metaScore-editor .field.timefield .buttons button[data-action="in"] {
+.metaScore-editor .field.timefield .input-wrapper .buttons button[data-action="in"] {
   background: transparent url('img/editor/field/time/in.png') no-repeat center center;
 }
-.metaScore-editor .field.timefield .buttons button[data-action="out"] {
+.metaScore-editor .field.timefield .input-wrapper .buttons button[data-action="out"] {
   background: transparent url('img/editor/field/time/out.png') no-repeat center center;
 }
-.metaScore-editor .field.colorfield {
+.metaScore-editor .field.colorfield .input-wrapper {
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .field.colorfield button {
-  display: block;
-  width: 100%;
-  height: 100%;
+.metaScore-editor .field.colorfield .input-wrapper input {
   background-image: url('img/editor/field/color/picker.png');
+  background-repeat: no-repeat;
   background-position: left center;
   background-size: contain;
 }
-.metaScore-editor .field.colorfield button:hover {
+.metaScore-editor .field.colorfield .input-wrapper input:hover {
   opacity: 1;
 }
-.metaScore-editor .field.colorfield.disabled button {
+.metaScore-editor .field.colorfield.disabled .input-wrapper button {
   cursor: default;
 }
-.metaScore-editor .field.imagefield {
+.metaScore-editor .field.borderradiusrfield .input-wrapper,
+.metaScore-editor .field.imagefield .input-wrapper,
+.metaScore-editor .field.colorfield .input-wrapper {
   position: relative;
 }
-.metaScore-editor .field.imagefield input {
+.metaScore-editor .field.borderradiusrfield .input-wrapper input,
+.metaScore-editor .field.imagefield .input-wrapper input,
+.metaScore-editor .field.colorfield .input-wrapper input {
   padding-right: 15px !important;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.metaScore-editor .field.imagefield button[data-action="clear"] {
+.metaScore-editor .field.borderradiusrfield .input-wrapper button[data-action="clear"],
+.metaScore-editor .field.imagefield .input-wrapper button[data-action="clear"],
+.metaScore-editor .field.colorfield .input-wrapper button[data-action="clear"] {
   position: absolute;
   top: 0;
   right: 0;
   width: 15px;
   height: 100%;
-  background-image: url('img/editor/field/image/clear.png');
+  background-image: url('img/editor/field/clear.png');
   background-position: center center;
   overflow: hidden;
   text-indent: 999px;
@@ -499,9 +503,86 @@
   display: block;
 }
 .metaScore-editor .sidebar .panel .fields {
+  display: table;
   width: 100%;
   font-size: 0.9em;
   background: #fff;
+  border-collapse: collapse;
+}
+.metaScore-editor .sidebar .panel .fields .field {
+  display: table-row;
+  border-bottom: 1px solid #b2b2b2;
+}
+.metaScore-editor .sidebar .panel .fields .field label {
+  display: table-cell;
+  width: 130px;
+  padding: 5px;
+  color: #7b7b7b;
+  border-right: 1px solid #d7d7d7;
+  white-space: nowrap;
+}
+.metaScore-editor .sidebar .panel .fields .field .input-wrapper {
+  display: table-cell;
+  margin: 0;
+  padding: 0;
+}
+.metaScore-editor .sidebar .panel .fields .field .input-wrapper input {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.metaScore-editor .sidebar .panel .fields .field .input-wrapper input[type="checkbox"] {
+  width: auto;
+}
+.metaScore-editor .sidebar .panel .fields .field.selectfield select {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button {
+  width: 23px;
+  height: 23px;
+  margin-right: 2px;
+  background-color: #eaeaea;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100% #eaeaea));
+  background-image: -webkit-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: -ms-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: -o-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-image: linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="bold"] {
+  background-image: url('img/editor/wysiwyg/bold.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="italic"] {
+  background-image: url('img/editor/wysiwyg/italic.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="strikethrough"] {
+  background-image: url('img/editor/wysiwyg/strikethrough.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="underline"] {
+  background-image: url('img/editor/wysiwyg/underline.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="subscript"] {
+  background-image: url('img/editor/wysiwyg/subscript.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="superscript"] {
+  background-image: url('img/editor/wysiwyg/superscript.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="link"] {
+  background-image: url('img/editor/wysiwyg/link.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="unlink"] {
+  background-image: url('img/editor/wysiwyg/unlink.png');
+}
+.metaScore-editor .sidebar .panel .fields .field.font-style {
+  border-bottom: none;
 }
 .metaScore-editor .sidebar .panel .fields .field-wrapper {
   border-bottom: 1px solid #b2b2b2;

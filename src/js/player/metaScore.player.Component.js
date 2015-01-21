@@ -47,8 +47,12 @@ metaScore.namespace('player').Component = (function () {
     return this.getProperty('name');
   };
 
+  Component.prototype.hasProperty = function(name){
+    return name in this.configs.properties;
+  };
+
   Component.prototype.getProperty = function(name){
-    if(name in this.configs.properties && 'getter' in this.configs.properties[name]){
+    if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
       return this.configs.properties[name].getter.call(this);
     }
   };
