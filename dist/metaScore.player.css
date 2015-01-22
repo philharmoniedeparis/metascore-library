@@ -275,9 +275,9 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.metaScore-component.element:not([data-r-inde]):not([data-start-time]) .contents,
+.metaScore-component.element:not([data-r-index]):not([data-start-time]) .contents,
 .metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
-.metaScore-component.element:not([data-r-inde]).active .contents,
+.metaScore-component.element:not([data-r-index]).active .contents,
 .metaScore-component.element[data-r-index="0"].active .contents {
   display: block;
 }

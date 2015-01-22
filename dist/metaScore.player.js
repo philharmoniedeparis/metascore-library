@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-21 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-22 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -95,7 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "fcd033";
+    return "2f5880";
   },
 
   namespace: function(str){
@@ -1903,9 +1903,8 @@ metaScore.StyleSheet = (function () {
 
     // call the super constructor.
     metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
-
+    
     this.el = this.get(0);
-    this.sheet = this.el.sheet;
 
     // WebKit hack :(
     this.setInternalValue("");
@@ -1921,15 +1920,17 @@ metaScore.StyleSheet = (function () {
   * @returns {number} the index specifying the position in which the rule was inserted
   */
   StyleSheet.prototype.addRule = function(selector, rules, index) {
+    var sheet = this.el.sheet;
+    
     if(index === undefined){
-      index = this.sheet.cssRules.length;
+      index = sheet.cssRules.length;
     }
 
-    if("insertRule" in this.sheet) {
-      return this.sheet.insertRule(selector + "{" + rules + "}", index);
+    if("insertRule" in sheet) {
+      return sheet.insertRule(selector + "{" + rules + "}", index);
     }
-    else if("addRule" in this.sheet) {
-      return this.sheet.addRule(selector, rules, index);
+    else if("addRule" in sheet) {
+      return sheet.addRule(selector, rules, index);
     }
   };
 
@@ -1938,11 +1939,13 @@ metaScore.StyleSheet = (function () {
   * @param {number} the index specifying the position of the rule
   */
   StyleSheet.prototype.removeRule = function(index) {
-    if("deleteRule" in this.sheet) {
-      this.sheet.deleteRule(index);
+    var sheet = this.el.sheet;
+  
+    if("deleteRule" in sheet) {
+      sheet.deleteRule(index);
     }
-    else if("removeRule" in this.sheet) {
-      this.sheet.removeRule(index);
+    else if("removeRule" in sheet) {
+      sheet.removeRule(index);
     }
 
     return this;
@@ -1953,7 +1956,8 @@ metaScore.StyleSheet = (function () {
   * @param {string} the selector to match
   */
   StyleSheet.prototype.removeRulesBySelector = function(selector) {
-    var rules = this.sheet.cssRules || this.sheet.rules;
+    var sheet = this.el.sheet,
+      rules = sheet.cssRules || sheet.rules;
 
     selector = selector.toLowerCase();
 
@@ -1971,7 +1975,8 @@ metaScore.StyleSheet = (function () {
   * Removes all CSS rule from the style sheet
   */
   StyleSheet.prototype.removeRules = function() {
-    var rules = this.sheet.cssRules || this.sheet.rules;
+    var sheet = this.el.sheet,
+      rules = sheet.cssRules || sheet.rules;
 
     while(rules.length > 0){
       this.removeRule(0);
