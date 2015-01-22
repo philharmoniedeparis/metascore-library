@@ -95,7 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "2f5880";
+    return "fbce6e";
   },
 
   namespace: function(str){
@@ -2161,6 +2161,10 @@ metaScore.Player = (function () {
   metaScore.Dom.extend(Player);
 
   Player.prototype.onKeydown = function(evt){
+    if(metaScore.editing){
+      return;
+    }
+  
     switch(evt.keyCode){
       case 32: //space-bar
         if(this.media.isPlaying()){
