@@ -39,6 +39,18 @@ metaScore.namespace('player.component').Controller = (function () {
         'setter': function(value){
           this.css('top', value +'px');
         }
+      },
+      'border-radius': {
+        'type': 'BorderRadius',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Controller.border-radius', 'Border radius')
+        },
+        'getter': function(skipDefault){
+          return this.css('border-radius', undefined, skipDefault);
+        },
+        'setter': function(value){
+          this.css('border-radius', value);
+        }
       }
     }
   };

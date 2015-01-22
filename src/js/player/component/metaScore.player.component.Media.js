@@ -68,6 +68,18 @@ metaScore.namespace('player.component').Media = (function () {
         'setter': function(value){
           this.css('height', value +'px');
         }
+      },
+      'border-radius': {
+        'type': 'BorderRadius',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.border-radius', 'Border radius')
+        },
+        'getter': function(skipDefault){
+          return this.css('border-radius', undefined, skipDefault);
+        },
+        'setter': function(value){
+          this.css('border-radius', value);
+        }
       }
     }
   };
