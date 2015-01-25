@@ -11,7 +11,7 @@ metaScore.namespace('player').Component = (function () {
     this.configs = this.getConfigs(configs);
 
     // call parent constructor
-    Component.parent.call(this, '<div/>', {'class': 'metaScore-component', 'id': 'componenet-'+ metaScore.String.uuid(5)});
+    Component.parent.call(this, '<div/>', {'class': 'metaScore-component', 'id': 'component-'+ metaScore.String.uuid(5)});
 
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;

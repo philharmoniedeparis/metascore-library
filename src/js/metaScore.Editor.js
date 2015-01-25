@@ -56,19 +56,26 @@ metaScore.Editor = (function(){
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onBlockUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onBlockPanelValueChange, this))
-      .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this));
+      .getToolbar()
+        .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onBlockPanelSelectorChange, this))
+        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this))        
+        .addSelectorOption(null, '');
 
     this.panels.page
       .addListener('componentset', metaScore.Function.proxy(this.onPageSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onPageUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this))
-      .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
+      .getToolbar()
+        .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onPagePanelSelectorChange, this))
+        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
 
     this.panels.element
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
-      .getToolbar().addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
+      .getToolbar()
+        .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
+        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
 
     this.history
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -315,10 +322,19 @@ metaScore.Editor = (function(){
 
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
+    
+    this.panels.page.getToolbar()
+      .emptySelector();
 
     if(block instanceof metaScore.player.component.Block){
+      this.panels.page.getToolbar()
+        .toggleMenuItem('new', true);
+        
+      block.getPages().each(function(index, page){
+        this.panels.page.getToolbar().addSelectorOption(page._metaScore.getId(), index+1);
+      }, this);
+      
       this.panels.page.setComponent(block.getActivePage(), true);
-      this.panels.page.getToolbar().toggleMenuItem('new', true);
 
       this.panels.element.getToolbar()
         .toggleMenuItem('Cursor', true)
@@ -373,7 +389,7 @@ metaScore.Editor = (function(){
         break;
 
       case 'previous':
-        blocks = this.player.getComponents(['media', 'controller', 'block']);
+        blocks = this.player.getComponents('.media.video, .controller, .block');
         count = blocks.count();
 
         if(count > 0){
@@ -389,7 +405,7 @@ metaScore.Editor = (function(){
         break;
 
       case 'next':
-        blocks = this.player.getComponents(['media', 'controller', 'block']);
+        blocks = this.player.getComponents('.media.video, .controller, .block');
         count = blocks.count();
 
         if(count > 0){
@@ -408,6 +424,22 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  Editor.prototype.onBlockPanelSelectorChange = function(evt){
+    var id = evt.detail.value,
+      dom;
+      
+    if(!id){
+      this.panels.block.unsetComponent();
+    }
+    else{
+      dom = this.player.getComponent('.media#'+ id +', .controller#'+ id +', .block#'+ id);
+      
+      if(dom && dom._metaScore){
+        this.panels.block.setComponent(dom._metaScore);
+      }
+    }
+  };
+
   Editor.prototype.onPageSet = function(evt){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
@@ -419,7 +451,13 @@ metaScore.Editor = (function(){
     this.panels.element.getToolbar()
       .toggleMenuItem('Cursor', true)
       .toggleMenuItem('Image', true)
-      .toggleMenuItem('Text', true);
+      .toggleMenuItem('Text', true)
+      .emptySelector()
+      .addSelectorOption(null, '');
+        
+    page.getElements().each(function(index, element){
+      this.panels.element.getToolbar().addSelectorOption(element._metaScore.getId(), element._metaScore.getName());
+    }, this);
 
     evt.stopPropagation();
   };
@@ -514,6 +552,20 @@ metaScore.Editor = (function(){
     }
 
     evt.stopPropagation();
+  };
+
+  Editor.prototype.onPagePanelSelectorChange = function(evt){
+    var block = this.panels.block.getComponent(),
+      id, dom;
+    
+    if(block){
+      id = evt.detail.value;
+      dom = this.player.getComponent('.page#'+ id);
+    
+      if(dom && dom._metaScore){
+        block.setActivePage(dom._metaScore);
+      }
+    }
   };
 
   Editor.prototype.onElementSet = function(evt){
@@ -622,6 +674,22 @@ metaScore.Editor = (function(){
     }
   };
 
+  Editor.prototype.onElementPanelSelectorChange = function(evt){
+    var id = evt.detail.value,
+      dom;
+      
+    if(!id){
+      this.panels.element.unsetComponent();
+    }
+    else{    
+      dom = this.player.getComponent('.element#'+ id);
+    
+      if(dom && dom._metaScore){
+        this.panels.element.setComponent(dom._metaScore);
+      }
+    }
+  };
+
   Editor.prototype.onPlayerTimeUpdate = function(evt){
     var time = evt.detail.media.getTime();
 
@@ -636,20 +704,22 @@ metaScore.Editor = (function(){
 
   Editor.prototype.onPlayerMediaAdd = function(evt){
     var media = evt.detail.media;
-
-    this.panels.block.getToolbar().addComponent(media);
+    
+    if(media.is('.video')){
+      this.panels.block.getToolbar().addSelectorOption(media.getId(), media.getName());
+    }
   };
 
   Editor.prototype.onPlayerControllerAdd = function(evt){
     var controller = evt.detail.controller;
 
-    this.panels.block.getToolbar().addComponent(controller);
+    this.panels.block.getToolbar().addSelectorOption(controller.getId(), controller.getName());
   };
 
   Editor.prototype.onPlayerBlockAdd = function(evt){
     var block = evt.detail.block;
 
-    this.panels.block.getToolbar().addComponent(block);
+    this.panels.block.getToolbar().addSelectorOption(block.getId(), block.getName());
   };
 
   Editor.prototype.onPlayerLoadSuccess = function(evt){
@@ -659,13 +729,13 @@ metaScore.Editor = (function(){
     this.player = player;
 
     this.player
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
       .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
-      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this));
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this));
 
     this.setEditing(true);
     this.updateMainmenu();
@@ -714,9 +784,12 @@ metaScore.Editor = (function(){
     else if(component instanceof metaScore.player.component.Element){
       this.panels.element.setComponent(component);
     }
+    
+    evt.stopImmediatePropagation();
   };
 
   Editor.prototype.onPlayerClick = function(evt){
+    
     if(metaScore.editing !== true){
       return;
     }
@@ -843,14 +916,14 @@ metaScore.Editor = (function(){
   };
 
   Editor.prototype.saveGuide = function(){
-    var components = this.player.getComponents(),
+    var components = this.player.getComponents('.media, .controller, .block'),
       id = this.player.getId(),
-      component,  options,
-      data = this.detailsOverlay.getValues();
+      data = this.detailsOverlay.getValues(),
+      component, options;
 
     components.each(function(index, dom){
       component = dom._metaScore;
-
+    
       if(component instanceof metaScore.player.component.Media){
         data['media'] = component.getProperties();
       }

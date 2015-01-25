@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-22 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-01-24 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -95,7 +95,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "c8e68e";
+    return "cc8c27";
   },
 
   namespace: function(str){
@@ -2351,17 +2351,30 @@ metaScore.Player = (function () {
     return this.json;
   };
 
-  Player.prototype.getComponents = function(type){
-    var selector = '.metaScore-component';
-
-    if(metaScore.Var.is(type, 'array')){
-      selector += '.'+ type.join(', '+ selector +'.');
+  Player.prototype.getComponent = function(selector){
+    var components;
+    
+    components = this.children('.metaScore-component');
+    
+    if(selector){
+      components = components.filter(selector);
     }
-    else if(type){
-      selector += '.'+ type;
+    
+    if(components.count() > 0){
+      return components.get(0);
+    }
+  };
+
+  Player.prototype.getComponents = function(selector){
+    var components;
+    
+    components = this.children('.metaScore-component');
+    
+    if(selector){
+      components = components.filter(selector);
     }
 
-    return this.children(selector);
+    return components;
   };
 
   Player.prototype.addMedia = function(configs, supressEvent){
@@ -2448,7 +2461,7 @@ metaScore.namespace('player').Component = (function () {
     this.configs = this.getConfigs(configs);
 
     // call parent constructor
-    Component.parent.call(this, '<div/>', {'class': 'metaScore-component', 'id': 'componenet-'+ metaScore.String.uuid(5)});
+    Component.parent.call(this, '<div/>', {'class': 'metaScore-component', 'id': 'component-'+ metaScore.String.uuid(5)});
 
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
@@ -2885,7 +2898,7 @@ metaScore.namespace('player.component').Block = (function () {
 
     this.addClass('block');
 
-    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
+    this.page_wrapper = new metaScore.Dom('<div/>', {'class': 'pages'})
       .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
       .addDelegate('.element', 'page', metaScore.Function.proxy(this.onElementPage, this))
       .appendTo(this);
@@ -2929,7 +2942,7 @@ metaScore.namespace('player.component').Block = (function () {
   };
 
   Block.prototype.getPages = function(){
-    return this.pages.children('.page');
+    return this.page_wrapper.children('.page');
   };
 
   Block.prototype.addPage = function(configs){
@@ -2937,11 +2950,11 @@ metaScore.namespace('player.component').Block = (function () {
 
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
-      page.appendTo(this.pages);
+      page.appendTo(this.page_wrapper);
     }
     else{
       page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
-        'container': this.pages
+        'container': this.page_wrapper
       }));
     }
 

@@ -191,7 +191,7 @@ metaScore.namespace('player.component').Block = (function () {
 
     this.addClass('block');
 
-    this.pages = new metaScore.Dom('<div/>', {'class': 'pages'})
+    this.page_wrapper = new metaScore.Dom('<div/>', {'class': 'pages'})
       .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
       .addDelegate('.element', 'page', metaScore.Function.proxy(this.onElementPage, this))
       .appendTo(this);
@@ -235,7 +235,7 @@ metaScore.namespace('player.component').Block = (function () {
   };
 
   Block.prototype.getPages = function(){
-    return this.pages.children('.page');
+    return this.page_wrapper.children('.page');
   };
 
   Block.prototype.addPage = function(configs){
@@ -243,11 +243,11 @@ metaScore.namespace('player.component').Block = (function () {
 
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
-      page.appendTo(this.pages);
+      page.appendTo(this.page_wrapper);
     }
     else{
       page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
-        'container': this.pages
+        'container': this.page_wrapper
       }));
     }
 

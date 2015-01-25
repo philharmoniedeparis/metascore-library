@@ -50,6 +50,12 @@ metaScore.namespace('editor.field').Select = (function () {
     return this;
   };
 
+  SelectField.prototype.removeOptions = function(){
+    this.input.empty();
+
+    return this;
+  };
+
   SelectField.prototype.removeOption = function(value){
     this.input.child('[value="'+ value +'"]').remove();
 

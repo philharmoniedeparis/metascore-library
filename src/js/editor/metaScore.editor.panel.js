@@ -133,7 +133,7 @@ metaScore.namespace('editor').Panel = (function(){
         .updateDraggable()
         .updateResizable()
         .addClass('has-component')
-        .getToolbar().setComponent(component, true);
+        .getToolbar().setSelectorValue(component.getId(), true);
 
       if(!(component instanceof metaScore.player.component.Controller)){
         this.getToolbar().toggleMenuItem('delete', true);
@@ -160,7 +160,7 @@ metaScore.namespace('editor').Panel = (function(){
       this
         .updateDraggable(false)
         .updateResizable(false)
-        .getToolbar().setComponent(null, true);
+        .getToolbar().setSelectorValue(null, true);
 
       component.removeClass('selected');
 

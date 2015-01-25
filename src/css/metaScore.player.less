@@ -401,13 +401,12 @@ body.in-editor{
     }
 
     .metaScore-component{
+      &.media,
+      &.controller,
       &.block{
-        border: 1px dashed fade(@block-outline, 50%);
-        .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
-
         &.selected{
-          border: 1px dashed @block-outline;
-          .box-shadow(@block-outline 0px 0px 4px 1px);
+          z-index: 100000;
+          .box-shadow(@block-outline 0px 0px 4px 2px);
         }
 
         &:hover,
@@ -415,13 +414,6 @@ body.in-editor{
           .pager{
             display: block !important;
           }
-        }
-      }
-      &.controller{
-        .box-shadow(fade(@block-outline, 50%) 0px 0px 4px 0px);
-
-        &.selected{
-          .box-shadow(@controller-outline 0px 0px 4px 1px);
         }
       }
 

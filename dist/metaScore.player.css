@@ -410,31 +410,21 @@ body.in-editor .metaScore-component.element[data-type="Text"] {
 body.in-editor.editing .resizable .resize-handle {
   display: block;
 }
-body.in-editor.editing .metaScore-component.block {
-  border: 1px dashed rgba(51, 49, 47, 0.5);
-  -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
-  -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
-  box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
-}
+body.in-editor.editing .metaScore-component.media.selected,
+body.in-editor.editing .metaScore-component.controller.selected,
 body.in-editor.editing .metaScore-component.block.selected {
-  border: 1px dashed #33312f;
-  -webkit-box-shadow: #33312f 0px 0px 4px 1px;
-  -moz-box-shadow: #33312f 0px 0px 4px 1px;
-  box-shadow: #33312f 0px 0px 4px 1px;
+  z-index: 100000;
+  -webkit-box-shadow: #33312f 0px 0px 4px 2px;
+  -moz-box-shadow: #33312f 0px 0px 4px 2px;
+  box-shadow: #33312f 0px 0px 4px 2px;
 }
+body.in-editor.editing .metaScore-component.media:hover .pager,
+body.in-editor.editing .metaScore-component.controller:hover .pager,
 body.in-editor.editing .metaScore-component.block:hover .pager,
+body.in-editor.editing .metaScore-component.media.dragging .pager,
+body.in-editor.editing .metaScore-component.controller.dragging .pager,
 body.in-editor.editing .metaScore-component.block.dragging .pager {
   display: block !important;
-}
-body.in-editor.editing .metaScore-component.controller {
-  -webkit-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
-  -moz-box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
-  box-shadow: rgba(51, 49, 47, 0.5) 0px 0px 4px 0px;
-}
-body.in-editor.editing .metaScore-component.controller.selected {
-  -webkit-box-shadow: #0000fe 0px 0px 4px 1px;
-  -moz-box-shadow: #0000fe 0px 0px 4px 1px;
-  box-shadow: #0000fe 0px 0px 4px 1px;
 }
 body.in-editor.editing .metaScore-component.element {
   outline-width: 1px;

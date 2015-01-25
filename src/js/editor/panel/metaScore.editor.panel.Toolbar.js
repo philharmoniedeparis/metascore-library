@@ -30,8 +30,9 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     if(this.configs.selector){
       this.selector = new metaScore.editor.field.Select()
         .addClass('selector')
-        .addOption(null, '')
         .appendTo(this);
+        
+      this.emptySelector();
     }
 
     if(!metaScore.Var.isEmpty(this.configs.menuItems)){
@@ -57,7 +58,7 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     /**
     * Whether to replace the title with a selector
     */
-    selector: false,
+    selector: true,
 
     menuItems: {}
   };
@@ -91,16 +92,28 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this.buttons.children('[data-action="'+ action +'"]');
   };
 
-  Toolbar.prototype.addComponent = function(component){
+  Toolbar.prototype.emptySelector = function(){
     if(this.selector){
-      this.selector.addOption(component.getId(), component.getName());
+      this.selector.removeOptions();
     }
+    
+    return this;
   };
 
-  Toolbar.prototype.setComponent = function(component, supressEvent){
+  Toolbar.prototype.addSelectorOption = function(value, text){
     if(this.selector){
-      this.selector.setValue(component ? component.getId() : null, supressEvent);
+      this.selector.addOption(value, text);
     }
+    
+    return this;
+  };
+
+  Toolbar.prototype.setSelectorValue = function(value, supressEvent){
+    if(this.selector){
+      this.selector.setValue(value, supressEvent);
+    }
+    
+    return this;
   };
 
   Toolbar.prototype.toggleMenuItem = function(action, state){

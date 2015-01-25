@@ -233,17 +233,30 @@ metaScore.Player = (function () {
     return this.json;
   };
 
-  Player.prototype.getComponents = function(type){
-    var selector = '.metaScore-component';
-
-    if(metaScore.Var.is(type, 'array')){
-      selector += '.'+ type.join(', '+ selector +'.');
+  Player.prototype.getComponent = function(selector){
+    var components;
+    
+    components = this.children('.metaScore-component');
+    
+    if(selector){
+      components = components.filter(selector);
     }
-    else if(type){
-      selector += '.'+ type;
+    
+    if(components.count() > 0){
+      return components.get(0);
+    }
+  };
+
+  Player.prototype.getComponents = function(selector){
+    var components;
+    
+    components = this.children('.metaScore-component');
+    
+    if(selector){
+      components = components.filter(selector);
     }
 
-    return this.children(selector);
+    return components;
   };
 
   Player.prototype.addMedia = function(configs, supressEvent){
