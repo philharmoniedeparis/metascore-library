@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-01-24 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-02-24 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -99,6 +99,7 @@ metaScore.Editor = (function(){
         .addSelectorOption(null, '');
 
     this.panels.page
+      .addListener('componentbeforeset', metaScore.Function.proxy(this.onPageBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onPageSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onPageUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this))
@@ -107,6 +108,7 @@ metaScore.Editor = (function(){
         .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
 
     this.panels.element
+      .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
@@ -141,6 +143,8 @@ metaScore.Editor = (function(){
   };
 
   Editor.prototype.setEditing = function(editing, sticky){
+    var element = this.panels.element.getComponent();
+  
     metaScore.editing = editing !== false;
 
     if(sticky !== false){
@@ -159,8 +163,22 @@ metaScore.Editor = (function(){
     this.toggleClass('editing', metaScore.editing);
 
     if(this.player){
-      this.player.toggleClass('editing', metaScore.editing);
+      this.player.getBody().toggleClass('editing', metaScore.editing);
     }
+    
+    if(metaScore.editing){
+      this.mainmenu.rindexfield.enable();
+      if(element){
+        //element.focus();
+      }
+    }
+    else{
+      this.mainmenu.rindexfield.disable();
+      if(element){
+        //element.blur();
+      }
+    }
+    
   };
 
   Editor.prototype.loadPlayerFromHash = function(){
@@ -240,13 +258,13 @@ metaScore.Editor = (function(){
         }
         break;
       case 90: //z
-        if(evt.ctrlKey){
+        if(evt.ctrlKey){ // Ctrl+z
           this.history.undo();
           evt.preventDefault();
         }
         break;
       case 89: //y
-        if(evt.ctrlKey){
+        if(evt.ctrlKey){ // Ctrl+y
           this.history.redo();
           evt.preventDefault();
         }
@@ -477,11 +495,15 @@ metaScore.Editor = (function(){
     }
   };
 
-  Editor.prototype.onPageSet = function(evt){
+  Editor.prototype.onPageBeforeSet = function(evt){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
 
     this.panels.block.setComponent(block);
+  };
+
+  Editor.prototype.onPageSet = function(evt){
+    var page = evt.detail.component;
 
     this.panels.page.getToolbar().toggleMenuItem('new', true);
 
@@ -605,13 +627,15 @@ metaScore.Editor = (function(){
     }
   };
 
-  Editor.prototype.onElementSet = function(evt){
+  Editor.prototype.onElementBeforeSet = function(evt){
     var element = evt.detail.component,
-      page = element.parents().get(0)._metaScore,
-      block = page.parents().parents().get(0)._metaScore;
+      page = element.parents().get(0)._metaScore;
 
     this.panels.page.setComponent(page);
-    this.panels.block.setComponent(block);
+  };
+
+  Editor.prototype.onElementSet = function(evt){
+    var element = evt.detail.component;
 
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
@@ -765,7 +789,8 @@ metaScore.Editor = (function(){
 
     this.player = player;
 
-    this.player
+    this.player.getBody()
+      .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
@@ -777,6 +802,7 @@ metaScore.Editor = (function(){
     this.setEditing(true);
     this.updateMainmenu();
     this.detailsOverlay.setValues(data);
+    this.mainmenu.rindexfield.setValue(0, true);
 
     window.history.replaceState(null, null, '#guide='+ this.player.getId());
 
@@ -806,20 +832,17 @@ metaScore.Editor = (function(){
 
     component = dom._metaScore;
 
-    if(component instanceof metaScore.player.component.Block){
-      this.panels.block.setComponent(component);
-    }
-    else if(component instanceof metaScore.player.component.Controller){
-      this.panels.block.setComponent(component);
-    }
-    else if(component instanceof metaScore.player.component.Media){
-      this.panels.block.setComponent(component);
+    if(component instanceof metaScore.player.component.Element){
+      this.panels.element.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Page){
+      this.panels.element.unsetComponent();
       this.panels.page.setComponent(component);
     }
-    else if(component instanceof metaScore.player.component.Element){
-      this.panels.element.setComponent(component);
+    else{
+      this.panels.element.unsetComponent();
+      this.panels.page.unsetComponent();
+      this.panels.block.setComponent(component);
     }
     
     evt.stopImmediatePropagation();
@@ -881,6 +904,10 @@ metaScore.Editor = (function(){
     this.mainmenu.toggleButton('revert', hasPlayer);
   };
 
+  Editor.prototype.getPlayer = function(){  
+    return this.player;  
+  };
+
   Editor.prototype.addPlayer = function(id){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
@@ -892,7 +919,6 @@ metaScore.Editor = (function(){
         container: this.workspace,
         url: this.configs.api_url +'guide/'+ id +'.json'
       })
-      .addClass('in-editor')
       .addListener('mediaadd', metaScore.Function.proxy(this.onPlayerMediaAdd, this))
       .addListener('controlleradd', metaScore.Function.proxy(this.onPlayerControllerAdd, this))
       .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
@@ -1414,7 +1440,8 @@ metaScore.namespace('editor').MainMenu = (function(){
       .appendTo(left);
 
     this.rindexfield = new metaScore.editor.field.Number({
-        min: 0
+        min: 0,
+        max: 999
       })
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.r-index', 'Reading index')
@@ -1715,6 +1742,8 @@ metaScore.namespace('editor').Panel = (function(){
 
     if(component !== this.getComponent()){
       this.unsetComponent(true);
+      
+      this.triggerEvent('componentbeforeset', {'component': component}, false);
 
       this.component = component;
 
@@ -2610,10 +2639,10 @@ metaScore.namespace('editor.field').Time = (function () {
       centiseconds_val, seconds_val, minutes_val, hours_val;
 
     if(active){
-      centiseconds_val = parseInt(this.centiseconds.val(), 10);
-      seconds_val = parseInt(this.seconds.val(), 10);
-      minutes_val = parseInt(this.minutes.val(), 10);
-      hours_val = parseInt(this.hours.val(), 10);
+      centiseconds_val = parseInt(this.centiseconds.val(), 10) || 0;
+      seconds_val = parseInt(this.seconds.val(), 10) || 0;
+      minutes_val = parseInt(this.minutes.val(), 10) || 0;
+      hours_val = parseInt(this.hours.val(), 10) || 0;
 
       this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
     }
@@ -2673,10 +2702,10 @@ metaScore.namespace('editor.field').Time = (function () {
         this.value = Math.min(this.value, this.configs.max);
       }
 
-      centiseconds_val = parseInt((this.value / 10) % 100, 10);
-      seconds_val = parseInt((this.value / 1000) % 60, 10);
-      minutes_val = parseInt((this.value / 60000) % 60, 10);
-      hours_val = parseInt((this.value / 3600000), 10);
+      centiseconds_val = parseInt((this.value / 10) % 100, 10) || 0;
+      seconds_val = parseInt((this.value / 1000) % 60, 10) || 0;
+      minutes_val = parseInt((this.value / 60000) % 60, 10) || 0;
+      hours_val = parseInt((this.value / 3600000), 10) || 0;
 
       if(!this.disabled){
         this.hours.attr('disabled', null);
@@ -2975,8 +3004,9 @@ metaScore.namespace('editor.panel').Text = (function () {
     TextPanel.parent.call(this, configs);
 
     // fix event handlers scope
-    this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
+    this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
+    this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
   }
 
   TextPanel.defaults = {
@@ -3136,7 +3166,7 @@ metaScore.namespace('editor.panel').Text = (function () {
 
       this.addClass('has-component');
 
-      component.contents.addListener('dblclick',this.onComponentContentsDblClick);
+      component.contents.addListener('dblclick', this.onComponentContentsDblClick);
     }
 
     if(supressEvent !== true){
@@ -3155,7 +3185,10 @@ metaScore.namespace('editor.panel').Text = (function () {
       component.contents
         .attr('contenteditable', 'null')
         .removeListener('dblclick', this.onComponentContentsDblClick)
-        .removeListener('click', this.onComponentContentsClick);
+        .removeListener('click', this.onComponentContentsClick)
+        .removeListener('keydown', this.onComponentContentsKey)
+        .removeListener('keypress', this.onComponentContentsKey)
+        .removeListener('keyup', this.onComponentContentsKey);
 
       this.component = null;
 
@@ -3177,7 +3210,10 @@ metaScore.namespace('editor.panel').Text = (function () {
     component.contents
       .attr('contenteditable', 'true')
       .removeListener('dblclick', this.onComponentContentsDblClick)
-      .addListener('click', this.onComponentContentsClick);
+      .addListener('click', this.onComponentContentsClick)
+      .addListener('keydown', this.onComponentContentsKey)
+      .addListener('keypress', this.onComponentContentsKey)
+      .addListener('keyup', this.onComponentContentsKey);
 
     this.execCommand("styleWithCSS", true);
 
@@ -3187,6 +3223,10 @@ metaScore.namespace('editor.panel').Text = (function () {
   };
 
   TextPanel.prototype.onComponentContentsClick = function(evt){
+    evt.stopPropagation();
+  };
+
+  TextPanel.prototype.onComponentContentsKey = function(evt){
     evt.stopPropagation();
   };
 
@@ -4367,6 +4407,96 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
   metaScore.editor.Overlay.extend(LoadMask);
 
   return LoadMask;
+
+})();
+/**
+ * NewPage
+ *
+ * @requires ../metaScore.editor.Ovelay.js
+ */
+
+metaScore.namespace('editor.overlay').NewPage = (function () {
+
+  function NewPage(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call parent constructor
+    NewPage.parent.call(this, this.configs);
+
+    this.addClass('new-page');
+
+    this.setupUI();
+  }
+
+  NewPage.defaults = {
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+
+    /**
+    * The overlay's title
+    */
+    title: metaScore.Locale.t('editor.overlay.NewPage.title', 'New Page'),
+    
+    position: 0,
+    
+    pages: []
+  };
+
+  metaScore.editor.Overlay.extend(NewPage);
+
+  NewPage.prototype.setupUI = function(){
+
+    var contents = this.getContents();
+
+    this.fields = {};
+    this.buttons = {};
+
+    this.fields.position = new metaScore.editor.field.Number({
+        label: metaScore.Locale.t('editor.overlay.NewPage.fields.position', 'Position')
+      })
+      .appendTo(contents);
+
+    this.fields.inTime = new metaScore.editor.field.Time({
+        label: metaScore.Locale.t('editor.overlay.NewPage.fields.in-time', 'Start time')
+      })
+      .appendTo(contents);
+
+    this.fields.outTime = new metaScore.editor.field.Time({
+        label: metaScore.Locale.t('editor.overlay.NewPage.fields.out-time', 'End time')
+      })
+      .appendTo(contents);
+
+    // Buttons
+    this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
+      .addClass('apply')
+      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
+      .appendTo(contents);
+
+    this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
+      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
+      .appendTo(contents);
+
+  };
+
+  NewPage.prototype.getValue = function(){
+    return {
+      position: this.fields.position.getValue(),
+      inTime: this.fields.inTime.getValue(),
+      outTime: this.fields.outTime.getValue()
+    };
+  };
+
+  NewPage.prototype.onApplyClick = function(evt){  
+    this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
+    this.hide();
+  };
+
+  NewPage.prototype.onCancelClick = NewPage.prototype.onCloseClick;
+
+  return NewPage;
 
 })();
 /**

@@ -112,10 +112,10 @@ metaScore.namespace('editor.field').Time = (function () {
       centiseconds_val, seconds_val, minutes_val, hours_val;
 
     if(active){
-      centiseconds_val = parseInt(this.centiseconds.val(), 10);
-      seconds_val = parseInt(this.seconds.val(), 10);
-      minutes_val = parseInt(this.minutes.val(), 10);
-      hours_val = parseInt(this.hours.val(), 10);
+      centiseconds_val = parseInt(this.centiseconds.val(), 10) || 0;
+      seconds_val = parseInt(this.seconds.val(), 10) || 0;
+      minutes_val = parseInt(this.minutes.val(), 10) || 0;
+      hours_val = parseInt(this.hours.val(), 10) || 0;
 
       this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
     }
@@ -175,10 +175,10 @@ metaScore.namespace('editor.field').Time = (function () {
         this.value = Math.min(this.value, this.configs.max);
       }
 
-      centiseconds_val = parseInt((this.value / 10) % 100, 10);
-      seconds_val = parseInt((this.value / 1000) % 60, 10);
-      minutes_val = parseInt((this.value / 60000) % 60, 10);
-      hours_val = parseInt((this.value / 3600000), 10);
+      centiseconds_val = parseInt((this.value / 10) % 100, 10) || 0;
+      seconds_val = parseInt((this.value / 1000) % 60, 10) || 0;
+      minutes_val = parseInt((this.value / 60000) % 60, 10) || 0;
+      hours_val = parseInt((this.value / 3600000), 10) || 0;
 
       if(!this.disabled){
         this.hours.attr('disabled', null);

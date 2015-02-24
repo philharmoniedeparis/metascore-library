@@ -162,6 +162,8 @@ metaScore.namespace('player.component').Media = (function () {
     if(supressEvent !== true){
       this.triggerEvent('reset');
     }
+    
+    return this;
   };
 
   Media.prototype.play = function(supressEvent) {
@@ -170,6 +172,8 @@ metaScore.namespace('player.component').Media = (function () {
     if(supressEvent !== true){
       this.triggerEvent('play');
     }
+    
+    return this;
   };
 
   Media.prototype.pause = function(supressEvent) {
@@ -178,6 +182,8 @@ metaScore.namespace('player.component').Media = (function () {
     if(supressEvent !== true){
       this.triggerEvent('pause');
     }
+    
+    return this;
   };
 
   Media.prototype.stop = function(supressEvent) {
@@ -189,6 +195,8 @@ metaScore.namespace('player.component').Media = (function () {
     if(supressEvent !== true){
       this.triggerEvent('stop');
     }
+    
+    return this;
   };
 
   Media.prototype.triggerTimeUpdate = function(loop) {

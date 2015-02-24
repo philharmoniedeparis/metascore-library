@@ -62,6 +62,7 @@ metaScore.Editor = (function(){
         .addSelectorOption(null, '');
 
     this.panels.page
+      .addListener('componentbeforeset', metaScore.Function.proxy(this.onPageBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onPageSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onPageUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this))
@@ -70,6 +71,7 @@ metaScore.Editor = (function(){
         .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
 
     this.panels.element
+      .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
@@ -104,6 +106,8 @@ metaScore.Editor = (function(){
   };
 
   Editor.prototype.setEditing = function(editing, sticky){
+    var element = this.panels.element.getComponent();
+  
     metaScore.editing = editing !== false;
 
     if(sticky !== false){
@@ -122,8 +126,22 @@ metaScore.Editor = (function(){
     this.toggleClass('editing', metaScore.editing);
 
     if(this.player){
-      this.player.toggleClass('editing', metaScore.editing);
+      this.player.getBody().toggleClass('editing', metaScore.editing);
     }
+    
+    if(metaScore.editing){
+      this.mainmenu.rindexfield.enable();
+      if(element){
+        //element.focus();
+      }
+    }
+    else{
+      this.mainmenu.rindexfield.disable();
+      if(element){
+        //element.blur();
+      }
+    }
+    
   };
 
   Editor.prototype.loadPlayerFromHash = function(){
@@ -203,13 +221,13 @@ metaScore.Editor = (function(){
         }
         break;
       case 90: //z
-        if(evt.ctrlKey){
+        if(evt.ctrlKey){ // Ctrl+z
           this.history.undo();
           evt.preventDefault();
         }
         break;
       case 89: //y
-        if(evt.ctrlKey){
+        if(evt.ctrlKey){ // Ctrl+y
           this.history.redo();
           evt.preventDefault();
         }
@@ -440,11 +458,15 @@ metaScore.Editor = (function(){
     }
   };
 
-  Editor.prototype.onPageSet = function(evt){
+  Editor.prototype.onPageBeforeSet = function(evt){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
 
     this.panels.block.setComponent(block);
+  };
+
+  Editor.prototype.onPageSet = function(evt){
+    var page = evt.detail.component;
 
     this.panels.page.getToolbar().toggleMenuItem('new', true);
 
@@ -568,13 +590,15 @@ metaScore.Editor = (function(){
     }
   };
 
-  Editor.prototype.onElementSet = function(evt){
+  Editor.prototype.onElementBeforeSet = function(evt){
     var element = evt.detail.component,
-      page = element.parents().get(0)._metaScore,
-      block = page.parents().parents().get(0)._metaScore;
+      page = element.parents().get(0)._metaScore;
 
     this.panels.page.setComponent(page);
-    this.panels.block.setComponent(block);
+  };
+
+  Editor.prototype.onElementSet = function(evt){
+    var element = evt.detail.component;
 
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
@@ -728,7 +752,8 @@ metaScore.Editor = (function(){
 
     this.player = player;
 
-    this.player
+    this.player.getBody()
+      .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
@@ -740,6 +765,7 @@ metaScore.Editor = (function(){
     this.setEditing(true);
     this.updateMainmenu();
     this.detailsOverlay.setValues(data);
+    this.mainmenu.rindexfield.setValue(0, true);
 
     window.history.replaceState(null, null, '#guide='+ this.player.getId());
 
@@ -769,20 +795,17 @@ metaScore.Editor = (function(){
 
     component = dom._metaScore;
 
-    if(component instanceof metaScore.player.component.Block){
-      this.panels.block.setComponent(component);
-    }
-    else if(component instanceof metaScore.player.component.Controller){
-      this.panels.block.setComponent(component);
-    }
-    else if(component instanceof metaScore.player.component.Media){
-      this.panels.block.setComponent(component);
+    if(component instanceof metaScore.player.component.Element){
+      this.panels.element.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Page){
+      this.panels.element.unsetComponent();
       this.panels.page.setComponent(component);
     }
-    else if(component instanceof metaScore.player.component.Element){
-      this.panels.element.setComponent(component);
+    else{
+      this.panels.element.unsetComponent();
+      this.panels.page.unsetComponent();
+      this.panels.block.setComponent(component);
     }
     
     evt.stopImmediatePropagation();
@@ -844,6 +867,10 @@ metaScore.Editor = (function(){
     this.mainmenu.toggleButton('revert', hasPlayer);
   };
 
+  Editor.prototype.getPlayer = function(){  
+    return this.player;  
+  };
+
   Editor.prototype.addPlayer = function(id){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
@@ -855,7 +882,6 @@ metaScore.Editor = (function(){
         container: this.workspace,
         url: this.configs.api_url +'guide/'+ id +'.json'
       })
-      .addClass('in-editor')
       .addListener('mediaadd', metaScore.Function.proxy(this.onPlayerMediaAdd, this))
       .addListener('controlleradd', metaScore.Function.proxy(this.onPlayerControllerAdd, this))
       .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))

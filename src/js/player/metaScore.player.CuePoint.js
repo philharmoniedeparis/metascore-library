@@ -33,23 +33,24 @@ metaScore.namespace('player').CuePoint = (function () {
     'outTime': null,
     'onStart': null,
     'onUpdate': null,
-    'onEnd': null
+    'onEnd': null,
+    'errorMargin': 10 // the number of milliseconds estimated as the error margin for time update events
   };
 
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
     var curTime = this.configs.media.getTime();
 
     if(!this.running){
-      if((!this.inTimer) && (curTime >= this.configs.inTime - 0.5) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
+      if((!this.inTimer) && (curTime >= this.configs.inTime - this.configs.errorMargin) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
         this.inTimer = setTimeout(this.launch, Math.max(0, this.configs.inTime - curTime));
       }
     }
     else{
-      if((!this.outTimer) && (this.configs.outTime !== null) && (curTime >= this.configs.outTime - 0.5)){
+      if((!this.outTimer) && (this.configs.outTime !== null) && (curTime >= this.configs.outTime - this.configs.errorMargin)){
         this.outTimer = setTimeout(this.stop, Math.max(0, this.configs.outTime - curTime));
       }
 
-      if(metaScore.Var.is(this.configs.onUpdate, 'function')){
+      if(this.configs.onUpdate){
         this.configs.onUpdate(this, curTime);
       }
     }
@@ -65,12 +66,12 @@ metaScore.namespace('player').CuePoint = (function () {
       this.inTimer = null;
     }
 
-    if(metaScore.Var.is(this.configs.onStart, 'function')){
+    if(this.configs.onStart){
       this.configs.onStart(this);
     }
 
     // stop the cuepoint if it doesn't have an outTime or doesn't have onUpdate and onEnd callbacks
-    if((this.configs.outTime === null) || (!(this.configs.onUpdate) && !(this.configs.onEnd))){
+    if((this.configs.outTime === null) || (!this.configs.onUpdate && !this.configs.onEnd)){
       this.stop();
     }
     else{
@@ -89,11 +90,15 @@ metaScore.namespace('player').CuePoint = (function () {
       this.outTimer = null;
     }
 
-    if(launchCallback !== false && metaScore.Var.is(this.configs.onEnd, 'function')){
+    if(launchCallback !== false && this.configs.onEnd){
       this.configs.onEnd(this);
     }
 
     this.running = false;
+  };
+
+  CuePoint.prototype.outside = function(time){
+    return (time < this.configs.inTime - this.configs.errorMargin) || ((this.configs.outTime !== null) && (time > this.configs.outTime + this.configs.errorMargin));
   };
 
   CuePoint.prototype.destroy = function(){

@@ -77,7 +77,8 @@ metaScore.namespace('editor').MainMenu = (function(){
       .appendTo(left);
 
     this.rindexfield = new metaScore.editor.field.Number({
-        min: 0
+        min: 0,
+        max: 999
       })
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.r-index', 'Reading index')

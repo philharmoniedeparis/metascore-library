@@ -172,6 +172,11 @@
         }
       }
     }
+    
+    &.disabled{
+      .opacity(0.25);
+      cursor: default;
+    }
   }
 
   .ruler{
@@ -320,8 +325,10 @@
       padding-left: 18px;
       background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
 
-      input{
+      input,
+      .separator{
         color: #505050;
+        vertical-align: top;
       }
     }
 
@@ -335,12 +342,13 @@
       background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
 
       input{
-        width: 2em;
+        width: 3em;
         height: 100%;
         color: #505050;
         border: none;
         background: none;
         text-align: right;
+        vertical-align: top;
         font-family: Tahoma, Geneva, sans-serif;
       }
     }

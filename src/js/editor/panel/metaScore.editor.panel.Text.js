@@ -17,8 +17,9 @@ metaScore.namespace('editor.panel').Text = (function () {
     TextPanel.parent.call(this, configs);
 
     // fix event handlers scope
-    this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
+    this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
+    this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
   }
 
   TextPanel.defaults = {
@@ -178,7 +179,7 @@ metaScore.namespace('editor.panel').Text = (function () {
 
       this.addClass('has-component');
 
-      component.contents.addListener('dblclick',this.onComponentContentsDblClick);
+      component.contents.addListener('dblclick', this.onComponentContentsDblClick);
     }
 
     if(supressEvent !== true){
@@ -197,7 +198,10 @@ metaScore.namespace('editor.panel').Text = (function () {
       component.contents
         .attr('contenteditable', 'null')
         .removeListener('dblclick', this.onComponentContentsDblClick)
-        .removeListener('click', this.onComponentContentsClick);
+        .removeListener('click', this.onComponentContentsClick)
+        .removeListener('keydown', this.onComponentContentsKey)
+        .removeListener('keypress', this.onComponentContentsKey)
+        .removeListener('keyup', this.onComponentContentsKey);
 
       this.component = null;
 
@@ -219,7 +223,10 @@ metaScore.namespace('editor.panel').Text = (function () {
     component.contents
       .attr('contenteditable', 'true')
       .removeListener('dblclick', this.onComponentContentsDblClick)
-      .addListener('click', this.onComponentContentsClick);
+      .addListener('click', this.onComponentContentsClick)
+      .addListener('keydown', this.onComponentContentsKey)
+      .addListener('keypress', this.onComponentContentsKey)
+      .addListener('keyup', this.onComponentContentsKey);
 
     this.execCommand("styleWithCSS", true);
 
@@ -229,6 +236,10 @@ metaScore.namespace('editor.panel').Text = (function () {
   };
 
   TextPanel.prototype.onComponentContentsClick = function(evt){
+    evt.stopPropagation();
+  };
+
+  TextPanel.prototype.onComponentContentsKey = function(evt){
     evt.stopPropagation();
   };
 

@@ -45,8 +45,7 @@ metaScore.namespace('player.component.element').Text = (function () {
       evt.preventDefault();
     }
     else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'value': parseFloat(matches[1]), 'stop': parseFloat(matches[2]), 'forcePlay': true});
-      this.triggerEvent('rindex', {'element': this, 'value': parseInt(matches[3])});
+      this.triggerEvent('time', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]), 'rIndex': parseInt(matches[3])});
     }
     else{
       window.open(link.href,'_blank');

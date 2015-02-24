@@ -124,6 +124,8 @@ metaScore.namespace('editor').Panel = (function(){
 
     if(component !== this.getComponent()){
       this.unsetComponent(true);
+      
+      this.triggerEvent('componentbeforeset', {'component': component}, false);
 
       this.component = component;
 

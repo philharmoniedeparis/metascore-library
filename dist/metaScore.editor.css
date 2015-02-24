@@ -222,6 +222,11 @@
   overflow: hidden;
   text-indent: 999px;
 }
+.metaScore-editor .field.disabled {
+  opacity: 0.25;
+  filter: alpha(opacity=(25));
+  cursor: default;
+}
 .metaScore-editor .ruler {
   position: absolute;
 }
@@ -364,8 +369,10 @@
   padding-left: 18px;
   background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
 }
-.metaScore-editor .main-menu .time input {
+.metaScore-editor .main-menu .time input,
+.metaScore-editor .main-menu .time .separator {
   color: #505050;
+  vertical-align: top;
 }
 .metaScore-editor .main-menu .r-index {
   display: inline-block;
@@ -377,12 +384,13 @@
   background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
 }
 .metaScore-editor .main-menu .r-index input {
-  width: 2em;
+  width: 3em;
   height: 100%;
   color: #505050;
   border: none;
   background: none;
   text-align: right;
+  vertical-align: top;
   font-family: Tahoma, Geneva, sans-serif;
 }
 .metaScore-editor .sidebar {

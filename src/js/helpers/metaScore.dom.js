@@ -442,8 +442,8 @@ metaScore.Dom = (function () {
   * @param {string} the selector
   * @returns {boolean} true if the element matches the selector, false otherwise
   */
-  Dom.is = function(element, selector){
-    return element.matches && element.matches(selector);
+  Dom.is = function(el, selector){
+    return (el instanceof Element) && Element.prototype.matches.call(el, selector);
   };
 
   Dom.prototype.add = function(elements){
@@ -711,17 +711,13 @@ metaScore.Dom = (function () {
   };
 
   Dom.prototype.show = function(){
-    this.each(function(index, element) {
-      this.css('display', '');
-    }, this);
+    this.css('display', '');
 
     return this;
   };
 
   Dom.prototype.hide = function(){
-    this.each(function(index, element) {
-      this.css('display', 'none');
-    }, this);
+    this.css('display', 'none');
 
     return this;
   };

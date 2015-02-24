@@ -1,22 +1,24 @@
 /**
  * Polyfills
  */
-if(Element){
-  (function(ElementPrototype) {
-    ElementPrototype.matches = ElementPrototype.matchesSelector =
-    ElementPrototype.matchesSelector ||
-    ElementPrototype.webkitMatchesSelector ||
-    ElementPrototype.mozMatchesSelector ||
-    ElementPrototype.msMatchesSelector ||
-    ElementPrototype.oMatchesSelector ||
+if(Element && !Element.prototype.matches){
+  Element.prototype.matches = Element.prototype.matchesSelector =
+    Element.prototype.matchesSelector ||
+    Element.prototype.webkitMatchesSelector ||
+    Element.prototype.mozMatchesSelector ||
+    Element.prototype.msMatchesSelector ||
+    Element.prototype.oMatchesSelector ||
     function (selector) {
-      var nodes = (this.parentNode || this.document).querySelectorAll(selector), i = -1;
+      var element = this,
+        matches = (element.document || element.ownerDocument).querySelectorAll(selector),
+        i = 0;
 
-      while (nodes[++i] && nodes[i] !== this){}
+      while (matches[i] && matches[i] !== element) {
+        i++;
+      }
 
-      return !!nodes[i];
+      return matches[i] ? true : false;
     };
-  })(Element.prototype);
 }
 
 
@@ -25,8 +27,8 @@ if(Element){
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
 (function() {
-  var lastTime = 0;
-  var vendors = ['ms', 'moz', 'webkit', 'o'];
+  var lastTime = 0,
+    vendors = ['ms', 'moz', 'webkit', 'o'];
   for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
     window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
     window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
