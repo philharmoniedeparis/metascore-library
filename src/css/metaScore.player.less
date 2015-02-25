@@ -203,8 +203,8 @@ body{
   &.element{
     width: 50px;
     height: 50px;
-    min-width: 5px;
-    min-width: 5px;
+    min-width: 10px;
+    min-height: 10px;
 
     .contents{
       display: none;
@@ -436,6 +436,14 @@ body.in-editor{
 
           &[data-type="Text"]{
             .box-shadow(@text-outline 0px 0px 4px 1px);
+            
+            .contents{
+              &[contenteditable]{
+                outline-color: @text-outline;
+                outline-width: 2px;
+                outline-style: solid;
+              }
+            }
           }
         }
       }

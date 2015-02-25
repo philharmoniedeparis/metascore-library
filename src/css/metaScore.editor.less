@@ -506,6 +506,7 @@
             display: table-cell;
             margin: 0;
             padding: 0;
+            vertical-align: middle;
             
             input{
               width: 100%;
@@ -535,9 +536,13 @@
               width: 23px;
               height: 23px;
               margin-right: 2px;
-              .gradient(#EAEAEA, #FFFFFF, #EAEAEA);
+              background-color: #EAEAEA;
               background-repeat: no-repeat;
               background-position: center center;
+              
+              &.pressed{
+                background-color: darken(#EAEAEA, 25%);
+              }
 
               &[data-action="bold"]{
                 background-image: url('img/editor/wysiwyg/bold.png');
@@ -545,8 +550,8 @@
               &[data-action="italic"]{
                 background-image: url('img/editor/wysiwyg/italic.png');
               }
-              &[data-action="strikethrough"]{
-                background-image: url('img/editor/wysiwyg/strikethrough.png');
+              &[data-action="strikeThrough"]{
+                background-image: url('img/editor/wysiwyg/strikeThrough.png');
               }
               &[data-action="underline"]{
                 background-image: url('img/editor/wysiwyg/underline.png');
@@ -566,91 +571,7 @@
             }
           }
 
-          &.font-style{
-            border-bottom: none;
-          }
-        }
-
-        .field-wrapper{
-          border-bottom: 1px solid #b2b2b2;
-
-          td{
-            width: 50%;
-            height: 1px;
-            white-space: nowrap;
-
-            label{
-              display: block;
-              padding: 5px;
-              color: #7b7b7b;
-              border-right: 1px solid #d7d7d7;
-            }
-
-            .field{
-              height: 100%;
-              width: 100%;
-
-              input{
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                border: none;
-
-                &[type="checkbox"]{
-                  width: auto;
-                }
-              }
-
-              &.selectfield{
-                select{
-                  display: block;
-                  width: 100%;
-                  height: 100%;
-                  margin: 0;
-                  border: none;
-                }
-              }
-
-              &.buttonsfield{
-                button{
-                  width: 23px;
-                  height: 23px;
-                  margin-right: 2px;
-                  .gradient(#EAEAEA, #FFFFFF, #EAEAEA);
-                  background-repeat: no-repeat;
-                  background-position: center center;
-
-                  &[data-action="bold"]{
-                    background-image: url('img/editor/wysiwyg/bold.png');
-                  }
-                  &[data-action="italic"]{
-                    background-image: url('img/editor/wysiwyg/italic.png');
-                  }
-                  &[data-action="strikethrough"]{
-                    background-image: url('img/editor/wysiwyg/strikethrough.png');
-                  }
-                  &[data-action="underline"]{
-                    background-image: url('img/editor/wysiwyg/underline.png');
-                  }
-                  &[data-action="subscript"]{
-                    background-image: url('img/editor/wysiwyg/subscript.png');
-                  }
-                  &[data-action="superscript"]{
-                    background-image: url('img/editor/wysiwyg/superscript.png');
-                  }
-                  &[data-action="link"]{
-                    background-image: url('img/editor/wysiwyg/link.png');
-                  }
-                  &[data-action="unlink"]{
-                    background-image: url('img/editor/wysiwyg/unlink.png');
-                  }
-                }
-              }
-            }
-          }
-
-          &.font-style{
+          &.fontStyle{
             border-bottom: none;
           }
         }

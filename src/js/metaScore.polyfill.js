@@ -21,6 +21,23 @@ if(Element && !Element.prototype.matches){
     };
 }
 
+if(Element && !Element.prototype.closest){
+  Element.prototype.closest = function closest(selector) {
+    var node = this;
+
+    while(node){
+      if(node.matches(selector)){
+        return node;
+      }
+      else{
+        node = node.parentElement;
+      }
+    }
+
+    return null;
+  };
+}
+
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating

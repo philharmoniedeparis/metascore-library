@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-02-24 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-02-25 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -142,9 +142,7 @@ metaScore.Editor = (function(){
     'ajax': {}
   };
 
-  Editor.prototype.setEditing = function(editing, sticky){
-    var element = this.panels.element.getComponent();
-  
+  Editor.prototype.setEditing = function(editing, sticky){  
     metaScore.editing = editing !== false;
 
     if(sticky !== false){
@@ -164,19 +162,6 @@ metaScore.Editor = (function(){
 
     if(this.player){
       this.player.getBody().toggleClass('editing', metaScore.editing);
-    }
-    
-    if(metaScore.editing){
-      this.mainmenu.rindexfield.enable();
-      if(element){
-        //element.focus();
-      }
-    }
-    else{
-      this.mainmenu.rindexfield.disable();
-      if(element){
-        //element.blur();
-      }
     }
     
   };
@@ -1707,22 +1692,32 @@ metaScore.namespace('editor').Panel = (function(){
 
   Panel.prototype.showField = function(name){
     this.getField(name).show();
+    
+    return this;
   };
 
   Panel.prototype.hideField = function(name){
     this.getField(name).hide();
+    
+    return this;
   };
 
   Panel.prototype.toggleState = function(){
     this.toggleClass('collapsed');
+    
+    return this;
   };
 
   Panel.prototype.disable = function(){
     this.addClass('disabled');
+    
+    return this;
   };
 
   Panel.prototype.enable = function(){
     this.removeClass('disabled');
+    
+    return this;
   };
 
   Panel.prototype.getComponent = function(){
@@ -1921,6 +1916,8 @@ metaScore.namespace('editor').Panel = (function(){
 
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
     this.getField(name).setValue(value, supressEvent);
+    
+    return this;
   };
 
   Panel.prototype.updateFieldValues = function(values, supressEvent){
@@ -2004,16 +2001,15 @@ metaScore.namespace('editor.field').Boolean = (function () {
 
     this.addClass('booleanfield');
 
-    if(this.configs.checked){
-      this.input.attr('checked', 'checked');
-    }
+    this.input.get(0).checked = this.configs.checked;
   }
 
   BooleanField.defaults = {
+
     /**
-    * Defines the default value
+    * Defines whether the field is checked by default
     */
-    value: false,
+    checked: false,
 
     /**
     * Defines the value when checked
@@ -2023,12 +2019,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
     /**
     * Defines the value when unchecked
     */
-    unchecked_value: false,
-
-    /**
-    * Defines whether the field is checked by default
-    */
-    checked: false
+    unchecked_value: false
   };
 
   metaScore.editor.Field.extend(BooleanField);
@@ -2051,12 +2042,12 @@ metaScore.namespace('editor.field').Boolean = (function () {
 
   BooleanField.prototype.onChange = function(evt){
     this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
-
+    
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
   BooleanField.prototype.setValue = function(value, supressEvent){
-    this.input.attr('checked', value === this.configs.checked_value ? 'checked' : null);
+    this.input.get(0).checked = value === this.configs.checked_value;
 
     if(supressEvent !== true){
       this.input.triggerEvent('change');
@@ -2140,6 +2131,8 @@ metaScore.namespace('editor.field').Buttons = (function () {
 
   function ButtonsField(configs) {
     this.configs = this.getConfigs(configs);
+    
+    this.buttons = {};
 
     // fix event handlers scope
     this.onClick = metaScore.Function.proxy(this.onClick, this);
@@ -2171,12 +2164,36 @@ metaScore.namespace('editor.field').Buttons = (function () {
       .appendTo(this);
 
     metaScore.Object.each(this.configs.buttons, function(key, attr){
-      new metaScore.Dom('<button/>', attr)
+      this.buttons[key] = new metaScore.Dom('<button/>', attr)
         .addListener('click', function(){
           field.triggerEvent('valuechange', {'field': field, 'value': key}, true, false);
         })
         .appendTo(this.input_wrapper);
     }, this);
+  };
+  
+  ButtonsField.prototype.getButtons = function(){
+    return this.buttons;
+  };
+  
+  ButtonsField.prototype.getButton = function(key){
+    return this.buttons[key];
+  };
+  
+  ButtonsField.prototype.enable = function(){
+    this.disabled = false;
+
+    this.removeClass('disabled');
+
+    return this;
+  };
+  
+  ButtonsField.prototype.disable = function(){
+    this.disabled = true;
+
+    this.addClass('disabled');
+
+    return this;
   };
 
   return ButtonsField;
@@ -2232,9 +2249,9 @@ metaScore.namespace('editor.field').Color = (function () {
   ColorField.prototype.setValue = function(value, supressEvent){
     var rgba;
   
-    this.value = metaScore.Color.parse(value);
+    this.value = value ? metaScore.Color.parse(value) : null;
     
-    rgba = 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')';
+    rgba = this.value ? 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')' : null;
 
     this.input
       .attr('title', rgba)
@@ -3007,6 +3024,7 @@ metaScore.namespace('editor.panel').Text = (function () {
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
+    this.onComponentContentsMouseup = metaScore.Function.proxy(this.onComponentContentsMouseup, this);
   }
 
   TextPanel.defaults = {
@@ -3017,48 +3035,61 @@ metaScore.namespace('editor.panel').Text = (function () {
     }),
 
     properties: {
-      'fore-color': {
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
+        },
+        'setter': function(value){
+          if(value){
+            this.lock();
+          }
+          else{
+            this.unlock();
+          }
+        }
+      },
+      'foreColor': {
         'type': 'Color',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color')
         },
         'setter': function(value){
-          var color = metaScore.Color.parse(value);
-          this.execCommand('foreColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+          this.execCommand('foreColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
       },
-      'back-color': {
+      'backColor': {
         'type': 'Color',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color')
         },
         'setter': function(value){
-          var color = metaScore.Color.parse(value);
-          this.execCommand('backColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+          this.execCommand('backColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
       },
-      'font': {
+      'fontName': {
         'type': 'Select',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
           'options': {
-            'Georgia, serif': 'Georgia',
-            '"Times New Roman", Times, serif': 'Times New Roman',
-            'Arial, Helvetica, sans-serif': 'Arial',
-            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
-            'Impact, Charcoal, sans-serif': 'Impact',
-            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
-            'Tahoma, Geneva, sans-serif': 'Tahoma',
-            'Verdana, Geneva, sans-serif': 'Verdana',
-            '"Courier New", Courier, monospace': 'Courier New',
-            '"Lucida Console", Monaco, monospace': 'Lucida Console'
+            "inherit": '',
+            "Georgia, serif": 'Georgia',
+            "'Times New Roman', Times, serif": 'Times New Roman',
+            "Arial, Helvetica, sans-serif": 'Arial',
+            "'Comic Sans MS', cursive, sans-serif": 'Comic Sans MS',
+            "Impact, Charcoal, sans-serif": 'Impact',
+            "'Lucida Sans Unicode', 'Lucida Grande', sans-serif": 'Lucida Sans Unicode',
+            "Tahoma, Geneva, sans-serif": 'Tahoma',
+            "Verdana, Geneva, sans-serif": 'Verdana',
+            "'Courier New', Courier, monospace": 'Courier New',
+            "'Lucida Console', Monaco, monospace": 'Lucida Console'
           }
         },
         'setter': function(value){
           this.execCommand('fontName', value);
         }
       },
-      'font-style': {
+      'fontStyle': {
         'type': 'Buttons',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
@@ -3077,13 +3108,13 @@ metaScore.namespace('editor.panel').Text = (function () {
           this.execCommand(value);
         }
       },
-      'font-style2': {
+      'fontStyle2': {
         'type': 'Buttons',
         'configs': {
           'label': '&nbsp;',
           'buttons': {
             'strikeThrough': {
-              'data-action': 'strikethrough',
+              'data-action': 'strikeThrough',
               'title': metaScore.Locale.t('editor.panel.Text.font-style.strikeThrough', 'Strikethrough')
             },
             'underline': {
@@ -3121,10 +3152,10 @@ metaScore.namespace('editor.panel').Text = (function () {
         },
         'setter': function(value){
           if(value === 'link'){
-            var link = this.getSelectedElement();
+            var link = metaScore.Dom.closest(this.getSelectedElement(), 'a');
 
             new metaScore.editor.overlay.LinkEditor({
-                link: link && metaScore.Dom.is(link, 'a') ? link : null,
+                link: link,
                 autoShow: true
               })
               .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
@@ -3141,7 +3172,7 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
-      name, value, old_values;
+      name, value;
 
     if(!component){
       return;
@@ -3149,13 +3180,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
     name = evt.detail.field.data('name');
     value = evt.detail.value;
-    old_values = this.getValues([name]);
 
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
     }
-
-    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
 
   TextPanel.prototype.setComponent = function(component, supressEvent){
@@ -3164,9 +3192,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
       this.component = component;
 
-      this.addClass('has-component');
-
-      component.contents.addListener('dblclick', this.onComponentContentsDblClick);
+      this
+        .setupFields(this.configs.properties)
+        .updateFieldValue('locked', true)
+        .addClass('has-component');
     }
 
     if(supressEvent !== true){
@@ -3178,18 +3207,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
+    
+    this.lock().removeClass('has-component');
 
-    this.removeClass('has-component');
-
-    if(component){
-      component.contents
-        .attr('contenteditable', 'null')
-        .removeListener('dblclick', this.onComponentContentsDblClick)
-        .removeListener('click', this.onComponentContentsClick)
-        .removeListener('keydown', this.onComponentContentsKey)
-        .removeListener('keypress', this.onComponentContentsKey)
-        .removeListener('keyup', this.onComponentContentsKey);
-
+    if(component){        
       this.component = null;
 
       if(supressEvent !== true){
@@ -3200,26 +3221,68 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
-  TextPanel.prototype.onComponentContentsDblClick = function(evt){
+  TextPanel.prototype.lock = function(){
     var component = this.getComponent();
-
-    if(component._draggable){
-      component._draggable.disable();
+    
+    if(component){      
+      component.contents
+        .attr('contenteditable', null)
+        .addListener('dblclick', this.onComponentContentsDblClick)
+        .removeListener('click', this.onComponentContentsClick)
+        .removeListener('keydown', this.onComponentContentsKey)
+        .removeListener('keypress', this.onComponentContentsKey)
+        .removeListener('keyup', this.onComponentContentsKey);
+        
+      this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
+        
+      if(component._draggable){
+        component._draggable.enable();
+      }
+      if(component._resizable){
+        component._resizable.enable();
+      }
     }
+    
+    return this;
+  };
 
-    component.contents
-      .attr('contenteditable', 'true')
-      .removeListener('dblclick', this.onComponentContentsDblClick)
-      .addListener('click', this.onComponentContentsClick)
-      .addListener('keydown', this.onComponentContentsKey)
-      .addListener('keypress', this.onComponentContentsKey)
-      .addListener('keyup', this.onComponentContentsKey);
+  TextPanel.prototype.unlock = function(){
+    var component = this.getComponent();
+    
+    if(component){
+      if(component._draggable){
+        component._draggable.disable();
+      }
+      if(component._resizable){
+        component._resizable.disable();
+      }
+      
+      component.contents
+        .attr('contenteditable', 'true')
+        .removeListener('dblclick', this.onComponentContentsDblClick)
+        .addListener('click', this.onComponentContentsClick)
+        .addListener('keydown', this.onComponentContentsKey)
+        .addListener('keypress', this.onComponentContentsKey)
+        .addListener('keyup', this.onComponentContentsKey)
+        .addListener('mouseup', this.onComponentContentsMouseup)
+        .focus();
 
-    this.execCommand("styleWithCSS", true);
+      this
+        .toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true)
+        .execCommand("styleWithCSS", true);
+    }
+    
+    return this;
+  };
 
-    this.setupFields(this.configs.properties);
-    this.enable();
-    this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
+  TextPanel.prototype.disable = function(){    
+    this.lock();
+    
+    return TextPanel.parent.prototype.disable.call(this);
+  };
+
+  TextPanel.prototype.onComponentContentsDblClick = function(evt){
+    this.updateFieldValue('locked', false);
   };
 
   TextPanel.prototype.onComponentContentsClick = function(evt){
@@ -3227,7 +3290,44 @@ metaScore.namespace('editor.panel').Text = (function () {
   };
 
   TextPanel.prototype.onComponentContentsKey = function(evt){
+    if(evt.type === 'keyup'){
+      this.updateButtons();
+    }
+    
     evt.stopPropagation();
+  };
+
+  TextPanel.prototype.onComponentContentsMouseup = function(evt){
+    this.updateButtons();
+  };
+
+  TextPanel.prototype.updateButtons = function(evt){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      field;
+      
+    metaScore.Object.each(this.getField('fontStyle').getButtons(), function(key, button){
+      button.toggleClass('pressed', document.queryCommandState(key));
+    });
+    
+    metaScore.Object.each(this.getField('fontStyle2').getButtons(), function(key, button){
+      button.toggleClass('pressed', document.queryCommandState(key));
+    });
+    
+    this.getField('foreColor').setValue(document.queryCommandValue('foreColor'), true);
+    this.getField('backColor').setValue(document.queryCommandValue('backColor'), true);
+    this.getField('fontName').setValue(document.queryCommandValue('fontName'), true);
+    
+    if(metaScore.Dom.closest(this.getSelectedElement(), 'a')){
+      field = this.getField('link');
+      field.getButton('link').addClass('pressed');
+      field.getButton('unlink').removeClass('disabled');
+    }
+    else{
+      field = this.getField('link');
+      field.getButton('link').removeClass('pressed');
+      field.getButton('unlink').addClass('disabled');
+    }
   };
 
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){
@@ -3238,9 +3338,8 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
-      contents =  component.contents.get(0),
-      document = contents.ownerDocument,
-      selection , element;
+      document =  component.contents.get(0).ownerDocument,
+      selection, element;
 
     if(document.selection){
       selection = document.selection;
@@ -3263,7 +3362,9 @@ metaScore.namespace('editor.panel').Text = (function () {
 
     contents.focus();
 
-    return document.execCommand(command, false, value);
+    document.execCommand(command, false, value);
+    
+    this.updateButtons();
   };
 
   return TextPanel;

@@ -259,7 +259,8 @@ body {
 .metaScore-component.element {
   width: 50px;
   height: 50px;
-  min-width: 5px;
+  min-width: 10px;
+  min-height: 10px;
 }
 .metaScore-component.element .contents {
   display: none;
@@ -447,4 +448,9 @@ body.in-editor.editing .metaScore-component.element.selected[data-type="Text"] {
   -webkit-box-shadow: #00c176 0px 0px 4px 1px;
   -moz-box-shadow: #00c176 0px 0px 4px 1px;
   box-shadow: #00c176 0px 0px 4px 1px;
+}
+body.in-editor.editing .metaScore-component.element.selected[data-type="Text"] .contents[contenteditable] {
+  outline-color: #00c176;
+  outline-width: 2px;
+  outline-style: solid;
 }

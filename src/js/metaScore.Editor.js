@@ -105,9 +105,7 @@ metaScore.Editor = (function(){
     'ajax': {}
   };
 
-  Editor.prototype.setEditing = function(editing, sticky){
-    var element = this.panels.element.getComponent();
-  
+  Editor.prototype.setEditing = function(editing, sticky){  
     metaScore.editing = editing !== false;
 
     if(sticky !== false){
@@ -127,19 +125,6 @@ metaScore.Editor = (function(){
 
     if(this.player){
       this.player.getBody().toggleClass('editing', metaScore.editing);
-    }
-    
-    if(metaScore.editing){
-      this.mainmenu.rindexfield.enable();
-      if(element){
-        //element.focus();
-      }
-    }
-    else{
-      this.mainmenu.rindexfield.disable();
-      if(element){
-        //element.blur();
-      }
     }
     
   };

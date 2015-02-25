@@ -14,16 +14,15 @@ metaScore.namespace('editor.field').Boolean = (function () {
 
     this.addClass('booleanfield');
 
-    if(this.configs.checked){
-      this.input.attr('checked', 'checked');
-    }
+    this.input.get(0).checked = this.configs.checked;
   }
 
   BooleanField.defaults = {
+
     /**
-    * Defines the default value
+    * Defines whether the field is checked by default
     */
-    value: false,
+    checked: false,
 
     /**
     * Defines the value when checked
@@ -33,12 +32,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
     /**
     * Defines the value when unchecked
     */
-    unchecked_value: false,
-
-    /**
-    * Defines whether the field is checked by default
-    */
-    checked: false
+    unchecked_value: false
   };
 
   metaScore.editor.Field.extend(BooleanField);
@@ -61,12 +55,12 @@ metaScore.namespace('editor.field').Boolean = (function () {
 
   BooleanField.prototype.onChange = function(evt){
     this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
-
+    
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
   BooleanField.prototype.setValue = function(value, supressEvent){
-    this.input.attr('checked', value === this.configs.checked_value ? 'checked' : null);
+    this.input.get(0).checked = value === this.configs.checked_value;
 
     if(supressEvent !== true){
       this.input.triggerEvent('change');

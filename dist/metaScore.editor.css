@@ -533,6 +533,7 @@
   display: table-cell;
   margin: 0;
   padding: 0;
+  vertical-align: middle;
 }
 .metaScore-editor .sidebar .panel .fields .field .input-wrapper input {
   width: 100%;
@@ -555,15 +556,12 @@
   width: 23px;
   height: 23px;
   margin-right: 2px;
-  background-color: #eaeaea;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100% #eaeaea));
-  background-image: -webkit-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: -ms-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: -o-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: linear-gradient(top, #ffffff 0%, #eaeaea 100%);
+  background-color: #EAEAEA;
   background-repeat: no-repeat;
   background-position: center center;
+}
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button.pressed {
+  background-color: #aaaaaa;
 }
 .metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="bold"] {
   background-image: url('img/editor/wysiwyg/bold.png');
@@ -571,8 +569,8 @@
 .metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="italic"] {
   background-image: url('img/editor/wysiwyg/italic.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="strikethrough"] {
-  background-image: url('img/editor/wysiwyg/strikethrough.png');
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="strikeThrough"] {
+  background-image: url('img/editor/wysiwyg/strikeThrough.png');
 }
 .metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="underline"] {
   background-image: url('img/editor/wysiwyg/underline.png');
@@ -589,83 +587,7 @@
 .metaScore-editor .sidebar .panel .fields .field.buttonsfield button[data-action="unlink"] {
   background-image: url('img/editor/wysiwyg/unlink.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.font-style {
-  border-bottom: none;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper {
-  border-bottom: 1px solid #b2b2b2;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td {
-  width: 50%;
-  height: 1px;
-  white-space: nowrap;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td label {
-  display: block;
-  padding: 5px;
-  color: #7b7b7b;
-  border-right: 1px solid #d7d7d7;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field {
-  height: 100%;
-  width: 100%;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field input {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field input[type="checkbox"] {
-  width: auto;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.selectfield select {
-  display: block;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  border: none;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button {
-  width: 23px;
-  height: 23px;
-  margin-right: 2px;
-  background-color: #eaeaea;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100% #eaeaea));
-  background-image: -webkit-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: -moz-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: -ms-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: -o-linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-image: linear-gradient(top, #ffffff 0%, #eaeaea 100%);
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="bold"] {
-  background-image: url('img/editor/wysiwyg/bold.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="italic"] {
-  background-image: url('img/editor/wysiwyg/italic.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="strikethrough"] {
-  background-image: url('img/editor/wysiwyg/strikethrough.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="underline"] {
-  background-image: url('img/editor/wysiwyg/underline.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="subscript"] {
-  background-image: url('img/editor/wysiwyg/subscript.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="superscript"] {
-  background-image: url('img/editor/wysiwyg/superscript.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="link"] {
-  background-image: url('img/editor/wysiwyg/link.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper td .field.buttonsfield button[data-action="unlink"] {
-  background-image: url('img/editor/wysiwyg/unlink.png');
-}
-.metaScore-editor .sidebar .panel .fields .field-wrapper.font-style {
+.metaScore-editor .sidebar .panel .fields .field.fontStyle {
   border-bottom: none;
 }
 .metaScore-editor .sidebar .panel.collapsed .toolbar .title,

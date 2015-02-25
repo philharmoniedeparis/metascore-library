@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-02-24 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-02-25 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -58,6 +58,23 @@ if(Element && !Element.prototype.matches){
     };
 }
 
+if(Element && !Element.prototype.closest){
+  Element.prototype.closest = function closest(selector) {
+    var node = this;
+
+    while(node){
+      if(node.matches(selector)){
+        return node;
+      }
+      else{
+        node = node.parentElement;
+      }
+    }
+
+    return null;
+  };
+}
+
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -97,7 +114,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "3045d5";
+    return "6b91eb";
   },
 
   namespace: function(str){
@@ -962,7 +979,6 @@ metaScore.Dom = (function () {
   * @returns {void}
   */
   Dom.attr = function(element, name, value){
-
     if(metaScore.Var.is(name, 'object')){
       metaScore.Object.each(name, function(key, value){
         Dom.attr(element, key, value);
@@ -1080,7 +1096,37 @@ metaScore.Dom = (function () {
   * @returns {boolean} true if the element matches the selector, false otherwise
   */
   Dom.is = function(el, selector){
-    return (el instanceof Element) && Element.prototype.matches.call(el, selector);
+    var document, win;
+    
+    if(el instanceof Element){
+      return Element.prototype.matches.call(el, selector);
+    }
+      
+    if(document = el.ownerDocument){
+      if(win = document.defaultView || document.parentWindow){
+        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
+      }
+    }
+    
+    return false;
+  };
+  
+  Dom.closest = function(el, selector){
+    var document, win;
+    
+    if(el instanceof Element){
+      return Element.prototype.closest.call(el, selector);
+    }
+      
+    if(document = el.ownerDocument){
+      if(win = document.defaultView || document.parentWindow){
+        if(el instanceof win.Element){
+          return Element.prototype.closest.call(el, selector);
+        }
+      }
+    }
+    
+    return false;
   };
 
   Dom.prototype.add = function(elements){
@@ -1359,6 +1405,18 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  Dom.prototype.focus = function(){
+    this.get(0).focus();
+
+    return this;
+  };
+
+  Dom.prototype.blur = function(){
+    this.get(0).blur();
+
+    return this;
+  };
+
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       this.each(function(index, element) {
@@ -1376,6 +1434,17 @@ metaScore.Dom = (function () {
 
     this.each(function(index, element) {
       found = Dom.is(element, selector);
+      return found;
+    }, this);
+
+    return found;
+  };
+
+  Dom.prototype.closest = function(selector){
+    var found;
+
+    this.each(function(index, element) {
+      found = Dom.closest(element, selector);
       return found;
     }, this);
 
@@ -3196,7 +3265,8 @@ metaScore.namespace('player.component').Element = (function () {
       'width': {
         'type': 'Number',
         'configs': {
-          'label': metaScore.Locale.t('player.component.Element.width', 'Width')
+          'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
+          'min': 10
         },
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
@@ -3208,7 +3278,8 @@ metaScore.namespace('player.component').Element = (function () {
       'height': {
         'type': 'Number',
         'configs': {
-          'label': metaScore.Locale.t('player.component.Element.height', 'Height')
+          'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
+          'min': 10
         },
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);

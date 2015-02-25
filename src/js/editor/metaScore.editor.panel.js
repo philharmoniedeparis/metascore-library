@@ -89,22 +89,32 @@ metaScore.namespace('editor').Panel = (function(){
 
   Panel.prototype.showField = function(name){
     this.getField(name).show();
+    
+    return this;
   };
 
   Panel.prototype.hideField = function(name){
     this.getField(name).hide();
+    
+    return this;
   };
 
   Panel.prototype.toggleState = function(){
     this.toggleClass('collapsed');
+    
+    return this;
   };
 
   Panel.prototype.disable = function(){
     this.addClass('disabled');
+    
+    return this;
   };
 
   Panel.prototype.enable = function(){
     this.removeClass('disabled');
+    
+    return this;
   };
 
   Panel.prototype.getComponent = function(){
@@ -303,6 +313,8 @@ metaScore.namespace('editor').Panel = (function(){
 
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
     this.getField(name).setValue(value, supressEvent);
+    
+    return this;
   };
 
   Panel.prototype.updateFieldValues = function(values, supressEvent){

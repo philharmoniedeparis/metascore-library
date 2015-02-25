@@ -20,6 +20,7 @@ metaScore.namespace('editor.panel').Text = (function () {
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
+    this.onComponentContentsMouseup = metaScore.Function.proxy(this.onComponentContentsMouseup, this);
   }
 
   TextPanel.defaults = {
@@ -30,48 +31,61 @@ metaScore.namespace('editor.panel').Text = (function () {
     }),
 
     properties: {
-      'fore-color': {
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
+        },
+        'setter': function(value){
+          if(value){
+            this.lock();
+          }
+          else{
+            this.unlock();
+          }
+        }
+      },
+      'foreColor': {
         'type': 'Color',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color')
         },
         'setter': function(value){
-          var color = metaScore.Color.parse(value);
-          this.execCommand('foreColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+          this.execCommand('foreColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
       },
-      'back-color': {
+      'backColor': {
         'type': 'Color',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color')
         },
         'setter': function(value){
-          var color = metaScore.Color.parse(value);
-          this.execCommand('backColor', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+          this.execCommand('backColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
       },
-      'font': {
+      'fontName': {
         'type': 'Select',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
           'options': {
-            'Georgia, serif': 'Georgia',
-            '"Times New Roman", Times, serif': 'Times New Roman',
-            'Arial, Helvetica, sans-serif': 'Arial',
-            '"Comic Sans MS", cursive, sans-serif': 'Comic Sans MS',
-            'Impact, Charcoal, sans-serif': 'Impact',
-            '"Lucida Sans Unicode", "Lucida Grande", sans-serif': 'Lucida Sans Unicode',
-            'Tahoma, Geneva, sans-serif': 'Tahoma',
-            'Verdana, Geneva, sans-serif': 'Verdana',
-            '"Courier New", Courier, monospace': 'Courier New',
-            '"Lucida Console", Monaco, monospace': 'Lucida Console'
+            "inherit": '',
+            "Georgia, serif": 'Georgia',
+            "'Times New Roman', Times, serif": 'Times New Roman',
+            "Arial, Helvetica, sans-serif": 'Arial',
+            "'Comic Sans MS', cursive, sans-serif": 'Comic Sans MS',
+            "Impact, Charcoal, sans-serif": 'Impact',
+            "'Lucida Sans Unicode', 'Lucida Grande', sans-serif": 'Lucida Sans Unicode',
+            "Tahoma, Geneva, sans-serif": 'Tahoma',
+            "Verdana, Geneva, sans-serif": 'Verdana',
+            "'Courier New', Courier, monospace": 'Courier New',
+            "'Lucida Console', Monaco, monospace": 'Lucida Console'
           }
         },
         'setter': function(value){
           this.execCommand('fontName', value);
         }
       },
-      'font-style': {
+      'fontStyle': {
         'type': 'Buttons',
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
@@ -90,13 +104,13 @@ metaScore.namespace('editor.panel').Text = (function () {
           this.execCommand(value);
         }
       },
-      'font-style2': {
+      'fontStyle2': {
         'type': 'Buttons',
         'configs': {
           'label': '&nbsp;',
           'buttons': {
             'strikeThrough': {
-              'data-action': 'strikethrough',
+              'data-action': 'strikeThrough',
               'title': metaScore.Locale.t('editor.panel.Text.font-style.strikeThrough', 'Strikethrough')
             },
             'underline': {
@@ -134,10 +148,10 @@ metaScore.namespace('editor.panel').Text = (function () {
         },
         'setter': function(value){
           if(value === 'link'){
-            var link = this.getSelectedElement();
+            var link = metaScore.Dom.closest(this.getSelectedElement(), 'a');
 
             new metaScore.editor.overlay.LinkEditor({
-                link: link && metaScore.Dom.is(link, 'a') ? link : null,
+                link: link,
                 autoShow: true
               })
               .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
@@ -154,7 +168,7 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
-      name, value, old_values;
+      name, value;
 
     if(!component){
       return;
@@ -162,13 +176,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
     name = evt.detail.field.data('name');
     value = evt.detail.value;
-    old_values = this.getValues([name]);
 
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
     }
-
-    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
 
   TextPanel.prototype.setComponent = function(component, supressEvent){
@@ -177,9 +188,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
       this.component = component;
 
-      this.addClass('has-component');
-
-      component.contents.addListener('dblclick', this.onComponentContentsDblClick);
+      this
+        .setupFields(this.configs.properties)
+        .updateFieldValue('locked', true)
+        .addClass('has-component');
     }
 
     if(supressEvent !== true){
@@ -191,18 +203,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
+    
+    this.lock().removeClass('has-component');
 
-    this.removeClass('has-component');
-
-    if(component){
-      component.contents
-        .attr('contenteditable', 'null')
-        .removeListener('dblclick', this.onComponentContentsDblClick)
-        .removeListener('click', this.onComponentContentsClick)
-        .removeListener('keydown', this.onComponentContentsKey)
-        .removeListener('keypress', this.onComponentContentsKey)
-        .removeListener('keyup', this.onComponentContentsKey);
-
+    if(component){        
       this.component = null;
 
       if(supressEvent !== true){
@@ -213,26 +217,68 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
-  TextPanel.prototype.onComponentContentsDblClick = function(evt){
+  TextPanel.prototype.lock = function(){
     var component = this.getComponent();
-
-    if(component._draggable){
-      component._draggable.disable();
+    
+    if(component){      
+      component.contents
+        .attr('contenteditable', null)
+        .addListener('dblclick', this.onComponentContentsDblClick)
+        .removeListener('click', this.onComponentContentsClick)
+        .removeListener('keydown', this.onComponentContentsKey)
+        .removeListener('keypress', this.onComponentContentsKey)
+        .removeListener('keyup', this.onComponentContentsKey);
+        
+      this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
+        
+      if(component._draggable){
+        component._draggable.enable();
+      }
+      if(component._resizable){
+        component._resizable.enable();
+      }
     }
+    
+    return this;
+  };
 
-    component.contents
-      .attr('contenteditable', 'true')
-      .removeListener('dblclick', this.onComponentContentsDblClick)
-      .addListener('click', this.onComponentContentsClick)
-      .addListener('keydown', this.onComponentContentsKey)
-      .addListener('keypress', this.onComponentContentsKey)
-      .addListener('keyup', this.onComponentContentsKey);
+  TextPanel.prototype.unlock = function(){
+    var component = this.getComponent();
+    
+    if(component){
+      if(component._draggable){
+        component._draggable.disable();
+      }
+      if(component._resizable){
+        component._resizable.disable();
+      }
+      
+      component.contents
+        .attr('contenteditable', 'true')
+        .removeListener('dblclick', this.onComponentContentsDblClick)
+        .addListener('click', this.onComponentContentsClick)
+        .addListener('keydown', this.onComponentContentsKey)
+        .addListener('keypress', this.onComponentContentsKey)
+        .addListener('keyup', this.onComponentContentsKey)
+        .addListener('mouseup', this.onComponentContentsMouseup)
+        .focus();
 
-    this.execCommand("styleWithCSS", true);
+      this
+        .toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true)
+        .execCommand("styleWithCSS", true);
+    }
+    
+    return this;
+  };
 
-    this.setupFields(this.configs.properties);
-    this.enable();
-    this.updateFieldValues(this.getValues(Object.keys(this.getField())), true);
+  TextPanel.prototype.disable = function(){    
+    this.lock();
+    
+    return TextPanel.parent.prototype.disable.call(this);
+  };
+
+  TextPanel.prototype.onComponentContentsDblClick = function(evt){
+    this.updateFieldValue('locked', false);
   };
 
   TextPanel.prototype.onComponentContentsClick = function(evt){
@@ -240,7 +286,44 @@ metaScore.namespace('editor.panel').Text = (function () {
   };
 
   TextPanel.prototype.onComponentContentsKey = function(evt){
+    if(evt.type === 'keyup'){
+      this.updateButtons();
+    }
+    
     evt.stopPropagation();
+  };
+
+  TextPanel.prototype.onComponentContentsMouseup = function(evt){
+    this.updateButtons();
+  };
+
+  TextPanel.prototype.updateButtons = function(evt){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      field;
+      
+    metaScore.Object.each(this.getField('fontStyle').getButtons(), function(key, button){
+      button.toggleClass('pressed', document.queryCommandState(key));
+    });
+    
+    metaScore.Object.each(this.getField('fontStyle2').getButtons(), function(key, button){
+      button.toggleClass('pressed', document.queryCommandState(key));
+    });
+    
+    this.getField('foreColor').setValue(document.queryCommandValue('foreColor'), true);
+    this.getField('backColor').setValue(document.queryCommandValue('backColor'), true);
+    this.getField('fontName').setValue(document.queryCommandValue('fontName'), true);
+    
+    if(metaScore.Dom.closest(this.getSelectedElement(), 'a')){
+      field = this.getField('link');
+      field.getButton('link').addClass('pressed');
+      field.getButton('unlink').removeClass('disabled');
+    }
+    else{
+      field = this.getField('link');
+      field.getButton('link').removeClass('pressed');
+      field.getButton('unlink').addClass('disabled');
+    }
   };
 
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){
@@ -251,9 +334,8 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
-      contents =  component.contents.get(0),
-      document = contents.ownerDocument,
-      selection , element;
+      document =  component.contents.get(0).ownerDocument,
+      selection, element;
 
     if(document.selection){
       selection = document.selection;
@@ -276,7 +358,9 @@ metaScore.namespace('editor.panel').Text = (function () {
 
     contents.focus();
 
-    return document.execCommand(command, false, value);
+    document.execCommand(command, false, value);
+    
+    this.updateButtons();
   };
 
   return TextPanel;

@@ -63,7 +63,8 @@ metaScore.namespace('player.component').Element = (function () {
       'width': {
         'type': 'Number',
         'configs': {
-          'label': metaScore.Locale.t('player.component.Element.width', 'Width')
+          'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
+          'min': 10
         },
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
@@ -75,7 +76,8 @@ metaScore.namespace('player.component').Element = (function () {
       'height': {
         'type': 'Number',
         'configs': {
-          'label': metaScore.Locale.t('player.component.Element.height', 'Height')
+          'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
+          'min': 10
         },
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);

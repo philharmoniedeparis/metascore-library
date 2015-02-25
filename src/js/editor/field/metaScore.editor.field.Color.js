@@ -48,9 +48,9 @@ metaScore.namespace('editor.field').Color = (function () {
   ColorField.prototype.setValue = function(value, supressEvent){
     var rgba;
   
-    this.value = metaScore.Color.parse(value);
+    this.value = value ? metaScore.Color.parse(value) : null;
     
-    rgba = 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')';
+    rgba = this.value ? 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')' : null;
 
     this.input
       .attr('title', rgba)

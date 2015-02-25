@@ -8,6 +8,8 @@ metaScore.namespace('editor.field').Buttons = (function () {
 
   function ButtonsField(configs) {
     this.configs = this.getConfigs(configs);
+    
+    this.buttons = {};
 
     // fix event handlers scope
     this.onClick = metaScore.Function.proxy(this.onClick, this);
@@ -39,12 +41,36 @@ metaScore.namespace('editor.field').Buttons = (function () {
       .appendTo(this);
 
     metaScore.Object.each(this.configs.buttons, function(key, attr){
-      new metaScore.Dom('<button/>', attr)
+      this.buttons[key] = new metaScore.Dom('<button/>', attr)
         .addListener('click', function(){
           field.triggerEvent('valuechange', {'field': field, 'value': key}, true, false);
         })
         .appendTo(this.input_wrapper);
     }, this);
+  };
+  
+  ButtonsField.prototype.getButtons = function(){
+    return this.buttons;
+  };
+  
+  ButtonsField.prototype.getButton = function(key){
+    return this.buttons[key];
+  };
+  
+  ButtonsField.prototype.enable = function(){
+    this.disabled = false;
+
+    this.removeClass('disabled');
+
+    return this;
+  };
+  
+  ButtonsField.prototype.disable = function(){
+    this.disabled = true;
+
+    this.addClass('disabled');
+
+    return this;
   };
 
   return ButtonsField;

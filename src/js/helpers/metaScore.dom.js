@@ -325,7 +325,6 @@ metaScore.Dom = (function () {
   * @returns {void}
   */
   Dom.attr = function(element, name, value){
-
     if(metaScore.Var.is(name, 'object')){
       metaScore.Object.each(name, function(key, value){
         Dom.attr(element, key, value);
@@ -443,7 +442,37 @@ metaScore.Dom = (function () {
   * @returns {boolean} true if the element matches the selector, false otherwise
   */
   Dom.is = function(el, selector){
-    return (el instanceof Element) && Element.prototype.matches.call(el, selector);
+    var document, win;
+    
+    if(el instanceof Element){
+      return Element.prototype.matches.call(el, selector);
+    }
+      
+    if(document = el.ownerDocument){
+      if(win = document.defaultView || document.parentWindow){
+        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
+      }
+    }
+    
+    return false;
+  };
+  
+  Dom.closest = function(el, selector){
+    var document, win;
+    
+    if(el instanceof Element){
+      return Element.prototype.closest.call(el, selector);
+    }
+      
+    if(document = el.ownerDocument){
+      if(win = document.defaultView || document.parentWindow){
+        if(el instanceof win.Element){
+          return Element.prototype.closest.call(el, selector);
+        }
+      }
+    }
+    
+    return false;
   };
 
   Dom.prototype.add = function(elements){
@@ -722,6 +751,18 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  Dom.prototype.focus = function(){
+    this.get(0).focus();
+
+    return this;
+  };
+
+  Dom.prototype.blur = function(){
+    this.get(0).blur();
+
+    return this;
+  };
+
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       this.each(function(index, element) {
@@ -739,6 +780,17 @@ metaScore.Dom = (function () {
 
     this.each(function(index, element) {
       found = Dom.is(element, selector);
+      return found;
+    }, this);
+
+    return found;
+  };
+
+  Dom.prototype.closest = function(selector){
+    var found;
+
+    this.each(function(index, element) {
+      found = Dom.closest(element, selector);
       return found;
     }, this);
 
