@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-02-25 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-02-26 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //

@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-02-25 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-02-26 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -114,7 +114,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "6b91eb";
+    return "aa1f00";
   },
 
   namespace: function(str){
@@ -3170,7 +3170,7 @@ metaScore.namespace('player.component').Controller = (function () {
 
     this.addClass('controller');
 
-    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00:00.00'})
+    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
       .appendTo(this);
 
     this.rewind_btn = new metaScore.Dom('<button/>')

@@ -61,7 +61,7 @@ metaScore.namespace('player.component').Controller = (function () {
 
     this.addClass('controller');
 
-    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00:00.00'})
+    this.timer = new metaScore.Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
       .appendTo(this);
 
     this.rewind_btn = new metaScore.Dom('<button/>')
