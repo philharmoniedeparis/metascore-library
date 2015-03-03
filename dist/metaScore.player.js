@@ -114,7 +114,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "833444";
+    return "15e2ac";
   },
 
   namespace: function(str){
@@ -2410,24 +2410,14 @@ metaScore.Player = (function () {
     return this.json;
   };
 
-  Player.prototype.getComponent = function(selector){
-    var components;
-    
-    components = this.children('.metaScore-component');
-    
-    if(selector){
-      components = components.filter(selector);
-    }
-    
-    if(components.count() > 0){
-      return components.get(0);
-    }
+  Player.prototype.getComponent = function(selector){    
+    return this.getComponents(selector).get(0);
   };
 
   Player.prototype.getComponents = function(selector){
     var components;
     
-    components = this.children('.metaScore-component');
+    components = this.getBody().children('.metaScore-component');
     
     if(selector){
       components = components.filter(selector);
