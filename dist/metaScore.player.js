@@ -114,7 +114,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "3607b6";
+    return "833444";
   },
 
   namespace: function(str){
@@ -2504,8 +2504,9 @@ metaScore.Player = (function () {
     this.rindex_css.removeRules();
 
     if(index !== 0){
-      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time])', 'display: block;');
-      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
     }
 
     if(supressEvent !== true){
