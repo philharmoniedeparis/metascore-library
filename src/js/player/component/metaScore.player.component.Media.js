@@ -101,55 +101,36 @@ metaScore.namespace('player.component').Media = (function () {
 
     this.dom = this.el.get(0);
 
-    this.el
-      .addListener('canplay', metaScore.Function.proxy(this.onCanPlay, this))
-      .addListener('play', metaScore.Function.proxy(this.onPlay, this))
-      .addListener('pause', metaScore.Function.proxy(this.onPause, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
-      .addListener('volumechange', metaScore.Function.proxy(this.onVolumeChange, this))
-      .addListener('ended', metaScore.Function.proxy(this.onEnded, this));
-
-    if(this.configs.useFrameAnimation){
-      this.el.addListener('play', metaScore.Function.proxy(this.triggerTimeUpdate, this));
-    }
+    this
+      .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
   };
 
   Media.prototype.getName = function(){
     return '[media]';
   };
 
-  Media.prototype.onCanPlay = function() {
-    this.triggerEvent('canplay');
-  };
-
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
-
-    this.triggerEvent('play');
+    
+    if(this.configs.useFrameAnimation){
+      this.triggerTimeUpdate();
+    }
   };
 
   Media.prototype.onPause = function(evt) {
     this.playing = false;
-
-    this.triggerEvent('pause');
   };
 
   Media.prototype.onTimeUpdate = function(evt){
     if(!(evt instanceof CustomEvent)){
-      evt.stopPropagation();
+      evt.stopImmediatePropagation();
     }
 
     if(!this.configs.useFrameAnimation){
       this.triggerTimeUpdate(false);
     }
-  };
-
-  Media.prototype.onVolumeChange = function(evt) {
-    this.triggerEvent('volumechange');
-  };
-
-  Media.prototype.onEnded = function(evt) {
-    this.triggerEvent('ended');
   };
 
   Media.prototype.isPlaying = function() {
@@ -158,43 +139,18 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.prototype.reset = function(supressEvent) {
     this.setTime(0);
-
-    if(supressEvent !== true){
-      this.triggerEvent('reset');
-    }
     
     return this;
   };
 
   Media.prototype.play = function(supressEvent) {
     this.dom.play();
-
-    if(supressEvent !== true){
-      this.triggerEvent('play');
-    }
     
     return this;
   };
 
   Media.prototype.pause = function(supressEvent) {
     this.dom.pause();
-
-    if(supressEvent !== true){
-      this.triggerEvent('pause');
-    }
-    
-    return this;
-  };
-
-  Media.prototype.stop = function(supressEvent) {
-    this.setTime(0);
-    this.pause(true);
-
-    this.triggerTimeUpdate(false);
-
-    if(supressEvent !== true){
-      this.triggerEvent('stop');
-    }
     
     return this;
   };
@@ -204,7 +160,7 @@ metaScore.namespace('player.component').Media = (function () {
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
 
-    this.triggerEvent('timeupdate', {'media': this});
+    this.el.triggerEvent('timeupdate', {'media': this});
   };
 
   Media.prototype.setTime = function(time) {
@@ -219,6 +175,18 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.prototype.getDuration = function() {
     return parseFloat(this.dom.duration) * 1000;
+  };
+
+  Media.prototype.addMediaListener = function(type, callback, useCapture) {
+    this.el.addListener(type, callback, useCapture);
+    
+    return this;
+  };
+
+  Media.prototype.removeMediaListener = function(type, callback, useCapture) {
+    this.el.removeListener(type, callback, useCapture);
+    
+    return this;
   };
 
   return Media;

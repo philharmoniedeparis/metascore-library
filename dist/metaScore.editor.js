@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-02-26 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-03-03 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -4508,96 +4508,6 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
   metaScore.editor.Overlay.extend(LoadMask);
 
   return LoadMask;
-
-})();
-/**
- * NewPage
- *
- * @requires ../metaScore.editor.Ovelay.js
- */
-
-metaScore.namespace('editor.overlay').NewPage = (function () {
-
-  function NewPage(configs) {
-    this.configs = this.getConfigs(configs);
-
-    // call parent constructor
-    NewPage.parent.call(this, this.configs);
-
-    this.addClass('new-page');
-
-    this.setupUI();
-  }
-
-  NewPage.defaults = {
-    /**
-    * True to add a toolbar with title and close button
-    */
-    toolbar: true,
-
-    /**
-    * The overlay's title
-    */
-    title: metaScore.Locale.t('editor.overlay.NewPage.title', 'New Page'),
-    
-    position: 0,
-    
-    pages: []
-  };
-
-  metaScore.editor.Overlay.extend(NewPage);
-
-  NewPage.prototype.setupUI = function(){
-
-    var contents = this.getContents();
-
-    this.fields = {};
-    this.buttons = {};
-
-    this.fields.position = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.NewPage.fields.position', 'Position')
-      })
-      .appendTo(contents);
-
-    this.fields.inTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.NewPage.fields.in-time', 'Start time')
-      })
-      .appendTo(contents);
-
-    this.fields.outTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.NewPage.fields.out-time', 'End time')
-      })
-      .appendTo(contents);
-
-    // Buttons
-    this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
-      .addClass('apply')
-      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
-      .appendTo(contents);
-
-    this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
-      .addClass('cancel')
-      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
-      .appendTo(contents);
-
-  };
-
-  NewPage.prototype.getValue = function(){
-    return {
-      position: this.fields.position.getValue(),
-      inTime: this.fields.inTime.getValue(),
-      outTime: this.fields.outTime.getValue()
-    };
-  };
-
-  NewPage.prototype.onApplyClick = function(evt){  
-    this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
-    this.hide();
-  };
-
-  NewPage.prototype.onCancelClick = NewPage.prototype.onCloseClick;
-
-  return NewPage;
 
 })();
 /**

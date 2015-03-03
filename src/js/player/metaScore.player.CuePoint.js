@@ -21,8 +21,9 @@ metaScore.namespace('player').CuePoint = (function () {
     this.launch = metaScore.Function.proxy(this.launch, this);
     this.stop = metaScore.Function.proxy(this.stop, this);
     this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
+    this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
-    this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
+    this.configs.media.addMediaListener('timeupdate', this.onMediaTimeUpdate);
   }
 
   metaScore.Evented.extend(CuePoint);
@@ -34,6 +35,7 @@ metaScore.namespace('player').CuePoint = (function () {
     'onStart': null,
     'onUpdate': null,
     'onEnd': null,
+    'onOut': null,
     'errorMargin': 10 // the number of milliseconds estimated as the error margin for time update events
   };
 
@@ -54,6 +56,28 @@ metaScore.namespace('player').CuePoint = (function () {
         this.configs.onUpdate(this, curTime);
       }
     }
+    
+    if(this.configs.onOut){
+      this.configs.media.addMediaListener('seeking', this.onMediaSeeked);
+    }
+  };
+
+  CuePoint.prototype.onMediaSeeked = function(evt){
+    var curTime;
+    
+    this.configs.media.removeMediaListener('play', this.onMediaSeeked);
+    
+    if(this.configs.onOut){
+      curTime = this.configs.media.getTime();
+    
+      if((curTime < this.configs.inTime) || (curTime > this.configs.outTime)){
+        this.configs.onOut(this);
+      }
+    }
+  };
+
+  CuePoint.prototype.getMedia = function(){
+    return this.configs.media;
   };
 
   CuePoint.prototype.launch = function(){
@@ -92,18 +116,22 @@ metaScore.namespace('player').CuePoint = (function () {
 
     if(launchCallback !== false && this.configs.onEnd){
       this.configs.onEnd(this);
+    
+      if(this.configs.onOut){
+        this.configs.media.addMediaListener('play', this.onMediaSeeked);
+      }
     }
 
     this.running = false;
   };
 
-  CuePoint.prototype.outside = function(time){
-    return (time < this.configs.inTime - this.configs.errorMargin) || ((this.configs.outTime !== null) && (time > this.configs.outTime + this.configs.errorMargin));
-  };
-
   CuePoint.prototype.destroy = function(){
     this.stop(false);
-    this.configs.media.removeListener('timeupdate', this.onMediaTimeUpdate);
+    
+    this.configs.media
+      .removeMediaListener('timeupdate', this.onMediaTimeUpdate)
+      .removeMediaListener('seeking', this.onMediaSeeked)
+      .removeMediaListener('play', this.onMediaSeeked);
   };
 
   return CuePoint;

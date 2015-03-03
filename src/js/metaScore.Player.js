@@ -97,13 +97,6 @@ metaScore.Player = (function () {
     var currentTime = evt.detail.media.getTime();
 
     this.controller.updateTime(currentTime);
-    
-    if(this.linkcuepoint && this.linkcuepoint.outside(currentTime)){
-      this.linkcuepoint.destroy();
-      this.setReadingIndex(0);
-      
-      delete this.linkcuepoint;
-    }
   };
 
   Player.prototype.onPageActivate = function(evt){
@@ -134,7 +127,13 @@ metaScore.Player = (function () {
         player.setReadingIndex(evt.detail.rIndex);
       },
       onEnd: function(cuepoint){
-        player.media.pause();
+        cuepoint.getMedia().pause();
+      },
+      onOut: function(cuepoint){
+        cuepoint.destroy();
+        delete player.linkcuepoint;
+        
+        player.setReadingIndex(0);
       }
     });
 
@@ -254,9 +253,9 @@ metaScore.Player = (function () {
 
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this.getBody());
 
     if(supressEvent !== true){
@@ -320,8 +319,8 @@ metaScore.Player = (function () {
     this.rindex_css.removeRules();
 
     if(index !== 0){
-      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time])', 'display: block;');
+      this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active', 'display: block;');
     }
 
     if(supressEvent !== true){

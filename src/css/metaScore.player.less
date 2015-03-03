@@ -219,9 +219,9 @@ body{
     height: 50px;
     min-width: 10px;
     min-height: 10px;
+    display: none;
 
     .contents{
-      display: none;
       position: absolute;
       top: 0;
       left: 0;
@@ -238,9 +238,7 @@ body{
     &[data-r-index="0"]{
       &:not([data-start-time]),
       &.active{
-        .contents{
-          display: block;
-        }
+        display: block;
       }
     }
 
@@ -436,9 +434,7 @@ body.in-editor{
         outline-style: dashed;
 
         &.selected{
-          .contents{
-            display: block;
-          }
+          display: block;
 
           &[data-type="Cursor"]{
             .box-shadow(@cursor-outline 0px 0px 4px 1px);
