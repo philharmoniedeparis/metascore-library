@@ -64,6 +64,12 @@
     }
   }
 
+  .draggable{
+    .drag-handle{
+      cursor: move;
+    }
+  }
+
   .metaScore-player{
     position: absolute;
     left: 0;
@@ -808,8 +814,10 @@
 
           td.thumbnail{
             padding-right: 10px;
+            vertical-align: top;
 
             img{
+              display: inline-block;
               width: 155px;
               height: 123px;
               background: #DADADA url('img/editor/default-thumbnail.png') no-repeat center center;

@@ -186,6 +186,8 @@ metaScore.Player = (function () {
 
     this.getBody().removeClass('loading');
     
+    this.media.reset();
+    
     this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
   };
 

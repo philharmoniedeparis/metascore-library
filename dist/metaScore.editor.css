@@ -135,6 +135,9 @@
 .metaScore-editor button span {
   pointer-events: none;
 }
+.metaScore-editor .draggable .drag-handle {
+  cursor: move;
+}
 .metaScore-editor .metaScore-player {
   position: absolute;
   left: 0;
@@ -804,8 +807,10 @@
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail {
   padding-right: 10px;
+  vertical-align: top;
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail img {
+  display: inline-block;
   width: 155px;
   height: 123px;
   background: #dadada url('img/editor/default-thumbnail.png') no-repeat center center;

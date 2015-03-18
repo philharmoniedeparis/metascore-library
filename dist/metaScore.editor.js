@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-03-03 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-03-18 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -2751,6 +2751,32 @@ metaScore.namespace('editor.field').Time = (function () {
     if(supressEvent !== true){
       this.triggerEvent('change');
     }
+  };
+
+  /**
+  *
+  */
+  TimeField.prototype.setMin = function(min){
+    this.configs.min = min;
+    
+    if(this.getValue() < min){
+      this.setValue(min);
+    }
+  
+    return this;
+  };
+
+  /**
+  *
+  */
+  TimeField.prototype.setMax = function(max){
+    this.configs.max = max;
+    
+    if(this.getValue() > max){
+      this.setValue(max);
+    }
+  
+    return this;
   };
 
   /**

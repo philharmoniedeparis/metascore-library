@@ -212,6 +212,32 @@ metaScore.namespace('editor.field').Time = (function () {
   /**
   *
   */
+  TimeField.prototype.setMin = function(min){
+    this.configs.min = min;
+    
+    if(this.getValue() < min){
+      this.setValue(min);
+    }
+  
+    return this;
+  };
+
+  /**
+  *
+  */
+  TimeField.prototype.setMax = function(max){
+    this.configs.max = max;
+    
+    if(this.getValue() > max){
+      this.setValue(max);
+    }
+  
+    return this;
+  };
+
+  /**
+  *
+  */
   TimeField.prototype.isActive = function(){
     return !this.checkbox || this.checkbox.is(":checked");
   };

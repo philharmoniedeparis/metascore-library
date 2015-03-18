@@ -1,6 +1,8 @@
 /**
  * Polyfills
  */
+ 
+// Element.matches
 if(Element && !Element.prototype.matches){
   Element.prototype.matches = Element.prototype.matchesSelector =
     Element.prototype.matchesSelector ||
@@ -21,6 +23,7 @@ if(Element && !Element.prototype.matches){
     };
 }
 
+// Element.closest
 if(Element && !Element.prototype.closest){
   Element.prototype.closest = function closest(selector) {
     var node = this;
@@ -38,7 +41,29 @@ if(Element && !Element.prototype.closest){
   };
 }
 
+// CustomEvent constructor
+// https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
+if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
+  window.CustomEvent = function(event, params) {
+    var evt;
+    
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
 
+    evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    
+    return evt;
+  };
+
+  window.CustomEvent.prototype = window.Event.prototype;
+}
+
+
+// requestAnimationFrame
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel

@@ -272,15 +272,15 @@ metaScore.namespace('player.component').Block = (function () {
     return page;
   };
 
-  Block.prototype.getActivePage = function(){
+  Block.prototype.getPage = function(index){
     var pages = this.getPages(),
-      index = this.getActivePageIndex();
+      page = pages.get(index);
 
-    if(index < 0){
-      return null;
-    }
+    return page ? page._metaScore : null;
+  };
 
-    return this.getPages().get(index)._metaScore;
+  Block.prototype.getActivePage = function(){
+    return this.getPage(this.getActivePageIndex());
   };
 
   Block.prototype.getActivePageIndex = function(){
