@@ -85,6 +85,10 @@ metaScore.Player = (function () {
     evt.stopPropagation();
   };
 
+  Player.prototype.onMediaLoadedMetadata = function(evt){
+    this.media.reset();
+  };
+
   Player.prototype.onMediaPlay = function(evt){
     this.controller.addClass('playing');
   };
@@ -186,8 +190,6 @@ metaScore.Player = (function () {
 
     this.getBody().removeClass('loading');
     
-    this.media.reset();
-    
     this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
   };
 
@@ -245,6 +247,7 @@ metaScore.Player = (function () {
 
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
+      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
       .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
