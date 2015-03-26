@@ -32,6 +32,10 @@ metaScore.namespace('editor.panel').Block = (function () {
 
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
+    
+    if(component.getProperty('locked')){
+      return false;
+    }
 
     if(component instanceof metaScore.player.component.Controller){
       return {
@@ -73,7 +77,7 @@ metaScore.namespace('editor.panel').Block = (function () {
   BlockPanel.prototype.getResizable = function(){
     var component = this.getComponent();
 
-    if(component instanceof metaScore.player.component.Controller){
+    if(component instanceof metaScore.player.component.Controller || component.getProperty('locked')){
       return false;
     }
 

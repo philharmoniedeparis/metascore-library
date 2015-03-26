@@ -1959,6 +1959,11 @@ metaScore.namespace('editor').Panel = (function(){
     old_values = this.getValues([name]);
 
     component.setProperty(name, value);
+    
+    if(name === 'locked'){
+      this.updateDraggable();
+      this.updateResizable();
+    }
 
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
@@ -2932,6 +2937,10 @@ metaScore.namespace('editor.panel').Block = (function () {
 
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
+    
+    if(component.getProperty('locked')){
+      return false;
+    }
 
     if(component instanceof metaScore.player.component.Controller){
       return {
@@ -2973,7 +2982,7 @@ metaScore.namespace('editor.panel').Block = (function () {
   BlockPanel.prototype.getResizable = function(){
     var component = this.getComponent();
 
-    if(component instanceof metaScore.player.component.Controller){
+    if(component instanceof metaScore.player.component.Controller || component.getProperty('locked')){
       return false;
     }
 
@@ -3022,6 +3031,10 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   ElementPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
+    
+    if(component.getProperty('locked')){
+      return false;
+    }
 
     return {
       'target': component,
@@ -3032,6 +3045,10 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   ElementPanel.prototype.getResizable = function(){
     var component = this.getComponent();
+    
+    if(component.getProperty('locked')){
+      return false;
+    }
 
     return {
       'target': component,

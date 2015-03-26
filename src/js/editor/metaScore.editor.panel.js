@@ -311,6 +311,11 @@ metaScore.namespace('editor').Panel = (function(){
     old_values = this.getValues([name]);
 
     component.setProperty(name, value);
+    
+    if(name === 'locked'){
+      this.updateDraggable();
+      this.updateResizable();
+    }
 
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };

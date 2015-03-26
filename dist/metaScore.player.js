@@ -139,7 +139,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "3d121e";
+    return "aff26e";
   },
 
   namespace: function(str){
@@ -2939,6 +2939,18 @@ metaScore.namespace('player.component').Block = (function () {
           this.data('name', value);
         }
       },
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
+        },
+        'getter': function(skipDefault){
+          return this.data('locked') === "true";
+        },
+        'setter': function(value){
+          this.data('locked', value ? "true" : null);
+        }
+      },
       'x': {
         'type': 'Number',
         'configs': {
@@ -3269,6 +3281,18 @@ metaScore.namespace('player.component').Controller = (function () {
 
   Controller.defaults = {
     'properties': {
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked ?')
+        },
+        'getter': function(skipDefault){
+          return this.data('locked') === "true";
+        },
+        'setter': function(value){
+          this.data('locked', value ? "true" : null);
+        }
+      },
       'x': {
         'type': 'Number',
         'configs': {
@@ -3380,6 +3404,18 @@ metaScore.namespace('player.component').Element = (function () {
         },
         'setter': function(value){
           this.data('type', value);
+        }
+      },
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
+        },
+        'getter': function(skipDefault){
+          return this.data('locked') === "true";
+        },
+        'setter': function(value){
+          this.data('locked', value ? "true" : null);
         }
       },
       'x': {
@@ -3624,6 +3660,18 @@ metaScore.namespace('player.component').Media = (function () {
     'sources': [],
     'useFrameAnimation': true,
     'properties': {
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
+        },
+        'getter': function(skipDefault){
+          return this.data('locked') === "true";
+        },
+        'setter': function(value){
+          this.data('locked', value ? "true" : null);
+        }
+      },
       'x': {
         'type': 'Number',
         'configs': {

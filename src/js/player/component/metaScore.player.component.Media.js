@@ -22,6 +22,18 @@ metaScore.namespace('player.component').Media = (function () {
     'sources': [],
     'useFrameAnimation': true,
     'properties': {
+      'locked': {
+        'type': 'Boolean',
+        'configs': {
+          'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
+        },
+        'getter': function(skipDefault){
+          return this.data('locked') === "true";
+        },
+        'setter': function(value){
+          this.data('locked', value ? "true" : null);
+        }
+      },
       'x': {
         'type': 'Number',
         'configs': {

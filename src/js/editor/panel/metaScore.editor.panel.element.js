@@ -34,6 +34,10 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   ElementPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
+    
+    if(component.getProperty('locked')){
+      return false;
+    }
 
     return {
       'target': component,
@@ -44,6 +48,10 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   ElementPanel.prototype.getResizable = function(){
     var component = this.getComponent();
+    
+    if(component.getProperty('locked')){
+      return false;
+    }
 
     return {
       'target': component,
