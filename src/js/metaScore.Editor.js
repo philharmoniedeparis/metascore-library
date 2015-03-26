@@ -325,17 +325,10 @@ metaScore.Editor = (function(){
 
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
-    
-    this.panels.page.getToolbar()
-      .emptySelector();
 
     if(block instanceof metaScore.player.component.Block){
       this.panels.page.getToolbar()
         .toggleMenuItem('new', true);
-        
-      block.getPages().each(function(index, page){
-        this.panels.page.getToolbar().addSelectorOption(page._metaScore.getId(), index+1);
-      }, this);
       
       this.panels.page.setComponent(block.getActivePage(), true);
 
@@ -344,6 +337,8 @@ metaScore.Editor = (function(){
         .toggleMenuItem('Image', true)
         .toggleMenuItem('Text', true);
     }
+    
+    this.updatePageSelector();
 
     evt.stopPropagation();
   };
@@ -489,7 +484,9 @@ metaScore.Editor = (function(){
   };
 
   Editor.prototype.onPagePanelToolbarClick = function(evt){
-    var block, page, dom, count, index;
+    var block, page,
+      auto_page, configs,
+      dom, count, index;
 
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -509,10 +506,31 @@ metaScore.Editor = (function(){
         if(page){
           block.removePage(page);
           this.panels.page.unsetComponent();
+          
+          if(block.getPageCount() < 1){
+            configs = {};
+            
+            if(block.getProperty('synched')){
+              configs['start-time'] = 0;
+              configs['end-time'] = this.getPlayer().getMedia().getDuration();
+            }
+            
+            auto_page = this.addPage(block, configs);
+          }
 
           this.history.add({
-            'undo': metaScore.Function.proxy(this.addPage, this, [block, page]),
-            'redo': metaScore.Function.proxy(page.remove, this)
+            'undo': metaScore.Function.proxy(function(block, page, auto_page){
+              if(auto_page){
+                block.removePage(auto_page, true);
+              }
+              this.addPage(block, page);
+            }, this, [block, page, auto_page]),
+            'redo': metaScore.Function.proxy(function(block, page, auto_page){
+              block.removePage(page, true);
+              if(auto_page){
+                this.addPage(block, auto_page);
+              }
+            }, this, [block, page, auto_page])
           });
         }
         break;
@@ -740,6 +758,7 @@ metaScore.Editor = (function(){
     this.player.getBody()
       .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdded, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
       .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
@@ -807,6 +826,16 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  Editor.prototype.onBlockPageAdded = function(evt){
+    var block = evt.detail.block;
+    
+    if(block === this.panels.block.getComponent()){    
+      this.updatePageSelector();
+    }
+
+    evt.stopPropagation();
+  };
+
   Editor.prototype.onBlockPageActivated = function(evt){
     if(metaScore.editing !== true){
       return;
@@ -850,6 +879,22 @@ metaScore.Editor = (function(){
     this.mainmenu.toggleButton('undo', this.history.hasUndo());
     this.mainmenu.toggleButton('redo', this.history.hasRedo());
     this.mainmenu.toggleButton('revert', hasPlayer);
+  };
+
+  Editor.prototype.updatePageSelector = function(){
+    var block = this.panels.block.getComponent(),
+      page = this.panels.page.getComponent(),
+      toolbar = this.panels.page.getToolbar();
+  
+    toolbar.emptySelector();
+  
+    if(block instanceof metaScore.player.component.Block){
+      this.panels.block.getComponent().getPages().each(function(index, page){
+        toolbar.addSelectorOption(page._metaScore.getId(), index+1);
+      }, this);
+    }
+    
+    toolbar.setSelectorValue(page ? page.getId() : null, true);
   };
 
   Editor.prototype.getPlayer = function(){  

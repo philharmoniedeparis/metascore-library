@@ -132,7 +132,7 @@ metaScore.namespace('editor').MainMenu = (function(){
   };
 
   MainMenu.prototype.toggleButton = function(action, state){
-    this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
+    this.find('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
 
     return this;
   };

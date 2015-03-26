@@ -34,8 +34,8 @@ metaScore.namespace('player').Pager = (function () {
   Pager.prototype.updateCount = function(index, count){
     this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 
-    this.buttons.first.toggleClass('inactive', index === 0);
-    this.buttons.previous.toggleClass('inactive', index === 0);
+    this.buttons.first.toggleClass('inactive', index < 1);
+    this.buttons.previous.toggleClass('inactive', index < 1);
     this.buttons.next.toggleClass('inactive', index >= count - 1);
   };
 

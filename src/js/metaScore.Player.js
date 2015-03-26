@@ -74,7 +74,7 @@ metaScore.Player = (function () {
 
     switch(action){
       case 'rewind':
-        this.media.reset();
+        this.getMedia().reset();
         break;
 
       case 'play':
@@ -86,7 +86,7 @@ metaScore.Player = (function () {
   };
 
   Player.prototype.onMediaLoadedMetadata = function(evt){
-    this.media.reset();
+    this.getMedia().reset();
   };
 
   Player.prototype.onMediaPlay = function(evt){
@@ -108,12 +108,12 @@ metaScore.Player = (function () {
       page = evt.detail.page;
 
     if(block.getProperty('synched')){
-      this.media.setTime(page.getProperty('start-time'));
+      this.getMedia().setTime(page.getProperty('start-time'));
     }
   };
 
   Player.prototype.onCursorElementTime = function(evt){
-    this.media.setTime(evt.detail.value);
+    this.getMedia().setTime(evt.detail.value);
   };
 
   Player.prototype.onTextElementTime = function(evt){
@@ -124,7 +124,7 @@ metaScore.Player = (function () {
     }
 
     this.linkcuepoint = new metaScore.player.CuePoint({
-      media: this.media,
+      media: this.getMedia(),
       inTime: evt.detail.inTime,
       outTime: evt.detail.outTime,
       onStart: function(cuepoint){
@@ -141,8 +141,9 @@ metaScore.Player = (function () {
       }
     });
 
-    this.media.setTime(evt.detail.inTime);
-    this.media.play();
+    this.getMedia()
+      .setTime(evt.detail.inTime)
+      .play();
   };
 
   Player.prototype.onComponenetPropChange = function(evt){
@@ -152,7 +153,7 @@ metaScore.Player = (function () {
       case 'start-time':
       case 'end-time':
         component.setCuePoint({
-          'media': this.media
+          'media': this.getMedia()
         });
         break;
     }
@@ -229,6 +230,10 @@ metaScore.Player = (function () {
     return this.json;
   };
 
+  Player.prototype.getMedia = function(){
+    return this.media;
+  };
+
   Player.prototype.getComponent = function(selector){    
     return this.getComponents(selector).get(0);
   };
@@ -301,12 +306,14 @@ metaScore.Player = (function () {
     this.css.setInternalValue(value);
   };
 
-  Player.prototype.togglePlay = function(){      
-    if(this.media.isPlaying()){
-      this.media.pause();
+  Player.prototype.togglePlay = function(){
+    var media = this.getMedia();
+  
+    if(media.isPlaying()){
+      media.pause();
     }
     else{
-      this.media.play();
+      media.play();
     }
   };
 

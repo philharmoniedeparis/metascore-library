@@ -17,7 +17,12 @@ metaScore.namespace('player').Component = (function () {
     this.get(0)._metaScore = this;
 
     if(this.configs.container){
-      this.appendTo(this.configs.container);
+      if(metaScore.Var.is(this.configs.index, 'number')){
+        this.insertAt(this.configs.container, this.configs.index);
+      }
+      else{
+        this.appendTo(this.configs.container);
+      }
     }
 
     metaScore.Object.each(this.configs.listeners, function(key, value){
@@ -34,6 +39,8 @@ metaScore.namespace('player').Component = (function () {
   metaScore.Dom.extend(Component);
 
   Component.defaults = {
+    'container': null,
+    'index': null,
     'properties': {}
   };
 
@@ -74,10 +81,13 @@ metaScore.namespace('player').Component = (function () {
     return values;
   };
 
-  Component.prototype.setProperty = function(name, value){
+  Component.prototype.setProperty = function(name, value, supressEvent){
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
-      this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+      
+      if(supressEvent !== true){
+        this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+      }
     }
   };
 

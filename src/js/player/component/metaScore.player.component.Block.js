@@ -199,8 +199,6 @@ metaScore.namespace('player.component').Block = (function () {
     this.pager = new metaScore.player.Pager()
       .addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this))
       .appendTo(this);
-
-    this.addPage();
   };
 
   Block.prototype.onPageCuePointStart = function(evt){
@@ -238,35 +236,55 @@ metaScore.namespace('player.component').Block = (function () {
     return this.page_wrapper.children('.page');
   };
 
-  Block.prototype.addPage = function(configs){
-    var page;
+  Block.prototype.addPage = function(configs, supressEvent){
+    var page,
+      previous_index, previous;
 
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
       page.appendTo(this.page_wrapper);
     }
     else{
+      if(metaScore.Var.isEmpty(configs)){
+        previous_index = this.getActivePageIndex();
+        previous = this.getPage(previous_index);
+        configs = {};
+        
+        if(this.getProperty('synched')){
+          configs['index'] = previous_index + 1;
+          configs['start-time'] = (previous.getProperty('end-time') - previous.getProperty('start-time')) / 2;
+          configs['end-time'] = previous.getProperty('end-time');
+          
+          previous.setProperty('end-time', configs['start-time']);
+        }
+      }
+    
       page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
-        'container': this.page_wrapper
+        'container': this.page_wrapper,
       }));
     }
 
     this.setActivePage(page);
 
+    if(supressEvent !== true){
+      this.triggerEvent('pageadd', {'block': this, 'page': page});
+    }
+
     return page;
   };
 
-  Block.prototype.removePage = function(page){
+  Block.prototype.removePage = function(page, supressEvent){
     var index;
 
     page.remove();
 
-    if(this.getPageCount() <= 0){
-      this.addPage();
-    }
-    else if(page.hasClass('active')){
+    if(page.hasClass('active')){
       index = Math.max(0, this.getActivePageIndex() - 1);
       this.setActivePage(index);
+    }
+
+    if(supressEvent !== true){
+      this.triggerEvent('pageremove', {'block': this, 'page': page});
     }
 
     return page;
@@ -295,26 +313,27 @@ metaScore.namespace('player.component').Block = (function () {
   };
 
   Block.prototype.setActivePage = function(page, supressEvent){
-    var pages = this.getPages();
+    var pages = this.getPages(), dom;
 
-    if(!(page instanceof metaScore.player.component.Page)){
-      page = pages.get(parseInt(page, 10))._metaScore;
+    if(metaScore.Var.is(page, 'number')){
+      page = pages.get(parseInt(page, 10));
+      page = page ? page._metaScore : null;
     }
 
-    if(page){
+    if(page instanceof metaScore.player.component.Page){
       pages.removeClass('active');
       page.addClass('active');
       this.updatePager();
 
       if(supressEvent !== true){
-        this.triggerEvent('pageactivate', {'page': page});
+        this.triggerEvent('pageactivate', {'block': this, 'page': page});
       }
     }
   };
 
   Block.prototype.updatePager = function(){
-    var index = this.getActivePageIndex();
-    var count = this.getPageCount();
+    var index = this.getActivePageIndex(),
+      count = this.getPageCount();
 
     this.pager.updateCount(index, count);
 

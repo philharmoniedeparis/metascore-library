@@ -133,6 +133,10 @@ metaScore.namespace('editor').Panel = (function(){
     var draggable, resizable;
 
     if(component !== this.getComponent()){
+      if(!component){
+        return this.unsetComponent();
+      }
+      
       this.unsetComponent(true);
       
       this.triggerEvent('componentbeforeset', {'component': component}, false);

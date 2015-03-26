@@ -52,7 +52,7 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'configs': {
           'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
-          'checkbox': true,
+          'checkbox': false,
           'inButton': true,
           'outButton': true
         },
@@ -68,7 +68,7 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'configs': {
           'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
-          'checkbox': true,
+          'checkbox': false,
           'inButton': true,
           'outButton': true
         },

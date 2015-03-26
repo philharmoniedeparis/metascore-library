@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-03-18 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-03-26 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -139,7 +139,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "527201";
+    return "3d121e";
   },
 
   namespace: function(str){
@@ -796,10 +796,10 @@ metaScore.Dom = (function () {
       parent = parent.get(0);
     }
 
-    if (metaScore.Var.is(selector, 'string')) {
+    if(metaScore.Var.is(selector, 'string')) {
       elements = parent.querySelectorAll(selector);
     }
-    else if (selector.length) {
+    else if(selector.length) {
       elements = selector;
     }
     else {
@@ -1093,6 +1093,38 @@ metaScore.Dom = (function () {
   };
 
   /**
+  * Inserts siblings before an element
+  * @param {object} the dom element
+  * @param {object/array} the siblings to insert
+  * @returns {void}
+  */
+  Dom.before = function(element, siblings){
+    if (!metaScore.Var.is(siblings, 'array')) {
+      siblings = [siblings];
+    }
+
+    metaScore.Array.each(siblings, function(index, sibling){
+      element.parentElement.insertBefore(sibling, element);
+    }, this);
+  };
+
+  /**
+  * Inserts siblings after an element
+  * @param {object} the dom element
+  * @param {object/array} the siblings to insert
+  * @returns {void}
+  */
+  Dom.after = function(element, siblings){
+    if (!metaScore.Var.is(siblings, 'array')) {
+      siblings = [siblings];
+    }
+
+    metaScore.Array.each(siblings, function(index, sibling){
+      element.parentElement.insertBefore(sibling, element.nextSibling);
+    }, this);
+  };
+
+  /**
   * Removes all element children
   * @param {object} the dom element
   * @returns {void}
@@ -1127,10 +1159,8 @@ metaScore.Dom = (function () {
       return Element.prototype.matches.call(el, selector);
     }
       
-    if(document = el.ownerDocument){
-      if(win = document.defaultView || document.parentWindow){
-        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
-      }
+    if((document = el.ownerDocument) && (win = document.defaultView || document.parentWindow)){
+      return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
     }
     
     return false;
@@ -1174,17 +1204,15 @@ metaScore.Dom = (function () {
   };
 
   Dom.prototype.filter = function(selector){
-    var filtered = [];
+    var filtered = new Dom();
 
     this.each(function(index, element) {
       if(Dom.is(element, selector)){
-        filtered.push(element);
+        filtered.add(element);
       }
     }, this);
 
-    this.elements = filtered;
-
-    return this;
+    return filtered;
   };
 
   Dom.prototype.index = function(selector){
@@ -1200,28 +1228,32 @@ metaScore.Dom = (function () {
     return found;
   };
 
-  Dom.prototype.child = function(selector){
-    var children = new Dom(),
-     child;
+  Dom.prototype.find = function(selector){
+    var descendents = new Dom();
 
     this.each(function(index, element) {
-      if(child = Dom.selectElement.call(this, selector, element)){
-        children.add(child);
-        return false;
-      }
+      descendents.add(Dom.selectElements.call(this, selector, element));
     }, this);
 
-    return children;
+    return descendents;
   };
 
   Dom.prototype.children = function(selector){
     var children = new Dom();
 
     this.each(function(index, element) {
-      children.add(Dom.selectElements.call(this, selector, element));
+      children.add(element.children);
     }, this);
 
+    if(selector){
+      children = children.filter(selector);
+    }
+
     return children;
+  };
+
+  Dom.prototype.child = function(selector){
+    return new Dom(this.children(selector).get(0));
   };
 
   Dom.prototype.parents = function(selector){
@@ -1232,7 +1264,7 @@ metaScore.Dom = (function () {
     }, this);
 
     if(selector){
-      parents.filter(selector);
+      parents = parents.filter(selector);
     }
 
     return parents;
@@ -1300,7 +1332,7 @@ metaScore.Dom = (function () {
           break;
         }
 
-        element = element.parentNode;
+        element = element.parentElement;
       }
 
       if(match){
@@ -1406,6 +1438,20 @@ metaScore.Dom = (function () {
     this.each(function(index, element) {
       Dom.append(parent, element);
     }, this);
+
+    return this;
+  };
+
+  Dom.prototype.insertAt = function(parent, index){
+    var element;
+  
+    if(!(parent instanceof Dom)){
+      parent = new Dom(parent);
+    }
+    
+    element = parent.children().get(index);
+    
+    Dom.before(element, this.elements);
 
     return this;
   };
@@ -2095,15 +2141,20 @@ metaScore.StyleSheet = (function () {
 
 })();
 /**
- * Variable
- *
- * @requires ../metaScore.base.js
- */
+* A helper class for variable type detection and value.
+* 
+* @class metaScore.Var
+* @extends metaScore.Class
+*/
 
 metaScore.Var = (function () {
 
   /**
   * Helper object used by the type function
+  *
+  * @property dot
+  * @type {Object}
+  * @private
   */
   var classes2types = {
     "[object Boolean]": "boolean",
@@ -2116,6 +2167,9 @@ metaScore.Var = (function () {
     "[object Object]": "object"
   };
 
+  /**
+  * @constructor
+  */
   function Var() {
   }
 
@@ -2123,8 +2177,10 @@ metaScore.Var = (function () {
 
   /**
   * Get the type of a variable
-  * @param {mixed} the variable
-  * @returns {string} the type
+  *
+  * @method type
+  * @param {Mixed} the variable
+  * @return {String} the type
   */
   Var.type = function(obj) {
     return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
@@ -2132,9 +2188,11 @@ metaScore.Var = (function () {
 
   /**
   * Checks if a variable is of a certain type
-  * @param {mixed} the variable
-  * @param {string} the type to check against
-  * @returns {boolean} true if the variable is of the specified type, false otherwise
+  *
+  * @method is
+  * @param {Mixed} the variable
+  * @param {String} the type to check against
+  * @return {Boolean} true if the variable is of the specified type, false otherwise
   */
   Var.is = function(obj, type) {
     return Var.type(obj) === type.toLowerCase();
@@ -2142,8 +2200,10 @@ metaScore.Var = (function () {
 
   /**
   * Checks if a variable is empty
-  * @param {mixed} the variable
-  * @returns {boolean} true if the variable is empty, false otherwise
+  *
+  * @method isEmpty
+  * @param {Mixed} the variable
+  * @return {Boolean} true if the variable is empty, false otherwise
   */
   Var.isEmpty = function(obj) {
     if(obj === undefined || obj == null){
@@ -2284,7 +2344,7 @@ metaScore.Player = (function () {
 
     switch(action){
       case 'rewind':
-        this.media.reset();
+        this.getMedia().reset();
         break;
 
       case 'play':
@@ -2296,7 +2356,7 @@ metaScore.Player = (function () {
   };
 
   Player.prototype.onMediaLoadedMetadata = function(evt){
-    this.media.reset();
+    this.getMedia().reset();
   };
 
   Player.prototype.onMediaPlay = function(evt){
@@ -2318,12 +2378,12 @@ metaScore.Player = (function () {
       page = evt.detail.page;
 
     if(block.getProperty('synched')){
-      this.media.setTime(page.getProperty('start-time'));
+      this.getMedia().setTime(page.getProperty('start-time'));
     }
   };
 
   Player.prototype.onCursorElementTime = function(evt){
-    this.media.setTime(evt.detail.value);
+    this.getMedia().setTime(evt.detail.value);
   };
 
   Player.prototype.onTextElementTime = function(evt){
@@ -2334,7 +2394,7 @@ metaScore.Player = (function () {
     }
 
     this.linkcuepoint = new metaScore.player.CuePoint({
-      media: this.media,
+      media: this.getMedia(),
       inTime: evt.detail.inTime,
       outTime: evt.detail.outTime,
       onStart: function(cuepoint){
@@ -2351,8 +2411,9 @@ metaScore.Player = (function () {
       }
     });
 
-    this.media.setTime(evt.detail.inTime);
-    this.media.play();
+    this.getMedia()
+      .setTime(evt.detail.inTime)
+      .play();
   };
 
   Player.prototype.onComponenetPropChange = function(evt){
@@ -2362,7 +2423,7 @@ metaScore.Player = (function () {
       case 'start-time':
       case 'end-time':
         component.setCuePoint({
-          'media': this.media
+          'media': this.getMedia()
         });
         break;
     }
@@ -2439,6 +2500,10 @@ metaScore.Player = (function () {
     return this.json;
   };
 
+  Player.prototype.getMedia = function(){
+    return this.media;
+  };
+
   Player.prototype.getComponent = function(selector){    
     return this.getComponents(selector).get(0);
   };
@@ -2511,12 +2576,14 @@ metaScore.Player = (function () {
     this.css.setInternalValue(value);
   };
 
-  Player.prototype.togglePlay = function(){      
-    if(this.media.isPlaying()){
-      this.media.pause();
+  Player.prototype.togglePlay = function(){
+    var media = this.getMedia();
+  
+    if(media.isPlaying()){
+      media.pause();
     }
     else{
-      this.media.play();
+      media.play();
     }
   };
 
@@ -2558,7 +2625,12 @@ metaScore.namespace('player').Component = (function () {
     this.get(0)._metaScore = this;
 
     if(this.configs.container){
-      this.appendTo(this.configs.container);
+      if(metaScore.Var.is(this.configs.index, 'number')){
+        this.insertAt(this.configs.container, this.configs.index);
+      }
+      else{
+        this.appendTo(this.configs.container);
+      }
     }
 
     metaScore.Object.each(this.configs.listeners, function(key, value){
@@ -2575,6 +2647,8 @@ metaScore.namespace('player').Component = (function () {
   metaScore.Dom.extend(Component);
 
   Component.defaults = {
+    'container': null,
+    'index': null,
     'properties': {}
   };
 
@@ -2615,10 +2689,13 @@ metaScore.namespace('player').Component = (function () {
     return values;
   };
 
-  Component.prototype.setProperty = function(name, value){
+  Component.prototype.setProperty = function(name, value, supressEvent){
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
-      this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+      
+      if(supressEvent !== true){
+        this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+      }
     }
   };
 
@@ -2821,8 +2898,8 @@ metaScore.namespace('player').Pager = (function () {
   Pager.prototype.updateCount = function(index, count){
     this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 
-    this.buttons.first.toggleClass('inactive', index === 0);
-    this.buttons.previous.toggleClass('inactive', index === 0);
+    this.buttons.first.toggleClass('inactive', index < 1);
+    this.buttons.previous.toggleClass('inactive', index < 1);
     this.buttons.next.toggleClass('inactive', index >= count - 1);
   };
 
@@ -3030,8 +3107,6 @@ metaScore.namespace('player.component').Block = (function () {
     this.pager = new metaScore.player.Pager()
       .addDelegate('.button', 'click', metaScore.Function.proxy(this.onPagerClick, this))
       .appendTo(this);
-
-    this.addPage();
   };
 
   Block.prototype.onPageCuePointStart = function(evt){
@@ -3069,35 +3144,55 @@ metaScore.namespace('player.component').Block = (function () {
     return this.page_wrapper.children('.page');
   };
 
-  Block.prototype.addPage = function(configs){
-    var page;
+  Block.prototype.addPage = function(configs, supressEvent){
+    var page,
+      previous_index, previous;
 
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
       page.appendTo(this.page_wrapper);
     }
     else{
+      if(metaScore.Var.isEmpty(configs)){
+        previous_index = this.getActivePageIndex();
+        previous = this.getPage(previous_index);
+        configs = {};
+        
+        if(this.getProperty('synched')){
+          configs['index'] = previous_index + 1;
+          configs['start-time'] = (previous.getProperty('end-time') - previous.getProperty('start-time')) / 2;
+          configs['end-time'] = previous.getProperty('end-time');
+          
+          previous.setProperty('end-time', configs['start-time']);
+        }
+      }
+    
       page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
-        'container': this.page_wrapper
+        'container': this.page_wrapper,
       }));
     }
 
     this.setActivePage(page);
 
+    if(supressEvent !== true){
+      this.triggerEvent('pageadd', {'block': this, 'page': page});
+    }
+
     return page;
   };
 
-  Block.prototype.removePage = function(page){
+  Block.prototype.removePage = function(page, supressEvent){
     var index;
 
     page.remove();
 
-    if(this.getPageCount() <= 0){
-      this.addPage();
-    }
-    else if(page.hasClass('active')){
+    if(page.hasClass('active')){
       index = Math.max(0, this.getActivePageIndex() - 1);
       this.setActivePage(index);
+    }
+
+    if(supressEvent !== true){
+      this.triggerEvent('pageremove', {'block': this, 'page': page});
     }
 
     return page;
@@ -3126,26 +3221,27 @@ metaScore.namespace('player.component').Block = (function () {
   };
 
   Block.prototype.setActivePage = function(page, supressEvent){
-    var pages = this.getPages();
+    var pages = this.getPages(), dom;
 
-    if(!(page instanceof metaScore.player.component.Page)){
-      page = pages.get(parseInt(page, 10))._metaScore;
+    if(metaScore.Var.is(page, 'number')){
+      page = pages.get(parseInt(page, 10));
+      page = page ? page._metaScore : null;
     }
 
-    if(page){
+    if(page instanceof metaScore.player.component.Page){
       pages.removeClass('active');
       page.addClass('active');
       this.updatePager();
 
       if(supressEvent !== true){
-        this.triggerEvent('pageactivate', {'page': page});
+        this.triggerEvent('pageactivate', {'block': this, 'page': page});
       }
     }
   };
 
   Block.prototype.updatePager = function(){
-    var index = this.getActivePageIndex();
-    var count = this.getPageCount();
+    var index = this.getActivePageIndex(),
+      count = this.getPageCount();
 
     this.pager.updateCount(index, count);
 
@@ -3524,6 +3620,7 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.defaults = {
     'type': 'audio',
+    'duration': null,
     'sources': [],
     'useFrameAnimation': true,
     'properties': {
@@ -3617,6 +3714,10 @@ metaScore.namespace('player.component').Media = (function () {
     return '[media]';
   };
 
+  Media.prototype.getDuration = function(){
+    return this.configs.duration;
+  };
+
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
     
@@ -3673,6 +3774,8 @@ metaScore.namespace('player.component').Media = (function () {
     this.dom.currentTime = parseFloat(time) / 1000;
 
     this.triggerTimeUpdate(false);
+    
+    return this;
   };
 
   Media.prototype.getTime = function() {
@@ -3752,7 +3855,7 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'configs': {
           'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
-          'checkbox': true,
+          'checkbox': false,
           'inButton': true,
           'outButton': true
         },
@@ -3768,7 +3871,7 @@ metaScore.namespace('player.component').Page = (function () {
         'type': 'Time',
         'configs': {
           'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
-          'checkbox': true,
+          'checkbox': false,
           'inButton': true,
           'outButton': true
         },

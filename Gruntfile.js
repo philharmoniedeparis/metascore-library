@@ -55,9 +55,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.loadNpmTasks('grunt-git-changelog');
   grunt.loadNpmTasks('grunt-git-rev-parse');
-  grunt.loadNpmTasks('grunt-jsdoc');
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-translate-extract');
 
@@ -192,11 +192,15 @@ module.exports = function(grunt) {
     qunit: {
       all: ['test/index.html']
     },
-    jsdoc: {
-      all: {
-        src:  CORE_LIST.concat(EDITOR_LIST, PLAYER_LIST),
+    yuidoc: {
+      compile: {
+        name: '<%= pkg.name %>',
+        description: '<%= pkg.description %>',
+        version: '<%= pkg.version %>',
+        url: '<%= pkg.homepage %>',
         options: {
-          destination: 'doc'
+          paths: './src/js',
+          outdir: './doc'
         }
       }
     },
@@ -278,6 +282,10 @@ module.exports = function(grunt) {
   
   grunt.registerTask('test', [
     'qunit'
+  ]);
+  
+  grunt.registerTask('doc', [
+    'yuidoc'
   ]);
   
   grunt.registerTask('drupal', [

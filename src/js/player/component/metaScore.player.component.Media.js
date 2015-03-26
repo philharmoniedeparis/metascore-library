@@ -18,6 +18,7 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.defaults = {
     'type': 'audio',
+    'duration': null,
     'sources': [],
     'useFrameAnimation': true,
     'properties': {
@@ -111,6 +112,10 @@ metaScore.namespace('player.component').Media = (function () {
     return '[media]';
   };
 
+  Media.prototype.getDuration = function(){
+    return this.configs.duration;
+  };
+
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
     
@@ -167,6 +172,8 @@ metaScore.namespace('player.component').Media = (function () {
     this.dom.currentTime = parseFloat(time) / 1000;
 
     this.triggerTimeUpdate(false);
+    
+    return this;
   };
 
   Media.prototype.getTime = function() {

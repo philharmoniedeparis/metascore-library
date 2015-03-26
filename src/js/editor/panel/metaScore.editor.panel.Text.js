@@ -184,6 +184,10 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   TextPanel.prototype.setComponent = function(component, supressEvent){
     if(component !== this.getComponent()){
+      if(!component){
+        return this.unsetComponent();
+      }
+      
       this.unsetComponent(true);
 
       this.component = component;
@@ -192,10 +196,10 @@ metaScore.namespace('editor.panel').Text = (function () {
         .setupFields(this.configs.properties)
         .updateFieldValue('locked', true)
         .addClass('has-component');
-    }
 
-    if(supressEvent !== true){
-      this.triggerEvent('componentset', {'component': component}, false);
+      if(supressEvent !== true){
+        this.triggerEvent('componentset', {'component': component}, false);
+      }
     }
 
     return this;

@@ -117,10 +117,10 @@ metaScore.Dom = (function () {
       parent = parent.get(0);
     }
 
-    if (metaScore.Var.is(selector, 'string')) {
+    if(metaScore.Var.is(selector, 'string')) {
       elements = parent.querySelectorAll(selector);
     }
-    else if (selector.length) {
+    else if(selector.length) {
       elements = selector;
     }
     else {
@@ -414,6 +414,38 @@ metaScore.Dom = (function () {
   };
 
   /**
+  * Inserts siblings before an element
+  * @param {object} the dom element
+  * @param {object/array} the siblings to insert
+  * @returns {void}
+  */
+  Dom.before = function(element, siblings){
+    if (!metaScore.Var.is(siblings, 'array')) {
+      siblings = [siblings];
+    }
+
+    metaScore.Array.each(siblings, function(index, sibling){
+      element.parentElement.insertBefore(sibling, element);
+    }, this);
+  };
+
+  /**
+  * Inserts siblings after an element
+  * @param {object} the dom element
+  * @param {object/array} the siblings to insert
+  * @returns {void}
+  */
+  Dom.after = function(element, siblings){
+    if (!metaScore.Var.is(siblings, 'array')) {
+      siblings = [siblings];
+    }
+
+    metaScore.Array.each(siblings, function(index, sibling){
+      element.parentElement.insertBefore(sibling, element.nextSibling);
+    }, this);
+  };
+
+  /**
   * Removes all element children
   * @param {object} the dom element
   * @returns {void}
@@ -448,10 +480,8 @@ metaScore.Dom = (function () {
       return Element.prototype.matches.call(el, selector);
     }
       
-    if(document = el.ownerDocument){
-      if(win = document.defaultView || document.parentWindow){
-        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
-      }
+    if((document = el.ownerDocument) && (win = document.defaultView || document.parentWindow)){
+      return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
     }
     
     return false;
@@ -495,17 +525,15 @@ metaScore.Dom = (function () {
   };
 
   Dom.prototype.filter = function(selector){
-    var filtered = [];
+    var filtered = new Dom();
 
     this.each(function(index, element) {
       if(Dom.is(element, selector)){
-        filtered.push(element);
+        filtered.add(element);
       }
     }, this);
 
-    this.elements = filtered;
-
-    return this;
+    return filtered;
   };
 
   Dom.prototype.index = function(selector){
@@ -521,28 +549,32 @@ metaScore.Dom = (function () {
     return found;
   };
 
-  Dom.prototype.child = function(selector){
-    var children = new Dom(),
-     child;
+  Dom.prototype.find = function(selector){
+    var descendents = new Dom();
 
     this.each(function(index, element) {
-      if(child = Dom.selectElement.call(this, selector, element)){
-        children.add(child);
-        return false;
-      }
+      descendents.add(Dom.selectElements.call(this, selector, element));
     }, this);
 
-    return children;
+    return descendents;
   };
 
   Dom.prototype.children = function(selector){
     var children = new Dom();
 
     this.each(function(index, element) {
-      children.add(Dom.selectElements.call(this, selector, element));
+      children.add(element.children);
     }, this);
 
+    if(selector){
+      children = children.filter(selector);
+    }
+
     return children;
+  };
+
+  Dom.prototype.child = function(selector){
+    return new Dom(this.children(selector).get(0));
   };
 
   Dom.prototype.parents = function(selector){
@@ -553,7 +585,7 @@ metaScore.Dom = (function () {
     }, this);
 
     if(selector){
-      parents.filter(selector);
+      parents = parents.filter(selector);
     }
 
     return parents;
@@ -621,7 +653,7 @@ metaScore.Dom = (function () {
           break;
         }
 
-        element = element.parentNode;
+        element = element.parentElement;
       }
 
       if(match){
@@ -727,6 +759,20 @@ metaScore.Dom = (function () {
     this.each(function(index, element) {
       Dom.append(parent, element);
     }, this);
+
+    return this;
+  };
+
+  Dom.prototype.insertAt = function(parent, index){
+    var element;
+  
+    if(!(parent instanceof Dom)){
+      parent = new Dom(parent);
+    }
+    
+    element = parent.children().get(index);
+    
+    Dom.before(element, this.elements);
 
     return this;
   };
