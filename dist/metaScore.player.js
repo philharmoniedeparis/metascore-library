@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-03-26 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-03-31 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -139,7 +139,7 @@ metaScore = global.metaScore = {
   },
 
   getRevision: function(){
-    return "aff26e";
+    return "6597cc";
   },
 
   namespace: function(str){
@@ -1181,7 +1181,7 @@ metaScore.Dom = (function () {
       }
     }
     
-    return false;
+    return null;
   };
 
   Dom.prototype.add = function(elements){
@@ -1516,7 +1516,7 @@ metaScore.Dom = (function () {
 
     this.each(function(index, element) {
       found = Dom.closest(element, selector);
-      return found;
+      return found !== null;
     }, this);
 
     return found;

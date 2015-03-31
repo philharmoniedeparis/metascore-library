@@ -538,41 +538,62 @@
           }
 
           &.buttonsfield{
-            button{
-              width: 23px;
-              height: 23px;
-              margin-right: 2px;
-              background-color: #EAEAEA;
-              background-repeat: no-repeat;
-              background-position: center center;
+            .input-wrapper{
+              background-image: url('img/editor/wysiwyg/bg.png');
+              background-repeat: repeat;
               
-              &.pressed{
-                background-color: darken(#EAEAEA, 25%);
-              }
+              button{
+                float: left;
+                width: 20px;
+                height: 20px;
+                background-repeat: no-repeat;
+                background-position: center center;
+                
+                &.pressed{
+                  background-color: darken(#EAEAEA, 25%);
+                }
 
-              &[data-action="bold"]{
-                background-image: url('img/editor/wysiwyg/bold.png');
-              }
-              &[data-action="italic"]{
-                background-image: url('img/editor/wysiwyg/italic.png');
-              }
-              &[data-action="strikeThrough"]{
-                background-image: url('img/editor/wysiwyg/strikeThrough.png');
-              }
-              &[data-action="underline"]{
-                background-image: url('img/editor/wysiwyg/underline.png');
-              }
-              &[data-action="subscript"]{
-                background-image: url('img/editor/wysiwyg/subscript.png');
-              }
-              &[data-action="superscript"]{
-                background-image: url('img/editor/wysiwyg/superscript.png');
-              }
-              &[data-action="link"]{
-                background-image: url('img/editor/wysiwyg/link.png');
-              }
-              &[data-action="unlink"]{
-                background-image: url('img/editor/wysiwyg/unlink.png');
+                &[data-action="bold"]{
+                  background-image: url('img/editor/wysiwyg/bold.png');
+                }
+                &[data-action="italic"]{
+                  background-image: url('img/editor/wysiwyg/italic.png');
+                }
+                &[data-action="strikeThrough"]{
+                  background-image: url('img/editor/wysiwyg/strikeThrough.png');
+                }
+                &[data-action="underline"]{
+                  background-image: url('img/editor/wysiwyg/underline.png');
+                }
+                &[data-action="subscript"]{
+                  background-image: url('img/editor/wysiwyg/subscript.png');
+                }
+                &[data-action="superscript"]{
+                  background-image: url('img/editor/wysiwyg/superscript.png');
+                }
+                &[data-action="justifyLeft"]{
+                  background-image: url('img/editor/wysiwyg/justifyLeft.png');
+                  clear: left;
+                }
+                &[data-action="justifyCenter"]{
+                  background-image: url('img/editor/wysiwyg/justifyCenter.png');
+                }
+                &[data-action="justifyRight"]{
+                  background-image: url('img/editor/wysiwyg/justifyRight.png');
+                }
+                &[data-action="justifyFull"]{
+                  background-image: url('img/editor/wysiwyg/justifyFull.png');
+                }
+                &[data-action="link"]{
+                  background-image: url('img/editor/wysiwyg/link.png');
+                  clear: left;
+                }
+                &[data-action="unlink"]{
+                  background-image: url('img/editor/wysiwyg/unlink.png');
+                }
+                &[data-action="removeFormat"]{
+                  background-image: url('img/editor/wysiwyg/removeFormat.png');
+                }
               }
             }
           }
@@ -892,6 +913,16 @@
     &.guide-details{
       .contents{
         min-width: 500px;
+      }
+    }
+
+    &.iframe{
+      .contents{        
+        iframe{
+          min-width: 800px;
+          min-height: 500px;
+          border: none;
+        }
       }
     }
 

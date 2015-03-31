@@ -16,28 +16,11 @@ metaScore.namespace('editor').Overlay = (function(){
 
     // call parent constructor
     Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
-
-    if(this.configs.modal){
-      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
-    }
+    
+    this.setupDOM();
 
     if(this.configs.autoShow){
       this.show();
-    }
-
-    if(this.configs.toolbar){
-      this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
-        .appendTo(this);
-
-      this.toolbar.addButton('close')
-        .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
-    }
-
-    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);
-
-    if(this.configs.draggable){
-      this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
     }
   }
 
@@ -75,6 +58,29 @@ metaScore.namespace('editor').Overlay = (function(){
   };
 
   metaScore.Dom.extend(Overlay);
+
+  Overlay.prototype.setupDOM = function(){
+
+    if(this.configs.modal){
+      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
+    }
+
+    if(this.configs.toolbar){
+      this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
+        .appendTo(this);
+
+      this.toolbar.addButton('close')
+        .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    }
+
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);
+
+    if(this.configs.draggable){
+      this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
+    }
+  
+  };
 
   Overlay.prototype.show = function(){
     if(this.configs.modal){

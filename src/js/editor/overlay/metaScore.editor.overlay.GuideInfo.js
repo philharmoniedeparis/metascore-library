@@ -14,8 +14,6 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     GuideInfo.parent.call(this, this.configs);
 
     this.addClass('guide-details');
-
-    this.setupUI();
   }
 
   GuideInfo.defaults = {
@@ -32,9 +30,13 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
   metaScore.editor.Overlay.extend(GuideInfo);
 
-  GuideInfo.prototype.setupUI = function(){
+  GuideInfo.prototype.setupDOM = function(){
+    var contents;
 
-    var contents = this.getContents();
+    // call parent method
+    GuideInfo.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};

@@ -10,16 +10,14 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
   function ColorSelector(configs) {
     this.configs = this.getConfigs(configs);
 
-    // call parent constructor
-    ColorSelector.parent.call(this, this.configs);
-
-    this.addClass('color-selector');
-
     // fix event handlers scope
     this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
     this.onAlphaMousemove = metaScore.Function.proxy(this.onAlphaMousemove, this);
 
-    this.setupUI();
+    // call parent constructor
+    ColorSelector.parent.call(this, this.configs);
+
+    this.addClass('color-selector');
   }
 
   ColorSelector.defaults = {
@@ -37,7 +35,9 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   metaScore.editor.Overlay.extend(ColorSelector);
 
-  ColorSelector.prototype.setupUI = function(){
+  ColorSelector.prototype.setupDOM = function(){
+    // call parent method
+    ColorSelector.parent.prototype.setupDOM.call(this);
 
     this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
     this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})

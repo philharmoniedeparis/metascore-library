@@ -41,17 +41,18 @@ metaScore.namespace('editor.field').Image = (function () {
       return;
     }
     
-    Drupal.media.popups.mediaBrowser(metaScore.Function.proxy(this.onFileSelect, this));
+    this.openBrowser(metaScore.Function.proxy(this.onFileSelect, this));
+  };
+
+  ImageField.prototype.openBrowser = function(callback){
   };
 
   ImageField.prototype.onClearClick = function(evt){
     this.setValue(null);
   };
 
-  ImageField.prototype.onFileSelect = function(files){
-    if(files.length > 0){
-      this.setValue(files[0].url +'?fid='+ files[0].fid);
-    }
+  ImageField.prototype.onFileSelect = function(url){
+    this.setValue(url);
   };
 
   return ImageField;

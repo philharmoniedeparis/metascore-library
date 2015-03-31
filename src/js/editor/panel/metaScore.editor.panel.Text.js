@@ -1,13 +1,5 @@
 /**
- * Block
- *
- * @requires ../metaScore.editor.Panel.js
- * @requires ../field/metaScore.editor.field.Color.js
- * @requires ../field/metaScore.editor.field.Select.js
- * @requires ../field/metaScore.editor.field.Buttons.js
- * @requires ../../helpers/metaScore.String.js
- * @requires ../../helpers/metaScore.Function.js
- * @requires ../../helpers/metaScore.Color.js
+ * Text
  */
 
 metaScore.namespace('editor.panel').Text = (function () {
@@ -85,64 +77,97 @@ metaScore.namespace('editor.panel').Text = (function () {
           this.execCommand('fontName', value);
         }
       },
-      'fontStyle': {
+      'formatBlock': {
+        'type': 'Select',
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.formatBlock', 'Format'),
+          'options': {
+            "p": metaScore.Locale.t('editor.panel.Text.formatBlock.p', 'Normal'),
+            "h1": metaScore.Locale.t('editor.panel.Text.formatBlock.h1', 'Heading 1'),
+            "h2": metaScore.Locale.t('editor.panel.Text.formatBlock.h2', 'Heading 2'),
+            "h3": metaScore.Locale.t('editor.panel.Text.formatBlock.h3', 'Heading 3'),
+            "h4": metaScore.Locale.t('editor.panel.Text.formatBlock.h4', 'Heading 4'),
+            "pre": metaScore.Locale.t('editor.panel.Text.formatBlock.pre', 'Formatted')
+          }
+        },
+        'setter': function(value){
+          this.execCommand('formatBlock', value);
+        }
+      },
+      'fontSize': {
+        'type': 'Select',
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.font-size', 'Font size'),
+          'options': {
+            "1": '1',
+            "2": '2',
+            "3": '3',
+            "4": '4',
+            "5": '5',
+            "6": '6',
+            "7": '7'
+          }
+        },
+        'setter': function(value){
+          this.execCommand('fontSize', value);
+        }
+      },
+      'formatting': {
         'type': 'Buttons',
         'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
+          'label': metaScore.Locale.t('editor.panel.Text.formatting', 'Formatting'),
           'buttons': {
             'bold': {
               'data-action': 'bold',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.bold', 'Bold')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.bold', 'Bold')
             },
             'italic': {
               'data-action': 'italic',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.italic', 'Italic')
-            }
-          }
-        },
-        'setter': function(value){
-          this.execCommand(value);
-        }
-      },
-      'fontStyle2': {
-        'type': 'Buttons',
-        'configs': {
-          'label': '&nbsp;',
-          'buttons': {
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.italic', 'Italic')
+            },
             'strikeThrough': {
               'data-action': 'strikeThrough',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.strikeThrough', 'Strikethrough')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.strikeThrough', 'Strikethrough')
             },
             'underline': {
               'data-action': 'underline',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.underline', 'Underline')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.underline', 'Underline')
             },
             'subscript': {
               'data-action': 'subscript',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.subscript', 'Subscript')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.subscript', 'Subscript')
             },
             'superscript': {
               'data-action': 'superscript',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.superscript', 'Superscript')
-            }
-          }
-        },
-        'setter': function(value){
-          this.execCommand(value);
-        }
-      },
-      'link': {
-        'type': 'Buttons',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.link', 'Link'),
-          'buttons': {
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.superscript', 'Superscript')
+            },
+            'justifyLeft': {
+              'data-action': 'justifyLeft',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyLeft', 'Left')
+            },
+            'justifyCenter': {
+              'data-action': 'justifyCenter',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyCenter', 'Center')
+            },
+            'justifyRight': {
+              'data-action': 'justifyRight',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyRight', 'Right')
+            },
+            'justifyFull': {
+              'data-action': 'justifyFull',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyFull', 'Justify')
+            },
             'link': {
               'data-action': 'link',
-              'title': metaScore.Locale.t('editor.panel.Text.link.link', 'Add/Modify')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.link', 'Add/Modify link')
             },
             'unlink': {
               'data-action': 'unlink',
-              'title': metaScore.Locale.t('editor.panel.Text.link.unlink', 'Remove')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.unlink', 'Remove link')
+            },
+            'removeFormat': {
+              'data-action': 'removeFormat',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.removeFormat', 'Remove formatting')
             }
           }
         },
@@ -231,7 +256,8 @@ metaScore.namespace('editor.panel').Text = (function () {
         .removeListener('click', this.onComponentContentsClick)
         .removeListener('keydown', this.onComponentContentsKey)
         .removeListener('keypress', this.onComponentContentsKey)
-        .removeListener('keyup', this.onComponentContentsKey);
+        .removeListener('keyup', this.onComponentContentsKey)
+        .removeListener('mouseup', this.onComponentContentsMouseup);
         
       this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
         
@@ -304,30 +330,30 @@ metaScore.namespace('editor.panel').Text = (function () {
   TextPanel.prototype.updateButtons = function(evt){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
-      field;
-      
-    metaScore.Object.each(this.getField('fontStyle').getButtons(), function(key, button){
-      button.toggleClass('pressed', document.queryCommandState(key));
-    });
+      element, is_link;
     
-    metaScore.Object.each(this.getField('fontStyle2').getButtons(), function(key, button){
-      button.toggleClass('pressed', document.queryCommandState(key));
-    });
+    element = new metaScore.Dom(this.getSelectedElement());
+    is_link = element.closest('a') !== null;
     
-    this.getField('foreColor').setValue(document.queryCommandValue('foreColor'), true);
-    this.getField('backColor').setValue(document.queryCommandValue('backColor'), true);
-    this.getField('fontName').setValue(document.queryCommandValue('fontName'), true);
-    
-    if(metaScore.Dom.closest(this.getSelectedElement(), 'a')){
-      field = this.getField('link');
-      field.getButton('link').addClass('pressed');
-      field.getButton('unlink').removeClass('disabled');
-    }
-    else{
-      field = this.getField('link');
-      field.getButton('link').removeClass('pressed');
-      field.getButton('unlink').addClass('disabled');
-    }
+    metaScore.Object.each(this.getField(), function(field_key, field){
+      switch(field_key){
+        case 'formatting':
+          metaScore.Object.each(field.getButtons(), function(button_key, button){
+            switch(button_key){
+              case 'link':
+                button.toggleClass('pressed', is_link);
+                break;
+                
+              default:
+                button.toggleClass('pressed', document.queryCommandState(button_key));
+            }
+          });
+          break;
+                
+        default:
+          field.setValue(document.queryCommandValue(field_key), true);
+      }
+    }, this);
   };
 
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){

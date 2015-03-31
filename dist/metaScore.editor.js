@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-03-26 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-03-31 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -1551,28 +1551,11 @@ metaScore.namespace('editor').Overlay = (function(){
 
     // call parent constructor
     Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
-
-    if(this.configs.modal){
-      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
-    }
+    
+    this.setupDOM();
 
     if(this.configs.autoShow){
       this.show();
-    }
-
-    if(this.configs.toolbar){
-      this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
-        .appendTo(this);
-
-      this.toolbar.addButton('close')
-        .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
-    }
-
-    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-      .appendTo(this);
-
-    if(this.configs.draggable){
-      this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
     }
   }
 
@@ -1610,6 +1593,29 @@ metaScore.namespace('editor').Overlay = (function(){
   };
 
   metaScore.Dom.extend(Overlay);
+
+  Overlay.prototype.setupDOM = function(){
+
+    if(this.configs.modal){
+      this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
+    }
+
+    if(this.configs.toolbar){
+      this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
+        .appendTo(this);
+
+      this.toolbar.addButton('close')
+        .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+    }
+
+    this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+      .appendTo(this);
+
+    if(this.configs.draggable){
+      this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
+    }
+  
+  };
 
   Overlay.prototype.show = function(){
     if(this.configs.modal){
@@ -2384,17 +2390,18 @@ metaScore.namespace('editor.field').Image = (function () {
       return;
     }
     
-    Drupal.media.popups.mediaBrowser(metaScore.Function.proxy(this.onFileSelect, this));
+    this.openBrowser(metaScore.Function.proxy(this.onFileSelect, this));
+  };
+
+  ImageField.prototype.openBrowser = function(callback){
   };
 
   ImageField.prototype.onClearClick = function(evt){
     this.setValue(null);
   };
 
-  ImageField.prototype.onFileSelect = function(files){
-    if(files.length > 0){
-      this.setValue(files[0].url +'?fid='+ files[0].fid);
-    }
+  ImageField.prototype.onFileSelect = function(url){
+    this.setValue(url);
   };
 
   return ImageField;
@@ -3095,15 +3102,7 @@ metaScore.namespace('editor.panel').Page = (function () {
 
 })();
 /**
- * Block
- *
- * @requires ../metaScore.editor.Panel.js
- * @requires ../field/metaScore.editor.field.Color.js
- * @requires ../field/metaScore.editor.field.Select.js
- * @requires ../field/metaScore.editor.field.Buttons.js
- * @requires ../../helpers/metaScore.String.js
- * @requires ../../helpers/metaScore.Function.js
- * @requires ../../helpers/metaScore.Color.js
+ * Text
  */
 
 metaScore.namespace('editor.panel').Text = (function () {
@@ -3181,64 +3180,97 @@ metaScore.namespace('editor.panel').Text = (function () {
           this.execCommand('fontName', value);
         }
       },
-      'fontStyle': {
+      'formatBlock': {
+        'type': 'Select',
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.formatBlock', 'Format'),
+          'options': {
+            "p": metaScore.Locale.t('editor.panel.Text.formatBlock.p', 'Normal'),
+            "h1": metaScore.Locale.t('editor.panel.Text.formatBlock.h1', 'Heading 1'),
+            "h2": metaScore.Locale.t('editor.panel.Text.formatBlock.h2', 'Heading 2'),
+            "h3": metaScore.Locale.t('editor.panel.Text.formatBlock.h3', 'Heading 3'),
+            "h4": metaScore.Locale.t('editor.panel.Text.formatBlock.h4', 'Heading 4'),
+            "pre": metaScore.Locale.t('editor.panel.Text.formatBlock.pre', 'Formatted')
+          }
+        },
+        'setter': function(value){
+          this.execCommand('formatBlock', value);
+        }
+      },
+      'fontSize': {
+        'type': 'Select',
+        'configs': {
+          'label': metaScore.Locale.t('editor.panel.Text.font-size', 'Font size'),
+          'options': {
+            "1": '1',
+            "2": '2',
+            "3": '3',
+            "4": '4',
+            "5": '5',
+            "6": '6',
+            "7": '7'
+          }
+        },
+        'setter': function(value){
+          this.execCommand('fontSize', value);
+        }
+      },
+      'formatting': {
         'type': 'Buttons',
         'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.font-style', 'Font style'),
+          'label': metaScore.Locale.t('editor.panel.Text.formatting', 'Formatting'),
           'buttons': {
             'bold': {
               'data-action': 'bold',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.bold', 'Bold')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.bold', 'Bold')
             },
             'italic': {
               'data-action': 'italic',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.italic', 'Italic')
-            }
-          }
-        },
-        'setter': function(value){
-          this.execCommand(value);
-        }
-      },
-      'fontStyle2': {
-        'type': 'Buttons',
-        'configs': {
-          'label': '&nbsp;',
-          'buttons': {
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.italic', 'Italic')
+            },
             'strikeThrough': {
               'data-action': 'strikeThrough',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.strikeThrough', 'Strikethrough')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.strikeThrough', 'Strikethrough')
             },
             'underline': {
               'data-action': 'underline',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.underline', 'Underline')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.underline', 'Underline')
             },
             'subscript': {
               'data-action': 'subscript',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.subscript', 'Subscript')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.subscript', 'Subscript')
             },
             'superscript': {
               'data-action': 'superscript',
-              'title': metaScore.Locale.t('editor.panel.Text.font-style.superscript', 'Superscript')
-            }
-          }
-        },
-        'setter': function(value){
-          this.execCommand(value);
-        }
-      },
-      'link': {
-        'type': 'Buttons',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.link', 'Link'),
-          'buttons': {
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.superscript', 'Superscript')
+            },
+            'justifyLeft': {
+              'data-action': 'justifyLeft',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyLeft', 'Left')
+            },
+            'justifyCenter': {
+              'data-action': 'justifyCenter',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyCenter', 'Center')
+            },
+            'justifyRight': {
+              'data-action': 'justifyRight',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyRight', 'Right')
+            },
+            'justifyFull': {
+              'data-action': 'justifyFull',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyFull', 'Justify')
+            },
             'link': {
               'data-action': 'link',
-              'title': metaScore.Locale.t('editor.panel.Text.link.link', 'Add/Modify')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.link', 'Add/Modify link')
             },
             'unlink': {
               'data-action': 'unlink',
-              'title': metaScore.Locale.t('editor.panel.Text.link.unlink', 'Remove')
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.unlink', 'Remove link')
+            },
+            'removeFormat': {
+              'data-action': 'removeFormat',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.removeFormat', 'Remove formatting')
             }
           }
         },
@@ -3327,7 +3359,8 @@ metaScore.namespace('editor.panel').Text = (function () {
         .removeListener('click', this.onComponentContentsClick)
         .removeListener('keydown', this.onComponentContentsKey)
         .removeListener('keypress', this.onComponentContentsKey)
-        .removeListener('keyup', this.onComponentContentsKey);
+        .removeListener('keyup', this.onComponentContentsKey)
+        .removeListener('mouseup', this.onComponentContentsMouseup);
         
       this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
         
@@ -3400,30 +3433,30 @@ metaScore.namespace('editor.panel').Text = (function () {
   TextPanel.prototype.updateButtons = function(evt){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
-      field;
-      
-    metaScore.Object.each(this.getField('fontStyle').getButtons(), function(key, button){
-      button.toggleClass('pressed', document.queryCommandState(key));
-    });
+      element, is_link;
     
-    metaScore.Object.each(this.getField('fontStyle2').getButtons(), function(key, button){
-      button.toggleClass('pressed', document.queryCommandState(key));
-    });
+    element = new metaScore.Dom(this.getSelectedElement());
+    is_link = element.closest('a') !== null;
     
-    this.getField('foreColor').setValue(document.queryCommandValue('foreColor'), true);
-    this.getField('backColor').setValue(document.queryCommandValue('backColor'), true);
-    this.getField('fontName').setValue(document.queryCommandValue('fontName'), true);
-    
-    if(metaScore.Dom.closest(this.getSelectedElement(), 'a')){
-      field = this.getField('link');
-      field.getButton('link').addClass('pressed');
-      field.getButton('unlink').removeClass('disabled');
-    }
-    else{
-      field = this.getField('link');
-      field.getButton('link').removeClass('pressed');
-      field.getButton('unlink').addClass('disabled');
-    }
+    metaScore.Object.each(this.getField(), function(field_key, field){
+      switch(field_key){
+        case 'formatting':
+          metaScore.Object.each(field.getButtons(), function(button_key, button){
+            switch(button_key){
+              case 'link':
+                button.toggleClass('pressed', is_link);
+                break;
+                
+              default:
+                button.toggleClass('pressed', document.queryCommandState(button_key));
+            }
+          });
+          break;
+                
+        default:
+          field.setValue(document.queryCommandValue(field_key), true);
+      }
+    }, this);
   };
 
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){
@@ -3612,6 +3645,24 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     Alert.parent.call(this, this.configs);
 
     this.addClass('alert');
+  }
+
+  Alert.defaults = {
+    /**
+    * True to make this draggable
+    */
+    draggable: false,
+
+    text: '',
+
+    buttons: []
+  };
+
+  metaScore.editor.Overlay.extend(Alert);
+
+  Alert.prototype.setupDOM = function(){
+    // call parent method
+    Alert.parent.prototype.setupDOM.call(this);
 
     this.text = new metaScore.Dom('<div/>', {'class': 'text'})
       .appendTo(this.contents);
@@ -3629,20 +3680,8 @@ metaScore.namespace('editor.overlay').Alert = (function () {
         this.addButton(action, label);
       }, this);
     }
-  }
-
-  Alert.defaults = {
-    /**
-    * True to make this draggable
-    */
-    draggable: false,
-
-    text: '',
-
-    buttons: []
+    
   };
-
-  metaScore.editor.Overlay.extend(Alert);
 
   Alert.prototype.setText = function(str){
     this.text.text(str);
@@ -3685,8 +3724,6 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     BorderRadius.parent.call(this, this.configs);
 
     this.addClass('border-radius');
-
-    this.setupUI();
   }
 
   BorderRadius.defaults = {
@@ -3703,9 +3740,13 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
   metaScore.editor.Overlay.extend(BorderRadius);
 
-  BorderRadius.prototype.setupUI = function(){
+  BorderRadius.prototype.setupDOM = function(){
+    var contents;
 
-    var contents = this.getContents();
+    // call parent method
+    BorderRadius.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};
@@ -3866,16 +3907,14 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
   function ColorSelector(configs) {
     this.configs = this.getConfigs(configs);
 
-    // call parent constructor
-    ColorSelector.parent.call(this, this.configs);
-
-    this.addClass('color-selector');
-
     // fix event handlers scope
     this.onGradientMousemove = metaScore.Function.proxy(this.onGradientMousemove, this);
     this.onAlphaMousemove = metaScore.Function.proxy(this.onAlphaMousemove, this);
 
-    this.setupUI();
+    // call parent constructor
+    ColorSelector.parent.call(this, this.configs);
+
+    this.addClass('color-selector');
   }
 
   ColorSelector.defaults = {
@@ -3893,7 +3932,9 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   metaScore.editor.Overlay.extend(ColorSelector);
 
-  ColorSelector.prototype.setupUI = function(){
+  ColorSelector.prototype.setupDOM = function(){
+    // call parent method
+    ColorSelector.parent.prototype.setupDOM.call(this);
 
     this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
     this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
@@ -4187,8 +4228,6 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     GuideInfo.parent.call(this, this.configs);
 
     this.addClass('guide-details');
-
-    this.setupUI();
   }
 
   GuideInfo.defaults = {
@@ -4205,9 +4244,13 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
   metaScore.editor.Overlay.extend(GuideInfo);
 
-  GuideInfo.prototype.setupUI = function(){
+  GuideInfo.prototype.setupDOM = function(){
+    var contents;
 
-    var contents = this.getContents();
+    // call parent method
+    GuideInfo.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};
@@ -4401,7 +4444,6 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
     this.addClass('link-editor');
 
-    this.setupUI();
     this.toggleFields();
 
     if(this.configs.link){
@@ -4428,9 +4470,13 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   metaScore.editor.Overlay.extend(LinkEditor);
 
-  LinkEditor.prototype.setupUI = function(){
+  LinkEditor.prototype.setupDOM = function(){
+    var contents;
 
-    var contents = this.getContents();
+    // call parent method
+    LinkEditor.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};
@@ -4661,6 +4707,46 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
   };
 
   return Toolbar;
+
+})();
+/**
+ * iFrame
+ */
+
+metaScore.namespace('editor.overlay').iFrame = (function () {
+
+  function iFrame(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call parent constructor
+    iFrame.parent.call(this, this.configs);
+
+    this.addClass('iframe');
+  }
+
+  iFrame.defaults = {
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+
+    /**
+    * The iframe url
+    */
+    url: null
+  };
+
+  metaScore.editor.Overlay.extend(iFrame);
+
+  iFrame.prototype.setupDOM = function(){
+    // call parent method
+    iFrame.parent.prototype.setupDOM.call(this);
+    
+    this.frame = new metaScore.Dom('<iframe/>', {'src': this.configs.url})
+      .appendTo(this.contents);
+  };
+
+  return iFrame;
 
 })();
 

@@ -13,8 +13,6 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     BorderRadius.parent.call(this, this.configs);
 
     this.addClass('border-radius');
-
-    this.setupUI();
   }
 
   BorderRadius.defaults = {
@@ -31,9 +29,13 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
   metaScore.editor.Overlay.extend(BorderRadius);
 
-  BorderRadius.prototype.setupUI = function(){
+  BorderRadius.prototype.setupDOM = function(){
+    var contents;
 
-    var contents = this.getContents();
+    // call parent method
+    BorderRadius.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};

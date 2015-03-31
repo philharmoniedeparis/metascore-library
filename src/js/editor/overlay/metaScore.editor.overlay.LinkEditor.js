@@ -15,7 +15,6 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
     this.addClass('link-editor');
 
-    this.setupUI();
     this.toggleFields();
 
     if(this.configs.link){
@@ -42,9 +41,13 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   metaScore.editor.Overlay.extend(LinkEditor);
 
-  LinkEditor.prototype.setupUI = function(){
+  LinkEditor.prototype.setupDOM = function(){
+    var contents;
 
-    var contents = this.getContents();
+    // call parent method
+    LinkEditor.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};

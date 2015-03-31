@@ -13,6 +13,24 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     Alert.parent.call(this, this.configs);
 
     this.addClass('alert');
+  }
+
+  Alert.defaults = {
+    /**
+    * True to make this draggable
+    */
+    draggable: false,
+
+    text: '',
+
+    buttons: []
+  };
+
+  metaScore.editor.Overlay.extend(Alert);
+
+  Alert.prototype.setupDOM = function(){
+    // call parent method
+    Alert.parent.prototype.setupDOM.call(this);
 
     this.text = new metaScore.Dom('<div/>', {'class': 'text'})
       .appendTo(this.contents);
@@ -30,20 +48,8 @@ metaScore.namespace('editor.overlay').Alert = (function () {
         this.addButton(action, label);
       }, this);
     }
-  }
-
-  Alert.defaults = {
-    /**
-    * True to make this draggable
-    */
-    draggable: false,
-
-    text: '',
-
-    buttons: []
+    
   };
-
-  metaScore.editor.Overlay.extend(Alert);
 
   Alert.prototype.setText = function(str){
     this.text.text(str);

@@ -502,7 +502,7 @@ metaScore.Dom = (function () {
       }
     }
     
-    return false;
+    return null;
   };
 
   Dom.prototype.add = function(elements){
@@ -837,7 +837,7 @@ metaScore.Dom = (function () {
 
     this.each(function(index, element) {
       found = Dom.closest(element, selector);
-      return found;
+      return found !== null;
     }, this);
 
     return found;
