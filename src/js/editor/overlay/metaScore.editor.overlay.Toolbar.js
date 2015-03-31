@@ -1,16 +1,17 @@
 /**
- * Toolbar
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Toolbar
+* @namespace metaScore.editor.overlay
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor.overlay').Toolbar = (function(){
 
   /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
+   * Initialize
+   * @constructor
+   * @param {} configs
+   */
   function Toolbar(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -37,10 +38,21 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
 
   metaScore.Dom.extend(Toolbar);
 
+  /**
+   * Description
+   * @method getTitle
+   * @return MemberExpression
+   */
   Toolbar.prototype.getTitle = function(){
     return this.title;
   };
 
+  /**
+   * Description
+   * @method addButton
+   * @param {} action
+   * @return button
+   */
   Toolbar.prototype.addButton = function(action){
     var button = new metaScore.editor.Button().data('action', action)
       .appendTo(this.buttons);
@@ -48,6 +60,12 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     return button;
   };
 
+  /**
+   * Description
+   * @method getButton
+   * @param {} action
+   * @return CallExpression
+   */
   Toolbar.prototype.getButton = function(action){
     return this.buttons.children('[data-action="'+ action +'"]');
   };

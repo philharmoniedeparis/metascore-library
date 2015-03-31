@@ -1,11 +1,17 @@
 /**
- * Player Page
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Pager
+* @namespace metaScore.player
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('player').Pager = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Pager(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -31,6 +37,13 @@ metaScore.namespace('player').Pager = (function () {
 
   metaScore.Dom.extend(Pager);
 
+  /**
+   * Description
+   * @method updateCount
+   * @param {} index
+   * @param {} count
+   * @return 
+   */
   Pager.prototype.updateCount = function(index, count){
     this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 

@@ -1,13 +1,16 @@
 /**
- * MainMenu
- *
- * @requires metaScore.editor.button.js
- * @requires field/metaScore.editor.field.timefield.js
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class MainMenu
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
+
 metaScore.namespace('editor').MainMenu = (function(){
 
+  /**
+   * Description
+   * @constructor
+   */
   function MainMenu() {
     // call parent constructor
     MainMenu.parent.call(this, '<div/>', {'class': 'main-menu clearfix'});
@@ -17,6 +20,11 @@ metaScore.namespace('editor').MainMenu = (function(){
 
   metaScore.Dom.extend(MainMenu);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   MainMenu.prototype.setupUI = function(){
 
     var left, right;
@@ -131,6 +139,13 @@ metaScore.namespace('editor').MainMenu = (function(){
 
   };
 
+  /**
+   * Description
+   * @method toggleButton
+   * @param {} action
+   * @param {} state
+   * @return ThisExpression
+   */
   MainMenu.prototype.toggleButton = function(action, state){
     this.find('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
 

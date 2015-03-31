@@ -1,12 +1,17 @@
 /**
- * Dom
- *
- * @requires ../metaScore.base.js
- * @requires metaScore.dom.js
- */
+* Description
+* @class Resizable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Resizable = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Resizable(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -44,6 +49,12 @@ metaScore.Resizable = (function () {
 
   metaScore.Class.extend(Resizable);
 
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
   Resizable.prototype.onMouseDown = function(evt){
     if(!this.enabled){
       return;
@@ -70,6 +81,12 @@ metaScore.Resizable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
   Resizable.prototype.onMouseMove = function(evt){
     var handle = new metaScore.Dom(this.start_state.handle),
       w, h, top, left;
@@ -126,6 +143,12 @@ metaScore.Resizable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
   Resizable.prototype.onMouseUp = function(evt){
     this.configs.container
       .removeListener('mousemove', this.onMouseMove, this)
@@ -138,6 +161,11 @@ metaScore.Resizable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   Resizable.prototype.enable = function(){
     this.configs.target.addClass('resizable');
 
@@ -146,6 +174,11 @@ metaScore.Resizable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   Resizable.prototype.disable = function(){
     this.configs.target.removeClass('resizable');
 
@@ -154,6 +187,11 @@ metaScore.Resizable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
   Resizable.prototype.destroy = function(){
     this.disable();
 

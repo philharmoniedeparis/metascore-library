@@ -1,11 +1,16 @@
 /**
- * Evented
- *
- * @requires metaScore.class.js
- */
+* A helper class for event handling
+* @class Evented
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Evented = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Evented() {
     // call parent constructor
     Evented.parent.call(this);
@@ -15,6 +20,13 @@ metaScore.Evented = (function () {
 
   metaScore.Class.extend(Evented);
 
+  /**
+   * Description
+   * @method addListener
+   * @param {} type
+   * @param {} listener
+   * @return ThisExpression
+   */
   Evented.prototype.addListener = function(type, listener){
     if (typeof this.listeners[type] === "undefined"){
       this.listeners[type] = [];
@@ -25,6 +37,13 @@ metaScore.Evented = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method removeListener
+   * @param {} type
+   * @param {} listener
+   * @return ThisExpression
+   */
   Evented.prototype.removeListener = function(type, listener){
     if(this.listeners[type] instanceof Array){
       var listeners = this.listeners[type];
@@ -39,6 +58,15 @@ metaScore.Evented = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method triggerEvent
+   * @param {} type
+   * @param {} data
+   * @param {} bubbling
+   * @param {} cancelable
+   * @return ThisExpression
+   */
   Evented.prototype.triggerEvent = function(type, data, bubbling, cancelable){
     var listeners, event;
 

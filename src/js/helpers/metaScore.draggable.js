@@ -1,12 +1,17 @@
 /**
- * Dom
- *
- * @requires ../metaScore.class.js
- * @requires metaScore.dom.js
- */
+* Description
+* @class Draggable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Draggable = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Draggable(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -34,6 +39,12 @@ metaScore.Draggable = (function () {
 
   metaScore.Class.extend(Draggable);
 
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
   Draggable.prototype.onMouseDown = function(evt){
     if(!this.enabled){
       return;
@@ -55,6 +66,12 @@ metaScore.Draggable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
   Draggable.prototype.onMouseMove = function(evt){
     var left = evt.clientX + this.start_state.left,
       top = evt.clientY + this.start_state.top;
@@ -75,6 +92,12 @@ metaScore.Draggable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
   Draggable.prototype.onMouseUp = function(evt){
     this.configs.container
       .removeListener('mousemove', this.onMouseMove)
@@ -87,6 +110,11 @@ metaScore.Draggable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   Draggable.prototype.enable = function(){
     this.configs.target.addClass('draggable');
 
@@ -97,6 +125,11 @@ metaScore.Draggable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   Draggable.prototype.disable = function(){
     this.configs.target.removeClass('draggable');
 
@@ -107,6 +140,11 @@ metaScore.Draggable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
   Draggable.prototype.destroy = function(){
     this.disable();
 

@@ -1,31 +1,38 @@
 /**
- * String
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class String
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.String = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function String() {
   }
 
   metaScore.Class.extend(String);
 
   /**
-  * Capitalize a string
-  * @param {string} the original string
-  * @returns {string} the capitalized string
-  */
+   * Capitalize a string
+   * @method capitalize
+   * @param {} str
+   * @return CallExpression
+   */
   String.capitalize = function(str){
     return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
   };
 
   /**
-  * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
-  * @param {number} the desired number of characters
-  * @param {number} the number of allowable values for each character
-  * @returns {string} a random uuid
-  */
+   * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+   * @method uuid
+   * @param {} len
+   * @param {} radix
+   * @return CallExpression
+   */
   String.uuid = function(len, radix) {
     var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
       uuid = [], i;
@@ -59,6 +66,15 @@ metaScore.String = (function () {
     return uuid.join('');
   };
 
+  /**
+   * Description
+   * @method pad
+   * @param {} str
+   * @param {} len
+   * @param {} pad
+   * @param {} dir
+   * @return str
+   */
   String.pad = function(str, len, pad, dir) {
     var right, left,
       padlen;

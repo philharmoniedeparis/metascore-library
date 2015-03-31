@@ -1,11 +1,17 @@
 /**
- * Button
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Button
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Button = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Button(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -30,12 +36,24 @@ metaScore.namespace('editor').Button = (function () {
 
   metaScore.Dom.extend(Button);
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   Button.prototype.onClick = function(evt){
     if(this.disabled){
       evt.stopPropagation();
     }
   };
 
+  /**
+   * Description
+   * @method setLabel
+   * @param {} text
+   * @return ThisExpression
+   */
   Button.prototype.setLabel = function(text){
     if(this.label === undefined){
       this.label = new metaScore.Dom('<span/>', {'class': 'label'})
@@ -48,9 +66,10 @@ metaScore.namespace('editor').Button = (function () {
   };
 
   /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
+   * Disable the button
+   * @method disable
+   * @return ThisExpression
+   */
   Button.prototype.disable = function(){
     this.disabled = true;
 
@@ -60,11 +79,10 @@ metaScore.namespace('editor').Button = (function () {
   };
 
   /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Enable the button
+   * @method enable
+   * @return ThisExpression
+   */
   Button.prototype.enable = function(){
     this.disabled = false;
 

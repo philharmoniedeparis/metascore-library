@@ -1,11 +1,17 @@
 /**
- * Cursor
- *
- * @requires ../metaScore.player.element.js
- */
+* Description
+* @class Cursor
+* @namespace metaScore.player.component.element
+* @extends metaScore.player.component.Element
+*/
 
 metaScore.namespace('player.component.element').Cursor = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
@@ -26,9 +32,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
             'top': metaScore.Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
           }
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('direction');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('direction', value);
         }
@@ -38,9 +54,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('accel');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('accel', value);
         }
@@ -50,10 +76,20 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.cursor.css('width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.cursor.css('width', value +'px');
         }
@@ -63,9 +99,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
            return this.cursor.css('background-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -74,6 +120,11 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     })
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Cursor.prototype.setupDOM = function(){
     // call parent function
     Cursor.parent.prototype.setupDOM.call(this);
@@ -88,6 +139,12 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   Cursor.prototype.onClick = function(evt){
     var pos, time,
       inTime, outTime,
@@ -131,6 +188,13 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     this.triggerEvent('time', {'element': this, 'value': time});
   };
 
+  /**
+   * Description
+   * @method onCuePointUpdate
+   * @param {} cuepoint
+   * @param {} curTime
+   * @return 
+   */
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width, height,
       inTime, outTime, pos,

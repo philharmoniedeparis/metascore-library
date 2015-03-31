@@ -1,20 +1,26 @@
 /**
- * Object
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class Object
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Object = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Object() {
   }
 
   metaScore.Class.extend(Object);
 
   /**
-  * Merge the contents of two or more objects together into the first object.
-  * @returns {object} the target object extended with the properties of the other objects
-  */
+   * Merge the contents of two or more objects together into the first object.
+   * @method extend
+   * @return target
+   */
   Object.extend = function() {
 
     var target = arguments[0] || {},
@@ -41,10 +47,11 @@ metaScore.Object = (function () {
   };
 
   /**
-  * Return a copy of an object
-  * @param {object} the original object
-  * @returns {object} a copy of the original object
-  */
+   * Return a copy of an object
+   * @method copy
+   * @param {} obj
+   * @return CallExpression
+   */
   Object.copy = function(obj) {
 
     return Object.extend({}, obj);
@@ -52,12 +59,13 @@ metaScore.Object = (function () {
   };
 
   /**
-  * Call a function on each property of an object
-  * @param {object} the object
-  * @param {function} the function to call
-  * @param {object} the scope of the function
-  * @returns {void}
-  */
+   * Call a function on each property of an object
+   * @method each
+   * @param {} obj
+   * @param {} callback
+   * @param {} scope
+   * @return obj
+   */
   Object.each = function(obj, callback, scope) {
 
     var key, value,

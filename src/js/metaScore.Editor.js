@@ -1,17 +1,17 @@
 /**
- * Editor
- *
- * @requires ../helpers/metaScore.Dom.js
- * @requires ../player/metaScore.Player.js
- * @requires metaScore.editor.MainMenu.js
- * @requires metaScore.editor.History.js
- * @requires panel/metaScore.editor.panel.Block.js
- * @requires panel/metaScore.editor.panel.Page.js
- * @requires panel/metaScore.editor.panel.Element.js
- * @requires panel/metaScore.editor.panel.Text.js
- */
+* The main editor class
+* @class Editor
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
+
 metaScore.Editor = (function(){
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Editor(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -105,6 +105,13 @@ metaScore.Editor = (function(){
     'ajax': {}
   };
 
+  /**
+   * Description
+   * @method setEditing
+   * @param {} editing
+   * @param {} sticky
+   * @return 
+   */
   Editor.prototype.setEditing = function(editing, sticky){  
     metaScore.editing = editing !== false;
 
@@ -129,6 +136,11 @@ metaScore.Editor = (function(){
     
   };
 
+  /**
+   * Description
+   * @method loadPlayerFromHash
+   * @return 
+   */
   Editor.prototype.loadPlayerFromHash = function(){
     var match;
 
@@ -137,11 +149,23 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onGuideSaveSuccess
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideSaveSuccess = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
   };
 
+  /**
+   * Description
+   * @method onGuideSaveError
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideSaveError = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
@@ -155,6 +179,11 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onGuideDeleteConfirm
+   * @return 
+   */
   Editor.prototype.onGuideDeleteConfirm = function(){
     var id = this.player.getId(),
       component,  options;
@@ -173,6 +202,12 @@ metaScore.Editor = (function(){
     metaScore.Ajax.send(this.configs.api_url +'guide/'+ id +'.json', options);
   };
 
+  /**
+   * Description
+   * @method onGuideDeleteSuccess
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideDeleteSuccess = function(xhr){
     this.removePlayer();
 
@@ -180,6 +215,12 @@ metaScore.Editor = (function(){
     delete this.loadmask;
   };
 
+  /**
+   * Description
+   * @method onGuideDeleteError
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideDeleteError = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
@@ -193,11 +234,23 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onGuideRevertConfirm
+   * @return 
+   */
   Editor.prototype.onGuideRevertConfirm = function(){
     this.addPlayer(this.player.getId());
   };
 
-  Editor.prototype.onPlayerKeydown = Editor.prototype.onKeydown = function(evt){
+  Editor.prototype.onPlayerKeydown = 
+/**
+  * Description
+  * @method onKeydown
+  * @param {} evt
+  * @return 
+  */
+ Editor.prototype.onKeydown = function(evt){
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
@@ -220,7 +273,14 @@ metaScore.Editor = (function(){
     }
   };
 
-  Editor.prototype.onPlayerKeyup = Editor.prototype.onKeyup = function(evt){
+  Editor.prototype.onPlayerKeyup = 
+/**
+  * Description
+  * @method onKeyup
+  * @param {} evt
+  * @return 
+  */
+ Editor.prototype.onKeyup = function(evt){
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(this.persistentEditing, false);
@@ -229,6 +289,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onMainmenuClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onMainmenuClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -295,6 +361,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onMainmenuTimeFieldChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onMainmenuTimeFieldChange = function(evt){
     var field = evt.target._metaScore,
       time = field.getValue();
@@ -302,6 +374,12 @@ metaScore.Editor = (function(){
     this.player.media.setTime(time);
   };
 
+  /**
+   * Description
+   * @method onMainmenuRindexFieldChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onMainmenuRindexFieldChange = function(evt){
     var field = evt.target._metaScore,
       value = field.getValue();
@@ -309,6 +387,12 @@ metaScore.Editor = (function(){
     this.player.setReadingIndex(value, true);
   };
 
+  /**
+   * Description
+   * @method onTimeFieldIn
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onTimeFieldIn = function(evt){
     var field = evt.target._metaScore,
       time = this.player.media.getTime();
@@ -316,6 +400,12 @@ metaScore.Editor = (function(){
     field.setValue(time);
   };
 
+  /**
+   * Description
+   * @method onTimeFieldOut
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onTimeFieldOut = function(evt){
     var field = evt.target._metaScore,
       time = field.getValue();
@@ -323,6 +413,12 @@ metaScore.Editor = (function(){
     this.player.media.setTime(time);
   };
 
+  /**
+   * Description
+   * @method onBlockSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
 
@@ -343,11 +439,23 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockUnset
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockUnset = function(evt){
     this.panels.page.unsetComponent();
     this.panels.page.getToolbar().toggleMenuItem('new', false);
   };
 
+  /**
+   * Description
+   * @method onBlockPanelValueChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPanelValueChange = function(evt){
     var block = evt.detail.component,
       old_values = evt.detail.old_values,
@@ -359,6 +467,12 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onBlockPanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
     var blocks, block, count, index;
 
@@ -422,6 +536,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockPanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPanelSelectorChange = function(evt){
     var id = evt.detail.value,
       dom;
@@ -438,6 +558,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onPageBeforeSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPageBeforeSet = function(evt){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
@@ -445,6 +571,12 @@ metaScore.Editor = (function(){
     this.panels.block.setComponent(block);
   };
 
+  /**
+   * Description
+   * @method onPageSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPageSet = function(evt){
     var page = evt.detail.component;
 
@@ -464,6 +596,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onPageUnset
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPageUnset = function(evt){
     this.panels.element.unsetComponent();
     this.panels.element.getToolbar()
@@ -472,6 +610,12 @@ metaScore.Editor = (function(){
       .toggleMenuItem('Text', false);
   };
 
+  /**
+   * Description
+   * @method onPagePanelValueChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPagePanelValueChange = function(evt){
     var page = evt.detail.component,
       old_values = evt.detail.old_values,
@@ -483,6 +627,12 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onPagePanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPagePanelToolbarClick = function(evt){
     var block, page,
       auto_page, configs,
@@ -579,6 +729,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onPagePanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPagePanelSelectorChange = function(evt){
     var block = this.panels.block.getComponent(),
       id, dom;
@@ -593,6 +749,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onElementBeforeSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementBeforeSet = function(evt){
     var element = evt.detail.component,
       page = element.parents().get(0)._metaScore;
@@ -600,6 +762,12 @@ metaScore.Editor = (function(){
     this.panels.page.setComponent(page);
   };
 
+  /**
+   * Description
+   * @method onElementSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementSet = function(evt){
     var element = evt.detail.component;
 
@@ -610,12 +778,24 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onElementUnset
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementUnset = function(evt){
     this.panels.text.unsetComponent();
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onElementPanelValueChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementPanelValueChange = function(evt){
     var element = evt.detail.component,
       old_values = evt.detail.old_values,
@@ -627,6 +807,12 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onElementPanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementPanelToolbarClick = function(evt){
     var page, element, dom, count, index,
       action = metaScore.Dom.data(evt.target, 'action');
@@ -701,6 +887,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onElementPanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementPanelSelectorChange = function(evt){
     var id = evt.detail.value,
       dom;
@@ -717,18 +909,36 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onPlayerTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerTimeUpdate = function(evt){
     var time = evt.detail.media.getTime();
 
     this.mainmenu.timefield.setValue(time, true);
   };
 
+  /**
+   * Description
+   * @method onPlayerReadingIndex
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerReadingIndex = function(evt){
     var rindex = evt.detail.value;
 
     this.mainmenu.rindexfield.setValue(rindex, true);
   };
 
+  /**
+   * Description
+   * @method onPlayerMediaAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerMediaAdd = function(evt){
     var media = evt.detail.media;
     
@@ -737,18 +947,36 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onPlayerControllerAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerControllerAdd = function(evt){
     var controller = evt.detail.controller;
 
     this.panels.block.getToolbar().addSelectorOption(controller.getId(), controller.getName());
   };
 
+  /**
+   * Description
+   * @method onPlayerBlockAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerBlockAdd = function(evt){
     var block = evt.detail.block;
 
     this.panels.block.getToolbar().addSelectorOption(block.getId(), block.getName());
   };
 
+  /**
+   * Description
+   * @method onPlayerLoadSuccess
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerLoadSuccess = function(evt){
     var player = evt.detail.player,
       data = evt.detail.data;
@@ -777,6 +1005,12 @@ metaScore.Editor = (function(){
     delete this.loadmask;
   };
 
+  /**
+   * Description
+   * @method onPlayerLoadError
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerLoadError = function(evt){
     this.loadmask.hide();
     delete this.loadmask;
@@ -790,6 +1024,13 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onComponentClick
+   * @param {} evt
+   * @param {} dom
+   * @return 
+   */
   Editor.prototype.onComponentClick = function(evt, dom){
     var component;
 
@@ -815,6 +1056,12 @@ metaScore.Editor = (function(){
     evt.stopImmediatePropagation();
   };
 
+  /**
+   * Description
+   * @method onPlayerClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerClick = function(evt){
     
     if(metaScore.editing !== true){
@@ -826,6 +1073,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockPageAdded
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPageAdded = function(evt){
     var block = evt.detail.block;
     
@@ -836,6 +1089,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockPageActivated
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPageActivated = function(evt){
     if(metaScore.editing !== true){
       return;
@@ -844,30 +1103,65 @@ metaScore.Editor = (function(){
     this.panels.page.setComponent(evt.detail.page);
   };
 
+  /**
+   * Description
+   * @method onHistoryAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onHistoryAdd = function(evt){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method onHistoryUndo
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onHistoryUndo = function(evt){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method onHistoryRedo
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onHistoryRedo = function(evt){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method onDetailsOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onDetailsOverlaySubmit = function(evt){
     var values = evt.detail.values;
 
     this.player.updateCSS(values.css);
   };
 
+  /**
+   * Description
+   * @method onBeforeUnload
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBeforeUnload = function(evt){  
     if(this.hasOwnProperty('player')){
       evt.returnValue = metaScore.Locale.t('editor.onBeforeUnload.msg', 'Any unsaved data will be lost.');
     }
   };
 
+  /**
+   * Description
+   * @method updateMainmenu
+   * @return 
+   */
   Editor.prototype.updateMainmenu = function(){
     var hasPlayer = this.hasOwnProperty('player');
 
@@ -881,6 +1175,11 @@ metaScore.Editor = (function(){
     this.mainmenu.toggleButton('revert', hasPlayer);
   };
 
+  /**
+   * Description
+   * @method updatePageSelector
+   * @return 
+   */
   Editor.prototype.updatePageSelector = function(){
     var block = this.panels.block.getComponent(),
       page = this.panels.page.getComponent(),
@@ -897,10 +1196,21 @@ metaScore.Editor = (function(){
     toolbar.setSelectorValue(page ? page.getId() : null, true);
   };
 
+  /**
+   * Description
+   * @method getPlayer
+   * @return MemberExpression
+   */
   Editor.prototype.getPlayer = function(){  
     return this.player;  
   };
 
+  /**
+   * Description
+   * @method addPlayer
+   * @param {} id
+   * @return 
+   */
   Editor.prototype.addPlayer = function(id){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
@@ -919,6 +1229,11 @@ metaScore.Editor = (function(){
       .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
   };
 
+  /**
+   * Description
+   * @method removePlayer
+   * @return 
+   */
   Editor.prototype.removePlayer = function(){
     if(this.player){
       this.player.remove();
@@ -929,6 +1244,12 @@ metaScore.Editor = (function(){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method addBlock
+   * @param {} block
+   * @return block
+   */
   Editor.prototype.addBlock = function(block){
     if(!(block instanceof metaScore.player.component.Block)){
       block = this.player.addBlock(block);
@@ -939,6 +1260,13 @@ metaScore.Editor = (function(){
     return block;
   };
 
+  /**
+   * Description
+   * @method addPage
+   * @param {} block
+   * @param {} page
+   * @return page
+   */
   Editor.prototype.addPage = function(block, page){
     if(!(page instanceof metaScore.player.component.Page)){
       page = block.addPage(page);
@@ -949,6 +1277,13 @@ metaScore.Editor = (function(){
     return page;
   };
 
+  /**
+   * Description
+   * @method addElement
+   * @param {} page
+   * @param {} element
+   * @return element
+   */
   Editor.prototype.addElement = function(page, element){
     if(!(element instanceof metaScore.player.component.Element)){
       element = page.addElement(element);
@@ -959,6 +1294,11 @@ metaScore.Editor = (function(){
     return element;
   };
 
+  /**
+   * Description
+   * @method openGuideSelector
+   * @return 
+   */
   Editor.prototype.openGuideSelector = function(){
     new metaScore.editor.overlay.GuideSelector({
         'url': this.configs.api_url +'guide.json',
@@ -967,10 +1307,21 @@ metaScore.Editor = (function(){
       .addListener('select', metaScore.Function.proxy(this.openGuide, this));
   };
 
+  /**
+   * Description
+   * @method openGuide
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.openGuide = function(evt){
     this.addPlayer(evt.detail.guide.id);
   };
 
+  /**
+   * Description
+   * @method saveGuide
+   * @return 
+   */
   Editor.prototype.saveGuide = function(){
     var components = this.player.getComponents('.media, .controller, .block'),
       id = this.player.getId(),

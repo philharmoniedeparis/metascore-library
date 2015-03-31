@@ -1,11 +1,17 @@
 /**
- * StyleSheet
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class StyleSheet
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
 
 metaScore.StyleSheet = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function StyleSheet(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -21,12 +27,13 @@ metaScore.StyleSheet = (function () {
   metaScore.Dom.extend(StyleSheet);
 
   /**
-  * Adds a CSS rule to the style sheet
-  * @param {string} a selector on which the rule should apply
-  * @param {string} the CSS rule(s)
-  * @param {number} an optional index specifying the position to insert the new rule in
-  * @returns {number} the index specifying the position in which the rule was inserted
-  */
+   * Adds a CSS rule to the style sheet
+   * @method addRule
+   * @param {} selector
+   * @param {} rules
+   * @param {} index
+   * @return 
+   */
   StyleSheet.prototype.addRule = function(selector, rules, index) {
     var sheet = this.el.sheet;
     
@@ -43,9 +50,11 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Removes a CSS rule from the style sheet
-  * @param {number} the index specifying the position of the rule
-  */
+   * Removes a CSS rule from the style sheet
+   * @method removeRule
+   * @param {} index
+   * @return ThisExpression
+   */
   StyleSheet.prototype.removeRule = function(index) {
     var sheet = this.el.sheet;
   
@@ -60,9 +69,11 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Removes the first CSS rule that matches a selector
-  * @param {string} the selector to match
-  */
+   * Removes the first CSS rule that matches a selector
+   * @method removeRulesBySelector
+   * @param {} selector
+   * @return ThisExpression
+   */
   StyleSheet.prototype.removeRulesBySelector = function(selector) {
     var sheet = this.el.sheet,
       rules = sheet.cssRules || sheet.rules;
@@ -80,8 +91,10 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Removes all CSS rule from the style sheet
-  */
+   * Removes all CSS rule from the style sheet
+   * @method removeRules
+   * @return ThisExpression
+   */
   StyleSheet.prototype.removeRules = function() {
     var sheet = this.el.sheet,
       rules = sheet.cssRules || sheet.rules;
@@ -94,8 +107,11 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Set the internal text value
-  */
+   * Set the internal text value
+   * @method setInternalValue
+   * @param {} value
+   * @return ThisExpression
+   */
   StyleSheet.prototype.setInternalValue = function(value) {
     if(this.el.styleSheet){
       this.el.styleSheet.cssText = value;

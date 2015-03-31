@@ -1,11 +1,17 @@
 /**
- * BorderRadiusrField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class BorderRadius
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').BorderRadius = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function BorderRadiusrField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -17,6 +23,11 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
 
   metaScore.editor.Field.extend(BorderRadiusrField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   BorderRadiusrField.prototype.setupUI = function(){
     BorderRadiusrField.parent.prototype.setupUI.call(this);
 
@@ -32,12 +43,25 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
       .appendTo(this.input_wrapper);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   BorderRadiusrField.prototype.setValue = function(value, supressEvent){
     BorderRadiusrField.parent.prototype.setValue.call(this, value, supressEvent);
 
     this.input.attr('title', value);
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   BorderRadiusrField.prototype.onClick = function(evt){
     if(this.disabled){
       return;
@@ -48,6 +72,12 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
       .show();
   };
 
+  /**
+   * Description
+   * @method onOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
   BorderRadiusrField.prototype.onOverlaySubmit = function(evt){
     var value = evt.detail.value,
       overlay = evt.detail.overlay;
@@ -55,6 +85,12 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     this.setValue(value);
   };
 
+  /**
+   * Description
+   * @method onClearClick
+   * @param {} evt
+   * @return 
+   */
   BorderRadiusrField.prototype.onClearClick = function(evt){
     this.setValue('0px');
   };

@@ -1,12 +1,17 @@
 /**
- * Player Component
- *
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class Component
+* @namespace metaScore.player
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('player').Component = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Component(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -44,26 +49,59 @@ metaScore.namespace('player').Component = (function () {
     'properties': {}
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Component.prototype.setupDOM = function(){};
 
+  /**
+   * Description
+   * @method getId
+   * @return CallExpression
+   */
   Component.prototype.getId = function(){
     return this.attr('id');
   };
 
+  /**
+   * Description
+   * @method getName
+   * @return CallExpression
+   */
   Component.prototype.getName = function(){
     return this.getProperty('name');
   };
 
+  /**
+   * Description
+   * @method hasProperty
+   * @param {} name
+   * @return BinaryExpression
+   */
   Component.prototype.hasProperty = function(name){
     return name in this.configs.properties;
   };
 
+  /**
+   * Description
+   * @method getProperty
+   * @param {} name
+   * @return 
+   */
   Component.prototype.getProperty = function(name){
     if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
       return this.configs.properties[name].getter.call(this);
     }
   };
 
+  /**
+   * Description
+   * @method getProperties
+   * @param {} skipDefaults
+   * @return values
+   */
   Component.prototype.getProperties = function(skipDefaults){
     var values = {},
       value;
@@ -81,6 +119,14 @@ metaScore.namespace('player').Component = (function () {
     return values;
   };
 
+  /**
+   * Description
+   * @method setProperty
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   Component.prototype.setProperty = function(name, value, supressEvent){
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
@@ -91,6 +137,12 @@ metaScore.namespace('player').Component = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setCuePoint
+   * @param {} configs
+   * @return MemberExpression
+   */
   Component.prototype.setCuePoint = function(configs){
     var inTime = this.getProperty('start-time'),
       outTime = this.getProperty('end-time');

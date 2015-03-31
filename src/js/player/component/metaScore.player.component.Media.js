@@ -1,12 +1,17 @@
 /**
- * Media
- *
- * @requires metaScore.player.js
- * @requires ../metaScore.dom.js
- */
+* Description
+* @class Media
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Media = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Media(configs){
     // call parent constructor
     Media.parent.call(this, configs);
@@ -27,9 +32,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('locked') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('locked', value ? "true" : null);
         }
@@ -39,9 +54,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.x', 'X')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('left', value +'px');
         }
@@ -51,9 +76,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.y', 'Y')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('top', value +'px');
         },
@@ -63,9 +98,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.width', 'Width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('width', value +'px');
         }
@@ -75,9 +120,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.height', 'Height')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('height', value +'px');
         }
@@ -87,9 +142,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.border-radius', 'Border radius')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-radius', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-radius', value);
         }
@@ -97,6 +162,11 @@ metaScore.namespace('player.component').Media = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Media.prototype.setupDOM = function(){
     var sources = '';
 
@@ -120,14 +190,30 @@ metaScore.namespace('player.component').Media = (function () {
       .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
   };
 
+  /**
+   * Description
+   * @method getName
+   * @return Literal
+   */
   Media.prototype.getName = function(){
     return '[media]';
   };
 
+  /**
+   * Description
+   * @method getDuration
+   * @return MemberExpression
+   */
   Media.prototype.getDuration = function(){
     return this.configs.duration;
   };
 
+  /**
+   * Description
+   * @method onPlay
+   * @param {} evt
+   * @return 
+   */
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
     
@@ -136,10 +222,22 @@ metaScore.namespace('player.component').Media = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onPause
+   * @param {} evt
+   * @return 
+   */
   Media.prototype.onPause = function(evt) {
     this.playing = false;
   };
 
+  /**
+   * Description
+   * @method onTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   Media.prototype.onTimeUpdate = function(evt){
     if(!(evt instanceof CustomEvent)){
       evt.stopImmediatePropagation();
@@ -150,28 +248,57 @@ metaScore.namespace('player.component').Media = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method isPlaying
+   * @return MemberExpression
+   */
   Media.prototype.isPlaying = function() {
     return this.playing;
   };
 
+  /**
+   * Description
+   * @method reset
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Media.prototype.reset = function(supressEvent) {
     this.setTime(0);
     
     return this;
   };
 
+  /**
+   * Description
+   * @method play
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Media.prototype.play = function(supressEvent) {
     this.dom.play();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method pause
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Media.prototype.pause = function(supressEvent) {
     this.dom.pause();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method triggerTimeUpdate
+   * @param {} loop
+   * @return 
+   */
   Media.prototype.triggerTimeUpdate = function(loop) {
     if(loop !== false && this.isPlaying()){
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
@@ -180,6 +307,12 @@ metaScore.namespace('player.component').Media = (function () {
     this.el.triggerEvent('timeupdate', {'media': this});
   };
 
+  /**
+   * Description
+   * @method setTime
+   * @param {} time
+   * @return ThisExpression
+   */
   Media.prototype.setTime = function(time) {
     this.dom.currentTime = parseFloat(time) / 1000;
 
@@ -188,20 +321,46 @@ metaScore.namespace('player.component').Media = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method getTime
+   * @return BinaryExpression
+   */
   Media.prototype.getTime = function() {
     return parseFloat(this.dom.currentTime) * 1000;
   };
 
+  /**
+   * Description
+   * @method getDuration
+   * @return BinaryExpression
+   */
   Media.prototype.getDuration = function() {
     return parseFloat(this.dom.duration) * 1000;
   };
 
+  /**
+   * Description
+   * @method addMediaListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Media.prototype.addMediaListener = function(type, callback, useCapture) {
     this.el.addListener(type, callback, useCapture);
     
     return this;
   };
 
+  /**
+   * Description
+   * @method removeMediaListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Media.prototype.removeMediaListener = function(type, callback, useCapture) {
     this.el.removeListener(type, callback, useCapture);
     

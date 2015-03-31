@@ -1,9 +1,17 @@
 /**
- * Text
- */
+* Description
+* @class Text
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
 
 metaScore.namespace('editor.panel').Text = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TextPanel(configs) {
     // call parent constructor
     TextPanel.parent.call(this, configs);
@@ -28,6 +36,11 @@ metaScore.namespace('editor.panel').Text = (function () {
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           if(value){
             this.lock();
@@ -42,6 +55,11 @@ metaScore.namespace('editor.panel').Text = (function () {
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color')
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('foreColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
@@ -51,6 +69,11 @@ metaScore.namespace('editor.panel').Text = (function () {
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color')
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('backColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
@@ -73,6 +96,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             "'Lucida Console', Monaco, monospace": 'Lucida Console'
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('fontName', value);
         }
@@ -90,6 +118,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             "pre": metaScore.Locale.t('editor.panel.Text.formatBlock.pre', 'Formatted')
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('formatBlock', value);
         }
@@ -108,6 +141,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             "7": '7'
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('fontSize', value);
         }
@@ -171,6 +209,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             }
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           if(value === 'link'){
             var link = metaScore.Dom.closest(this.getSelectedElement(), 'a');
@@ -191,6 +234,12 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   metaScore.editor.Panel.extend(TextPanel);
 
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
       name, value;
@@ -207,6 +256,13 @@ metaScore.namespace('editor.panel').Text = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setComponent
+   * @param {} component
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   TextPanel.prototype.setComponent = function(component, supressEvent){
     if(component !== this.getComponent()){
       if(!component){
@@ -230,6 +286,12 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method unsetComponent
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   TextPanel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
     
@@ -246,6 +308,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method lock
+   * @return ThisExpression
+   */
   TextPanel.prototype.lock = function(){
     var component = this.getComponent();
     
@@ -272,6 +339,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method unlock
+   * @return ThisExpression
+   */
   TextPanel.prototype.unlock = function(){
     var component = this.getComponent();
     
@@ -301,20 +373,43 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return CallExpression
+   */
   TextPanel.prototype.disable = function(){    
     this.lock();
     
     return TextPanel.parent.prototype.disable.call(this);
   };
 
+  /**
+   * Description
+   * @method onComponentContentsDblClick
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsDblClick = function(evt){
     this.updateFieldValue('locked', false);
   };
 
+  /**
+   * Description
+   * @method onComponentContentsClick
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsClick = function(evt){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onComponentContentsKey
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsKey = function(evt){
     if(evt.type === 'keyup'){
       this.updateButtons();
@@ -323,10 +418,22 @@ metaScore.namespace('editor.panel').Text = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onComponentContentsMouseup
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsMouseup = function(evt){
     this.updateButtons();
   };
 
+  /**
+   * Description
+   * @method updateButtons
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.updateButtons = function(evt){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
@@ -356,12 +463,23 @@ metaScore.namespace('editor.panel').Text = (function () {
     }, this);
   };
 
+  /**
+   * Description
+   * @method onLinkOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){
     var url = evt.detail.url;
 
     this.execCommand('createLink', url);
   };
 
+  /**
+   * Description
+   * @method getSelectedElement
+   * @return element
+   */
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
@@ -381,6 +499,13 @@ metaScore.namespace('editor.panel').Text = (function () {
     return element;
   };
 
+  /**
+   * Description
+   * @method execCommand
+   * @param {} command
+   * @param {} value
+   * @return 
+   */
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
       contents =  component.contents.get(0),

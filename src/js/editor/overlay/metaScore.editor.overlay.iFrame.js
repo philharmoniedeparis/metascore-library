@@ -1,9 +1,17 @@
 /**
- * iFrame
- */
+* Description
+* @class iFrame
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').iFrame = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function iFrame(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -27,6 +35,11 @@ metaScore.namespace('editor.overlay').iFrame = (function () {
 
   metaScore.editor.Overlay.extend(iFrame);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   iFrame.prototype.setupDOM = function(){
     // call parent method
     iFrame.parent.prototype.setupDOM.call(this);

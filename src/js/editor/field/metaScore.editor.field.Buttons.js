@@ -1,11 +1,17 @@
 /**
- * ButtonsField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Buttons
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Buttons = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ButtonsField(configs) {
     this.configs = this.getConfigs(configs);
     
@@ -26,9 +32,19 @@ metaScore.namespace('editor.field').Buttons = (function () {
 
   metaScore.editor.Field.extend(ButtonsField);
 
+  /**
+   * Description
+   * @method setValue
+   * @return 
+   */
   ButtonsField.prototype.setValue = function(){
   };
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   ButtonsField.prototype.setupUI = function(){
     var field = this;
 
@@ -49,14 +65,30 @@ metaScore.namespace('editor.field').Buttons = (function () {
     }, this);
   };
   
+  /**
+   * Description
+   * @method getButtons
+   * @return MemberExpression
+   */
   ButtonsField.prototype.getButtons = function(){
     return this.buttons;
   };
   
+  /**
+   * Description
+   * @method getButton
+   * @param {} key
+   * @return MemberExpression
+   */
   ButtonsField.prototype.getButton = function(key){
     return this.buttons[key];
   };
   
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   ButtonsField.prototype.enable = function(){
     this.disabled = false;
 
@@ -65,6 +97,11 @@ metaScore.namespace('editor.field').Buttons = (function () {
     return this;
   };
   
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   ButtonsField.prototype.disable = function(){
     this.disabled = true;
 

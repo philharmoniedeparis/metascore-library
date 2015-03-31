@@ -1,11 +1,17 @@
 /**
- * LoadMask
- *
- * @requires ./metaScore.editor.Overlay.js
- */
+* Description
+* @class LoadMask
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').LoadMask = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function LoadMask(configs) {
     this.configs = this.getConfigs(configs);
 

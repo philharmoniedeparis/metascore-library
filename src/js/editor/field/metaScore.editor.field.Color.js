@@ -1,12 +1,17 @@
 /**
- * ColorField
- *
- * @requires ../metaScore.editor.field.js
- * @requires ../../helpers/metaScore.object.js
- */
+* Description
+* @class Color
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Color = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ColorField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -30,6 +35,11 @@ metaScore.namespace('editor.field').Color = (function () {
 
   metaScore.editor.Field.extend(ColorField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   ColorField.prototype.setupUI = function(){
     ColorField.parent.prototype.setupUI.call(this);
 
@@ -45,6 +55,13 @@ metaScore.namespace('editor.field').Color = (function () {
       .addListener('select', metaScore.Function.proxy(this.onColorSelect, this));
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   ColorField.prototype.setValue = function(value, supressEvent){
     var rgba;
   
@@ -62,6 +79,12 @@ metaScore.namespace('editor.field').Color = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   ColorField.prototype.onClick = function(evt){
     if(this.disabled){
       return;
@@ -72,6 +95,12 @@ metaScore.namespace('editor.field').Color = (function () {
       .show();
   };
 
+  /**
+   * Description
+   * @method onColorSelect
+   * @param {} evt
+   * @return 
+   */
   ColorField.prototype.onColorSelect = function(evt){
     var value = evt.detail.value,
       overlay = evt.detail.overlay;
@@ -79,6 +108,12 @@ metaScore.namespace('editor.field').Color = (function () {
     this.setValue(value);
   };
 
+  /**
+   * Description
+   * @method onClearClick
+   * @param {} evt
+   * @return 
+   */
   ColorField.prototype.onClearClick = function(evt){
     this.setValue(null);
   };

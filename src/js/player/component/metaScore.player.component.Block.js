@@ -1,14 +1,17 @@
 /**
- * Player Block
- *
- * @requires metaScore.player.pager.js
- * @requires metaScore.player.page.js
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class Block
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Block = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Block(configs) {
     // call parent constructor
     Block.parent.call(this, configs);
@@ -24,9 +27,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.name', 'Name')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('name');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('name', value);
         }
@@ -36,9 +49,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('locked') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('locked', value ? "true" : null);
         }
@@ -48,9 +71,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.x', 'X')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('left', value +'px');
         }
@@ -60,9 +93,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.y', 'Y')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('top', value +'px');
         },
@@ -72,9 +115,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.width', 'Width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('width', value +'px');
         }
@@ -84,9 +137,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.height', 'Height')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('height', value +'px');
         }
@@ -96,9 +159,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -109,6 +182,11 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
 
@@ -118,6 +196,11 @@ metaScore.namespace('player.component').Block = (function () {
 
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.css('background-image', value);
@@ -128,10 +211,20 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.css('border-width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-width', value +'px');
         }
@@ -141,9 +234,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -154,9 +257,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-radius', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-radius', value);
         }
@@ -166,15 +279,30 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('synched') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('synched', value);
         }
       },
       'pages': {
         'editable':false,
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return pages
+         */
         'getter': function(skipDefault){
           var pages = [];
 
@@ -184,6 +312,11 @@ metaScore.namespace('player.component').Block = (function () {
 
           return pages;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.getPages().remove();
 
@@ -197,6 +330,11 @@ metaScore.namespace('player.component').Block = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Block.prototype.setupDOM = function(){
     // call parent function
     Block.parent.prototype.setupDOM.call(this);
@@ -213,14 +351,32 @@ metaScore.namespace('player.component').Block = (function () {
       .appendTo(this);
   };
 
+  /**
+   * Description
+   * @method onPageCuePointStart
+   * @param {} evt
+   * @return 
+   */
   Block.prototype.onPageCuePointStart = function(evt){
     this.setActivePage(evt.target._metaScore, true);
   };
 
+  /**
+   * Description
+   * @method onElementPage
+   * @param {} evt
+   * @return 
+   */
   Block.prototype.onElementPage = function(evt){
     this.setActivePage(evt.detail.value);
   };
 
+  /**
+   * Description
+   * @method onPagerClick
+   * @param {} evt
+   * @return 
+   */
   Block.prototype.onPagerClick = function(evt){
     var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
       action;
@@ -244,10 +400,22 @@ metaScore.namespace('player.component').Block = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method getPages
+   * @return CallExpression
+   */
   Block.prototype.getPages = function(){
     return this.page_wrapper.children('.page');
   };
 
+  /**
+   * Description
+   * @method addPage
+   * @param {} configs
+   * @param {} supressEvent
+   * @return page
+   */
   Block.prototype.addPage = function(configs, supressEvent){
     var page,
       previous_index, previous;
@@ -285,6 +453,13 @@ metaScore.namespace('player.component').Block = (function () {
     return page;
   };
 
+  /**
+   * Description
+   * @method removePage
+   * @param {} page
+   * @param {} supressEvent
+   * @return page
+   */
   Block.prototype.removePage = function(page, supressEvent){
     var index;
 
@@ -302,6 +477,12 @@ metaScore.namespace('player.component').Block = (function () {
     return page;
   };
 
+  /**
+   * Description
+   * @method getPage
+   * @param {} index
+   * @return ConditionalExpression
+   */
   Block.prototype.getPage = function(index){
     var pages = this.getPages(),
       page = pages.get(index);
@@ -309,10 +490,20 @@ metaScore.namespace('player.component').Block = (function () {
     return page ? page._metaScore : null;
   };
 
+  /**
+   * Description
+   * @method getActivePage
+   * @return CallExpression
+   */
   Block.prototype.getActivePage = function(){
     return this.getPage(this.getActivePageIndex());
   };
 
+  /**
+   * Description
+   * @method getActivePageIndex
+   * @return index
+   */
   Block.prototype.getActivePageIndex = function(){
     var pages = this.getPages(),
       index = pages.index('.active');
@@ -320,10 +511,22 @@ metaScore.namespace('player.component').Block = (function () {
     return index;
   };
 
+  /**
+   * Description
+   * @method getPageCount
+   * @return CallExpression
+   */
   Block.prototype.getPageCount = function(){
     return this.getPages().count();
   };
 
+  /**
+   * Description
+   * @method setActivePage
+   * @param {} page
+   * @param {} supressEvent
+   * @return 
+   */
   Block.prototype.setActivePage = function(page, supressEvent){
     var pages = this.getPages(), dom;
 
@@ -343,6 +546,11 @@ metaScore.namespace('player.component').Block = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method updatePager
+   * @return 
+   */
   Block.prototype.updatePager = function(){
     var index = this.getActivePageIndex(),
       count = this.getPageCount();

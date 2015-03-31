@@ -1,11 +1,17 @@
 /**
- * TimeField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Time
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Time = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TimeField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -40,6 +46,11 @@ metaScore.namespace('editor.field').Time = (function () {
 
   metaScore.editor.Field.extend(TimeField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   TimeField.prototype.setupUI = function(){
     var buttons;
 
@@ -103,10 +114,22 @@ metaScore.namespace('editor.field').Time = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onChange
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onChange = function(evt){
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
+  /**
+   * Description
+   * @method onInput
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onInput = function(evt){
     var active = this.isActive(),
       centiseconds_val, seconds_val, minutes_val, hours_val;
@@ -126,14 +149,33 @@ metaScore.namespace('editor.field').Time = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onInClick
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onInClick = function(evt){
     this.triggerEvent('valuein');
   };
 
+  /**
+   * Description
+   * @method onOutClick
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onOutClick = function(evt){
     this.triggerEvent('valueout');
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} milliseconds
+   * @param {} supressEvent
+   * @return 
+   */
   TimeField.prototype.setValue = function(milliseconds, supressEvent){
     var centiseconds_val, seconds_val, minutes_val, hours_val;
 
@@ -210,8 +252,11 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  *
-  */
+   * Description
+   * @method setMin
+   * @param {} min
+   * @return ThisExpression
+   */
   TimeField.prototype.setMin = function(min){
     this.configs.min = min;
     
@@ -223,8 +268,11 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  *
-  */
+   * Description
+   * @method setMax
+   * @param {} max
+   * @return ThisExpression
+   */
   TimeField.prototype.setMax = function(max){
     this.configs.max = max;
     
@@ -236,16 +284,19 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  *
-  */
+   * Description
+   * @method isActive
+   * @return LogicalExpression
+   */
   TimeField.prototype.isActive = function(){
     return !this.checkbox || this.checkbox.is(":checked");
   };
 
   /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
+   * Disable the button
+   * @method disable
+   * @return ThisExpression
+   */
   TimeField.prototype.disable = function(){
     this.disabled = true;
 
@@ -271,11 +322,10 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Enable the button
+   * @method enable
+   * @return ThisExpression
+   */
   TimeField.prototype.enable = function(){
     var active = this.isActive();
 

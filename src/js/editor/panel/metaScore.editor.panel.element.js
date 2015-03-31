@@ -1,18 +1,17 @@
 /**
- * Block
- *
- * @requires ../metaScore.editor.panel.js
- * @requires ../field/metaScore.editor.field.numberfield.js
- * @requires ../field/metaScore.editor.field.colorfield.js
- * @requires ../field/metaScore.editor.field.imagefield.js
- * @requires ../field/metaScore.editor.field.booleanfield.js
- * @requires ../../helpers/metaScore.string.js
- * @requires ../../helpers/metaScore.resizable.js
- * @requires ../../helpers/metaScore.resizable.js
- */
+* Description
+* @class Element
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
 
 metaScore.namespace('editor.panel').Element = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ElementPanel(configs) {
     // call parent constructor
     ElementPanel.parent.call(this, configs);
@@ -32,6 +31,11 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   metaScore.editor.Panel.extend(ElementPanel);
 
+  /**
+   * Description
+   * @method getDraggable
+   * @return ObjectExpression
+   */
   ElementPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
     
@@ -46,6 +50,11 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
   };
 
+  /**
+   * Description
+   * @method getResizable
+   * @return ObjectExpression
+   */
   ElementPanel.prototype.getResizable = function(){
     var component = this.getComponent();
     

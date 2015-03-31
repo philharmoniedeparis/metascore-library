@@ -1,11 +1,17 @@
 /**
- * NumberField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Number
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Number = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function NumberField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -34,6 +40,11 @@ metaScore.namespace('editor.field').Number = (function () {
 
   metaScore.editor.Field.extend(NumberField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   NumberField.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 

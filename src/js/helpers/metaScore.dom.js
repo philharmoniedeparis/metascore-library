@@ -1,15 +1,16 @@
 /**
- * Dom
- *
- * @requires ../metaScore.base.js
- * @requires ../metaScore.polyfill.js
- * @requires metaScore.array.js
- * @requires metaScore.object.js
- * @requires metaScore.var.js
- */
+* Description
+* @class Dom
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Dom = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Dom() {
     var elements;
 
@@ -46,17 +47,22 @@ metaScore.Dom = (function () {
   Dom.camelRe = /-([\da-z])/gi;
 
   /**
-  * Helper function used by the camel function
-  */
+   * Helper function used by the camel function
+   * @method camelReplaceFn
+   * @param {} all
+   * @param {} letter
+   * @return CallExpression
+   */
   Dom.camelReplaceFn = function(all, letter) {
     return letter.toUpperCase();
   };
 
   /**
-  * Normaliz a string to Camel Case; used for CSS properties
-  * @param {string} the original string
-  * @returns {string} the normalized string
-  */
+   * Normaliz a string to Camel Case; used for CSS properties
+   * @method camel
+   * @param {} str
+   * @return CallExpression
+   */
   Dom.camel = function(str){
     return str.replace(Dom.camelRe, Dom.camelReplaceFn);
   };
@@ -76,11 +82,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Select a single element by selecor
-  * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements
-  * @returns {object} an HTML element
-  */
+   * Select a single element by selecor
+   * @method selectElement
+   * @param {} selector
+   * @param {} parent
+   * @return element
+   */
   Dom.selectElement = function (selector, parent) {
     var element;
 
@@ -102,11 +109,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Select elements by selecor
-  * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements
-  * @returns {array} an array of HTML elements
-  */
+   * Select elements by selecor
+   * @method selectElements
+   * @param {} selector
+   * @param {} parent
+   * @return elements
+   */
   Dom.selectElements = function (selector, parent) {
     var elements;
 
@@ -131,10 +139,11 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
-  * @param {string} the HTML string
-  * @returns {object} an HTML element
-  */
+   * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+   * @method elementsFromString
+   * @param {} html
+   * @return Literal
+   */
   Dom.elementsFromString = function(html){
     var wrapMap = {
         'option': [1, "<select multiple='multiple'>", "</select>"],
@@ -177,21 +186,23 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Checks if an element has a given class
-  * @param {object} the dom element
-  * @param {string} the class to check
-  * @returns {boolean} true if the element has the given class, false otherwise
-  */
+   * Checks if an element has a given class
+   * @method hasClass
+   * @param {} element
+   * @param {} className
+   * @return CallExpression
+   */
   Dom.hasClass = function(element, className){
     return element.classList.contains(className);
   };
 
   /**
-  * Adds a given class to an element
-  * @param {object} the dom element
-  * @param {string} the class(es) to add; separated by a space
-  * @returns {void}
-  */
+   * Adds a given class to an element
+   * @method addClass
+   * @param {} element
+   * @param {} className
+   * @return 
+   */
   Dom.addClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
@@ -202,11 +213,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Removes a given class from an element
-  * @param {object} the dom element
-  * @param {string} the class(es) to remove; separated by a space
-  * @returns {void}
-  */
+   * Removes a given class from an element
+   * @method removeClass
+   * @param {} element
+   * @param {} className
+   * @return 
+   */
   Dom.removeClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
@@ -217,12 +229,13 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Toggles a given class on an element
-  * @param {object} the dom element
-  * @param {string} the class(es) to toggle; separated by a space
-  * @param {boolean} optional boolean; If true, the class will be added but not removed. If false, the class will be removed but not added.
-  * @returns {void}
-  */
+   * Toggles a given class on an element
+   * @method toggleClass
+   * @param {} element
+   * @param {} className
+   * @param {} force
+   * @return 
+   */
   Dom.toggleClass = function(element, className, force){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
@@ -240,13 +253,14 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Add an event listener on an element
-  * @param {object} the dom element
-  * @param {string} the event type to register
-  * @param {function} the callback function
-  * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
-  * @returns {void}
-  */
+   * Add an event listener on an element
+   * @method addListener
+   * @param {} element
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return CallExpression
+   */
   Dom.addListener = function(element, type, callback, useCapture){
     if(useCapture === undefined){
       useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
@@ -256,13 +270,14 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Remove an event listener from an element
-  * @param {object} the dom element
-  * @param {string} the event type to remove
-  * @param {function} the callback function
-  * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
-  * @returns {void}
-  */
+   * Remove an event listener from an element
+   * @method removeListener
+   * @param {} element
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return CallExpression
+   */
   Dom.removeListener = function(element, type, callback, useCapture){
     if(useCapture === undefined){
       useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
@@ -272,13 +287,15 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Trigger an event from an element
-  * @param {object} the dom element
-  * @param {string} the event type to trigger
-  * @param {boolean} whether the event should bubble
-  * @param {boolean} whether the event is cancelable
-  * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
-  */
+   * Trigger an event from an element
+   * @method triggerEvent
+   * @param {} element
+   * @param {} type
+   * @param {} data
+   * @param {} bubbles
+   * @param {} cancelable
+   * @return CallExpression
+   */
   Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
     var event = new CustomEvent(type, {
       'detail': data,
@@ -290,11 +307,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets the innerHTML of an element
-  * @param {object} the dom element
-  * @param {string} an optional text to set
-  * @returns {string} the value of the innerHTML
-  */
+   * Sets or gets the innerHTML of an element
+   * @method text
+   * @param {} element
+   * @param {} value
+   * @return MemberExpression
+   */
   Dom.text = function(element, value){
     if(value !== undefined){
       element.innerHTML = value;
@@ -304,11 +322,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets the value of an element
-  * @param {object} the dom element
-  * @param {string} an optional value to set
-  * @returns {string} the value
-  */
+   * Sets or gets the value of an element
+   * @method val
+   * @param {} element
+   * @param {} value
+   * @return MemberExpression
+   */
   Dom.val = function(element, value){
     if(value !== undefined){
       element.value = value;
@@ -318,12 +337,13 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets an attribute on an element
-  * @param {object} the dom element
-  * @param {string} the attribute's name
-  * @param {string} an optional value to set
-  * @returns {void}
-  */
+   * Sets an attribute on an element
+   * @method attr
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
   Dom.attr = function(element, name, value){
     if(metaScore.Var.is(name, 'object')){
       metaScore.Object.each(name, function(key, value){
@@ -357,12 +377,14 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets a style property of an element
-  * @param {object} the dom element
-  * @param {string} the property's name
-  * @param {string} an optional value to set
-  * @returns {string} the value of the property
-  */
+   * Sets or gets a style property of an element
+   * @method css
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @param {} inline
+   * @return CallExpression
+   */
   Dom.css = function(element, name, value, inline){
     var camel, style;
 
@@ -378,12 +400,13 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets a data string of an element
-  * @param {object} the dom element
-  * @param {string} the object's name
-  * @param {string} an optional value to set
-  * @returns {object} the object
-  */
+   * Sets or gets a data string of an element
+   * @method data
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @return MemberExpression
+   */
   Dom.data = function(element, name, value){
     name = this.camel(name);
 
@@ -398,11 +421,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Appends children to an element
-  * @param {object} the dom element
-  * @param {object/array} the child(ren) to append
-  * @returns {void}
-  */
+   * Appends children to an element
+   * @method append
+   * @param {} element
+   * @param {} children
+   * @return 
+   */
   Dom.append = function(element, children){
     if (!metaScore.Var.is(children, 'array')) {
       children = [children];
@@ -414,11 +438,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Inserts siblings before an element
-  * @param {object} the dom element
-  * @param {object/array} the siblings to insert
-  * @returns {void}
-  */
+   * Inserts siblings before an element
+   * @method before
+   * @param {} element
+   * @param {} siblings
+   * @return 
+   */
   Dom.before = function(element, siblings){
     if (!metaScore.Var.is(siblings, 'array')) {
       siblings = [siblings];
@@ -430,11 +455,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Inserts siblings after an element
-  * @param {object} the dom element
-  * @param {object/array} the siblings to insert
-  * @returns {void}
-  */
+   * Inserts siblings after an element
+   * @method after
+   * @param {} element
+   * @param {} siblings
+   * @return 
+   */
   Dom.after = function(element, siblings){
     if (!metaScore.Var.is(siblings, 'array')) {
       siblings = [siblings];
@@ -446,10 +472,11 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Removes all element children
-  * @param {object} the dom element
-  * @returns {void}
-  */
+   * Removes all element children
+   * @method empty
+   * @param {} element
+   * @return 
+   */
   Dom.empty = function(element){
     while(element.firstChild){
       element.removeChild(element.firstChild);
@@ -457,10 +484,11 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Removes an element from the dom
-  * @param {object} the dom element
-  * @returns {void}
-  */
+   * Removes an element from the dom
+   * @method remove
+   * @param {} element
+   * @return 
+   */
   Dom.remove = function(element){
     if(element.parentElement){
       element.parentElement.removeChild(element);
@@ -468,11 +496,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Checks if an element matches a selector
-  * @param {object} the dom element
-  * @param {string} the selector
-  * @returns {boolean} true if the element matches the selector, false otherwise
-  */
+   * Checks if an element matches a selector
+   * @method is
+   * @param {} el
+   * @param {} selector
+   * @return Literal
+   */
   Dom.is = function(el, selector){
     var document, win;
     
@@ -487,6 +516,13 @@ metaScore.Dom = (function () {
     return false;
   };
   
+  /**
+   * Description
+   * @method closest
+   * @param {} el
+   * @param {} selector
+   * @return Literal
+   */
   Dom.closest = function(el, selector){
     var document, win;
     
@@ -505,6 +541,12 @@ metaScore.Dom = (function () {
     return null;
   };
 
+  /**
+   * Description
+   * @method add
+   * @param {} elements
+   * @return 
+   */
   Dom.prototype.add = function(elements){
     if('length' in elements){
       for(var i = 0; i < elements.length; i++ ) {
@@ -516,14 +558,31 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method count
+   * @return MemberExpression
+   */
   Dom.prototype.count = function(){
     return this.elements.length;
   };
 
+  /**
+   * Description
+   * @method get
+   * @param {} index
+   * @return MemberExpression
+   */
   Dom.prototype.get = function(index){
     return this.elements[index];
   };
 
+  /**
+   * Description
+   * @method filter
+   * @param {} selector
+   * @return filtered
+   */
   Dom.prototype.filter = function(selector){
     var filtered = new Dom();
 
@@ -536,6 +595,12 @@ metaScore.Dom = (function () {
     return filtered;
   };
 
+  /**
+   * Description
+   * @method index
+   * @param {} selector
+   * @return found
+   */
   Dom.prototype.index = function(selector){
     var found = -1;
 
@@ -549,6 +614,12 @@ metaScore.Dom = (function () {
     return found;
   };
 
+  /**
+   * Description
+   * @method find
+   * @param {} selector
+   * @return descendents
+   */
   Dom.prototype.find = function(selector){
     var descendents = new Dom();
 
@@ -559,6 +630,12 @@ metaScore.Dom = (function () {
     return descendents;
   };
 
+  /**
+   * Description
+   * @method children
+   * @param {} selector
+   * @return children
+   */
   Dom.prototype.children = function(selector){
     var children = new Dom();
 
@@ -573,10 +650,22 @@ metaScore.Dom = (function () {
     return children;
   };
 
+  /**
+   * Description
+   * @method child
+   * @param {} selector
+   * @return NewExpression
+   */
   Dom.prototype.child = function(selector){
     return new Dom(this.children(selector).get(0));
   };
 
+  /**
+   * Description
+   * @method parents
+   * @param {} selector
+   * @return parents
+   */
   Dom.prototype.parents = function(selector){
     var parents = new Dom();
 
@@ -591,12 +680,25 @@ metaScore.Dom = (function () {
     return parents;
   };
 
+  /**
+   * Description
+   * @method each
+   * @param {} callback
+   * @param {} scope
+   * @return 
+   */
   Dom.prototype.each = function(callback, scope){
     scope = scope || this;
 
     metaScore.Array.each(this.elements, callback, scope);
   };
 
+  /**
+   * Description
+   * @method hasClass
+   * @param {} className
+   * @return found
+   */
   Dom.prototype.hasClass = function(className) {
     var found;
 
@@ -608,6 +710,12 @@ metaScore.Dom = (function () {
     return found;
   };
 
+  /**
+   * Description
+   * @method addClass
+   * @param {} className
+   * @return ThisExpression
+   */
   Dom.prototype.addClass = function(className) {
     this.each(function(index, element) {
       Dom.addClass(element, className);
@@ -616,6 +724,12 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method removeClass
+   * @param {} className
+   * @return ThisExpression
+   */
   Dom.prototype.removeClass = function(className) {
     this.each(function(index, element) {
       Dom.removeClass(element, className);
@@ -624,6 +738,13 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleClass
+   * @param {} className
+   * @param {} force
+   * @return ThisExpression
+   */
   Dom.prototype.toggleClass = function(className, force) {
     this.each(function(index, element) {
       Dom.toggleClass(element, className, force);
@@ -632,6 +753,14 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Dom.prototype.addListener = function(type, callback, useCapture) {
    this.each(function(index, element) {
       Dom.addListener(element, type, callback, useCapture);
@@ -640,6 +769,16 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addDelegate
+   * @param {} selector
+   * @param {} type
+   * @param {} callback
+   * @param {} scope
+   * @param {} useCapture
+   * @return CallExpression
+   */
   Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
     scope = scope || this;
 
@@ -662,6 +801,14 @@ metaScore.Dom = (function () {
     }, useCapture);
   };
 
+  /**
+   * Description
+   * @method removeListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Dom.prototype.removeListener = function(type, callback, useCapture) {
     this.each(function(index, element) {
       Dom.removeListener(element, type, callback, useCapture);
@@ -670,6 +817,15 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method triggerEvent
+   * @param {} type
+   * @param {} data
+   * @param {} bubbles
+   * @param {} cancelable
+   * @return return_value
+   */
   Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
 
@@ -680,6 +836,12 @@ metaScore.Dom = (function () {
     return return_value;
   };
 
+  /**
+   * Description
+   * @method text
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.text = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -691,6 +853,12 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method val
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.val = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -703,6 +871,13 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method attr
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.attr = function(name, value) {
     if(value !== undefined || metaScore.Var.is(name, 'object')){
       this.each(function(index, element) {
@@ -715,6 +890,14 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method css
+   * @param {} name
+   * @param {} value
+   * @param {} inline
+   * @return 
+   */
   Dom.prototype.css = function(name, value, inline) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -727,6 +910,13 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method data
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.data = function(name, value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -739,6 +929,12 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method append
+   * @param {} children
+   * @return ThisExpression
+   */
   Dom.prototype.append = function(children){
     if(children instanceof Dom){
       children = children.elements;
@@ -749,6 +945,12 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method appendTo
+   * @param {} parent
+   * @return ThisExpression
+   */
   Dom.prototype.appendTo = function(parent){
     if(!(parent instanceof Dom)){
       parent = new Dom(parent);
@@ -763,6 +965,13 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method insertAt
+   * @param {} parent
+   * @param {} index
+   * @return ThisExpression
+   */
   Dom.prototype.insertAt = function(parent, index){
     var element;
   
@@ -777,6 +986,11 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method empty
+   * @return ThisExpression
+   */
   Dom.prototype.empty = function(){
     this.each(function(index, element) {
       Dom.empty(element);
@@ -785,30 +999,55 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method show
+   * @return ThisExpression
+   */
   Dom.prototype.show = function(){
     this.css('display', '');
 
     return this;
   };
 
+  /**
+   * Description
+   * @method hide
+   * @return ThisExpression
+   */
   Dom.prototype.hide = function(){
     this.css('display', 'none');
 
     return this;
   };
 
+  /**
+   * Description
+   * @method focus
+   * @return ThisExpression
+   */
   Dom.prototype.focus = function(){
     this.get(0).focus();
 
     return this;
   };
 
+  /**
+   * Description
+   * @method blur
+   * @return ThisExpression
+   */
   Dom.prototype.blur = function(){
     this.get(0).blur();
 
     return this;
   };
 
+  /**
+   * Description
+   * @method remove
+   * @return ThisExpression
+   */
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       this.each(function(index, element) {
@@ -821,6 +1060,12 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method is
+   * @param {} selector
+   * @return found
+   */
   Dom.prototype.is = function(selector){
     var found;
 
@@ -832,6 +1077,12 @@ metaScore.Dom = (function () {
     return found;
   };
 
+  /**
+   * Description
+   * @method closest
+   * @param {} selector
+   * @return found
+   */
   Dom.prototype.closest = function(selector){
     var found;
 

@@ -1,16 +1,17 @@
 /**
- * Overlay
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Overlay
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Overlay = (function(){
 
   /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
+   * Initialize
+   * @constructor
+   * @param {} configs
+   */
   function Overlay(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -59,6 +60,11 @@ metaScore.namespace('editor').Overlay = (function(){
 
   metaScore.Dom.extend(Overlay);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Overlay.prototype.setupDOM = function(){
 
     if(this.configs.modal){
@@ -82,6 +88,11 @@ metaScore.namespace('editor').Overlay = (function(){
   
   };
 
+  /**
+   * Description
+   * @method show
+   * @return ThisExpression
+   */
   Overlay.prototype.show = function(){
     if(this.configs.modal){
       this.mask.appendTo(this.configs.parent);
@@ -92,6 +103,11 @@ metaScore.namespace('editor').Overlay = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method hide
+   * @return ThisExpression
+   */
   Overlay.prototype.hide = function(){
     if(this.configs.modal){
       this.mask.remove();
@@ -102,14 +118,29 @@ metaScore.namespace('editor').Overlay = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method getToolbar
+   * @return MemberExpression
+   */
   Overlay.prototype.getToolbar = function(){
     return this.toolbar;
   };
 
+  /**
+   * Description
+   * @method getContents
+   * @return MemberExpression
+   */
   Overlay.prototype.getContents = function(){
     return this.contents;
   };
 
+  /**
+   * Description
+   * @method onCloseClick
+   * @return 
+   */
   Overlay.prototype.onCloseClick = function(){
     this.hide();
   };

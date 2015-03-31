@@ -1,11 +1,17 @@
 /**
- * Field
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Field
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Field = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Field(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -42,6 +48,11 @@ metaScore.namespace('editor').Field = (function () {
 
   metaScore.Dom.extend(Field);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   Field.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 
@@ -58,12 +69,25 @@ metaScore.namespace('editor').Field = (function () {
       .appendTo(this.input_wrapper);
   };
 
+  /**
+   * Description
+   * @method onChange
+   * @param {} evt
+   * @return 
+   */
   Field.prototype.onChange = function(evt){
     this.value = this.input.val();
 
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   Field.prototype.setValue = function(value, supressEvent){
     this.input.val(value);
     this.value = value;
@@ -73,14 +97,20 @@ metaScore.namespace('editor').Field = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method getValue
+   * @return MemberExpression
+   */
   Field.prototype.getValue = function(){
     return this.value;
   };
 
   /**
-  * Disable the field
-  * @returns {object} the XMLHttp object
-  */
+   * Disable the field
+   * @method disable
+   * @return ThisExpression
+   */
   Field.prototype.disable = function(){
     this.disabled = true;
 
@@ -91,11 +121,10 @@ metaScore.namespace('editor').Field = (function () {
   };
 
   /**
-  * Enable the field
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Enable the field
+   * @method enable
+   * @return ThisExpression
+   */
   Field.prototype.enable = function(){
     this.disabled = false;
 

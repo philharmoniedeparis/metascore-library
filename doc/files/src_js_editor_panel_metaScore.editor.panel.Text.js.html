@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src\js\editor\panel\metaScore.editor.panel.Text.js - metaScore</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="metaScore" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.2</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/metaScore.Array.html">metaScore.Array</a></li>
+                                <li><a href="../classes/metaScore.Class.html">metaScore.Class</a></li>
+                                <li><a href="../classes/metaScore.Color.html">metaScore.Color</a></li>
+                                <li><a href="../classes/metaScore.Dom.html">metaScore.Dom</a></li>
+                                <li><a href="../classes/metaScore.Draggable.html">metaScore.Draggable</a></li>
+                                <li><a href="../classes/metaScore.Editor.html">metaScore.Editor</a></li>
+                                <li><a href="../classes/metaScore.editor.Ajax.html">metaScore.editor.Ajax</a></li>
+                                <li><a href="../classes/metaScore.editor.Button.html">metaScore.editor.Button</a></li>
+                                <li><a href="../classes/metaScore.editor.DropDownMenu.html">metaScore.editor.DropDownMenu</a></li>
+                                <li><a href="../classes/metaScore.editor.Field.html">metaScore.editor.Field</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Boolean.html">metaScore.editor.field.Boolean</a></li>
+                                <li><a href="../classes/metaScore.editor.field.BorderRadius.html">metaScore.editor.field.BorderRadius</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Buttons.html">metaScore.editor.field.Buttons</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Color.html">metaScore.editor.field.Color</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Image.html">metaScore.editor.field.Image</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Number.html">metaScore.editor.field.Number</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Select.html">metaScore.editor.field.Select</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Text.html">metaScore.editor.field.Text</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Textarea.html">metaScore.editor.field.Textarea</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Time.html">metaScore.editor.field.Time</a></li>
+                                <li><a href="../classes/metaScore.editor.History.html">metaScore.editor.History</a></li>
+                                <li><a href="../classes/metaScore.editor.MainMenu.html">metaScore.editor.MainMenu</a></li>
+                                <li><a href="../classes/metaScore.editor.Overlay.html">metaScore.editor.Overlay</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.Alert.html">metaScore.editor.overlay.Alert</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.BorderRadius.html">metaScore.editor.overlay.BorderRadius</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.ColorSelector.html">metaScore.editor.overlay.ColorSelector</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.GuideInfo.html">metaScore.editor.overlay.GuideInfo</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.GuideSelector.html">metaScore.editor.overlay.GuideSelector</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.iFrame.html">metaScore.editor.overlay.iFrame</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.LinkEditor.html">metaScore.editor.overlay.LinkEditor</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.LoadMask.html">metaScore.editor.overlay.LoadMask</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.Toolbar.html">metaScore.editor.overlay.Toolbar</a></li>
+                                <li><a href="../classes/metaScore.editor.Panel.html">metaScore.editor.Panel</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Block.html">metaScore.editor.panel.Block</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Element.html">metaScore.editor.panel.Element</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Page.html">metaScore.editor.panel.Page</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Text.html">metaScore.editor.panel.Text</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Toolbar.html">metaScore.editor.panel.Toolbar</a></li>
+                                <li><a href="../classes/metaScore.Evented.html">metaScore.Evented</a></li>
+                                <li><a href="../classes/metaScore.Function.html">metaScore.Function</a></li>
+                                <li><a href="../classes/metaScore.Locale.html">metaScore.Locale</a></li>
+                                <li><a href="../classes/metaScore.metaScore.html">metaScore.metaScore</a></li>
+                                <li><a href="../classes/metaScore.Object.html">metaScore.Object</a></li>
+                                <li><a href="../classes/metaScore.Player.html">metaScore.Player</a></li>
+                                <li><a href="../classes/metaScore.player.Component.html">metaScore.player.Component</a></li>
+                                <li><a href="../classes/metaScore.player.component.Block.html">metaScore.player.component.Block</a></li>
+                                <li><a href="../classes/metaScore.player.component.Controller.html">metaScore.player.component.Controller</a></li>
+                                <li><a href="../classes/metaScore.player.component.Element.html">metaScore.player.component.Element</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Cursor.html">metaScore.player.component.element.Cursor</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Image.html">metaScore.player.component.element.Image</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Text.html">metaScore.player.component.element.Text</a></li>
+                                <li><a href="../classes/metaScore.player.component.Media.html">metaScore.player.component.Media</a></li>
+                                <li><a href="../classes/metaScore.player.component.Page.html">metaScore.player.component.Page</a></li>
+                                <li><a href="../classes/metaScore.player.CuePoint.html">metaScore.player.CuePoint</a></li>
+                                <li><a href="../classes/metaScore.player.Pager.html">metaScore.player.Pager</a></li>
+                                <li><a href="../classes/metaScore.Resizable.html">metaScore.Resizable</a></li>
+                                <li><a href="../classes/metaScore.String.html">metaScore.String</a></li>
+                                <li><a href="../classes/metaScore.StyleSheet.html">metaScore.StyleSheet</a></li>
+                                <li><a href="../classes/metaScore.Var.html">metaScore.Var</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src\js\editor\panel\metaScore.editor.panel.Text.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+* Description
+* @class Text
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
+
+metaScore.namespace(&#x27;editor.panel&#x27;).Text = (function () {
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function TextPanel(configs) {
+    // call parent constructor
+    TextPanel.parent.call(this, configs);
+
+    // fix event handlers scope
+    this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
+    this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
+    this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
+    this.onComponentContentsMouseup = metaScore.Function.proxy(this.onComponentContentsMouseup, this);
+  }
+
+  TextPanel.defaults = {
+    toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
+      title: metaScore.Locale.t(&#x27;editor.panel.Text.title&#x27;, &#x27;Text&#x27;),
+      buttons: [],
+      selector: false
+    }),
+
+    properties: {
+      &#x27;locked&#x27;: {
+        &#x27;type&#x27;: &#x27;Boolean&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.locked&#x27;, &#x27;Locked ?&#x27;)
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          if(value){
+            this.lock();
+          }
+          else{
+            this.unlock();
+          }
+        }
+      },
+      &#x27;foreColor&#x27;: {
+        &#x27;type&#x27;: &#x27;Color&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.fore-color&#x27;, &#x27;Font color&#x27;)
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          this.execCommand(&#x27;foreColor&#x27;, value ? &#x27;rgba(&#x27;+ value.r +&#x27;,&#x27;+ value.g +&#x27;,&#x27;+ value.b +&#x27;,&#x27;+ value.a +&#x27;)&#x27; : &#x27;inherit&#x27;);
+        }
+      },
+      &#x27;backColor&#x27;: {
+        &#x27;type&#x27;: &#x27;Color&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.back-color&#x27;, &#x27;Background color&#x27;)
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          this.execCommand(&#x27;backColor&#x27;, value ? &#x27;rgba(&#x27;+ value.r +&#x27;,&#x27;+ value.g +&#x27;,&#x27;+ value.b +&#x27;,&#x27;+ value.a +&#x27;)&#x27; : &#x27;inherit&#x27;);
+        }
+      },
+      &#x27;fontName&#x27;: {
+        &#x27;type&#x27;: &#x27;Select&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.font&#x27;, &#x27;Font&#x27;),
+          &#x27;options&#x27;: {
+            &quot;inherit&quot;: &#x27;&#x27;,
+            &quot;Georgia, serif&quot;: &#x27;Georgia&#x27;,
+            &quot;&#x27;Times New Roman&#x27;, Times, serif&quot;: &#x27;Times New Roman&#x27;,
+            &quot;Arial, Helvetica, sans-serif&quot;: &#x27;Arial&#x27;,
+            &quot;&#x27;Comic Sans MS&#x27;, cursive, sans-serif&quot;: &#x27;Comic Sans MS&#x27;,
+            &quot;Impact, Charcoal, sans-serif&quot;: &#x27;Impact&#x27;,
+            &quot;&#x27;Lucida Sans Unicode&#x27;, &#x27;Lucida Grande&#x27;, sans-serif&quot;: &#x27;Lucida Sans Unicode&#x27;,
+            &quot;Tahoma, Geneva, sans-serif&quot;: &#x27;Tahoma&#x27;,
+            &quot;Verdana, Geneva, sans-serif&quot;: &#x27;Verdana&#x27;,
+            &quot;&#x27;Courier New&#x27;, Courier, monospace&quot;: &#x27;Courier New&#x27;,
+            &quot;&#x27;Lucida Console&#x27;, Monaco, monospace&quot;: &#x27;Lucida Console&#x27;
+          }
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          this.execCommand(&#x27;fontName&#x27;, value);
+        }
+      },
+      &#x27;formatBlock&#x27;: {
+        &#x27;type&#x27;: &#x27;Select&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock&#x27;, &#x27;Format&#x27;),
+          &#x27;options&#x27;: {
+            &quot;p&quot;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock.p&#x27;, &#x27;Normal&#x27;),
+            &quot;h1&quot;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock.h1&#x27;, &#x27;Heading 1&#x27;),
+            &quot;h2&quot;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock.h2&#x27;, &#x27;Heading 2&#x27;),
+            &quot;h3&quot;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock.h3&#x27;, &#x27;Heading 3&#x27;),
+            &quot;h4&quot;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock.h4&#x27;, &#x27;Heading 4&#x27;),
+            &quot;pre&quot;: metaScore.Locale.t(&#x27;editor.panel.Text.formatBlock.pre&#x27;, &#x27;Formatted&#x27;)
+          }
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          this.execCommand(&#x27;formatBlock&#x27;, value);
+        }
+      },
+      &#x27;fontSize&#x27;: {
+        &#x27;type&#x27;: &#x27;Select&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.font-size&#x27;, &#x27;Font size&#x27;),
+          &#x27;options&#x27;: {
+            &quot;1&quot;: &#x27;1&#x27;,
+            &quot;2&quot;: &#x27;2&#x27;,
+            &quot;3&quot;: &#x27;3&#x27;,
+            &quot;4&quot;: &#x27;4&#x27;,
+            &quot;5&quot;: &#x27;5&#x27;,
+            &quot;6&quot;: &#x27;6&#x27;,
+            &quot;7&quot;: &#x27;7&#x27;
+          }
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          this.execCommand(&#x27;fontSize&#x27;, value);
+        }
+      },
+      &#x27;formatting&#x27;: {
+        &#x27;type&#x27;: &#x27;Buttons&#x27;,
+        &#x27;configs&#x27;: {
+          &#x27;label&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting&#x27;, &#x27;Formatting&#x27;),
+          &#x27;buttons&#x27;: {
+            &#x27;bold&#x27;: {
+              &#x27;data-action&#x27;: &#x27;bold&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.bold&#x27;, &#x27;Bold&#x27;)
+            },
+            &#x27;italic&#x27;: {
+              &#x27;data-action&#x27;: &#x27;italic&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.italic&#x27;, &#x27;Italic&#x27;)
+            },
+            &#x27;strikeThrough&#x27;: {
+              &#x27;data-action&#x27;: &#x27;strikeThrough&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.strikeThrough&#x27;, &#x27;Strikethrough&#x27;)
+            },
+            &#x27;underline&#x27;: {
+              &#x27;data-action&#x27;: &#x27;underline&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.underline&#x27;, &#x27;Underline&#x27;)
+            },
+            &#x27;subscript&#x27;: {
+              &#x27;data-action&#x27;: &#x27;subscript&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.subscript&#x27;, &#x27;Subscript&#x27;)
+            },
+            &#x27;superscript&#x27;: {
+              &#x27;data-action&#x27;: &#x27;superscript&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.superscript&#x27;, &#x27;Superscript&#x27;)
+            },
+            &#x27;justifyLeft&#x27;: {
+              &#x27;data-action&#x27;: &#x27;justifyLeft&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.justifyLeft&#x27;, &#x27;Left&#x27;)
+            },
+            &#x27;justifyCenter&#x27;: {
+              &#x27;data-action&#x27;: &#x27;justifyCenter&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.justifyCenter&#x27;, &#x27;Center&#x27;)
+            },
+            &#x27;justifyRight&#x27;: {
+              &#x27;data-action&#x27;: &#x27;justifyRight&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.justifyRight&#x27;, &#x27;Right&#x27;)
+            },
+            &#x27;justifyFull&#x27;: {
+              &#x27;data-action&#x27;: &#x27;justifyFull&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.justifyFull&#x27;, &#x27;Justify&#x27;)
+            },
+            &#x27;link&#x27;: {
+              &#x27;data-action&#x27;: &#x27;link&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.link&#x27;, &#x27;Add/Modify link&#x27;)
+            },
+            &#x27;unlink&#x27;: {
+              &#x27;data-action&#x27;: &#x27;unlink&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.unlink&#x27;, &#x27;Remove link&#x27;)
+            },
+            &#x27;removeFormat&#x27;: {
+              &#x27;data-action&#x27;: &#x27;removeFormat&#x27;,
+              &#x27;title&#x27;: metaScore.Locale.t(&#x27;editor.panel.Text.formatting.removeFormat&#x27;, &#x27;Remove formatting&#x27;)
+            }
+          }
+        },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
+        &#x27;setter&#x27;: function(value){
+          if(value === &#x27;link&#x27;){
+            var link = metaScore.Dom.closest(this.getSelectedElement(), &#x27;a&#x27;);
+
+            new metaScore.editor.overlay.LinkEditor({
+                link: link,
+                autoShow: true
+              })
+              .addListener(&#x27;submit&#x27;, metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
+          }
+          else{
+            this.execCommand(value);
+          }
+        }
+      }
+    }
+  };
+
+  metaScore.editor.Panel.extend(TextPanel);
+
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onFieldValueChange = function(evt){
+    var component = this.getComponent(),
+      name, value;
+
+    if(!component){
+      return;
+    }
+
+    name = evt.detail.field.data(&#x27;name&#x27;);
+    value = evt.detail.value;
+
+    if(name in this.configs.properties &amp;&amp; &#x27;setter&#x27; in this.configs.properties[name]){
+      this.configs.properties[name].setter.call(this, value);
+    }
+  };
+
+  /**
+   * Description
+   * @method setComponent
+   * @param {} component
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
+  TextPanel.prototype.setComponent = function(component, supressEvent){
+    if(component !== this.getComponent()){
+      if(!component){
+        return this.unsetComponent();
+      }
+      
+      this.unsetComponent(true);
+
+      this.component = component;
+
+      this
+        .setupFields(this.configs.properties)
+        .updateFieldValue(&#x27;locked&#x27;, true)
+        .addClass(&#x27;has-component&#x27;);
+
+      if(supressEvent !== true){
+        this.triggerEvent(&#x27;componentset&#x27;, {&#x27;component&#x27;: component}, false);
+      }
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method unsetComponent
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
+  TextPanel.prototype.unsetComponent = function(supressEvent){
+    var component = this.getComponent();
+    
+    this.lock().removeClass(&#x27;has-component&#x27;);
+
+    if(component){        
+      this.component = null;
+
+      if(supressEvent !== true){
+        this.triggerEvent(&#x27;componentunset&#x27;, {&#x27;component&#x27;: component}, false);
+      }
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method lock
+   * @return ThisExpression
+   */
+  TextPanel.prototype.lock = function(){
+    var component = this.getComponent();
+    
+    if(component){      
+      component.contents
+        .attr(&#x27;contenteditable&#x27;, null)
+        .addListener(&#x27;dblclick&#x27;, this.onComponentContentsDblClick)
+        .removeListener(&#x27;click&#x27;, this.onComponentContentsClick)
+        .removeListener(&#x27;keydown&#x27;, this.onComponentContentsKey)
+        .removeListener(&#x27;keypress&#x27;, this.onComponentContentsKey)
+        .removeListener(&#x27;keyup&#x27;, this.onComponentContentsKey)
+        .removeListener(&#x27;mouseup&#x27;, this.onComponentContentsMouseup);
+        
+      this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), &#x27;locked&#x27;), false);
+        
+      if(component._draggable){
+        component._draggable.enable();
+      }
+      if(component._resizable){
+        component._resizable.enable();
+      }
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method unlock
+   * @return ThisExpression
+   */
+  TextPanel.prototype.unlock = function(){
+    var component = this.getComponent();
+    
+    if(component){
+      if(component._draggable){
+        component._draggable.disable();
+      }
+      if(component._resizable){
+        component._resizable.disable();
+      }
+      
+      component.contents
+        .attr(&#x27;contenteditable&#x27;, &#x27;true&#x27;)
+        .removeListener(&#x27;dblclick&#x27;, this.onComponentContentsDblClick)
+        .addListener(&#x27;click&#x27;, this.onComponentContentsClick)
+        .addListener(&#x27;keydown&#x27;, this.onComponentContentsKey)
+        .addListener(&#x27;keypress&#x27;, this.onComponentContentsKey)
+        .addListener(&#x27;keyup&#x27;, this.onComponentContentsKey)
+        .addListener(&#x27;mouseup&#x27;, this.onComponentContentsMouseup)
+        .focus();
+
+      this
+        .toggleFields(metaScore.Array.remove(Object.keys(this.getField()), &#x27;locked&#x27;), true)
+        .execCommand(&quot;styleWithCSS&quot;, true);
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method disable
+   * @return CallExpression
+   */
+  TextPanel.prototype.disable = function(){    
+    this.lock();
+    
+    return TextPanel.parent.prototype.disable.call(this);
+  };
+
+  /**
+   * Description
+   * @method onComponentContentsDblClick
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onComponentContentsDblClick = function(evt){
+    this.updateFieldValue(&#x27;locked&#x27;, false);
+  };
+
+  /**
+   * Description
+   * @method onComponentContentsClick
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onComponentContentsClick = function(evt){
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onComponentContentsKey
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onComponentContentsKey = function(evt){
+    if(evt.type === &#x27;keyup&#x27;){
+      this.updateButtons();
+    }
+    
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onComponentContentsMouseup
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onComponentContentsMouseup = function(evt){
+    this.updateButtons();
+  };
+
+  /**
+   * Description
+   * @method updateButtons
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.updateButtons = function(evt){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      element, is_link;
+    
+    element = new metaScore.Dom(this.getSelectedElement());
+    is_link = element.closest(&#x27;a&#x27;) !== null;
+    
+    metaScore.Object.each(this.getField(), function(field_key, field){
+      switch(field_key){
+        case &#x27;formatting&#x27;:
+          metaScore.Object.each(field.getButtons(), function(button_key, button){
+            switch(button_key){
+              case &#x27;link&#x27;:
+                button.toggleClass(&#x27;pressed&#x27;, is_link);
+                break;
+                
+              default:
+                button.toggleClass(&#x27;pressed&#x27;, document.queryCommandState(button_key));
+            }
+          });
+          break;
+                
+        default:
+          field.setValue(document.queryCommandValue(field_key), true);
+      }
+    }, this);
+  };
+
+  /**
+   * Description
+   * @method onLinkOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onLinkOverlaySubmit = function(evt){
+    var url = evt.detail.url;
+
+    this.execCommand(&#x27;createLink&#x27;, url);
+  };
+
+  /**
+   * Description
+   * @method getSelectedElement
+   * @return element
+   */
+  TextPanel.prototype.getSelectedElement = function(){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      selection, element;
+
+    if(document.selection){
+      selection = document.selection;
+    	element = selection.createRange().parentElement();
+    }
+    else{
+    	selection = document.getSelection();
+    	if(selection.rangeCount &gt; 0){
+        element = selection.getRangeAt(0).startContainer.parentNode;
+      }
+    }
+
+    return element;
+  };
+
+  /**
+   * Description
+   * @method execCommand
+   * @param {} command
+   * @param {} value
+   * @return 
+   */
+  TextPanel.prototype.execCommand = function(command, value){
+     var component = this.getComponent(),
+      contents =  component.contents.get(0),
+      document = contents.ownerDocument;
+
+    contents.focus();
+
+    document.execCommand(command, false, value);
+    
+    this.updateButtons();
+  };
+
+  return TextPanel;
+
+})();
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

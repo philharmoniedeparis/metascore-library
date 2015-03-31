@@ -1,11 +1,17 @@
 /**
- * Text
- *
- * @requires ../metaScore.player.element.js
- */
+* Description
+* @class Text
+* @namespace metaScore.player.component.element
+* @extends metaScore.player.component.Element
+*/
 
 metaScore.namespace('player.component.element').Text = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Text(configs) {
     // call parent constructor
     Text.parent.call(this, configs);
@@ -19,9 +25,18 @@ metaScore.namespace('player.component.element').Text = (function () {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'text': {
         'editable':false,
+        /**
+         * Description
+         * @return CallExpression
+         */
         'getter': function(){
           return this.contents.text();
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.contents.text(value);
         }
@@ -29,6 +44,11 @@ metaScore.namespace('player.component.element').Text = (function () {
     })
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Text.prototype.setupDOM = function(){
     // call parent function
     Text.parent.prototype.setupDOM.call(this);
@@ -36,6 +56,12 @@ metaScore.namespace('player.component.element').Text = (function () {
     this.data('type', 'text');
   };
 
+  /**
+   * Description
+   * @method onLinkClick
+   * @param {} evt
+   * @return 
+   */
   Text.prototype.onLinkClick = function(evt){
     var link = evt.target,
       matches;

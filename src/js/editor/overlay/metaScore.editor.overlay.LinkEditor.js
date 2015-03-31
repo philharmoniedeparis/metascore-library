@@ -1,12 +1,17 @@
 /**
- * LinkEditor
- *
- * @requires ../metaScore.editor.Ovelay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class LinkEditor
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function LinkEditor(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -41,6 +46,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   metaScore.editor.Overlay.extend(LinkEditor);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   LinkEditor.prototype.setupDOM = function(){
     var contents;
 
@@ -106,6 +116,12 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   };
 
+  /**
+   * Description
+   * @method setValuesFromLink
+   * @param {} link
+   * @return 
+   */
   LinkEditor.prototype.setValuesFromLink = function(link){
     var matches;
 
@@ -125,6 +141,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method toggleFields
+   * @return 
+   */
   LinkEditor.prototype.toggleFields = function(){
     var type = this.fields.type.getValue();
 
@@ -155,10 +176,22 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onTypeChange
+   * @param {} evt
+   * @return 
+   */
   LinkEditor.prototype.onTypeChange = function(evt){
     this.toggleFields();
   };
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   LinkEditor.prototype.onApplyClick = function(evt){
     var type = this.fields.type.getValue(),
       url;
@@ -182,6 +215,12 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.hide();
   };
 
+  /**
+   * Description
+   * @method onCancelClick
+   * @param {} evt
+   * @return 
+   */
   LinkEditor.prototype.onCancelClick = function(evt){
     this.hide();
   };

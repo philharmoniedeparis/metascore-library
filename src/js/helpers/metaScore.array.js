@@ -1,22 +1,28 @@
 /**
- * Array
- *
- * @requires ../metaScore.class.js
- */
+* Description
+* @class Array
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Array = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Array() {
   }
 
   metaScore.Class.extend(Array);
 
   /**
-  * Checks if a value is in an array
-  * @param {mixed} the value to check
-  * @param {array} the array
-  * @returns {number} the index of the value if found, -1 otherwise
-  */
+   * Checks if a value is in an array
+   * @method inArray
+   * @param {} value
+   * @param {} arr
+   * @return UnaryExpression
+   */
   Array.inArray = function (value, arr) {
     var len, i = 0;
 
@@ -39,19 +45,21 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Copies an array
-  * @param {array} the original array
-  * @returns {array} a copy of the array
-  */
+   * Copies an array
+   * @method copy
+   * @param {} arr
+   * @return CallExpression
+   */
   Array.copy = function (arr) {
     return [].concat(arr);
   };
 
   /**
-  * Shuffles elements in an array
-  * @param {array} the original array
-  * @returns {array} a copy of the array with it's elements shuffled
-  */
+   * Shuffles elements in an array
+   * @method shuffle
+   * @param {} arr
+   * @return shuffled
+   */
   Array.shuffle = function(arr) {
 
     var shuffled = Array.copy(arr);
@@ -65,10 +73,11 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Return new array with duplicate values removed
-  * @param {array} the original array
-  * @returns {array} a copy of the array with the duplicate values removed
-  */
+   * Return new array with duplicate values removed
+   * @method unique
+   * @param {} arr
+   * @return unique
+   */
   Array.unique = function(arr) {
 
     var unique = [];
@@ -89,11 +98,13 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Call a function on each element of an array
-  * @param {array} the array
-  * @param {function} the function to call
-  * @returns {array} a copy of the array
-  */
+   * Call a function on each element of an array
+   * @method each
+   * @param {} arr
+   * @param {} callback
+   * @param {} scope
+   * @return arr
+   */
   Array.each = function(arr, callback, scope) {
 
     var i = 0,
@@ -114,11 +125,12 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Remove an element from an array
-  * @param {array} the array
-  * @param {mixed} the element to remove
-  * @returns {array} a copy of the array
-  */
+   * Remove an element from an array
+   * @method remove
+   * @param {} arr
+   * @param {} element
+   * @return arr
+   */
   Array.remove = function(arr, element){
     var index = Array.inArray(element, arr);
 

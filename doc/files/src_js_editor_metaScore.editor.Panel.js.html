@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src\js\editor\metaScore.editor.Panel.js - metaScore</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="metaScore" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.2</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/metaScore.Array.html">metaScore.Array</a></li>
+                                <li><a href="../classes/metaScore.Class.html">metaScore.Class</a></li>
+                                <li><a href="../classes/metaScore.Color.html">metaScore.Color</a></li>
+                                <li><a href="../classes/metaScore.Dom.html">metaScore.Dom</a></li>
+                                <li><a href="../classes/metaScore.Draggable.html">metaScore.Draggable</a></li>
+                                <li><a href="../classes/metaScore.Editor.html">metaScore.Editor</a></li>
+                                <li><a href="../classes/metaScore.editor.Ajax.html">metaScore.editor.Ajax</a></li>
+                                <li><a href="../classes/metaScore.editor.Button.html">metaScore.editor.Button</a></li>
+                                <li><a href="../classes/metaScore.editor.DropDownMenu.html">metaScore.editor.DropDownMenu</a></li>
+                                <li><a href="../classes/metaScore.editor.Field.html">metaScore.editor.Field</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Boolean.html">metaScore.editor.field.Boolean</a></li>
+                                <li><a href="../classes/metaScore.editor.field.BorderRadius.html">metaScore.editor.field.BorderRadius</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Buttons.html">metaScore.editor.field.Buttons</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Color.html">metaScore.editor.field.Color</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Image.html">metaScore.editor.field.Image</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Number.html">metaScore.editor.field.Number</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Select.html">metaScore.editor.field.Select</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Text.html">metaScore.editor.field.Text</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Textarea.html">metaScore.editor.field.Textarea</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Time.html">metaScore.editor.field.Time</a></li>
+                                <li><a href="../classes/metaScore.editor.History.html">metaScore.editor.History</a></li>
+                                <li><a href="../classes/metaScore.editor.MainMenu.html">metaScore.editor.MainMenu</a></li>
+                                <li><a href="../classes/metaScore.editor.Overlay.html">metaScore.editor.Overlay</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.Alert.html">metaScore.editor.overlay.Alert</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.BorderRadius.html">metaScore.editor.overlay.BorderRadius</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.ColorSelector.html">metaScore.editor.overlay.ColorSelector</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.GuideInfo.html">metaScore.editor.overlay.GuideInfo</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.GuideSelector.html">metaScore.editor.overlay.GuideSelector</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.iFrame.html">metaScore.editor.overlay.iFrame</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.LinkEditor.html">metaScore.editor.overlay.LinkEditor</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.LoadMask.html">metaScore.editor.overlay.LoadMask</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.Toolbar.html">metaScore.editor.overlay.Toolbar</a></li>
+                                <li><a href="../classes/metaScore.editor.Panel.html">metaScore.editor.Panel</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Block.html">metaScore.editor.panel.Block</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Element.html">metaScore.editor.panel.Element</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Page.html">metaScore.editor.panel.Page</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Text.html">metaScore.editor.panel.Text</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Toolbar.html">metaScore.editor.panel.Toolbar</a></li>
+                                <li><a href="../classes/metaScore.Evented.html">metaScore.Evented</a></li>
+                                <li><a href="../classes/metaScore.Function.html">metaScore.Function</a></li>
+                                <li><a href="../classes/metaScore.Locale.html">metaScore.Locale</a></li>
+                                <li><a href="../classes/metaScore.metaScore.html">metaScore.metaScore</a></li>
+                                <li><a href="../classes/metaScore.Object.html">metaScore.Object</a></li>
+                                <li><a href="../classes/metaScore.Player.html">metaScore.Player</a></li>
+                                <li><a href="../classes/metaScore.player.Component.html">metaScore.player.Component</a></li>
+                                <li><a href="../classes/metaScore.player.component.Block.html">metaScore.player.component.Block</a></li>
+                                <li><a href="../classes/metaScore.player.component.Controller.html">metaScore.player.component.Controller</a></li>
+                                <li><a href="../classes/metaScore.player.component.Element.html">metaScore.player.component.Element</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Cursor.html">metaScore.player.component.element.Cursor</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Image.html">metaScore.player.component.element.Image</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Text.html">metaScore.player.component.element.Text</a></li>
+                                <li><a href="../classes/metaScore.player.component.Media.html">metaScore.player.component.Media</a></li>
+                                <li><a href="../classes/metaScore.player.component.Page.html">metaScore.player.component.Page</a></li>
+                                <li><a href="../classes/metaScore.player.CuePoint.html">metaScore.player.CuePoint</a></li>
+                                <li><a href="../classes/metaScore.player.Pager.html">metaScore.player.Pager</a></li>
+                                <li><a href="../classes/metaScore.Resizable.html">metaScore.Resizable</a></li>
+                                <li><a href="../classes/metaScore.String.html">metaScore.String</a></li>
+                                <li><a href="../classes/metaScore.StyleSheet.html">metaScore.StyleSheet</a></li>
+                                <li><a href="../classes/metaScore.Var.html">metaScore.Var</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src\js\editor\metaScore.editor.Panel.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+* Description
+* @class Panel
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
+
+metaScore.namespace(&#x27;editor&#x27;).Panel = (function(){
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function Panel(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call parent constructor
+    Panel.parent.call(this, &#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;panel&#x27;});
+
+    // fix event handlers scope
+    this.onComponentDragStart = metaScore.Function.proxy(this.onComponentDragStart, this);
+    this.onComponentDrag = metaScore.Function.proxy(this.onComponentDrag, this);
+    this.onComponentDragEnd = metaScore.Function.proxy(this.onComponentDragEnd, this);
+    this.onComponentResizeStart = metaScore.Function.proxy(this.onComponentResizeStart, this);
+    this.onComponentResize = metaScore.Function.proxy(this.onComponentResize, this);
+    this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
+
+    this.toolbar = new metaScore.editor.panel.Toolbar(this.configs.toolbarConfigs)
+      .appendTo(this);
+
+    this.toolbar.getTitle()
+      .addListener(&#x27;click&#x27;, metaScore.Function.proxy(this.toggleState, this));
+
+    this.contents = new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;fields&#x27;})
+      .appendTo(this);
+
+    this
+      .addDelegate(&#x27;.field&#x27;, &#x27;valuechange&#x27;, metaScore.Function.proxy(this.onFieldValueChange, this))
+      .unsetComponent();
+  }
+
+  Panel.defaults = {
+    toolbarConfigs: {
+      buttons: [
+        &#x27;previous&#x27;,
+        &#x27;next&#x27;
+      ]
+    }
+  };
+
+  metaScore.Dom.extend(Panel);
+
+  /**
+   * Description
+   * @method setupFields
+   * @param {} properties
+   * @return ThisExpression
+   */
+  Panel.prototype.setupFields = function(properties){
+    var configs, fieldType, field;
+
+    this.fields = {};
+    this.contents.empty();
+
+    metaScore.Object.each(properties, function(key, prop){
+      if(prop.editable !== false){
+        configs = prop.configs || {};
+
+        field = new metaScore.editor.field[prop.type](configs)
+          .data(&#x27;name&#x27;, key)
+          .appendTo(this.contents);
+
+        this.fields[key] = field;
+      }
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method getToolbar
+   * @return MemberExpression
+   */
+  Panel.prototype.getToolbar = function(){
+    return this.toolbar;
+  };
+
+  /**
+   * Description
+   * @method getField
+   * @param {} key
+   * @return MemberExpression
+   */
+  Panel.prototype.getField = function(key){
+    if(key === undefined){
+      return this.fields;
+    }
+
+    return this.fields[key];
+  };
+
+  /**
+   * Description
+   * @method enableFields
+   * @return 
+   */
+  Panel.prototype.enableFields = function(){
+    metaScore.Object.each(this.fields, function(key, field){
+      field.enable();
+    }, this);
+  };
+
+  /**
+   * Description
+   * @method showField
+   * @param {} name
+   * @return ThisExpression
+   */
+  Panel.prototype.showField = function(name){
+    this.getField(name).show();
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method hideField
+   * @param {} name
+   * @return ThisExpression
+   */
+  Panel.prototype.hideField = function(name){
+    this.getField(name).hide();
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method toggleState
+   * @return ThisExpression
+   */
+  Panel.prototype.toggleState = function(){
+    this.toggleClass(&#x27;collapsed&#x27;);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
+  Panel.prototype.disable = function(){
+    this.addClass(&#x27;disabled&#x27;);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
+  Panel.prototype.enable = function(){
+    this.removeClass(&#x27;disabled&#x27;);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method getComponent
+   * @return MemberExpression
+   */
+  Panel.prototype.getComponent = function(){
+    return this.component;
+  };
+
+  /**
+   * Description
+   * @method getDraggable
+   * @return Literal
+   */
+  Panel.prototype.getDraggable = function(){
+    return false;
+  };
+
+  /**
+   * Description
+   * @method getResizable
+   * @return Literal
+   */
+  Panel.prototype.getResizable = function(){
+    return false;
+  };
+
+  /**
+   * Description
+   * @method setComponent
+   * @param {} component
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
+  Panel.prototype.setComponent = function(component, supressEvent){
+    var draggable, resizable;
+
+    if(component !== this.getComponent()){
+      if(!component){
+        return this.unsetComponent();
+      }
+      
+      this.unsetComponent(true);
+      
+      this.triggerEvent(&#x27;componentbeforeset&#x27;, {&#x27;component&#x27;: component}, false);
+
+      this.component = component;
+
+      this
+        .setupFields(this.component.configs.properties)
+        .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
+        .updateDraggable()
+        .updateResizable()
+        .addClass(&#x27;has-component&#x27;)
+        .getToolbar().setSelectorValue(component.getId(), true);
+
+      if(!(component instanceof metaScore.player.component.Controller)){
+        this.getToolbar().toggleMenuItem(&#x27;delete&#x27;, true);
+      }
+
+      component.addClass(&#x27;selected&#x27;);
+
+      if(supressEvent !== true){
+        this.triggerEvent(&#x27;componentset&#x27;, {&#x27;component&#x27;: component}, false);
+      }
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method unsetComponent
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
+  Panel.prototype.unsetComponent = function(supressEvent){
+    var component = this.getComponent();
+
+    this
+      .removeClass(&#x27;has-component&#x27;)
+      .getToolbar().toggleMenuItem(&#x27;delete&#x27;, false);
+
+    if(component){
+      this
+        .updateDraggable(false)
+        .updateResizable(false)
+        .getToolbar().setSelectorValue(null, true);
+
+      component.removeClass(&#x27;selected&#x27;);
+
+      delete this.component;
+
+      if(supressEvent !== true){
+        this.triggerEvent(&#x27;componentunset&#x27;, {&#x27;component&#x27;: component}, false);
+      }
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateDraggable
+   * @param {} draggable
+   * @return ThisExpression
+   */
+  Panel.prototype.updateDraggable = function(draggable){
+    var component = this.getComponent();
+      
+    if(draggable === undefined){
+      draggable = this.getDraggable();
+    }
+    
+    if(draggable){
+      if(!component._draggable){
+        component._draggable = new metaScore.Draggable(draggable);
+        component
+          .addListener(&#x27;dragstart&#x27;, this.onComponentDragStart)
+          .addListener(&#x27;drag&#x27;, this.onComponentDrag)
+          .addListener(&#x27;dragend&#x27;, this.onComponentDragEnd);
+      }
+    }
+    else if(component._draggable){
+      component._draggable.destroy();
+      delete component._draggable;
+      
+      component
+        .removeListener(&#x27;dragstart&#x27;, this.onComponentDragStart)
+        .removeListener(&#x27;drag&#x27;, this.onComponentDrag)
+        .removeListener(&#x27;dragend&#x27;, this.onComponentDragEnd);
+    }
+    
+    this.toggleFields([&#x27;x&#x27;, &#x27;y&#x27;], draggable);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateResizable
+   * @param {} resizable
+   * @return ThisExpression
+   */
+  Panel.prototype.updateResizable = function(resizable){
+    var component = this.getComponent();
+      
+    if(resizable === undefined){
+      resizable = this.getResizable();
+    }
+    
+    if(resizable){
+      if(!component._resizable){
+        component._resizable = new metaScore.Resizable(resizable);
+        component
+          .addListener(&#x27;resizestart&#x27;, this.onComponentResizeStart)
+          .addListener(&#x27;resize&#x27;, this.onComponentResize)
+          .addListener(&#x27;resizeend&#x27;, this.onComponentResizeEnd);
+      }
+    }
+    else if(component._resizable){
+      component._resizable.destroy();
+      delete component._resizable;
+      
+      component
+        .removeListener(&#x27;resizestart&#x27;, this.onComponentResizeStart)
+        .removeListener(&#x27;resize&#x27;, this.onComponentResize)
+        .removeListener(&#x27;resizeend&#x27;, this.onComponentResizeEnd);
+    }
+    
+    this.toggleFields([&#x27;width&#x27;, &#x27;height&#x27;], resizable);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method onComponentDragStart
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onComponentDragStart = function(evt){
+    var fields = [&#x27;x&#x27;, &#x27;y&#x27;];
+
+    this._beforeDragValues = this.getValues(fields);
+  };
+
+  /**
+   * Description
+   * @method onComponentDrag
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onComponentDrag = function(evt){
+    var fields = [&#x27;x&#x27;, &#x27;y&#x27;];
+
+    this.updateFieldValues(fields, true);
+  };
+
+  /**
+   * Description
+   * @method onComponentDragEnd
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onComponentDragEnd = function(evt){
+    var component = this.getComponent(),
+      fields = [&#x27;x&#x27;, &#x27;y&#x27;];
+
+    this.updateFieldValues(fields, true);
+
+    this.triggerEvent(&#x27;valueschange&#x27;, {&#x27;component&#x27;: component, &#x27;old_values&#x27;: this._beforeDragValues, &#x27;new_values&#x27;: this.getValues(fields)}, false);
+
+    delete this._beforeDragValues;
+  };
+
+  /**
+   * Description
+   * @method onComponentResizeStart
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onComponentResizeStart = function(evt){
+    var fields = [&#x27;x&#x27;, &#x27;y&#x27;, &#x27;width&#x27;, &#x27;height&#x27;];
+
+    this._beforeResizeValues = this.getValues(fields);
+  };
+
+  /**
+   * Description
+   * @method onComponentResize
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onComponentResize = function(evt){
+    var fields = [&#x27;x&#x27;, &#x27;y&#x27;, &#x27;width&#x27;, &#x27;height&#x27;];
+
+    this.updateFieldValues(fields, true);
+  };
+
+  /**
+   * Description
+   * @method onComponentResizeEnd
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onComponentResizeEnd = function(evt){
+    var component = this.getComponent(),
+      fields = [&#x27;x&#x27;, &#x27;y&#x27;, &#x27;width&#x27;, &#x27;height&#x27;];
+
+    this.updateFieldValues(fields, true);
+
+    this.triggerEvent(&#x27;valueschange&#x27;, {&#x27;component&#x27;: component, &#x27;old_values&#x27;: this._beforeResizeValues, &#x27;new_values&#x27;: this.getValues(fields)}, false);
+
+    delete this._beforeResizeValues;
+  };
+
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onFieldValueChange = function(evt){
+    var component = this.getComponent(),
+      name, value, old_values;
+
+    if(!component){
+      return;
+    }
+
+    name = evt.detail.field.data(&#x27;name&#x27;);
+    value = evt.detail.value;
+    old_values = this.getValues([name]);
+
+    component.setProperty(name, value);
+    
+    if(name === &#x27;locked&#x27;){
+      this.updateDraggable();
+      this.updateResizable();
+    }
+
+    this.triggerEvent(&#x27;valueschange&#x27;, {&#x27;component&#x27;: component, &#x27;old_values&#x27;: old_values, &#x27;new_values&#x27;: this.getValues([name])}, false);
+  };
+
+  /**
+   * Description
+   * @method updateFieldValue
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
+  Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+    this.getField(name).setValue(value, supressEvent);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateFieldValues
+   * @param {} values
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
+  Panel.prototype.updateFieldValues = function(values, supressEvent){
+    if(metaScore.Var.is(values, &#x27;array&#x27;)){
+      metaScore.Array.each(values, function(index, field){
+        this.updateFieldValue(field, this.getValue(field), supressEvent);
+      }, this);
+    }
+    else{
+      metaScore.Object.each(values, function(field, value){
+        this.updateFieldValue(field, value, supressEvent);
+      }, this);
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateProperties
+   * @param {} component
+   * @param {} values
+   * @return ThisExpression
+   */
+  Panel.prototype.updateProperties = function(component, values){
+    metaScore.Object.each(values, function(name, value){
+      if(!this.getField(name).disabled){
+        component.setProperty(name, value);
+      }
+    }, this);
+
+    this.updateFieldValues(values, true);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method toggleFields
+   * @param {} names
+   * @param {} toggle
+   * @return ThisExpression
+   */
+  Panel.prototype.toggleFields = function(names, toggle){
+    var field;
+  
+    metaScore.Array.each(names, function(index, name){
+      if(field = this.getField(name)){
+        if(toggle){
+          field.enable();
+        }
+        else{
+          field.disable();
+        }
+      }
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method getValue
+   * @param {} name
+   * @return CallExpression
+   */
+  Panel.prototype.getValue = function(name){
+    return this.getComponent().getProperty(name);
+  };
+
+  /**
+   * Description
+   * @method getValues
+   * @param {} fields
+   * @return values
+   */
+  Panel.prototype.getValues = function(fields){
+    var values = {};
+
+    fields = fields || Object.keys(this.getField());
+
+    metaScore.Array.each(fields, function(index, name){
+      if(!this.getField(name).disabled){
+        values[name] = this.getValue(name);
+      }
+    }, this);
+
+    return values;
+  };
+
+  return Panel;
+
+})();
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

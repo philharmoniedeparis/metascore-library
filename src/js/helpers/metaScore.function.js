@@ -1,24 +1,29 @@
 /**
- * Function
- *
- * @requires ../metaScore.base.js
- * @requires metaScore.var.js
- */
+* Description
+* @class Function
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Function = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Function() {
   }
 
   metaScore.Class.extend(Function);
 
   /**
-  * Checks if a variable is of a certain type
-  * @param {mixed} the variable
-  * @param {string} the type to check against
-  * @param {array} an array of arguments to send, defaults to the arguments sent
-  * @returns {boolean} true if the variable is of the specified type, false otherwise
-  */
+   * Checks if a variable is of a certain type
+   * @method proxy
+   * @param {} fn
+   * @param {} scope
+   * @param {} args
+   * @return FunctionExpression
+   */
   Function.proxy = function(fn, scope, args){
     if (!metaScore.Var.type(fn, 'function')){
       return undefined;
@@ -30,8 +35,10 @@ metaScore.Function = (function () {
   };
 
   /**
-  * A reusable empty function
-  */
+   * A reusable empty function
+   * @method emptyFn
+   * @return 
+   */
   Function.emptyFn = function(){};
 
   return Function;

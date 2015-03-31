@@ -25,6 +25,12 @@ if(Element && !Element.prototype.matches){
 
 // Element.closest
 if(Element && !Element.prototype.closest){
+  /**
+   * Description
+   * @method closest
+   * @param {} selector
+   * @return Literal
+   */
   Element.prototype.closest = function closest(selector) {
     var node = this;
 
@@ -44,6 +50,13 @@ if(Element && !Element.prototype.closest){
 // CustomEvent constructor
 // https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
 if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
+  /**
+   * Description
+   * @method CustomEvent
+   * @param {} event
+   * @param {} params
+   * @return evt
+   */
   window.CustomEvent = function(event, params) {
     var evt;
     
@@ -77,6 +90,13 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   }
 
   if (!window.requestAnimationFrame){
+    /**
+     * Description
+     * @method requestAnimationFrame
+     * @param {} callback
+     * @param {} element
+     * @return id
+     */
     window.requestAnimationFrame = function(callback, element) {
       var currTime = new Date().getTime();
       var timeToCall = Math.max(0, 16 - (currTime - lastTime));
@@ -87,6 +107,12 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   }
 
   if (!window.cancelAnimationFrame){
+    /**
+     * Description
+     * @method cancelAnimationFrame
+     * @param {} id
+     * @return 
+     */
     window.cancelAnimationFrame = function(id) {
       clearTimeout(id);
     };

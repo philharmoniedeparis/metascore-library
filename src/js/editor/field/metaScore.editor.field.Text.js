@@ -1,11 +1,17 @@
 /**
- * TextField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Text
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Text = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TextField(configs) {
     this.configs = this.getConfigs(configs);
 

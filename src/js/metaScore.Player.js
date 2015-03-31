@@ -1,10 +1,17 @@
 /**
- * Player
- *
- * @requires ../metaScore.base.js
- */
+* The main player class
+* @class Player
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
+
 metaScore.Player = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Player(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -30,6 +37,12 @@ metaScore.Player = (function () {
 
   metaScore.Dom.extend(Player);
 
+  /**
+   * Description
+   * @method onIFrameLoad
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onIFrameLoad = function(evt){
     this.document = this.get(0).contentDocument || this.iframe.get(0).contentWindow.document;    
     this.head = new metaScore.Dom(this.document.head);
@@ -44,6 +57,12 @@ metaScore.Player = (function () {
     this.load();
   };
 
+  /**
+   * Description
+   * @method onKey
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onKey = function(evt){
     var skip = evt.type === 'keydown';
     
@@ -69,6 +88,12 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onControllerButtonClick
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onControllerButtonClick = function(evt){
     var action = metaScore.Dom.data(evt.target, 'action');
 
@@ -85,24 +110,54 @@ metaScore.Player = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMediaLoadedMetadata
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaLoadedMetadata = function(evt){
     this.getMedia().reset();
   };
 
+  /**
+   * Description
+   * @method onMediaPlay
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaPlay = function(evt){
     this.controller.addClass('playing');
   };
 
+  /**
+   * Description
+   * @method onMediaPause
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaPause = function(evt){
     this.controller.removeClass('playing');
   };
 
+  /**
+   * Description
+   * @method onMediaTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getTime();
 
     this.controller.updateTime(currentTime);
   };
 
+  /**
+   * Description
+   * @method onPageActivate
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
       page = evt.detail.page;
@@ -112,10 +167,22 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onCursorElementTime
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onCursorElementTime = function(evt){
     this.getMedia().setTime(evt.detail.value);
   };
 
+  /**
+   * Description
+   * @method onTextElementTime
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onTextElementTime = function(evt){
     var player = this;
   
@@ -127,12 +194,30 @@ metaScore.Player = (function () {
       media: this.getMedia(),
       inTime: evt.detail.inTime,
       outTime: evt.detail.outTime,
+      /**
+       * Description
+       * @method onStart
+       * @param {} cuepoint
+       * @return 
+       */
       onStart: function(cuepoint){
         player.setReadingIndex(evt.detail.rIndex);
       },
+      /**
+       * Description
+       * @method onEnd
+       * @param {} cuepoint
+       * @return 
+       */
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
       },
+      /**
+       * Description
+       * @method onOut
+       * @param {} cuepoint
+       * @return 
+       */
       onOut: function(cuepoint){
         cuepoint.destroy();
         delete player.linkcuepoint;
@@ -146,6 +231,12 @@ metaScore.Player = (function () {
       .play();
   };
 
+  /**
+   * Description
+   * @method onComponenetPropChange
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onComponenetPropChange = function(evt){
     var component = evt.detail.component;
 
@@ -159,6 +250,12 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onLoadSuccess
+   * @param {} xhr
+   * @return 
+   */
   Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
 
@@ -194,12 +291,24 @@ metaScore.Player = (function () {
     this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
   };
 
+  /**
+   * Description
+   * @method onLoadError
+   * @param {} xhr
+   * @return 
+   */
   Player.prototype.onLoadError = function(xhr){
     this.getBody().removeClass('loading');
     
     this.triggerEvent('loaderror', {'player': this}, true, false);
   };
 
+  /**
+   * Description
+   * @method load
+   * @param {} url
+   * @return 
+   */
   Player.prototype.load = function(url){
     var options;
 
@@ -214,30 +323,67 @@ metaScore.Player = (function () {
     metaScore.Ajax.get(this.configs.url, options);
   };
 
+  /**
+   * Description
+   * @method getId
+   * @return CallExpression
+   */
   Player.prototype.getId = function(){
     return this.data('id');
   };
 
+  /**
+   * Description
+   * @method getHead
+   * @return MemberExpression
+   */
   Player.prototype.getHead = function(){
     return this.head;
   };
 
+  /**
+   * Description
+   * @method getBody
+   * @return MemberExpression
+   */
   Player.prototype.getBody = function(){
     return this.body;
   };
 
+  /**
+   * Description
+   * @method getData
+   * @return MemberExpression
+   */
   Player.prototype.getData = function(){
     return this.json;
   };
 
+  /**
+   * Description
+   * @method getMedia
+   * @return MemberExpression
+   */
   Player.prototype.getMedia = function(){
     return this.media;
   };
 
+  /**
+   * Description
+   * @method getComponent
+   * @param {} selector
+   * @return CallExpression
+   */
   Player.prototype.getComponent = function(selector){    
     return this.getComponents(selector).get(0);
   };
 
+  /**
+   * Description
+   * @method getComponents
+   * @param {} selector
+   * @return components
+   */
   Player.prototype.getComponents = function(selector){
     var components;
     
@@ -250,6 +396,13 @@ metaScore.Player = (function () {
     return components;
   };
 
+  /**
+   * Description
+   * @method addMedia
+   * @param {} configs
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
       .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
@@ -265,6 +418,13 @@ metaScore.Player = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addController
+   * @param {} configs
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Player.prototype.addController = function(configs, supressEvent){
     this.controller = new metaScore.player.component.Controller(configs)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
@@ -277,6 +437,13 @@ metaScore.Player = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addBlock
+   * @param {} configs
+   * @param {} supressEvent
+   * @return block
+   */
   Player.prototype.addBlock = function(configs, supressEvent){
     var block, page;
 
@@ -302,10 +469,21 @@ metaScore.Player = (function () {
     return block;
   };
 
+  /**
+   * Description
+   * @method updateCSS
+   * @param {} value
+   * @return 
+   */
   Player.prototype.updateCSS = function(value){
     this.css.setInternalValue(value);
   };
 
+  /**
+   * Description
+   * @method togglePlay
+   * @return 
+   */
   Player.prototype.togglePlay = function(){
     var media = this.getMedia();
   
@@ -317,6 +495,13 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setReadingIndex
+   * @param {} index
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
 

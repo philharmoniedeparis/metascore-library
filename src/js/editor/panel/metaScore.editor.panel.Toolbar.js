@@ -1,16 +1,17 @@
 /**
- * Toolbar
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Toolbar
+* @namespace metaScore.editor.panel
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor.panel').Toolbar = (function(){
 
   /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
+   * Initialize
+   * @constructor
+   * @param {} configs
+   */
   function Toolbar(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -65,22 +66,48 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
   metaScore.Dom.extend(Toolbar);
 
+  /**
+   * Description
+   * @method getToggle
+   * @return MemberExpression
+   */
   Toolbar.prototype.getToggle = function(){
     return this.toggle;
   };
 
+  /**
+   * Description
+   * @method getTitle
+   * @return MemberExpression
+   */
   Toolbar.prototype.getTitle = function(){
     return this.title;
   };
 
+  /**
+   * Description
+   * @method getSelector
+   * @return MemberExpression
+   */
   Toolbar.prototype.getSelector = function(){
     return this.selector;
   };
 
+  /**
+   * Description
+   * @method getMenu
+   * @return MemberExpression
+   */
   Toolbar.prototype.getMenu = function(){
     return this.menu;
   };
 
+  /**
+   * Description
+   * @method addButton
+   * @param {} action
+   * @return button
+   */
   Toolbar.prototype.addButton = function(action){
     var button = new metaScore.editor.Button().data('action', action)
       .appendTo(this.buttons);
@@ -88,10 +115,21 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return button;
   };
 
+  /**
+   * Description
+   * @method getButton
+   * @param {} action
+   * @return CallExpression
+   */
   Toolbar.prototype.getButton = function(action){
     return this.buttons.children('[data-action="'+ action +'"]');
   };
 
+  /**
+   * Description
+   * @method emptySelector
+   * @return ThisExpression
+   */
   Toolbar.prototype.emptySelector = function(){
     if(this.selector){
       this.selector.removeOptions();
@@ -100,6 +138,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method addSelectorOption
+   * @param {} value
+   * @param {} text
+   * @return ThisExpression
+   */
   Toolbar.prototype.addSelectorOption = function(value, text){
     if(this.selector){
       this.selector.addOption(value, text);
@@ -108,6 +153,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method setSelectorValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Toolbar.prototype.setSelectorValue = function(value, supressEvent){
     if(this.selector){
       this.selector.setValue(value, supressEvent);
@@ -116,6 +168,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleMenuItem
+   * @param {} action
+   * @param {} state
+   * @return ThisExpression
+   */
   Toolbar.prototype.toggleMenuItem = function(action, state){
     var menu = this.getMenu();
 

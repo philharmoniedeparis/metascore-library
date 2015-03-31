@@ -1,16 +1,27 @@
 /**
- * Color
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class Color
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Color = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Color() {
   }
 
   metaScore.Class.extend(Color);
 
+  /**
+   * Description
+   * @method rgb2hsv
+   * @param {} rgb
+   * @return ObjectExpression
+   */
   Color.rgb2hsv = function (rgb){
     var r = rgb.r, g = rgb.g, b = rgb.b,
       max = Math.max(r, g, b),
@@ -49,6 +60,12 @@ metaScore.Color = (function () {
     };
   };
 
+  /**
+   * Description
+   * @method parse
+   * @param {} color
+   * @return rgba
+   */
   Color.parse = function(color){
     var rgba, matches;
     

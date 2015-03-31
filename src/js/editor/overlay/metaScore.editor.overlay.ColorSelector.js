@@ -1,12 +1,17 @@
 /**
- * ColorSelector
- *
- * @requires ../metaScore.editor.overlay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class ColorSelector
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ColorSelector(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -35,6 +40,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   metaScore.editor.Overlay.extend(ColorSelector);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   ColorSelector.prototype.setupDOM = function(){
     // call parent method
     ColorSelector.parent.prototype.setupDOM.call(this);
@@ -109,6 +119,12 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} val
+   * @return ThisExpression
+   */
   ColorSelector.prototype.setValue = function(val){
     this.previous_value = val;
 
@@ -119,6 +135,15 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method updateValue
+   * @param {} val
+   * @param {} refillAlpha
+   * @param {} updatePositions
+   * @param {} updateInputs
+   * @return 
+   */
   ColorSelector.prototype.updateValue = function(val, refillAlpha, updatePositions, updateInputs){
 
     var hsv;
@@ -166,6 +191,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   };
 
+  /**
+   * Description
+   * @method fillPrevious
+   * @return 
+   */
   ColorSelector.prototype.fillPrevious = function(){
     var context = this.controls.previous.get(0).getContext('2d');
 
@@ -174,6 +204,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method fillCurrent
+   * @return 
+   */
   ColorSelector.prototype.fillCurrent = function(){
     var context = this.controls.current.get(0).getContext('2d');
 
@@ -182,6 +217,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method fillGradient
+   * @return 
+   */
   ColorSelector.prototype.fillGradient = function(){
     var context = this.gradient.canvas.get(0).getContext('2d'),
       fill;
@@ -212,6 +252,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method fillAlpha
+   * @return 
+   */
   ColorSelector.prototype.fillAlpha = function(){
     var context = this.alpha.canvas.get(0).getContext('2d'),
       fill;
@@ -227,6 +272,12 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method onControlInput
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onControlInput = function(evt){
     var rgba, hsv;
 
@@ -238,18 +289,36 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }, true, true, false);
   };
 
+  /**
+   * Description
+   * @method onGradientMousedown
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onGradientMousedown = function(evt){
     this.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onGradientMouseup
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onGradientMouseup = function(evt){
     this.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onGradientClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onGradientClick = function(evt){
     var offset = evt.target.getBoundingClientRect(),
       colorX = evt.pageX - offset.left,
@@ -272,18 +341,36 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   ColorSelector.prototype.onGradientMousemove = ColorSelector.prototype.onGradientClick;
 
+  /**
+   * Description
+   * @method onAlphaMousedown
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onAlphaMousedown = function(evt){
     this.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onAlphaMouseup
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onAlphaMouseup = function(evt){
     this.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onAlphaClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onAlphaClick = function(evt){
     var offset = evt.target.getBoundingClientRect(),
       colorY = evt.pageY - offset.top,
@@ -302,12 +389,24 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   ColorSelector.prototype.onAlphaMousemove = ColorSelector.prototype.onAlphaClick;
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onApplyClick = function(evt){
     this.triggerEvent('select', {'overlay': this, 'value': this.value}, true, false);
 
     this.hide();
   };
 
+  /**
+   * Description
+   * @method onCancelClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onCancelClick = function(evt){
     this.hide();
   };

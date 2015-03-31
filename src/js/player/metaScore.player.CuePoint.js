@@ -1,14 +1,17 @@
 /**
- * CuePoints
- *
- * @requires metaScore.player.media.js
- * @requires ../metaScore.base.js
- * @requires ../helpers/metaScore.object.js
- * @requires ../helpers/metaScore.var.js
- */
+* Description
+* @class CuePoint
+* @namespace metaScore.player
+* @extends metaScore.Evented
+*/
 
 metaScore.namespace('player').CuePoint = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function CuePoint(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -39,6 +42,12 @@ metaScore.namespace('player').CuePoint = (function () {
     'errorMargin': 10 // the number of milliseconds estimated as the error margin for time update events
   };
 
+  /**
+   * Description
+   * @method onMediaTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
     var curTime = this.configs.media.getTime();
 
@@ -62,6 +71,12 @@ metaScore.namespace('player').CuePoint = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onMediaSeeked
+   * @param {} evt
+   * @return 
+   */
   CuePoint.prototype.onMediaSeeked = function(evt){
     var curTime;
     
@@ -76,10 +91,20 @@ metaScore.namespace('player').CuePoint = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method getMedia
+   * @return MemberExpression
+   */
   CuePoint.prototype.getMedia = function(){
     return this.configs.media;
   };
 
+  /**
+   * Description
+   * @method launch
+   * @return 
+   */
   CuePoint.prototype.launch = function(){
     if(this.running){
       return;
@@ -103,6 +128,12 @@ metaScore.namespace('player').CuePoint = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method stop
+   * @param {} launchCallback
+   * @return 
+   */
   CuePoint.prototype.stop = function(launchCallback){
     if(this.inTimer){
       clearTimeout(this.inTimer);
@@ -125,6 +156,11 @@ metaScore.namespace('player').CuePoint = (function () {
     this.running = false;
   };
 
+  /**
+   * Description
+   * @method destroy
+   * @return 
+   */
   CuePoint.prototype.destroy = function(){
     this.stop(false);
     

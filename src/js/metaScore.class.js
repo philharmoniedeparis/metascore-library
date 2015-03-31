@@ -1,8 +1,9 @@
 /**
- * Base Class
- *
- * @requires metaScore.core.js
- */
+* The base class
+* Implements a class extension mechanism and defines shared methods 
+* @class Class
+* @namespace metaScore
+*/
 
 metaScore.Class = (function () {
 
@@ -14,6 +15,12 @@ metaScore.Class = (function () {
 
   Class.defaults = {};
 
+  /**
+   * Extends a class by another
+   * @method extend
+   * @param {Object} child
+   * @return 
+   */
   Class.extend = function(child){
     child.prototype = Object.create(this.prototype, {
       constructor: {
@@ -35,6 +42,12 @@ metaScore.Class = (function () {
     }
   };
 
+  /**
+   * Extends the passed configs with default configs
+   * @method getConfigs
+   * @param {Object} configs
+   * @return configs
+   */
   Class.prototype.getConfigs = function(configs){
     configs = configs || {};
 

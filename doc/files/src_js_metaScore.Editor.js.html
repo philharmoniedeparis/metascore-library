@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src\js\metaScore.Editor.js - metaScore</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="metaScore" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.0.2</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/metaScore.Array.html">metaScore.Array</a></li>
+                                <li><a href="../classes/metaScore.Class.html">metaScore.Class</a></li>
+                                <li><a href="../classes/metaScore.Color.html">metaScore.Color</a></li>
+                                <li><a href="../classes/metaScore.Dom.html">metaScore.Dom</a></li>
+                                <li><a href="../classes/metaScore.Draggable.html">metaScore.Draggable</a></li>
+                                <li><a href="../classes/metaScore.Editor.html">metaScore.Editor</a></li>
+                                <li><a href="../classes/metaScore.editor.Ajax.html">metaScore.editor.Ajax</a></li>
+                                <li><a href="../classes/metaScore.editor.Button.html">metaScore.editor.Button</a></li>
+                                <li><a href="../classes/metaScore.editor.DropDownMenu.html">metaScore.editor.DropDownMenu</a></li>
+                                <li><a href="../classes/metaScore.editor.Field.html">metaScore.editor.Field</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Boolean.html">metaScore.editor.field.Boolean</a></li>
+                                <li><a href="../classes/metaScore.editor.field.BorderRadius.html">metaScore.editor.field.BorderRadius</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Buttons.html">metaScore.editor.field.Buttons</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Color.html">metaScore.editor.field.Color</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Image.html">metaScore.editor.field.Image</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Number.html">metaScore.editor.field.Number</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Select.html">metaScore.editor.field.Select</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Text.html">metaScore.editor.field.Text</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Textarea.html">metaScore.editor.field.Textarea</a></li>
+                                <li><a href="../classes/metaScore.editor.field.Time.html">metaScore.editor.field.Time</a></li>
+                                <li><a href="../classes/metaScore.editor.History.html">metaScore.editor.History</a></li>
+                                <li><a href="../classes/metaScore.editor.MainMenu.html">metaScore.editor.MainMenu</a></li>
+                                <li><a href="../classes/metaScore.editor.Overlay.html">metaScore.editor.Overlay</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.Alert.html">metaScore.editor.overlay.Alert</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.BorderRadius.html">metaScore.editor.overlay.BorderRadius</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.ColorSelector.html">metaScore.editor.overlay.ColorSelector</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.GuideInfo.html">metaScore.editor.overlay.GuideInfo</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.GuideSelector.html">metaScore.editor.overlay.GuideSelector</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.iFrame.html">metaScore.editor.overlay.iFrame</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.LinkEditor.html">metaScore.editor.overlay.LinkEditor</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.LoadMask.html">metaScore.editor.overlay.LoadMask</a></li>
+                                <li><a href="../classes/metaScore.editor.overlay.Toolbar.html">metaScore.editor.overlay.Toolbar</a></li>
+                                <li><a href="../classes/metaScore.editor.Panel.html">metaScore.editor.Panel</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Block.html">metaScore.editor.panel.Block</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Element.html">metaScore.editor.panel.Element</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Page.html">metaScore.editor.panel.Page</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Text.html">metaScore.editor.panel.Text</a></li>
+                                <li><a href="../classes/metaScore.editor.panel.Toolbar.html">metaScore.editor.panel.Toolbar</a></li>
+                                <li><a href="../classes/metaScore.Evented.html">metaScore.Evented</a></li>
+                                <li><a href="../classes/metaScore.Function.html">metaScore.Function</a></li>
+                                <li><a href="../classes/metaScore.Locale.html">metaScore.Locale</a></li>
+                                <li><a href="../classes/metaScore.metaScore.html">metaScore.metaScore</a></li>
+                                <li><a href="../classes/metaScore.Object.html">metaScore.Object</a></li>
+                                <li><a href="../classes/metaScore.Player.html">metaScore.Player</a></li>
+                                <li><a href="../classes/metaScore.player.Component.html">metaScore.player.Component</a></li>
+                                <li><a href="../classes/metaScore.player.component.Block.html">metaScore.player.component.Block</a></li>
+                                <li><a href="../classes/metaScore.player.component.Controller.html">metaScore.player.component.Controller</a></li>
+                                <li><a href="../classes/metaScore.player.component.Element.html">metaScore.player.component.Element</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Cursor.html">metaScore.player.component.element.Cursor</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Image.html">metaScore.player.component.element.Image</a></li>
+                                <li><a href="../classes/metaScore.player.component.element.Text.html">metaScore.player.component.element.Text</a></li>
+                                <li><a href="../classes/metaScore.player.component.Media.html">metaScore.player.component.Media</a></li>
+                                <li><a href="../classes/metaScore.player.component.Page.html">metaScore.player.component.Page</a></li>
+                                <li><a href="../classes/metaScore.player.CuePoint.html">metaScore.player.CuePoint</a></li>
+                                <li><a href="../classes/metaScore.player.Pager.html">metaScore.player.Pager</a></li>
+                                <li><a href="../classes/metaScore.Resizable.html">metaScore.Resizable</a></li>
+                                <li><a href="../classes/metaScore.String.html">metaScore.String</a></li>
+                                <li><a href="../classes/metaScore.StyleSheet.html">metaScore.StyleSheet</a></li>
+                                <li><a href="../classes/metaScore.Var.html">metaScore.Var</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src\js\metaScore.Editor.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+* The main editor class
+* @class Editor
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
+
+metaScore.Editor = (function(){
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function Editor(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call parent constructor
+    Editor.parent.call(this, &#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;metaScore-editor&#x27;});
+
+    if(DEBUG){
+      metaScore.Editor.instance = this;
+    }
+
+    if(this.configs.container){
+      this.appendTo(this.configs.container);
+    }
+
+    // add components
+    this.h_ruler = new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;ruler horizontal&#x27;}).appendTo(this);
+    this.v_ruler = new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;ruler vertical&#x27;}).appendTo(this);
+    this.workspace = new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;workspace&#x27;}).appendTo(this);
+    this.mainmenu = new metaScore.editor.MainMenu().appendTo(this);
+    this.sidebar =  new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;sidebar&#x27;}).appendTo(this);
+    this.panels = {};
+    this.panels.block = new metaScore.editor.panel.Block().appendTo(this.sidebar);
+    this.panels.page = new metaScore.editor.panel.Page().appendTo(this.sidebar);
+    this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar);
+    this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
+    this.grid = new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;grid&#x27;}).appendTo(this.workspace);
+    this.version = new metaScore.Dom(&#x27;&lt;div/&gt;&#x27;, {&#x27;class&#x27;: &#x27;version&#x27;, &#x27;text&#x27;: &#x27;metaScore v.&#x27;+ metaScore.getVersion() +&#x27; r.&#x27;+ metaScore.getRevision()}).appendTo(this.workspace);
+    this.history = new metaScore.editor.History();
+    this.detailsOverlay = new metaScore.editor.overlay.GuideInfo();
+
+    // add event listeners
+    this
+      .addDelegate(&#x27;.timefield&#x27;, &#x27;valuein&#x27;, metaScore.Function.proxy(this.onTimeFieldIn, this))
+      .addDelegate(&#x27;.timefield&#x27;, &#x27;valueout&#x27;, metaScore.Function.proxy(this.onTimeFieldOut, this));
+
+    this.mainmenu
+      .addDelegate(&#x27;button[data-action]:not(.disabled)&#x27;, &#x27;click&#x27;, metaScore.Function.proxy(this.onMainmenuClick, this))
+      .addDelegate(&#x27;.time&#x27;, &#x27;valuechange&#x27;, metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
+      .addDelegate(&#x27;.r-index&#x27;, &#x27;valuechange&#x27;, metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
+
+    this.panels.block
+      .addListener(&#x27;componentset&#x27;, metaScore.Function.proxy(this.onBlockSet, this))
+      .addListener(&#x27;componentunset&#x27;, metaScore.Function.proxy(this.onBlockUnset, this))
+      .addListener(&#x27;valueschange&#x27;, metaScore.Function.proxy(this.onBlockPanelValueChange, this))
+      .getToolbar()
+        .addDelegate(&#x27;.selector&#x27;, &#x27;valuechange&#x27;, metaScore.Function.proxy(this.onBlockPanelSelectorChange, this))
+        .addDelegate(&#x27;.buttons [data-action]&#x27;, &#x27;click&#x27;, metaScore.Function.proxy(this.onBlockPanelToolbarClick, this))        
+        .addSelectorOption(null, &#x27;&#x27;);
+
+    this.panels.page
+      .addListener(&#x27;componentbeforeset&#x27;, metaScore.Function.proxy(this.onPageBeforeSet, this))
+      .addListener(&#x27;componentset&#x27;, metaScore.Function.proxy(this.onPageSet, this))
+      .addListener(&#x27;componentunset&#x27;, metaScore.Function.proxy(this.onPageUnset, this))
+      .addListener(&#x27;valueschange&#x27;, metaScore.Function.proxy(this.onPagePanelValueChange, this))
+      .getToolbar()
+        .addDelegate(&#x27;.selector&#x27;, &#x27;valuechange&#x27;, metaScore.Function.proxy(this.onPagePanelSelectorChange, this))
+        .addDelegate(&#x27;.buttons [data-action]&#x27;, &#x27;click&#x27;, metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
+
+    this.panels.element
+      .addListener(&#x27;componentbeforeset&#x27;, metaScore.Function.proxy(this.onElementBeforeSet, this))
+      .addListener(&#x27;componentset&#x27;, metaScore.Function.proxy(this.onElementSet, this))
+      .addListener(&#x27;componentunset&#x27;, metaScore.Function.proxy(this.onElementUnset, this))
+      .addListener(&#x27;valueschange&#x27;, metaScore.Function.proxy(this.onElementPanelValueChange, this))
+      .getToolbar()
+        .addDelegate(&#x27;.selector&#x27;, &#x27;valuechange&#x27;, metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
+        .addDelegate(&#x27;.buttons [data-action]&#x27;, &#x27;click&#x27;, metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
+
+    this.history
+      .addListener(&#x27;add&#x27;, metaScore.Function.proxy(this.onHistoryAdd, this))
+      .addListener(&#x27;undo&#x27;, metaScore.Function.proxy(this.onHistoryUndo, this))
+      .addListener(&#x27;redo&#x27;, metaScore.Function.proxy(this.onHistoryRedo, this));
+
+    this.detailsOverlay
+      .addListener(&#x27;submit&#x27;, metaScore.Function.proxy(this.onDetailsOverlaySubmit, this));
+
+    new metaScore.Dom(&#x27;body&#x27;)
+      .addListener(&#x27;keydown&#x27;, metaScore.Function.proxy(this.onKeydown, this))
+      .addListener(&#x27;keyup&#x27;, metaScore.Function.proxy(this.onKeyup, this));
+   
+   new metaScore.Dom(window)
+      .addListener(&#x27;beforeunload&#x27;, metaScore.Function.proxy(this.onBeforeUnload, this));
+
+    this.updateMainmenu();
+    this.setEditing(false);
+    this.loadPlayerFromHash();
+  }
+
+  metaScore.Dom.extend(Editor);
+
+  Editor.defaults = {
+    &#x27;ajax&#x27;: {}
+  };
+
+  /**
+   * Description
+   * @method setEditing
+   * @param {} editing
+   * @param {} sticky
+   * @return 
+   */
+  Editor.prototype.setEditing = function(editing, sticky){  
+    metaScore.editing = editing !== false;
+
+    if(sticky !== false){
+      this.persistentEditing = metaScore.editing;
+    }
+
+    metaScore.Object.each(this.panels, function(key, panel){
+      if(metaScore.editing){
+        panel.enable();
+      }
+      else{
+        panel.disable();
+      }
+    });
+
+    this.toggleClass(&#x27;editing&#x27;, metaScore.editing);
+
+    if(this.player){
+      this.player.getBody().toggleClass(&#x27;editing&#x27;, metaScore.editing);
+    }
+    
+  };
+
+  /**
+   * Description
+   * @method loadPlayerFromHash
+   * @return 
+   */
+  Editor.prototype.loadPlayerFromHash = function(){
+    var match;
+
+    if(match = window.location.hash.match(/(#|&amp;)guide=(\d+)/)){
+      this.addPlayer(match[2]);
+    }
+  };
+
+  /**
+   * Description
+   * @method onGuideSaveSuccess
+   * @param {} xhr
+   * @return 
+   */
+  Editor.prototype.onGuideSaveSuccess = function(xhr){
+    this.loadmask.hide();
+    delete this.loadmask;
+  };
+
+  /**
+   * Description
+   * @method onGuideSaveError
+   * @param {} xhr
+   * @return 
+   */
+  Editor.prototype.onGuideSaveError = function(xhr){
+    this.loadmask.hide();
+    delete this.loadmask;
+
+    new metaScore.editor.overlay.Alert({
+      &#x27;text&#x27;: metaScore.Locale.t(&#x27;editor.onGuideSaveError.msg&#x27;, &#x27;An error occured while trying to save the guide. Please try again.&#x27;),
+      &#x27;buttons&#x27;: {
+        &#x27;ok&#x27;: metaScore.Locale.t(&#x27;editor.onGuideSaveError.ok&#x27;, &#x27;OK&#x27;),
+      },
+      &#x27;autoShow&#x27;: true
+    });
+  };
+
+  /**
+   * Description
+   * @method onGuideDeleteConfirm
+   * @return 
+   */
+  Editor.prototype.onGuideDeleteConfirm = function(){
+    var id = this.player.getId(),
+      component,  options;
+
+    options = metaScore.Object.extend({}, {
+      &#x27;dataType&#x27;: &#x27;json&#x27;,
+      &#x27;method&#x27;: &#x27;DELETE&#x27;,
+      &#x27;success&#x27;: metaScore.Function.proxy(this.onGuideDeleteSuccess, this),
+      &#x27;error&#x27;: metaScore.Function.proxy(this.onGuideDeleteError, this)
+    }, this.configs.ajax);
+
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      &#x27;autoShow&#x27;: true
+    });
+
+    metaScore.Ajax.send(this.configs.api_url +&#x27;guide/&#x27;+ id +&#x27;.json&#x27;, options);
+  };
+
+  /**
+   * Description
+   * @method onGuideDeleteSuccess
+   * @param {} xhr
+   * @return 
+   */
+  Editor.prototype.onGuideDeleteSuccess = function(xhr){
+    this.removePlayer();
+
+    this.loadmask.hide();
+    delete this.loadmask;
+  };
+
+  /**
+   * Description
+   * @method onGuideDeleteError
+   * @param {} xhr
+   * @return 
+   */
+  Editor.prototype.onGuideDeleteError = function(xhr){
+    this.loadmask.hide();
+    delete this.loadmask;
+
+    new metaScore.editor.overlay.Alert({
+      &#x27;text&#x27;: metaScore.Locale.t(&#x27;editor.onGuideDeleteError.msg&#x27;, &#x27;An error occured while trying to delete the guide. Please try again.&#x27;),
+      &#x27;buttons&#x27;: {
+        &#x27;ok&#x27;: metaScore.Locale.t(&#x27;editor.onGuideSaveError.ok&#x27;, &#x27;OK&#x27;),
+      },
+      &#x27;autoShow&#x27;: true
+    });
+  };
+
+  /**
+   * Description
+   * @method onGuideRevertConfirm
+   * @return 
+   */
+  Editor.prototype.onGuideRevertConfirm = function(){
+    this.addPlayer(this.player.getId());
+  };
+
+  Editor.prototype.onPlayerKeydown = 
+/**
+  * Description
+  * @method onKeydown
+  * @param {} evt
+  * @return 
+  */
+ Editor.prototype.onKeydown = function(evt){
+    switch(evt.keyCode){
+      case 18: //alt
+        if(!evt.repeat){
+          this.setEditing(!this.persistentEditing, false);
+          evt.preventDefault();
+        }
+        break;
+      case 90: //z
+        if(evt.ctrlKey){ // Ctrl+z
+          this.history.undo();
+          evt.preventDefault();
+        }
+        break;
+      case 89: //y
+        if(evt.ctrlKey){ // Ctrl+y
+          this.history.redo();
+          evt.preventDefault();
+        }
+        break;
+    }
+  };
+
+  Editor.prototype.onPlayerKeyup = 
+/**
+  * Description
+  * @method onKeyup
+  * @param {} evt
+  * @return 
+  */
+ Editor.prototype.onKeyup = function(evt){
+    switch(evt.keyCode){
+      case 18: //alt
+        this.setEditing(this.persistentEditing, false);
+        evt.preventDefault();
+        break;
+    }
+  };
+
+  /**
+   * Description
+   * @method onMainmenuClick
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onMainmenuClick = function(evt){
+    switch(metaScore.Dom.data(evt.target, &#x27;action&#x27;)){
+      case &#x27;new&#x27;:
+        break;
+      case &#x27;open&#x27;:
+        if(this.hasOwnProperty(&#x27;player&#x27;)){
+          new metaScore.editor.overlay.Alert({
+              &#x27;text&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.open.msg&#x27;, &#x27;Are you sure you want to open another guide ?&lt;br/&gt;&lt;strong&gt;Any unsaved data will be lost.&lt;/strong&gt;&#x27;),
+              &#x27;buttons&#x27;: {
+                &#x27;confirm&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.open.yes&#x27;, &#x27;Yes&#x27;),
+                &#x27;cancel&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.open.no&#x27;, &#x27;No&#x27;)
+              },
+              &#x27;autoShow&#x27;: true
+            })
+            .addListener(&#x27;confirmclick&#x27;, metaScore.Function.proxy(this.openGuideSelector, this));
+        }
+        else{
+          this.openGuideSelector();
+        }
+        break;
+      case &#x27;edit&#x27;:
+        this.detailsOverlay.show();
+        break;
+      case &#x27;save&#x27;:
+        this.saveGuide();
+        break;
+      case &#x27;download&#x27;:
+        break;
+      case &#x27;delete&#x27;:
+        new metaScore.editor.overlay.Alert({
+            &#x27;text&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.delete.msg&#x27;, &#x27;Are you sure you want to delete this guide ?&#x27;),
+            &#x27;buttons&#x27;: {
+              &#x27;confirm&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.delete.yes&#x27;, &#x27;Yes&#x27;),
+              &#x27;cancel&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.delete.no&#x27;, &#x27;No&#x27;)
+            },
+            &#x27;autoShow&#x27;: true
+          })
+          .addListener(&#x27;confirmclick&#x27;, metaScore.Function.proxy(this.onGuideDeleteConfirm, this));
+        break;
+      case &#x27;revert&#x27;:
+        new metaScore.editor.overlay.Alert({
+            &#x27;text&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.revert.msg&#x27;, &#x27;Are you sure you want to revert back to the last saved version ?&lt;br/&gt;&lt;strong&gt;Any unsaved data will be lost.&lt;/strong&gt;&#x27;),
+            &#x27;buttons&#x27;: {
+              &#x27;confirm&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.revert.yes&#x27;, &#x27;Yes&#x27;),
+              &#x27;cancel&#x27;: metaScore.Locale.t(&#x27;editor.onMainmenuClick.revert.no&#x27;, &#x27;No&#x27;)
+            },
+            &#x27;autoShow&#x27;: true
+          })
+          .addListener(&#x27;confirmclick&#x27;, metaScore.Function.proxy(this.onGuideRevertConfirm, this));
+        break;
+      case &#x27;undo&#x27;:
+        this.history.undo();
+        break;
+      case &#x27;redo&#x27;:
+        this.history.redo();
+        break;
+      case &#x27;edit-toggle&#x27;:
+        this.setEditing(!metaScore.editing);
+        break;
+      case &#x27;settings&#x27;:
+        break;
+      case &#x27;help&#x27;:
+        break;
+    }
+  };
+
+  /**
+   * Description
+   * @method onMainmenuTimeFieldChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onMainmenuTimeFieldChange = function(evt){
+    var field = evt.target._metaScore,
+      time = field.getValue();
+
+    this.player.media.setTime(time);
+  };
+
+  /**
+   * Description
+   * @method onMainmenuRindexFieldChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onMainmenuRindexFieldChange = function(evt){
+    var field = evt.target._metaScore,
+      value = field.getValue();
+
+    this.player.setReadingIndex(value, true);
+  };
+
+  /**
+   * Description
+   * @method onTimeFieldIn
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onTimeFieldIn = function(evt){
+    var field = evt.target._metaScore,
+      time = this.player.media.getTime();
+
+    field.setValue(time);
+  };
+
+  /**
+   * Description
+   * @method onTimeFieldOut
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onTimeFieldOut = function(evt){
+    var field = evt.target._metaScore,
+      time = field.getValue();
+
+    this.player.media.setTime(time);
+  };
+
+  /**
+   * Description
+   * @method onBlockSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockSet = function(evt){
+    var block = evt.detail.component;
+
+    if(block instanceof metaScore.player.component.Block){
+      this.panels.page.getToolbar()
+        .toggleMenuItem(&#x27;new&#x27;, true);
+      
+      this.panels.page.setComponent(block.getActivePage(), true);
+
+      this.panels.element.getToolbar()
+        .toggleMenuItem(&#x27;Cursor&#x27;, true)
+        .toggleMenuItem(&#x27;Image&#x27;, true)
+        .toggleMenuItem(&#x27;Text&#x27;, true);
+    }
+    
+    this.updatePageSelector();
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onBlockUnset
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockUnset = function(evt){
+    this.panels.page.unsetComponent();
+    this.panels.page.getToolbar().toggleMenuItem(&#x27;new&#x27;, false);
+  };
+
+  /**
+   * Description
+   * @method onBlockPanelValueChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockPanelValueChange = function(evt){
+    var block = evt.detail.component,
+      old_values = evt.detail.old_values,
+      new_values = evt.detail.new_values;
+
+    this.history.add({
+      &#x27;undo&#x27;: metaScore.Function.proxy(this.panels.block.updateProperties, this.panels.block, [block, old_values]),
+      &#x27;redo&#x27;: metaScore.Function.proxy(this.panels.block.updateProperties, this.panels.block, [block, new_values])
+    });
+  };
+
+  /**
+   * Description
+   * @method onBlockPanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockPanelToolbarClick = function(evt){
+    var blocks, block, count, index;
+
+    switch(metaScore.Dom.data(evt.target, &#x27;action&#x27;)){
+      case &#x27;new&#x27;:
+        block = this.player.addBlock();
+
+        this.history.add({
+          &#x27;undo&#x27;: metaScore.Function.proxy(block.remove, this),
+          &#x27;redo&#x27;: metaScore.Function.proxy(this.addBlock, this, [block])
+        });
+        break;
+
+      case &#x27;delete&#x27;:
+        block = this.panels.block.getComponent();
+
+        if(block){
+          block.remove();
+          this.panels.block.unsetComponent();
+
+          this.history.add({
+            &#x27;undo&#x27;: metaScore.Function.proxy(this.addBlock, this, [block]),
+            &#x27;redo&#x27;: metaScore.Function.proxy(block.remove, this)
+          });
+        }
+        break;
+
+      case &#x27;previous&#x27;:
+        blocks = this.player.getComponents(&#x27;.media.video, .controller, .block&#x27;);
+        count = blocks.count();
+
+        if(count &gt; 0){
+          index = blocks.index(&#x27;.selected&#x27;) - 1;
+          if(index &lt; 0){
+            index = count - 1;
+          }
+
+          block = blocks.get(index)._metaScore;
+
+          this.panels.block.setComponent(block);
+        }
+        break;
+
+      case &#x27;next&#x27;:
+        blocks = this.player.getComponents(&#x27;.media.video, .controller, .block&#x27;);
+        count = blocks.count();
+
+        if(count &gt; 0){
+          index = blocks.index(&#x27;.selected&#x27;) + 1;
+          if(index &gt;= count){
+            index = 0;
+          }
+
+          block = blocks.get(index)._metaScore;
+
+          this.panels.block.setComponent(block);
+        }
+        break;
+    }
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onBlockPanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockPanelSelectorChange = function(evt){
+    var id = evt.detail.value,
+      dom;
+      
+    if(!id){
+      this.panels.block.unsetComponent();
+    }
+    else{
+      dom = this.player.getComponent(&#x27;.media#&#x27;+ id +&#x27;, .controller#&#x27;+ id +&#x27;, .block#&#x27;+ id);
+      
+      if(dom &amp;&amp; dom._metaScore){
+        this.panels.block.setComponent(dom._metaScore);
+      }
+    }
+  };
+
+  /**
+   * Description
+   * @method onPageBeforeSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPageBeforeSet = function(evt){
+    var page = evt.detail.component,
+      block = page.parents().parents().get(0)._metaScore;
+
+    this.panels.block.setComponent(block);
+  };
+
+  /**
+   * Description
+   * @method onPageSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPageSet = function(evt){
+    var page = evt.detail.component;
+
+    this.panels.page.getToolbar().toggleMenuItem(&#x27;new&#x27;, true);
+
+    this.panels.element.getToolbar()
+      .toggleMenuItem(&#x27;Cursor&#x27;, true)
+      .toggleMenuItem(&#x27;Image&#x27;, true)
+      .toggleMenuItem(&#x27;Text&#x27;, true)
+      .emptySelector()
+      .addSelectorOption(null, &#x27;&#x27;);
+        
+    page.getElements().each(function(index, element){
+      this.panels.element.getToolbar().addSelectorOption(element._metaScore.getId(), element._metaScore.getName());
+    }, this);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onPageUnset
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPageUnset = function(evt){
+    this.panels.element.unsetComponent();
+    this.panels.element.getToolbar()
+      .toggleMenuItem(&#x27;Cursor&#x27;, false)
+      .toggleMenuItem(&#x27;Image&#x27;, false)
+      .toggleMenuItem(&#x27;Text&#x27;, false);
+  };
+
+  /**
+   * Description
+   * @method onPagePanelValueChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPagePanelValueChange = function(evt){
+    var page = evt.detail.component,
+      old_values = evt.detail.old_values,
+      new_values = evt.detail.new_values;
+
+    this.history.add({
+      &#x27;undo&#x27;: metaScore.Function.proxy(this.panels.page.updateProperties, this.panels.page, [page, old_values]),
+      &#x27;redo&#x27;: metaScore.Function.proxy(this.panels.page.updateProperties, this.panels.page, [page, new_values])
+    });
+  };
+
+  /**
+   * Description
+   * @method onPagePanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPagePanelToolbarClick = function(evt){
+    var block, page,
+      auto_page, configs,
+      dom, count, index;
+
+    switch(metaScore.Dom.data(evt.target, &#x27;action&#x27;)){
+      case &#x27;new&#x27;:
+        block = this.panels.block.getComponent();
+        page = this.addPage(block);
+
+        this.history.add({
+          &#x27;undo&#x27;: metaScore.Function.proxy(page.remove, this),
+          &#x27;redo&#x27;: metaScore.Function.proxy(this.addPage, this, [block, page])
+        });
+        break;
+
+      case &#x27;delete&#x27;:
+        block = this.panels.block.getComponent();
+        page = this.panels.page.getComponent();
+
+        if(page){
+          block.removePage(page);
+          this.panels.page.unsetComponent();
+          
+          if(block.getPageCount() &lt; 1){
+            configs = {};
+            
+            if(block.getProperty(&#x27;synched&#x27;)){
+              configs[&#x27;start-time&#x27;] = 0;
+              configs[&#x27;end-time&#x27;] = this.getPlayer().getMedia().getDuration();
+            }
+            
+            auto_page = this.addPage(block, configs);
+          }
+
+          this.history.add({
+            &#x27;undo&#x27;: metaScore.Function.proxy(function(block, page, auto_page){
+              if(auto_page){
+                block.removePage(auto_page, true);
+              }
+              this.addPage(block, page);
+            }, this, [block, page, auto_page]),
+            &#x27;redo&#x27;: metaScore.Function.proxy(function(block, page, auto_page){
+              block.removePage(page, true);
+              if(auto_page){
+                this.addPage(block, auto_page);
+              }
+            }, this, [block, page, auto_page])
+          });
+        }
+        break;
+
+      case &#x27;previous&#x27;:
+        block = this.panels.block.getComponent();
+
+        if(block){
+          dom = new metaScore.Dom(&#x27;.page&#x27;, block);
+          count = dom.count();
+
+          if(count &gt; 0){
+            index = dom.index(&#x27;.selected&#x27;) - 1;
+            if(index &lt; 0){
+              index = count - 1;
+            }
+
+            page = dom.get(index)._metaScore;
+
+            block.setActivePage(page);
+          }
+        }
+        break;
+
+      case &#x27;next&#x27;:
+        block = this.panels.block.getComponent();
+
+        if(block){
+          dom = new metaScore.Dom(&#x27;.page&#x27;, block);
+          count = dom.count();
+
+          if(count &gt; 0){
+            index = dom.index(&#x27;.selected&#x27;) + 1;
+            if(index &gt;= count){
+              index = 0;
+            }
+
+            page = dom.get(index)._metaScore;
+
+            block.setActivePage(page);
+          }
+        }
+        break;
+    }
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onPagePanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPagePanelSelectorChange = function(evt){
+    var block = this.panels.block.getComponent(),
+      id, dom;
+    
+    if(block){
+      id = evt.detail.value;
+      dom = this.player.getComponent(&#x27;.page#&#x27;+ id);
+    
+      if(dom &amp;&amp; dom._metaScore){
+        block.setActivePage(dom._metaScore);
+      }
+    }
+  };
+
+  /**
+   * Description
+   * @method onElementBeforeSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onElementBeforeSet = function(evt){
+    var element = evt.detail.component,
+      page = element.parents().get(0)._metaScore;
+
+    this.panels.page.setComponent(page);
+  };
+
+  /**
+   * Description
+   * @method onElementSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onElementSet = function(evt){
+    var element = evt.detail.component;
+
+    if(element.getProperty(&#x27;type&#x27;) === &#x27;Text&#x27;){
+      this.panels.text.setComponent(element);
+    }
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onElementUnset
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onElementUnset = function(evt){
+    this.panels.text.unsetComponent();
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onElementPanelValueChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onElementPanelValueChange = function(evt){
+    var element = evt.detail.component,
+      old_values = evt.detail.old_values,
+      new_values = evt.detail.new_values;
+
+    this.history.add({
+      &#x27;undo&#x27;: metaScore.Function.proxy(this.panels.element.updateProperties, this.panels.element, [element, old_values]),
+      &#x27;redo&#x27;: metaScore.Function.proxy(this.panels.element.updateProperties, this.panels.element, [element, new_values])
+    });
+  };
+
+  /**
+   * Description
+   * @method onElementPanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onElementPanelToolbarClick = function(evt){
+    var page, element, dom, count, index,
+      action = metaScore.Dom.data(evt.target, &#x27;action&#x27;);
+
+    switch(action){
+      case &#x27;Cursor&#x27;:
+      case &#x27;Image&#x27;:
+      case &#x27;Text&#x27;:
+        page = this.panels.page.getComponent();
+        element = this.addElement(page, {&#x27;type&#x27;: action});
+
+        this.history.add({
+          &#x27;undo&#x27;: metaScore.Function.proxy(element.remove, this),
+          &#x27;redo&#x27;: metaScore.Function.proxy(this.addElement, this, [page, element])
+        });
+        break;
+
+      case &#x27;delete&#x27;:
+        page = this.panels.page.getComponent();
+        element = this.panels.element.getComponent();
+
+        if(element){
+          element.remove();
+          this.panels.element.unsetComponent();
+
+          this.history.add({
+            &#x27;undo&#x27;: metaScore.Function.proxy(this.addElement, this, [page, element]),
+            &#x27;redo&#x27;: metaScore.Function.proxy(element.remove, this)
+          });
+        }
+        break;
+
+      case &#x27;previous&#x27;:
+        page = this.panels.page.getComponent();
+
+        if(page){
+          dom = new metaScore.Dom(&#x27;.element&#x27;, page);
+          count = dom.count();
+
+          if(count &gt; 0){
+            index = dom.index(&#x27;.selected&#x27;) - 1;
+            if(index &lt; 0){
+              index = count - 1;
+            }
+
+            element = dom.get(index)._metaScore;
+
+            this.panels.element.setComponent(element);
+          }
+        }
+        break;
+
+      case &#x27;next&#x27;:
+        page = this.panels.page.getComponent();
+
+        if(page){
+          dom = new metaScore.Dom(&#x27;.element&#x27;, page);
+          count = dom.count();
+
+          if(count &gt; 0){
+            index = dom.index(&#x27;.selected&#x27;) + 1;
+            if(index &gt;= count){
+              index = 0;
+            }
+
+            element = dom.get(index)._metaScore;
+
+            this.panels.element.setComponent(element);
+          }
+        }
+        break;
+    }
+  };
+
+  /**
+   * Description
+   * @method onElementPanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onElementPanelSelectorChange = function(evt){
+    var id = evt.detail.value,
+      dom;
+      
+    if(!id){
+      this.panels.element.unsetComponent();
+    }
+    else{    
+      dom = this.player.getComponent(&#x27;.element#&#x27;+ id);
+    
+      if(dom &amp;&amp; dom._metaScore){
+        this.panels.element.setComponent(dom._metaScore);
+      }
+    }
+  };
+
+  /**
+   * Description
+   * @method onPlayerTimeUpdate
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerTimeUpdate = function(evt){
+    var time = evt.detail.media.getTime();
+
+    this.mainmenu.timefield.setValue(time, true);
+  };
+
+  /**
+   * Description
+   * @method onPlayerReadingIndex
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerReadingIndex = function(evt){
+    var rindex = evt.detail.value;
+
+    this.mainmenu.rindexfield.setValue(rindex, true);
+  };
+
+  /**
+   * Description
+   * @method onPlayerMediaAdd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerMediaAdd = function(evt){
+    var media = evt.detail.media;
+    
+    if(media.is(&#x27;.video&#x27;)){
+      this.panels.block.getToolbar().addSelectorOption(media.getId(), media.getName());
+    }
+  };
+
+  /**
+   * Description
+   * @method onPlayerControllerAdd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerControllerAdd = function(evt){
+    var controller = evt.detail.controller;
+
+    this.panels.block.getToolbar().addSelectorOption(controller.getId(), controller.getName());
+  };
+
+  /**
+   * Description
+   * @method onPlayerBlockAdd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerBlockAdd = function(evt){
+    var block = evt.detail.block;
+
+    this.panels.block.getToolbar().addSelectorOption(block.getId(), block.getName());
+  };
+
+  /**
+   * Description
+   * @method onPlayerLoadSuccess
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerLoadSuccess = function(evt){
+    var player = evt.detail.player,
+      data = evt.detail.data;
+
+    this.player = player;
+
+    this.player.getBody()
+      .addClass(&#x27;in-editor&#x27;)
+      .addDelegate(&#x27;.metaScore-component&#x27;, &#x27;click&#x27;, metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate(&#x27;.metaScore-component.block&#x27;, &#x27;pageadd&#x27;, metaScore.Function.proxy(this.onBlockPageAdded, this))
+      .addDelegate(&#x27;.metaScore-component.block&#x27;, &#x27;pageactivate&#x27;, metaScore.Function.proxy(this.onBlockPageActivated, this))
+      .addListener(&#x27;click&#x27;, metaScore.Function.proxy(this.onPlayerClick, this))
+      .addListener(&#x27;keydown&#x27;, metaScore.Function.proxy(this.onPlayerKeydown, this))
+      .addListener(&#x27;keyup&#x27;, metaScore.Function.proxy(this.onPlayerKeyup, this))
+      .addListener(&#x27;timeupdate&#x27;, metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+      .addListener(&#x27;rindex&#x27;, metaScore.Function.proxy(this.onPlayerReadingIndex, this));
+
+    this.setEditing(true);
+    this.updateMainmenu();
+    this.detailsOverlay.setValues(data);
+    this.mainmenu.rindexfield.setValue(0, true);
+
+    window.history.replaceState(null, null, &#x27;#guide=&#x27;+ this.player.getId());
+
+    this.loadmask.hide();
+    delete this.loadmask;
+  };
+
+  /**
+   * Description
+   * @method onPlayerLoadError
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerLoadError = function(evt){
+    this.loadmask.hide();
+    delete this.loadmask;
+
+    new metaScore.editor.overlay.Alert({
+      &#x27;text&#x27;: metaScore.Locale.t(&#x27;editor.onPlayerLoadError.msg&#x27;, &#x27;An error occured while trying to load the guide. Please try again.&#x27;),
+      &#x27;buttons&#x27;: {
+        &#x27;ok&#x27;: metaScore.Locale.t(&#x27;editor.onPlayerLoadError.ok&#x27;, &#x27;OK&#x27;),
+      },
+      &#x27;autoShow&#x27;: true
+    });
+  };
+
+  /**
+   * Description
+   * @method onComponentClick
+   * @param {} evt
+   * @param {} dom
+   * @return 
+   */
+  Editor.prototype.onComponentClick = function(evt, dom){
+    var component;
+
+    if(metaScore.editing !== true){
+      return;
+    }
+
+    component = dom._metaScore;
+
+    if(component instanceof metaScore.player.component.Element){
+      this.panels.element.setComponent(component);
+    }
+    else if(component instanceof metaScore.player.component.Page){
+      this.panels.element.unsetComponent();
+      this.panels.page.setComponent(component);
+    }
+    else{
+      this.panels.element.unsetComponent();
+      this.panels.page.unsetComponent();
+      this.panels.block.setComponent(component);
+    }
+    
+    evt.stopImmediatePropagation();
+  };
+
+  /**
+   * Description
+   * @method onPlayerClick
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerClick = function(evt){
+    
+    if(metaScore.editing !== true){
+      return;
+    }
+
+    this.panels.block.unsetComponent();
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onBlockPageAdded
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockPageAdded = function(evt){
+    var block = evt.detail.block;
+    
+    if(block === this.panels.block.getComponent()){    
+      this.updatePageSelector();
+    }
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onBlockPageActivated
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockPageActivated = function(evt){
+    if(metaScore.editing !== true){
+      return;
+    }
+
+    this.panels.page.setComponent(evt.detail.page);
+  };
+
+  /**
+   * Description
+   * @method onHistoryAdd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onHistoryAdd = function(evt){
+    this.updateMainmenu();
+  };
+
+  /**
+   * Description
+   * @method onHistoryUndo
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onHistoryUndo = function(evt){
+    this.updateMainmenu();
+  };
+
+  /**
+   * Description
+   * @method onHistoryRedo
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onHistoryRedo = function(evt){
+    this.updateMainmenu();
+  };
+
+  /**
+   * Description
+   * @method onDetailsOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onDetailsOverlaySubmit = function(evt){
+    var values = evt.detail.values;
+
+    this.player.updateCSS(values.css);
+  };
+
+  /**
+   * Description
+   * @method onBeforeUnload
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBeforeUnload = function(evt){  
+    if(this.hasOwnProperty(&#x27;player&#x27;)){
+      evt.returnValue = metaScore.Locale.t(&#x27;editor.onBeforeUnload.msg&#x27;, &#x27;Any unsaved data will be lost.&#x27;);
+    }
+  };
+
+  /**
+   * Description
+   * @method updateMainmenu
+   * @return 
+   */
+  Editor.prototype.updateMainmenu = function(){
+    var hasPlayer = this.hasOwnProperty(&#x27;player&#x27;);
+
+    this.mainmenu.toggleButton(&#x27;edit&#x27;, hasPlayer);
+    this.mainmenu.toggleButton(&#x27;save&#x27;, hasPlayer);
+    this.mainmenu.toggleButton(&#x27;delete&#x27;, hasPlayer);
+    this.mainmenu.toggleButton(&#x27;download&#x27;, hasPlayer);
+
+    this.mainmenu.toggleButton(&#x27;undo&#x27;, this.history.hasUndo());
+    this.mainmenu.toggleButton(&#x27;redo&#x27;, this.history.hasRedo());
+    this.mainmenu.toggleButton(&#x27;revert&#x27;, hasPlayer);
+  };
+
+  /**
+   * Description
+   * @method updatePageSelector
+   * @return 
+   */
+  Editor.prototype.updatePageSelector = function(){
+    var block = this.panels.block.getComponent(),
+      page = this.panels.page.getComponent(),
+      toolbar = this.panels.page.getToolbar();
+  
+    toolbar.emptySelector();
+  
+    if(block instanceof metaScore.player.component.Block){
+      this.panels.block.getComponent().getPages().each(function(index, page){
+        toolbar.addSelectorOption(page._metaScore.getId(), index+1);
+      }, this);
+    }
+    
+    toolbar.setSelectorValue(page ? page.getId() : null, true);
+  };
+
+  /**
+   * Description
+   * @method getPlayer
+   * @return MemberExpression
+   */
+  Editor.prototype.getPlayer = function(){  
+    return this.player;  
+  };
+
+  /**
+   * Description
+   * @method addPlayer
+   * @param {} id
+   * @return 
+   */
+  Editor.prototype.addPlayer = function(id){
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      &#x27;autoShow&#x27;: true
+    });
+
+    this.removePlayer();
+
+    new metaScore.Player({
+        container: this.workspace,
+        url: this.configs.api_url +&#x27;guide/&#x27;+ id +&#x27;.json&#x27;
+      })
+      .addListener(&#x27;mediaadd&#x27;, metaScore.Function.proxy(this.onPlayerMediaAdd, this))
+      .addListener(&#x27;controlleradd&#x27;, metaScore.Function.proxy(this.onPlayerControllerAdd, this))
+      .addListener(&#x27;blockadd&#x27;, metaScore.Function.proxy(this.onPlayerBlockAdd, this))
+      .addListener(&#x27;loadsuccess&#x27;, metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+      .addListener(&#x27;loaderror&#x27;, metaScore.Function.proxy(this.onPlayerLoadError, this));
+  };
+
+  /**
+   * Description
+   * @method removePlayer
+   * @return 
+   */
+  Editor.prototype.removePlayer = function(){
+    if(this.player){
+      this.player.remove();
+      delete this.player;
+    }
+
+    this.panels.block.unsetComponent();
+    this.updateMainmenu();
+  };
+
+  /**
+   * Description
+   * @method addBlock
+   * @param {} block
+   * @return block
+   */
+  Editor.prototype.addBlock = function(block){
+    if(!(block instanceof metaScore.player.component.Block)){
+      block = this.player.addBlock(block);
+    }
+
+    this.panels.block.setComponent(block);
+
+    return block;
+  };
+
+  /**
+   * Description
+   * @method addPage
+   * @param {} block
+   * @param {} page
+   * @return page
+   */
+  Editor.prototype.addPage = function(block, page){
+    if(!(page instanceof metaScore.player.component.Page)){
+      page = block.addPage(page);
+    }
+
+    this.panels.page.setComponent(page);
+
+    return page;
+  };
+
+  /**
+   * Description
+   * @method addElement
+   * @param {} page
+   * @param {} element
+   * @return element
+   */
+  Editor.prototype.addElement = function(page, element){
+    if(!(element instanceof metaScore.player.component.Element)){
+      element = page.addElement(element);
+    }
+
+    this.panels.element.setComponent(element);
+
+    return element;
+  };
+
+  /**
+   * Description
+   * @method openGuideSelector
+   * @return 
+   */
+  Editor.prototype.openGuideSelector = function(){
+    new metaScore.editor.overlay.GuideSelector({
+        &#x27;url&#x27;: this.configs.api_url +&#x27;guide.json&#x27;,
+        &#x27;autoShow&#x27;: true
+      })
+      .addListener(&#x27;select&#x27;, metaScore.Function.proxy(this.openGuide, this));
+  };
+
+  /**
+   * Description
+   * @method openGuide
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.openGuide = function(evt){
+    this.addPlayer(evt.detail.guide.id);
+  };
+
+  /**
+   * Description
+   * @method saveGuide
+   * @return 
+   */
+  Editor.prototype.saveGuide = function(){
+    var components = this.player.getComponents(&#x27;.media, .controller, .block&#x27;),
+      id = this.player.getId(),
+      data = this.detailsOverlay.getValues(),
+      component, options;
+
+    components.each(function(index, dom){
+      component = dom._metaScore;
+    
+      if(component instanceof metaScore.player.component.Media){
+        data[&#x27;media&#x27;] = component.getProperties();
+      }
+      else if(component instanceof metaScore.player.component.Controller){
+        data[&#x27;controller&#x27;] = component.getProperties();
+      }
+      else if(component instanceof metaScore.player.component.Block){
+        if(!(&#x27;blocks&#x27; in data)){
+          data[&#x27;blocks&#x27;] = [];
+        }
+
+        data[&#x27;blocks&#x27;].push(component.getProperties());
+      }
+    }, this);
+
+    options = metaScore.Object.extend({}, {
+      &#x27;data&#x27;: JSON.stringify(data),
+      &#x27;dataType&#x27;: &#x27;json&#x27;,
+      &#x27;success&#x27;: metaScore.Function.proxy(this.onGuideSaveSuccess, this),
+      &#x27;error&#x27;: metaScore.Function.proxy(this.onGuideSaveError, this)
+    }, this.configs.ajax);
+
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      &#x27;autoShow&#x27;: true
+    });
+
+    metaScore.Ajax.put(this.configs.api_url +&#x27;guide/&#x27;+ id +&#x27;.json&#x27;, options);
+  };
+
+  return Editor;
+
+})();
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

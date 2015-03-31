@@ -1,12 +1,17 @@
 /**
- * GuideInfo
- *
- * @requires ../metaScore.editor.Ovelay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class GuideInfo
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function GuideInfo(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -30,6 +35,11 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
   metaScore.editor.Overlay.extend(GuideInfo);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   GuideInfo.prototype.setupDOM = function(){
     var contents;
 
@@ -74,6 +84,12 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
   };
 
+  /**
+   * Description
+   * @method setValues
+   * @param {} data
+   * @return 
+   */
   GuideInfo.prototype.setValues = function(data){
     this.fields.title.setValue(data.title || null);
     this.fields.description.setValue(data.description || null);
@@ -81,6 +97,11 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     this.fields.css.setValue(data.css || null);
   };
 
+  /**
+   * Description
+   * @method getValues
+   * @return ObjectExpression
+   */
   GuideInfo.prototype.getValues = function(){
     return {
       'title': this.fields.title.getValue(),
@@ -90,16 +111,34 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     };
   };
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   GuideInfo.prototype.onApplyClick = function(evt){
     this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
     this.hide();
   };
 
-  GuideInfo.prototype.onCancelClick = GuideInfo.prototype.onCloseClick = function(evt){
+  GuideInfo.prototype.onCancelClick = 
+/**
+  * Description
+  * @method onCloseClick
+  * @param {} evt
+  * @return 
+  */
+ GuideInfo.prototype.onCloseClick = function(evt){
     this.setValues(this.previousValues);
     this.hide();
   };
 
+  /**
+   * Description
+   * @method show
+   * @return CallExpression
+   */
   GuideInfo.prototype.show = function(){
     this.previousValues = this.getValues();
 

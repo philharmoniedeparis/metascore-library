@@ -1,11 +1,17 @@
 /**
- * Image
- *
- * @requires ../metaScore.player.element.js
- */
+* Description
+* @class Image
+* @namespace metaScore.player.component.element
+* @extends metaScore.player.component.Element
+*/
 
 metaScore.namespace('player.component.element').Image = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Image(configs) {
     // call parent constructor
     Image.parent.call(this, configs);
@@ -13,6 +19,11 @@ metaScore.namespace('player.component.element').Image = (function () {
 
   metaScore.player.component.Element.extend(Image);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Image.prototype.setupDOM = function(){
     // call parent function
     Image.parent.prototype.setupDOM.call(this);

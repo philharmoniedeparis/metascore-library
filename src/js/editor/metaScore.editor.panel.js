@@ -1,14 +1,17 @@
 /**
- * Panel
- *
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.object.js
- * @requires ../helpers/metaScore.string.js
- * @requires ../helpers/metaScore.function.js
- */
+* Description
+* @class Panel
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Panel = (function(){
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Panel(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -48,6 +51,12 @@ metaScore.namespace('editor').Panel = (function(){
 
   metaScore.Dom.extend(Panel);
 
+  /**
+   * Description
+   * @method setupFields
+   * @param {} properties
+   * @return ThisExpression
+   */
   Panel.prototype.setupFields = function(properties){
     var configs, fieldType, field;
 
@@ -69,10 +78,21 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method getToolbar
+   * @return MemberExpression
+   */
   Panel.prototype.getToolbar = function(){
     return this.toolbar;
   };
 
+  /**
+   * Description
+   * @method getField
+   * @param {} key
+   * @return MemberExpression
+   */
   Panel.prototype.getField = function(key){
     if(key === undefined){
       return this.fields;
@@ -81,54 +101,108 @@ metaScore.namespace('editor').Panel = (function(){
     return this.fields[key];
   };
 
+  /**
+   * Description
+   * @method enableFields
+   * @return 
+   */
   Panel.prototype.enableFields = function(){
     metaScore.Object.each(this.fields, function(key, field){
       field.enable();
     }, this);
   };
 
+  /**
+   * Description
+   * @method showField
+   * @param {} name
+   * @return ThisExpression
+   */
   Panel.prototype.showField = function(name){
     this.getField(name).show();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method hideField
+   * @param {} name
+   * @return ThisExpression
+   */
   Panel.prototype.hideField = function(name){
     this.getField(name).hide();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleState
+   * @return ThisExpression
+   */
   Panel.prototype.toggleState = function(){
     this.toggleClass('collapsed');
     
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   Panel.prototype.disable = function(){
     this.addClass('disabled');
     
     return this;
   };
 
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   Panel.prototype.enable = function(){
     this.removeClass('disabled');
     
     return this;
   };
 
+  /**
+   * Description
+   * @method getComponent
+   * @return MemberExpression
+   */
   Panel.prototype.getComponent = function(){
     return this.component;
   };
 
+  /**
+   * Description
+   * @method getDraggable
+   * @return Literal
+   */
   Panel.prototype.getDraggable = function(){
     return false;
   };
 
+  /**
+   * Description
+   * @method getResizable
+   * @return Literal
+   */
   Panel.prototype.getResizable = function(){
     return false;
   };
 
+  /**
+   * Description
+   * @method setComponent
+   * @param {} component
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.setComponent = function(component, supressEvent){
     var draggable, resizable;
 
@@ -165,6 +239,12 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method unsetComponent
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
 
@@ -190,6 +270,12 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method updateDraggable
+   * @param {} draggable
+   * @return ThisExpression
+   */
   Panel.prototype.updateDraggable = function(draggable){
     var component = this.getComponent();
       
@@ -221,6 +307,12 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method updateResizable
+   * @param {} resizable
+   * @return ThisExpression
+   */
   Panel.prototype.updateResizable = function(resizable){
     var component = this.getComponent();
       
@@ -252,18 +344,36 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method onComponentDragStart
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentDragStart = function(evt){
     var fields = ['x', 'y'];
 
     this._beforeDragValues = this.getValues(fields);
   };
 
+  /**
+   * Description
+   * @method onComponentDrag
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentDrag = function(evt){
     var fields = ['x', 'y'];
 
     this.updateFieldValues(fields, true);
   };
 
+  /**
+   * Description
+   * @method onComponentDragEnd
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentDragEnd = function(evt){
     var component = this.getComponent(),
       fields = ['x', 'y'];
@@ -275,18 +385,36 @@ metaScore.namespace('editor').Panel = (function(){
     delete this._beforeDragValues;
   };
 
+  /**
+   * Description
+   * @method onComponentResizeStart
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentResizeStart = function(evt){
     var fields = ['x', 'y', 'width', 'height'];
 
     this._beforeResizeValues = this.getValues(fields);
   };
 
+  /**
+   * Description
+   * @method onComponentResize
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentResize = function(evt){
     var fields = ['x', 'y', 'width', 'height'];
 
     this.updateFieldValues(fields, true);
   };
 
+  /**
+   * Description
+   * @method onComponentResizeEnd
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentResizeEnd = function(evt){
     var component = this.getComponent(),
       fields = ['x', 'y', 'width', 'height'];
@@ -298,6 +426,12 @@ metaScore.namespace('editor').Panel = (function(){
     delete this._beforeResizeValues;
   };
 
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
       name, value, old_values;
@@ -320,12 +454,27 @@ metaScore.namespace('editor').Panel = (function(){
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
 
+  /**
+   * Description
+   * @method updateFieldValue
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
     this.getField(name).setValue(value, supressEvent);
     
     return this;
   };
 
+  /**
+   * Description
+   * @method updateFieldValues
+   * @param {} values
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.updateFieldValues = function(values, supressEvent){
     if(metaScore.Var.is(values, 'array')){
       metaScore.Array.each(values, function(index, field){
@@ -341,6 +490,13 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method updateProperties
+   * @param {} component
+   * @param {} values
+   * @return ThisExpression
+   */
   Panel.prototype.updateProperties = function(component, values){
     metaScore.Object.each(values, function(name, value){
       if(!this.getField(name).disabled){
@@ -353,6 +509,13 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleFields
+   * @param {} names
+   * @param {} toggle
+   * @return ThisExpression
+   */
   Panel.prototype.toggleFields = function(names, toggle){
     var field;
   
@@ -370,10 +533,22 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method getValue
+   * @param {} name
+   * @return CallExpression
+   */
   Panel.prototype.getValue = function(name){
     return this.getComponent().getProperty(name);
   };
 
+  /**
+   * Description
+   * @method getValues
+   * @param {} fields
+   * @return values
+   */
   Panel.prototype.getValues = function(fields){
     var values = {};
 

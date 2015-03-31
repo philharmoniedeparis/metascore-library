@@ -1,22 +1,25 @@
 /**
- * Ajax
- *
- * @requires ../metaScore.class.js
- * @requires metaScore.object.js
- * @requires metaScore.var.js
- */
+* Description
+* @class Ajax
+* @extends metaScore.Class
+*/
 
 metaScore.Ajax = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Ajax() {
   }
 
   metaScore.Class.extend(Ajax);
 
   /**
-  * Create an XMLHttp object
-  * @returns {object} the XMLHttp object
-  */
+   * Create an XMLHttp object
+   * @method createXHR
+   * @return 
+   */
   Ajax.createXHR = function() {
 
     var xhr, i, l,
@@ -47,11 +50,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp request
+   * @method send
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return xhr
+   */
   Ajax.send = function(url, options) {
 
     var key,
@@ -87,6 +91,11 @@ metaScore.Ajax = (function () {
       xhr.setRequestHeader(key, value);
     });
 
+    /**
+     * Description
+     * @method onreadystatechange
+     * @return 
+     */
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if(metaScore.Var.is(options.complete, 'function')){
@@ -110,11 +119,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp GET request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp GET request
+   * @method get
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
   Ajax.get = function(url, options) {
 
     metaScore.Object.extend(options, {'method': 'GET'});
@@ -124,11 +134,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp POST request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp POST request
+   * @method post
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
   Ajax.post = function(url, options) {
 
     metaScore.Object.extend(options, {'method': 'POST'});
@@ -138,11 +149,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp PUT request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp PUT request
+   * @method put
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
   Ajax.put = function(url, options) {
 
     metaScore.Object.extend(options, {'method': 'PUT'});

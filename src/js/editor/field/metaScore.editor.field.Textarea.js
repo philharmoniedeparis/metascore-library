@@ -1,11 +1,17 @@
 /**
- * TextareaField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Textarea
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Textarea = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TextareaField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -24,6 +30,11 @@ metaScore.namespace('editor.field').Textarea = (function () {
 
   metaScore.editor.Field.extend(TextareaField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   TextareaField.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 

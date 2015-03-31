@@ -1,11 +1,17 @@
 /**
- * Undo
- *
- * @requires ../metaScore.evented.js
- */
+* Description
+* @class History
+* @namespace metaScore.editor
+* @extends metaScore.Evented
+*/
 
 metaScore.namespace('editor').History = (function(){
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function History(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -26,6 +32,13 @@ metaScore.namespace('editor').History = (function(){
 
   metaScore.Evented.extend(History);
 
+  /**
+   * Description
+   * @method execute
+   * @param {} command
+   * @param {} action
+   * @return ThisExpression
+   */
   History.prototype.execute = function(command, action) {
     if (command && (action in command)) {
       this.executing = true;
@@ -36,6 +49,12 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method add
+   * @param {} command
+   * @return ThisExpression
+   */
   History.prototype.add = function (command){
     if (this.executing) {
       return this;
@@ -60,6 +79,11 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method undo
+   * @return ThisExpression
+   */
   History.prototype.undo = function() {
     var command = this.commands[this.index];
 
@@ -78,6 +102,11 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method redo
+   * @return ThisExpression
+   */
   History.prototype.redo = function() {
     var command = this.commands[this.index + 1];
 
@@ -96,6 +125,11 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method clear
+   * @return 
+   */
   History.prototype.clear = function () {
     var length = this.commands.length;
 
@@ -108,10 +142,20 @@ metaScore.namespace('editor').History = (function(){
 
   };
 
+  /**
+   * Description
+   * @method hasUndo
+   * @return BinaryExpression
+   */
   History.prototype.hasUndo = function(){
     return this.index !== -1;
   };
 
+  /**
+   * Description
+   * @method hasRedo
+   * @return BinaryExpression
+   */
   History.prototype.hasRedo = function(){
     return this.index < (this.commands.length - 1);
   };

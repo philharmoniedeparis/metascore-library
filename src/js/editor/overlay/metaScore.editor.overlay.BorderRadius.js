@@ -1,11 +1,17 @@
 /**
- * BorderRadius
- *
- * @requires ../metaScore.editor.Ovelay.js
- */
+* Description
+* @class BorderRadius
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function BorderRadius(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -29,6 +35,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
   metaScore.editor.Overlay.extend(BorderRadius);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   BorderRadius.prototype.setupDOM = function(){
     var contents;
 
@@ -96,6 +107,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onValueChange
+   * @return 
+   */
   BorderRadius.prototype.onValueChange = function(){  
     var radius  = '';
     
@@ -112,6 +128,12 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     this.preview.css('border-radius', radius);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} val
+   * @return ThisExpression
+   */
   BorderRadius.prototype.setValue = function(val){
     var matches,
       values = {
@@ -170,10 +192,21 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method getValue
+   * @return CallExpression
+   */
   BorderRadius.prototype.getValue = function(){
     return this.preview.css('border-radius');
   };
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   BorderRadius.prototype.onApplyClick = function(evt){  
     this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
     this.hide();

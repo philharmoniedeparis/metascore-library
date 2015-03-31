@@ -1,12 +1,17 @@
 /**
- * GuideSelector
- *
- * @requires ../metaScore.editor.overlay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class GuideSelector
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function GuideSelector(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -40,6 +45,11 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
   metaScore.editor.Overlay.extend(GuideSelector);
 
+  /**
+   * Description
+   * @method show
+   * @return 
+   */
   GuideSelector.prototype.show = function(){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
@@ -51,6 +61,12 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     });
   };
 
+  /**
+   * Description
+   * @method onLoadSuccess
+   * @param {} xhr
+   * @return 
+   */
   GuideSelector.prototype.onLoadSuccess = function(xhr){
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
@@ -90,9 +106,20 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     this.appendTo(this.configs.parent);
   };
 
+  /**
+   * Description
+   * @method onLoadError
+   * @return 
+   */
   GuideSelector.prototype.onLoadError = function(){
   };
 
+  /**
+   * Description
+   * @method onGuideClick
+   * @param {} guide
+   * @return 
+   */
   GuideSelector.prototype.onGuideClick = function(guide){
     this.triggerEvent('select', {'overlay': this, 'guide': guide}, true, false);
 
