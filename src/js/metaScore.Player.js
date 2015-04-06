@@ -449,6 +449,7 @@ metaScore.Player = (function () {
 
     if(configs instanceof metaScore.player.component.Block){
       block = configs;
+      block.appendTo(this.getBody());
     }
     else{
       block = new metaScore.player.component.Block(metaScore.Object.extend({}, configs, {

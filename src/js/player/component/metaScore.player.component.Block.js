@@ -416,31 +416,23 @@ metaScore.namespace('player.component').Block = (function () {
    * @param {} supressEvent
    * @return page
    */
-  Block.prototype.addPage = function(configs, supressEvent){
-    var page,
-      previous_index, previous;
+  Block.prototype.addPage = function(configs, index, supressEvent){
+    var page;
 
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
-      page.appendTo(this.page_wrapper);
-    }
-    else{
-      if(metaScore.Var.isEmpty(configs)){
-        previous_index = this.getActivePageIndex();
-        previous = this.getPage(previous_index);
-        configs = {};
-        
-        if(this.getProperty('synched')){
-          configs['index'] = previous_index + 1;
-          configs['start-time'] = (previous.getProperty('end-time') - previous.getProperty('start-time')) / 2;
-          configs['end-time'] = previous.getProperty('end-time');
-          
-          previous.setProperty('end-time', configs['start-time']);
-        }
+      
+      if(metaScore.Var.is(index, 'number')){
+        page.insertAt(this.page_wrapper, index);
       }
-    
+      else{
+        page.appendTo(this.page_wrapper);
+      }
+    }
+    else{    
       page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
         'container': this.page_wrapper,
+        'index': index
       }));
     }
 
@@ -464,11 +456,6 @@ metaScore.namespace('player.component').Block = (function () {
     var index;
 
     page.remove();
-
-    if(page.hasClass('active')){
-      index = Math.max(0, this.getActivePageIndex() - 1);
-      this.setActivePage(index);
-    }
 
     if(supressEvent !== true){
       this.triggerEvent('pageremove', {'block': this, 'page': page});

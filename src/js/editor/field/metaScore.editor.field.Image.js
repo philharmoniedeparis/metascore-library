@@ -15,6 +15,9 @@ metaScore.namespace('editor.field').Image = (function () {
   function ImageField(configs) {
     this.configs = this.getConfigs(configs);
 
+    // fix event handlers scope
+    this.onFileSelect = metaScore.Function.proxy(this.onFileSelect, this);
+
     // call parent constructor
     ImageField.parent.call(this, this.configs);
 
@@ -64,16 +67,7 @@ metaScore.namespace('editor.field').Image = (function () {
       return;
     }
     
-    this.openBrowser(metaScore.Function.proxy(this.onFileSelect, this));
-  };
-
-  /**
-   * Description
-   * @method openBrowser
-   * @param {} callback
-   * @return 
-   */
-  ImageField.prototype.openBrowser = function(callback){
+    this.triggerEvent('filebrowser', {'callback': this.onFileSelect}, true, false);
   };
 
   /**

@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-03-31 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-06 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -36,19 +36,18 @@ var metaScore = global.metaScore;
 
 
 /**
- * Editor
- *
- * @requires ../helpers/metaScore.Dom.js
- * @requires ../player/metaScore.Player.js
- * @requires metaScore.editor.MainMenu.js
- * @requires metaScore.editor.History.js
- * @requires panel/metaScore.editor.panel.Block.js
- * @requires panel/metaScore.editor.panel.Page.js
- * @requires panel/metaScore.editor.panel.Element.js
- * @requires panel/metaScore.editor.panel.Text.js
- */
+* The main editor class
+* @class Editor
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
+
 metaScore.Editor = (function(){
 
+  /**
+   * @constructor
+   * @param {Object} configs
+   */
   function Editor(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -64,64 +63,62 @@ metaScore.Editor = (function(){
     }
 
     // add components
+    
     this.h_ruler = new metaScore.Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
     this.v_ruler = new metaScore.Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
+    
     this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
-    this.mainmenu = new metaScore.editor.MainMenu().appendTo(this);
-    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);
-    this.panels = {};
-    this.panels.block = new metaScore.editor.panel.Block().appendTo(this.sidebar);
-    this.panels.page = new metaScore.editor.panel.Page().appendTo(this.sidebar);
-    this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar);
-    this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
-    this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
-    this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
-    this.history = new metaScore.editor.History();
-    this.detailsOverlay = new metaScore.editor.overlay.GuideInfo();
-
-    // add event listeners
-    this
-      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
-      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this));
-
-    this.mainmenu
+    
+    this.mainmenu = new metaScore.editor.MainMenu().appendTo(this)
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
       .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
-
-    this.panels.block
+      
+    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);
+    
+    this.panels = {};
+    
+    this.panels.block = new metaScore.editor.panel.Block().appendTo(this.sidebar)
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onBlockUnset, this))
-      .addListener('valueschange', metaScore.Function.proxy(this.onBlockPanelValueChange, this))
-      .getToolbar()
+      .addListener('valueschange', metaScore.Function.proxy(this.onBlockPanelValueChange, this));
+      
+    this.panels.block.getToolbar()
         .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onBlockPanelSelectorChange, this))
         .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this))        
         .addSelectorOption(null, '');
-
-    this.panels.page
+        
+    this.panels.page = new metaScore.editor.panel.Page().appendTo(this.sidebar)
       .addListener('componentbeforeset', metaScore.Function.proxy(this.onPageBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onPageSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onPageUnset, this))
-      .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this))
-      .getToolbar()
+      .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this));
+      
+    this.panels.page.getToolbar()
         .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onPagePanelSelectorChange, this))
         .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
-
-    this.panels.element
+        
+    this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar)
       .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
-      .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
-      .getToolbar()
+      .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this));
+      
+    this.panels.element.getToolbar()
         .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
         .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
-
-    this.history
+        
+    this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
+    
+    this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
+    this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
+    
+    this.history = new metaScore.editor.History()
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
       .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
       .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
-
-    this.detailsOverlay
+      
+    this.detailsOverlay = new metaScore.editor.overlay.GuideInfo()
       .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this));
 
     new metaScore.Dom('body')
@@ -131,54 +128,39 @@ metaScore.Editor = (function(){
    new metaScore.Dom(window)
       .addListener('beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
 
-    this.updateMainmenu();
-    this.setEditing(false);
-    this.loadPlayerFromHash();
+    this
+      .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
+      .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this))
+      .updateMainmenu()
+      .setEditing(false)
+      .loadPlayerFromHash();
   }
 
   metaScore.Dom.extend(Editor);
 
   Editor.defaults = {
+    'container': 'body',
+    'api_url': '',
     'ajax': {}
   };
 
-  Editor.prototype.setEditing = function(editing, sticky){  
-    metaScore.editing = editing !== false;
-
-    if(sticky !== false){
-      this.persistentEditing = metaScore.editing;
-    }
-
-    metaScore.Object.each(this.panels, function(key, panel){
-      if(metaScore.editing){
-        panel.enable();
-      }
-      else{
-        panel.disable();
-      }
-    });
-
-    this.toggleClass('editing', metaScore.editing);
-
-    if(this.player){
-      this.player.getBody().toggleClass('editing', metaScore.editing);
-    }
-    
-  };
-
-  Editor.prototype.loadPlayerFromHash = function(){
-    var match;
-
-    if(match = window.location.hash.match(/(#|&)guide=(\d+)/)){
-      this.addPlayer(match[2]);
-    }
-  };
-
+  /**
+   * Description
+   * @method onGuideSaveSuccess
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideSaveSuccess = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
   };
 
+  /**
+   * Description
+   * @method onGuideSaveError
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideSaveError = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
@@ -192,8 +174,13 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onGuideDeleteConfirm
+   * @return 
+   */
   Editor.prototype.onGuideDeleteConfirm = function(){
-    var id = this.player.getId(),
+    var id = this.getPlayer().getId(),
       component,  options;
 
     options = metaScore.Object.extend({}, {
@@ -210,6 +197,12 @@ metaScore.Editor = (function(){
     metaScore.Ajax.send(this.configs.api_url +'guide/'+ id +'.json', options);
   };
 
+  /**
+   * Description
+   * @method onGuideDeleteSuccess
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideDeleteSuccess = function(xhr){
     this.removePlayer();
 
@@ -217,6 +210,12 @@ metaScore.Editor = (function(){
     delete this.loadmask;
   };
 
+  /**
+   * Description
+   * @method onGuideDeleteError
+   * @param {} xhr
+   * @return 
+   */
   Editor.prototype.onGuideDeleteError = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
@@ -230,11 +229,31 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onGuideRevertConfirm
+   * @return 
+   */
   Editor.prototype.onGuideRevertConfirm = function(){
-    this.addPlayer(this.player.getId());
+    this.addPlayer(this.getPlayer().getId());
   };
 
-  Editor.prototype.onPlayerKeydown = Editor.prototype.onKeydown = function(evt){
+  /**
+   * Description
+   * @method onGuideSelectorSelect
+   * @param {Object} evt
+   */
+  Editor.prototype.onGuideSelectorSelect = function(evt){
+    this.addPlayer(evt.detail.guide.id);
+  };
+  
+  /**
+    * Description
+    * @method onKeydown
+    * @param {} evt
+    * @return 
+    */
+   Editor.prototype.onKeydown = function(evt){
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
@@ -256,8 +275,14 @@ metaScore.Editor = (function(){
         break;
     }
   };
-
-  Editor.prototype.onPlayerKeyup = Editor.prototype.onKeyup = function(evt){
+  
+  /**
+    * Description
+    * @method onKeyup
+    * @param {} evt
+    * @return 
+    */
+   Editor.prototype.onKeyup = function(evt){
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(this.persistentEditing, false);
@@ -266,6 +291,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onMainmenuClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onMainmenuClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
@@ -332,34 +363,64 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onMainmenuTimeFieldChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onMainmenuTimeFieldChange = function(evt){
     var field = evt.target._metaScore,
       time = field.getValue();
 
-    this.player.media.setTime(time);
+    this.getPlayer().media.setTime(time);
   };
 
+  /**
+   * Description
+   * @method onMainmenuRindexFieldChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onMainmenuRindexFieldChange = function(evt){
     var field = evt.target._metaScore,
       value = field.getValue();
 
-    this.player.setReadingIndex(value, true);
+    this.getPlayer().setReadingIndex(value, true);
   };
 
+  /**
+   * Description
+   * @method onTimeFieldIn
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onTimeFieldIn = function(evt){
     var field = evt.target._metaScore,
-      time = this.player.media.getTime();
+      time = this.getPlayer().media.getTime();
 
     field.setValue(time);
   };
 
+  /**
+   * Description
+   * @method onTimeFieldOut
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onTimeFieldOut = function(evt){
     var field = evt.target._metaScore,
       time = field.getValue();
 
-    this.player.media.setTime(time);
+    this.getPlayer().media.setTime(time);
   };
 
+  /**
+   * Description
+   * @method onBlockSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
 
@@ -380,51 +441,92 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockUnset
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockUnset = function(evt){
     this.panels.page.unsetComponent();
     this.panels.page.getToolbar().toggleMenuItem('new', false);
   };
 
+  /**
+   * Description
+   * @method onBlockPanelValueChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPanelValueChange = function(evt){
-    var block = evt.detail.component,
+    var panel = this.panels.block,
+      block = evt.detail.component,
       old_values = evt.detail.old_values,
       new_values = evt.detail.new_values;
 
     this.history.add({
-      'undo': metaScore.Function.proxy(this.panels.block.updateProperties, this.panels.block, [block, old_values]),
-      'redo': metaScore.Function.proxy(this.panels.block.updateProperties, this.panels.block, [block, new_values])
+      'undo': function(){
+        panel.updateProperties(block, old_values);
+      },
+      'redo': function(){
+        panel.updateProperties(block, new_values);
+      }
     });
   };
 
+  /**
+   * Description
+   * @method onBlockPanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var blocks, block, count, index;
+    var player, panel, blocks, block, count, index;
 
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
-        block = this.player.addBlock();
+        player = this.getPlayer();
+        panel = this.panels.block;
+        block = player.addBlock();
+        
+        panel.setComponent(block);
 
         this.history.add({
-          'undo': metaScore.Function.proxy(block.remove, this),
-          'redo': metaScore.Function.proxy(this.addBlock, this, [block])
+          'undo': function(){
+            panel.unsetComponent();
+            block.remove();
+          },
+          'redo': function(){
+            player.addBlock(block);
+            panel.setComponent(block);
+          }
         });
         break;
 
       case 'delete':
+        player = this.getPlayer();
+        panel = this.panels.block;
         block = this.panels.block.getComponent();
 
         if(block){
+          panel.unsetComponent();
           block.remove();
-          this.panels.block.unsetComponent();
 
           this.history.add({
-            'undo': metaScore.Function.proxy(this.addBlock, this, [block]),
-            'redo': metaScore.Function.proxy(block.remove, this)
+            'undo': function(){
+              player.addBlock(block);
+              panel.setComponent(block);
+            },
+            'redo': function(){
+              panel.unsetComponent();
+              block.remove();
+            }
           });
         }
         break;
 
       case 'previous':
-        blocks = this.player.getComponents('.media.video, .controller, .block');
+        blocks = this.getPlayer().getComponents('.media.video, .controller, .block');
         count = blocks.count();
 
         if(count > 0){
@@ -440,7 +542,7 @@ metaScore.Editor = (function(){
         break;
 
       case 'next':
-        blocks = this.player.getComponents('.media.video, .controller, .block');
+        blocks = this.getPlayer().getComponents('.media.video, .controller, .block');
         count = blocks.count();
 
         if(count > 0){
@@ -459,6 +561,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockPanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPanelSelectorChange = function(evt){
     var id = evt.detail.value,
       dom;
@@ -467,7 +575,7 @@ metaScore.Editor = (function(){
       this.panels.block.unsetComponent();
     }
     else{
-      dom = this.player.getComponent('.media#'+ id +', .controller#'+ id +', .block#'+ id);
+      dom = this.getPlayer().getComponent('.media#'+ id +', .controller#'+ id +', .block#'+ id);
       
       if(dom && dom._metaScore){
         this.panels.block.setComponent(dom._metaScore);
@@ -475,6 +583,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onPageBeforeSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPageBeforeSet = function(evt){
     var page = evt.detail.component,
       block = page.parents().parents().get(0)._metaScore;
@@ -482,6 +596,12 @@ metaScore.Editor = (function(){
     this.panels.block.setComponent(block);
   };
 
+  /**
+   * Description
+   * @method onPageSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPageSet = function(evt){
     var page = evt.detail.component;
 
@@ -501,6 +621,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onPageUnset
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPageUnset = function(evt){
     this.panels.element.unsetComponent();
     this.panels.element.getToolbar()
@@ -509,40 +635,89 @@ metaScore.Editor = (function(){
       .toggleMenuItem('Text', false);
   };
 
+  /**
+   * Description
+   * @method onPagePanelValueChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPagePanelValueChange = function(evt){
-    var page = evt.detail.component,
+    var panel = this.panels.page,
+      page = evt.detail.component,
       old_values = evt.detail.old_values,
       new_values = evt.detail.new_values;
 
     this.history.add({
-      'undo': metaScore.Function.proxy(this.panels.page.updateProperties, this.panels.page, [page, old_values]),
-      'redo': metaScore.Function.proxy(this.panels.page.updateProperties, this.panels.page, [page, new_values])
+      'undo': function(){
+        panel.updateProperties(page, old_values);
+      },
+      'redo': function(){
+        panel.updateProperties(page, new_values);
+      }
     });
   };
 
+  /**
+   * Description
+   * @method onPagePanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPagePanelToolbarClick = function(evt){
-    var block, page,
-      auto_page, configs,
+    var panel, block, page, configs,
+      previous_page, auto_page,
       dom, count, index;
 
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
+        panel = this.panels.page;
         block = this.panels.block.getComponent();
-        page = this.addPage(block);
+        configs = {};
+        
+        if(block.getProperty('synched')){
+          index = block.getActivePageIndex();
+          previous_page = block.getPage(index);
+        
+          configs['start-time'] = (previous_page.getProperty('end-time') - previous_page.getProperty('start-time')) / 2;
+          configs['end-time'] = previous_page.getProperty('end-time');
+          
+          previous_page.setProperty('end-time', configs['start-time']);
+        }
+        
+        page = block.addPage(configs, index+1);
+        panel.setComponent(page);
 
         this.history.add({
-          'undo': metaScore.Function.proxy(page.remove, this),
-          'redo': metaScore.Function.proxy(this.addPage, this, [block, page])
+          'undo': function(){
+            panel.unsetComponent();
+            page.remove();
+            
+            if(block.getProperty('synched')){
+              previous_page.setProperty('end-time', configs['end-time']);
+            }
+            
+            block.setActivePage(index);
+          },
+          'redo': function(){
+            if(block.getProperty('synched')){
+              previous_page.setProperty('end-time', configs['start-time']);
+            }
+            
+            block.addPage(page, index+1);
+            panel.setComponent(page);
+          }
         });
         break;
 
       case 'delete':
+        panel = this.panels.page;
         block = this.panels.block.getComponent();
-        page = this.panels.page.getComponent();
+        page = panel.getComponent();
+        index = block.getActivePageIndex();
 
         if(page){
+          panel.unsetComponent();
           block.removePage(page);
-          this.panels.page.unsetComponent();
           
           if(block.getPageCount() < 1){
             configs = {};
@@ -552,22 +727,32 @@ metaScore.Editor = (function(){
               configs['end-time'] = this.getPlayer().getMedia().getDuration();
             }
             
-            auto_page = this.addPage(block, configs);
+            auto_page = block.addPage(configs);
+            panel.setComponent(auto_page);
           }
+            
+          block.setActivePage(index);
 
           this.history.add({
-            'undo': metaScore.Function.proxy(function(block, page, auto_page){
+            'undo': function(){
               if(auto_page){
                 block.removePage(auto_page, true);
               }
-              this.addPage(block, page);
-            }, this, [block, page, auto_page]),
-            'redo': metaScore.Function.proxy(function(block, page, auto_page){
+              
+              block.addPage(page);
+              panel.setComponent(page);
+            },
+            'redo': function(){
+              panel.unsetComponent();
               block.removePage(page, true);
+              
               if(auto_page){
-                this.addPage(block, auto_page);
+                block.addPage(auto_page);
+                panel.setComponent(auto_page);
               }
-            }, this, [block, page, auto_page])
+              
+              block.setActivePage(index);
+            }
           });
         }
         break;
@@ -616,13 +801,19 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onPagePanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPagePanelSelectorChange = function(evt){
     var block = this.panels.block.getComponent(),
       id, dom;
     
     if(block){
       id = evt.detail.value;
-      dom = this.player.getComponent('.page#'+ id);
+      dom = this.getPlayer().getComponent('.page#'+ id);
     
       if(dom && dom._metaScore){
         block.setActivePage(dom._metaScore);
@@ -630,6 +821,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onElementBeforeSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementBeforeSet = function(evt){
     var element = evt.detail.component,
       page = element.parents().get(0)._metaScore;
@@ -637,6 +834,12 @@ metaScore.Editor = (function(){
     this.panels.page.setComponent(page);
   };
 
+  /**
+   * Description
+   * @method onElementSet
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementSet = function(evt){
     var element = evt.detail.component;
 
@@ -647,51 +850,90 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onElementUnset
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementUnset = function(evt){
     this.panels.text.unsetComponent();
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onElementPanelValueChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementPanelValueChange = function(evt){
-    var element = evt.detail.component,
+    var panel = this.panels.element,
+      element = evt.detail.component,
       old_values = evt.detail.old_values,
       new_values = evt.detail.new_values;
 
     this.history.add({
-      'undo': metaScore.Function.proxy(this.panels.element.updateProperties, this.panels.element, [element, old_values]),
-      'redo': metaScore.Function.proxy(this.panels.element.updateProperties, this.panels.element, [element, new_values])
+      'undo': function(){
+        panel.updateProperties(element, old_values);
+      },
+      'redo': function(){
+        panel.updateProperties(element, new_values);
+      }
     });
   };
 
+  /**
+   * Description
+   * @method onElementPanelToolbarClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementPanelToolbarClick = function(evt){
-    var page, element, dom, count, index,
+    var panel, page, element, dom, count, index,
       action = metaScore.Dom.data(evt.target, 'action');
 
     switch(action){
       case 'Cursor':
       case 'Image':
       case 'Text':
+        panel = this.panels.element;
         page = this.panels.page.getComponent();
-        element = this.addElement(page, {'type': action});
+        element = page.addElement({'type': action});
+
+        panel.setComponent(element);
 
         this.history.add({
-          'undo': metaScore.Function.proxy(element.remove, this),
-          'redo': metaScore.Function.proxy(this.addElement, this, [page, element])
+          'undo': function(){
+            panel.unsetComponent();
+            element.remove();
+          },
+          'redo': function(){
+            page.addElement(element);
+            panel.setComponent(element);
+          }
         });
         break;
 
       case 'delete':
+        panel = this.panels.element;
         page = this.panels.page.getComponent();
         element = this.panels.element.getComponent();
 
         if(element){
+          panel.unsetComponent();
           element.remove();
-          this.panels.element.unsetComponent();
 
           this.history.add({
-            'undo': metaScore.Function.proxy(this.addElement, this, [page, element]),
-            'redo': metaScore.Function.proxy(element.remove, this)
+            'undo': function(){
+              page.addElement(element);
+              panel.setComponent(element);
+            },
+            'redo': function(){
+              panel.unsetComponent();
+              element.remove();
+            }
           });
         }
         break;
@@ -738,6 +980,12 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onElementPanelSelectorChange
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onElementPanelSelectorChange = function(evt){
     var id = evt.detail.value,
       dom;
@@ -746,7 +994,7 @@ metaScore.Editor = (function(){
       this.panels.element.unsetComponent();
     }
     else{    
-      dom = this.player.getComponent('.element#'+ id);
+      dom = this.getPlayer().getComponent('.element#'+ id);
     
       if(dom && dom._metaScore){
         this.panels.element.setComponent(dom._metaScore);
@@ -754,18 +1002,36 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onPlayerTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerTimeUpdate = function(evt){
     var time = evt.detail.media.getTime();
 
     this.mainmenu.timefield.setValue(time, true);
   };
 
+  /**
+   * Description
+   * @method onPlayerReadingIndex
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerReadingIndex = function(evt){
     var rindex = evt.detail.value;
 
     this.mainmenu.rindexfield.setValue(rindex, true);
   };
 
+  /**
+   * Description
+   * @method onPlayerMediaAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerMediaAdd = function(evt){
     var media = evt.detail.media;
     
@@ -774,23 +1040,40 @@ metaScore.Editor = (function(){
     }
   };
 
+  /**
+   * Description
+   * @method onPlayerControllerAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerControllerAdd = function(evt){
     var controller = evt.detail.controller;
 
     this.panels.block.getToolbar().addSelectorOption(controller.getId(), controller.getName());
   };
 
+  /**
+   * Description
+   * @method onPlayerBlockAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerBlockAdd = function(evt){
     var block = evt.detail.block;
 
     this.panels.block.getToolbar().addSelectorOption(block.getId(), block.getName());
   };
 
+  /**
+   * Description
+   * @method onPlayerLoadSuccess
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerLoadSuccess = function(evt){
-    var player = evt.detail.player,
-      data = evt.detail.data;
+    var data = evt.detail.data;
 
-    this.player = player;
+    this.player = evt.detail.player;
 
     this.player.getBody()
       .addClass('in-editor')
@@ -798,13 +1081,15 @@ metaScore.Editor = (function(){
       .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdded, this))
       .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
       .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-      .addListener('keydown', metaScore.Function.proxy(this.onPlayerKeydown, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onPlayerKeyup, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
       .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
       .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this));
 
-    this.setEditing(true);
-    this.updateMainmenu();
+    this
+      .setEditing(true)
+      .updateMainmenu();
+      
     this.detailsOverlay.setValues(data);
     this.mainmenu.rindexfield.setValue(0, true);
 
@@ -814,6 +1099,12 @@ metaScore.Editor = (function(){
     delete this.loadmask;
   };
 
+  /**
+   * Description
+   * @method onPlayerLoadError
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerLoadError = function(evt){
     this.loadmask.hide();
     delete this.loadmask;
@@ -827,6 +1118,13 @@ metaScore.Editor = (function(){
     });
   };
 
+  /**
+   * Description
+   * @method onComponentClick
+   * @param {} evt
+   * @param {} dom
+   * @return 
+   */
   Editor.prototype.onComponentClick = function(evt, dom){
     var component;
 
@@ -852,6 +1150,12 @@ metaScore.Editor = (function(){
     evt.stopImmediatePropagation();
   };
 
+  /**
+   * Description
+   * @method onPlayerClick
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onPlayerClick = function(evt){
     
     if(metaScore.editing !== true){
@@ -863,6 +1167,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockPageAdded
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPageAdded = function(evt){
     var block = evt.detail.block;
     
@@ -873,6 +1183,12 @@ metaScore.Editor = (function(){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onBlockPageActivated
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBlockPageActivated = function(evt){
     if(metaScore.editing !== true){
       return;
@@ -881,30 +1197,115 @@ metaScore.Editor = (function(){
     this.panels.page.setComponent(evt.detail.page);
   };
 
+  /**
+   * Description
+   * @method onHistoryAdd
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onHistoryAdd = function(evt){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method onHistoryUndo
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onHistoryUndo = function(evt){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method onHistoryRedo
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onHistoryRedo = function(evt){
     this.updateMainmenu();
   };
 
+  /**
+   * Description
+   * @method onDetailsOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onDetailsOverlaySubmit = function(evt){
     var values = evt.detail.values;
 
-    this.player.updateCSS(values.css);
+    this.getPlayer().updateCSS(values.css);
   };
 
+  /**
+   * Description
+   * @method onBeforeUnload
+   * @param {} evt
+   * @return 
+   */
   Editor.prototype.onBeforeUnload = function(evt){  
     if(this.hasOwnProperty('player')){
       evt.returnValue = metaScore.Locale.t('editor.onBeforeUnload.msg', 'Any unsaved data will be lost.');
     }
   };
 
+  /**
+   * Updates the editing state
+   * @method setEditing
+   * @param {Boolean} editing
+   * @param {Boolean} sticky
+   * @chainable
+   */
+  Editor.prototype.setEditing = function(editing, sticky){
+    var player = this.getPlayer();
+  
+    metaScore.editing = editing !== false;
+
+    if(sticky !== false){
+      this.persistentEditing = metaScore.editing;
+    }
+
+    metaScore.Object.each(this.panels, function(key, panel){
+      if(metaScore.editing){
+        panel.enable();
+      }
+      else{
+        panel.disable();
+      }
+    });
+
+    this.toggleClass('editing', metaScore.editing);
+
+    if(player){
+      player.getBody().toggleClass('editing', metaScore.editing);
+    }
+    
+    return this;
+    
+  };
+
+  /**
+   * Description
+   * @method loadPlayerFromHash
+   * @chainable
+   */
+  Editor.prototype.loadPlayerFromHash = function(){
+    var match;
+
+    if(match = window.location.hash.match(/(#|&)guide=(\d+)/)){
+      this.addPlayer(match[2]);
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateMainmenu
+   * @chainable 
+   */
   Editor.prototype.updateMainmenu = function(){
     var hasPlayer = this.hasOwnProperty('player');
 
@@ -916,8 +1317,15 @@ metaScore.Editor = (function(){
     this.mainmenu.toggleButton('undo', this.history.hasUndo());
     this.mainmenu.toggleButton('redo', this.history.hasRedo());
     this.mainmenu.toggleButton('revert', hasPlayer);
+    
+    return this;
   };
 
+  /**
+   * Description
+   * @method updatePageSelector
+   * @chainable 
+   */
   Editor.prototype.updatePageSelector = function(){
     var block = this.panels.block.getComponent(),
       page = this.panels.page.getComponent(),
@@ -932,12 +1340,25 @@ metaScore.Editor = (function(){
     }
     
     toolbar.setSelectorValue(page ? page.getId() : null, true);
+    
+    return this;
   };
 
+  /**
+   * Description
+   * @method getPlayer
+   * @return MemberExpression
+   */
   Editor.prototype.getPlayer = function(){  
     return this.player;  
   };
 
+  /**
+   * Description
+   * @method addPlayer
+   * @param {} id
+   * @chainable 
+   */
   Editor.prototype.addPlayer = function(id){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
@@ -954,8 +1375,15 @@ metaScore.Editor = (function(){
       .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
       .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
       .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+    
+    return this;
   };
 
+  /**
+   * Description
+   * @method removePlayer
+   * @chainable 
+   */
   Editor.prototype.removePlayer = function(){
     if(this.player){
       this.player.remove();
@@ -964,53 +1392,34 @@ metaScore.Editor = (function(){
 
     this.panels.block.unsetComponent();
     this.updateMainmenu();
+    
+    return this;
   };
 
-  Editor.prototype.addBlock = function(block){
-    if(!(block instanceof metaScore.player.component.Block)){
-      block = this.player.addBlock(block);
-    }
-
-    this.panels.block.setComponent(block);
-
-    return block;
-  };
-
-  Editor.prototype.addPage = function(block, page){
-    if(!(page instanceof metaScore.player.component.Page)){
-      page = block.addPage(page);
-    }
-
-    this.panels.page.setComponent(page);
-
-    return page;
-  };
-
-  Editor.prototype.addElement = function(page, element){
-    if(!(element instanceof metaScore.player.component.Element)){
-      element = page.addElement(element);
-    }
-
-    this.panels.element.setComponent(element);
-
-    return element;
-  };
-
+  /**
+   * Description
+   * @method openGuideSelector
+   * @chainable 
+   */
   Editor.prototype.openGuideSelector = function(){
     new metaScore.editor.overlay.GuideSelector({
         'url': this.configs.api_url +'guide.json',
         'autoShow': true
       })
-      .addListener('select', metaScore.Function.proxy(this.openGuide, this));
+      .addListener('select', metaScore.Function.proxy(this.onGuideSelectorSelect, this));
+    
+    return this;
   };
 
-  Editor.prototype.openGuide = function(evt){
-    this.addPlayer(evt.detail.guide.id);
-  };
-
+  /**
+   * Description
+   * @method saveGuide
+   * @chainable 
+   */
   Editor.prototype.saveGuide = function(){
-    var components = this.player.getComponents('.media, .controller, .block'),
-      id = this.player.getId(),
+    var player = this.getPlayer(),
+      id = player.getId(),
+      components = player.getComponents('.media, .controller, .block'),
       data = this.detailsOverlay.getValues(),
       component, options;
 
@@ -1044,19 +1453,27 @@ metaScore.Editor = (function(){
     });
 
     metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);
+    
+    return this;
   };
 
   return Editor;
 
 })();
 /**
- * Button
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Button
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Button = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Button(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1081,12 +1498,24 @@ metaScore.namespace('editor').Button = (function () {
 
   metaScore.Dom.extend(Button);
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   Button.prototype.onClick = function(evt){
     if(this.disabled){
       evt.stopPropagation();
     }
   };
 
+  /**
+   * Description
+   * @method setLabel
+   * @param {} text
+   * @return ThisExpression
+   */
   Button.prototype.setLabel = function(text){
     if(this.label === undefined){
       this.label = new metaScore.Dom('<span/>', {'class': 'label'})
@@ -1099,9 +1528,10 @@ metaScore.namespace('editor').Button = (function () {
   };
 
   /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
+   * Disable the button
+   * @method disable
+   * @return ThisExpression
+   */
   Button.prototype.disable = function(){
     this.disabled = true;
 
@@ -1111,11 +1541,10 @@ metaScore.namespace('editor').Button = (function () {
   };
 
   /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Enable the button
+   * @method enable
+   * @return ThisExpression
+   */
   Button.prototype.enable = function(){
     this.disabled = false;
 
@@ -1128,13 +1557,19 @@ metaScore.namespace('editor').Button = (function () {
 
 })();
 /**
- * DropDownMenu
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class DropDownMenu
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').DropDownMenu = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function DropDownMenu(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1144,6 +1579,13 @@ metaScore.namespace('editor').DropDownMenu = (function () {
 
   metaScore.Dom.extend(DropDownMenu);
 
+  /**
+   * Description
+   * @method addItem
+   * @param {} action
+   * @param {} label
+   * @return item
+   */
   DropDownMenu.prototype.addItem = function(action, label){
     var item = new metaScore.Dom('<li/>', {'data-action': action, 'text': label})
       .appendTo(this);
@@ -1151,6 +1593,13 @@ metaScore.namespace('editor').DropDownMenu = (function () {
     return item;
   };
 
+  /**
+   * Description
+   * @method toggleItem
+   * @param {} action
+   * @param {} state
+   * @return ThisExpression
+   */
   DropDownMenu.prototype.toggleItem = function(action, state){
     this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
 
@@ -1161,13 +1610,19 @@ metaScore.namespace('editor').DropDownMenu = (function () {
 
 })();
 /**
- * Field
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Field
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Field = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Field(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1204,6 +1659,11 @@ metaScore.namespace('editor').Field = (function () {
 
   metaScore.Dom.extend(Field);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   Field.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 
@@ -1220,12 +1680,25 @@ metaScore.namespace('editor').Field = (function () {
       .appendTo(this.input_wrapper);
   };
 
+  /**
+   * Description
+   * @method onChange
+   * @param {} evt
+   * @return 
+   */
   Field.prototype.onChange = function(evt){
     this.value = this.input.val();
 
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   Field.prototype.setValue = function(value, supressEvent){
     this.input.val(value);
     this.value = value;
@@ -1235,14 +1708,20 @@ metaScore.namespace('editor').Field = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method getValue
+   * @return MemberExpression
+   */
   Field.prototype.getValue = function(){
     return this.value;
   };
 
   /**
-  * Disable the field
-  * @returns {object} the XMLHttp object
-  */
+   * Disable the field
+   * @method disable
+   * @return ThisExpression
+   */
   Field.prototype.disable = function(){
     this.disabled = true;
 
@@ -1253,11 +1732,10 @@ metaScore.namespace('editor').Field = (function () {
   };
 
   /**
-  * Enable the field
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Enable the field
+   * @method enable
+   * @return ThisExpression
+   */
   Field.prototype.enable = function(){
     this.disabled = false;
 
@@ -1271,13 +1749,19 @@ metaScore.namespace('editor').Field = (function () {
 
 })();
 /**
- * Undo
- *
- * @requires ../metaScore.evented.js
- */
+* Description
+* @class History
+* @namespace metaScore.editor
+* @extends metaScore.Evented
+*/
 
 metaScore.namespace('editor').History = (function(){
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function History(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1298,6 +1782,13 @@ metaScore.namespace('editor').History = (function(){
 
   metaScore.Evented.extend(History);
 
+  /**
+   * Description
+   * @method execute
+   * @param {} command
+   * @param {} action
+   * @return ThisExpression
+   */
   History.prototype.execute = function(command, action) {
     if (command && (action in command)) {
       this.executing = true;
@@ -1308,6 +1799,12 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method add
+   * @param {} command
+   * @return ThisExpression
+   */
   History.prototype.add = function (command){
     if (this.executing) {
       return this;
@@ -1332,6 +1829,11 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method undo
+   * @return ThisExpression
+   */
   History.prototype.undo = function() {
     var command = this.commands[this.index];
 
@@ -1350,6 +1852,11 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method redo
+   * @return ThisExpression
+   */
   History.prototype.redo = function() {
     var command = this.commands[this.index + 1];
 
@@ -1368,6 +1875,11 @@ metaScore.namespace('editor').History = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method clear
+   * @return 
+   */
   History.prototype.clear = function () {
     var length = this.commands.length;
 
@@ -1380,10 +1892,20 @@ metaScore.namespace('editor').History = (function(){
 
   };
 
+  /**
+   * Description
+   * @method hasUndo
+   * @return BinaryExpression
+   */
   History.prototype.hasUndo = function(){
     return this.index !== -1;
   };
 
+  /**
+   * Description
+   * @method hasRedo
+   * @return BinaryExpression
+   */
   History.prototype.hasRedo = function(){
     return this.index < (this.commands.length - 1);
   };
@@ -1392,15 +1914,18 @@ metaScore.namespace('editor').History = (function(){
 
 })();
 /**
- * MainMenu
- *
- * @requires metaScore.editor.button.js
- * @requires field/metaScore.editor.field.timefield.js
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class MainMenu
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
+
 metaScore.namespace('editor').MainMenu = (function(){
 
+  /**
+   * Description
+   * @constructor
+   */
   function MainMenu() {
     // call parent constructor
     MainMenu.parent.call(this, '<div/>', {'class': 'main-menu clearfix'});
@@ -1410,6 +1935,11 @@ metaScore.namespace('editor').MainMenu = (function(){
 
   metaScore.Dom.extend(MainMenu);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   MainMenu.prototype.setupUI = function(){
 
     var left, right;
@@ -1524,6 +2054,13 @@ metaScore.namespace('editor').MainMenu = (function(){
 
   };
 
+  /**
+   * Description
+   * @method toggleButton
+   * @param {} action
+   * @param {} state
+   * @return ThisExpression
+   */
   MainMenu.prototype.toggleButton = function(action, state){
     this.find('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
 
@@ -1534,18 +2071,19 @@ metaScore.namespace('editor').MainMenu = (function(){
 
 })();
 /**
- * Overlay
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Overlay
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Overlay = (function(){
 
   /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
+   * Initialize
+   * @constructor
+   * @param {} configs
+   */
   function Overlay(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1594,6 +2132,11 @@ metaScore.namespace('editor').Overlay = (function(){
 
   metaScore.Dom.extend(Overlay);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Overlay.prototype.setupDOM = function(){
 
     if(this.configs.modal){
@@ -1617,6 +2160,11 @@ metaScore.namespace('editor').Overlay = (function(){
   
   };
 
+  /**
+   * Description
+   * @method show
+   * @return ThisExpression
+   */
   Overlay.prototype.show = function(){
     if(this.configs.modal){
       this.mask.appendTo(this.configs.parent);
@@ -1627,6 +2175,11 @@ metaScore.namespace('editor').Overlay = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method hide
+   * @return ThisExpression
+   */
   Overlay.prototype.hide = function(){
     if(this.configs.modal){
       this.mask.remove();
@@ -1637,14 +2190,29 @@ metaScore.namespace('editor').Overlay = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method getToolbar
+   * @return MemberExpression
+   */
   Overlay.prototype.getToolbar = function(){
     return this.toolbar;
   };
 
+  /**
+   * Description
+   * @method getContents
+   * @return MemberExpression
+   */
   Overlay.prototype.getContents = function(){
     return this.contents;
   };
 
+  /**
+   * Description
+   * @method onCloseClick
+   * @return 
+   */
   Overlay.prototype.onCloseClick = function(){
     this.hide();
   };
@@ -1653,16 +2221,19 @@ metaScore.namespace('editor').Overlay = (function(){
 
 })();
 /**
- * Panel
- *
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.object.js
- * @requires ../helpers/metaScore.string.js
- * @requires ../helpers/metaScore.function.js
- */
+* Description
+* @class Panel
+* @namespace metaScore.editor
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor').Panel = (function(){
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Panel(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1702,6 +2273,12 @@ metaScore.namespace('editor').Panel = (function(){
 
   metaScore.Dom.extend(Panel);
 
+  /**
+   * Description
+   * @method setupFields
+   * @param {} properties
+   * @return ThisExpression
+   */
   Panel.prototype.setupFields = function(properties){
     var configs, fieldType, field;
 
@@ -1723,10 +2300,21 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method getToolbar
+   * @return MemberExpression
+   */
   Panel.prototype.getToolbar = function(){
     return this.toolbar;
   };
 
+  /**
+   * Description
+   * @method getField
+   * @param {} key
+   * @return MemberExpression
+   */
   Panel.prototype.getField = function(key){
     if(key === undefined){
       return this.fields;
@@ -1735,54 +2323,108 @@ metaScore.namespace('editor').Panel = (function(){
     return this.fields[key];
   };
 
+  /**
+   * Description
+   * @method enableFields
+   * @return 
+   */
   Panel.prototype.enableFields = function(){
     metaScore.Object.each(this.fields, function(key, field){
       field.enable();
     }, this);
   };
 
+  /**
+   * Description
+   * @method showField
+   * @param {} name
+   * @return ThisExpression
+   */
   Panel.prototype.showField = function(name){
     this.getField(name).show();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method hideField
+   * @param {} name
+   * @return ThisExpression
+   */
   Panel.prototype.hideField = function(name){
     this.getField(name).hide();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleState
+   * @return ThisExpression
+   */
   Panel.prototype.toggleState = function(){
     this.toggleClass('collapsed');
     
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   Panel.prototype.disable = function(){
     this.addClass('disabled');
     
     return this;
   };
 
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   Panel.prototype.enable = function(){
     this.removeClass('disabled');
     
     return this;
   };
 
+  /**
+   * Description
+   * @method getComponent
+   * @return MemberExpression
+   */
   Panel.prototype.getComponent = function(){
     return this.component;
   };
 
+  /**
+   * Description
+   * @method getDraggable
+   * @return Literal
+   */
   Panel.prototype.getDraggable = function(){
     return false;
   };
 
+  /**
+   * Description
+   * @method getResizable
+   * @return Literal
+   */
   Panel.prototype.getResizable = function(){
     return false;
   };
 
+  /**
+   * Description
+   * @method setComponent
+   * @param {} component
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.setComponent = function(component, supressEvent){
     var draggable, resizable;
 
@@ -1819,6 +2461,12 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method unsetComponent
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
 
@@ -1844,6 +2492,12 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method updateDraggable
+   * @param {} draggable
+   * @return ThisExpression
+   */
   Panel.prototype.updateDraggable = function(draggable){
     var component = this.getComponent();
       
@@ -1875,6 +2529,12 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method updateResizable
+   * @param {} resizable
+   * @return ThisExpression
+   */
   Panel.prototype.updateResizable = function(resizable){
     var component = this.getComponent();
       
@@ -1906,18 +2566,36 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method onComponentDragStart
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentDragStart = function(evt){
     var fields = ['x', 'y'];
 
     this._beforeDragValues = this.getValues(fields);
   };
 
+  /**
+   * Description
+   * @method onComponentDrag
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentDrag = function(evt){
     var fields = ['x', 'y'];
 
     this.updateFieldValues(fields, true);
   };
 
+  /**
+   * Description
+   * @method onComponentDragEnd
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentDragEnd = function(evt){
     var component = this.getComponent(),
       fields = ['x', 'y'];
@@ -1929,18 +2607,36 @@ metaScore.namespace('editor').Panel = (function(){
     delete this._beforeDragValues;
   };
 
+  /**
+   * Description
+   * @method onComponentResizeStart
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentResizeStart = function(evt){
     var fields = ['x', 'y', 'width', 'height'];
 
     this._beforeResizeValues = this.getValues(fields);
   };
 
+  /**
+   * Description
+   * @method onComponentResize
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentResize = function(evt){
     var fields = ['x', 'y', 'width', 'height'];
 
     this.updateFieldValues(fields, true);
   };
 
+  /**
+   * Description
+   * @method onComponentResizeEnd
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onComponentResizeEnd = function(evt){
     var component = this.getComponent(),
       fields = ['x', 'y', 'width', 'height'];
@@ -1952,6 +2648,12 @@ metaScore.namespace('editor').Panel = (function(){
     delete this._beforeResizeValues;
   };
 
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
   Panel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
       name, value, old_values;
@@ -1974,12 +2676,27 @@ metaScore.namespace('editor').Panel = (function(){
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
 
+  /**
+   * Description
+   * @method updateFieldValue
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.updateFieldValue = function(name, value, supressEvent){
     this.getField(name).setValue(value, supressEvent);
     
     return this;
   };
 
+  /**
+   * Description
+   * @method updateFieldValues
+   * @param {} values
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Panel.prototype.updateFieldValues = function(values, supressEvent){
     if(metaScore.Var.is(values, 'array')){
       metaScore.Array.each(values, function(index, field){
@@ -1995,6 +2712,13 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method updateProperties
+   * @param {} component
+   * @param {} values
+   * @return ThisExpression
+   */
   Panel.prototype.updateProperties = function(component, values){
     metaScore.Object.each(values, function(name, value){
       if(!this.getField(name).disabled){
@@ -2007,6 +2731,13 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleFields
+   * @param {} names
+   * @param {} toggle
+   * @return ThisExpression
+   */
   Panel.prototype.toggleFields = function(names, toggle){
     var field;
   
@@ -2024,10 +2755,22 @@ metaScore.namespace('editor').Panel = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method getValue
+   * @param {} name
+   * @return CallExpression
+   */
   Panel.prototype.getValue = function(name){
     return this.getComponent().getProperty(name);
   };
 
+  /**
+   * Description
+   * @method getValues
+   * @param {} fields
+   * @return values
+   */
   Panel.prototype.getValues = function(fields){
     var values = {};
 
@@ -2046,13 +2789,19 @@ metaScore.namespace('editor').Panel = (function(){
 
 })();
 /**
- * BooleanField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Boolean
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Boolean = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function BooleanField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2084,6 +2833,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
 
   metaScore.editor.Field.extend(BooleanField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   BooleanField.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 
@@ -2100,12 +2854,25 @@ metaScore.namespace('editor.field').Boolean = (function () {
       .appendTo(this.input_wrapper);
   };
 
+  /**
+   * Description
+   * @method onChange
+   * @param {} evt
+   * @return 
+   */
   BooleanField.prototype.onChange = function(evt){
     this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   BooleanField.prototype.setValue = function(value, supressEvent){
     this.input.get(0).checked = value === this.configs.checked_value;
 
@@ -2118,13 +2885,19 @@ metaScore.namespace('editor.field').Boolean = (function () {
 
 })();
 /**
- * BorderRadiusrField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class BorderRadius
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').BorderRadius = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function BorderRadiusrField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2136,6 +2909,11 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
 
   metaScore.editor.Field.extend(BorderRadiusrField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   BorderRadiusrField.prototype.setupUI = function(){
     BorderRadiusrField.parent.prototype.setupUI.call(this);
 
@@ -2151,12 +2929,25 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
       .appendTo(this.input_wrapper);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   BorderRadiusrField.prototype.setValue = function(value, supressEvent){
     BorderRadiusrField.parent.prototype.setValue.call(this, value, supressEvent);
 
     this.input.attr('title', value);
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   BorderRadiusrField.prototype.onClick = function(evt){
     if(this.disabled){
       return;
@@ -2167,6 +2958,12 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
       .show();
   };
 
+  /**
+   * Description
+   * @method onOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
   BorderRadiusrField.prototype.onOverlaySubmit = function(evt){
     var value = evt.detail.value,
       overlay = evt.detail.overlay;
@@ -2174,6 +2971,12 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     this.setValue(value);
   };
 
+  /**
+   * Description
+   * @method onClearClick
+   * @param {} evt
+   * @return 
+   */
   BorderRadiusrField.prototype.onClearClick = function(evt){
     this.setValue('0px');
   };
@@ -2182,13 +2985,19 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
 
 })();
 /**
- * ButtonsField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Buttons
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Buttons = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ButtonsField(configs) {
     this.configs = this.getConfigs(configs);
     
@@ -2209,9 +3018,19 @@ metaScore.namespace('editor.field').Buttons = (function () {
 
   metaScore.editor.Field.extend(ButtonsField);
 
+  /**
+   * Description
+   * @method setValue
+   * @return 
+   */
   ButtonsField.prototype.setValue = function(){
   };
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   ButtonsField.prototype.setupUI = function(){
     var field = this;
 
@@ -2232,14 +3051,30 @@ metaScore.namespace('editor.field').Buttons = (function () {
     }, this);
   };
   
+  /**
+   * Description
+   * @method getButtons
+   * @return MemberExpression
+   */
   ButtonsField.prototype.getButtons = function(){
     return this.buttons;
   };
   
+  /**
+   * Description
+   * @method getButton
+   * @param {} key
+   * @return MemberExpression
+   */
   ButtonsField.prototype.getButton = function(key){
     return this.buttons[key];
   };
   
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   ButtonsField.prototype.enable = function(){
     this.disabled = false;
 
@@ -2248,6 +3083,11 @@ metaScore.namespace('editor.field').Buttons = (function () {
     return this;
   };
   
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   ButtonsField.prototype.disable = function(){
     this.disabled = true;
 
@@ -2260,14 +3100,19 @@ metaScore.namespace('editor.field').Buttons = (function () {
 
 })();
 /**
- * ColorField
- *
- * @requires ../metaScore.editor.field.js
- * @requires ../../helpers/metaScore.object.js
- */
+* Description
+* @class Color
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Color = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ColorField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2291,6 +3136,11 @@ metaScore.namespace('editor.field').Color = (function () {
 
   metaScore.editor.Field.extend(ColorField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   ColorField.prototype.setupUI = function(){
     ColorField.parent.prototype.setupUI.call(this);
 
@@ -2306,6 +3156,13 @@ metaScore.namespace('editor.field').Color = (function () {
       .addListener('select', metaScore.Function.proxy(this.onColorSelect, this));
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   ColorField.prototype.setValue = function(value, supressEvent){
     var rgba;
   
@@ -2323,6 +3180,12 @@ metaScore.namespace('editor.field').Color = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   ColorField.prototype.onClick = function(evt){
     if(this.disabled){
       return;
@@ -2333,6 +3196,12 @@ metaScore.namespace('editor.field').Color = (function () {
       .show();
   };
 
+  /**
+   * Description
+   * @method onColorSelect
+   * @param {} evt
+   * @return 
+   */
   ColorField.prototype.onColorSelect = function(evt){
     var value = evt.detail.value,
       overlay = evt.detail.overlay;
@@ -2340,6 +3209,12 @@ metaScore.namespace('editor.field').Color = (function () {
     this.setValue(value);
   };
 
+  /**
+   * Description
+   * @method onClearClick
+   * @param {} evt
+   * @return 
+   */
   ColorField.prototype.onClearClick = function(evt){
     this.setValue(null);
   };
@@ -2347,17 +3222,25 @@ metaScore.namespace('editor.field').Color = (function () {
   return ColorField;
 
 })();
-/* global Drupal */
 /**
- * ImageField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Image
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Image = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ImageField(configs) {
     this.configs = this.getConfigs(configs);
+
+    // fix event handlers scope
+    this.onFileSelect = metaScore.Function.proxy(this.onFileSelect, this);
 
     // call parent constructor
     ImageField.parent.call(this, this.configs);
@@ -2367,6 +3250,11 @@ metaScore.namespace('editor.field').Image = (function () {
 
   metaScore.editor.Field.extend(ImageField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   ImageField.prototype.setupUI = function(){
     ImageField.parent.prototype.setupUI.call(this);
 
@@ -2379,27 +3267,49 @@ metaScore.namespace('editor.field').Image = (function () {
       .appendTo(this.input_wrapper);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   ImageField.prototype.setValue = function(value, supressEvent){
     ImageField.parent.prototype.setValue.call(this, value, supressEvent);
 
     this.input.attr('title', value);
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   ImageField.prototype.onClick = function(evt){
     if(this.disabled){
       return;
     }
     
-    this.openBrowser(metaScore.Function.proxy(this.onFileSelect, this));
+    this.triggerEvent('filebrowser', {'callback': this.onFileSelect}, true, false);
   };
 
-  ImageField.prototype.openBrowser = function(callback){
-  };
-
+  /**
+   * Description
+   * @method onClearClick
+   * @param {} evt
+   * @return 
+   */
   ImageField.prototype.onClearClick = function(evt){
     this.setValue(null);
   };
 
+  /**
+   * Description
+   * @method onFileSelect
+   * @param {} url
+   * @return 
+   */
   ImageField.prototype.onFileSelect = function(url){
     this.setValue(url);
   };
@@ -2408,13 +3318,19 @@ metaScore.namespace('editor.field').Image = (function () {
 
 })();
 /**
- * NumberField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Number
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Number = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function NumberField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2443,6 +3359,11 @@ metaScore.namespace('editor.field').Number = (function () {
 
   metaScore.editor.Field.extend(NumberField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   NumberField.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 
@@ -2463,13 +3384,19 @@ metaScore.namespace('editor.field').Number = (function () {
 
 })();
 /**
- * SelectField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Select
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Select = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function SelectField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2488,6 +3415,11 @@ metaScore.namespace('editor.field').Select = (function () {
 
   metaScore.editor.Field.extend(SelectField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   SelectField.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 
@@ -2508,18 +3440,36 @@ metaScore.namespace('editor.field').Select = (function () {
       }, this);
   };
 
+  /**
+   * Description
+   * @method addOption
+   * @param {} value
+   * @param {} text
+   * @return ThisExpression
+   */
   SelectField.prototype.addOption = function(value, text){
     this.input.append(new metaScore.Dom('<option/>', {'value': value, 'text': text}));
 
     return this;
   };
 
+  /**
+   * Description
+   * @method removeOptions
+   * @return ThisExpression
+   */
   SelectField.prototype.removeOptions = function(){
     this.input.empty();
 
     return this;
   };
 
+  /**
+   * Description
+   * @method removeOption
+   * @param {} value
+   * @return ThisExpression
+   */
   SelectField.prototype.removeOption = function(value){
     this.input.child('[value="'+ value +'"]').remove();
 
@@ -2530,13 +3480,19 @@ metaScore.namespace('editor.field').Select = (function () {
 
 })();
 /**
- * TextField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Text
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Text = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TextField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2559,13 +3515,19 @@ metaScore.namespace('editor.field').Text = (function () {
 
 })();
 /**
- * TextareaField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Textarea
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Textarea = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TextareaField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2584,6 +3546,11 @@ metaScore.namespace('editor.field').Textarea = (function () {
 
   metaScore.editor.Field.extend(TextareaField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   TextareaField.prototype.setupUI = function(){
     var uid = 'field-'+ metaScore.String.uuid(5);
 
@@ -2604,13 +3571,19 @@ metaScore.namespace('editor.field').Textarea = (function () {
 
 })();
 /**
- * TimeField
- *
- * @requires ../metaScore.editor.field.js
- */
+* Description
+* @class Time
+* @namespace metaScore.editor.field
+* @extends metaScore.editor.Field
+*/
 
 metaScore.namespace('editor.field').Time = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TimeField(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2645,6 +3618,11 @@ metaScore.namespace('editor.field').Time = (function () {
 
   metaScore.editor.Field.extend(TimeField);
 
+  /**
+   * Description
+   * @method setupUI
+   * @return 
+   */
   TimeField.prototype.setupUI = function(){
     var buttons;
 
@@ -2708,10 +3686,22 @@ metaScore.namespace('editor.field').Time = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onChange
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onChange = function(evt){
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
 
+  /**
+   * Description
+   * @method onInput
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onInput = function(evt){
     var active = this.isActive(),
       centiseconds_val, seconds_val, minutes_val, hours_val;
@@ -2731,14 +3721,33 @@ metaScore.namespace('editor.field').Time = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onInClick
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onInClick = function(evt){
     this.triggerEvent('valuein');
   };
 
+  /**
+   * Description
+   * @method onOutClick
+   * @param {} evt
+   * @return 
+   */
   TimeField.prototype.onOutClick = function(evt){
     this.triggerEvent('valueout');
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} milliseconds
+   * @param {} supressEvent
+   * @return 
+   */
   TimeField.prototype.setValue = function(milliseconds, supressEvent){
     var centiseconds_val, seconds_val, minutes_val, hours_val;
 
@@ -2815,8 +3824,11 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  *
-  */
+   * Description
+   * @method setMin
+   * @param {} min
+   * @return ThisExpression
+   */
   TimeField.prototype.setMin = function(min){
     this.configs.min = min;
     
@@ -2828,8 +3840,11 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  *
-  */
+   * Description
+   * @method setMax
+   * @param {} max
+   * @return ThisExpression
+   */
   TimeField.prototype.setMax = function(max){
     this.configs.max = max;
     
@@ -2841,16 +3856,19 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  *
-  */
+   * Description
+   * @method isActive
+   * @return LogicalExpression
+   */
   TimeField.prototype.isActive = function(){
     return !this.checkbox || this.checkbox.is(":checked");
   };
 
   /**
-  * Disable the button
-  * @returns {object} the XMLHttp object
-  */
+   * Disable the button
+   * @method disable
+   * @return ThisExpression
+   */
   TimeField.prototype.disable = function(){
     this.disabled = true;
 
@@ -2876,11 +3894,10 @@ metaScore.namespace('editor.field').Time = (function () {
   };
 
   /**
-  * Enable the button
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Enable the button
+   * @method enable
+   * @return ThisExpression
+   */
   TimeField.prototype.enable = function(){
     var active = this.isActive();
 
@@ -2911,20 +3928,19 @@ metaScore.namespace('editor.field').Time = (function () {
 
 })();
 /**
- * Block
- *
- * @requires ../metaScore.editor.panel.js
- * @requires ../field/metaScore.editor.field.numberfield.js
- * @requires ../field/metaScore.editor.field.colorfield.js
- * @requires ../field/metaScore.editor.field.imagefield.js
- * @requires ../field/metaScore.editor.field.booleanfield.js
- * @requires ../../helpers/metaScore.string.js
- * @requires ../../helpers/metaScore.resizable.js
- * @requires ../../helpers/metaScore.resizable.js
- */
+* Description
+* @class Block
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
 
 metaScore.namespace('editor.panel').Block = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function BlockPanel(configs) {
     // call parent constructor
     BlockPanel.parent.call(this, configs);
@@ -2942,6 +3958,11 @@ metaScore.namespace('editor.panel').Block = (function () {
 
   metaScore.editor.Panel.extend(BlockPanel);
 
+  /**
+   * Description
+   * @method getDraggable
+   * @return Literal
+   */
   BlockPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
     
@@ -2986,6 +4007,11 @@ metaScore.namespace('editor.panel').Block = (function () {
     return false;
   };
 
+  /**
+   * Description
+   * @method getResizable
+   * @return ObjectExpression
+   */
   BlockPanel.prototype.getResizable = function(){
     var component = this.getComponent();
 
@@ -3003,20 +4029,19 @@ metaScore.namespace('editor.panel').Block = (function () {
 
 })();
 /**
- * Block
- *
- * @requires ../metaScore.editor.panel.js
- * @requires ../field/metaScore.editor.field.numberfield.js
- * @requires ../field/metaScore.editor.field.colorfield.js
- * @requires ../field/metaScore.editor.field.imagefield.js
- * @requires ../field/metaScore.editor.field.booleanfield.js
- * @requires ../../helpers/metaScore.string.js
- * @requires ../../helpers/metaScore.resizable.js
- * @requires ../../helpers/metaScore.resizable.js
- */
+* Description
+* @class Element
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
 
 metaScore.namespace('editor.panel').Element = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ElementPanel(configs) {
     // call parent constructor
     ElementPanel.parent.call(this, configs);
@@ -3036,6 +4061,11 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   metaScore.editor.Panel.extend(ElementPanel);
 
+  /**
+   * Description
+   * @method getDraggable
+   * @return ObjectExpression
+   */
   ElementPanel.prototype.getDraggable = function(){
     var component = this.getComponent();
     
@@ -3050,6 +4080,11 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
   };
 
+  /**
+   * Description
+   * @method getResizable
+   * @return ObjectExpression
+   */
   ElementPanel.prototype.getResizable = function(){
     var component = this.getComponent();
     
@@ -3067,20 +4102,19 @@ metaScore.namespace('editor.panel').Element = (function () {
 
 })();
 /**
- * Block
- *
- * @requires ../metaScore.editor.panel.js
- * @requires ../field/metaScore.editor.field.numberfield.js
- * @requires ../field/metaScore.editor.field.colorfield.js
- * @requires ../field/metaScore.editor.field.imagefield.js
- * @requires ../field/metaScore.editor.field.booleanfield.js
- * @requires ../../helpers/metaScore.string.js
- * @requires ../../helpers/metaScore.resizable.js
- * @requires ../../helpers/metaScore.resizable.js
- */
+* Description
+* @class Page
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
 
 metaScore.namespace('editor.panel').Page = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function PagePanel(configs) {
     // call parent constructor
     PagePanel.parent.call(this, configs);
@@ -3102,11 +4136,19 @@ metaScore.namespace('editor.panel').Page = (function () {
 
 })();
 /**
- * Text
- */
+* Description
+* @class Text
+* @namespace metaScore.editor.panel
+* @extends metaScore.editor.Panel
+*/
 
 metaScore.namespace('editor.panel').Text = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function TextPanel(configs) {
     // call parent constructor
     TextPanel.parent.call(this, configs);
@@ -3131,6 +4173,11 @@ metaScore.namespace('editor.panel').Text = (function () {
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           if(value){
             this.lock();
@@ -3145,6 +4192,11 @@ metaScore.namespace('editor.panel').Text = (function () {
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color')
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('foreColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
@@ -3154,6 +4206,11 @@ metaScore.namespace('editor.panel').Text = (function () {
         'configs': {
           'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color')
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('backColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
         }
@@ -3176,6 +4233,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             "'Lucida Console', Monaco, monospace": 'Lucida Console'
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('fontName', value);
         }
@@ -3193,6 +4255,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             "pre": metaScore.Locale.t('editor.panel.Text.formatBlock.pre', 'Formatted')
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('formatBlock', value);
         }
@@ -3211,6 +4278,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             "7": '7'
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.execCommand('fontSize', value);
         }
@@ -3274,6 +4346,11 @@ metaScore.namespace('editor.panel').Text = (function () {
             }
           }
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           if(value === 'link'){
             var link = metaScore.Dom.closest(this.getSelectedElement(), 'a');
@@ -3294,6 +4371,12 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   metaScore.editor.Panel.extend(TextPanel);
 
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onFieldValueChange = function(evt){
     var component = this.getComponent(),
       name, value;
@@ -3310,6 +4393,13 @@ metaScore.namespace('editor.panel').Text = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setComponent
+   * @param {} component
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   TextPanel.prototype.setComponent = function(component, supressEvent){
     if(component !== this.getComponent()){
       if(!component){
@@ -3333,6 +4423,12 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method unsetComponent
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   TextPanel.prototype.unsetComponent = function(supressEvent){
     var component = this.getComponent();
     
@@ -3349,6 +4445,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method lock
+   * @return ThisExpression
+   */
   TextPanel.prototype.lock = function(){
     var component = this.getComponent();
     
@@ -3375,6 +4476,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method unlock
+   * @return ThisExpression
+   */
   TextPanel.prototype.unlock = function(){
     var component = this.getComponent();
     
@@ -3404,20 +4510,43 @@ metaScore.namespace('editor.panel').Text = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return CallExpression
+   */
   TextPanel.prototype.disable = function(){    
     this.lock();
     
     return TextPanel.parent.prototype.disable.call(this);
   };
 
+  /**
+   * Description
+   * @method onComponentContentsDblClick
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsDblClick = function(evt){
     this.updateFieldValue('locked', false);
   };
 
+  /**
+   * Description
+   * @method onComponentContentsClick
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsClick = function(evt){
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onComponentContentsKey
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsKey = function(evt){
     if(evt.type === 'keyup'){
       this.updateButtons();
@@ -3426,10 +4555,22 @@ metaScore.namespace('editor.panel').Text = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onComponentContentsMouseup
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onComponentContentsMouseup = function(evt){
     this.updateButtons();
   };
 
+  /**
+   * Description
+   * @method updateButtons
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.updateButtons = function(evt){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
@@ -3459,12 +4600,23 @@ metaScore.namespace('editor.panel').Text = (function () {
     }, this);
   };
 
+  /**
+   * Description
+   * @method onLinkOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
   TextPanel.prototype.onLinkOverlaySubmit = function(evt){
     var url = evt.detail.url;
 
     this.execCommand('createLink', url);
   };
 
+  /**
+   * Description
+   * @method getSelectedElement
+   * @return element
+   */
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
@@ -3484,6 +4636,13 @@ metaScore.namespace('editor.panel').Text = (function () {
     return element;
   };
 
+  /**
+   * Description
+   * @method execCommand
+   * @param {} command
+   * @param {} value
+   * @return 
+   */
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
       contents =  component.contents.get(0),
@@ -3500,18 +4659,19 @@ metaScore.namespace('editor.panel').Text = (function () {
 
 })();
 /**
- * Toolbar
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Toolbar
+* @namespace metaScore.editor.panel
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor.panel').Toolbar = (function(){
 
   /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
+   * Initialize
+   * @constructor
+   * @param {} configs
+   */
   function Toolbar(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -3566,22 +4726,48 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
   metaScore.Dom.extend(Toolbar);
 
+  /**
+   * Description
+   * @method getToggle
+   * @return MemberExpression
+   */
   Toolbar.prototype.getToggle = function(){
     return this.toggle;
   };
 
+  /**
+   * Description
+   * @method getTitle
+   * @return MemberExpression
+   */
   Toolbar.prototype.getTitle = function(){
     return this.title;
   };
 
+  /**
+   * Description
+   * @method getSelector
+   * @return MemberExpression
+   */
   Toolbar.prototype.getSelector = function(){
     return this.selector;
   };
 
+  /**
+   * Description
+   * @method getMenu
+   * @return MemberExpression
+   */
   Toolbar.prototype.getMenu = function(){
     return this.menu;
   };
 
+  /**
+   * Description
+   * @method addButton
+   * @param {} action
+   * @return button
+   */
   Toolbar.prototype.addButton = function(action){
     var button = new metaScore.editor.Button().data('action', action)
       .appendTo(this.buttons);
@@ -3589,10 +4775,21 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return button;
   };
 
+  /**
+   * Description
+   * @method getButton
+   * @param {} action
+   * @return CallExpression
+   */
   Toolbar.prototype.getButton = function(action){
     return this.buttons.children('[data-action="'+ action +'"]');
   };
 
+  /**
+   * Description
+   * @method emptySelector
+   * @return ThisExpression
+   */
   Toolbar.prototype.emptySelector = function(){
     if(this.selector){
       this.selector.removeOptions();
@@ -3601,6 +4798,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method addSelectorOption
+   * @param {} value
+   * @param {} text
+   * @return ThisExpression
+   */
   Toolbar.prototype.addSelectorOption = function(value, text){
     if(this.selector){
       this.selector.addOption(value, text);
@@ -3609,6 +4813,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method setSelectorValue
+   * @param {} value
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Toolbar.prototype.setSelectorValue = function(value, supressEvent){
     if(this.selector){
       this.selector.setValue(value, supressEvent);
@@ -3617,6 +4828,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleMenuItem
+   * @param {} action
+   * @param {} state
+   * @return ThisExpression
+   */
   Toolbar.prototype.toggleMenuItem = function(action, state){
     var menu = this.getMenu();
 
@@ -3631,13 +4849,19 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
 })();
 /**
- * Alert
- *
- * @requires ./metaScore.editor.Overlay.js
- */
+* Description
+* @class Alert
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').Alert = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Alert(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -3660,6 +4884,11 @@ metaScore.namespace('editor.overlay').Alert = (function () {
 
   metaScore.editor.Overlay.extend(Alert);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Alert.prototype.setupDOM = function(){
     // call parent method
     Alert.parent.prototype.setupDOM.call(this);
@@ -3683,10 +4912,23 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     
   };
 
+  /**
+   * Description
+   * @method setText
+   * @param {} str
+   * @return 
+   */
   Alert.prototype.setText = function(str){
     this.text.text(str);
   };
 
+  /**
+   * Description
+   * @method addButton
+   * @param {} action
+   * @param {} label
+   * @return button
+   */
   Alert.prototype.addButton = function(action, label){
     var button = new metaScore.editor.Button()
       .setLabel(label)
@@ -3696,6 +4938,12 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     return button;
   };
 
+  /**
+   * Description
+   * @method onButtonClick
+   * @param {} evt
+   * @return 
+   */
   Alert.prototype.onButtonClick = function(evt){
     var action = new metaScore.Dom(evt.target).data('action');
 
@@ -3710,13 +4958,19 @@ metaScore.namespace('editor.overlay').Alert = (function () {
 
 })();
 /**
- * BorderRadius
- *
- * @requires ../metaScore.editor.Ovelay.js
- */
+* Description
+* @class BorderRadius
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function BorderRadius(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -3740,6 +4994,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
   metaScore.editor.Overlay.extend(BorderRadius);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   BorderRadius.prototype.setupDOM = function(){
     var contents;
 
@@ -3807,6 +5066,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onValueChange
+   * @return 
+   */
   BorderRadius.prototype.onValueChange = function(){  
     var radius  = '';
     
@@ -3823,6 +5087,12 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     this.preview.css('border-radius', radius);
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} val
+   * @return ThisExpression
+   */
   BorderRadius.prototype.setValue = function(val){
     var matches,
       values = {
@@ -3881,10 +5151,21 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method getValue
+   * @return CallExpression
+   */
   BorderRadius.prototype.getValue = function(){
     return this.preview.css('border-radius');
   };
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   BorderRadius.prototype.onApplyClick = function(evt){  
     this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
     this.hide();
@@ -3896,14 +5177,19 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
 })();
 /**
- * ColorSelector
- *
- * @requires ../metaScore.editor.overlay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class ColorSelector
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function ColorSelector(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -3932,6 +5218,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   metaScore.editor.Overlay.extend(ColorSelector);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   ColorSelector.prototype.setupDOM = function(){
     // call parent method
     ColorSelector.parent.prototype.setupDOM.call(this);
@@ -4006,6 +5297,12 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   };
 
+  /**
+   * Description
+   * @method setValue
+   * @param {} val
+   * @return ThisExpression
+   */
   ColorSelector.prototype.setValue = function(val){
     this.previous_value = val;
 
@@ -4016,6 +5313,15 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method updateValue
+   * @param {} val
+   * @param {} refillAlpha
+   * @param {} updatePositions
+   * @param {} updateInputs
+   * @return 
+   */
   ColorSelector.prototype.updateValue = function(val, refillAlpha, updatePositions, updateInputs){
 
     var hsv;
@@ -4063,6 +5369,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   };
 
+  /**
+   * Description
+   * @method fillPrevious
+   * @return 
+   */
   ColorSelector.prototype.fillPrevious = function(){
     var context = this.controls.previous.get(0).getContext('2d');
 
@@ -4071,6 +5382,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method fillCurrent
+   * @return 
+   */
   ColorSelector.prototype.fillCurrent = function(){
     var context = this.controls.current.get(0).getContext('2d');
 
@@ -4079,6 +5395,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method fillGradient
+   * @return 
+   */
   ColorSelector.prototype.fillGradient = function(){
     var context = this.gradient.canvas.get(0).getContext('2d'),
       fill;
@@ -4109,6 +5430,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method fillAlpha
+   * @return 
+   */
   ColorSelector.prototype.fillAlpha = function(){
     var context = this.alpha.canvas.get(0).getContext('2d'),
       fill;
@@ -4124,6 +5450,12 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     context.fillRect(0, 0, context.canvas.width, context.canvas.height);
   };
 
+  /**
+   * Description
+   * @method onControlInput
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onControlInput = function(evt){
     var rgba, hsv;
 
@@ -4135,18 +5467,36 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }, true, true, false);
   };
 
+  /**
+   * Description
+   * @method onGradientMousedown
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onGradientMousedown = function(evt){
     this.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onGradientMouseup
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onGradientMouseup = function(evt){
     this.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onGradientClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onGradientClick = function(evt){
     var offset = evt.target.getBoundingClientRect(),
       colorX = evt.pageX - offset.left,
@@ -4169,18 +5519,36 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   ColorSelector.prototype.onGradientMousemove = ColorSelector.prototype.onGradientClick;
 
+  /**
+   * Description
+   * @method onAlphaMousedown
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onAlphaMousedown = function(evt){
     this.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onAlphaMouseup
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onAlphaMouseup = function(evt){
     this.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
 
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onAlphaClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onAlphaClick = function(evt){
     var offset = evt.target.getBoundingClientRect(),
       colorY = evt.pageY - offset.top,
@@ -4199,12 +5567,24 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
   ColorSelector.prototype.onAlphaMousemove = ColorSelector.prototype.onAlphaClick;
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onApplyClick = function(evt){
     this.triggerEvent('select', {'overlay': this, 'value': this.value}, true, false);
 
     this.hide();
   };
 
+  /**
+   * Description
+   * @method onCancelClick
+   * @param {} evt
+   * @return 
+   */
   ColorSelector.prototype.onCancelClick = function(evt){
     this.hide();
   };
@@ -4213,14 +5593,19 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
 })();
 /**
- * GuideInfo
- *
- * @requires ../metaScore.editor.Ovelay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class GuideInfo
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function GuideInfo(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -4244,6 +5629,11 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
   metaScore.editor.Overlay.extend(GuideInfo);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   GuideInfo.prototype.setupDOM = function(){
     var contents;
 
@@ -4288,6 +5678,12 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
   };
 
+  /**
+   * Description
+   * @method setValues
+   * @param {} data
+   * @return 
+   */
   GuideInfo.prototype.setValues = function(data){
     this.fields.title.setValue(data.title || null);
     this.fields.description.setValue(data.description || null);
@@ -4295,6 +5691,11 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     this.fields.css.setValue(data.css || null);
   };
 
+  /**
+   * Description
+   * @method getValues
+   * @return ObjectExpression
+   */
   GuideInfo.prototype.getValues = function(){
     return {
       'title': this.fields.title.getValue(),
@@ -4304,16 +5705,34 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
     };
   };
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   GuideInfo.prototype.onApplyClick = function(evt){
     this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
     this.hide();
   };
 
-  GuideInfo.prototype.onCancelClick = GuideInfo.prototype.onCloseClick = function(evt){
+  GuideInfo.prototype.onCancelClick = 
+/**
+  * Description
+  * @method onCloseClick
+  * @param {} evt
+  * @return 
+  */
+ GuideInfo.prototype.onCloseClick = function(evt){
     this.setValues(this.previousValues);
     this.hide();
   };
 
+  /**
+   * Description
+   * @method show
+   * @return CallExpression
+   */
   GuideInfo.prototype.show = function(){
     this.previousValues = this.getValues();
 
@@ -4324,14 +5743,19 @@ metaScore.namespace('editor.overlay').GuideInfo = (function () {
 
 })();
 /**
- * GuideSelector
- *
- * @requires ../metaScore.editor.overlay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class GuideSelector
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function GuideSelector(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -4365,6 +5789,11 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
   metaScore.editor.Overlay.extend(GuideSelector);
 
+  /**
+   * Description
+   * @method show
+   * @return 
+   */
   GuideSelector.prototype.show = function(){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
@@ -4376,6 +5805,12 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     });
   };
 
+  /**
+   * Description
+   * @method onLoadSuccess
+   * @param {} xhr
+   * @return 
+   */
   GuideSelector.prototype.onLoadSuccess = function(xhr){
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
@@ -4415,9 +5850,20 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     this.appendTo(this.configs.parent);
   };
 
+  /**
+   * Description
+   * @method onLoadError
+   * @return 
+   */
   GuideSelector.prototype.onLoadError = function(){
   };
 
+  /**
+   * Description
+   * @method onGuideClick
+   * @param {} guide
+   * @return 
+   */
   GuideSelector.prototype.onGuideClick = function(guide){
     this.triggerEvent('select', {'overlay': this, 'guide': guide}, true, false);
 
@@ -4428,14 +5874,19 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
 })();
 /**
- * LinkEditor
- *
- * @requires ../metaScore.editor.Ovelay.js
- * @requires ../../helpers/metaScore.ajax.js
- */
+* Description
+* @class LinkEditor
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function LinkEditor(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -4470,6 +5921,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   metaScore.editor.Overlay.extend(LinkEditor);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   LinkEditor.prototype.setupDOM = function(){
     var contents;
 
@@ -4535,6 +5991,12 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   };
 
+  /**
+   * Description
+   * @method setValuesFromLink
+   * @param {} link
+   * @return 
+   */
   LinkEditor.prototype.setValuesFromLink = function(link){
     var matches;
 
@@ -4554,6 +6016,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method toggleFields
+   * @return 
+   */
   LinkEditor.prototype.toggleFields = function(){
     var type = this.fields.type.getValue();
 
@@ -4584,10 +6051,22 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
   };
 
+  /**
+   * Description
+   * @method onTypeChange
+   * @param {} evt
+   * @return 
+   */
   LinkEditor.prototype.onTypeChange = function(evt){
     this.toggleFields();
   };
 
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
   LinkEditor.prototype.onApplyClick = function(evt){
     var type = this.fields.type.getValue(),
       url;
@@ -4611,6 +6090,12 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.hide();
   };
 
+  /**
+   * Description
+   * @method onCancelClick
+   * @param {} evt
+   * @return 
+   */
   LinkEditor.prototype.onCancelClick = function(evt){
     this.hide();
   };
@@ -4619,13 +6104,19 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
 })();
 /**
- * LoadMask
- *
- * @requires ./metaScore.editor.Overlay.js
- */
+* Description
+* @class LoadMask
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').LoadMask = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function LoadMask(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -4653,18 +6144,19 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
 
 })();
 /**
- * Toolbar
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Toolbar
+* @namespace metaScore.editor.overlay
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('editor.overlay').Toolbar = (function(){
 
   /**
-  * Initialize
-  * @param {object} a configuration object
-  * @returns {void}
-  */
+   * Initialize
+   * @constructor
+   * @param {} configs
+   */
   function Toolbar(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -4691,10 +6183,21 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
 
   metaScore.Dom.extend(Toolbar);
 
+  /**
+   * Description
+   * @method getTitle
+   * @return MemberExpression
+   */
   Toolbar.prototype.getTitle = function(){
     return this.title;
   };
 
+  /**
+   * Description
+   * @method addButton
+   * @param {} action
+   * @return button
+   */
   Toolbar.prototype.addButton = function(action){
     var button = new metaScore.editor.Button().data('action', action)
       .appendTo(this.buttons);
@@ -4702,6 +6205,12 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     return button;
   };
 
+  /**
+   * Description
+   * @method getButton
+   * @param {} action
+   * @return CallExpression
+   */
   Toolbar.prototype.getButton = function(action){
     return this.buttons.children('[data-action="'+ action +'"]');
   };
@@ -4710,11 +6219,19 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
 
 })();
 /**
- * iFrame
- */
+* Description
+* @class iFrame
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
 
 metaScore.namespace('editor.overlay').iFrame = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function iFrame(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -4738,6 +6255,11 @@ metaScore.namespace('editor.overlay').iFrame = (function () {
 
   metaScore.editor.Overlay.extend(iFrame);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   iFrame.prototype.setupDOM = function(){
     // call parent method
     iFrame.parent.prototype.setupDOM.call(this);

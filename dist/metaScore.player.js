@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-03-31 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-06 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -62,6 +62,12 @@ if(Element && !Element.prototype.matches){
 
 // Element.closest
 if(Element && !Element.prototype.closest){
+  /**
+   * Description
+   * @method closest
+   * @param {} selector
+   * @return Literal
+   */
   Element.prototype.closest = function closest(selector) {
     var node = this;
 
@@ -81,6 +87,13 @@ if(Element && !Element.prototype.closest){
 // CustomEvent constructor
 // https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
 if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
+  /**
+   * Description
+   * @method CustomEvent
+   * @param {} event
+   * @param {} params
+   * @return evt
+   */
   window.CustomEvent = function(event, params) {
     var evt;
     
@@ -114,6 +127,13 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   }
 
   if (!window.requestAnimationFrame){
+    /**
+     * Description
+     * @method requestAnimationFrame
+     * @param {} callback
+     * @param {} element
+     * @return id
+     */
     window.requestAnimationFrame = function(callback, element) {
       var currTime = new Date().getTime();
       var timeToCall = Math.max(0, 16 - (currTime - lastTime));
@@ -124,24 +144,49 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   }
 
   if (!window.cancelAnimationFrame){
+    /**
+     * Description
+     * @method cancelAnimationFrame
+     * @param {} id
+     * @return 
+     */
     window.cancelAnimationFrame = function(id) {
       clearTimeout(id);
     };
   }
 }());
 /**
-* Core
+* The code class
+* Implements global helper methods
+* @class metaScore
 */
+
 metaScore = global.metaScore = {
 
+  /**
+   * Returns the current version identifier
+   * @method getVersion
+   * @return {String} The version identifier
+   */
   getVersion: function(){
     return "0.0.2";
   },
 
+  /**
+   * Returns the current revision identifier
+   * @method getRevision
+   * @return {String} The revision identifier
+   */
   getRevision: function(){
-    return "6597cc";
+    return "9a14bf";
   },
 
+  /**
+   * Extends the metaScore namespace
+   * @method namespace
+   * @param {String} The namespace to add
+   * @return {Object} The extended namespace
+   */
   namespace: function(str){
     var parent = this,
       parts = str.split('.'),
@@ -158,10 +203,11 @@ metaScore = global.metaScore = {
 
 };
 /**
- * Base Class
- *
- * @requires metaScore.core.js
- */
+* The base class
+* Implements a class extension mechanism and defines shared methods 
+* @class Class
+* @namespace metaScore
+*/
 
 metaScore.Class = (function () {
 
@@ -173,6 +219,12 @@ metaScore.Class = (function () {
 
   Class.defaults = {};
 
+  /**
+   * Extends a class by another
+   * @method extend
+   * @param {Object} child
+   * @return 
+   */
   Class.extend = function(child){
     child.prototype = Object.create(this.prototype, {
       constructor: {
@@ -194,6 +246,12 @@ metaScore.Class = (function () {
     }
   };
 
+  /**
+   * Extends the passed configs with default configs
+   * @method getConfigs
+   * @param {Object} configs
+   * @return configs
+   */
   Class.prototype.getConfigs = function(configs){
     configs = configs || {};
 
@@ -210,13 +268,18 @@ metaScore.Class = (function () {
 
 })();
 /**
- * Evented
- *
- * @requires metaScore.class.js
- */
+* A helper class for event handling
+* @class Evented
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Evented = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Evented() {
     // call parent constructor
     Evented.parent.call(this);
@@ -226,6 +289,13 @@ metaScore.Evented = (function () {
 
   metaScore.Class.extend(Evented);
 
+  /**
+   * Description
+   * @method addListener
+   * @param {} type
+   * @param {} listener
+   * @return ThisExpression
+   */
   Evented.prototype.addListener = function(type, listener){
     if (typeof this.listeners[type] === "undefined"){
       this.listeners[type] = [];
@@ -236,6 +306,13 @@ metaScore.Evented = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method removeListener
+   * @param {} type
+   * @param {} listener
+   * @return ThisExpression
+   */
   Evented.prototype.removeListener = function(type, listener){
     if(this.listeners[type] instanceof Array){
       var listeners = this.listeners[type];
@@ -250,6 +327,15 @@ metaScore.Evented = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method triggerEvent
+   * @param {} type
+   * @param {} data
+   * @param {} bubbling
+   * @param {} cancelable
+   * @return ThisExpression
+   */
   Evented.prototype.triggerEvent = function(type, data, bubbling, cancelable){
     var listeners, event;
 
@@ -276,24 +362,27 @@ metaScore.Evented = (function () {
 
 })();
 /**
- * Ajax
- *
- * @requires ../metaScore.class.js
- * @requires metaScore.object.js
- * @requires metaScore.var.js
- */
+* Description
+* @class Ajax
+* @extends metaScore.Class
+*/
 
 metaScore.Ajax = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Ajax() {
   }
 
   metaScore.Class.extend(Ajax);
 
   /**
-  * Create an XMLHttp object
-  * @returns {object} the XMLHttp object
-  */
+   * Create an XMLHttp object
+   * @method createXHR
+   * @return 
+   */
   Ajax.createXHR = function() {
 
     var xhr, i, l,
@@ -324,11 +413,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp request
+   * @method send
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return xhr
+   */
   Ajax.send = function(url, options) {
 
     var key,
@@ -364,6 +454,11 @@ metaScore.Ajax = (function () {
       xhr.setRequestHeader(key, value);
     });
 
+    /**
+     * Description
+     * @method onreadystatechange
+     * @return 
+     */
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if(metaScore.Var.is(options.complete, 'function')){
@@ -387,11 +482,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp GET request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp GET request
+   * @method get
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
   Ajax.get = function(url, options) {
 
     metaScore.Object.extend(options, {'method': 'GET'});
@@ -401,11 +497,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp POST request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp POST request
+   * @method post
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
   Ajax.post = function(url, options) {
 
     metaScore.Object.extend(options, {'method': 'POST'});
@@ -415,11 +512,12 @@ metaScore.Ajax = (function () {
   };
 
   /**
-  * Send an XMLHttp PUT request
-  * @param {string} the url of the request
-  * @param {object} options to set for the request; see the defaults variable
-  * @returns {object} the XMLHttp object
-  */
+   * Send an XMLHttp PUT request
+   * @method put
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
   Ajax.put = function(url, options) {
 
     metaScore.Object.extend(options, {'method': 'PUT'});
@@ -432,24 +530,30 @@ metaScore.Ajax = (function () {
 
 })();
 /**
- * Array
- *
- * @requires ../metaScore.class.js
- */
+* Description
+* @class Array
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Array = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Array() {
   }
 
   metaScore.Class.extend(Array);
 
   /**
-  * Checks if a value is in an array
-  * @param {mixed} the value to check
-  * @param {array} the array
-  * @returns {number} the index of the value if found, -1 otherwise
-  */
+   * Checks if a value is in an array
+   * @method inArray
+   * @param {} value
+   * @param {} arr
+   * @return UnaryExpression
+   */
   Array.inArray = function (value, arr) {
     var len, i = 0;
 
@@ -472,19 +576,21 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Copies an array
-  * @param {array} the original array
-  * @returns {array} a copy of the array
-  */
+   * Copies an array
+   * @method copy
+   * @param {} arr
+   * @return CallExpression
+   */
   Array.copy = function (arr) {
     return [].concat(arr);
   };
 
   /**
-  * Shuffles elements in an array
-  * @param {array} the original array
-  * @returns {array} a copy of the array with it's elements shuffled
-  */
+   * Shuffles elements in an array
+   * @method shuffle
+   * @param {} arr
+   * @return shuffled
+   */
   Array.shuffle = function(arr) {
 
     var shuffled = Array.copy(arr);
@@ -498,10 +604,11 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Return new array with duplicate values removed
-  * @param {array} the original array
-  * @returns {array} a copy of the array with the duplicate values removed
-  */
+   * Return new array with duplicate values removed
+   * @method unique
+   * @param {} arr
+   * @return unique
+   */
   Array.unique = function(arr) {
 
     var unique = [];
@@ -522,11 +629,13 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Call a function on each element of an array
-  * @param {array} the array
-  * @param {function} the function to call
-  * @returns {array} a copy of the array
-  */
+   * Call a function on each element of an array
+   * @method each
+   * @param {} arr
+   * @param {} callback
+   * @param {} scope
+   * @return arr
+   */
   Array.each = function(arr, callback, scope) {
 
     var i = 0,
@@ -547,11 +656,12 @@ metaScore.Array = (function () {
   };
 
   /**
-  * Remove an element from an array
-  * @param {array} the array
-  * @param {mixed} the element to remove
-  * @returns {array} a copy of the array
-  */
+   * Remove an element from an array
+   * @method remove
+   * @param {} arr
+   * @param {} element
+   * @return arr
+   */
   Array.remove = function(arr, element){
     var index = Array.inArray(element, arr);
 
@@ -567,18 +677,29 @@ metaScore.Array = (function () {
 
 })();
 /**
- * Color
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class Color
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Color = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Color() {
   }
 
   metaScore.Class.extend(Color);
 
+  /**
+   * Description
+   * @method rgb2hsv
+   * @param {} rgb
+   * @return ObjectExpression
+   */
   Color.rgb2hsv = function (rgb){
     var r = rgb.r, g = rgb.g, b = rgb.b,
       max = Math.max(r, g, b),
@@ -617,6 +738,12 @@ metaScore.Color = (function () {
     };
   };
 
+  /**
+   * Description
+   * @method parse
+   * @param {} color
+   * @return rgba
+   */
   Color.parse = function(color){
     var rgba, matches;
     
@@ -678,17 +805,18 @@ metaScore.Color = (function () {
 
 })();
 /**
- * Dom
- *
- * @requires ../metaScore.base.js
- * @requires ../metaScore.polyfill.js
- * @requires metaScore.array.js
- * @requires metaScore.object.js
- * @requires metaScore.var.js
- */
+* Description
+* @class Dom
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Dom = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Dom() {
     var elements;
 
@@ -725,17 +853,22 @@ metaScore.Dom = (function () {
   Dom.camelRe = /-([\da-z])/gi;
 
   /**
-  * Helper function used by the camel function
-  */
+   * Helper function used by the camel function
+   * @method camelReplaceFn
+   * @param {} all
+   * @param {} letter
+   * @return CallExpression
+   */
   Dom.camelReplaceFn = function(all, letter) {
     return letter.toUpperCase();
   };
 
   /**
-  * Normaliz a string to Camel Case; used for CSS properties
-  * @param {string} the original string
-  * @returns {string} the normalized string
-  */
+   * Normaliz a string to Camel Case; used for CSS properties
+   * @method camel
+   * @param {} str
+   * @return CallExpression
+   */
   Dom.camel = function(str){
     return str.replace(Dom.camelRe, Dom.camelReplaceFn);
   };
@@ -755,11 +888,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Select a single element by selecor
-  * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements
-  * @returns {object} an HTML element
-  */
+   * Select a single element by selecor
+   * @method selectElement
+   * @param {} selector
+   * @param {} parent
+   * @return element
+   */
   Dom.selectElement = function (selector, parent) {
     var element;
 
@@ -781,11 +915,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Select elements by selecor
-  * @param {string} the selector (you can exclude elements by using ":not()" such as "div.class1:not(.class2)")
-  * @param {object} an optional parent to constrain the matched elements
-  * @returns {array} an array of HTML elements
-  */
+   * Select elements by selecor
+   * @method selectElements
+   * @param {} selector
+   * @param {} parent
+   * @return elements
+   */
   Dom.selectElements = function (selector, parent) {
     var elements;
 
@@ -810,10 +945,11 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
-  * @param {string} the HTML string
-  * @returns {object} an HTML element
-  */
+   * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+   * @method elementsFromString
+   * @param {} html
+   * @return Literal
+   */
   Dom.elementsFromString = function(html){
     var wrapMap = {
         'option': [1, "<select multiple='multiple'>", "</select>"],
@@ -856,21 +992,23 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Checks if an element has a given class
-  * @param {object} the dom element
-  * @param {string} the class to check
-  * @returns {boolean} true if the element has the given class, false otherwise
-  */
+   * Checks if an element has a given class
+   * @method hasClass
+   * @param {} element
+   * @param {} className
+   * @return CallExpression
+   */
   Dom.hasClass = function(element, className){
     return element.classList.contains(className);
   };
 
   /**
-  * Adds a given class to an element
-  * @param {object} the dom element
-  * @param {string} the class(es) to add; separated by a space
-  * @returns {void}
-  */
+   * Adds a given class to an element
+   * @method addClass
+   * @param {} element
+   * @param {} className
+   * @return 
+   */
   Dom.addClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
@@ -881,11 +1019,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Removes a given class from an element
-  * @param {object} the dom element
-  * @param {string} the class(es) to remove; separated by a space
-  * @returns {void}
-  */
+   * Removes a given class from an element
+   * @method removeClass
+   * @param {} element
+   * @param {} className
+   * @return 
+   */
   Dom.removeClass = function(element, className){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
@@ -896,12 +1035,13 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Toggles a given class on an element
-  * @param {object} the dom element
-  * @param {string} the class(es) to toggle; separated by a space
-  * @param {boolean} optional boolean; If true, the class will be added but not removed. If false, the class will be removed but not added.
-  * @returns {void}
-  */
+   * Toggles a given class on an element
+   * @method toggleClass
+   * @param {} element
+   * @param {} className
+   * @param {} force
+   * @return 
+   */
   Dom.toggleClass = function(element, className, force){
     var classNames = className.split(" "),
       i = 0, l = classNames.length;
@@ -919,13 +1059,14 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Add an event listener on an element
-  * @param {object} the dom element
-  * @param {string} the event type to register
-  * @param {function} the callback function
-  * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
-  * @returns {void}
-  */
+   * Add an event listener on an element
+   * @method addListener
+   * @param {} element
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return CallExpression
+   */
   Dom.addListener = function(element, type, callback, useCapture){
     if(useCapture === undefined){
       useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
@@ -935,13 +1076,14 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Remove an event listener from an element
-  * @param {object} the dom element
-  * @param {string} the event type to remove
-  * @param {function} the callback function
-  * @param {boolean} specifies the event phase (capturing or bubbling) to add the event handler for
-  * @returns {void}
-  */
+   * Remove an event listener from an element
+   * @method removeListener
+   * @param {} element
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return CallExpression
+   */
   Dom.removeListener = function(element, type, callback, useCapture){
     if(useCapture === undefined){
       useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
@@ -951,13 +1093,15 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Trigger an event from an element
-  * @param {object} the dom element
-  * @param {string} the event type to trigger
-  * @param {boolean} whether the event should bubble
-  * @param {boolean} whether the event is cancelable
-  * @returns {boolean} false if at least one of the event handlers which handled this event called Event.preventDefault()
-  */
+   * Trigger an event from an element
+   * @method triggerEvent
+   * @param {} element
+   * @param {} type
+   * @param {} data
+   * @param {} bubbles
+   * @param {} cancelable
+   * @return CallExpression
+   */
   Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
     var event = new CustomEvent(type, {
       'detail': data,
@@ -969,11 +1113,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets the innerHTML of an element
-  * @param {object} the dom element
-  * @param {string} an optional text to set
-  * @returns {string} the value of the innerHTML
-  */
+   * Sets or gets the innerHTML of an element
+   * @method text
+   * @param {} element
+   * @param {} value
+   * @return MemberExpression
+   */
   Dom.text = function(element, value){
     if(value !== undefined){
       element.innerHTML = value;
@@ -983,11 +1128,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets the value of an element
-  * @param {object} the dom element
-  * @param {string} an optional value to set
-  * @returns {string} the value
-  */
+   * Sets or gets the value of an element
+   * @method val
+   * @param {} element
+   * @param {} value
+   * @return MemberExpression
+   */
   Dom.val = function(element, value){
     if(value !== undefined){
       element.value = value;
@@ -997,12 +1143,13 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets an attribute on an element
-  * @param {object} the dom element
-  * @param {string} the attribute's name
-  * @param {string} an optional value to set
-  * @returns {void}
-  */
+   * Sets an attribute on an element
+   * @method attr
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
   Dom.attr = function(element, name, value){
     if(metaScore.Var.is(name, 'object')){
       metaScore.Object.each(name, function(key, value){
@@ -1036,12 +1183,14 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets a style property of an element
-  * @param {object} the dom element
-  * @param {string} the property's name
-  * @param {string} an optional value to set
-  * @returns {string} the value of the property
-  */
+   * Sets or gets a style property of an element
+   * @method css
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @param {} inline
+   * @return CallExpression
+   */
   Dom.css = function(element, name, value, inline){
     var camel, style;
 
@@ -1057,12 +1206,13 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Sets or gets a data string of an element
-  * @param {object} the dom element
-  * @param {string} the object's name
-  * @param {string} an optional value to set
-  * @returns {object} the object
-  */
+   * Sets or gets a data string of an element
+   * @method data
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @return MemberExpression
+   */
   Dom.data = function(element, name, value){
     name = this.camel(name);
 
@@ -1077,11 +1227,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Appends children to an element
-  * @param {object} the dom element
-  * @param {object/array} the child(ren) to append
-  * @returns {void}
-  */
+   * Appends children to an element
+   * @method append
+   * @param {} element
+   * @param {} children
+   * @return 
+   */
   Dom.append = function(element, children){
     if (!metaScore.Var.is(children, 'array')) {
       children = [children];
@@ -1093,11 +1244,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Inserts siblings before an element
-  * @param {object} the dom element
-  * @param {object/array} the siblings to insert
-  * @returns {void}
-  */
+   * Inserts siblings before an element
+   * @method before
+   * @param {} element
+   * @param {} siblings
+   * @return 
+   */
   Dom.before = function(element, siblings){
     if (!metaScore.Var.is(siblings, 'array')) {
       siblings = [siblings];
@@ -1109,11 +1261,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Inserts siblings after an element
-  * @param {object} the dom element
-  * @param {object/array} the siblings to insert
-  * @returns {void}
-  */
+   * Inserts siblings after an element
+   * @method after
+   * @param {} element
+   * @param {} siblings
+   * @return 
+   */
   Dom.after = function(element, siblings){
     if (!metaScore.Var.is(siblings, 'array')) {
       siblings = [siblings];
@@ -1125,10 +1278,11 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Removes all element children
-  * @param {object} the dom element
-  * @returns {void}
-  */
+   * Removes all element children
+   * @method empty
+   * @param {} element
+   * @return 
+   */
   Dom.empty = function(element){
     while(element.firstChild){
       element.removeChild(element.firstChild);
@@ -1136,10 +1290,11 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Removes an element from the dom
-  * @param {object} the dom element
-  * @returns {void}
-  */
+   * Removes an element from the dom
+   * @method remove
+   * @param {} element
+   * @return 
+   */
   Dom.remove = function(element){
     if(element.parentElement){
       element.parentElement.removeChild(element);
@@ -1147,11 +1302,12 @@ metaScore.Dom = (function () {
   };
 
   /**
-  * Checks if an element matches a selector
-  * @param {object} the dom element
-  * @param {string} the selector
-  * @returns {boolean} true if the element matches the selector, false otherwise
-  */
+   * Checks if an element matches a selector
+   * @method is
+   * @param {} el
+   * @param {} selector
+   * @return Literal
+   */
   Dom.is = function(el, selector){
     var document, win;
     
@@ -1166,6 +1322,13 @@ metaScore.Dom = (function () {
     return false;
   };
   
+  /**
+   * Description
+   * @method closest
+   * @param {} el
+   * @param {} selector
+   * @return Literal
+   */
   Dom.closest = function(el, selector){
     var document, win;
     
@@ -1184,6 +1347,12 @@ metaScore.Dom = (function () {
     return null;
   };
 
+  /**
+   * Description
+   * @method add
+   * @param {} elements
+   * @return 
+   */
   Dom.prototype.add = function(elements){
     if('length' in elements){
       for(var i = 0; i < elements.length; i++ ) {
@@ -1195,14 +1364,31 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method count
+   * @return MemberExpression
+   */
   Dom.prototype.count = function(){
     return this.elements.length;
   };
 
+  /**
+   * Description
+   * @method get
+   * @param {} index
+   * @return MemberExpression
+   */
   Dom.prototype.get = function(index){
     return this.elements[index];
   };
 
+  /**
+   * Description
+   * @method filter
+   * @param {} selector
+   * @return filtered
+   */
   Dom.prototype.filter = function(selector){
     var filtered = new Dom();
 
@@ -1215,6 +1401,12 @@ metaScore.Dom = (function () {
     return filtered;
   };
 
+  /**
+   * Description
+   * @method index
+   * @param {} selector
+   * @return found
+   */
   Dom.prototype.index = function(selector){
     var found = -1;
 
@@ -1228,6 +1420,12 @@ metaScore.Dom = (function () {
     return found;
   };
 
+  /**
+   * Description
+   * @method find
+   * @param {} selector
+   * @return descendents
+   */
   Dom.prototype.find = function(selector){
     var descendents = new Dom();
 
@@ -1238,6 +1436,12 @@ metaScore.Dom = (function () {
     return descendents;
   };
 
+  /**
+   * Description
+   * @method children
+   * @param {} selector
+   * @return children
+   */
   Dom.prototype.children = function(selector){
     var children = new Dom();
 
@@ -1252,10 +1456,22 @@ metaScore.Dom = (function () {
     return children;
   };
 
+  /**
+   * Description
+   * @method child
+   * @param {} selector
+   * @return NewExpression
+   */
   Dom.prototype.child = function(selector){
     return new Dom(this.children(selector).get(0));
   };
 
+  /**
+   * Description
+   * @method parents
+   * @param {} selector
+   * @return parents
+   */
   Dom.prototype.parents = function(selector){
     var parents = new Dom();
 
@@ -1270,12 +1486,25 @@ metaScore.Dom = (function () {
     return parents;
   };
 
+  /**
+   * Description
+   * @method each
+   * @param {} callback
+   * @param {} scope
+   * @return 
+   */
   Dom.prototype.each = function(callback, scope){
     scope = scope || this;
 
     metaScore.Array.each(this.elements, callback, scope);
   };
 
+  /**
+   * Description
+   * @method hasClass
+   * @param {} className
+   * @return found
+   */
   Dom.prototype.hasClass = function(className) {
     var found;
 
@@ -1287,6 +1516,12 @@ metaScore.Dom = (function () {
     return found;
   };
 
+  /**
+   * Description
+   * @method addClass
+   * @param {} className
+   * @return ThisExpression
+   */
   Dom.prototype.addClass = function(className) {
     this.each(function(index, element) {
       Dom.addClass(element, className);
@@ -1295,6 +1530,12 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method removeClass
+   * @param {} className
+   * @return ThisExpression
+   */
   Dom.prototype.removeClass = function(className) {
     this.each(function(index, element) {
       Dom.removeClass(element, className);
@@ -1303,6 +1544,13 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method toggleClass
+   * @param {} className
+   * @param {} force
+   * @return ThisExpression
+   */
   Dom.prototype.toggleClass = function(className, force) {
     this.each(function(index, element) {
       Dom.toggleClass(element, className, force);
@@ -1311,6 +1559,14 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Dom.prototype.addListener = function(type, callback, useCapture) {
    this.each(function(index, element) {
       Dom.addListener(element, type, callback, useCapture);
@@ -1319,6 +1575,16 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addDelegate
+   * @param {} selector
+   * @param {} type
+   * @param {} callback
+   * @param {} scope
+   * @param {} useCapture
+   * @return CallExpression
+   */
   Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
     scope = scope || this;
 
@@ -1341,6 +1607,14 @@ metaScore.Dom = (function () {
     }, useCapture);
   };
 
+  /**
+   * Description
+   * @method removeListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Dom.prototype.removeListener = function(type, callback, useCapture) {
     this.each(function(index, element) {
       Dom.removeListener(element, type, callback, useCapture);
@@ -1349,6 +1623,15 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method triggerEvent
+   * @param {} type
+   * @param {} data
+   * @param {} bubbles
+   * @param {} cancelable
+   * @return return_value
+   */
   Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
     var return_value = true;
 
@@ -1359,6 +1642,12 @@ metaScore.Dom = (function () {
     return return_value;
   };
 
+  /**
+   * Description
+   * @method text
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.text = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1370,6 +1659,12 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method val
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.val = function(value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1382,6 +1677,13 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method attr
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.attr = function(name, value) {
     if(value !== undefined || metaScore.Var.is(name, 'object')){
       this.each(function(index, element) {
@@ -1394,6 +1696,14 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method css
+   * @param {} name
+   * @param {} value
+   * @param {} inline
+   * @return 
+   */
   Dom.prototype.css = function(name, value, inline) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1406,6 +1716,13 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method data
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
   Dom.prototype.data = function(name, value) {
     if(value !== undefined){
       this.each(function(index, element) {
@@ -1418,6 +1735,12 @@ metaScore.Dom = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method append
+   * @param {} children
+   * @return ThisExpression
+   */
   Dom.prototype.append = function(children){
     if(children instanceof Dom){
       children = children.elements;
@@ -1428,6 +1751,12 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method appendTo
+   * @param {} parent
+   * @return ThisExpression
+   */
   Dom.prototype.appendTo = function(parent){
     if(!(parent instanceof Dom)){
       parent = new Dom(parent);
@@ -1442,6 +1771,13 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method insertAt
+   * @param {} parent
+   * @param {} index
+   * @return ThisExpression
+   */
   Dom.prototype.insertAt = function(parent, index){
     var element;
   
@@ -1456,6 +1792,11 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method empty
+   * @return ThisExpression
+   */
   Dom.prototype.empty = function(){
     this.each(function(index, element) {
       Dom.empty(element);
@@ -1464,30 +1805,55 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method show
+   * @return ThisExpression
+   */
   Dom.prototype.show = function(){
     this.css('display', '');
 
     return this;
   };
 
+  /**
+   * Description
+   * @method hide
+   * @return ThisExpression
+   */
   Dom.prototype.hide = function(){
     this.css('display', 'none');
 
     return this;
   };
 
+  /**
+   * Description
+   * @method focus
+   * @return ThisExpression
+   */
   Dom.prototype.focus = function(){
     this.get(0).focus();
 
     return this;
   };
 
+  /**
+   * Description
+   * @method blur
+   * @return ThisExpression
+   */
   Dom.prototype.blur = function(){
     this.get(0).blur();
 
     return this;
   };
 
+  /**
+   * Description
+   * @method remove
+   * @return ThisExpression
+   */
   Dom.prototype.remove = function(){
     if(this.triggerEvent('beforeremove') !== false){
       this.each(function(index, element) {
@@ -1500,6 +1866,12 @@ metaScore.Dom = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method is
+   * @param {} selector
+   * @return found
+   */
   Dom.prototype.is = function(selector){
     var found;
 
@@ -1511,6 +1883,12 @@ metaScore.Dom = (function () {
     return found;
   };
 
+  /**
+   * Description
+   * @method closest
+   * @param {} selector
+   * @return found
+   */
   Dom.prototype.closest = function(selector){
     var found;
 
@@ -1526,14 +1904,19 @@ metaScore.Dom = (function () {
 
 })();
 /**
- * Dom
- *
- * @requires ../metaScore.class.js
- * @requires metaScore.dom.js
- */
+* Description
+* @class Draggable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Draggable = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Draggable(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1561,6 +1944,12 @@ metaScore.Draggable = (function () {
 
   metaScore.Class.extend(Draggable);
 
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
   Draggable.prototype.onMouseDown = function(evt){
     if(!this.enabled){
       return;
@@ -1582,6 +1971,12 @@ metaScore.Draggable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
   Draggable.prototype.onMouseMove = function(evt){
     var left = evt.clientX + this.start_state.left,
       top = evt.clientY + this.start_state.top;
@@ -1602,6 +1997,12 @@ metaScore.Draggable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
   Draggable.prototype.onMouseUp = function(evt){
     this.configs.container
       .removeListener('mousemove', this.onMouseMove)
@@ -1614,6 +2015,11 @@ metaScore.Draggable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   Draggable.prototype.enable = function(){
     this.configs.target.addClass('draggable');
 
@@ -1624,6 +2030,11 @@ metaScore.Draggable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   Draggable.prototype.disable = function(){
     this.configs.target.removeClass('draggable');
 
@@ -1634,6 +2045,11 @@ metaScore.Draggable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
   Draggable.prototype.destroy = function(){
     this.disable();
 
@@ -1646,26 +2062,31 @@ metaScore.Draggable = (function () {
 
 })();
 /**
- * Function
- *
- * @requires ../metaScore.base.js
- * @requires metaScore.var.js
- */
+* Description
+* @class Function
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Function = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Function() {
   }
 
   metaScore.Class.extend(Function);
 
   /**
-  * Checks if a variable is of a certain type
-  * @param {mixed} the variable
-  * @param {string} the type to check against
-  * @param {array} an array of arguments to send, defaults to the arguments sent
-  * @returns {boolean} true if the variable is of the specified type, false otherwise
-  */
+   * Checks if a variable is of a certain type
+   * @method proxy
+   * @param {} fn
+   * @param {} scope
+   * @param {} args
+   * @return FunctionExpression
+   */
   Function.proxy = function(fn, scope, args){
     if (!metaScore.Var.type(fn, 'function')){
       return undefined;
@@ -1677,30 +2098,38 @@ metaScore.Function = (function () {
   };
 
   /**
-  * A reusable empty function
-  */
+   * A reusable empty function
+   * @method emptyFn
+   * @return 
+   */
   Function.emptyFn = function(){};
 
   return Function;
 
 })();
 /**
- * Object
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class Object
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Object = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Object() {
   }
 
   metaScore.Class.extend(Object);
 
   /**
-  * Merge the contents of two or more objects together into the first object.
-  * @returns {object} the target object extended with the properties of the other objects
-  */
+   * Merge the contents of two or more objects together into the first object.
+   * @method extend
+   * @return target
+   */
   Object.extend = function() {
 
     var target = arguments[0] || {},
@@ -1727,10 +2156,11 @@ metaScore.Object = (function () {
   };
 
   /**
-  * Return a copy of an object
-  * @param {object} the original object
-  * @returns {object} a copy of the original object
-  */
+   * Return a copy of an object
+   * @method copy
+   * @param {} obj
+   * @return CallExpression
+   */
   Object.copy = function(obj) {
 
     return Object.extend({}, obj);
@@ -1738,12 +2168,13 @@ metaScore.Object = (function () {
   };
 
   /**
-  * Call a function on each property of an object
-  * @param {object} the object
-  * @param {function} the function to call
-  * @param {object} the scope of the function
-  * @returns {void}
-  */
+   * Call a function on each property of an object
+   * @method each
+   * @param {} obj
+   * @param {} callback
+   * @param {} scope
+   * @return obj
+   */
   Object.each = function(obj, callback, scope) {
 
     var key, value,
@@ -1765,14 +2196,19 @@ metaScore.Object = (function () {
 
 })();
 /**
- * Dom
- *
- * @requires ../metaScore.base.js
- * @requires metaScore.dom.js
- */
+* Description
+* @class Resizable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Resizable = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Resizable(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -1810,6 +2246,12 @@ metaScore.Resizable = (function () {
 
   metaScore.Class.extend(Resizable);
 
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
   Resizable.prototype.onMouseDown = function(evt){
     if(!this.enabled){
       return;
@@ -1836,6 +2278,12 @@ metaScore.Resizable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
   Resizable.prototype.onMouseMove = function(evt){
     var handle = new metaScore.Dom(this.start_state.handle),
       w, h, top, left;
@@ -1892,6 +2340,12 @@ metaScore.Resizable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
   Resizable.prototype.onMouseUp = function(evt){
     this.configs.container
       .removeListener('mousemove', this.onMouseMove, this)
@@ -1904,6 +2358,11 @@ metaScore.Resizable = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
   Resizable.prototype.enable = function(){
     this.configs.target.addClass('resizable');
 
@@ -1912,6 +2371,11 @@ metaScore.Resizable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
   Resizable.prototype.disable = function(){
     this.configs.target.removeClass('resizable');
 
@@ -1920,6 +2384,11 @@ metaScore.Resizable = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
   Resizable.prototype.destroy = function(){
     this.disable();
 
@@ -1934,33 +2403,40 @@ metaScore.Resizable = (function () {
 
 })();
 /**
- * String
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class String
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.String = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function String() {
   }
 
   metaScore.Class.extend(String);
 
   /**
-  * Capitalize a string
-  * @param {string} the original string
-  * @returns {string} the capitalized string
-  */
+   * Capitalize a string
+   * @method capitalize
+   * @param {} str
+   * @return CallExpression
+   */
   String.capitalize = function(str){
     return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
   };
 
   /**
-  * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
-  * @param {number} the desired number of characters
-  * @param {number} the number of allowable values for each character
-  * @returns {string} a random uuid
-  */
+   * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+   * @method uuid
+   * @param {} len
+   * @param {} radix
+   * @return CallExpression
+   */
   String.uuid = function(len, radix) {
     var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
       uuid = [], i;
@@ -1994,6 +2470,15 @@ metaScore.String = (function () {
     return uuid.join('');
   };
 
+  /**
+   * Description
+   * @method pad
+   * @param {} str
+   * @param {} len
+   * @param {} pad
+   * @param {} dir
+   * @return str
+   */
   String.pad = function(str, len, pad, dir) {
     var right, left,
       padlen;
@@ -2029,13 +2514,19 @@ metaScore.String = (function () {
 
 })();
 /**
- * StyleSheet
- *
- * @requires ../metaScore.base.js
- */
+* Description
+* @class StyleSheet
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
 
 metaScore.StyleSheet = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function StyleSheet(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2051,12 +2542,13 @@ metaScore.StyleSheet = (function () {
   metaScore.Dom.extend(StyleSheet);
 
   /**
-  * Adds a CSS rule to the style sheet
-  * @param {string} a selector on which the rule should apply
-  * @param {string} the CSS rule(s)
-  * @param {number} an optional index specifying the position to insert the new rule in
-  * @returns {number} the index specifying the position in which the rule was inserted
-  */
+   * Adds a CSS rule to the style sheet
+   * @method addRule
+   * @param {} selector
+   * @param {} rules
+   * @param {} index
+   * @return 
+   */
   StyleSheet.prototype.addRule = function(selector, rules, index) {
     var sheet = this.el.sheet;
     
@@ -2073,9 +2565,11 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Removes a CSS rule from the style sheet
-  * @param {number} the index specifying the position of the rule
-  */
+   * Removes a CSS rule from the style sheet
+   * @method removeRule
+   * @param {} index
+   * @return ThisExpression
+   */
   StyleSheet.prototype.removeRule = function(index) {
     var sheet = this.el.sheet;
   
@@ -2090,9 +2584,11 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Removes the first CSS rule that matches a selector
-  * @param {string} the selector to match
-  */
+   * Removes the first CSS rule that matches a selector
+   * @method removeRulesBySelector
+   * @param {} selector
+   * @return ThisExpression
+   */
   StyleSheet.prototype.removeRulesBySelector = function(selector) {
     var sheet = this.el.sheet,
       rules = sheet.cssRules || sheet.rules;
@@ -2110,8 +2606,10 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Removes all CSS rule from the style sheet
-  */
+   * Removes all CSS rule from the style sheet
+   * @method removeRules
+   * @return ThisExpression
+   */
   StyleSheet.prototype.removeRules = function() {
     var sheet = this.el.sheet,
       rules = sheet.cssRules || sheet.rules;
@@ -2124,8 +2622,11 @@ metaScore.StyleSheet = (function () {
   };
 
   /**
-  * Set the internal text value
-  */
+   * Set the internal text value
+   * @method setInternalValue
+   * @param {} value
+   * @return ThisExpression
+   */
   StyleSheet.prototype.setInternalValue = function(value) {
     if(this.el.styleSheet){
       this.el.styleSheet.cssText = value;
@@ -2142,8 +2643,8 @@ metaScore.StyleSheet = (function () {
 })();
 /**
 * A helper class for variable type detection and value.
-* 
-* @class metaScore.Var
+* @class Var
+* @namespace metaScore
 * @extends metaScore.Class
 */
 
@@ -2168,43 +2669,40 @@ metaScore.Var = (function () {
   };
 
   /**
-  * @constructor
-  */
+   * @constructor
+   */
   function Var() {
   }
 
   metaScore.Class.extend(Var);
 
   /**
-  * Get the type of a variable
-  *
-  * @method type
-  * @param {Mixed} the variable
-  * @return {String} the type
-  */
+   * Get the type of a variable
+   * @method type
+   * @param {} obj
+   * @return ConditionalExpression
+   */
   Var.type = function(obj) {
     return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
   };
 
   /**
-  * Checks if a variable is of a certain type
-  *
-  * @method is
-  * @param {Mixed} the variable
-  * @param {String} the type to check against
-  * @return {Boolean} true if the variable is of the specified type, false otherwise
-  */
+   * Checks if a variable is of a certain type
+   * @method is
+   * @param {} obj
+   * @param {} type
+   * @return BinaryExpression
+   */
   Var.is = function(obj, type) {
     return Var.type(obj) === type.toLowerCase();
   };
 
   /**
-  * Checks if a variable is empty
-  *
-  * @method isEmpty
-  * @param {Mixed} the variable
-  * @return {Boolean} true if the variable is empty, false otherwise
-  */
+   * Checks if a variable is empty
+   * @method isEmpty
+   * @param {} obj
+   * @return Literal
+   */
   Var.isEmpty = function(obj) {
     if(obj === undefined || obj == null){
       return true;
@@ -2225,24 +2723,31 @@ metaScore.Var = (function () {
 
 })();
 /**
- * Locale
- *
- * @requires ../metaScore.base.js
- */
+* The i18n handling class
+* @class Locale
+* @namespace metaScore
+* @extends metaScore.Class
+*/
 
 metaScore.Locale = (function () {
 
+  /**
+   * Description
+   * @constructor
+   */
   function Locale() {
   }
 
   metaScore.Class.extend(Locale);
 
   /**
-  * Translate a string
-  * @param {string} the original string
-  * @param {object} string replacements
-  * @returns {string} the translated string
-  */
+   * Translate a string
+   * @method t
+   * @param {} key
+   * @param {} str
+   * @param {} args
+   * @return CallExpression
+   */
   Locale.t = function(key, str, args){
     if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
       str = metaScoreLocale[key];
@@ -2252,11 +2757,12 @@ metaScore.Locale = (function () {
   };
 
   /**
-  * Replace placeholders with sanitized values in a string.
-  * @param {string} the original string
-  * @param {object} string replacements
-  * @returns {string} the formatted string
-  */
+   * Replace placeholders with sanitized values in a string.
+   * @method formatString
+   * @param {} str
+   * @param {} args
+   * @return str
+   */
   Locale.formatString = function(str, args) {
     metaScore.Object.each(args, function(key, value){
       str = str.replace(key, args[key]);
@@ -2269,12 +2775,19 @@ metaScore.Locale = (function () {
 
 })();
 /**
- * Player
- *
- * @requires ../metaScore.base.js
- */
+* The main player class
+* @class Player
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
+
 metaScore.Player = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Player(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2300,6 +2813,12 @@ metaScore.Player = (function () {
 
   metaScore.Dom.extend(Player);
 
+  /**
+   * Description
+   * @method onIFrameLoad
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onIFrameLoad = function(evt){
     this.document = this.get(0).contentDocument || this.iframe.get(0).contentWindow.document;    
     this.head = new metaScore.Dom(this.document.head);
@@ -2314,6 +2833,12 @@ metaScore.Player = (function () {
     this.load();
   };
 
+  /**
+   * Description
+   * @method onKey
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onKey = function(evt){
     var skip = evt.type === 'keydown';
     
@@ -2339,6 +2864,12 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onControllerButtonClick
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onControllerButtonClick = function(evt){
     var action = metaScore.Dom.data(evt.target, 'action');
 
@@ -2355,24 +2886,54 @@ metaScore.Player = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method onMediaLoadedMetadata
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaLoadedMetadata = function(evt){
     this.getMedia().reset();
   };
 
+  /**
+   * Description
+   * @method onMediaPlay
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaPlay = function(evt){
     this.controller.addClass('playing');
   };
 
+  /**
+   * Description
+   * @method onMediaPause
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaPause = function(evt){
     this.controller.removeClass('playing');
   };
 
+  /**
+   * Description
+   * @method onMediaTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onMediaTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getTime();
 
     this.controller.updateTime(currentTime);
   };
 
+  /**
+   * Description
+   * @method onPageActivate
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
       page = evt.detail.page;
@@ -2382,10 +2943,22 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onCursorElementTime
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onCursorElementTime = function(evt){
     this.getMedia().setTime(evt.detail.value);
   };
 
+  /**
+   * Description
+   * @method onTextElementTime
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onTextElementTime = function(evt){
     var player = this;
   
@@ -2397,12 +2970,30 @@ metaScore.Player = (function () {
       media: this.getMedia(),
       inTime: evt.detail.inTime,
       outTime: evt.detail.outTime,
+      /**
+       * Description
+       * @method onStart
+       * @param {} cuepoint
+       * @return 
+       */
       onStart: function(cuepoint){
         player.setReadingIndex(evt.detail.rIndex);
       },
+      /**
+       * Description
+       * @method onEnd
+       * @param {} cuepoint
+       * @return 
+       */
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
       },
+      /**
+       * Description
+       * @method onOut
+       * @param {} cuepoint
+       * @return 
+       */
       onOut: function(cuepoint){
         cuepoint.destroy();
         delete player.linkcuepoint;
@@ -2416,6 +3007,12 @@ metaScore.Player = (function () {
       .play();
   };
 
+  /**
+   * Description
+   * @method onComponenetPropChange
+   * @param {} evt
+   * @return 
+   */
   Player.prototype.onComponenetPropChange = function(evt){
     var component = evt.detail.component;
 
@@ -2429,6 +3026,12 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onLoadSuccess
+   * @param {} xhr
+   * @return 
+   */
   Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
 
@@ -2464,12 +3067,24 @@ metaScore.Player = (function () {
     this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
   };
 
+  /**
+   * Description
+   * @method onLoadError
+   * @param {} xhr
+   * @return 
+   */
   Player.prototype.onLoadError = function(xhr){
     this.getBody().removeClass('loading');
     
     this.triggerEvent('loaderror', {'player': this}, true, false);
   };
 
+  /**
+   * Description
+   * @method load
+   * @param {} url
+   * @return 
+   */
   Player.prototype.load = function(url){
     var options;
 
@@ -2484,30 +3099,67 @@ metaScore.Player = (function () {
     metaScore.Ajax.get(this.configs.url, options);
   };
 
+  /**
+   * Description
+   * @method getId
+   * @return CallExpression
+   */
   Player.prototype.getId = function(){
     return this.data('id');
   };
 
+  /**
+   * Description
+   * @method getHead
+   * @return MemberExpression
+   */
   Player.prototype.getHead = function(){
     return this.head;
   };
 
+  /**
+   * Description
+   * @method getBody
+   * @return MemberExpression
+   */
   Player.prototype.getBody = function(){
     return this.body;
   };
 
+  /**
+   * Description
+   * @method getData
+   * @return MemberExpression
+   */
   Player.prototype.getData = function(){
     return this.json;
   };
 
+  /**
+   * Description
+   * @method getMedia
+   * @return MemberExpression
+   */
   Player.prototype.getMedia = function(){
     return this.media;
   };
 
+  /**
+   * Description
+   * @method getComponent
+   * @param {} selector
+   * @return CallExpression
+   */
   Player.prototype.getComponent = function(selector){    
     return this.getComponents(selector).get(0);
   };
 
+  /**
+   * Description
+   * @method getComponents
+   * @param {} selector
+   * @return components
+   */
   Player.prototype.getComponents = function(selector){
     var components;
     
@@ -2520,6 +3172,13 @@ metaScore.Player = (function () {
     return components;
   };
 
+  /**
+   * Description
+   * @method addMedia
+   * @param {} configs
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
       .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
@@ -2535,6 +3194,13 @@ metaScore.Player = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addController
+   * @param {} configs
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Player.prototype.addController = function(configs, supressEvent){
     this.controller = new metaScore.player.component.Controller(configs)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
@@ -2547,11 +3213,19 @@ metaScore.Player = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method addBlock
+   * @param {} configs
+   * @param {} supressEvent
+   * @return block
+   */
   Player.prototype.addBlock = function(configs, supressEvent){
     var block, page;
 
     if(configs instanceof metaScore.player.component.Block){
       block = configs;
+      block.appendTo(this.getBody());
     }
     else{
       block = new metaScore.player.component.Block(metaScore.Object.extend({}, configs, {
@@ -2572,10 +3246,21 @@ metaScore.Player = (function () {
     return block;
   };
 
+  /**
+   * Description
+   * @method updateCSS
+   * @param {} value
+   * @return 
+   */
   Player.prototype.updateCSS = function(value){
     this.css.setInternalValue(value);
   };
 
+  /**
+   * Description
+   * @method togglePlay
+   * @return 
+   */
   Player.prototype.togglePlay = function(){
     var media = this.getMedia();
   
@@ -2587,6 +3272,13 @@ metaScore.Player = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setReadingIndex
+   * @param {} index
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
 
@@ -2607,14 +3299,19 @@ metaScore.Player = (function () {
 
 })();
 /**
- * Player Component
- *
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class Component
+* @namespace metaScore.player
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('player').Component = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Component(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2652,26 +3349,59 @@ metaScore.namespace('player').Component = (function () {
     'properties': {}
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Component.prototype.setupDOM = function(){};
 
+  /**
+   * Description
+   * @method getId
+   * @return CallExpression
+   */
   Component.prototype.getId = function(){
     return this.attr('id');
   };
 
+  /**
+   * Description
+   * @method getName
+   * @return CallExpression
+   */
   Component.prototype.getName = function(){
     return this.getProperty('name');
   };
 
+  /**
+   * Description
+   * @method hasProperty
+   * @param {} name
+   * @return BinaryExpression
+   */
   Component.prototype.hasProperty = function(name){
     return name in this.configs.properties;
   };
 
+  /**
+   * Description
+   * @method getProperty
+   * @param {} name
+   * @return 
+   */
   Component.prototype.getProperty = function(name){
     if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
       return this.configs.properties[name].getter.call(this);
     }
   };
 
+  /**
+   * Description
+   * @method getProperties
+   * @param {} skipDefaults
+   * @return values
+   */
   Component.prototype.getProperties = function(skipDefaults){
     var values = {},
       value;
@@ -2689,6 +3419,14 @@ metaScore.namespace('player').Component = (function () {
     return values;
   };
 
+  /**
+   * Description
+   * @method setProperty
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
   Component.prototype.setProperty = function(name, value, supressEvent){
     if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
       this.configs.properties[name].setter.call(this, value);
@@ -2699,6 +3437,12 @@ metaScore.namespace('player').Component = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setCuePoint
+   * @param {} configs
+   * @return MemberExpression
+   */
   Component.prototype.setCuePoint = function(configs){
     var inTime = this.getProperty('start-time'),
       outTime = this.getProperty('end-time');
@@ -2724,16 +3468,19 @@ metaScore.namespace('player').Component = (function () {
 
 })();
 /**
- * CuePoints
- *
- * @requires metaScore.player.media.js
- * @requires ../metaScore.base.js
- * @requires ../helpers/metaScore.object.js
- * @requires ../helpers/metaScore.var.js
- */
+* Description
+* @class CuePoint
+* @namespace metaScore.player
+* @extends metaScore.Evented
+*/
 
 metaScore.namespace('player').CuePoint = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function CuePoint(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2764,6 +3511,12 @@ metaScore.namespace('player').CuePoint = (function () {
     'errorMargin': 10 // the number of milliseconds estimated as the error margin for time update events
   };
 
+  /**
+   * Description
+   * @method onMediaTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
     var curTime = this.configs.media.getTime();
 
@@ -2787,6 +3540,12 @@ metaScore.namespace('player').CuePoint = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onMediaSeeked
+   * @param {} evt
+   * @return 
+   */
   CuePoint.prototype.onMediaSeeked = function(evt){
     var curTime;
     
@@ -2801,10 +3560,20 @@ metaScore.namespace('player').CuePoint = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method getMedia
+   * @return MemberExpression
+   */
   CuePoint.prototype.getMedia = function(){
     return this.configs.media;
   };
 
+  /**
+   * Description
+   * @method launch
+   * @return 
+   */
   CuePoint.prototype.launch = function(){
     if(this.running){
       return;
@@ -2828,6 +3597,12 @@ metaScore.namespace('player').CuePoint = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method stop
+   * @param {} launchCallback
+   * @return 
+   */
   CuePoint.prototype.stop = function(launchCallback){
     if(this.inTimer){
       clearTimeout(this.inTimer);
@@ -2850,6 +3625,11 @@ metaScore.namespace('player').CuePoint = (function () {
     this.running = false;
   };
 
+  /**
+   * Description
+   * @method destroy
+   * @return 
+   */
   CuePoint.prototype.destroy = function(){
     this.stop(false);
     
@@ -2863,13 +3643,19 @@ metaScore.namespace('player').CuePoint = (function () {
 
 })();
 /**
- * Player Page
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Pager
+* @namespace metaScore.player
+* @extends metaScore.Dom
+*/
 
 metaScore.namespace('player').Pager = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Pager(configs) {
     this.configs = this.getConfigs(configs);
 
@@ -2895,6 +3681,13 @@ metaScore.namespace('player').Pager = (function () {
 
   metaScore.Dom.extend(Pager);
 
+  /**
+   * Description
+   * @method updateCount
+   * @param {} index
+   * @param {} count
+   * @return 
+   */
   Pager.prototype.updateCount = function(index, count){
     this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 
@@ -2907,16 +3700,19 @@ metaScore.namespace('player').Pager = (function () {
 
 })();
 /**
- * Player Block
- *
- * @requires metaScore.player.pager.js
- * @requires metaScore.player.page.js
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class Block
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Block = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Block(configs) {
     // call parent constructor
     Block.parent.call(this, configs);
@@ -2932,9 +3728,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.name', 'Name')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('name');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('name', value);
         }
@@ -2944,9 +3750,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('locked') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('locked', value ? "true" : null);
         }
@@ -2956,9 +3772,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.x', 'X')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('left', value +'px');
         }
@@ -2968,9 +3794,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.y', 'Y')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('top', value +'px');
         },
@@ -2980,9 +3816,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.width', 'Width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('width', value +'px');
         }
@@ -2992,9 +3838,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.height', 'Height')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('height', value +'px');
         }
@@ -3004,9 +3860,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -3017,6 +3883,11 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
 
@@ -3026,6 +3897,11 @@ metaScore.namespace('player.component').Block = (function () {
 
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.css('background-image', value);
@@ -3036,10 +3912,20 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.css('border-width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-width', value +'px');
         }
@@ -3049,9 +3935,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -3062,9 +3958,19 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-radius', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-radius', value);
         }
@@ -3074,15 +3980,30 @@ metaScore.namespace('player.component').Block = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('synched') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('synched', value);
         }
       },
       'pages': {
         'editable':false,
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return pages
+         */
         'getter': function(skipDefault){
           var pages = [];
 
@@ -3092,6 +4013,11 @@ metaScore.namespace('player.component').Block = (function () {
 
           return pages;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.getPages().remove();
 
@@ -3105,6 +4031,11 @@ metaScore.namespace('player.component').Block = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Block.prototype.setupDOM = function(){
     // call parent function
     Block.parent.prototype.setupDOM.call(this);
@@ -3121,14 +4052,32 @@ metaScore.namespace('player.component').Block = (function () {
       .appendTo(this);
   };
 
+  /**
+   * Description
+   * @method onPageCuePointStart
+   * @param {} evt
+   * @return 
+   */
   Block.prototype.onPageCuePointStart = function(evt){
     this.setActivePage(evt.target._metaScore, true);
   };
 
+  /**
+   * Description
+   * @method onElementPage
+   * @param {} evt
+   * @return 
+   */
   Block.prototype.onElementPage = function(evt){
     this.setActivePage(evt.detail.value);
   };
 
+  /**
+   * Description
+   * @method onPagerClick
+   * @param {} evt
+   * @return 
+   */
   Block.prototype.onPagerClick = function(evt){
     var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
       action;
@@ -3152,35 +4101,39 @@ metaScore.namespace('player.component').Block = (function () {
     evt.stopPropagation();
   };
 
+  /**
+   * Description
+   * @method getPages
+   * @return CallExpression
+   */
   Block.prototype.getPages = function(){
     return this.page_wrapper.children('.page');
   };
 
-  Block.prototype.addPage = function(configs, supressEvent){
-    var page,
-      previous_index, previous;
+  /**
+   * Description
+   * @method addPage
+   * @param {} configs
+   * @param {} supressEvent
+   * @return page
+   */
+  Block.prototype.addPage = function(configs, index, supressEvent){
+    var page;
 
     if(configs instanceof metaScore.player.component.Page){
       page = configs;
-      page.appendTo(this.page_wrapper);
-    }
-    else{
-      if(metaScore.Var.isEmpty(configs)){
-        previous_index = this.getActivePageIndex();
-        previous = this.getPage(previous_index);
-        configs = {};
-        
-        if(this.getProperty('synched')){
-          configs['index'] = previous_index + 1;
-          configs['start-time'] = (previous.getProperty('end-time') - previous.getProperty('start-time')) / 2;
-          configs['end-time'] = previous.getProperty('end-time');
-          
-          previous.setProperty('end-time', configs['start-time']);
-        }
+      
+      if(metaScore.Var.is(index, 'number')){
+        page.insertAt(this.page_wrapper, index);
       }
-    
+      else{
+        page.appendTo(this.page_wrapper);
+      }
+    }
+    else{    
       page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
         'container': this.page_wrapper,
+        'index': index
       }));
     }
 
@@ -3193,15 +4146,17 @@ metaScore.namespace('player.component').Block = (function () {
     return page;
   };
 
+  /**
+   * Description
+   * @method removePage
+   * @param {} page
+   * @param {} supressEvent
+   * @return page
+   */
   Block.prototype.removePage = function(page, supressEvent){
     var index;
 
     page.remove();
-
-    if(page.hasClass('active')){
-      index = Math.max(0, this.getActivePageIndex() - 1);
-      this.setActivePage(index);
-    }
 
     if(supressEvent !== true){
       this.triggerEvent('pageremove', {'block': this, 'page': page});
@@ -3210,6 +4165,12 @@ metaScore.namespace('player.component').Block = (function () {
     return page;
   };
 
+  /**
+   * Description
+   * @method getPage
+   * @param {} index
+   * @return ConditionalExpression
+   */
   Block.prototype.getPage = function(index){
     var pages = this.getPages(),
       page = pages.get(index);
@@ -3217,10 +4178,20 @@ metaScore.namespace('player.component').Block = (function () {
     return page ? page._metaScore : null;
   };
 
+  /**
+   * Description
+   * @method getActivePage
+   * @return CallExpression
+   */
   Block.prototype.getActivePage = function(){
     return this.getPage(this.getActivePageIndex());
   };
 
+  /**
+   * Description
+   * @method getActivePageIndex
+   * @return index
+   */
   Block.prototype.getActivePageIndex = function(){
     var pages = this.getPages(),
       index = pages.index('.active');
@@ -3228,10 +4199,22 @@ metaScore.namespace('player.component').Block = (function () {
     return index;
   };
 
+  /**
+   * Description
+   * @method getPageCount
+   * @return CallExpression
+   */
   Block.prototype.getPageCount = function(){
     return this.getPages().count();
   };
 
+  /**
+   * Description
+   * @method setActivePage
+   * @param {} page
+   * @param {} supressEvent
+   * @return 
+   */
   Block.prototype.setActivePage = function(page, supressEvent){
     var pages = this.getPages(), dom;
 
@@ -3251,6 +4234,11 @@ metaScore.namespace('player.component').Block = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method updatePager
+   * @return 
+   */
   Block.prototype.updatePager = function(){
     var index = this.getActivePageIndex(),
       count = this.getPageCount();
@@ -3264,14 +4252,19 @@ metaScore.namespace('player.component').Block = (function () {
 
 })();
 /**
- * Player Controller
- *
- * @requires ../helpers/metaScore.dom.js
- * @requires ../helpers/metaScore.string.js
- */
+* Description
+* @class Controller
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Controller = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Controller(configs) {
     // call parent constructor
     Controller.parent.call(this, configs);
@@ -3286,9 +4279,19 @@ metaScore.namespace('player.component').Controller = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('locked') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('locked', value ? "true" : null);
         }
@@ -3298,9 +4301,19 @@ metaScore.namespace('player.component').Controller = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Controller.x', 'X')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('left', value +'px');
         }
@@ -3310,9 +4323,19 @@ metaScore.namespace('player.component').Controller = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Controller.y', 'Y')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('top', value +'px');
         }
@@ -3322,9 +4345,19 @@ metaScore.namespace('player.component').Controller = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Controller.border-radius', 'Border radius')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-radius', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-radius', value);
         }
@@ -3332,6 +4365,11 @@ metaScore.namespace('player.component').Controller = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Controller.prototype.setupDOM = function(){
     // call parent function
     Controller.parent.prototype.setupDOM.call(this);
@@ -3353,10 +4391,21 @@ metaScore.namespace('player.component').Controller = (function () {
       .appendTo(this);
   };
 
+  /**
+   * Description
+   * @method getName
+   * @return Literal
+   */
   Controller.prototype.getName = function(){
     return '[controller]';
   };
 
+  /**
+   * Description
+   * @method updateTime
+   * @param {} time
+   * @return 
+   */
   Controller.prototype.updateTime = function(time){
     var centiseconds = metaScore.String.pad(parseInt((time / 10) % 100, 10), 2, '0', 'left'),
       seconds = metaScore.String.pad(parseInt((time / 1000) % 60, 10), 2, '0', 'left'),
@@ -3369,13 +4418,19 @@ metaScore.namespace('player.component').Controller = (function () {
 
 })();
 /**
- * Player Element
- *
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Element
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Element = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Element(configs) {
     // call parent constructor
     Element.parent.call(this, configs);
@@ -3390,18 +4445,38 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.name', 'Name')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('name');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('name', value);
         }
       },
       'type': {
         'editable':false,
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('type');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('type', value);
         }
@@ -3411,9 +4486,19 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('locked') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('locked', value ? "true" : null);
         }
@@ -3423,9 +4508,19 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.x', 'X')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('left', value +'px');
         }
@@ -3435,9 +4530,19 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.y', 'Y')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('top', value +'px');
         }
@@ -3448,9 +4553,19 @@ metaScore.namespace('player.component').Element = (function () {
           'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
           'min': 10
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('width', value +'px');
         }
@@ -3461,9 +4576,19 @@ metaScore.namespace('player.component').Element = (function () {
           'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
           'min': 10
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('height', value +'px');
         }
@@ -3474,10 +4599,20 @@ metaScore.namespace('player.component').Element = (function () {
           'label': metaScore.Locale.t('player.component.Element.r-index', 'Reading index'),
           'min': 0
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.data('r-index');
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('r-index', value);
         }
@@ -3487,10 +4622,20 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.css('z-index', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('z-index', value);
         }
@@ -3500,9 +4645,19 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.background-color', 'Background color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.contents.css('background-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.contents.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -3513,6 +4668,11 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           var value = this.contents.css('background-image', undefined, skipDefault);
 
@@ -3522,6 +4682,11 @@ metaScore.namespace('player.component').Element = (function () {
 
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.contents.css('background-image', value);
@@ -3532,10 +4697,20 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.contents.css('border-width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.contents.css('border-width', value +'px');
         }
@@ -3545,9 +4720,19 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.border-color', 'Border color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.contents.css('border-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.contents.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -3558,9 +4743,19 @@ metaScore.namespace('player.component').Element = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Element.border-radius', 'Border radius')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.contents.css('border-radius', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.contents.css('border-radius', value);
         }
@@ -3573,9 +4768,19 @@ metaScore.namespace('player.component').Element = (function () {
           'max': 1,
           'step': 0.1
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.contents.css('opacity', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.contents.css('opacity', value);
         }
@@ -3588,10 +4793,20 @@ metaScore.namespace('player.component').Element = (function () {
           'inButton': true,
           'outButton': true
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = parseFloat(this.data('start-time'));
           return isNaN(value) ? null : value;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('start-time', isNaN(value) ? null : value);
         }
@@ -3604,10 +4819,20 @@ metaScore.namespace('player.component').Element = (function () {
           'inButton': true,
           'outButton': true
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = parseFloat(this.data('end-time'));
           return isNaN(value) ? null : value;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('end-time', isNaN(value) ? null : value);
         }
@@ -3615,6 +4840,11 @@ metaScore.namespace('player.component').Element = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Element.prototype.setupDOM = function(){
     // call parent function
     Element.parent.prototype.setupDOM.call(this);
@@ -3625,10 +4855,22 @@ metaScore.namespace('player.component').Element = (function () {
       .appendTo(this);
   };
 
+  /**
+   * Description
+   * @method onCuePointStart
+   * @param {} cuepoint
+   * @return 
+   */
   Element.prototype.onCuePointStart = function(cuepoint){
     this.addClass('active');
   };
 
+  /**
+   * Description
+   * @method onCuePointEnd
+   * @param {} cuepoint
+   * @return 
+   */
   Element.prototype.onCuePointEnd = function(cuepoint){
     this.removeClass('active');
   };
@@ -3637,14 +4879,19 @@ metaScore.namespace('player.component').Element = (function () {
 
 })();
 /**
- * Media
- *
- * @requires metaScore.player.js
- * @requires ../metaScore.dom.js
- */
+* Description
+* @class Media
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Media = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Media(configs){
     // call parent constructor
     Media.parent.call(this, configs);
@@ -3665,9 +4912,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return BinaryExpression
+         */
         'getter': function(skipDefault){
           return this.data('locked') === "true";
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('locked', value ? "true" : null);
         }
@@ -3677,9 +4934,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.x', 'X')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('left'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('left', value +'px');
         }
@@ -3689,9 +4956,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.y', 'Y')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('top'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('top', value +'px');
         },
@@ -3701,9 +4978,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.width', 'Width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('width'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('width', value +'px');
         }
@@ -3713,9 +5000,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.height', 'Height')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return parseInt(this.css('height'), 10);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('height', value +'px');
         }
@@ -3725,9 +5022,19 @@ metaScore.namespace('player.component').Media = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Media.border-radius', 'Border radius')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('border-radius', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.css('border-radius', value);
         }
@@ -3735,6 +5042,11 @@ metaScore.namespace('player.component').Media = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Media.prototype.setupDOM = function(){
     var sources = '';
 
@@ -3758,14 +5070,30 @@ metaScore.namespace('player.component').Media = (function () {
       .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
   };
 
+  /**
+   * Description
+   * @method getName
+   * @return Literal
+   */
   Media.prototype.getName = function(){
     return '[media]';
   };
 
+  /**
+   * Description
+   * @method getDuration
+   * @return MemberExpression
+   */
   Media.prototype.getDuration = function(){
     return this.configs.duration;
   };
 
+  /**
+   * Description
+   * @method onPlay
+   * @param {} evt
+   * @return 
+   */
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
     
@@ -3774,10 +5102,22 @@ metaScore.namespace('player.component').Media = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method onPause
+   * @param {} evt
+   * @return 
+   */
   Media.prototype.onPause = function(evt) {
     this.playing = false;
   };
 
+  /**
+   * Description
+   * @method onTimeUpdate
+   * @param {} evt
+   * @return 
+   */
   Media.prototype.onTimeUpdate = function(evt){
     if(!(evt instanceof CustomEvent)){
       evt.stopImmediatePropagation();
@@ -3788,28 +5128,57 @@ metaScore.namespace('player.component').Media = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method isPlaying
+   * @return MemberExpression
+   */
   Media.prototype.isPlaying = function() {
     return this.playing;
   };
 
+  /**
+   * Description
+   * @method reset
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Media.prototype.reset = function(supressEvent) {
     this.setTime(0);
     
     return this;
   };
 
+  /**
+   * Description
+   * @method play
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Media.prototype.play = function(supressEvent) {
     this.dom.play();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method pause
+   * @param {} supressEvent
+   * @return ThisExpression
+   */
   Media.prototype.pause = function(supressEvent) {
     this.dom.pause();
     
     return this;
   };
 
+  /**
+   * Description
+   * @method triggerTimeUpdate
+   * @param {} loop
+   * @return 
+   */
   Media.prototype.triggerTimeUpdate = function(loop) {
     if(loop !== false && this.isPlaying()){
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
@@ -3818,6 +5187,12 @@ metaScore.namespace('player.component').Media = (function () {
     this.el.triggerEvent('timeupdate', {'media': this});
   };
 
+  /**
+   * Description
+   * @method setTime
+   * @param {} time
+   * @return ThisExpression
+   */
   Media.prototype.setTime = function(time) {
     this.dom.currentTime = parseFloat(time) / 1000;
 
@@ -3826,20 +5201,46 @@ metaScore.namespace('player.component').Media = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method getTime
+   * @return BinaryExpression
+   */
   Media.prototype.getTime = function() {
     return parseFloat(this.dom.currentTime) * 1000;
   };
 
+  /**
+   * Description
+   * @method getDuration
+   * @return BinaryExpression
+   */
   Media.prototype.getDuration = function() {
     return parseFloat(this.dom.duration) * 1000;
   };
 
+  /**
+   * Description
+   * @method addMediaListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Media.prototype.addMediaListener = function(type, callback, useCapture) {
     this.el.addListener(type, callback, useCapture);
     
     return this;
   };
 
+  /**
+   * Description
+   * @method removeMediaListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
   Media.prototype.removeMediaListener = function(type, callback, useCapture) {
     this.el.removeListener(type, callback, useCapture);
     
@@ -3850,14 +5251,19 @@ metaScore.namespace('player.component').Media = (function () {
 
 })();
 /**
- * Player Page
- *
- * @requires metaScore.player.element.js
- * @requires ../helpers/metaScore.dom.js
- */
+* Description
+* @class Page
+* @namespace metaScore.player.component
+* @extends metaScore.player.Component
+*/
 
 metaScore.namespace('player.component').Page = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Page(configs) {
     // call parent constructor
     Page.parent.call(this, configs);
@@ -3872,9 +5278,19 @@ metaScore.namespace('player.component').Page = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.css('background-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -3885,6 +5301,11 @@ metaScore.namespace('player.component').Page = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           var value = this.css('background-image', undefined, skipDefault);
 
@@ -3894,6 +5315,11 @@ metaScore.namespace('player.component').Page = (function () {
 
           return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
           this.css('background-image', value);
@@ -3907,10 +5333,20 @@ metaScore.namespace('player.component').Page = (function () {
           'inButton': true,
           'outButton': true
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = parseFloat(this.data('start-time'));
           return isNaN(value) ? null : value;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('start-time', isNaN(value) ? null : value);
         }
@@ -3923,16 +5359,31 @@ metaScore.namespace('player.component').Page = (function () {
           'inButton': true,
           'outButton': true
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = parseFloat(this.data('end-time'));
           return isNaN(value) ? null : value;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('end-time', isNaN(value) ? null : value);
         }
       },
       'elements': {
         'editable': false,
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return elements
+         */
         'getter': function(skipDefault){
           var elements = [];
 
@@ -3942,6 +5393,11 @@ metaScore.namespace('player.component').Page = (function () {
 
           return elements;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           metaScore.Array.each(value, function(index, configs){
             this.addElement(configs);
@@ -3951,6 +5407,11 @@ metaScore.namespace('player.component').Page = (function () {
     }
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Page.prototype.setupDOM = function(){
     // call parent function
     Page.parent.prototype.setupDOM.call(this);
@@ -3958,6 +5419,12 @@ metaScore.namespace('player.component').Page = (function () {
     this.addClass('page');
   };
 
+  /**
+   * Description
+   * @method addElement
+   * @param {} configs
+   * @return element
+   */
   Page.prototype.addElement = function(configs){
     var element;
 
@@ -3974,14 +5441,31 @@ metaScore.namespace('player.component').Page = (function () {
     return element;
   };
 
+  /**
+   * Description
+   * @method getElements
+   * @return CallExpression
+   */
   Page.prototype.getElements = function(){
     return this.children('.element');
   };
 
+  /**
+   * Description
+   * @method onCuePointStart
+   * @param {} cuepoint
+   * @return 
+   */
   Page.prototype.onCuePointStart = function(cuepoint){
     this.triggerEvent('cuepointstart');
   };
 
+  /**
+   * Description
+   * @method onCuePointEnd
+   * @param {} cuepoint
+   * @return 
+   */
   Page.prototype.onCuePointEnd = function(cuepoint){
     this.triggerEvent('cuepointend');
   };
@@ -3990,13 +5474,19 @@ metaScore.namespace('player.component').Page = (function () {
 
 })();
 /**
- * Cursor
- *
- * @requires ../metaScore.player.element.js
- */
+* Description
+* @class Cursor
+* @namespace metaScore.player.component.element
+* @extends metaScore.player.component.Element
+*/
 
 metaScore.namespace('player.component.element').Cursor = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Cursor(configs) {
     // call parent constructor
     Cursor.parent.call(this, configs);
@@ -4017,9 +5507,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
             'top': metaScore.Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
           }
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('direction');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('direction', value);
         }
@@ -4029,9 +5529,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
           return this.data('accel');
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.data('accel', value);
         }
@@ -4041,10 +5551,20 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return ConditionalExpression
+         */
         'getter': function(skipDefault){
           var value = this.cursor.css('width', undefined, skipDefault);
           return value !== null ? parseInt(value, 10) : null;
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.cursor.css('width', value +'px');
         }
@@ -4054,9 +5574,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         'configs': {
           'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
         },
+        /**
+         * Description
+         * @param {} skipDefault
+         * @return CallExpression
+         */
         'getter': function(skipDefault){
            return this.cursor.css('background-color', undefined, skipDefault);
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           var color = metaScore.Color.parse(value);
           this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -4065,6 +5595,11 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     })
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Cursor.prototype.setupDOM = function(){
     // call parent function
     Cursor.parent.prototype.setupDOM.call(this);
@@ -4079,6 +5614,12 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
   };
 
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
   Cursor.prototype.onClick = function(evt){
     var pos, time,
       inTime, outTime,
@@ -4122,6 +5663,13 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     this.triggerEvent('time', {'element': this, 'value': time});
   };
 
+  /**
+   * Description
+   * @method onCuePointUpdate
+   * @param {} cuepoint
+   * @param {} curTime
+   * @return 
+   */
   Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
     var width, height,
       inTime, outTime, pos,
@@ -4168,13 +5716,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
 
 })();
 /**
- * Image
- *
- * @requires ../metaScore.player.element.js
- */
+* Description
+* @class Image
+* @namespace metaScore.player.component.element
+* @extends metaScore.player.component.Element
+*/
 
 metaScore.namespace('player.component.element').Image = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Image(configs) {
     // call parent constructor
     Image.parent.call(this, configs);
@@ -4182,6 +5736,11 @@ metaScore.namespace('player.component.element').Image = (function () {
 
   metaScore.player.component.Element.extend(Image);
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Image.prototype.setupDOM = function(){
     // call parent function
     Image.parent.prototype.setupDOM.call(this);
@@ -4193,13 +5752,19 @@ metaScore.namespace('player.component.element').Image = (function () {
 
 })();
 /**
- * Text
- *
- * @requires ../metaScore.player.element.js
- */
+* Description
+* @class Text
+* @namespace metaScore.player.component.element
+* @extends metaScore.player.component.Element
+*/
 
 metaScore.namespace('player.component.element').Text = (function () {
 
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
   function Text(configs) {
     // call parent constructor
     Text.parent.call(this, configs);
@@ -4213,9 +5778,18 @@ metaScore.namespace('player.component.element').Text = (function () {
     'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
       'text': {
         'editable':false,
+        /**
+         * Description
+         * @return CallExpression
+         */
         'getter': function(){
           return this.contents.text();
         },
+        /**
+         * Description
+         * @param {} value
+         * @return 
+         */
         'setter': function(value){
           this.contents.text(value);
         }
@@ -4223,6 +5797,11 @@ metaScore.namespace('player.component.element').Text = (function () {
     })
   };
 
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
   Text.prototype.setupDOM = function(){
     // call parent function
     Text.parent.prototype.setupDOM.call(this);
@@ -4230,6 +5809,12 @@ metaScore.namespace('player.component.element').Text = (function () {
     this.data('type', 'text');
   };
 
+  /**
+   * Description
+   * @method onLinkClick
+   * @param {} evt
+   * @return 
+   */
   Text.prototype.onLinkClick = function(evt){
     var link = evt.target,
       matches;
