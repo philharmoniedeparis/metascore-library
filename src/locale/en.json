@@ -11,6 +11,8 @@
 	"editor.onMainmenuClick.revert.msg": "Are you sure you want to revert back to the last saved version ?<br/><strong>Any unsaved data will be lost.</strong>",
 	"editor.onMainmenuClick.revert.yes": "Yes",
 	"editor.onMainmenuClick.revert.no": "No",
+	"editor.onBlockPanelToolbarClick.defaultBlockName": "untitled",
+	"editor.onElementPanelToolbarClick.defaultElementName": "untitled",
 	"editor.onPlayerLoadError.msg": "An error occured while trying to load the guide. Please try again.",
 	"editor.onPlayerLoadError.ok": "OK",
 	"editor.onBeforeUnload.msg": "Any unsaved data will be lost.",

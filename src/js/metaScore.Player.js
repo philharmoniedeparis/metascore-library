@@ -387,7 +387,7 @@ metaScore.Player = (function () {
   Player.prototype.getComponents = function(selector){
     var components;
     
-    components = this.getBody().children('.metaScore-component');
+    components = this.getBody().find('.metaScore-component');
     
     if(selector){
       components = components.filter(selector);

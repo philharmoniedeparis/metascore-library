@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-06 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-07 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -85,8 +85,7 @@ metaScore.Editor = (function(){
       
     this.panels.block.getToolbar()
         .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onBlockPanelSelectorChange, this))
-        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this))        
-        .addSelectorOption(null, '');
+        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this));
         
     this.panels.page = new metaScore.editor.panel.Page().appendTo(this.sidebar)
       .addListener('componentbeforeset', metaScore.Function.proxy(this.onPageBeforeSet, this))
@@ -487,7 +486,9 @@ metaScore.Editor = (function(){
       case 'new':
         player = this.getPlayer();
         panel = this.panels.block;
-        block = player.addBlock();
+        block = player.addBlock({'name':  metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')});
+        
+        block.addPage();
         
         panel.setComponent(block);
 
@@ -607,16 +608,14 @@ metaScore.Editor = (function(){
 
     this.panels.page.getToolbar().toggleMenuItem('new', true);
 
-    this.panels.element.getToolbar()
-      .toggleMenuItem('Cursor', true)
-      .toggleMenuItem('Image', true)
-      .toggleMenuItem('Text', true)
-      .emptySelector()
-      .addSelectorOption(null, '');
-        
-    page.getElements().each(function(index, element){
-      this.panels.element.getToolbar().addSelectorOption(element._metaScore.getId(), element._metaScore.getName());
-    }, this);
+    this.panels.element
+      .unsetComponent()
+      .getToolbar()
+        .toggleMenuItem('Cursor', true)
+        .toggleMenuItem('Image', true)
+        .toggleMenuItem('Text', true);
+      
+    this.updateElementSelector();
 
     evt.stopPropagation();
   };
@@ -628,11 +627,12 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onPageUnset = function(evt){
-    this.panels.element.unsetComponent();
-    this.panels.element.getToolbar()
-      .toggleMenuItem('Cursor', false)
-      .toggleMenuItem('Image', false)
-      .toggleMenuItem('Text', false);
+    this.panels.element
+      .unsetComponent()
+      .getToolbar()
+        .toggleMenuItem('Cursor', false)
+        .toggleMenuItem('Image', false)
+        .toggleMenuItem('Text', false);
   };
 
   /**
@@ -664,7 +664,8 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onPagePanelToolbarClick = function(evt){
-    var panel, block, page, configs,
+    var panel, block, page, 
+      start_time, end_time, configs,
       previous_page, auto_page,
       dom, count, index;
 
@@ -677,11 +678,14 @@ metaScore.Editor = (function(){
         if(block.getProperty('synched')){
           index = block.getActivePageIndex();
           previous_page = block.getPage(index);
-        
-          configs['start-time'] = (previous_page.getProperty('end-time') - previous_page.getProperty('start-time')) / 2;
-          configs['end-time'] = previous_page.getProperty('end-time');
           
-          previous_page.setProperty('end-time', configs['start-time']);
+          start_time = this.getPlayer().media.getTime();
+          end_time = previous_page.getProperty('end-time');
+        
+          configs['start-time'] = start_time;
+          configs['end-time'] = end_time;
+          
+          previous_page.setProperty('end-time', start_time);
         }
         
         page = block.addPage(configs, index+1);
@@ -690,17 +694,17 @@ metaScore.Editor = (function(){
         this.history.add({
           'undo': function(){
             panel.unsetComponent();
-            page.remove();
+            block.removePage(page);
             
             if(block.getProperty('synched')){
-              previous_page.setProperty('end-time', configs['end-time']);
+              previous_page.setProperty('end-time', end_time);
             }
             
             block.setActivePage(index);
           },
           'redo': function(){
             if(block.getProperty('synched')){
-              previous_page.setProperty('end-time', configs['start-time']);
+              previous_page.setProperty('end-time', start_time);
             }
             
             block.addPage(page, index+1);
@@ -900,7 +904,7 @@ metaScore.Editor = (function(){
       case 'Text':
         panel = this.panels.element;
         page = this.panels.page.getComponent();
-        element = page.addElement({'type': action});
+        element = page.addElement({'type': action, 'name':  metaScore.Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')});
 
         panel.setComponent(element);
 
@@ -1028,40 +1032,35 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method onPlayerMediaAdd
-   * @param {} evt
-   * @return 
-   */
-  Editor.prototype.onPlayerMediaAdd = function(evt){
-    var media = evt.detail.media;
-    
-    if(media.is('.video')){
-      this.panels.block.getToolbar().addSelectorOption(media.getId(), media.getName());
-    }
-  };
-
-  /**
-   * Description
-   * @method onPlayerControllerAdd
-   * @param {} evt
-   * @return 
-   */
-  Editor.prototype.onPlayerControllerAdd = function(evt){
-    var controller = evt.detail.controller;
-
-    this.panels.block.getToolbar().addSelectorOption(controller.getId(), controller.getName());
-  };
-
-  /**
-   * Description
    * @method onPlayerBlockAdd
    * @param {} evt
    * @return 
    */
   Editor.prototype.onPlayerBlockAdd = function(evt){
-    var block = evt.detail.block;
+    this.updateBlockSelector();
+  };
 
-    this.panels.block.getToolbar().addSelectorOption(block.getId(), block.getName());
+  /**
+   * Description
+   * @method onPlayerChildRemove
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerChildRemove = function(evt){
+    var child = evt.detail.child,
+      component = child._metaScore;
+  
+    if(component){
+      if(component instanceof metaScore.player.component.Block){
+        this.updateBlockSelector();
+      }
+      else if(component instanceof metaScore.player.component.Page){
+        this.updatePageSelector();
+      }
+      else if(component instanceof metaScore.player.component.Element){
+        this.updateElementSelector();
+      }
+    }
   };
 
   /**
@@ -1073,22 +1072,27 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerLoadSuccess = function(evt){
     var data = evt.detail.data;
 
-    this.player = evt.detail.player;
+    this.player = evt.detail.player;    
 
-    this.player.getBody()
-      .addClass('in-editor')
-      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-      .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdded, this))
-      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivated, this))
-      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
-      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this));
+    this.player
+      .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))    
+      .getBody()
+        .addClass('in-editor')
+        .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+        .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
+        .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
+        .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
+        .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+        .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
+        .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+        .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+        .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+        .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
 
     this
       .setEditing(true)
-      .updateMainmenu();
+      .updateMainmenu()
+      .updateBlockSelector();
       
     this.detailsOverlay.setValues(data);
     this.mainmenu.rindexfield.setValue(0, true);
@@ -1169,14 +1173,14 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method onBlockPageAdded
+   * @method onBlockPageAdd
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onBlockPageAdded = function(evt){
+  Editor.prototype.onBlockPageAdd = function(evt){
     var block = evt.detail.block;
     
-    if(block === this.panels.block.getComponent()){    
+    if(block === this.panels.block.getComponent()){
       this.updatePageSelector();
     }
 
@@ -1185,16 +1189,32 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method onBlockPageActivated
+   * @method onBlockPageActivate
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onBlockPageActivated = function(evt){
+  Editor.prototype.onBlockPageActivate = function(evt){
     if(metaScore.editing !== true){
       return;
     }
 
     this.panels.page.setComponent(evt.detail.page);
+  };
+
+  /**
+   * Description
+   * @method onPageElementAdd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPageElementAdd = function(evt){
+    var page = evt.detail.page;
+    
+    if(page === this.panels.page.getComponent()){
+      this.updateElementSelector();
+    }
+
+    evt.stopPropagation();
   };
 
   /**
@@ -1323,6 +1343,28 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method updateBlockSelector
+   * @chainable 
+   */
+  Editor.prototype.updateBlockSelector = function(){
+    var block = this.panels.block.getComponent(),
+      toolbar = this.panels.block.getToolbar();
+  
+    toolbar.emptySelector().addSelectorOption(null, '');
+        
+    this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, block){
+      if(block._metaScore){
+        toolbar.addSelectorOption(block._metaScore.getId(), block._metaScore.getName());
+      }
+    }, this);
+    
+    toolbar.setSelectorValue(block ? block.getId() : null, true);
+    
+    return this;
+  };
+
+  /**
+   * Description
    * @method updatePageSelector
    * @chainable 
    */
@@ -1340,6 +1382,29 @@ metaScore.Editor = (function(){
     }
     
     toolbar.setSelectorValue(page ? page.getId() : null, true);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateElementSelector
+   * @chainable 
+   */
+  Editor.prototype.updateElementSelector = function(){
+    var page = this.panels.page.getComponent(),
+      element = this.panels.element.getComponent(),
+      toolbar = this.panels.element.getToolbar();
+      
+    toolbar.emptySelector().addSelectorOption(null, '');
+        
+    if(page instanceof metaScore.player.component.Page){
+      page.getElements().each(function(index, element){
+        toolbar.addSelectorOption(element._metaScore.getId(), element._metaScore.getName());
+      }, this);
+    }
+    
+    toolbar.setSelectorValue(element ? element.getId() : null, true);
     
     return this;
   };
@@ -1370,9 +1435,6 @@ metaScore.Editor = (function(){
         container: this.workspace,
         url: this.configs.api_url +'guide/'+ id +'.json'
       })
-      .addListener('mediaadd', metaScore.Function.proxy(this.onPlayerMediaAdd, this))
-      .addListener('controlleradd', metaScore.Function.proxy(this.onPlayerControllerAdd, this))
-      .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
       .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
       .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
     
@@ -2258,7 +2320,7 @@ metaScore.namespace('editor').Panel = (function(){
       .appendTo(this);
 
     this
-      .addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .addDelegate('.fields .field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .unsetComponent();
   }
 
@@ -2668,9 +2730,15 @@ metaScore.namespace('editor').Panel = (function(){
 
     component.setProperty(name, value);
     
-    if(name === 'locked'){
-      this.updateDraggable();
-      this.updateResizable();
+    switch(name){
+      case 'locked':
+        this.updateDraggable();
+        this.updateResizable();
+        break;
+        
+      case 'name':
+        this.getToolbar().updateSelectorOption(component.getId(), value);
+        break;
     }
 
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
@@ -3445,10 +3513,23 @@ metaScore.namespace('editor.field').Select = (function () {
    * @method addOption
    * @param {} value
    * @param {} text
-   * @return ThisExpression
+   * @chainable
    */
   SelectField.prototype.addOption = function(value, text){
     this.input.append(new metaScore.Dom('<option/>', {'value': value, 'text': text}));
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateOption
+   * @param {} value
+   * @param {} text
+   * @chainable
+   */
+  SelectField.prototype.updateOption = function(value, text){
+    this.input.find('option[value="'+ value +'"]').text(text);
 
     return this;
   };
@@ -3468,7 +3549,7 @@ metaScore.namespace('editor.field').Select = (function () {
    * Description
    * @method removeOption
    * @param {} value
-   * @return ThisExpression
+   * @chainable
    */
   SelectField.prototype.removeOption = function(value){
     this.input.child('[value="'+ value +'"]').remove();
@@ -4808,6 +4889,21 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
   Toolbar.prototype.addSelectorOption = function(value, text){
     if(this.selector){
       this.selector.addOption(value, text);
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method addSelectorOption
+   * @param {} value
+   * @param {} text
+   * @return ThisExpression
+   */
+  Toolbar.prototype.updateSelectorOption = function(value, text){
+    if(this.selector){
+      this.selector.updateOption(value, text);
     }
     
     return this;

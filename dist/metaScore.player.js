@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-06 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-07 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "9a14bf";
+    return "95b3c3";
   },
 
   /**
@@ -1787,7 +1787,12 @@ metaScore.Dom = (function () {
     
     element = parent.children().get(index);
     
-    Dom.before(element, this.elements);
+    if(element){
+      Dom.before(element, this.elements);
+    }
+    else{
+      this.appendTo(parent);
+    }
 
     return this;
   };
@@ -1859,7 +1864,7 @@ metaScore.Dom = (function () {
       this.each(function(index, element) {
         var parent = element.parentElement;
         Dom.remove(element);
-        Dom.triggerEvent(parent, 'childremoved', {'child': element});
+        Dom.triggerEvent(parent, 'childremove', {'child': element});
       }, this);
     }
 
@@ -3163,7 +3168,7 @@ metaScore.Player = (function () {
   Player.prototype.getComponents = function(selector){
     var components;
     
-    components = this.getBody().children('.metaScore-component');
+    components = this.getBody().find('.metaScore-component');
     
     if(selector){
       components = components.filter(selector);
@@ -5425,7 +5430,7 @@ metaScore.namespace('player.component').Page = (function () {
    * @param {} configs
    * @return element
    */
-  Page.prototype.addElement = function(configs){
+  Page.prototype.addElement = function(configs, supressEvent){
     var element;
 
     if(configs instanceof metaScore.player.component.Element){
@@ -5436,6 +5441,10 @@ metaScore.namespace('player.component').Page = (function () {
       element = new metaScore.player.component.element[configs.type](metaScore.Object.extend({}, configs, {
         'container': this
       }));
+    }
+
+    if(supressEvent !== true){
+      this.triggerEvent('elementadd', {'page': this, 'element': element});
     }
 
     return element;

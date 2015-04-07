@@ -60,10 +60,23 @@ metaScore.namespace('editor.field').Select = (function () {
    * @method addOption
    * @param {} value
    * @param {} text
-   * @return ThisExpression
+   * @chainable
    */
   SelectField.prototype.addOption = function(value, text){
     this.input.append(new metaScore.Dom('<option/>', {'value': value, 'text': text}));
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateOption
+   * @param {} value
+   * @param {} text
+   * @chainable
+   */
+  SelectField.prototype.updateOption = function(value, text){
+    this.input.find('option[value="'+ value +'"]').text(text);
 
     return this;
   };
@@ -83,7 +96,7 @@ metaScore.namespace('editor.field').Select = (function () {
    * Description
    * @method removeOption
    * @param {} value
-   * @return ThisExpression
+   * @chainable
    */
   SelectField.prototype.removeOption = function(value){
     this.input.child('[value="'+ value +'"]').remove();

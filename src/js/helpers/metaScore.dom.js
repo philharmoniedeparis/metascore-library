@@ -981,7 +981,12 @@ metaScore.Dom = (function () {
     
     element = parent.children().get(index);
     
-    Dom.before(element, this.elements);
+    if(element){
+      Dom.before(element, this.elements);
+    }
+    else{
+      this.appendTo(parent);
+    }
 
     return this;
   };
@@ -1053,7 +1058,7 @@ metaScore.Dom = (function () {
       this.each(function(index, element) {
         var parent = element.parentElement;
         Dom.remove(element);
-        Dom.triggerEvent(parent, 'childremoved', {'child': element});
+        Dom.triggerEvent(parent, 'childremove', {'child': element});
       }, this);
     }
 

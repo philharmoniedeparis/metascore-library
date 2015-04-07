@@ -173,7 +173,7 @@ metaScore.namespace('player.component').Page = (function () {
    * @param {} configs
    * @return element
    */
-  Page.prototype.addElement = function(configs){
+  Page.prototype.addElement = function(configs, supressEvent){
     var element;
 
     if(configs instanceof metaScore.player.component.Element){
@@ -184,6 +184,10 @@ metaScore.namespace('player.component').Page = (function () {
       element = new metaScore.player.component.element[configs.type](metaScore.Object.extend({}, configs, {
         'container': this
       }));
+    }
+
+    if(supressEvent !== true){
+      this.triggerEvent('elementadd', {'page': this, 'element': element});
     }
 
     return element;

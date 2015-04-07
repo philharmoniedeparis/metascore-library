@@ -11,6 +11,8 @@ var metaScoreLocale = {
 	"editor.onMainmenuClick.revert.msg": "Êtes-vous sûr de vouloir revenir à la dernière version enregistrée ?<br/><strong>Toutes les données non sauvegardées seront perdues.</strong>",
 	"editor.onMainmenuClick.revert.yes": "Oui",
 	"editor.onMainmenuClick.revert.no": "Non",
+	"editor.onBlockPanelToolbarClick.defaultBlockName": "sans titre",
+	"editor.onElementPanelToolbarClick.defaultElementName": "sans titre",
 	"editor.onPlayerLoadError.msg": "Une erreur est survenue en essayant de charger le guide. Veuillez ré-essayer.",
 	"editor.onPlayerLoadError.ok": "OK",
 	"editor.onBeforeUnload.msg": "Toutes les données non sauvegardées seront perdues.",

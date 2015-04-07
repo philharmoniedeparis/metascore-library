@@ -155,6 +155,21 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
   /**
    * Description
+   * @method addSelectorOption
+   * @param {} value
+   * @param {} text
+   * @return ThisExpression
+   */
+  Toolbar.prototype.updateSelectorOption = function(value, text){
+    if(this.selector){
+      this.selector.updateOption(value, text);
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
    * @method setSelectorValue
    * @param {} value
    * @param {} supressEvent

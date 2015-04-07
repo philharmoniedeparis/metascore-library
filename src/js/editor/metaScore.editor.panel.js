@@ -36,7 +36,7 @@ metaScore.namespace('editor').Panel = (function(){
       .appendTo(this);
 
     this
-      .addDelegate('.field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .addDelegate('.fields .field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .unsetComponent();
   }
 
@@ -446,9 +446,15 @@ metaScore.namespace('editor').Panel = (function(){
 
     component.setProperty(name, value);
     
-    if(name === 'locked'){
-      this.updateDraggable();
-      this.updateResizable();
+    switch(name){
+      case 'locked':
+        this.updateDraggable();
+        this.updateResizable();
+        break;
+        
+      case 'name':
+        this.getToolbar().updateSelectorOption(component.getId(), value);
+        break;
     }
 
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
