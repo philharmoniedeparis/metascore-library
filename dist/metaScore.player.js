@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-07 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-13 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "95b3c3";
+    return "16b19d";
   },
 
   /**
@@ -3059,12 +3059,19 @@ metaScore.Player = (function () {
     this.rindex_css = new metaScore.StyleSheet()
       .appendTo(this.getHead());
 
-    this
-      .addMedia(this.json.media)
-      .addController(this.json.controller);
-
     metaScore.Array.each(this.json.blocks, function(index, block){
-      this.addBlock(block);
+      switch(block.type){
+        case 'media':
+          this.addMedia(metaScore.Object.extend({}, block, this.json.media));
+          break;
+          
+        case 'controller':
+          this.addController(block);
+          break;
+        
+        default:
+          this.addBlock(block);
+      }
     }, this);
 
     this.getBody().removeClass('loading');

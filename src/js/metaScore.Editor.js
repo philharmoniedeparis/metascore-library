@@ -261,8 +261,6 @@ metaScore.Editor = (function(){
    */
   Editor.prototype.onMainmenuClick = function(evt){
     switch(metaScore.Dom.data(evt.target, 'action')){
-      case 'new':
-        break;
       case 'open':
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
@@ -319,8 +317,6 @@ metaScore.Editor = (function(){
         this.setEditing(!metaScore.editing);
         break;
       case 'settings':
-        break;
-      case 'help':
         break;
     }
   };
@@ -1447,21 +1443,19 @@ metaScore.Editor = (function(){
       components = player.getComponents('.media, .controller, .block'),
       data = this.detailsOverlay.getValues(),
       component, options;
+      
+    data['blocks'] = [];
 
     components.each(function(index, dom){
       component = dom._metaScore;
     
       if(component instanceof metaScore.player.component.Media){
-        data['media'] = component.getProperties();
+        data['blocks'].push(metaScore.Object.extend({'type': 'media'}, component.getProperties()));
       }
       else if(component instanceof metaScore.player.component.Controller){
-        data['controller'] = component.getProperties();
+        data['blocks'].push(metaScore.Object.extend({'type': 'controller'}, component.getProperties()));
       }
       else if(component instanceof metaScore.player.component.Block){
-        if(!('blocks' in data)){
-          data['blocks'] = [];
-        }
-
         data['blocks'].push(component.getProperties());
       }
     }, this);

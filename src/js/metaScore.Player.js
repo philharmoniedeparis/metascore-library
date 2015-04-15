@@ -278,12 +278,19 @@ metaScore.Player = (function () {
     this.rindex_css = new metaScore.StyleSheet()
       .appendTo(this.getHead());
 
-    this
-      .addMedia(this.json.media)
-      .addController(this.json.controller);
-
     metaScore.Array.each(this.json.blocks, function(index, block){
-      this.addBlock(block);
+      switch(block.type){
+        case 'media':
+          this.addMedia(metaScore.Object.extend({}, block, this.json.media));
+          break;
+          
+        case 'controller':
+          this.addController(block);
+          break;
+        
+        default:
+          this.addBlock(block);
+      }
     }, this);
 
     this.getBody().removeClass('loading');
