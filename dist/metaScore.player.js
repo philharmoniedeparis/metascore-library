@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "e7c757";
+    return "7d0e2c";
   },
 
   /**

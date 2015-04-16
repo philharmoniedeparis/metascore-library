@@ -202,6 +202,10 @@ metaScore.namespace('editor.panel').Text = (function () {
               'data-action': 'unlink',
               'title': metaScore.Locale.t('editor.panel.Text.formatting.unlink', 'Remove link')
             },
+            'insertImage': {
+              'data-action': 'insertImage',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.insertImage', 'Add/Modify image')
+            },
             'removeFormat': {
               'data-action': 'removeFormat',
               'title': metaScore.Locale.t('editor.panel.Text.formatting.removeFormat', 'Remove formatting')
@@ -214,17 +218,44 @@ metaScore.namespace('editor.panel').Text = (function () {
          * @return 
          */
         'setter': function(value){
-          if(value === 'link'){
-            var link = metaScore.Dom.closest(this.getSelectedElement(), 'a');
+          var selected, element;
+        
+          switch(value){
+            case 'link':
+              selected = this.getSelectedElement();
+              element = metaScore.Dom.is(selected, 'a') ? selected : null;
+                
+              if(element){
+                this.setSelectedElement(element);
+              }
 
-            new metaScore.editor.overlay.LinkEditor({
-                link: link,
-                autoShow: true
-              })
-              .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
-          }
-          else{
-            this.execCommand(value);
+              new metaScore.editor.overlay.InsertLink({
+                  link: element,
+                  autoShow: true
+                })
+                .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
+              break;
+              
+            case 'unlink':
+              selected = this.getSelectedElement();
+              element = metaScore.Dom.is(selected, 'a') ? selected : null;
+                
+              if(element){
+                this.setSelectedElement(element);
+              }
+              
+              this.execCommand(value);
+              break;
+            
+            case 'insertImage':
+              new metaScore.editor.overlay.InsertImage({
+                  autoShow: true
+                })
+                .addListener('submit', metaScore.Function.proxy(this.onImageOverlaySubmit, this));
+              break;
+              
+            default:
+              this.execCommand(value);
           }
         }
       }
@@ -436,10 +467,10 @@ metaScore.namespace('editor.panel').Text = (function () {
   TextPanel.prototype.updateButtons = function(evt){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
-      element, is_link;
+      selected, is_link;
     
-    element = new metaScore.Dom(this.getSelectedElement());
-    is_link = element.closest('a') !== null;
+    selected = this.getSelectedElement();
+    is_link = metaScore.Dom.is(selected, 'a');
     
     metaScore.Object.each(this.getField(), function(field_key, field){
       switch(field_key){
@@ -476,26 +507,64 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   /**
    * Description
+   * @method onImageOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onImageOverlaySubmit = function(evt){
+    var url = evt.detail.url;
+
+    this.execCommand('insertImage', url);
+  };
+
+  /**
+   * Description
    * @method getSelectedElement
    * @return element
    */
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
-      selection, element;
+      selection, range, element;
+    
+    if(document.getSelection) { // FF3.6, Safari4, Chrome5 (DOM Standards)
+      selection = document.getSelection();
+      element = selection.anchorNode;
+    }
+    
+    if(!element && document.selection) { // IE
+      selection = document.selection;
+      range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+      element = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement ? range.parentElement() : range.item(0);
+    }
+    
+    if(element) {
+      return (element.nodeName === "#text" ? element.parentNode : element);
+    }
+  };
+
+
+  /**
+   * Description
+   * @method setSelectedElement
+   */
+  TextPanel.prototype.setSelectedElement = function(element){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      selection, range;
 
     if(document.selection){
       selection = document.selection;
-    	element = selection.createRange().parentElement();
     }
-    else{
-    	selection = document.getSelection();
-    	if(selection.rangeCount > 0){
-        element = selection.getRangeAt(0).startContainer.parentNode;
-      }
+    else{      
+      selection = document.getSelection();
     }
-
-    return element;
+    
+    range = document.createRange();
+    range.selectNodeContents(element);
+    
+    selection.removeAllRanges();
+    selection.addRange(range);
   };
 
   /**

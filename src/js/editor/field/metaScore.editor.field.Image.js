@@ -24,6 +24,13 @@ metaScore.namespace('editor.field').Image = (function () {
     this.addClass('imagefield');
   }
 
+  ImageField.defaults = {
+    /**
+    * Defines the placeholder
+    */
+    placeholder: metaScore.Locale.t('editor.field.Image.placeholder', 'Browse...')
+  };
+
   metaScore.editor.Field.extend(ImageField);
 
   /**
@@ -36,6 +43,7 @@ metaScore.namespace('editor.field').Image = (function () {
 
     this.input
       .attr('readonly', 'readonly')
+      .attr('placeholder', this.configs.placeholder)
       .addListener('click', metaScore.Function.proxy(this.onClick, this));
 
     this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})

@@ -1,24 +1,24 @@
 /**
 * Description
-* @class LinkEditor
+* @class InsertLink
 * @namespace metaScore.editor.overlay
 * @extends metaScore.editor.Overlay
 */
 
-metaScore.namespace('editor.overlay').LinkEditor = (function () {
+metaScore.namespace('editor.overlay').InsertLink = (function () {
 
   /**
    * Description
    * @constructor
    * @param {} configs
    */
-  function LinkEditor(configs) {
+  function InsertLink(configs) {
     this.configs = this.getConfigs(configs);
 
     // call parent constructor
-    LinkEditor.parent.call(this, this.configs);
+    InsertLink.parent.call(this, this.configs);
 
-    this.addClass('link-editor');
+    this.addClass('insert-link');
 
     this.toggleFields();
 
@@ -27,7 +27,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     }
   }
 
-  LinkEditor.defaults = {
+  InsertLink.defaults = {
     /**
     * True to add a toolbar with title and close button
     */
@@ -36,7 +36,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link Editor'),
+    title: metaScore.Locale.t('editor.overlay.InsertLink.title', 'Insert Link'),
 
     /**
     * The current link
@@ -44,18 +44,18 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     link: null
   };
 
-  metaScore.editor.Overlay.extend(LinkEditor);
+  metaScore.editor.Overlay.extend(InsertLink);
 
   /**
    * Description
    * @method setupDOM
    * @return 
    */
-  LinkEditor.prototype.setupDOM = function(){
+  InsertLink.prototype.setupDOM = function(){
     var contents;
 
     // call parent method
-    LinkEditor.parent.prototype.setupDOM.call(this);
+    InsertLink.parent.prototype.setupDOM.call(this);
 
     contents = this.getContents();
 
@@ -63,11 +63,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     this.buttons = {};
 
     this.fields.type = new metaScore.editor.field.Select({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type', 'Type'),
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.type', 'Type'),
         options: {
-          url: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.url', 'URL'),
-          page: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.page', 'Page'),
-          time: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.time', 'Time'),
+          url: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
+          page: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
+          time: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time'),
         }
       })
       .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
@@ -75,31 +75,31 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
 
     // URL
     this.fields.url = new metaScore.editor.field.Text({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.url', 'URL')
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.url', 'URL')
       })
       .appendTo(contents);
 
     // Page
     this.fields.page = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.page', 'Page')
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.page', 'Page')
       })
       .appendTo(contents);
 
     // Time
     this.fields.inTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.in-time', 'Start time'),
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.in-time', 'Start time'),
         inButton: true
       })
       .appendTo(contents);
 
     this.fields.outTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.out-time', 'End time'),
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.out-time', 'End time'),
         inButton: true
       })
       .appendTo(contents);
 
     this.fields.rIndex = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.r-index', 'Reading index')
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.r-index', 'Reading index')
       })
       .appendTo(contents);
 
@@ -122,7 +122,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} link
    * @return 
    */
-  LinkEditor.prototype.setValuesFromLink = function(link){
+  InsertLink.prototype.setValuesFromLink = function(link){
     var matches;
 
     if(matches = link.hash.match(/^#p=(\d+)/)){
@@ -146,7 +146,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @method toggleFields
    * @return 
    */
-  LinkEditor.prototype.toggleFields = function(){
+  InsertLink.prototype.toggleFields = function(){
     var type = this.fields.type.getValue();
 
     switch(type){
@@ -182,7 +182,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} evt
    * @return 
    */
-  LinkEditor.prototype.onTypeChange = function(evt){
+  InsertLink.prototype.onTypeChange = function(evt){
     this.toggleFields();
   };
 
@@ -192,7 +192,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} evt
    * @return 
    */
-  LinkEditor.prototype.onApplyClick = function(evt){
+  InsertLink.prototype.onApplyClick = function(evt){
     var type = this.fields.type.getValue(),
       url;
 
@@ -221,10 +221,10 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} evt
    * @return 
    */
-  LinkEditor.prototype.onCancelClick = function(evt){
+  InsertLink.prototype.onCancelClick = function(evt){
     this.hide();
   };
 
-  return LinkEditor;
+  return InsertLink;
 
 })();

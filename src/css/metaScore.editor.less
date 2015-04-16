@@ -171,7 +171,8 @@
         position: relative;
 
         input{
-          padding-right: 15px !important;
+          width: 100%;
+          padding-right: 17px !important;
           .box-sizing(border-box);
         }
 
@@ -179,10 +180,11 @@
           position: absolute;
           top: 0;
           right: 0;
-          width: 15px;
+          width: 17px;
+          min-width: 0;
           height: 100%;
-          background-image: url('img/editor/field/clear.png');
-          background-position: center center;
+          margin: 0;
+          background: url('img/editor/field/clear.png') no-repeat center center;
           overflow: hidden;
           text-indent: 999px;
         }
@@ -608,6 +610,9 @@
                 &[data-action="unlink"]{
                   background-image: url('img/editor/wysiwyg/unlink.png');
                 }
+                &[data-action="insertImage"]{
+                  background-image: url('img/editor/wysiwyg/insertImage.png');
+                }
                 &[data-action="removeFormat"]{
                   background-image: url('img/editor/wysiwyg/removeFormat.png');
                 }
@@ -893,7 +898,8 @@
     }
 
     &.guide-details,
-    &.link-editor{
+    &.insert-link,
+    &.insert-image{
       .contents{
         min-width: 300px;
         padding: 12px 16px;

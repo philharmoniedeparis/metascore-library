@@ -3352,6 +3352,13 @@ metaScore.namespace('editor.field').Image = (function () {
     this.addClass('imagefield');
   }
 
+  ImageField.defaults = {
+    /**
+    * Defines the placeholder
+    */
+    placeholder: metaScore.Locale.t('editor.field.Image.placeholder', 'Browse...')
+  };
+
   metaScore.editor.Field.extend(ImageField);
 
   /**
@@ -3364,6 +3371,7 @@ metaScore.namespace('editor.field').Image = (function () {
 
     this.input
       .attr('readonly', 'readonly')
+      .attr('placeholder', this.configs.placeholder)
       .addListener('click', metaScore.Function.proxy(this.onClick, this));
 
     this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
@@ -4457,6 +4465,10 @@ metaScore.namespace('editor.panel').Text = (function () {
               'data-action': 'unlink',
               'title': metaScore.Locale.t('editor.panel.Text.formatting.unlink', 'Remove link')
             },
+            'insertImage': {
+              'data-action': 'insertImage',
+              'title': metaScore.Locale.t('editor.panel.Text.formatting.insertImage', 'Add/Modify image')
+            },
             'removeFormat': {
               'data-action': 'removeFormat',
               'title': metaScore.Locale.t('editor.panel.Text.formatting.removeFormat', 'Remove formatting')
@@ -4469,17 +4481,44 @@ metaScore.namespace('editor.panel').Text = (function () {
          * @return 
          */
         'setter': function(value){
-          if(value === 'link'){
-            var link = metaScore.Dom.closest(this.getSelectedElement(), 'a');
+          var selected, element;
+        
+          switch(value){
+            case 'link':
+              selected = this.getSelectedElement();
+              element = metaScore.Dom.is(selected, 'a') ? selected : null;
+                
+              if(element){
+                this.setSelectedElement(element);
+              }
 
-            new metaScore.editor.overlay.LinkEditor({
-                link: link,
-                autoShow: true
-              })
-              .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
-          }
-          else{
-            this.execCommand(value);
+              new metaScore.editor.overlay.InsertLink({
+                  link: element,
+                  autoShow: true
+                })
+                .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
+              break;
+              
+            case 'unlink':
+              selected = this.getSelectedElement();
+              element = metaScore.Dom.is(selected, 'a') ? selected : null;
+                
+              if(element){
+                this.setSelectedElement(element);
+              }
+              
+              this.execCommand(value);
+              break;
+            
+            case 'insertImage':
+              new metaScore.editor.overlay.InsertImage({
+                  autoShow: true
+                })
+                .addListener('submit', metaScore.Function.proxy(this.onImageOverlaySubmit, this));
+              break;
+              
+            default:
+              this.execCommand(value);
           }
         }
       }
@@ -4691,10 +4730,10 @@ metaScore.namespace('editor.panel').Text = (function () {
   TextPanel.prototype.updateButtons = function(evt){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
-      element, is_link;
+      selected, is_link;
     
-    element = new metaScore.Dom(this.getSelectedElement());
-    is_link = element.closest('a') !== null;
+    selected = this.getSelectedElement();
+    is_link = metaScore.Dom.is(selected, 'a');
     
     metaScore.Object.each(this.getField(), function(field_key, field){
       switch(field_key){
@@ -4731,26 +4770,64 @@ metaScore.namespace('editor.panel').Text = (function () {
 
   /**
    * Description
+   * @method onImageOverlaySubmit
+   * @param {} evt
+   * @return 
+   */
+  TextPanel.prototype.onImageOverlaySubmit = function(evt){
+    var url = evt.detail.url;
+
+    this.execCommand('insertImage', url);
+  };
+
+  /**
+   * Description
    * @method getSelectedElement
    * @return element
    */
   TextPanel.prototype.getSelectedElement = function(){
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
-      selection, element;
+      selection, range, element;
+    
+    if(document.getSelection) { // FF3.6, Safari4, Chrome5 (DOM Standards)
+      selection = document.getSelection();
+      element = selection.anchorNode;
+    }
+    
+    if(!element && document.selection) { // IE
+      selection = document.selection;
+      range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+      element = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement ? range.parentElement() : range.item(0);
+    }
+    
+    if(element) {
+      return (element.nodeName === "#text" ? element.parentNode : element);
+    }
+  };
+
+
+  /**
+   * Description
+   * @method setSelectedElement
+   */
+  TextPanel.prototype.setSelectedElement = function(element){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      selection, range;
 
     if(document.selection){
       selection = document.selection;
-    	element = selection.createRange().parentElement();
     }
-    else{
-    	selection = document.getSelection();
-    	if(selection.rangeCount > 0){
-        element = selection.getRangeAt(0).startContainer.parentNode;
-      }
+    else{      
+      selection = document.getSelection();
     }
-
-    return element;
+    
+    range = document.createRange();
+    range.selectNodeContents(element);
+    
+    selection.removeAllRanges();
+    selection.addRange(range);
   };
 
   /**
@@ -6007,34 +6084,32 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 })();
 /**
 * Description
-* @class LinkEditor
+* @class InsertImage
 * @namespace metaScore.editor.overlay
 * @extends metaScore.editor.Overlay
 */
 
-metaScore.namespace('editor.overlay').LinkEditor = (function () {
+metaScore.namespace('editor.overlay').InsertImage = (function () {
 
   /**
    * Description
    * @constructor
    * @param {} configs
    */
-  function LinkEditor(configs) {
+  function InsertImage(configs) {
     this.configs = this.getConfigs(configs);
 
     // call parent constructor
-    LinkEditor.parent.call(this, this.configs);
+    InsertImage.parent.call(this, this.configs);
 
-    this.addClass('link-editor');
+    this.addClass('insert-image');
 
-    this.toggleFields();
-
-    if(this.configs.link){
-      this.setValuesFromLink(this.configs.link);
+    if(this.configs.image){
+      this.setValuesFromImage(this.configs.image);
     }
   }
 
-  LinkEditor.defaults = {
+  InsertImage.defaults = {
     /**
     * True to add a toolbar with title and close button
     */
@@ -6043,70 +6118,35 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
     /**
     * The overlay's title
     */
-    title: metaScore.Locale.t('editor.overlay.LinkEditor.title', 'Link Editor'),
+    title: metaScore.Locale.t('editor.overlay.InsertImage.title', 'Insert Image'),
 
     /**
-    * The current link
+    * The current image
     */
-    link: null
+    image: null
   };
 
-  metaScore.editor.Overlay.extend(LinkEditor);
+  metaScore.editor.Overlay.extend(InsertImage);
 
   /**
    * Description
    * @method setupDOM
    * @return 
    */
-  LinkEditor.prototype.setupDOM = function(){
+  InsertImage.prototype.setupDOM = function(){
     var contents;
 
     // call parent method
-    LinkEditor.parent.prototype.setupDOM.call(this);
+    InsertImage.parent.prototype.setupDOM.call(this);
 
     contents = this.getContents();
 
     this.fields = {};
     this.buttons = {};
 
-    this.fields.type = new metaScore.editor.field.Select({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type', 'Type'),
-        options: {
-          url: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.url', 'URL'),
-          page: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.page', 'Page'),
-          time: metaScore.Locale.t('editor.overlay.LinkEditor.fields.type.time', 'Time'),
-        }
-      })
-      .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
-      .appendTo(contents);
-
     // URL
-    this.fields.url = new metaScore.editor.field.Text({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.url', 'URL')
-      })
-      .appendTo(contents);
-
-    // Page
-    this.fields.page = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.page', 'Page')
-      })
-      .appendTo(contents);
-
-    // Time
-    this.fields.inTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.in-time', 'Start time'),
-        inButton: true
-      })
-      .appendTo(contents);
-
-    this.fields.outTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.out-time', 'End time'),
-        inButton: true
-      })
-      .appendTo(contents);
-
-    this.fields.rIndex = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.LinkEditor.fields.r-index', 'Reading index')
+    this.fields.image = new metaScore.editor.field.Image({
+        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.image', 'Image')
       })
       .appendTo(contents);
 
@@ -6129,7 +6169,164 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} link
    * @return 
    */
-  LinkEditor.prototype.setValuesFromLink = function(link){
+  InsertImage.prototype.setValuesFromImage = function(image){
+    this.fields.image.setValue(image.url);
+  };
+
+  /**
+   * Description
+   * @method onApplyClick
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onApplyClick = function(evt){
+    var url;
+    
+    url = this.fields.image.getValue();
+
+    this.triggerEvent('submit', {'overlay': this, 'url': url}, true, false);
+
+    this.hide();
+  };
+
+  /**
+   * Description
+   * @method onCancelClick
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onCancelClick = function(evt){
+    this.hide();
+  };
+
+  return InsertImage;
+
+})();
+/**
+* Description
+* @class InsertLink
+* @namespace metaScore.editor.overlay
+* @extends metaScore.editor.Overlay
+*/
+
+metaScore.namespace('editor.overlay').InsertLink = (function () {
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function InsertLink(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call parent constructor
+    InsertLink.parent.call(this, this.configs);
+
+    this.addClass('insert-link');
+
+    this.toggleFields();
+
+    if(this.configs.link){
+      this.setValuesFromLink(this.configs.link);
+    }
+  }
+
+  InsertLink.defaults = {
+    /**
+    * True to add a toolbar with title and close button
+    */
+    toolbar: true,
+
+    /**
+    * The overlay's title
+    */
+    title: metaScore.Locale.t('editor.overlay.InsertLink.title', 'Insert Link'),
+
+    /**
+    * The current link
+    */
+    link: null
+  };
+
+  metaScore.editor.Overlay.extend(InsertLink);
+
+  /**
+   * Description
+   * @method setupDOM
+   * @return 
+   */
+  InsertLink.prototype.setupDOM = function(){
+    var contents;
+
+    // call parent method
+    InsertLink.parent.prototype.setupDOM.call(this);
+
+    contents = this.getContents();
+
+    this.fields = {};
+    this.buttons = {};
+
+    this.fields.type = new metaScore.editor.field.Select({
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.type', 'Type'),
+        options: {
+          url: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
+          page: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
+          time: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time'),
+        }
+      })
+      .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
+      .appendTo(contents);
+
+    // URL
+    this.fields.url = new metaScore.editor.field.Text({
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.url', 'URL')
+      })
+      .appendTo(contents);
+
+    // Page
+    this.fields.page = new metaScore.editor.field.Number({
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.page', 'Page')
+      })
+      .appendTo(contents);
+
+    // Time
+    this.fields.inTime = new metaScore.editor.field.Time({
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.in-time', 'Start time'),
+        inButton: true
+      })
+      .appendTo(contents);
+
+    this.fields.outTime = new metaScore.editor.field.Time({
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.out-time', 'End time'),
+        inButton: true
+      })
+      .appendTo(contents);
+
+    this.fields.rIndex = new metaScore.editor.field.Number({
+        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.r-index', 'Reading index')
+      })
+      .appendTo(contents);
+
+    // Buttons
+    this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
+      .addClass('apply')
+      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
+      .appendTo(contents);
+
+    this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+      .addClass('cancel')
+      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
+      .appendTo(contents);
+
+  };
+
+  /**
+   * Description
+   * @method setValuesFromLink
+   * @param {} link
+   * @return 
+   */
+  InsertLink.prototype.setValuesFromLink = function(link){
     var matches;
 
     if(matches = link.hash.match(/^#p=(\d+)/)){
@@ -6153,7 +6350,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @method toggleFields
    * @return 
    */
-  LinkEditor.prototype.toggleFields = function(){
+  InsertLink.prototype.toggleFields = function(){
     var type = this.fields.type.getValue();
 
     switch(type){
@@ -6189,7 +6386,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} evt
    * @return 
    */
-  LinkEditor.prototype.onTypeChange = function(evt){
+  InsertLink.prototype.onTypeChange = function(evt){
     this.toggleFields();
   };
 
@@ -6199,7 +6396,7 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} evt
    * @return 
    */
-  LinkEditor.prototype.onApplyClick = function(evt){
+  InsertLink.prototype.onApplyClick = function(evt){
     var type = this.fields.type.getValue(),
       url;
 
@@ -6228,11 +6425,11 @@ metaScore.namespace('editor.overlay').LinkEditor = (function () {
    * @param {} evt
    * @return 
    */
-  LinkEditor.prototype.onCancelClick = function(evt){
+  InsertLink.prototype.onCancelClick = function(evt){
     this.hide();
   };
 
-  return LinkEditor;
+  return InsertLink;
 
 })();
 /**

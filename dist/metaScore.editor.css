@@ -210,7 +210,8 @@
 .metaScore-editor .field.borderradiusrfield .input-wrapper input,
 .metaScore-editor .field.imagefield .input-wrapper input,
 .metaScore-editor .field.colorfield .input-wrapper input {
-  padding-right: 15px !important;
+  width: 100%;
+  padding-right: 17px !important;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -221,10 +222,11 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 15px;
+  width: 17px;
+  min-width: 0;
   height: 100%;
-  background-image: url('img/editor/field/clear.png');
-  background-position: center center;
+  margin: 0;
+  background: url('img/editor/field/clear.png') no-repeat center center;
   overflow: hidden;
   text-indent: 999px;
 }
@@ -615,6 +617,9 @@
 .metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="unlink"] {
   background-image: url('img/editor/wysiwyg/unlink.png');
 }
+.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="insertImage"] {
+  background-image: url('img/editor/wysiwyg/insertImage.png');
+}
 .metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="removeFormat"] {
   background-image: url('img/editor/wysiwyg/removeFormat.png');
 }
@@ -866,27 +871,32 @@
   background: #EEE;
 }
 .metaScore-editor .overlay.guide-details .contents,
-.metaScore-editor .overlay.link-editor .contents {
+.metaScore-editor .overlay.insert-link .contents,
+.metaScore-editor .overlay.insert-image .contents {
   min-width: 300px;
   padding: 12px 16px;
 }
 .metaScore-editor .overlay.guide-details .contents .field,
-.metaScore-editor .overlay.link-editor .contents .field {
+.metaScore-editor .overlay.insert-link .contents .field,
+.metaScore-editor .overlay.insert-image .contents .field {
   display: block;
   margin-bottom: 1em;
 }
 .metaScore-editor .overlay.guide-details .contents .field label,
-.metaScore-editor .overlay.link-editor .contents .field label {
+.metaScore-editor .overlay.insert-link .contents .field label,
+.metaScore-editor .overlay.insert-image .contents .field label {
   display: block;
   font-weight: bold;
 }
 .metaScore-editor .overlay.guide-details .contents .field textarea,
-.metaScore-editor .overlay.link-editor .contents .field textarea {
+.metaScore-editor .overlay.insert-link .contents .field textarea,
+.metaScore-editor .overlay.insert-image .contents .field textarea {
   width: 100%;
   min-height: 5em;
 }
 .metaScore-editor .overlay.guide-details .contents button,
-.metaScore-editor .overlay.link-editor .contents button {
+.metaScore-editor .overlay.insert-link .contents button,
+.metaScore-editor .overlay.insert-image .contents button {
   min-width: 60px;
   margin-right: 0.5em;
   padding: 0.5em;
@@ -894,7 +904,8 @@
   pointer-events: auto;
 }
 .metaScore-editor .overlay.guide-details .contents button.cancel,
-.metaScore-editor .overlay.link-editor .contents button.cancel {
+.metaScore-editor .overlay.insert-link .contents button.cancel,
+.metaScore-editor .overlay.insert-image .contents button.cancel {
   background: #eee;
 }
 .metaScore-editor .overlay.guide-details .contents {
