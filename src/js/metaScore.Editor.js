@@ -439,13 +439,18 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var player, panel, blocks, block, count, index;
+    var player, panel, blocks, block, count, index,    
+      action = metaScore.Dom.data(evt.target, 'action');
 
-    switch(metaScore.Dom.data(evt.target, 'action')){
-      case 'new':
+    switch(action){
+      case 'synched':
+      case 'non-synched':
         player = this.getPlayer();
         panel = this.panels.block;
-        block = player.addBlock({'name':  metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')});
+        block = player.addBlock({
+          'name':  metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled'),
+          'synched': action === 'synched'
+        });
         
         block.addPage();
         
@@ -626,9 +631,10 @@ metaScore.Editor = (function(){
     var panel, block, page, 
       start_time, end_time, configs,
       previous_page, auto_page,
-      dom, count, index;
-
-    switch(metaScore.Dom.data(evt.target, 'action')){
+      dom, count, index,
+      action = metaScore.Dom.data(evt.target, 'action');
+    
+    switch(action){
       case 'new':
         panel = this.panels.page;
         block = this.panels.block.getComponent();

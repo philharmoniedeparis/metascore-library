@@ -77,6 +77,16 @@
   }
 
   .field{
+    &.booleanfield{
+      &.readonly{
+        .input-wrapper{
+          input{
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+    
     &.timefield{
       .input-wrapper{
         display: inline-block;
@@ -176,6 +186,13 @@
           overflow: hidden;
           text-indent: 999px;
         }
+      }
+    }
+    
+    &.readonly{
+      .input-wrapper{
+        .opacity(0.75);
+        cursor: default;
       }
     }
     

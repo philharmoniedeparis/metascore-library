@@ -21,7 +21,8 @@ metaScore.namespace('editor.panel').Block = (function () {
     toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
       title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
       menuItems: {
-        'new': metaScore.Locale.t('editor.panel.Block.menuItems.new', 'Add a new block'),
+        'synched': metaScore.Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
+        'non-synched': metaScore.Locale.t('editor.panel.Block.menuItems.non-synched', 'Add an non-synchronized block'),
         'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
       }
     })

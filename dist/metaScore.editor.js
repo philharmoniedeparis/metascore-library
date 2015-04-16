@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-13 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-16 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -476,13 +476,18 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var player, panel, blocks, block, count, index;
+    var player, panel, blocks, block, count, index,    
+      action = metaScore.Dom.data(evt.target, 'action');
 
-    switch(metaScore.Dom.data(evt.target, 'action')){
-      case 'new':
+    switch(action){
+      case 'synched':
+      case 'non-synched':
         player = this.getPlayer();
         panel = this.panels.block;
-        block = player.addBlock({'name':  metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')});
+        block = player.addBlock({
+          'name':  metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled'),
+          'synched': action === 'synched'
+        });
         
         block.addPage();
         
@@ -663,9 +668,10 @@ metaScore.Editor = (function(){
     var panel, block, page, 
       start_time, end_time, configs,
       previous_page, auto_page,
-      dom, count, index;
-
-    switch(metaScore.Dom.data(evt.target, 'action')){
+      dom, count, index,
+      action = metaScore.Dom.data(evt.target, 'action');
+    
+    switch(action){
       case 'new':
         panel = this.panels.page;
         block = this.panels.block.getComponent();
@@ -1690,8 +1696,6 @@ metaScore.namespace('editor').Field = (function () {
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
 
-    this.disabled = false;
-
     if(this.configs.value !== null){
       this.setValue(this.configs.value);
     }
@@ -1699,6 +1703,11 @@ metaScore.namespace('editor').Field = (function () {
     if(this.configs.disabled){
       this.disable();
     }
+    else{
+      this.enable();
+    }
+
+    this.readonly(this.configs.readonly);
   }
 
   Field.defaults = {
@@ -1710,7 +1719,12 @@ metaScore.namespace('editor').Field = (function () {
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
+    disabled: false,
+
+    /**
+    * Defines whether the field is readonly by default
+    */
+    readonly: false
   };
 
   metaScore.Dom.extend(Field);
@@ -1782,7 +1796,10 @@ metaScore.namespace('editor').Field = (function () {
     this.disabled = true;
 
     this.addClass('disabled');
-    this.input.attr('disabled', 'disabled');
+    
+    if(this.input){
+      this.input.attr('disabled', 'disabled');
+    }
 
     return this;
   };
@@ -1796,7 +1813,27 @@ metaScore.namespace('editor').Field = (function () {
     this.disabled = false;
 
     this.removeClass('disabled');
-    this.input.attr('disabled', null);
+    
+    if(this.input){
+      this.input.attr('disabled', null);
+    }
+
+    return this;
+  };
+
+  /**
+   * Toggle the readonly attribute of the field
+   * @method readonly
+   * @return ThisExpression
+   */
+  Field.prototype.readonly = function(readonly){
+    this.readonly = readonly === true;
+
+    this.toggleClass('readonly', this.readonly);
+    
+    if(this.input){
+      this.input.attr('readonly', this.readonly ? "readonly" : null);
+    }
 
     return this;
   };
@@ -2912,8 +2949,21 @@ metaScore.namespace('editor.field').Boolean = (function () {
       .appendTo(this);
 
     this.input = new metaScore.Dom('<input/>', {'type': 'checkbox', 'id': uid})
+      .addListener('click', metaScore.Function.proxy(this.onClick, this))
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this.input_wrapper);
+  };
+
+  /**
+   * Description
+   * @method onClick
+   * @param {} evt
+   * @return 
+   */
+  BooleanField.prototype.onClick = function(evt){
+    if(this.readonly){
+      evt.preventDefault();
+    }
   };
 
   /**
@@ -2923,6 +2973,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
    * @return 
    */
   BooleanField.prototype.onChange = function(evt){
+    if(this.readonly){
+      evt.preventDefault();
+      return;
+    }
+    
     this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
@@ -2941,6 +2996,19 @@ metaScore.namespace('editor.field').Boolean = (function () {
     if(supressEvent !== true){
       this.input.triggerEvent('change');
     }
+  };
+
+  /**
+   * Toggle the readonly attribute of the field
+   * @method readonly
+   * @return ThisExpression
+   */
+  BooleanField.prototype.readonly = function(readonly){
+    this.readonly = readonly === true;
+
+    this.toggleClass('readonly', this.readonly);
+
+    return this;
   };
 
   return BooleanField;
@@ -3130,32 +3198,6 @@ metaScore.namespace('editor.field').Buttons = (function () {
    */
   ButtonsField.prototype.getButton = function(key){
     return this.buttons[key];
-  };
-  
-  /**
-   * Description
-   * @method enable
-   * @return ThisExpression
-   */
-  ButtonsField.prototype.enable = function(){
-    this.disabled = false;
-
-    this.removeClass('disabled');
-
-    return this;
-  };
-  
-  /**
-   * Description
-   * @method disable
-   * @return ThisExpression
-   */
-  ButtonsField.prototype.disable = function(){
-    this.disabled = true;
-
-    this.addClass('disabled');
-
-    return this;
   };
 
   return ButtonsField;
@@ -4025,7 +4067,8 @@ metaScore.namespace('editor.panel').Block = (function () {
     toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
       title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
       menuItems: {
-        'new': metaScore.Locale.t('editor.panel.Block.menuItems.new', 'Add a new block'),
+        'synched': metaScore.Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
+        'non-synched': metaScore.Locale.t('editor.panel.Block.menuItems.non-synched', 'Add an non-synchronized block'),
         'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
       }
     })
@@ -4349,8 +4392,7 @@ metaScore.namespace('editor.panel').Text = (function () {
             "3": '3',
             "4": '4',
             "5": '5',
-            "6": '6',
-            "7": '7'
+            "6": '6'
           }
         },
         /**

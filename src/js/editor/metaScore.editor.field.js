@@ -23,8 +23,6 @@ metaScore.namespace('editor').Field = (function () {
     // keep a reference to this class instance in the DOM node
     this.get(0)._metaScore = this;
 
-    this.disabled = false;
-
     if(this.configs.value !== null){
       this.setValue(this.configs.value);
     }
@@ -32,6 +30,11 @@ metaScore.namespace('editor').Field = (function () {
     if(this.configs.disabled){
       this.disable();
     }
+    else{
+      this.enable();
+    }
+
+    this.readonly(this.configs.readonly);
   }
 
   Field.defaults = {
@@ -43,7 +46,12 @@ metaScore.namespace('editor').Field = (function () {
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false
+    disabled: false,
+
+    /**
+    * Defines whether the field is readonly by default
+    */
+    readonly: false
   };
 
   metaScore.Dom.extend(Field);
@@ -115,7 +123,10 @@ metaScore.namespace('editor').Field = (function () {
     this.disabled = true;
 
     this.addClass('disabled');
-    this.input.attr('disabled', 'disabled');
+    
+    if(this.input){
+      this.input.attr('disabled', 'disabled');
+    }
 
     return this;
   };
@@ -129,7 +140,27 @@ metaScore.namespace('editor').Field = (function () {
     this.disabled = false;
 
     this.removeClass('disabled');
-    this.input.attr('disabled', null);
+    
+    if(this.input){
+      this.input.attr('disabled', null);
+    }
+
+    return this;
+  };
+
+  /**
+   * Toggle the readonly attribute of the field
+   * @method readonly
+   * @return ThisExpression
+   */
+  Field.prototype.readonly = function(readonly){
+    this.readonly = readonly === true;
+
+    this.toggleClass('readonly', this.readonly);
+    
+    if(this.input){
+      this.input.attr('readonly', this.readonly ? "readonly" : null);
+    }
 
     return this;
   };

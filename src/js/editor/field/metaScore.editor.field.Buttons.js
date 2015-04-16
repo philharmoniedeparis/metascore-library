@@ -83,32 +83,6 @@ metaScore.namespace('editor.field').Buttons = (function () {
   ButtonsField.prototype.getButton = function(key){
     return this.buttons[key];
   };
-  
-  /**
-   * Description
-   * @method enable
-   * @return ThisExpression
-   */
-  ButtonsField.prototype.enable = function(){
-    this.disabled = false;
-
-    this.removeClass('disabled');
-
-    return this;
-  };
-  
-  /**
-   * Description
-   * @method disable
-   * @return ThisExpression
-   */
-  ButtonsField.prototype.disable = function(){
-    this.disabled = true;
-
-    this.addClass('disabled');
-
-    return this;
-  };
 
   return ButtonsField;
 

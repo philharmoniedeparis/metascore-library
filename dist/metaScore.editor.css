@@ -143,6 +143,9 @@
   left: 0;
   top: 0;
 }
+.metaScore-editor .field.booleanfield.readonly .input-wrapper input {
+  cursor: not-allowed;
+}
 .metaScore-editor .field.timefield .input-wrapper {
   display: inline-block;
   vertical-align: top;
@@ -224,6 +227,11 @@
   background-position: center center;
   overflow: hidden;
   text-indent: 999px;
+}
+.metaScore-editor .field.readonly .input-wrapper {
+  opacity: 0.75;
+  filter: alpha(opacity=(75));
+  cursor: default;
 }
 .metaScore-editor .field.disabled {
   opacity: 0.25;
