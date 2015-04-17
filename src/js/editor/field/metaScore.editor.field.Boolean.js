@@ -72,7 +72,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
    * @return 
    */
   BooleanField.prototype.onClick = function(evt){
-    if(this.readonly){
+    if(this.is_readonly){
       evt.preventDefault();
     }
   };
@@ -84,7 +84,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
    * @return 
    */
   BooleanField.prototype.onChange = function(evt){
-    if(this.readonly){
+    if(this.is_readonly){
       evt.preventDefault();
       return;
     }
