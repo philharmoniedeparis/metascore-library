@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-17 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -605,7 +605,12 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onPageSet = function(evt){
-    var page = evt.detail.component;
+    var page = evt.detail.component,
+      block = this.panels.block.getComponent(),
+      index, previous_page, next_page,
+      min, max,
+      start_time_field = this.panels.page.getField('start-time'),
+      end_time_field = this.panels.page.getField('end-time');
 
     this.panels.page.getToolbar().toggleMenuItem('new', true);
 
@@ -615,6 +620,45 @@ metaScore.Editor = (function(){
         .toggleMenuItem('Cursor', true)
         .toggleMenuItem('Image', true)
         .toggleMenuItem('Text', true);
+      
+    start_time_field.readonly(false).enable();
+    end_time_field.readonly(false).enable();
+    
+    if(block.getProperty('synched')){
+      index = block.getActivePageIndex();
+      previous_page = block.getPage(index-1);
+      next_page = block.getPage(index+1);
+      
+      if(previous_page){
+        min = previous_page.getProperty('start-time');
+        
+        start_time_field.setMin(min);
+        end_time_field.setMin(min);
+      }
+      else{
+        min = page.getProperty('start-time');
+        
+        start_time_field.readonly(true);
+        end_time_field.setMin(min);
+      }
+      
+      if(next_page){
+        max = next_page.getProperty('end-time');
+        
+        start_time_field.setMax(max);
+        end_time_field.setMax(max);
+      }
+      else{
+        max = page.getProperty('end-time');
+        
+        start_time_field.setMax(max);
+        end_time_field.readonly(true);
+      }
+    }
+    else{
+      start_time_field.disable();
+      end_time_field.disable();
+    }
       
     this.updateElementSelector();
 
@@ -646,14 +690,49 @@ metaScore.Editor = (function(){
     var panel = this.panels.page,
       page = evt.detail.component,
       old_values = evt.detail.old_values,
-      new_values = evt.detail.new_values;
+      new_values = evt.detail.new_values,
+      block, index, previous_page, next_page;
+      
+    if(('start-time' in new_values) || ('end-time' in new_values)){
+      block = page.parents().parents().get(0)._metaScore;
+      
+      if(block.getProperty('synched')){
+        index = block.getActivePageIndex();
+        previous_page = block.getPage(index-1);
+        next_page = block.getPage(index+1);
+    
+        if(('start-time' in new_values) && previous_page){
+          previous_page.setProperty('end-time', new_values['start-time']);
+        }
+        
+        if(('end-time' in new_values) && next_page){
+          next_page.setProperty('start-time', new_values['end-time']);
+        }
+      }
+    }
 
     this.history.add({
       'undo': function(){
         panel.updateProperties(page, old_values);
+        
+        if(('start-time' in new_values) && previous_page){
+          previous_page.setProperty('end-time', old_values['start-time']);
+        }
+        
+        if(('end-time' in new_values) && next_page){
+          next_page.setProperty('start-time', old_values['end-time']);
+        }
       },
       'redo': function(){
         panel.updateProperties(page, new_values);
+        
+        if(('start-time' in new_values) && previous_page){
+          previous_page.setProperty('end-time', new_values['start-time']);
+        }
+        
+        if(('end-time' in new_values) && next_page){
+          next_page.setProperty('start-time', new_values['end-time']);
+        }
       }
     });
   };
@@ -1827,12 +1906,12 @@ metaScore.namespace('editor').Field = (function () {
    * @return ThisExpression
    */
   Field.prototype.readonly = function(readonly){
-    this.readonly = readonly === true;
+    this.is_readonly = readonly === true;
 
-    this.toggleClass('readonly', this.readonly);
+    this.toggleClass('readonly', this.is_readonly);
     
     if(this.input){
-      this.input.attr('readonly', this.readonly ? "readonly" : null);
+      this.input.attr('readonly', this.is_readonly ? "readonly" : null);
     }
 
     return this;
@@ -2996,19 +3075,6 @@ metaScore.namespace('editor.field').Boolean = (function () {
     if(supressEvent !== true){
       this.input.triggerEvent('change');
     }
-  };
-
-  /**
-   * Toggle the readonly attribute of the field
-   * @method readonly
-   * @return ThisExpression
-   */
-  BooleanField.prototype.readonly = function(readonly){
-    this.readonly = readonly === true;
-
-    this.toggleClass('readonly', this.readonly);
-
-    return this;
   };
 
   return BooleanField;

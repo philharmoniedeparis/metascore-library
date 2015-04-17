@@ -36,9 +36,7 @@ metaScore.namespace('player').Component = (function () {
 
     this.setupDOM();
 
-    metaScore.Object.each(this.configs, function(key, value){
-      this.setProperty(key, value);
-    }, this);
+    this.setProperties(this.configs);
   }
 
   metaScore.Dom.extend(Component);
@@ -135,6 +133,24 @@ metaScore.namespace('player').Component = (function () {
         this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
       }
     }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method setProperties
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
+  Component.prototype.setProperties = function(properties, supressEvent){
+    metaScore.Object.each(properties, function(key, value){
+      this.setProperty(key, value, supressEvent);
+    }, this);
+    
+    return this;
   };
 
   /**

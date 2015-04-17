@@ -143,8 +143,8 @@
   left: 0;
   top: 0;
 }
-.metaScore-editor .field.booleanfield.readonly .input-wrapper input {
-  cursor: not-allowed;
+.metaScore-editor .field.booleanfield.readonly .input-wrapper {
+  pointer-events: none;
 }
 .metaScore-editor .field.timefield .input-wrapper {
   display: inline-block;

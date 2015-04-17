@@ -154,12 +154,12 @@ metaScore.namespace('editor').Field = (function () {
    * @return ThisExpression
    */
   Field.prototype.readonly = function(readonly){
-    this.readonly = readonly === true;
+    this.is_readonly = readonly === true;
 
-    this.toggleClass('readonly', this.readonly);
+    this.toggleClass('readonly', this.is_readonly);
     
     if(this.input){
-      this.input.attr('readonly', this.readonly ? "readonly" : null);
+      this.input.attr('readonly', this.is_readonly ? "readonly" : null);
     }
 
     return this;

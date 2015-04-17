@@ -109,19 +109,6 @@ metaScore.namespace('editor.field').Boolean = (function () {
     }
   };
 
-  /**
-   * Toggle the readonly attribute of the field
-   * @method readonly
-   * @return ThisExpression
-   */
-  BooleanField.prototype.readonly = function(readonly){
-    this.readonly = readonly === true;
-
-    this.toggleClass('readonly', this.readonly);
-
-    return this;
-  };
-
   return BooleanField;
 
 })();

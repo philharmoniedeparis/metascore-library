@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-17 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "7d0e2c";
+    return "902fae";
   },
 
   /**
@@ -3348,9 +3348,7 @@ metaScore.namespace('player').Component = (function () {
 
     this.setupDOM();
 
-    metaScore.Object.each(this.configs, function(key, value){
-      this.setProperty(key, value);
-    }, this);
+    this.setProperties(this.configs);
   }
 
   metaScore.Dom.extend(Component);
@@ -3447,6 +3445,24 @@ metaScore.namespace('player').Component = (function () {
         this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
       }
     }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method setProperties
+   * @param {} name
+   * @param {} value
+   * @param {} supressEvent
+   * @return 
+   */
+  Component.prototype.setProperties = function(properties, supressEvent){
+    metaScore.Object.each(properties, function(key, value){
+      this.setProperty(key, value, supressEvent);
+    }, this);
+    
+    return this;
   };
 
   /**
