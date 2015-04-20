@@ -397,7 +397,8 @@ metaScore.namespace('editor.panel').Text = (function () {
 
       this
         .toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true)
-        .execCommand("styleWithCSS", true);
+        .execCommand("styleWithCSS", true)
+        .execCommand("enableObjectResizing", true);
     }
     
     return this;
@@ -512,9 +513,12 @@ metaScore.namespace('editor.panel').Text = (function () {
    * @return 
    */
   TextPanel.prototype.onImageOverlaySubmit = function(evt){
-    var url = evt.detail.url;
-
-    this.execCommand('insertImage', url);
+    var url = evt.detail.url,
+      width = evt.detail.width,
+      height = evt.detail.height,
+      alignment = evt.detail.alignment;
+    
+    this.execCommand('insertHTML', '<img src="'+ url +'" style="width: '+ width +'px; height: '+ height +'px'+ (alignment ? '; float: '+ alignment : "") +';" />');
   };
 
   /**
@@ -527,16 +531,8 @@ metaScore.namespace('editor.panel').Text = (function () {
       document =  component.contents.get(0).ownerDocument,
       selection, range, element;
     
-    if(document.getSelection) { // FF3.6, Safari4, Chrome5 (DOM Standards)
-      selection = document.getSelection();
-      element = selection.anchorNode;
-    }
-    
-    if(!element && document.selection) { // IE
-      selection = document.selection;
-      range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-      element = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement ? range.parentElement() : range.item(0);
-    }
+    selection = document.getSelection();
+    element = selection.anchorNode;
     
     if(element) {
       return (element.nodeName === "#text" ? element.parentNode : element);
@@ -552,19 +548,42 @@ metaScore.namespace('editor.panel').Text = (function () {
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
       selection, range;
-
-    if(document.selection){
-      selection = document.selection;
-    }
-    else{      
-      selection = document.getSelection();
-    }
+    
+    selection = document.getSelection();
     
     range = document.createRange();
     range.selectNodeContents(element);
     
     selection.removeAllRanges();
     selection.addRange(range);
+  };
+  
+  /**
+   * Insert some html at the current caret position
+   * @method pasteHtmlAtCaret
+   */
+  TextPanel.prototype.insertHtmlAtCaret = function(html){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      selection, range,
+      element, fragment,
+      node, lastNode;
+      
+    selection = document.getSelection();
+
+    if(selection.getRangeAt && selection.rangeCount) {
+      range = selection.getRangeAt(0);
+      range.deleteContents();
+      
+      fragment = range.createContextualFragment(html);
+
+      range.insertNode(fragment);
+    
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    return this;
   };
 
   /**
@@ -576,14 +595,22 @@ metaScore.namespace('editor.panel').Text = (function () {
    */
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
-      contents =  component.contents.get(0),
-      document = contents.ownerDocument;
+      contents =  component.contents.get(0);
 
     contents.focus();
-
-    document.execCommand(command, false, value);
+    
+    switch(command){
+      case 'insertHTML':
+        this.insertHtmlAtCaret(value);
+        break;
+        
+      default:
+        contents.ownerDocument.execCommand(command, false, value);
+    }
     
     this.updateButtons();
+    
+    return this;
   };
 
   return TextPanel;

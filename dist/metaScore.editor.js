@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-17 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-20 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -74,7 +74,18 @@ metaScore.Editor = (function(){
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
       .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
       
-    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);
+    
+    this.sidebar_wrapper = new metaScore.Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
+      .addListener('resizestart', metaScore.Function.proxy(this.onSidebarResizeStart, this))
+      .addListener('resize', metaScore.Function.proxy(this.onSidebarResize, this))
+      .addListener('resizeend', metaScore.Function.proxy(this.onSidebarResizeEnd, this));
+      
+    new metaScore.Resizable({
+      target: this.sidebar_wrapper,
+      directions: ['left']
+    });
+    
+    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
     
     this.panels = {};
     
@@ -412,6 +423,38 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method onSidebarResizeStart
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResizeStart = function(evt){
+    this.addClass('sidebar-resizing');
+  };
+
+  /**
+   * Description
+   * @method onSidebarResize
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResize = function(evt){
+    var width = parseInt(this.sidebar_wrapper.css('width'), 10);
+    
+    this.workspace.css('right', width +'px');
+  };
+
+  /**
+   * Description
+   * @method onSidebarResizeEnd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResizeEnd = function(evt){
+    this.removeClass('sidebar-resizing');
+  };
+
+  /**
+   * Description
    * @method onBlockSet
    * @param {} evt
    * @return 
@@ -476,7 +519,7 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var player, panel, blocks, block, count, index,    
+    var player, panel, blocks, block, count, index, page_configs,
       action = metaScore.Dom.data(evt.target, 'action');
 
     switch(action){
@@ -489,7 +532,14 @@ metaScore.Editor = (function(){
           'synched': action === 'synched'
         });
         
-        block.addPage();
+        page_configs = {};
+        
+        if(action === 'synched'){
+          page_configs['start-time'] = 0;
+          page_configs['end-time'] = this.getPlayer().getMedia().getDuration();
+        }
+        
+        block.addPage(page_configs);
         
         panel.setComponent(block);
 
@@ -4726,7 +4776,8 @@ metaScore.namespace('editor.panel').Text = (function () {
 
       this
         .toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true)
-        .execCommand("styleWithCSS", true);
+        .execCommand("styleWithCSS", true)
+        .execCommand("enableObjectResizing", true);
     }
     
     return this;
@@ -4841,9 +4892,12 @@ metaScore.namespace('editor.panel').Text = (function () {
    * @return 
    */
   TextPanel.prototype.onImageOverlaySubmit = function(evt){
-    var url = evt.detail.url;
-
-    this.execCommand('insertImage', url);
+    var url = evt.detail.url,
+      width = evt.detail.width,
+      height = evt.detail.height,
+      alignment = evt.detail.alignment;
+    
+    this.execCommand('insertHTML', '<img src="'+ url +'" style="width: '+ width +'px; height: '+ height +'px'+ (alignment ? '; float: '+ alignment : "") +';" />');
   };
 
   /**
@@ -4856,16 +4910,8 @@ metaScore.namespace('editor.panel').Text = (function () {
       document =  component.contents.get(0).ownerDocument,
       selection, range, element;
     
-    if(document.getSelection) { // FF3.6, Safari4, Chrome5 (DOM Standards)
-      selection = document.getSelection();
-      element = selection.anchorNode;
-    }
-    
-    if(!element && document.selection) { // IE
-      selection = document.selection;
-      range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-      element = range.commonAncestorContainer ? range.commonAncestorContainer : range.parentElement ? range.parentElement() : range.item(0);
-    }
+    selection = document.getSelection();
+    element = selection.anchorNode;
     
     if(element) {
       return (element.nodeName === "#text" ? element.parentNode : element);
@@ -4881,19 +4927,42 @@ metaScore.namespace('editor.panel').Text = (function () {
      var component = this.getComponent(),
       document =  component.contents.get(0).ownerDocument,
       selection, range;
-
-    if(document.selection){
-      selection = document.selection;
-    }
-    else{      
-      selection = document.getSelection();
-    }
+    
+    selection = document.getSelection();
     
     range = document.createRange();
     range.selectNodeContents(element);
     
     selection.removeAllRanges();
     selection.addRange(range);
+  };
+  
+  /**
+   * Insert some html at the current caret position
+   * @method pasteHtmlAtCaret
+   */
+  TextPanel.prototype.insertHtmlAtCaret = function(html){
+     var component = this.getComponent(),
+      document =  component.contents.get(0).ownerDocument,
+      selection, range,
+      element, fragment,
+      node, lastNode;
+      
+    selection = document.getSelection();
+
+    if(selection.getRangeAt && selection.rangeCount) {
+      range = selection.getRangeAt(0);
+      range.deleteContents();
+      
+      fragment = range.createContextualFragment(html);
+
+      range.insertNode(fragment);
+    
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+    return this;
   };
 
   /**
@@ -4905,14 +4974,22 @@ metaScore.namespace('editor.panel').Text = (function () {
    */
   TextPanel.prototype.execCommand = function(command, value){
      var component = this.getComponent(),
-      contents =  component.contents.get(0),
-      document = contents.ownerDocument;
+      contents =  component.contents.get(0);
 
     contents.focus();
-
-    document.execCommand(command, false, value);
+    
+    switch(command){
+      case 'insertHTML':
+        this.insertHtmlAtCaret(value);
+        break;
+        
+      default:
+        contents.ownerDocument.execCommand(command, false, value);
+    }
     
     this.updateButtons();
+    
+    return this;
   };
 
   return TextPanel;
@@ -6214,6 +6291,32 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
     this.fields.image = new metaScore.editor.field.Image({
         label: metaScore.Locale.t('editor.overlay.InsertImage.fields.image', 'Image')
       })
+      .addListener('valuechange', metaScore.Function.proxy(this.onURLChange, this))
+      .appendTo(contents);
+      
+    // Width
+    this.fields.width = new metaScore.editor.field.Number({
+        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.width', 'Width'),
+        min: 0
+      })
+      .appendTo(contents);
+      
+    // Height
+    this.fields.height = new metaScore.editor.field.Number({
+        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.height', 'Height'),
+        min: 0
+      })
+      .appendTo(contents);
+      
+    // Alignment
+    this.fields.alignment = new metaScore.editor.field.Select({
+        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment', 'Alignment'),
+        options: {
+          '': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.unset', '<not set>'),
+          'left': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.left', 'Left'),
+          'right': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.right', 'Right')
+        }
+      })
       .appendTo(contents);
 
     // Buttons
@@ -6241,16 +6344,40 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
 
   /**
    * Description
+   * @method onURLChange
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onURLChange = function(evt){
+    var url = evt.detail.value;
+    
+    if(url){
+      new metaScore.Dom('<img/>')
+        .addListener('load', metaScore.Function.proxy(function(evt){
+          var img = evt.target;
+          
+          this.fields.width.setValue(img.width);
+          this.fields.height.setValue(img.height);
+        }, this))
+        .attr('src', url);
+    }
+  };
+
+  /**
+   * Description
    * @method onApplyClick
    * @param {} evt
    * @return 
    */
   InsertImage.prototype.onApplyClick = function(evt){
-    var url;
+    var url, width, height, alignment;
     
     url = this.fields.image.getValue();
+    width = this.fields.width.getValue();
+    height = this.fields.height.getValue();
+    alignment = this.fields.alignment.getValue();
 
-    this.triggerEvent('submit', {'overlay': this, 'url': url}, true, false);
+    this.triggerEvent('submit', {'overlay': this, 'url': url, 'width': width, 'height': height, 'alignment': alignment}, true, false);
 
     this.hide();
   };
@@ -6335,9 +6462,9 @@ metaScore.namespace('editor.overlay').InsertLink = (function () {
     this.fields.type = new metaScore.editor.field.Select({
         label: metaScore.Locale.t('editor.overlay.InsertLink.fields.type', 'Type'),
         options: {
-          url: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
-          page: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
-          time: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time'),
+          'url': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
+          'page': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
+          'time': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time')
         }
       })
       .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))

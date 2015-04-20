@@ -143,6 +143,9 @@
   left: 0;
   top: 0;
 }
+.metaScore-editor.sidebar-resizing .metaScore-player {
+  pointer-events: none;
+}
 .metaScore-editor .field.booleanfield.readonly .input-wrapper {
   pointer-events: none;
 }
@@ -245,7 +248,7 @@
 }
 .metaScore-editor .ruler.horizontal {
   left: 0;
-  right: 285px;
+  right: 0;
   top: 42px;
   height: 19px;
   background: url('img/editor/ruler-h.png') no-repeat top left;
@@ -406,18 +409,33 @@
   vertical-align: top;
   font-family: Tahoma, Geneva, sans-serif;
 }
-.metaScore-editor .sidebar {
+.metaScore-editor .sidebar-wrapper {
   position: fixed;
   right: 0;
   top: 42px;
   bottom: 0;
   width: 285px;
-  overflow: auto;
+  min-width: 280px;
+  max-width: 500px;
+  overflow: hidden;
   background: #f2f2f2;
   border-left: 1px solid #b2b2b2;
+}
+.metaScore-editor .sidebar-wrapper .resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+}
+.metaScore-editor .sidebar-wrapper .sidebar {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
   overflow-y: scroll;
 }
-.metaScore-editor .sidebar .panel .toolbar {
+.metaScore-editor .sidebar-wrapper .panel .toolbar {
   padding: 5px;
   border-bottom: 1px solid #d7d7d7;
   background-color: #fefefe;
@@ -428,7 +446,7 @@
   background-image: -o-linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
   background-image: linear-gradient(top, #fefefe 0%, #fcfcfc 32%, #fafafa 36%, #f3f3f3 100%);
 }
-.metaScore-editor .sidebar .panel .toolbar .title {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .title {
   float: left;
   padding-left: 18px;
   margin-right: 5px;
@@ -439,40 +457,40 @@
   opacity: 0.8;
   filter: alpha(opacity=(80));
 }
-.metaScore-editor .sidebar .panel .toolbar .selector {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .selector {
   float: right;
 }
-.metaScore-editor .sidebar .panel .toolbar .selector select {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .selector select {
   width: 100px;
   background: none;
   border: none;
 }
-.metaScore-editor .sidebar .panel .toolbar .selector select:empty {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .selector select:empty {
   display: none;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons {
   float: right;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button {
   width: 16px;
   height: 16px;
   background-repeat: no-repeat;
   background-position: center center;
   vertical-align: middle;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="previous"] {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="previous"] {
   background-image: url('img/editor/panel/previous.png');
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="next"] {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="next"] {
   background-image: url('img/editor/panel/next.png');
   margin-left: -1px;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] {
   position: relative;
   margin-left: 10px;
   padding-bottom: 2px;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"]:after {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:after {
   content: "";
   position: absolute;
   top: 0;
@@ -481,7 +499,7 @@
   right: 0;
   background: url('img/editor/panel/menu.png') no-repeat center center;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu {
   display: none;
   position: absolute;
   right: 0;
@@ -493,7 +511,7 @@
   background: #fff;
   z-index: 999;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li {
   min-width: 50px;
   margin-bottom: -1px;
   padding: 3px 4px;
@@ -502,39 +520,39 @@
   text-align: right;
   white-space: nowrap;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li:hover {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li:hover {
   background: #eee;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li:active {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li:active {
   opacity: 0.75;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li.disabled {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li.disabled {
   pointer-events: none;
   background: none;
   opacity: 0.5;
   cursor: default;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"]:hover {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:hover {
   opacity: 1;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"]:hover:after {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:hover:after {
   opacity: 0.75;
 }
-.metaScore-editor .sidebar .panel .toolbar .buttons button[data-action="menu"]:hover .dropdown-menu {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:hover .dropdown-menu {
   display: block;
 }
-.metaScore-editor .sidebar .panel .fields {
+.metaScore-editor .sidebar-wrapper .panel .fields {
   display: table;
   width: 100%;
   font-size: 0.9em;
   background: #fff;
   border-collapse: collapse;
 }
-.metaScore-editor .sidebar .panel .fields .field {
+.metaScore-editor .sidebar-wrapper .panel .fields .field {
   display: table-row;
   border-bottom: 1px solid #b2b2b2;
 }
-.metaScore-editor .sidebar .panel .fields .field label {
+.metaScore-editor .sidebar-wrapper .panel .fields .field label {
   display: table-cell;
   width: 130px;
   padding: 5px;
@@ -542,105 +560,105 @@
   border-right: 1px solid #d7d7d7;
   white-space: nowrap;
 }
-.metaScore-editor .sidebar .panel .fields .field .input-wrapper {
+.metaScore-editor .sidebar-wrapper .panel .fields .field .input-wrapper {
   display: table-cell;
   margin: 0;
   padding: 0;
   vertical-align: middle;
 }
-.metaScore-editor .sidebar .panel .fields .field .input-wrapper input {
+.metaScore-editor .sidebar-wrapper .panel .fields .field .input-wrapper input {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
   border: none;
 }
-.metaScore-editor .sidebar .panel .fields .field .input-wrapper input[type="checkbox"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field .input-wrapper input[type="checkbox"] {
   width: auto;
 }
-.metaScore-editor .sidebar .panel .fields .field.selectfield select {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.selectfield select {
   display: block;
   width: 100%;
   height: 100%;
   margin: 0;
   border: none;
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper {
   background-image: url('img/editor/wysiwyg/bg.png');
   background-repeat: repeat;
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button {
   float: left;
   width: 20px;
   height: 20px;
   background-repeat: no-repeat;
   background-position: center center;
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button.pressed {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button.pressed {
   background-color: #aaaaaa;
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="bold"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="bold"] {
   background-image: url('img/editor/wysiwyg/bold.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="italic"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="italic"] {
   background-image: url('img/editor/wysiwyg/italic.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="strikeThrough"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="strikeThrough"] {
   background-image: url('img/editor/wysiwyg/strikeThrough.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="underline"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="underline"] {
   background-image: url('img/editor/wysiwyg/underline.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="subscript"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="subscript"] {
   background-image: url('img/editor/wysiwyg/subscript.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="superscript"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="superscript"] {
   background-image: url('img/editor/wysiwyg/superscript.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyLeft"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyLeft"] {
   background-image: url('img/editor/wysiwyg/justifyLeft.png');
   clear: left;
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyCenter"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyCenter"] {
   background-image: url('img/editor/wysiwyg/justifyCenter.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyRight"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyRight"] {
   background-image: url('img/editor/wysiwyg/justifyRight.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyFull"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="justifyFull"] {
   background-image: url('img/editor/wysiwyg/justifyFull.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="link"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="link"] {
   background-image: url('img/editor/wysiwyg/link.png');
   clear: left;
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="unlink"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="unlink"] {
   background-image: url('img/editor/wysiwyg/unlink.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="insertImage"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="insertImage"] {
   background-image: url('img/editor/wysiwyg/insertImage.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.buttonsfield .input-wrapper button[data-action="removeFormat"] {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.buttonsfield .input-wrapper button[data-action="removeFormat"] {
   background-image: url('img/editor/wysiwyg/removeFormat.png');
 }
-.metaScore-editor .sidebar .panel .fields .field.fontStyle {
+.metaScore-editor .sidebar-wrapper .panel .fields .field.fontStyle {
   border-bottom: none;
 }
-.metaScore-editor .sidebar .panel.collapsed .toolbar .title,
-.metaScore-editor .sidebar .panel:not(.has-component) .toolbar .title,
-.metaScore-editor .sidebar .panel.disabled .toolbar .title {
+.metaScore-editor .sidebar-wrapper .panel.collapsed .toolbar .title,
+.metaScore-editor .sidebar-wrapper .panel:not(.has-component) .toolbar .title,
+.metaScore-editor .sidebar-wrapper .panel.disabled .toolbar .title {
   background-image: url('img/editor/panel/collapsed.png');
 }
-.metaScore-editor .sidebar .panel.collapsed .fields,
-.metaScore-editor .sidebar .panel:not(.has-component) .fields,
-.metaScore-editor .sidebar .panel.disabled .fields {
+.metaScore-editor .sidebar-wrapper .panel.collapsed .fields,
+.metaScore-editor .sidebar-wrapper .panel:not(.has-component) .fields,
+.metaScore-editor .sidebar-wrapper .panel.disabled .fields {
   display: none;
 }
-.metaScore-editor .sidebar .panel:not(.has-component) .toolbar .title,
-.metaScore-editor .sidebar .panel.disabled .toolbar .title {
+.metaScore-editor .sidebar-wrapper .panel:not(.has-component) .toolbar .title,
+.metaScore-editor .sidebar-wrapper .panel.disabled .toolbar .title {
   pointer-events: none;
 }
-.metaScore-editor .sidebar .panel.disabled {
+.metaScore-editor .sidebar-wrapper .panel.disabled {
   pointer-events: none;
   opacity: 0.5;
 }

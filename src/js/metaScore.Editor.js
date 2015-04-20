@@ -37,7 +37,18 @@ metaScore.Editor = (function(){
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
       .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
       
-    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this);
+    
+    this.sidebar_wrapper = new metaScore.Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
+      .addListener('resizestart', metaScore.Function.proxy(this.onSidebarResizeStart, this))
+      .addListener('resize', metaScore.Function.proxy(this.onSidebarResize, this))
+      .addListener('resizeend', metaScore.Function.proxy(this.onSidebarResizeEnd, this));
+      
+    new metaScore.Resizable({
+      target: this.sidebar_wrapper,
+      directions: ['left']
+    });
+    
+    this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
     
     this.panels = {};
     
@@ -375,6 +386,38 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method onSidebarResizeStart
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResizeStart = function(evt){
+    this.addClass('sidebar-resizing');
+  };
+
+  /**
+   * Description
+   * @method onSidebarResize
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResize = function(evt){
+    var width = parseInt(this.sidebar_wrapper.css('width'), 10);
+    
+    this.workspace.css('right', width +'px');
+  };
+
+  /**
+   * Description
+   * @method onSidebarResizeEnd
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResizeEnd = function(evt){
+    this.removeClass('sidebar-resizing');
+  };
+
+  /**
+   * Description
    * @method onBlockSet
    * @param {} evt
    * @return 
@@ -439,7 +482,7 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var player, panel, blocks, block, count, index,    
+    var player, panel, blocks, block, count, index, page_configs,
       action = metaScore.Dom.data(evt.target, 'action');
 
     switch(action){
@@ -452,7 +495,14 @@ metaScore.Editor = (function(){
           'synched': action === 'synched'
         });
         
-        block.addPage();
+        page_configs = {};
+        
+        if(action === 'synched'){
+          page_configs['start-time'] = 0;
+          page_configs['end-time'] = this.getPlayer().getMedia().getDuration();
+        }
+        
+        block.addPage(page_configs);
         
         panel.setComponent(block);
 

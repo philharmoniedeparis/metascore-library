@@ -65,9 +65,9 @@ metaScore.namespace('editor.overlay').InsertLink = (function () {
     this.fields.type = new metaScore.editor.field.Select({
         label: metaScore.Locale.t('editor.overlay.InsertLink.fields.type', 'Type'),
         options: {
-          url: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
-          page: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
-          time: metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time'),
+          'url': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
+          'page': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
+          'time': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time')
         }
       })
       .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
