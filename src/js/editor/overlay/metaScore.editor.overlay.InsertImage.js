@@ -85,7 +85,7 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
     this.fields.alignment = new metaScore.editor.field.Select({
         label: metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment', 'Alignment'),
         options: {
-          '': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.unset', '<not set>'),
+          '': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.unset', '&lt;not set&gt;'),
           'left': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.left', 'Left'),
           'right': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.right', 'Right')
         }

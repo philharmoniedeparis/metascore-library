@@ -84,7 +84,7 @@
 	"editor.overlay.InsertImage.fields.width": "Largeur",
 	"editor.overlay.InsertImage.fields.height": "Hauteur",
 	"editor.overlay.InsertImage.fields.alignment": "Alignement",
-	"editor.overlay.InsertImage.fields.alignment.unset": "<non défini>",
+	"editor.overlay.InsertImage.fields.alignment.unset": "&lt;non défini&gt;",
 	"editor.overlay.InsertImage.fields.alignment.left": "Gauche",
 	"editor.overlay.InsertImage.fields.alignment.right": "Droite",
 	"editor.overlay.InsertLink.title": "Insérer un lien",
