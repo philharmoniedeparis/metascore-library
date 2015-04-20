@@ -703,7 +703,7 @@
   vertical-align: middle;
 }
 .metaScore-editor .overlay .toolbar .buttons button[data-action="close"] {
-  background-image: url('img/editor/popup/close.png');
+  background-image: url('img/editor/overlay/close.png');
 }
 .metaScore-editor .overlay.color-selector {
   padding: 10px;
@@ -928,6 +928,49 @@
 }
 .metaScore-editor .overlay.guide-details .contents {
   min-width: 500px;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper {
+  position: relative;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .width,
+.metaScore-editor .overlay.insert-image .size-wrapper .height {
+  width: 50%;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .width input,
+.metaScore-editor .overlay.insert-image .size-wrapper .height input {
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .size-buttons {
+  position: absolute;
+  margin-left: 55%;
+  margin-top: -8px;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .size-buttons .lock-ratio {
+  float: left;
+  margin-right: 10px;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .size-buttons .lock-ratio input {
+  display: none;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .size-buttons .lock-ratio label {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url('img/editor/overlay/insert-image/lock-open.png') no-repeat center center;
+  cursor: pointer;
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .size-buttons .lock-ratio.checked label {
+  background-image: url('img/editor/overlay/insert-image/lock.png');
+}
+.metaScore-editor .overlay.insert-image .size-wrapper .size-buttons .reset-size {
+  float: left;
+  min-width: 0;
+  width: 16px;
+  height: 16px;
+  background: url('img/editor/overlay/insert-image/reset.png') no-repeat center center;
 }
 .metaScore-editor .overlay.iframe .contents iframe {
   min-width: 800px;

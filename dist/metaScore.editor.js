@@ -3037,8 +3037,8 @@ metaScore.namespace('editor.field').Boolean = (function () {
     BooleanField.parent.call(this, this.configs);
 
     this.addClass('booleanfield');
-
-    this.input.get(0).checked = this.configs.checked;
+    
+    this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
   }
 
   BooleanField.defaults = {
@@ -3107,7 +3107,14 @@ metaScore.namespace('editor.field').Boolean = (function () {
       return;
     }
     
-    this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
+    if(this.input.is(":checked")){
+      this.value = this.configs.checked_value;
+      this.addClass('checked');
+    }
+    else{
+      this.value = this.configs.unchecked_value;
+      this.removeClass('checked');
+    }
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
@@ -6277,7 +6284,7 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
    * @return 
    */
   InsertImage.prototype.setupDOM = function(){
-    var contents;
+    var contents, size_wrapper, size_buttons;
 
     // call parent method
     InsertImage.parent.prototype.setupDOM.call(this);
@@ -6289,34 +6296,64 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
 
     // URL
     this.fields.image = new metaScore.editor.field.Image({
-        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.image', 'Image')
+        'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.image', 'Image')
       })
+      .addClass('image')
       .addListener('valuechange', metaScore.Function.proxy(this.onURLChange, this))
+      .appendTo(contents);
+    
+    size_wrapper = new metaScore.Dom('<div/>', {'class': 'size-wrapper clearfix'})
       .appendTo(contents);
       
     // Width
     this.fields.width = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.width', 'Width'),
-        min: 0
+        'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.width', 'Width'),
+        'min': 0
       })
-      .appendTo(contents);
+      .addClass('width')
+      .addListener('valuechange', metaScore.Function.proxy(this.onWidthChange, this))
+      .appendTo(size_wrapper);
+    
+    size_buttons = new metaScore.Dom('<div/>', {'class': 'size-buttons'})
+      .appendTo(size_wrapper);
+      
+    // Lock ratio
+    this.fields.lock_ratio = new metaScore.editor.field.Boolean({
+        'checked': true,
+        'label': '&nbsp;'
+      })
+      .addClass('lock-ratio')
+      .attr('title', metaScore.Locale.t('editor.overlay.InsertImage.lock-ratio', 'Lock ratio'))
+      .addListener('valuechange', metaScore.Function.proxy(this.onLockRatioChange, this))
+      .appendTo(size_buttons);
+      
+    // Reset
+    this.fields.reset_size = new metaScore.editor.Button({
+      })
+      .addClass('reset-size')
+      .attr('title', metaScore.Locale.t('editor.overlay.InsertImage.reset-size', 'Reset size'))
+      .addListener('click', metaScore.Function.proxy(this.onRevertSizeClick, this))
+      .appendTo(size_buttons);
       
     // Height
     this.fields.height = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.height', 'Height'),
-        min: 0
+        'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.height', 'Height'),
+        'min': 0
       })
-      .appendTo(contents);
+      .addClass('height')
+      .addListener('valuechange', metaScore.Function.proxy(this.onHeightChange, this))
+      .appendTo(size_wrapper);
       
     // Alignment
     this.fields.alignment = new metaScore.editor.field.Select({
-        label: metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment', 'Alignment'),
-        options: {
+        'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment', 'Alignment'),
+        'options': {
           '': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.unset', '&lt;not set&gt;'),
           'left': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.left', 'Left'),
           'right': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.right', 'Right')
         }
       })
+      .addClass('alignment')
       .appendTo(contents);
 
     // Buttons
@@ -6354,12 +6391,75 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
     if(url){
       new metaScore.Dom('<img/>')
         .addListener('load', metaScore.Function.proxy(function(evt){
-          var img = evt.target;
+          this.img = evt.target;
           
-          this.fields.width.setValue(img.width);
-          this.fields.height.setValue(img.height);
+          this.fields.width.setValue(this.img.width, true);
+          this.fields.height.setValue(this.img.height, true);
         }, this))
         .attr('src', url);
+    }
+  };
+
+  /**
+   * Description
+   * @method onWidthChange
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onWidthChange = function(evt){
+    var lock_ratio = this.fields.lock_ratio.getValue(),
+      width, height;
+    
+    if(lock_ratio && this.img){
+      width = this.fields.width.getValue();
+      height = Math.round(width * this.img.height / this.img.width);
+      
+      this.fields.height.setValue(height, true);
+    }
+  };
+
+  /**
+   * Description
+   * @method onHeightChange
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onHeightChange = function(evt){
+    var lock_ratio = this.fields.lock_ratio.getValue(),
+      width, height;
+    
+    if(lock_ratio && this.img){
+      height = this.fields.height.getValue();
+      width = Math.round(height * this.img.width / this.img.height);
+      
+      this.fields.width.setValue(width, true);
+    }
+  };
+
+  /**
+   * Description
+   * @method onRatioChange
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onLockRatioChange = function(evt){
+    var lock_ratio = evt.detail.value;
+    
+    if(lock_ratio && this.img){      
+      this.fields.width.setValue(this.fields.width.getValue());
+    }
+  };
+
+  /**
+   * Description
+   * @method onRevertSizeClick
+   * @param {} evt
+   * @return 
+   */
+  InsertImage.prototype.onRevertSizeClick = function(evt){    
+    if(this.img){      
+      this.fields.width.setValue(this.img.width);
+      this.fields.height.setValue(this.img.height);
     }
   };
 

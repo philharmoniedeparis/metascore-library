@@ -82,6 +82,8 @@ var metaScoreLocale = {
 	"editor.overlay.InsertImage.title": "Insérer une image",
 	"editor.overlay.InsertImage.fields.image": "Image",
 	"editor.overlay.InsertImage.fields.width": "Largeur",
+	"editor.overlay.InsertImage.lock-ratio": "Conserver les proportions",
+	"editor.overlay.InsertImage.reset-size": "Taille d'origine",
 	"editor.overlay.InsertImage.fields.height": "Hauteur",
 	"editor.overlay.InsertImage.fields.alignment": "Alignement",
 	"editor.overlay.InsertImage.fields.alignment.unset": "&lt;non défini&gt;",

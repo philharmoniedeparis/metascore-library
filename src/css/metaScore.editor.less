@@ -709,7 +709,7 @@
           vertical-align: middle;
 
           &[data-action="close"]{
-            background-image: url('img/editor/popup/close.png');
+            background-image: url('img/editor/overlay/close.png');
           }
         }
       }
@@ -957,6 +957,59 @@
     &.guide-details{
       .contents{
         min-width: 500px;
+      }
+    }
+    
+    &.insert-image{
+      .size-wrapper{
+        position: relative;
+        
+        .width,
+        .height{
+          width: 50%;
+          
+          input{
+            width: 100%;
+            .box-sizing(border-box);
+          }
+        }
+        
+        .size-buttons{
+          position: absolute;
+          margin-left: 55%;
+          margin-top: -8px;
+          
+          .lock-ratio{
+            float: left;
+            margin-right: 10px;
+            
+            input{
+              display: none;
+            }
+            
+            label{
+              display: inline-block;
+              width:16px;
+              height:16px;
+              background: url('img/editor/overlay/insert-image/lock-open.png') no-repeat center center;
+              cursor: pointer;
+            }
+            
+            &.checked{
+              label{
+                background-image: url('img/editor/overlay/insert-image/lock.png');
+              }
+            }
+          }
+          
+          .reset-size{
+            float: left;
+            min-width: 0;
+            width:16px;
+            height:16px;
+            background: url('img/editor/overlay/insert-image/reset.png') no-repeat center center;
+          }
+        }
       }
     }
 

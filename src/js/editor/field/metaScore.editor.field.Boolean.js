@@ -19,8 +19,8 @@ metaScore.namespace('editor.field').Boolean = (function () {
     BooleanField.parent.call(this, this.configs);
 
     this.addClass('booleanfield');
-
-    this.input.get(0).checked = this.configs.checked;
+    
+    this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
   }
 
   BooleanField.defaults = {
@@ -89,7 +89,14 @@ metaScore.namespace('editor.field').Boolean = (function () {
       return;
     }
     
-    this.value = this.input.is(":checked") ? this.configs.checked_value : this.configs.unchecked_value;
+    if(this.input.is(":checked")){
+      this.value = this.configs.checked_value;
+      this.addClass('checked');
+    }
+    else{
+      this.value = this.configs.unchecked_value;
+      this.removeClass('checked');
+    }
     
     this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
   };
