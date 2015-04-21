@@ -160,9 +160,10 @@ metaScore.Player = (function () {
    */
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
-      page = evt.detail.page;
+      page = evt.detail.page,
+      basis = evt.detail.basis;
 
-    if(block.getProperty('synched')){
+    if(block.getProperty('synched') && (basis !== 'pagecuepoint')){
       this.getMedia().setTime(page.getProperty('start-time'));
     }
   };
@@ -194,30 +195,12 @@ metaScore.Player = (function () {
       media: this.getMedia(),
       inTime: evt.detail.inTime,
       outTime: evt.detail.outTime,
-      /**
-       * Description
-       * @method onStart
-       * @param {} cuepoint
-       * @return 
-       */
       onStart: function(cuepoint){
         player.setReadingIndex(evt.detail.rIndex);
       },
-      /**
-       * Description
-       * @method onEnd
-       * @param {} cuepoint
-       * @return 
-       */
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
       },
-      /**
-       * Description
-       * @method onOut
-       * @param {} cuepoint
-       * @return 
-       */
       onOut: function(cuepoint){
         cuepoint.destroy();
         delete player.linkcuepoint;

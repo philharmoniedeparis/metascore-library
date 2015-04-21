@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-20 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-04-21 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "ccbf87";
+    return "0e49bd";
   },
 
   /**
@@ -2941,9 +2941,10 @@ metaScore.Player = (function () {
    */
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
-      page = evt.detail.page;
+      page = evt.detail.page,
+      basis = evt.detail.basis;
 
-    if(block.getProperty('synched')){
+    if(block.getProperty('synched') && (basis !== 'pagecuepoint')){
       this.getMedia().setTime(page.getProperty('start-time'));
     }
   };
@@ -2975,30 +2976,12 @@ metaScore.Player = (function () {
       media: this.getMedia(),
       inTime: evt.detail.inTime,
       outTime: evt.detail.outTime,
-      /**
-       * Description
-       * @method onStart
-       * @param {} cuepoint
-       * @return 
-       */
       onStart: function(cuepoint){
         player.setReadingIndex(evt.detail.rIndex);
       },
-      /**
-       * Description
-       * @method onEnd
-       * @param {} cuepoint
-       * @return 
-       */
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
       },
-      /**
-       * Description
-       * @method onOut
-       * @param {} cuepoint
-       * @return 
-       */
       onOut: function(cuepoint){
         cuepoint.destroy();
         delete player.linkcuepoint;
@@ -3482,7 +3465,7 @@ metaScore.namespace('player').Component = (function () {
     if(inTime != null || outTime != null){
       this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
         'inTime': inTime,
-        'outTime': outTime - 1,
+        'outTime': outTime,
         'onStart': this.onCuePointStart ? metaScore.Function.proxy(this.onCuePointStart, this) : null,
         'onUpdate': this.onCuePointUpdate ? metaScore.Function.proxy(this.onCuePointUpdate, this) : null,
         'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null
@@ -3536,7 +3519,7 @@ metaScore.namespace('player').CuePoint = (function () {
     'onUpdate': null,
     'onEnd': null,
     'onOut': null,
-    'errorMargin': 10 // the number of milliseconds estimated as the error margin for time update events
+    'errorMargin': 20 // the number of milliseconds estimated as the error margin for time update events
   };
 
   /**
@@ -3549,7 +3532,7 @@ metaScore.namespace('player').CuePoint = (function () {
     var curTime = this.configs.media.getTime();
 
     if(!this.running){
-      if((!this.inTimer) && (curTime >= this.configs.inTime - this.configs.errorMargin) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
+      if((!this.inTimer) && (curTime >= this.configs.inTime - this.configs.errorMargin) && ((this.configs.outTime === null) || (curTime < this.configs.outTime))){
         this.inTimer = setTimeout(this.launch, Math.max(0, this.configs.inTime - curTime));
       }
     }
@@ -3595,6 +3578,24 @@ metaScore.namespace('player').CuePoint = (function () {
    */
   CuePoint.prototype.getMedia = function(){
     return this.configs.media;
+  };
+
+  /**
+   * Description
+   * @method getInTime
+   * @return MemberExpression
+   */
+  CuePoint.prototype.getInTime = function(){
+    return this.configs.inTime;
+  };
+
+  /**
+   * Description
+   * @method getOutTime
+   * @return MemberExpression
+   */
+  CuePoint.prototype.getOutTime = function(){
+    return this.configs.outTime;
   };
 
   /**
@@ -4088,7 +4089,7 @@ metaScore.namespace('player.component').Block = (function () {
    * @return 
    */
   Block.prototype.onPageCuePointStart = function(evt){
-    this.setActivePage(evt.target._metaScore, true);
+    this.setActivePage(evt.target._metaScore, 'pagecuepoint');
   };
 
   /**
@@ -4244,7 +4245,7 @@ metaScore.namespace('player.component').Block = (function () {
    * @param {} supressEvent
    * @return 
    */
-  Block.prototype.setActivePage = function(page, supressEvent){
+  Block.prototype.setActivePage = function(page, basis, supressEvent){
     var pages = this.getPages(), dom;
 
     if(metaScore.Var.is(page, 'number')){
@@ -4258,7 +4259,7 @@ metaScore.namespace('player.component').Block = (function () {
       this.updatePager();
 
       if(supressEvent !== true){
-        this.triggerEvent('pageactivate', {'block': this, 'page': page});
+        this.triggerEvent('pageactivate', {'block': this, 'page': page, 'basis': basis});
       }
     }
   };
@@ -5472,6 +5473,22 @@ metaScore.namespace('player.component').Page = (function () {
     }
 
     return element;
+  };
+
+  /**
+   * Description
+   * @method getBlock
+   * @return CallExpression
+   */
+  Page.prototype.getBlock = function(){
+    var dom = this.parents().parents().get(0),
+      block;
+    
+    if(dom){
+      block = dom._metaScore;
+    }
+    
+    return block;
   };
 
   /**

@@ -39,7 +39,7 @@ metaScore.namespace('player').CuePoint = (function () {
     'onUpdate': null,
     'onEnd': null,
     'onOut': null,
-    'errorMargin': 10 // the number of milliseconds estimated as the error margin for time update events
+    'errorMargin': 20 // the number of milliseconds estimated as the error margin for time update events
   };
 
   /**
@@ -52,7 +52,7 @@ metaScore.namespace('player').CuePoint = (function () {
     var curTime = this.configs.media.getTime();
 
     if(!this.running){
-      if((!this.inTimer) && (curTime >= this.configs.inTime - this.configs.errorMargin) && ((this.configs.outTime === null) || (curTime <= this.configs.outTime))){
+      if((!this.inTimer) && (curTime >= this.configs.inTime - this.configs.errorMargin) && ((this.configs.outTime === null) || (curTime < this.configs.outTime))){
         this.inTimer = setTimeout(this.launch, Math.max(0, this.configs.inTime - curTime));
       }
     }
@@ -98,6 +98,24 @@ metaScore.namespace('player').CuePoint = (function () {
    */
   CuePoint.prototype.getMedia = function(){
     return this.configs.media;
+  };
+
+  /**
+   * Description
+   * @method getInTime
+   * @return MemberExpression
+   */
+  CuePoint.prototype.getInTime = function(){
+    return this.configs.inTime;
+  };
+
+  /**
+   * Description
+   * @method getOutTime
+   * @return MemberExpression
+   */
+  CuePoint.prototype.getOutTime = function(){
+    return this.configs.outTime;
   };
 
   /**

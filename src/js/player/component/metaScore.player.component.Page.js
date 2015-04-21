@@ -195,6 +195,22 @@ metaScore.namespace('player.component').Page = (function () {
 
   /**
    * Description
+   * @method getBlock
+   * @return CallExpression
+   */
+  Page.prototype.getBlock = function(){
+    var dom = this.parents().parents().get(0),
+      block;
+    
+    if(dom){
+      block = dom._metaScore;
+    }
+    
+    return block;
+  };
+
+  /**
+   * Description
    * @method getElements
    * @return CallExpression
    */

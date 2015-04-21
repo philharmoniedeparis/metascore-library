@@ -359,7 +359,7 @@ metaScore.namespace('player.component').Block = (function () {
    * @return 
    */
   Block.prototype.onPageCuePointStart = function(evt){
-    this.setActivePage(evt.target._metaScore, true);
+    this.setActivePage(evt.target._metaScore, 'pagecuepoint');
   };
 
   /**
@@ -515,7 +515,7 @@ metaScore.namespace('player.component').Block = (function () {
    * @param {} supressEvent
    * @return 
    */
-  Block.prototype.setActivePage = function(page, supressEvent){
+  Block.prototype.setActivePage = function(page, basis, supressEvent){
     var pages = this.getPages(), dom;
 
     if(metaScore.Var.is(page, 'number')){
@@ -529,7 +529,7 @@ metaScore.namespace('player.component').Block = (function () {
       this.updatePager();
 
       if(supressEvent !== true){
-        this.triggerEvent('pageactivate', {'block': this, 'page': page});
+        this.triggerEvent('pageactivate', {'block': this, 'page': page, 'basis': basis});
       }
     }
   };

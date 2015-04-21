@@ -606,7 +606,7 @@ metaScore.Editor = (function(){
    */
   Editor.prototype.onPageBeforeSet = function(evt){
     var page = evt.detail.component,
-      block = page.parents().parents().get(0)._metaScore;
+      block = page.getBlock();
 
     this.panels.block.setComponent(block);
   };
@@ -706,10 +706,8 @@ metaScore.Editor = (function(){
       new_values = evt.detail.new_values,
       block, index, previous_page, next_page;
       
-    if(('start-time' in new_values) || ('end-time' in new_values)){
-      block = page.parents().parents().get(0)._metaScore;
-      
-      if(block.getProperty('synched')){
+    if(('start-time' in new_values) || ('end-time' in new_values)){      
+      if((block = page.getBlock()) && block.getProperty('synched')){
         index = block.getActivePageIndex();
         previous_page = block.getPage(index-1);
         next_page = block.getPage(index+1);
@@ -1288,11 +1286,18 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onBlockPageActivate = function(evt){
+    var page, basis;
+  
     if(metaScore.editing !== true){
       return;
     }
+    
+    page = evt.detail.page;
+    basis = evt.detail.basis;
 
-    this.panels.page.setComponent(evt.detail.page);
+    if((basis !== 'pagecuepoint') || (page.getBlock() === this.panels.block.getComponent())){
+      this.panels.page.setComponent(page);
+    }
   };
 
   /**
