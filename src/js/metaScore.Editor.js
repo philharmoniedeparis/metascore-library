@@ -621,7 +621,6 @@ metaScore.Editor = (function(){
     var page = evt.detail.component,
       block = this.panels.block.getComponent(),
       index, previous_page, next_page,
-      min, max,
       start_time_field = this.panels.page.getField('start-time'),
       end_time_field = this.panels.page.getField('end-time');
 
@@ -633,9 +632,6 @@ metaScore.Editor = (function(){
         .toggleMenuItem('Cursor', true)
         .toggleMenuItem('Image', true)
         .toggleMenuItem('Text', true);
-      
-    start_time_field.readonly(false).enable();
-    end_time_field.readonly(false).enable();
     
     if(block.getProperty('synched')){
       index = block.getActivePageIndex();
@@ -643,29 +639,17 @@ metaScore.Editor = (function(){
       next_page = block.getPage(index+1);
       
       if(previous_page){
-        min = previous_page.getProperty('start-time');
-        
-        start_time_field.setMin(min);
-        end_time_field.setMin(min);
+        start_time_field.readonly(false).enable().setMin(previous_page.getProperty('start-time'));
       }
-      else{
-        min = page.getProperty('start-time');
-        
-        start_time_field.readonly(true);
-        end_time_field.setMin(min);
+      else{        
+        start_time_field.readonly(true).enable();
       }
       
       if(next_page){
-        max = next_page.getProperty('end-time');
-        
-        start_time_field.setMax(max);
-        end_time_field.setMax(max);
+        end_time_field.readonly(false).enable().setMax(next_page.getProperty('end-time'));
       }
-      else{
-        max = page.getProperty('end-time');
-        
-        start_time_field.setMax(max);
-        end_time_field.readonly(true);
+      else{        
+        end_time_field.readonly(true).enable();
       }
     }
     else{

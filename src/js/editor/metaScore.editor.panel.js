@@ -455,6 +455,14 @@ metaScore.namespace('editor').Panel = (function(){
       case 'name':
         this.getToolbar().updateSelectorOption(component.getId(), value);
         break;
+        
+      case 'start-time':
+        this.getField('end-time').setMin(value);
+        break;
+        
+      case 'end-time':
+        this.getField('start-time').setMax(value);
+        break;
     }
 
     this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
