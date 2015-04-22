@@ -146,11 +146,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
    * @return ThisExpression
    */
   Toolbar.prototype.addSelectorOption = function(value, text){
+    var option;
+  
     if(this.selector){
-      this.selector.addOption(value, text);
+      option = this.selector.addOption(value, text);
     }
     
-    return this;
+    return option;
   };
 
   /**
@@ -161,11 +163,13 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
    * @return ThisExpression
    */
   Toolbar.prototype.updateSelectorOption = function(value, text){
+    var option;
+    
     if(this.selector){
-      this.selector.updateOption(value, text);
+      option = this.selector.updateOption(value, text);
     }
     
-    return this;
+    return option;
   };
 
   /**

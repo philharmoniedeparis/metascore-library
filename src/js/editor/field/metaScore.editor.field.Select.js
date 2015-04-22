@@ -63,9 +63,11 @@ metaScore.namespace('editor.field').Select = (function () {
    * @chainable
    */
   SelectField.prototype.addOption = function(value, text){
-    this.input.append(new metaScore.Dom('<option/>', {'value': value, 'text': text}));
+    var option = new metaScore.Dom('<option/>', {'value': value, 'text': text});
+    
+    this.input.append(option);
 
-    return this;
+    return option;
   };
 
   /**
@@ -75,21 +77,12 @@ metaScore.namespace('editor.field').Select = (function () {
    * @param {} text
    * @chainable
    */
-  SelectField.prototype.updateOption = function(value, text){
-    this.input.find('option[value="'+ value +'"]').text(text);
+  SelectField.prototype.updateOption = function(value, text, attr){
+    var option = this.input.child('option[value="'+ value +'"]');
+    
+    option.text(text);
 
-    return this;
-  };
-
-  /**
-   * Description
-   * @method removeOptions
-   * @return ThisExpression
-   */
-  SelectField.prototype.removeOptions = function(){
-    this.input.empty();
-
-    return this;
+    return option;
   };
 
   /**
@@ -99,7 +92,20 @@ metaScore.namespace('editor.field').Select = (function () {
    * @chainable
    */
   SelectField.prototype.removeOption = function(value){
-    this.input.child('[value="'+ value +'"]').remove();
+    var option = this.input.child('option[value="'+ value +'"]');
+    
+    option.remove();
+
+    return option;
+  };
+
+  /**
+   * Description
+   * @method removeOptions
+   * @return ThisExpression
+   */
+  SelectField.prototype.removeOptions = function(){
+    this.input.empty();
 
     return this;
   };

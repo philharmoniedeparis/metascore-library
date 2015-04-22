@@ -700,13 +700,14 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onPagePanelValueChange = function(evt){
-    var panel = this.panels.page,
+    var editor = this,
+      panel = this.panels.page,
       page = evt.detail.component,
       old_values = evt.detail.old_values,
       new_values = evt.detail.new_values,
       block, index, previous_page, next_page;
       
-    if(('start-time' in new_values) || ('end-time' in new_values)){      
+    if(('start-time' in new_values) || ('end-time' in new_values)){
       if((block = page.getBlock()) && block.getProperty('synched')){
         index = block.getActivePageIndex();
         previous_page = block.getPage(index-1);
@@ -720,29 +721,39 @@ metaScore.Editor = (function(){
           next_page.setProperty('start-time', new_values['end-time']);
         }
       }
+      
+      editor.updateElementSelector();
     }
 
     this.history.add({
       'undo': function(){
         panel.updateProperties(page, old_values);
         
-        if(('start-time' in new_values) && previous_page){
-          previous_page.setProperty('end-time', old_values['start-time']);
-        }
-        
-        if(('end-time' in new_values) && next_page){
-          next_page.setProperty('start-time', old_values['end-time']);
+        if(('start-time' in new_values) || ('end-time' in new_values)){
+          if(('start-time' in new_values) && previous_page){
+            previous_page.setProperty('end-time', old_values['start-time']);
+          }
+          
+          if(('end-time' in new_values) && next_page){
+            next_page.setProperty('start-time', old_values['end-time']);
+          }
+      
+          editor.updateElementSelector();
         }
       },
       'redo': function(){
         panel.updateProperties(page, new_values);
         
-        if(('start-time' in new_values) && previous_page){
-          previous_page.setProperty('end-time', new_values['start-time']);
-        }
-        
-        if(('end-time' in new_values) && next_page){
-          next_page.setProperty('start-time', new_values['end-time']);
+        if(('start-time' in new_values) || ('end-time' in new_values)){
+          if(('start-time' in new_values) && previous_page){
+            previous_page.setProperty('end-time', new_values['start-time']);
+          }
+          
+          if(('end-time' in new_values) && next_page){
+            next_page.setProperty('start-time', new_values['end-time']);
+          }
+      
+          editor.updateElementSelector();
         }
       }
     });
@@ -965,17 +976,30 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onElementPanelValueChange = function(evt){
-    var panel = this.panels.element,
+    var editor = this,
+      panel = this.panels.element,
       element = evt.detail.component,
       old_values = evt.detail.old_values,
       new_values = evt.detail.new_values;
+      
+    if(('start-time' in new_values) || ('end-time' in new_values)){
+      editor.updateElementSelector();
+    }
 
     this.history.add({
       'undo': function(){
         panel.updateProperties(element, old_values);
+      
+        if(('start-time' in new_values) || ('end-time' in new_values)){
+          editor.updateElementSelector();
+        }
       },
       'redo': function(){
         panel.updateProperties(element, new_values);
+      
+        if(('start-time' in new_values) || ('end-time' in new_values)){
+          editor.updateElementSelector();
+        }
       }
     });
   };
@@ -1491,17 +1515,38 @@ metaScore.Editor = (function(){
    * @chainable 
    */
   Editor.prototype.updateElementSelector = function(){
-    var page = this.panels.page.getComponent(),
-      element = this.panels.element.getComponent(),
-      toolbar = this.panels.element.getToolbar();
+    var block = this.panels.block.getComponent(),
+      page = this.panels.page.getComponent(),
+      toolbar = this.panels.element.getToolbar(),
+      synched = block.getProperty('synched'),
+      element, out_of_range,
+      page_start_time, page_end_time,
+      element_start_time, element_end_time;
       
     toolbar.emptySelector().addSelectorOption(null, '');
+    
+    if(synched){
+      page_start_time = page.getProperty('start-time');
+      page_end_time = page.getProperty('end-time');
+    }
         
     if(page instanceof metaScore.player.component.Page){
-      page.getElements().each(function(index, element){
-        toolbar.addSelectorOption(element._metaScore.getId(), element._metaScore.getName());
+      page.getElements().each(function(index, dom){
+        element = dom._metaScore;
+        out_of_range = false;
+        
+        if(synched){
+          element_start_time = element.getProperty('start-time');
+          element_end_time = element.getProperty('end-time');
+          
+          out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
+        }
+        
+        toolbar.addSelectorOption(element.getId(), element.getName() + (out_of_range ? '*' : '')).toggleClass('out-of-range', out_of_range);
       }, this);
     }
+    
+    element = this.panels.element.getComponent();
     
     toolbar.setSelectorValue(element ? element.getId() : null, true);
     

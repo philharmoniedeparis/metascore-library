@@ -438,6 +438,22 @@ metaScore.namespace('player.component').Element = (function () {
 
   /**
    * Description
+   * @method getBlock
+   * @return CallExpression
+   */
+  Element.prototype.getPage = function(){
+    var dom = this.parents().get(0),
+      page;
+    
+    if(dom){
+      page = dom._metaScore;
+    
+    }
+    return page;
+  };
+
+  /**
+   * Description
    * @method onCuePointStart
    * @param {} cuepoint
    * @return 
