@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-22 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-05-26 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "41a4f1";
+    return "b14625";
   },
 
   /**
@@ -2981,8 +2981,9 @@ metaScore.Player = (function () {
       },
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
+        console.log(cuepoint.getMedia().getTime());
       },
-      onOut: function(cuepoint){
+      onSeekOut: function(cuepoint){
         cuepoint.destroy();
         delete player.linkcuepoint;
         
@@ -3498,8 +3499,6 @@ metaScore.namespace('player').CuePoint = (function () {
     this.id = metaScore.String.uuid();
 
     this.running = false;
-    this.inTimer = null;
-    this.outTimer = null;
 
     this.launch = metaScore.Function.proxy(this.launch, this);
     this.stop = metaScore.Function.proxy(this.stop, this);
@@ -3518,8 +3517,7 @@ metaScore.namespace('player').CuePoint = (function () {
     'onStart': null,
     'onUpdate': null,
     'onEnd': null,
-    'onOut': null,
-    'errorMargin': 20 // the number of milliseconds estimated as the error margin for time update events
+    'onSeekOut': null
   };
 
   /**
@@ -3532,13 +3530,13 @@ metaScore.namespace('player').CuePoint = (function () {
     var curTime = this.configs.media.getTime();
 
     if(!this.running){
-      if((!this.inTimer) && (curTime >= this.configs.inTime - this.configs.errorMargin) && ((this.configs.outTime === null) || (curTime < this.configs.outTime))){
-        this.inTimer = setTimeout(this.launch, Math.max(0, this.configs.inTime - curTime));
+      if((curTime >= this.configs.inTime) && ((this.configs.outTime === null) || (curTime < this.configs.outTime))){
+        this.launch();
       }
     }
     else{
-      if((!this.outTimer) && (this.configs.outTime !== null) && (curTime >= this.configs.outTime - this.configs.errorMargin)){
-        this.outTimer = setTimeout(this.stop, Math.max(0, this.configs.outTime - curTime));
+      if((curTime < this.configs.inTime) || ((this.configs.outTime !== null) && (curTime >= this.configs.outTime))){
+        this.stop();
       }
 
       if(this.configs.onUpdate){
@@ -3546,7 +3544,7 @@ metaScore.namespace('player').CuePoint = (function () {
       }
     }
     
-    if(this.configs.onOut){
+    if(this.configs.onSeekOut){
       this.configs.media.addMediaListener('seeking', this.onMediaSeeked);
     }
   };
@@ -3562,11 +3560,11 @@ metaScore.namespace('player').CuePoint = (function () {
     
     this.configs.media.removeMediaListener('play', this.onMediaSeeked);
     
-    if(this.configs.onOut){
+    if(this.configs.onSeekOut){
       curTime = this.configs.media.getTime();
     
       if((curTime < this.configs.inTime) || (curTime > this.configs.outTime)){
-        this.configs.onOut(this);
+        this.configs.onSeekOut(this);
       }
     }
   };
@@ -3608,11 +3606,6 @@ metaScore.namespace('player').CuePoint = (function () {
       return;
     }
 
-    if(this.inTimer){
-      clearTimeout(this.inTimer);
-      this.inTimer = null;
-    }
-
     if(this.configs.onStart){
       this.configs.onStart(this);
     }
@@ -3633,20 +3626,10 @@ metaScore.namespace('player').CuePoint = (function () {
    * @return 
    */
   CuePoint.prototype.stop = function(launchCallback){
-    if(this.inTimer){
-      clearTimeout(this.inTimer);
-      this.inTimer = null;
-    }
-
-    if(this.outTimer){
-      clearTimeout(this.outTimer);
-      this.outTimer = null;
-    }
-
     if(launchCallback !== false && this.configs.onEnd){
       this.configs.onEnd(this);
     
-      if(this.configs.onOut){
+      if(this.configs.onSeekOut){
         this.configs.media.addMediaListener('play', this.onMediaSeeked);
       }
     }
@@ -5123,15 +5106,6 @@ metaScore.namespace('player.component').Media = (function () {
    */
   Media.prototype.getName = function(){
     return '[media]';
-  };
-
-  /**
-   * Description
-   * @method getDuration
-   * @return MemberExpression
-   */
-  Media.prototype.getDuration = function(){
-    return this.configs.duration;
   };
 
   /**

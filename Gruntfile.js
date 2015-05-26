@@ -56,7 +56,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
-  grunt.loadNpmTasks('grunt-git-changelog');
   grunt.loadNpmTasks('grunt-git-rev-parse');
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-translate-extract');
@@ -98,19 +97,6 @@ module.exports = function(grunt) {
       'options': {
         banner: BANNER
       }
-    },
-    'git_changelog': {
-      manifest: "package.json",
-      history: "history.txt",
-      changelog: "changelog.txt",
-      changesSeparator: '\n\t*********',
-      masks: [
-        {
-          title: '',
-          mask: /[^\n]/gi,
-          format: ' - #%h: %s %b'
-        }
-      ]
     },
     'git-rev-parse': {
       all: {},

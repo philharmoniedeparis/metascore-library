@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-04-22 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-05-26 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -90,13 +90,14 @@ metaScore.Editor = (function(){
     this.panels = {};
     
     this.panels.block = new metaScore.editor.panel.Block().appendTo(this.sidebar)
+      .addListener('componentbeforeset', metaScore.Function.proxy(this.onBlockBeforeSet, this))
       .addListener('componentset', metaScore.Function.proxy(this.onBlockSet, this))
       .addListener('componentunset', metaScore.Function.proxy(this.onBlockUnset, this))
       .addListener('valueschange', metaScore.Function.proxy(this.onBlockPanelValueChange, this));
       
     this.panels.block.getToolbar()
-        .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onBlockPanelSelectorChange, this))
-        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this));
+      .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onBlockPanelSelectorChange, this))
+      .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onBlockPanelToolbarClick, this));
         
     this.panels.page = new metaScore.editor.panel.Page().appendTo(this.sidebar)
       .addListener('componentbeforeset', metaScore.Function.proxy(this.onPageBeforeSet, this))
@@ -105,8 +106,8 @@ metaScore.Editor = (function(){
       .addListener('valueschange', metaScore.Function.proxy(this.onPagePanelValueChange, this));
       
     this.panels.page.getToolbar()
-        .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onPagePanelSelectorChange, this))
-        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
+      .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onPagePanelSelectorChange, this))
+      .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onPagePanelToolbarClick, this));
         
     this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar)
       .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
@@ -115,8 +116,8 @@ metaScore.Editor = (function(){
       .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this));
       
     this.panels.element.getToolbar()
-        .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
-        .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
+      .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
+      .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
         
     this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
     
@@ -135,7 +136,7 @@ metaScore.Editor = (function(){
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
    
-   new metaScore.Dom(window)
+    new metaScore.Dom(window)
       .addListener('beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
 
     this
@@ -455,6 +456,19 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method onBlockBeforeSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onBlockBeforeSet = function(evt){
+    var block = evt.detail.component;
+    
+    this.panels.element.unsetComponent();
+    this.panels.page.unsetComponent();
+  };
+
+  /**
+   * Description
    * @method onBlockSet
    * @param {} evt
    * @return 
@@ -466,7 +480,7 @@ metaScore.Editor = (function(){
       this.panels.page.getToolbar()
         .toggleMenuItem('new', true);
       
-      this.panels.page.setComponent(block.getActivePage(), true);
+      this.panels.page.setComponent(block.getActivePage());
 
       this.panels.element.getToolbar()
         .toggleMenuItem('Cursor', true)
@@ -645,6 +659,7 @@ metaScore.Editor = (function(){
     var page = evt.detail.component,
       block = page.getBlock();
 
+    this.panels.element.unsetComponent();    
     this.panels.block.setComponent(block);
   };
 
@@ -1279,12 +1294,9 @@ metaScore.Editor = (function(){
       this.panels.element.setComponent(component);
     }
     else if(component instanceof metaScore.player.component.Page){
-      this.panels.element.unsetComponent();
       this.panels.page.setComponent(component);
     }
     else{
-      this.panels.element.unsetComponent();
-      this.panels.page.unsetComponent();
       this.panels.block.setComponent(component);
     }
     
@@ -1563,7 +1575,7 @@ metaScore.Editor = (function(){
           out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
         }
         
-        toolbar.addSelectorOption(element.getId(), element.getName() + (out_of_range ? '*' : '')).toggleClass('out-of-range', out_of_range);
+        toolbar.addSelectorOption(element.getId(), (out_of_range ? '*' : '') + element.getName()).toggleClass('out-of-range', out_of_range);
       }, this);
     }
     

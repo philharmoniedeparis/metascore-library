@@ -568,7 +568,7 @@
 }
 .metaScore-editor .sidebar-wrapper .panel .fields .field .input-wrapper input {
   width: 100%;
-  height: 100%;
+  height: 24px;
   margin: 0;
   padding: 0;
   border: none;

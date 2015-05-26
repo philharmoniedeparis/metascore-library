@@ -201,15 +201,6 @@ metaScore.namespace('player.component').Media = (function () {
 
   /**
    * Description
-   * @method getDuration
-   * @return MemberExpression
-   */
-  Media.prototype.getDuration = function(){
-    return this.configs.duration;
-  };
-
-  /**
-   * Description
    * @method onPlay
    * @param {} evt
    * @return 
