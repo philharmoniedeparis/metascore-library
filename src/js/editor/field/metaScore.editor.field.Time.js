@@ -140,7 +140,7 @@ metaScore.namespace('editor.field').Time = (function () {
       minutes_val = parseInt(this.minutes.val(), 10) || 0;
       hours_val = parseInt(this.hours.val(), 10) || 0;
 
-      this.setValue((centiseconds_val * 10) + (seconds_val * 1000) + (minutes_val * 60000) + (hours_val * 3600000));
+      this.setValue(centiseconds_val + (seconds_val * 100) + (minutes_val * 6000) + (hours_val * 360000));
     }
     else{
       this.setValue(null);
@@ -172,16 +172,16 @@ metaScore.namespace('editor.field').Time = (function () {
   /**
    * Description
    * @method setValue
-   * @param {} milliseconds
+   * @param {} centiseconds
    * @param {} supressEvent
    * @return 
    */
-  TimeField.prototype.setValue = function(milliseconds, supressEvent){
+  TimeField.prototype.setValue = function(centiseconds, supressEvent){
     var centiseconds_val, seconds_val, minutes_val, hours_val;
 
-    milliseconds = parseFloat(milliseconds);
+    centiseconds = parseFloat(centiseconds);
 
-    if(isNaN(milliseconds)){
+    if(isNaN(centiseconds)){
       this.value = null;
 
       this.centiseconds.val(0);
@@ -208,7 +208,7 @@ metaScore.namespace('editor.field').Time = (function () {
       }
     }
     else{
-      this.value = milliseconds;
+      this.value = Math.floor(centiseconds);
 
       if(this.configs.min !== null){
         this.value = Math.max(this.value, this.configs.min);
@@ -217,10 +217,10 @@ metaScore.namespace('editor.field').Time = (function () {
         this.value = Math.min(this.value, this.configs.max);
       }
 
-      centiseconds_val = parseInt((this.value / 10) % 100, 10) || 0;
-      seconds_val = parseInt((this.value / 1000) % 60, 10) || 0;
-      minutes_val = parseInt((this.value / 60000) % 60, 10) || 0;
-      hours_val = parseInt((this.value / 3600000), 10) || 0;
+      centiseconds_val = parseInt((this.value) % 100, 10) || 0;
+      seconds_val = parseInt((this.value / 100) % 60, 10) || 0;
+      minutes_val = parseInt((this.value / 6000) % 60, 10) || 0;
+      hours_val = parseInt((this.value / 360000), 10) || 0;
 
       if(!this.disabled){
         this.hours.attr('disabled', null);

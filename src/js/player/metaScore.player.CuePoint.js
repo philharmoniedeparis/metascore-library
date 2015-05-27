@@ -49,12 +49,12 @@ metaScore.namespace('player').CuePoint = (function () {
     var curTime = this.configs.media.getTime();
 
     if(!this.running){
-      if((curTime >= this.configs.inTime) && ((this.configs.outTime === null) || (curTime < this.configs.outTime))){
+      if((Math.floor(curTime) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(curTime) < this.configs.outTime))){
         this.launch();
       }
     }
     else{
-      if((curTime < this.configs.inTime) || ((this.configs.outTime !== null) && (curTime >= this.configs.outTime))){
+      if((Math.ceil(curTime) < this.configs.inTime) || ((this.configs.outTime !== null) && (Math.floor(curTime) >= this.configs.outTime))){
         this.stop();
       }
 
@@ -82,7 +82,7 @@ metaScore.namespace('player').CuePoint = (function () {
     if(this.configs.onSeekOut){
       curTime = this.configs.media.getTime();
     
-      if((curTime < this.configs.inTime) || (curTime > this.configs.outTime)){
+      if((Math.ceil(curTime) < this.configs.inTime) || (Math.floor(curTime) > this.configs.outTime)){
         this.configs.onSeekOut(this);
       }
     }

@@ -200,7 +200,6 @@ metaScore.Player = (function () {
       },
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
-        console.log(cuepoint.getMedia().getTime());
       },
       onSeekOut: function(cuepoint){
         cuepoint.destroy();

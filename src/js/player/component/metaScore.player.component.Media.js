@@ -305,7 +305,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return ThisExpression
    */
   Media.prototype.setTime = function(time) {
-    this.dom.currentTime = parseFloat(time) / 1000;
+    this.dom.currentTime = parseFloat(time) / 100;
 
     this.triggerTimeUpdate(false);
     
@@ -318,7 +318,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return BinaryExpression
    */
   Media.prototype.getTime = function() {
-    return parseFloat(this.dom.currentTime) * 1000;
+    return parseFloat(this.dom.currentTime) * 100;
   };
 
   /**
@@ -327,7 +327,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return BinaryExpression
    */
   Media.prototype.getDuration = function() {
-    return parseFloat(this.dom.duration) * 1000;
+    return parseFloat(this.dom.duration) * 100;
   };
 
   /**

@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "931edb";
+    return "e145c4";
   },
 
   /**
@@ -2981,7 +2981,6 @@ metaScore.Player = (function () {
       },
       onEnd: function(cuepoint){
         cuepoint.getMedia().pause();
-        console.log(cuepoint.getMedia().getTime());
       },
       onSeekOut: function(cuepoint){
         cuepoint.destroy();
@@ -3530,12 +3529,12 @@ metaScore.namespace('player').CuePoint = (function () {
     var curTime = this.configs.media.getTime();
 
     if(!this.running){
-      if((curTime >= this.configs.inTime) && ((this.configs.outTime === null) || (curTime < this.configs.outTime))){
+      if((Math.floor(curTime) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(curTime) < this.configs.outTime))){
         this.launch();
       }
     }
     else{
-      if((curTime < this.configs.inTime) || ((this.configs.outTime !== null) && (curTime >= this.configs.outTime))){
+      if((Math.ceil(curTime) < this.configs.inTime) || ((this.configs.outTime !== null) && (Math.floor(curTime) >= this.configs.outTime))){
         this.stop();
       }
 
@@ -3563,7 +3562,7 @@ metaScore.namespace('player').CuePoint = (function () {
     if(this.configs.onSeekOut){
       curTime = this.configs.media.getTime();
     
-      if((curTime < this.configs.inTime) || (curTime > this.configs.outTime)){
+      if((Math.ceil(curTime) < this.configs.inTime) || (Math.floor(curTime) > this.configs.outTime)){
         this.configs.onSeekOut(this);
       }
     }
@@ -5214,7 +5213,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return ThisExpression
    */
   Media.prototype.setTime = function(time) {
-    this.dom.currentTime = parseFloat(time) / 1000;
+    this.dom.currentTime = parseFloat(time) / 100;
 
     this.triggerTimeUpdate(false);
     
@@ -5227,7 +5226,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return BinaryExpression
    */
   Media.prototype.getTime = function() {
-    return parseFloat(this.dom.currentTime) * 1000;
+    return parseFloat(this.dom.currentTime) * 100;
   };
 
   /**
@@ -5236,7 +5235,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return BinaryExpression
    */
   Media.prototype.getDuration = function() {
-    return parseFloat(this.dom.duration) * 1000;
+    return parseFloat(this.dom.duration) * 100;
   };
 
   /**
