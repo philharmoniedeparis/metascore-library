@@ -65,19 +65,25 @@ metaScore.namespace('player.component.element').Text = (function () {
   Text.prototype.onLinkClick = function(evt){
     var link = evt.target,
       matches;
+      
+    if(!metaScore.Dom.is(link, 'a')){
+      link = metaScore.Dom.closest(link, 'a');
+    }
+    
+    if(link){
+      if(matches = link.hash.match(/^#p=(\d+)/)){
+        this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
+        evt.preventDefault();
+      }
+      else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
+        this.triggerEvent('time', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]), 'rIndex': parseInt(matches[3])});
+      }
+      else{
+        window.open(link.href,'_blank');
+      }
 
-    if(matches = link.hash.match(/^#p=(\d+)/)){
-      this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
     }
-    else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]), 'rIndex': parseInt(matches[3])});
-    }
-    else{
-      window.open(link.href,'_blank');
-    }
-
-    evt.preventDefault();
 
   };
 

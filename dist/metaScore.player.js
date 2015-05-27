@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-05-26 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-05-27 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "b14625";
+    return "931edb";
   },
 
   /**
@@ -5858,19 +5858,25 @@ metaScore.namespace('player.component.element').Text = (function () {
   Text.prototype.onLinkClick = function(evt){
     var link = evt.target,
       matches;
+      
+    if(!metaScore.Dom.is(link, 'a')){
+      link = metaScore.Dom.closest(link, 'a');
+    }
+    
+    if(link){
+      if(matches = link.hash.match(/^#p=(\d+)/)){
+        this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
+        evt.preventDefault();
+      }
+      else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
+        this.triggerEvent('time', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]), 'rIndex': parseInt(matches[3])});
+      }
+      else{
+        window.open(link.href,'_blank');
+      }
 
-    if(matches = link.hash.match(/^#p=(\d+)/)){
-      this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
       evt.preventDefault();
     }
-    else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
-      this.triggerEvent('time', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]), 'rIndex': parseInt(matches[3])});
-    }
-    else{
-      window.open(link.href,'_blank');
-    }
-
-    evt.preventDefault();
 
   };
 
