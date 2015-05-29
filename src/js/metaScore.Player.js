@@ -206,7 +206,8 @@ metaScore.Player = (function () {
         delete player.linkcuepoint;
         
         player.setReadingIndex(0);
-      }
+      },
+      considerError: true
     });
 
     this.getMedia()

@@ -25,6 +25,8 @@ metaScore.namespace('player').CuePoint = (function () {
     this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
     this.configs.media.addMediaListener('timeupdate', this.onMediaTimeUpdate);
+    
+    this.max_error = 0;
   }
 
   metaScore.Evented.extend(CuePoint);
@@ -36,7 +38,8 @@ metaScore.namespace('player').CuePoint = (function () {
     'onStart': null,
     'onUpdate': null,
     'onEnd': null,
-    'onSeekOut': null
+    'onSeekOut': null,
+    'considerError': false
   };
 
   /**
@@ -46,20 +49,28 @@ metaScore.namespace('player').CuePoint = (function () {
    * @return 
    */
   CuePoint.prototype.onMediaTimeUpdate = function(evt){
-    var curTime = this.configs.media.getTime();
+    var cur_time = this.configs.media.getTime();
 
     if(!this.running){
-      if((Math.floor(curTime) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(curTime) < this.configs.outTime))){
+      if((Math.floor(cur_time) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
         this.launch();
       }
     }
     else{
-      if((Math.ceil(curTime) < this.configs.inTime) || ((this.configs.outTime !== null) && (Math.floor(curTime) >= this.configs.outTime))){
+      if(this.configs.considerError){
+        if('previous_time' in this){
+          this.max_error = Math.max(this.max_error, Math.abs(cur_time - this.previous_time));
+        }
+        
+        this.previous_time = cur_time;
+      }
+    
+      if((Math.ceil(cur_time) < this.configs.inTime) || ((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime))){
         this.stop();
       }
 
       if(this.configs.onUpdate){
-        this.configs.onUpdate(this, curTime);
+        this.configs.onUpdate(this, cur_time);
       }
     }
     
@@ -75,14 +86,14 @@ metaScore.namespace('player').CuePoint = (function () {
    * @return 
    */
   CuePoint.prototype.onMediaSeeked = function(evt){
-    var curTime;
+    var cur_time;
     
     this.configs.media.removeMediaListener('play', this.onMediaSeeked);
     
     if(this.configs.onSeekOut){
-      curTime = this.configs.media.getTime();
+      cur_time = this.configs.media.getTime();
     
-      if((Math.ceil(curTime) < this.configs.inTime) || (Math.floor(curTime) > this.configs.outTime)){
+      if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
         this.configs.onSeekOut(this);
       }
     }
@@ -151,6 +162,11 @@ metaScore.namespace('player').CuePoint = (function () {
       if(this.configs.onSeekOut){
         this.configs.media.addMediaListener('play', this.onMediaSeeked);
       }
+    }
+    
+    if(this.configs.considerError){
+      this.max_error = 0;
+      delete this.previous_time;
     }
 
     this.running = false;
