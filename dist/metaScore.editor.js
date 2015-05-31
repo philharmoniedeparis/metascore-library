@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-05-29 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-05-31 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -35,6 +35,2750 @@ if (typeof DEBUG === 'undefined') DEBUG = true;
 var metaScore = global.metaScore;
 
 
+/**
+ * Polyfills
+ */
+ 
+// Element.matches
+if(Element && !Element.prototype.matches){
+  Element.prototype.matches = Element.prototype.matchesSelector =
+    Element.prototype.matchesSelector ||
+    Element.prototype.webkitMatchesSelector ||
+    Element.prototype.mozMatchesSelector ||
+    Element.prototype.msMatchesSelector ||
+    Element.prototype.oMatchesSelector ||
+    function (selector) {
+      var element = this,
+        matches = (element.document || element.ownerDocument).querySelectorAll(selector),
+        i = 0;
+
+      while (matches[i] && matches[i] !== element) {
+        i++;
+      }
+
+      return matches[i] ? true : false;
+    };
+}
+
+// Element.closest
+if(Element && !Element.prototype.closest){
+  /**
+   * Description
+   * @method closest
+   * @param {} selector
+   * @return Literal
+   */
+  Element.prototype.closest = function closest(selector) {
+    var node = this;
+
+    while(node){
+      if(node.matches(selector)){
+        return node;
+      }
+      else{
+        node = node.parentElement;
+      }
+    }
+
+    return null;
+  };
+}
+
+// CustomEvent constructor
+// https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
+if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
+  /**
+   * Description
+   * @method CustomEvent
+   * @param {} event
+   * @param {} params
+   * @return evt
+   */
+  window.CustomEvent = function(event, params) {
+    var evt;
+    
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+
+    evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    
+    return evt;
+  };
+
+  window.CustomEvent.prototype = window.Event.prototype;
+}
+
+
+// requestAnimationFrame
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+// MIT license
+(function() {
+  var lastTime = 0,
+    vendors = ['ms', 'moz', 'webkit', 'o'];
+  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame){
+    /**
+     * Description
+     * @method requestAnimationFrame
+     * @param {} callback
+     * @param {} element
+     * @return id
+     */
+    window.requestAnimationFrame = function(callback, element) {
+      var currTime = new Date().getTime();
+      var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+      var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+  }
+
+  if (!window.cancelAnimationFrame){
+    /**
+     * Description
+     * @method cancelAnimationFrame
+     * @param {} id
+     * @return 
+     */
+    window.cancelAnimationFrame = function(id) {
+      clearTimeout(id);
+    };
+  }
+}());
+/**
+* The code class
+* Implements global helper methods
+* @class metaScore
+*/
+
+metaScore = global.metaScore = {
+
+  /**
+   * Returns the current version identifier
+   * @method getVersion
+   * @return {String} The version identifier
+   */
+  getVersion: function(){
+    return "0.0.2";
+  },
+
+  /**
+   * Returns the current revision identifier
+   * @method getRevision
+   * @return {String} The revision identifier
+   */
+  getRevision: function(){
+    return "305d1b";
+  },
+
+  /**
+   * Extends the metaScore namespace
+   * @method namespace
+   * @param {String} The namespace to add
+   * @return {Object} The extended namespace
+   */
+  namespace: function(str){
+    var parent = this,
+      parts = str.split('.'),
+      part;
+
+    for(var i = 0, length = parts.length; i < length; i++) {
+      part = parts[i];
+      parent[part] = parent[part] || {};
+      parent = parent[part];
+    }
+
+    return parent;
+  }
+
+};
+/**
+* The base class
+* Implements a class extension mechanism and defines shared methods 
+* @class Class
+* @namespace metaScore
+*/
+
+metaScore.Class = (function () {
+
+  /**
+   * @constructor
+   */
+  function Class(){
+  }
+
+  Class.defaults = {};
+
+  /**
+   * Extends a class by another
+   * @method extend
+   * @param {Object} child
+   * @return 
+   */
+  Class.extend = function(child){
+    child.prototype = Object.create(this.prototype, {
+      constructor: {
+        value: child
+      }
+    });
+
+    child.parent = this;
+    child.extend = this.extend;
+
+    if(!('defaults' in child)){
+      child.defaults = {};
+    }
+
+    for(var prop in this.defaults){
+      if(!(prop in child.defaults)){
+        child.defaults[prop] = this.defaults[prop];
+      }
+    }
+  };
+
+  /**
+   * Extends the passed configs with default configs
+   * @method getConfigs
+   * @param {Object} configs
+   * @return configs
+   */
+  Class.prototype.getConfigs = function(configs){
+    configs = configs || {};
+
+    for(var prop in this.constructor.defaults){
+      if(!(prop in configs)){
+        configs[prop] = this.constructor.defaults[prop];
+      }
+    }
+
+    return configs;
+  };
+
+  return Class;
+
+})();
+/**
+* A helper class for event handling
+* @class Evented
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Evented = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Evented() {
+    // call parent constructor
+    Evented.parent.call(this);
+
+    this.listeners = {};
+  }
+
+  metaScore.Class.extend(Evented);
+
+  /**
+   * Description
+   * @method addListener
+   * @param {} type
+   * @param {} listener
+   * @return ThisExpression
+   */
+  Evented.prototype.addListener = function(type, listener){
+    if (typeof this.listeners[type] === "undefined"){
+      this.listeners[type] = [];
+    }
+
+    this.listeners[type].push(listener);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method removeListener
+   * @param {} type
+   * @param {} listener
+   * @return ThisExpression
+   */
+  Evented.prototype.removeListener = function(type, listener){
+    if(this.listeners[type] instanceof Array){
+      var listeners = this.listeners[type];
+      for (var i=0, len=listeners.length; i < len; i++){
+        if (listeners[i] === listener){
+          listeners.splice(i, 1);
+          break;
+        }
+      }
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method triggerEvent
+   * @param {} type
+   * @param {} data
+   * @param {} bubbling
+   * @param {} cancelable
+   * @return ThisExpression
+   */
+  Evented.prototype.triggerEvent = function(type, data, bubbling, cancelable){
+    var listeners, event;
+
+    if (this.listeners[type] instanceof Array){
+      listeners = this.listeners[type];
+
+      event = {
+        'target': this,
+        'type': type,
+        'detail': data,
+        'bubbles': bubbling !== false,
+        'cancelable': cancelable !== false
+      };
+
+      metaScore.Object.each(listeners, function(index, listener){
+        listener.call(this, event);
+      }, this);
+    }
+
+    return this;
+  };
+
+  return Evented;
+
+})();
+/**
+* Description
+* @class Ajax
+* @extends metaScore.Class
+*/
+
+metaScore.Ajax = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Ajax() {
+  }
+
+  metaScore.Class.extend(Ajax);
+
+  /**
+   * Create an XMLHttp object
+   * @method createXHR
+   * @return 
+   */
+  Ajax.createXHR = function() {
+
+    var xhr, i, l,
+      activeX = [
+        "MSXML2.XMLHttp.5.0",
+        "MSXML2.XMLHttp.4.0",
+        "MSXML2.XMLHttp.3.0",
+        "MSXML2.XMLHttp",
+        "Microsoft.XMLHttp"
+      ];
+
+    if (typeof XMLHttpRequest !== "undefined") {
+      xhr = new XMLHttpRequest();
+      return xhr;
+    }
+    else if (window.ActiveXObject) {
+      for (i = 0, l = activeX.length; i < l; i++) {
+        try {
+          xhr = new ActiveXObject(activeX[i]);
+          return xhr;
+        }
+        catch (e) {}
+      }
+    }
+
+    throw new Error("XMLHttp object could be created.");
+
+  };
+
+  /**
+   * Send an XMLHttp request
+   * @method send
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return xhr
+   */
+  Ajax.send = function(url, options) {
+
+    var key,
+      xhr = Ajax.createXHR(),
+      defaults = {
+        'method': 'GET',
+        'headers': {},
+        'async': true,
+        'data': {},
+        'dataType': 'json', // xml, json, script, text or html
+        'complete': null,
+        'success': null,
+        'error': null,
+        'scope': this
+      };
+
+    options = metaScore.Object.extend({}, defaults, options);
+
+    if((options.method === 'POST' || options.method === 'PUT') && !('Content-type' in options.headers)){
+      switch(options.dataType){
+        case 'json':
+          options.headers['Content-type'] = 'application/json;charset=UTF-8';
+          break;
+
+        default:
+          options.headers['Content-type'] = 'application/x-www-form-urlencoded';
+      }
+    }
+
+    xhr.open(options.method, url, options.async);
+
+    metaScore.Object.each(options.headers, function(key, value){
+      xhr.setRequestHeader(key, value);
+    });
+
+    /**
+     * Description
+     * @method onreadystatechange
+     * @return 
+     */
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if(metaScore.Var.is(options.complete, 'function')){
+          options.complete.call(options.scope, xhr);
+        }
+        if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
+          if(metaScore.Var.is(options.success, 'function')){
+            options.success.call(options.scope, xhr);
+          }
+        }
+        else if(metaScore.Var.is(options.error, 'function')){
+          options.error.call(options.scope, xhr);
+        }
+      }
+    };
+
+    xhr.send(options.data);
+
+    return xhr;
+
+  };
+
+  /**
+   * Send an XMLHttp GET request
+   * @method get
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
+  Ajax.get = function(url, options) {
+
+    metaScore.Object.extend(options, {'method': 'GET'});
+
+    return Ajax.send(url, options);
+
+  };
+
+  /**
+   * Send an XMLHttp POST request
+   * @method post
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
+  Ajax.post = function(url, options) {
+
+    metaScore.Object.extend(options, {'method': 'POST'});
+
+    return Ajax.send(url, options);
+
+  };
+
+  /**
+   * Send an XMLHttp PUT request
+   * @method put
+   * @param {} url
+   * @param {object} options to set for the request; see the defaults variable
+   * @return CallExpression
+   */
+  Ajax.put = function(url, options) {
+
+    metaScore.Object.extend(options, {'method': 'PUT'});
+
+    return Ajax.send(url, options);
+
+  };
+
+  return Ajax;
+
+})();
+/**
+* Description
+* @class Array
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Array = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Array() {
+  }
+
+  metaScore.Class.extend(Array);
+
+  /**
+   * Checks if a value is in an array
+   * @method inArray
+   * @param {} value
+   * @param {} arr
+   * @return UnaryExpression
+   */
+  Array.inArray = function (value, arr) {
+    var len, i = 0;
+
+    if(arr) {
+      if(arr.indexOf){
+        return arr.indexOf(value);
+      }
+
+      len = arr.length;
+
+      for ( ; i < len; i++ ) {
+        // Skip accessing in sparse arrays
+        if ( i in arr && arr[i] === value ) {
+          return i;
+        }
+      }
+    }
+
+    return -1;
+  };
+
+  /**
+   * Copies an array
+   * @method copy
+   * @param {} arr
+   * @return CallExpression
+   */
+  Array.copy = function (arr) {
+    return [].concat(arr);
+  };
+
+  /**
+   * Shuffles elements in an array
+   * @method shuffle
+   * @param {} arr
+   * @return shuffled
+   */
+  Array.shuffle = function(arr) {
+
+    var shuffled = Array.copy(arr);
+
+    shuffled.sort(function(){
+      return ((Math.random() * 3) | 0) - 1;
+    });
+
+    return shuffled;
+
+  };
+
+  /**
+   * Return new array with duplicate values removed
+   * @method unique
+   * @param {} arr
+   * @return unique
+   */
+  Array.unique = function(arr) {
+
+    var unique = [];
+    var length = arr.length;
+
+    for(var i=0; i<length; i++) {
+      for(var j=i+1; j<length; j++) {
+        // If this[i] is found later in the array
+        if (arr[i] === arr[j]){
+          j = ++i;
+        }
+      }
+      unique.push(arr[i]);
+    }
+
+    return unique;
+
+  };
+
+  /**
+   * Call a function on each element of an array
+   * @method each
+   * @param {} arr
+   * @param {} callback
+   * @param {} scope
+   * @return arr
+   */
+  Array.each = function(arr, callback, scope) {
+
+    var i = 0,
+      l = arr.length,
+      value,
+      scope_provided = scope !== undefined;
+
+    for(; i < l; i++) {
+      value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
+
+      if (value === false) {
+        break;
+      }
+    }
+
+    return arr;
+
+  };
+
+  /**
+   * Remove an element from an array
+   * @method remove
+   * @param {} arr
+   * @param {} element
+   * @return arr
+   */
+  Array.remove = function(arr, element){
+    var index = Array.inArray(element, arr);
+
+    while(index > -1){
+      arr.splice(index, 1);
+      index = Array.inArray(element, arr);
+    }
+
+    return arr;
+  };
+
+  return Array;
+
+})();
+/**
+* Description
+* @class Color
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Color = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Color() {
+  }
+
+  metaScore.Class.extend(Color);
+
+  /**
+   * Description
+   * @method rgb2hsv
+   * @param {} rgb
+   * @return ObjectExpression
+   */
+  Color.rgb2hsv = function (rgb){
+    var r = rgb.r, g = rgb.g, b = rgb.b,
+      max = Math.max(r, g, b),
+      min = Math.min(r, g, b),
+      d = max - min,
+      h, s, v;
+
+    s = max === 0 ? 0 : d / max;
+    v = max;
+
+    if(max === min) {
+      h = 0; // achromatic
+    }
+    else {
+      switch(max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+
+        case g:
+          h = (b - r) / d + 2;
+          break;
+
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+
+      h /= 6;
+    }
+
+    return {
+      'h': h,
+      's': s,
+      'v': v
+    };
+  };
+
+  /**
+   * Description
+   * @method parse
+   * @param {} color
+   * @return rgba
+   */
+  Color.parse = function(color){
+    var rgba, matches;
+    
+    rgba = {
+      r: 0,
+      g: 0,
+      b: 0,
+      a: 0,
+    };
+
+    if(metaScore.Var.is(color, 'object')){
+      rgba.r = 'r' in color ? color.r : 0;
+      rgba.g = 'g' in color ? color.g : 0;
+      rgba.b = 'b' in color ? color.b : 0;
+      rgba.a = 'a' in color ? color.a : 1;
+    }
+    else if(metaScore.Var.is(color, 'string')){
+      color = color.replace(/\s\s*/g,''); // Remove all spaces
+
+      // Checks for 6 digit hex and converts string to integer
+      if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
+        rgba.r = parseInt(matches[1], 16);
+        rgba.g = parseInt(matches[2], 16);
+        rgba.b = parseInt(matches[3], 16);
+        rgba.a = 1;
+      }
+
+      // Checks for 3 digit hex and converts string to integer
+      else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
+        rgba.r = parseInt(matches[1], 16) * 17;
+        rgba.g = parseInt(matches[2], 16) * 17;
+        rgba.b = parseInt(matches[3], 16) * 17;
+        rgba.a = 1;
+      }
+
+      // Checks for rgba and converts string to
+      // integer/float using unary + operator to save bytes
+      else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
+        rgba.r = +matches[1];
+        rgba.g = +matches[2];
+        rgba.b = +matches[3];
+        rgba.a = +matches[4];
+      }
+
+      // Checks for rgb and converts string to
+      // integer/float using unary + operator to save bytes
+      else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
+        rgba.r = +matches[1];
+        rgba.g = +matches[2];
+        rgba.b = +matches[3];
+        rgba.a = 1;
+      }
+    }
+
+    return rgba;
+  };
+
+  return Color;
+
+})();
+/**
+* Description
+* @class Dom
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Dom = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Dom() {
+    var elements;
+
+    this.elements = [];
+
+    if(arguments.length > 0){
+      if(elements = metaScore.Dom.elementsFromString.apply(this, arguments)){
+        this.add(elements);
+
+        if(arguments.length > 1){
+          this.attr(arguments[1]);
+        }
+      }
+      else if(elements = metaScore.Dom.selectElements.apply(this, arguments)){
+        this.add(elements);
+
+        if(arguments.length > 2){
+          this.attr(arguments[2]);
+        }
+      }
+    }
+  }
+
+  metaScore.Class.extend(Dom);
+
+  /**
+  * Regular expression that matches an element's string
+  */
+  Dom.stringRe = /^<(.)+>$/;
+
+  /**
+  * Regular expression that matches dashed string for camelizing
+  */
+  Dom.camelRe = /-([\da-z])/gi;
+
+  /**
+   * Helper function used by the camel function
+   * @method camelReplaceFn
+   * @param {} all
+   * @param {} letter
+   * @return CallExpression
+   */
+  Dom.camelReplaceFn = function(all, letter) {
+    return letter.toUpperCase();
+  };
+
+  /**
+   * Normaliz a string to Camel Case; used for CSS properties
+   * @method camel
+   * @param {} str
+   * @return CallExpression
+   */
+  Dom.camel = function(str){
+    return str.replace(Dom.camelRe, Dom.camelReplaceFn);
+  };
+
+  /**
+  * List of event that should generaly bubble up
+  */
+  Dom.bubbleEvents = {
+    'click': true,
+    'submit': true,
+    'mousedown': true,
+    'mousemove': true,
+    'mouseup': true,
+    'mouseover': true,
+    'mouseout': true,
+    'transitionend': true
+  };
+
+  /**
+   * Select a single element by selecor
+   * @method selectElement
+   * @param {} selector
+   * @param {} parent
+   * @return element
+   */
+  Dom.selectElement = function (selector, parent) {
+    var element;
+
+    if(!parent){
+      parent = document;
+    }
+
+    if (metaScore.Var.is(selector, 'string')) {
+      element = parent.querySelector(selector);
+    }
+    else if (selector.length) {
+      element = selector[0];
+    }
+    else {
+      element = selector;
+    }
+
+    return element;
+  };
+
+  /**
+   * Select elements by selecor
+   * @method selectElements
+   * @param {} selector
+   * @param {} parent
+   * @return elements
+   */
+  Dom.selectElements = function (selector, parent) {
+    var elements;
+
+    if(!parent){
+      parent = document;
+    }
+    else if(parent instanceof Dom){
+      parent = parent.get(0);
+    }
+
+    if(metaScore.Var.is(selector, 'string')) {
+      elements = parent.querySelectorAll(selector);
+    }
+    else if(selector.length) {
+      elements = selector;
+    }
+    else {
+      elements = [selector];
+    }
+
+    return elements;
+  };
+
+  /**
+   * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+   * @method elementsFromString
+   * @param {} html
+   * @return Literal
+   */
+  Dom.elementsFromString = function(html){
+    var wrapMap = {
+        'option': [1, "<select multiple='multiple'>", "</select>"],
+        'optgroup': [1, "<select multiple='multiple'>", "</select>"],
+        'legend': [1, "<fieldset>", "</fieldset>"],
+        'area': [1, "<map>", "</map>"],
+        'param': [1, "<object>", "</object>"],
+        'thead': [1, "<table>", "</table>"],
+        'tbody': [1, "<table>", "</table>"],
+        'tfoot': [1, "<table>", "</table>"],
+        'colgroup': [1, "<table>", "</table>"],
+        'caption': [1, "<table>", "</table>"],
+        'tr': [2, "<table><tbody>", "</tbody></table>"],
+        'col': [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
+        'th': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+        'td': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+        '_default': [1, "<div>", "</div>" ]
+      },
+      element = document.createElement('div'),
+      match = /<\s*\w.*?>/g.exec(html),
+      tag, map, j;
+
+    if(match != null){
+      tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
+
+      map = wrapMap[tag] || wrapMap['_default'];
+      html = map[1] + html + map[2];
+      element.innerHTML = html;
+
+      // Descend through wrappers to the right content
+      j = map[0];
+      while(j--) {
+        element = element.lastChild;
+      }
+
+      return element.childNodes;
+    }
+
+    return null;
+  };
+
+  /**
+   * Checks if an element has a given class
+   * @method hasClass
+   * @param {} element
+   * @param {} className
+   * @return CallExpression
+   */
+  Dom.hasClass = function(element, className){
+    return element.classList.contains(className);
+  };
+
+  /**
+   * Adds a given class to an element
+   * @method addClass
+   * @param {} element
+   * @param {} className
+   * @return 
+   */
+  Dom.addClass = function(element, className){
+    var classNames = className.split(" "),
+      i = 0, l = classNames.length;
+
+    for(; i<l; i++){
+      element.classList.add(classNames[i]);
+    }
+  };
+
+  /**
+   * Removes a given class from an element
+   * @method removeClass
+   * @param {} element
+   * @param {} className
+   * @return 
+   */
+  Dom.removeClass = function(element, className){
+    var classNames = className.split(" "),
+      i = 0, l = classNames.length;
+
+    for(; i<l; i++){
+      element.classList.remove(classNames[i]);
+    }
+  };
+
+  /**
+   * Toggles a given class on an element
+   * @method toggleClass
+   * @param {} element
+   * @param {} className
+   * @param {} force
+   * @return 
+   */
+  Dom.toggleClass = function(element, className, force){
+    var classNames = className.split(" "),
+      i = 0, l = classNames.length;
+
+    if(force === undefined){
+      for(; i<l; i++){
+        element.classList.toggle(classNames[i]);
+      }
+    }
+    else{
+      for(; i<l; i++){
+        element.classList.toggle(classNames[i], force);
+      }
+    }
+  };
+
+  /**
+   * Add an event listener on an element
+   * @method addListener
+   * @param {} element
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return CallExpression
+   */
+  Dom.addListener = function(element, type, callback, useCapture){
+    if(useCapture === undefined){
+      useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
+    }
+
+    return element.addEventListener(type, callback, useCapture);
+  };
+
+  /**
+   * Remove an event listener from an element
+   * @method removeListener
+   * @param {} element
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return CallExpression
+   */
+  Dom.removeListener = function(element, type, callback, useCapture){
+    if(useCapture === undefined){
+      useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
+    }
+
+    return element.removeEventListener(type, callback, useCapture);
+  };
+
+  /**
+   * Trigger an event from an element
+   * @method triggerEvent
+   * @param {} element
+   * @param {} type
+   * @param {} data
+   * @param {} bubbles
+   * @param {} cancelable
+   * @return CallExpression
+   */
+  Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
+    var event = new CustomEvent(type, {
+      'detail': data,
+      'bubbles': bubbles !== false,
+      'cancelable': cancelable !== false
+    });
+
+    return element.dispatchEvent(event);
+  };
+
+  /**
+   * Sets or gets the innerHTML of an element
+   * @method text
+   * @param {} element
+   * @param {} value
+   * @return MemberExpression
+   */
+  Dom.text = function(element, value){
+    if(value !== undefined){
+      element.innerHTML = value;
+    }
+
+    return element.innerHTML;
+  };
+
+  /**
+   * Sets or gets the value of an element
+   * @method val
+   * @param {} element
+   * @param {} value
+   * @return MemberExpression
+   */
+  Dom.val = function(element, value){
+    if(value !== undefined){
+      element.value = value;
+    }
+
+    return element.value;
+  };
+
+  /**
+   * Sets an attribute on an element
+   * @method attr
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
+  Dom.attr = function(element, name, value){
+    if(metaScore.Var.is(name, 'object')){
+      metaScore.Object.each(name, function(key, value){
+        Dom.attr(element, key, value);
+      }, this);
+    }
+    else{
+      switch(name){
+        case 'class':
+          this.addClass(element, value);
+          break;
+
+        case 'text':
+          this.text(element, value);
+          break;
+
+        default:
+          if(value === null){
+            element.removeAttribute(name);
+          }
+          else{
+            if(value !== undefined){
+              element.setAttribute(name, value);
+            }
+
+            return element.getAttribute(name);
+          }
+          break;
+      }
+    }
+  };
+
+  /**
+   * Sets or gets a style property of an element
+   * @method css
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @param {} inline
+   * @return CallExpression
+   */
+  Dom.css = function(element, name, value, inline){
+    var camel, style;
+
+    camel = this.camel(name);
+
+    if(value !== undefined){
+      element.style[camel] = value;
+    }
+
+    style = inline === true ? element.style : window.getComputedStyle(element);
+
+    return style.getPropertyValue(name);
+  };
+
+  /**
+   * Sets or gets a data string of an element
+   * @method data
+   * @param {} element
+   * @param {} name
+   * @param {} value
+   * @return MemberExpression
+   */
+  Dom.data = function(element, name, value){
+    name = this.camel(name);
+
+    if(value === null){
+      delete element.dataset[name];
+    }
+    else if(value !== undefined){
+      element.dataset[name] = value;
+    }
+
+    return element.dataset[name];
+  };
+
+  /**
+   * Appends children to an element
+   * @method append
+   * @param {} element
+   * @param {} children
+   * @return 
+   */
+  Dom.append = function(element, children){
+    if (!metaScore.Var.is(children, 'array')) {
+      children = [children];
+    }
+
+    metaScore.Array.each(children, function(index, child){
+      element.appendChild(child);
+    }, this);
+  };
+
+  /**
+   * Inserts siblings before an element
+   * @method before
+   * @param {} element
+   * @param {} siblings
+   * @return 
+   */
+  Dom.before = function(element, siblings){
+    if (!metaScore.Var.is(siblings, 'array')) {
+      siblings = [siblings];
+    }
+
+    metaScore.Array.each(siblings, function(index, sibling){
+      element.parentElement.insertBefore(sibling, element);
+    }, this);
+  };
+
+  /**
+   * Inserts siblings after an element
+   * @method after
+   * @param {} element
+   * @param {} siblings
+   * @return 
+   */
+  Dom.after = function(element, siblings){
+    if (!metaScore.Var.is(siblings, 'array')) {
+      siblings = [siblings];
+    }
+
+    metaScore.Array.each(siblings, function(index, sibling){
+      element.parentElement.insertBefore(sibling, element.nextSibling);
+    }, this);
+  };
+
+  /**
+   * Removes all element children
+   * @method empty
+   * @param {} element
+   * @return 
+   */
+  Dom.empty = function(element){
+    while(element.firstChild){
+      element.removeChild(element.firstChild);
+    }
+  };
+
+  /**
+   * Removes an element from the dom
+   * @method remove
+   * @param {} element
+   * @return 
+   */
+  Dom.remove = function(element){
+    if(element.parentElement){
+      element.parentElement.removeChild(element);
+    }
+  };
+
+  /**
+   * Checks if an element matches a selector
+   * @method is
+   * @param {} el
+   * @param {} selector
+   * @return Literal
+   */
+  Dom.is = function(el, selector){
+    var document, win;
+    
+    if(el instanceof Element){
+      return Element.prototype.matches.call(el, selector);
+    }
+      
+    if((document = el.ownerDocument) && (win = document.defaultView || document.parentWindow)){
+      return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
+    }
+    
+    return false;
+  };
+  
+  /**
+   * Description
+   * @method closest
+   * @param {} el
+   * @param {} selector
+   * @return Literal
+   */
+  Dom.closest = function(el, selector){
+    var document, win;
+    
+    if(el instanceof Element){
+      return Element.prototype.closest.call(el, selector);
+    }
+      
+    if(document = el.ownerDocument){
+      if(win = document.defaultView || document.parentWindow){
+        if(el instanceof win.Element){
+          return Element.prototype.closest.call(el, selector);
+        }
+      }
+    }
+    
+    return null;
+  };
+
+  /**
+   * Description
+   * @method add
+   * @param {} elements
+   * @return 
+   */
+  Dom.prototype.add = function(elements){
+    if('length' in elements){
+      for(var i = 0; i < elements.length; i++ ) {
+        this.elements.push(elements[i]);
+      }
+    }
+    else{
+      this.elements.push(elements);
+    }
+  };
+
+  /**
+   * Description
+   * @method count
+   * @return MemberExpression
+   */
+  Dom.prototype.count = function(){
+    return this.elements.length;
+  };
+
+  /**
+   * Description
+   * @method get
+   * @param {} index
+   * @return MemberExpression
+   */
+  Dom.prototype.get = function(index){
+    return this.elements[index];
+  };
+
+  /**
+   * Description
+   * @method filter
+   * @param {} selector
+   * @return filtered
+   */
+  Dom.prototype.filter = function(selector){
+    var filtered = new Dom();
+
+    this.each(function(index, element) {
+      if(Dom.is(element, selector)){
+        filtered.add(element);
+      }
+    }, this);
+
+    return filtered;
+  };
+
+  /**
+   * Description
+   * @method index
+   * @param {} selector
+   * @return found
+   */
+  Dom.prototype.index = function(selector){
+    var found = -1;
+
+    this.each(function(index, element) {
+      if(Dom.is(element, selector)){
+        found = index;
+        return false;
+      }
+    }, this);
+
+    return found;
+  };
+
+  /**
+   * Description
+   * @method find
+   * @param {} selector
+   * @return descendents
+   */
+  Dom.prototype.find = function(selector){
+    var descendents = new Dom();
+
+    this.each(function(index, element) {
+      descendents.add(Dom.selectElements.call(this, selector, element));
+    }, this);
+
+    return descendents;
+  };
+
+  /**
+   * Description
+   * @method children
+   * @param {} selector
+   * @return children
+   */
+  Dom.prototype.children = function(selector){
+    var children = new Dom();
+
+    this.each(function(index, element) {
+      children.add(element.children);
+    }, this);
+
+    if(selector){
+      children = children.filter(selector);
+    }
+
+    return children;
+  };
+
+  /**
+   * Description
+   * @method child
+   * @param {} selector
+   * @return NewExpression
+   */
+  Dom.prototype.child = function(selector){
+    return new Dom(this.children(selector).get(0));
+  };
+
+  /**
+   * Description
+   * @method parents
+   * @param {} selector
+   * @return parents
+   */
+  Dom.prototype.parents = function(selector){
+    var parents = new Dom();
+
+    this.each(function(index, element) {
+      parents.add(element.parentElement);
+    }, this);
+
+    if(selector){
+      parents = parents.filter(selector);
+    }
+
+    return parents;
+  };
+
+  /**
+   * Description
+   * @method each
+   * @param {} callback
+   * @param {} scope
+   * @return 
+   */
+  Dom.prototype.each = function(callback, scope){
+    scope = scope || this;
+
+    metaScore.Array.each(this.elements, callback, scope);
+  };
+
+  /**
+   * Description
+   * @method hasClass
+   * @param {} className
+   * @return found
+   */
+  Dom.prototype.hasClass = function(className) {
+    var found;
+
+    this.each(function(index, element) {
+      found = Dom.hasClass(element, className);
+      return !found;
+    }, this);
+
+    return found;
+  };
+
+  /**
+   * Description
+   * @method addClass
+   * @param {} className
+   * @return ThisExpression
+   */
+  Dom.prototype.addClass = function(className) {
+    this.each(function(index, element) {
+      Dom.addClass(element, className);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method removeClass
+   * @param {} className
+   * @return ThisExpression
+   */
+  Dom.prototype.removeClass = function(className) {
+    this.each(function(index, element) {
+      Dom.removeClass(element, className);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method toggleClass
+   * @param {} className
+   * @param {} force
+   * @return ThisExpression
+   */
+  Dom.prototype.toggleClass = function(className, force) {
+    this.each(function(index, element) {
+      Dom.toggleClass(element, className, force);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method addListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
+  Dom.prototype.addListener = function(type, callback, useCapture) {
+   this.each(function(index, element) {
+      Dom.addListener(element, type, callback, useCapture);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method addDelegate
+   * @param {} selector
+   * @param {} type
+   * @param {} callback
+   * @param {} scope
+   * @param {} useCapture
+   * @return CallExpression
+   */
+  Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
+    scope = scope || this;
+
+    return this.addListener(type, function(evt){
+      var element = evt.target,
+        match;
+
+      while (element) {
+        if(Dom.is(element, selector)){
+          match = element;
+          break;
+        }
+
+        element = element.parentElement;
+      }
+
+      if(match){
+        callback.call(scope, evt, match);
+      }
+    }, useCapture);
+  };
+
+  /**
+   * Description
+   * @method removeListener
+   * @param {} type
+   * @param {} callback
+   * @param {} useCapture
+   * @return ThisExpression
+   */
+  Dom.prototype.removeListener = function(type, callback, useCapture) {
+    this.each(function(index, element) {
+      Dom.removeListener(element, type, callback, useCapture);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method triggerEvent
+   * @param {} type
+   * @param {} data
+   * @param {} bubbles
+   * @param {} cancelable
+   * @return return_value
+   */
+  Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
+    var return_value = true;
+
+    this.each(function(index, element) {
+      return_value = Dom.triggerEvent(element, type, data, bubbles, cancelable) && return_value;
+    }, this);
+
+    return return_value;
+  };
+
+  /**
+   * Description
+   * @method text
+   * @param {} value
+   * @return 
+   */
+  Dom.prototype.text = function(value) {
+    if(value !== undefined){
+      this.each(function(index, element) {
+        Dom.text(element, value);
+      }, this);
+    }
+    else{
+      return Dom.text(this.get(0));
+    }
+  };
+
+  /**
+   * Description
+   * @method val
+   * @param {} value
+   * @return 
+   */
+  Dom.prototype.val = function(value) {
+    if(value !== undefined){
+      this.each(function(index, element) {
+        Dom.val(element, value);
+      }, this);
+      return this;
+    }
+    else{
+      return Dom.val(this.get(0));
+    }
+  };
+
+  /**
+   * Description
+   * @method attr
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
+  Dom.prototype.attr = function(name, value) {
+    if(value !== undefined || metaScore.Var.is(name, 'object')){
+      this.each(function(index, element) {
+        Dom.attr(element, name, value);
+      }, this);
+      return this;
+    }
+    else{
+      return Dom.attr(this.get(0), name);
+    }
+  };
+
+  /**
+   * Description
+   * @method css
+   * @param {} name
+   * @param {} value
+   * @param {} inline
+   * @return 
+   */
+  Dom.prototype.css = function(name, value, inline) {
+    if(value !== undefined){
+      this.each(function(index, element) {
+        Dom.css(element, name, value, inline);
+      }, this);
+      return this;
+    }
+    else{
+      return Dom.css(this.get(0), name, value, inline);
+    }
+  };
+
+  /**
+   * Description
+   * @method data
+   * @param {} name
+   * @param {} value
+   * @return 
+   */
+  Dom.prototype.data = function(name, value) {
+    if(value !== undefined){
+      this.each(function(index, element) {
+        Dom.data(element, name, value);
+      }, this);
+      return this;
+    }
+    else{
+      return Dom.data(this.get(0), name);
+    }
+  };
+
+  /**
+   * Description
+   * @method append
+   * @param {} children
+   * @return ThisExpression
+   */
+  Dom.prototype.append = function(children){
+    if(children instanceof Dom){
+      children = children.elements;
+    }
+
+    Dom.append(this.get(0), children);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method appendTo
+   * @param {} parent
+   * @return ThisExpression
+   */
+  Dom.prototype.appendTo = function(parent){
+    if(!(parent instanceof Dom)){
+      parent = new Dom(parent);
+    }
+
+    parent = parent.get(0);
+
+    this.each(function(index, element) {
+      Dom.append(parent, element);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method insertAt
+   * @param {} parent
+   * @param {} index
+   * @return ThisExpression
+   */
+  Dom.prototype.insertAt = function(parent, index){
+    var element;
+  
+    if(!(parent instanceof Dom)){
+      parent = new Dom(parent);
+    }
+    
+    element = parent.children().get(index);
+    
+    if(element){
+      Dom.before(element, this.elements);
+    }
+    else{
+      this.appendTo(parent);
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method empty
+   * @return ThisExpression
+   */
+  Dom.prototype.empty = function(){
+    this.each(function(index, element) {
+      Dom.empty(element);
+    }, this);
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method show
+   * @return ThisExpression
+   */
+  Dom.prototype.show = function(){
+    this.css('display', '');
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method hide
+   * @return ThisExpression
+   */
+  Dom.prototype.hide = function(){
+    this.css('display', 'none');
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method focus
+   * @return ThisExpression
+   */
+  Dom.prototype.focus = function(){
+    this.get(0).focus();
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method blur
+   * @return ThisExpression
+   */
+  Dom.prototype.blur = function(){
+    this.get(0).blur();
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method remove
+   * @return ThisExpression
+   */
+  Dom.prototype.remove = function(){
+    if(this.triggerEvent('beforeremove') !== false){
+      this.each(function(index, element) {
+        var parent = element.parentElement;
+        Dom.remove(element);
+        Dom.triggerEvent(parent, 'childremove', {'child': element});
+      }, this);
+    }
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method is
+   * @param {} selector
+   * @return found
+   */
+  Dom.prototype.is = function(selector){
+    var found;
+
+    this.each(function(index, element) {
+      found = Dom.is(element, selector);
+      return found;
+    }, this);
+
+    return found;
+  };
+
+  /**
+   * Description
+   * @method closest
+   * @param {} selector
+   * @return found
+   */
+  Dom.prototype.closest = function(selector){
+    var found;
+
+    this.each(function(index, element) {
+      found = Dom.closest(element, selector);
+      return found !== null;
+    }, this);
+
+    return found;
+  };
+
+  return Dom;
+
+})();
+/**
+* Description
+* @class Draggable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Draggable = (function () {
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function Draggable(configs) {
+    this.configs = this.getConfigs(configs);
+
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+
+    this.configs.handle.addListener('mousedown', this.onMouseDown);
+
+    this.enable();
+  }
+
+  Draggable.defaults = {
+    /**
+    * The limits of the dragging
+    */
+    limits: {
+      top: null,
+      left: null
+    }
+  };
+
+  metaScore.Class.extend(Draggable);
+
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
+  Draggable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+
+    this.start_state = {
+      'left': parseInt(this.configs.target.css('left'), 10) - evt.clientX,
+      'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
+    };
+
+    this.configs.container
+      .addListener('mouseup', this.onMouseUp)
+      .addListener('mousemove', this.onMouseMove);
+
+    this.configs.target
+      .addClass('dragging')
+      .triggerEvent('dragstart', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
+  Draggable.prototype.onMouseMove = function(evt){
+    var left = evt.clientX + this.start_state.left,
+      top = evt.clientY + this.start_state.top;
+
+    if(!isNaN(this.configs.limits.top)){
+      top = Math.max(top, this.configs.limits.top);
+    }
+
+    if(!isNaN(this.configs.limits.left)){
+      left = Math.max(left, this.configs.limits.left);
+    }
+
+    this.configs.target
+      .css('left', left + 'px')
+      .css('top', top + 'px')
+      .triggerEvent('drag', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
+  Draggable.prototype.onMouseUp = function(evt){
+    this.configs.container
+      .removeListener('mousemove', this.onMouseMove)
+      .removeListener('mouseup', this.onMouseUp);
+
+    this.configs.target
+      .removeClass('dragging')
+      .triggerEvent('dragend', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
+  Draggable.prototype.enable = function(){
+    this.configs.target.addClass('draggable');
+
+    this.configs.handle.addClass('drag-handle');
+
+    this.enabled = true;
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
+  Draggable.prototype.disable = function(){
+    this.configs.target.removeClass('draggable');
+
+    this.configs.handle.removeClass('drag-handle');
+
+    this.enabled = false;
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
+  Draggable.prototype.destroy = function(){
+    this.disable();
+
+    this.configs.handle.removeListener('mousedown', this.onMouseDown);
+
+    return this;
+  };
+
+  return Draggable;
+
+})();
+/**
+* Description
+* @class Function
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Function = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Function() {
+  }
+
+  metaScore.Class.extend(Function);
+
+  /**
+   * Checks if a variable is of a certain type
+   * @method proxy
+   * @param {} fn
+   * @param {} scope
+   * @param {} args
+   * @return FunctionExpression
+   */
+  Function.proxy = function(fn, scope, args){
+    if (!metaScore.Var.type(fn, 'function')){
+      return undefined;
+    }
+
+    return function () {
+      return fn.apply(scope || this, args || arguments);
+    };
+  };
+
+  /**
+   * A reusable empty function
+   * @method emptyFn
+   * @return 
+   */
+  Function.emptyFn = function(){};
+
+  return Function;
+
+})();
+/**
+* Description
+* @class Object
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Object = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Object() {
+  }
+
+  metaScore.Class.extend(Object);
+
+  /**
+   * Merge the contents of two or more objects together into the first object.
+   * @method extend
+   * @return target
+   */
+  Object.extend = function() {
+
+    var target = arguments[0] || {},
+      options,
+      i = 1,
+      length = arguments.length,
+      key, src, copy;
+
+    for (; i < length; i++ ) {
+      if ((options = arguments[i]) != null) {
+        for ( key in options ) {
+          src = target[key];
+          copy = options[key];
+
+          if(src !== copy && copy !== undefined ) {
+            target[key] = copy;
+          }
+        }
+      }
+    }
+
+    return target;
+
+  };
+
+  /**
+   * Return a copy of an object
+   * @method copy
+   * @param {} obj
+   * @return CallExpression
+   */
+  Object.copy = function(obj) {
+
+    return Object.extend({}, obj);
+
+  };
+
+  /**
+   * Call a function on each property of an object
+   * @method each
+   * @param {} obj
+   * @param {} callback
+   * @param {} scope
+   * @return obj
+   */
+  Object.each = function(obj, callback, scope) {
+
+    var key, value,
+      scope_provided = scope !== undefined;
+
+    for (key in obj) {
+      value = callback.call(scope_provided ? scope : obj[key], key, obj[key]);
+
+      if (value === false) {
+        break;
+      }
+    }
+
+    return obj;
+
+  };
+
+  return Object;
+
+})();
+/**
+* Description
+* @class Resizable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Resizable = (function () {
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function Resizable(configs) {
+    this.configs = this.getConfigs(configs);
+
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+
+    this.handles = {};
+
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+
+    metaScore.Array.each(this.configs.directions, function(index, direction){
+      this.handles[direction] = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+        .data('direction', direction)
+        .addListener('mousedown', this.onMouseDown)
+        .appendTo(this.configs.target);
+    }, this);
+
+    this.enable();
+  }
+
+  Resizable.defaults = {
+    directions: [
+      'top',
+      'right',
+      'bottom',
+      'left',
+      'top-left',
+      'top-right',
+      'bottom-left',
+      'bottom-right'
+    ]
+  };
+
+  metaScore.Class.extend(Resizable);
+
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
+  Resizable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+
+    this.start_state = {
+      'handle': evt.target,
+      'x': evt.clientX,
+      'y': evt.clientY,
+      'left': parseInt(this.configs.target.css('left'), 10),
+      'top': parseInt(this.configs.target.css('top'), 10),
+      'w': parseInt(this.configs.target.css('width'), 10),
+      'h': parseInt(this.configs.target.css('height'), 10)
+    };
+
+    this.configs.container
+      .addListener('mousemove', this.onMouseMove, this)
+      .addListener('mouseup', this.onMouseUp, this);
+
+    this.configs.target
+      .addClass('resizing')
+      .triggerEvent('resizestart', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
+  Resizable.prototype.onMouseMove = function(evt){
+    var handle = new metaScore.Dom(this.start_state.handle),
+      w, h, top, left;
+
+    switch(handle.data('direction')){
+      case 'top':
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
+        break;
+      case 'right':
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        break;
+      case 'bottom':
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        break;
+      case 'left':
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
+        break;
+      case 'top-left':
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
+        break;
+      case 'top-right':
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY - this.start_state.y;
+        break;
+      case 'bottom-left':
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
+        break;
+      case 'bottom-right':
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        break;
+    }
+
+    if(top !== undefined){
+      this.configs.target.css('top', top +'px');
+    }
+    if(left !== undefined){
+      this.configs.target.css('left', left +'px');
+    }
+
+    this.configs.target
+      .css('width', w +'px')
+      .css('height', h +'px')
+      .triggerEvent('resize', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
+  Resizable.prototype.onMouseUp = function(evt){
+    this.configs.container
+      .removeListener('mousemove', this.onMouseMove, this)
+      .removeListener('mouseup', this.onMouseUp, this);
+
+    this.configs.target
+      .removeClass('resizing')
+      .triggerEvent('resizeend', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
+  Resizable.prototype.enable = function(){
+    this.configs.target.addClass('resizable');
+
+    this.enabled = true;
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
+  Resizable.prototype.disable = function(){
+    this.configs.target.removeClass('resizable');
+
+    this.enabled = false;
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
+  Resizable.prototype.destroy = function(){
+    this.disable();
+
+    metaScore.Object.each(this.handles, function(index, handle){
+      handle.remove();
+    }, this);
+
+    return this;
+  };
+
+  return Resizable;
+
+})();
+/**
+* Description
+* @class String
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.String = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function String() {
+  }
+
+  metaScore.Class.extend(String);
+
+  /**
+   * Capitalize a string
+   * @method capitalize
+   * @param {} str
+   * @return CallExpression
+   */
+  String.capitalize = function(str){
+    return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+  };
+
+  /**
+   * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+   * @method uuid
+   * @param {} len
+   * @param {} radix
+   * @return CallExpression
+   */
+  String.uuid = function(len, radix) {
+    var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
+      uuid = [], i;
+
+    radix = radix || chars.length;
+
+    if (len) {
+      // Compact form
+      for (i = 0; i < len; i++){
+        uuid[i] = chars[0 | Math.random() * radix];
+      }
+    }
+    else {
+      // rfc4122, version 4 form
+      var r;
+
+      // rfc4122 requires these characters
+      uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+      uuid[14] = '4';
+
+      // Fill in random data.  At i==19 set the high bits of clock sequence as
+      // per rfc4122, sec. 4.1.5
+      for (i = 0; i < 36; i++) {
+        if (!uuid[i]) {
+          r = 0 | Math.random()*16;
+          uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
+        }
+      }
+    }
+
+    return uuid.join('');
+  };
+
+  /**
+   * Description
+   * @method pad
+   * @param {} str
+   * @param {} len
+   * @param {} pad
+   * @param {} dir
+   * @return str
+   */
+  String.pad = function(str, len, pad, dir) {
+    var right, left,
+      padlen;
+
+    if (typeof(len) === "undefined") { len = 0; }
+    if (typeof(pad) === "undefined") { pad = ' '; }
+    if (typeof(dir) === "undefined") { dir = 'right'; }
+
+    str = str +'';
+
+    if (len + 1 >= str.length) {
+      switch (dir){
+        case 'left':
+          str = Array(len + 1 - str.length).join(pad) + str;
+          break;
+
+        case 'both':
+          padlen = len - str.length;
+          right = Math.ceil(padlen / 2);
+          left = padlen - right;
+          str = Array(left+1).join(pad) + str + Array(right+1).join(pad);
+          break;
+
+        default:
+          str = str + Array(len + 1 - str.length).join(pad);
+          break;
+      }
+    }
+    return str;
+  };
+
+  return String;
+
+})();
+/**
+* Description
+* @class StyleSheet
+* @namespace metaScore
+* @extends metaScore.Dom
+*/
+
+metaScore.StyleSheet = (function () {
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function StyleSheet(configs) {
+    this.configs = this.getConfigs(configs);
+
+    // call the super constructor.
+    metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
+    
+    this.el = this.get(0);
+
+    // WebKit hack :(
+    this.setInternalValue("");
+  }
+
+  metaScore.Dom.extend(StyleSheet);
+
+  /**
+   * Adds a CSS rule to the style sheet
+   * @method addRule
+   * @param {} selector
+   * @param {} rules
+   * @param {} index
+   * @return 
+   */
+  StyleSheet.prototype.addRule = function(selector, rules, index) {
+    var sheet = this.el.sheet;
+    
+    if(index === undefined){
+      index = sheet.cssRules.length;
+    }
+
+    if("insertRule" in sheet) {
+      return sheet.insertRule(selector + "{" + rules + "}", index);
+    }
+    else if("addRule" in sheet) {
+      return sheet.addRule(selector, rules, index);
+    }
+  };
+
+  /**
+   * Removes a CSS rule from the style sheet
+   * @method removeRule
+   * @param {} index
+   * @return ThisExpression
+   */
+  StyleSheet.prototype.removeRule = function(index) {
+    var sheet = this.el.sheet;
+  
+    if("deleteRule" in sheet) {
+      sheet.deleteRule(index);
+    }
+    else if("removeRule" in sheet) {
+      sheet.removeRule(index);
+    }
+
+    return this;
+  };
+
+  /**
+   * Removes the first CSS rule that matches a selector
+   * @method removeRulesBySelector
+   * @param {} selector
+   * @return ThisExpression
+   */
+  StyleSheet.prototype.removeRulesBySelector = function(selector) {
+    var sheet = this.el.sheet,
+      rules = sheet.cssRules || sheet.rules;
+
+    selector = selector.toLowerCase();
+
+    for (var i=0; i<rules.length; i++){
+      if(rules[i].selectorText.toLowerCase() === selector){
+        this.removeRule(i);
+        break;
+      }
+    }
+
+    return this;
+  };
+
+  /**
+   * Removes all CSS rule from the style sheet
+   * @method removeRules
+   * @return ThisExpression
+   */
+  StyleSheet.prototype.removeRules = function() {
+    var sheet = this.el.sheet,
+      rules = sheet.cssRules || sheet.rules;
+
+    while(rules.length > 0){
+      this.removeRule(0);
+    }
+
+    return this;
+  };
+
+  /**
+   * Set the internal text value
+   * @method setInternalValue
+   * @param {} value
+   * @return ThisExpression
+   */
+  StyleSheet.prototype.setInternalValue = function(value) {
+    if(this.el.styleSheet){
+      this.el.styleSheet.cssText = value;
+    }
+    else{
+      this.text(value);
+    }
+
+    return this;
+  };
+
+  return StyleSheet;
+
+})();
+/**
+* A helper class for variable type detection and value.
+* @class Var
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Var = (function () {
+
+  /**
+  * Helper object used by the type function
+  *
+  * @property dot
+  * @type {Object}
+  * @private
+  */
+  var classes2types = {
+    "[object Boolean]": "boolean",
+    "[object Number]": "number",
+    "[object String]": "string",
+    "[object Function]": "function",
+    "[object Array]": "array",
+    "[object Date]": "date",
+    "[object RegExp]": "regexp",
+    "[object Object]": "object"
+  };
+
+  /**
+   * @constructor
+   */
+  function Var() {
+  }
+
+  metaScore.Class.extend(Var);
+
+  /**
+   * Get the type of a variable
+   * @method type
+   * @param {} obj
+   * @return ConditionalExpression
+   */
+  Var.type = function(obj) {
+    return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
+  };
+
+  /**
+   * Checks if a variable is of a certain type
+   * @method is
+   * @param {} obj
+   * @param {} type
+   * @return BinaryExpression
+   */
+  Var.is = function(obj, type) {
+    return Var.type(obj) === type.toLowerCase();
+  };
+
+  /**
+   * Checks if a variable is empty
+   * @method isEmpty
+   * @param {} obj
+   * @return Literal
+   */
+  Var.isEmpty = function(obj) {
+    if(obj === undefined || obj == null){
+      return true;
+    }
+
+    if(obj.hasOwnProperty('length')){
+      return obj.length <= 0;
+    }
+
+    if(metaScore.Var.is(obj, 'object')){
+      return Object.keys(obj).length <= 0;
+    }
+
+    return false;
+  };
+
+  return Var;
+
+})();
+/**
+* The i18n handling class
+* @class Locale
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Locale = (function () {
+
+  /**
+   * Description
+   * @constructor
+   */
+  function Locale() {
+  }
+
+  metaScore.Class.extend(Locale);
+
+  /**
+   * Translate a string
+   * @method t
+   * @param {} key
+   * @param {} str
+   * @param {} args
+   * @return CallExpression
+   */
+  Locale.t = function(key, str, args){
+    if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
+      str = metaScoreLocale[key];
+    }
+
+    return Locale.formatString(str, args);
+  };
+
+  /**
+   * Replace placeholders with sanitized values in a string.
+   * @method formatString
+   * @param {} str
+   * @param {} args
+   * @return str
+   */
+  Locale.formatString = function(str, args) {
+    metaScore.Object.each(args, function(key, value){
+      str = str.replace(key, args[key]);
+    }, this);
+
+    return str;
+  };
+
+  return Locale;
+
+})();
 /**
 * The main editor class
 * @class Editor
@@ -123,6 +2867,10 @@ metaScore.Editor = (function(){
     
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
+    
+    this.player_frame = new metaScore.Dom('<iframe/>', {'class': 'player-frame'}).appendTo(this.workspace)
+      .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
+      .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
     
     this.history = new metaScore.editor.History()
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -476,7 +3224,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
 
-    if(block instanceof metaScore.player.component.Block){
+    if(block.instanceOf('Block')){
       this.panels.page.getToolbar()
         .toggleMenuItem('new', true);
       
@@ -1203,16 +3951,47 @@ metaScore.Editor = (function(){
       component = child._metaScore;
   
     if(component){
-      if(component instanceof metaScore.player.component.Block){
+      if(component.instanceOf('Block')){
         this.updateBlockSelector();
       }
-      else if(component instanceof metaScore.player.component.Page){
+      else if(component.instanceOf('Page')){
         this.updatePageSelector();
       }
-      else if(component instanceof metaScore.player.component.Element){
+      else if(component.instanceOf('Element')){
         this.updateElementSelector();
       }
     }
+  };
+
+  /**
+   * Description
+   * @method onPlayerFrameLoadSuccess
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerFrameLoadSuccess = function(evt){    
+    this.player_frame.get(0).contentWindow.player
+      .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+  };
+
+  /**
+   * Description
+   * @method onPlayerFrameLoadError
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerFrameLoadError = function(evt){
+    this.loadmask.hide();
+    delete this.loadmask;
+
+    new metaScore.editor.overlay.Alert({
+      'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+      'buttons': {
+        'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
+      },
+      'autoShow': true
+    });
   };
 
   /**
@@ -1221,32 +4000,27 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onPlayerLoadSuccess = function(evt){
-    var data = evt.detail.data;
-
-    this.player = evt.detail.player;    
-
-    this.player
-      .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))    
-      .getBody()
-        .addClass('in-editor')
-        .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-        .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
-        .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
-        .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
-        .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
-        .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
-        .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-        .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-        .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
-        .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
+  Editor.prototype.onPlayerLoadSuccess = function(evt){    
+    this.player = evt.detail.player
+      .addClass('in-editor')
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
+      .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
+      .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
+      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+      .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
 
     this
       .setEditing(true)
       .updateMainmenu()
       .updateBlockSelector();
       
-    this.detailsOverlay.setValues(data);
+    //this.detailsOverlay.setValues(data);
     this.mainmenu.rindexfield.setValue(0, true);
 
     window.history.replaceState(null, null, '#guide='+ this.player.getId());
@@ -1290,10 +4064,10 @@ metaScore.Editor = (function(){
 
     component = dom._metaScore;
 
-    if(component instanceof metaScore.player.component.Element){
+    if(component.instanceOf('Element')){
       this.panels.element.setComponent(component);
     }
-    else if(component instanceof metaScore.player.component.Page){
+    else if(component.instanceOf('Page')){
       this.panels.page.setComponent(component);
     }
     else{
@@ -1455,7 +4229,7 @@ metaScore.Editor = (function(){
     this.toggleClass('editing', metaScore.editing);
 
     if(player){
-      player.getBody().toggleClass('editing', metaScore.editing);
+      player.toggleClass('editing', metaScore.editing);
     }
     
     return this;
@@ -1531,7 +4305,7 @@ metaScore.Editor = (function(){
   
     toolbar.emptySelector();
   
-    if(block instanceof metaScore.player.component.Block){
+    if(block.instanceOf('Block')){
       this.panels.block.getComponent().getPages().each(function(index, page){
         toolbar.addSelectorOption(page._metaScore.getId(), index+1);
       }, this);
@@ -1563,7 +4337,7 @@ metaScore.Editor = (function(){
       page_end_time = page.getProperty('end-time');
     }
         
-    if(page instanceof metaScore.player.component.Page){
+    if(page.instanceOf('Page')){
       page.getElements().each(function(index, dom){
         element = dom._metaScore;
         out_of_range = false;
@@ -1605,15 +4379,8 @@ metaScore.Editor = (function(){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
-
-    this.removePlayer();
-
-    new metaScore.Player({
-        container: this.workspace,
-        url: this.configs.api_url +'guide/'+ id +'.json'
-      })
-      .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+    
+    this.player_frame.attr('src', 'http://metascore.localhost/player/'+ id);
     
     return this;
   };
@@ -1623,12 +4390,10 @@ metaScore.Editor = (function(){
    * @method removePlayer
    * @chainable 
    */
-  Editor.prototype.removePlayer = function(){
-    if(this.player){
-      this.player.remove();
-      delete this.player;
-    }
+  Editor.prototype.removePlayer = function(){    
+    delete this.player;
 
+    this.player_frame.attr('src', 'about:blank');
     this.panels.block.unsetComponent();
     this.updateMainmenu();
     
@@ -1667,13 +4432,13 @@ metaScore.Editor = (function(){
     components.each(function(index, dom){
       component = dom._metaScore;
     
-      if(component instanceof metaScore.player.component.Media){
+      if(component.instanceOf('Media')){
         data['blocks'].push(metaScore.Object.extend({'type': 'media'}, component.getProperties()));
       }
-      else if(component instanceof metaScore.player.component.Controller){
+      else if(component.instanceOf('Controller')){
         data['blocks'].push(metaScore.Object.extend({'type': 'controller'}, component.getProperties()));
       }
-      else if(component instanceof metaScore.player.component.Block){
+      else if(component.instanceOf('Block')){
         data['blocks'].push(component.getProperties());
       }
     }, this);
@@ -2670,32 +5435,12 @@ metaScore.namespace('editor').Panel = (function(){
 
   /**
    * Description
-   * @method getDraggable
-   * @return Literal
-   */
-  Panel.prototype.getDraggable = function(){
-    return false;
-  };
-
-  /**
-   * Description
-   * @method getResizable
-   * @return Literal
-   */
-  Panel.prototype.getResizable = function(){
-    return false;
-  };
-
-  /**
-   * Description
    * @method setComponent
    * @param {} component
    * @param {} supressEvent
    * @return ThisExpression
    */
   Panel.prototype.setComponent = function(component, supressEvent){
-    var draggable, resizable;
-
     if(component !== this.getComponent()){
       if(!component){
         return this.unsetComponent();
@@ -2710,12 +5455,12 @@ metaScore.namespace('editor').Panel = (function(){
       this
         .setupFields(this.component.configs.properties)
         .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
-        .updateDraggable()
-        .updateResizable()
+        .updateDraggable(true)
+        .updateResizable(true)
         .addClass('has-component')
         .getToolbar().setSelectorValue(component.getId(), true);
 
-      if(!(component instanceof metaScore.player.component.Controller)){
+      if(!component.instanceOf('Controller') && !component.instanceOf('Media')){
         this.getToolbar().toggleMenuItem('delete', true);
       }
 
@@ -2768,31 +5513,23 @@ metaScore.namespace('editor').Panel = (function(){
    */
   Panel.prototype.updateDraggable = function(draggable){
     var component = this.getComponent();
-      
-    if(draggable === undefined){
-      draggable = this.getDraggable();
-    }
+    
+    draggable = component.setDraggable(draggable);
     
     if(draggable){
-      if(!component._draggable){
-        component._draggable = new metaScore.Draggable(draggable);
-        component
-          .addListener('dragstart', this.onComponentDragStart)
-          .addListener('drag', this.onComponentDrag)
-          .addListener('dragend', this.onComponentDragEnd);
-      }
+      component
+        .addListener('dragstart', this.onComponentDragStart)
+        .addListener('drag', this.onComponentDrag)
+        .addListener('dragend', this.onComponentDragEnd);
     }
-    else if(component._draggable){
-      component._draggable.destroy();
-      delete component._draggable;
-      
+    else{      
       component
         .removeListener('dragstart', this.onComponentDragStart)
         .removeListener('drag', this.onComponentDrag)
         .removeListener('dragend', this.onComponentDragEnd);
     }
     
-    this.toggleFields(['x', 'y'], draggable);
+    this.toggleFields(['x', 'y'], draggable ? true : false);
     
     return this;
   };
@@ -2806,30 +5543,22 @@ metaScore.namespace('editor').Panel = (function(){
   Panel.prototype.updateResizable = function(resizable){
     var component = this.getComponent();
       
-    if(resizable === undefined){
-      resizable = this.getResizable();
-    }
+    resizable = component.setResizable(resizable);
     
     if(resizable){
-      if(!component._resizable){
-        component._resizable = new metaScore.Resizable(resizable);
         component
           .addListener('resizestart', this.onComponentResizeStart)
           .addListener('resize', this.onComponentResize)
           .addListener('resizeend', this.onComponentResizeEnd);
-      }
     }
-    else if(component._resizable){
-      component._resizable.destroy();
-      delete component._resizable;
-      
+    else{      
       component
         .removeListener('resizestart', this.onComponentResizeStart)
         .removeListener('resize', this.onComponentResize)
         .removeListener('resizeend', this.onComponentResizeEnd);
     }
     
-    this.toggleFields(['width', 'height'], resizable);
+    this.toggleFields(['width', 'height'], resizable ? true : false);
     
     return this;
   };
@@ -2938,8 +5667,8 @@ metaScore.namespace('editor').Panel = (function(){
     
     switch(name){
       case 'locked':
-        this.updateDraggable();
-        this.updateResizable();
+        this.updateDraggable(!value);
+        this.updateResizable(!value);
         break;
         
       case 'name':
@@ -4259,80 +6988,13 @@ metaScore.namespace('editor.panel').Block = (function () {
       title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
       menuItems: {
         'synched': metaScore.Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
-        'non-synched': metaScore.Locale.t('editor.panel.Block.menuItems.non-synched', 'Add an non-synchronized block'),
+        'non-synched': metaScore.Locale.t('editor.panel.Block.menuItems.non-synched', 'Add a non-synchronized block'),
         'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
       }
     })
   };
 
   metaScore.editor.Panel.extend(BlockPanel);
-
-  /**
-   * Description
-   * @method getDraggable
-   * @return Literal
-   */
-  BlockPanel.prototype.getDraggable = function(){
-    var component = this.getComponent();
-    
-    if(component.getProperty('locked')){
-      return false;
-    }
-
-    if(component instanceof metaScore.player.component.Controller){
-      return {
-        'target': component,
-        'handle': component.child('.timer'),
-        'container': component.parents(),
-        'limits': {
-          'top': 0,
-          'left': 0
-        }
-      };
-    }
-    else if(component instanceof metaScore.player.component.Media){
-      return {
-        'target': component,
-        'handle': component.child('video'),
-        'container': component.parents(),
-        'limits': {
-          'top': 0,
-          'left': 0
-        }
-      };
-    }
-    else if(component instanceof metaScore.player.component.Block){
-      return {
-        'target': component,
-        'handle': component.child('.pager'),
-        'container': component.parents(),
-        'limits': {
-          'top': 0,
-          'left': 0
-        }
-      };
-    }
-
-    return false;
-  };
-
-  /**
-   * Description
-   * @method getResizable
-   * @return ObjectExpression
-   */
-  BlockPanel.prototype.getResizable = function(){
-    var component = this.getComponent();
-
-    if(component instanceof metaScore.player.component.Controller || component.getProperty('locked')){
-      return false;
-    }
-
-    return {
-      'target': component,
-      'container': component.parents()
-    };
-  };
 
   return BlockPanel;
 
@@ -4369,43 +7031,6 @@ metaScore.namespace('editor.panel').Element = (function () {
   };
 
   metaScore.editor.Panel.extend(ElementPanel);
-
-  /**
-   * Description
-   * @method getDraggable
-   * @return ObjectExpression
-   */
-  ElementPanel.prototype.getDraggable = function(){
-    var component = this.getComponent();
-    
-    if(component.getProperty('locked')){
-      return false;
-    }
-
-    return {
-      'target': component,
-      'handle': component,
-      'container': component.parents()
-    };
-  };
-
-  /**
-   * Description
-   * @method getResizable
-   * @return ObjectExpression
-   */
-  ElementPanel.prototype.getResizable = function(){
-    var component = this.getComponent();
-    
-    if(component.getProperty('locked')){
-      return false;
-    }
-
-    return {
-      'target': component,
-      'container': component.parents()
-    };
-  };
 
   return ElementPanel;
 

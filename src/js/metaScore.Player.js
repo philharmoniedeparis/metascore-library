@@ -16,14 +16,17 @@ metaScore.Player = (function () {
     this.configs = this.getConfigs(configs);
 
     // call parent constructor
-    Player.parent.call(this, '<iframe></iframe>', {'class': 'metaScore-player', 'src': 'about:blank'});
+    Player.parent.call(this, '<div></div>', {'class': 'metaScore-player'});
 
     this
       .css('width', this.configs.width)
       .css('height', this.configs.height)
       .css('border', 'none')
-      .addListener('load', metaScore.Function.proxy(this.onIFrameLoad, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onKey, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKey, this))
       .appendTo(this.configs.container);
+
+    this.load();
   }
 
   Player.defaults = {
@@ -36,26 +39,6 @@ metaScore.Player = (function () {
   };
 
   metaScore.Dom.extend(Player);
-
-  /**
-   * Description
-   * @method onIFrameLoad
-   * @param {} evt
-   * @return 
-   */
-  Player.prototype.onIFrameLoad = function(evt){
-    this.document = this.get(0).contentDocument || this.iframe.get(0).contentWindow.document;    
-    this.head = new metaScore.Dom(this.document.head);
-    this.body = new metaScore.Dom(this.document.body);
-
-    if(this.configs.keyboard){
-      this.body
-        .addListener('keydown', metaScore.Function.proxy(this.onKey, this))
-        .addListener('keyup', metaScore.Function.proxy(this.onKey, this));
-    }
-
-    this.load();
-  };
 
   /**
    * Description
@@ -75,13 +58,13 @@ metaScore.Player = (function () {
         break;
       case 37: //left
         if(!skip){
-          this.getBody().child('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
+          this.child('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
         }
         evt.preventDefault();
         break;
       case 39: //right
         if(!skip){
-          this.getBody().child('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
+          this.child('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
         }
         evt.preventDefault();
         break;
@@ -248,19 +231,19 @@ metaScore.Player = (function () {
     // setup the base url
     if(this.json.base_url){
       new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
-        .appendTo(this.getHead());
+        .appendTo(document.head);
     }
 
     // add style sheets
     new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': this.json.library_css})
-      .appendTo(this.getHead());
+      .appendTo(document.head);
 
     this.css = new metaScore.StyleSheet()
       .setInternalValue(this.json.css)
-      .appendTo(this.getHead());
+      .appendTo(document.head);
 
     this.rindex_css = new metaScore.StyleSheet()
-      .appendTo(this.getHead());
+      .appendTo(document.head);
 
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
@@ -277,7 +260,7 @@ metaScore.Player = (function () {
       }
     }, this);
 
-    this.getBody().removeClass('loading');
+    this.removeClass('loading');
     
     this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
   };
@@ -289,7 +272,7 @@ metaScore.Player = (function () {
    * @return 
    */
   Player.prototype.onLoadError = function(xhr){
-    this.getBody().removeClass('loading');
+    this.removeClass('loading');
     
     this.triggerEvent('loaderror', {'player': this}, true, false);
   };
@@ -297,13 +280,12 @@ metaScore.Player = (function () {
   /**
    * Description
    * @method load
-   * @param {} url
    * @return 
    */
-  Player.prototype.load = function(url){
+  Player.prototype.load = function(){
     var options;
 
-    this.getBody().addClass('loading');
+    this.addClass('loading');
 
     options = metaScore.Object.extend({}, {
       'success': metaScore.Function.proxy(this.onLoadSuccess, this),
@@ -321,24 +303,6 @@ metaScore.Player = (function () {
    */
   Player.prototype.getId = function(){
     return this.data('id');
-  };
-
-  /**
-   * Description
-   * @method getHead
-   * @return MemberExpression
-   */
-  Player.prototype.getHead = function(){
-    return this.head;
-  };
-
-  /**
-   * Description
-   * @method getBody
-   * @return MemberExpression
-   */
-  Player.prototype.getBody = function(){
-    return this.body;
   };
 
   /**
@@ -378,7 +342,7 @@ metaScore.Player = (function () {
   Player.prototype.getComponents = function(selector){
     var components;
     
-    components = this.getBody().find('.metaScore-component');
+    components = this.find('.metaScore-component');
     
     if(selector){
       components = components.filter(selector);
@@ -400,7 +364,7 @@ metaScore.Player = (function () {
       .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
       .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
-      .appendTo(this.getBody());
+      .appendTo(this);
 
     if(supressEvent !== true){
       this.triggerEvent('mediaadd', {'player': this, 'media': this.media}, true, false);
@@ -419,7 +383,7 @@ metaScore.Player = (function () {
   Player.prototype.addController = function(configs, supressEvent){
     this.controller = new metaScore.player.component.Controller(configs)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
-      .appendTo(this.body);
+      .appendTo(this);
 
     if(supressEvent !== true){
       this.triggerEvent('controlleradd', {'player': this, 'controller': this.controller}, true, false);
@@ -440,11 +404,11 @@ metaScore.Player = (function () {
 
     if(configs instanceof metaScore.player.component.Block){
       block = configs;
-      block.appendTo(this.getBody());
+      block.appendTo(this);
     }
     else{
       block = new metaScore.player.component.Block(metaScore.Object.extend({}, configs, {
-          'container': this.getBody(),
+          'container': this,
           'listeners': {
             'propchange': metaScore.Function.proxy(this.onComponenetPropChange, this)
           }
@@ -504,7 +468,7 @@ metaScore.Player = (function () {
     }
 
     if(supressEvent !== true){
-      this.getBody().triggerEvent('rindex', {'player': this, 'value': index}, true, false);
+      this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
     }
     
     return this;

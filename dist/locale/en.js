@@ -33,7 +33,7 @@ var metaScoreLocale = {
 	"editor.field.Image.placeholder": "Browse...",
 	"editor.panel.Block.title": "Block",
 	"editor.panel.Block.menuItems.synched": "Add a synchronized block",
-	"editor.panel.Block.menuItems.non-synched": "Add an non-synchronized block",
+	"editor.panel.Block.menuItems.non-synched": "Add a non-synchronized block",
 	"editor.panel.Block.menuItems.delete": "Delete the active block",
 	"editor.panel.Element.title": "Element",
 	"editor.panel.Element.menuItems.Cursor": "Add a cursor",

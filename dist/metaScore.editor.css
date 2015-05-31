@@ -267,7 +267,7 @@
   top: 61px;
   bottom: 0;
   min-width: 700px;
-  overflow: auto;
+  overflow: hidden;
   background: #fff;
 }
 .metaScore-editor .workspace .grid {
@@ -293,6 +293,13 @@
   -khtml-user-select: initial;
   -webkit-user-select: initial;
   user-select: initial;
+}
+.metaScore-editor .workspace .player-frame {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 .metaScore-editor .main-menu {
   position: fixed;

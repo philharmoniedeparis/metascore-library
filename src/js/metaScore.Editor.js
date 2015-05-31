@@ -87,6 +87,10 @@ metaScore.Editor = (function(){
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     
+    this.player_frame = new metaScore.Dom('<iframe/>', {'class': 'player-frame'}).appendTo(this.workspace)
+      .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
+      .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
+    
     this.history = new metaScore.editor.History()
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
       .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
@@ -439,7 +443,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
 
-    if(block instanceof metaScore.player.component.Block){
+    if(block.instanceOf('Block')){
       this.panels.page.getToolbar()
         .toggleMenuItem('new', true);
       
@@ -1166,16 +1170,47 @@ metaScore.Editor = (function(){
       component = child._metaScore;
   
     if(component){
-      if(component instanceof metaScore.player.component.Block){
+      if(component.instanceOf('Block')){
         this.updateBlockSelector();
       }
-      else if(component instanceof metaScore.player.component.Page){
+      else if(component.instanceOf('Page')){
         this.updatePageSelector();
       }
-      else if(component instanceof metaScore.player.component.Element){
+      else if(component.instanceOf('Element')){
         this.updateElementSelector();
       }
     }
+  };
+
+  /**
+   * Description
+   * @method onPlayerFrameLoadSuccess
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerFrameLoadSuccess = function(evt){    
+    this.player_frame.get(0).contentWindow.player
+      .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+  };
+
+  /**
+   * Description
+   * @method onPlayerFrameLoadError
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerFrameLoadError = function(evt){
+    this.loadmask.hide();
+    delete this.loadmask;
+
+    new metaScore.editor.overlay.Alert({
+      'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+      'buttons': {
+        'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
+      },
+      'autoShow': true
+    });
   };
 
   /**
@@ -1184,32 +1219,27 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onPlayerLoadSuccess = function(evt){
-    var data = evt.detail.data;
-
-    this.player = evt.detail.player;    
-
-    this.player
-      .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))    
-      .getBody()
-        .addClass('in-editor')
-        .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
-        .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
-        .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
-        .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
-        .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
-        .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
-        .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
-        .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
-        .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
-        .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
+  Editor.prototype.onPlayerLoadSuccess = function(evt){    
+    this.player = evt.detail.player
+      .addClass('in-editor')
+      .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
+      .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
+      .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
+      .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
+      .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
+      .addListener('click', metaScore.Function.proxy(this.onPlayerClick, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
+      .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
+      .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
 
     this
       .setEditing(true)
       .updateMainmenu()
       .updateBlockSelector();
       
-    this.detailsOverlay.setValues(data);
+    //this.detailsOverlay.setValues(data);
     this.mainmenu.rindexfield.setValue(0, true);
 
     window.history.replaceState(null, null, '#guide='+ this.player.getId());
@@ -1253,10 +1283,10 @@ metaScore.Editor = (function(){
 
     component = dom._metaScore;
 
-    if(component instanceof metaScore.player.component.Element){
+    if(component.instanceOf('Element')){
       this.panels.element.setComponent(component);
     }
-    else if(component instanceof metaScore.player.component.Page){
+    else if(component.instanceOf('Page')){
       this.panels.page.setComponent(component);
     }
     else{
@@ -1418,7 +1448,7 @@ metaScore.Editor = (function(){
     this.toggleClass('editing', metaScore.editing);
 
     if(player){
-      player.getBody().toggleClass('editing', metaScore.editing);
+      player.toggleClass('editing', metaScore.editing);
     }
     
     return this;
@@ -1494,7 +1524,7 @@ metaScore.Editor = (function(){
   
     toolbar.emptySelector();
   
-    if(block instanceof metaScore.player.component.Block){
+    if(block.instanceOf('Block')){
       this.panels.block.getComponent().getPages().each(function(index, page){
         toolbar.addSelectorOption(page._metaScore.getId(), index+1);
       }, this);
@@ -1526,7 +1556,7 @@ metaScore.Editor = (function(){
       page_end_time = page.getProperty('end-time');
     }
         
-    if(page instanceof metaScore.player.component.Page){
+    if(page.instanceOf('Page')){
       page.getElements().each(function(index, dom){
         element = dom._metaScore;
         out_of_range = false;
@@ -1568,15 +1598,8 @@ metaScore.Editor = (function(){
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
-
-    this.removePlayer();
-
-    new metaScore.Player({
-        container: this.workspace,
-        url: this.configs.api_url +'guide/'+ id +'.json'
-      })
-      .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+    
+    this.player_frame.attr('src', 'http://metascore.localhost/player/'+ id);
     
     return this;
   };
@@ -1586,12 +1609,10 @@ metaScore.Editor = (function(){
    * @method removePlayer
    * @chainable 
    */
-  Editor.prototype.removePlayer = function(){
-    if(this.player){
-      this.player.remove();
-      delete this.player;
-    }
+  Editor.prototype.removePlayer = function(){    
+    delete this.player;
 
+    this.player_frame.attr('src', 'about:blank');
     this.panels.block.unsetComponent();
     this.updateMainmenu();
     
@@ -1630,13 +1651,13 @@ metaScore.Editor = (function(){
     components.each(function(index, dom){
       component = dom._metaScore;
     
-      if(component instanceof metaScore.player.component.Media){
+      if(component.instanceOf('Media')){
         data['blocks'].push(metaScore.Object.extend({'type': 'media'}, component.getProperties()));
       }
-      else if(component instanceof metaScore.player.component.Controller){
+      else if(component.instanceOf('Controller')){
         data['blocks'].push(metaScore.Object.extend({'type': 'controller'}, component.getProperties()));
       }
-      else if(component instanceof metaScore.player.component.Block){
+      else if(component.instanceOf('Block')){
         data['blocks'].push(component.getProperties());
       }
     }, this);

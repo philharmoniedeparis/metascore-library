@@ -74,6 +74,17 @@ metaScore.namespace('player').Component = (function () {
 
   /**
    * Description
+   * @method instanceOf
+   * @return CallExpression
+   */
+  Component.prototype.instanceOf = function(type){
+  
+    return (type in metaScore.player.component) && (this instanceof metaScore.player.component[type]);
+  
+  };
+
+  /**
+   * Description
    * @method hasProperty
    * @param {} name
    * @return BinaryExpression
@@ -178,6 +189,30 @@ metaScore.namespace('player').Component = (function () {
     }
 
     return this.cuepoint;
+  };
+
+  /**
+   * Description
+   * @method setDraggable
+   * @param {} draggable
+   * @return MemberExpression
+   */
+  Component.prototype.setDraggable = function(draggable){
+  
+    return false;
+  
+  };
+
+  /**
+   * Description
+   * @method setResizable
+   * @param {} resizable
+   * @return MemberExpression
+   */
+  Component.prototype.setResizable = function(resizable){
+  
+    return false;
+  
   };
 
   return Component;

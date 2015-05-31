@@ -354,114 +354,114 @@ body {
 /*
 * Special styles when embedded in editor
 */
-body.in-editor {
+.in-editor {
   margin: 0;
 }
-body.in-editor .draggable .drag-handle {
+.in-editor .draggable .drag-handle {
   cursor: move;
 }
-body.in-editor .resizable .resize-handle {
+.in-editor .resizable .resize-handle {
   position: absolute;
   display: none;
   width: 10px;
   height: 10px;
   z-index: 99997;
 }
-body.in-editor .resizable .resize-handle[data-direction="top"] {
+.in-editor .resizable .resize-handle[data-direction="top"] {
   top: 0px;
   left: 50%;
   margin-left: -5px;
   cursor: n-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="right"] {
+.in-editor .resizable .resize-handle[data-direction="right"] {
   right: 0px;
   top: 50%;
   margin-top: -5px;
   cursor: e-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="bottom"] {
+.in-editor .resizable .resize-handle[data-direction="bottom"] {
   bottom: 0px;
   left: 50%;
   margin-left: -5px;
   cursor: s-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="left"] {
+.in-editor .resizable .resize-handle[data-direction="left"] {
   left: px;
   top: 50%;
   margin-top: -5px;
   cursor: w-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="top-right"] {
+.in-editor .resizable .resize-handle[data-direction="top-right"] {
   top: 0px;
   right: 0px;
   cursor: ne-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="top-left"] {
+.in-editor .resizable .resize-handle[data-direction="top-left"] {
   top: 0px;
   left: 0px;
   cursor: nw-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="bottom-left"] {
+.in-editor .resizable .resize-handle[data-direction="bottom-left"] {
   bottom: 0px;
   left: 0px;
   cursor: sw-resize;
 }
-body.in-editor .resizable .resize-handle[data-direction="bottom-right"] {
+.in-editor .resizable .resize-handle[data-direction="bottom-right"] {
   bottom: 0px;
   right: 0px;
   cursor: se-resize;
 }
-body.in-editor .metaScore-component.element[data-type="Cursor"] {
+.in-editor .metaScore-component.element[data-type="Cursor"] {
   outline-color: #ff003c;
 }
-body.in-editor .metaScore-component.element[data-type="Image"] {
+.in-editor .metaScore-component.element[data-type="Image"] {
   outline-color: #ff8a00;
 }
-body.in-editor .metaScore-component.element[data-type="Text"] {
+.in-editor .metaScore-component.element[data-type="Text"] {
   outline-color: #00c176;
 }
-body.in-editor.editing .resizable .resize-handle {
+.in-editor.editing .resizable .resize-handle {
   display: block;
 }
-body.in-editor.editing .metaScore-component.media.selected,
-body.in-editor.editing .metaScore-component.controller.selected,
-body.in-editor.editing .metaScore-component.block.selected {
+.in-editor.editing .metaScore-component.media.selected,
+.in-editor.editing .metaScore-component.controller.selected,
+.in-editor.editing .metaScore-component.block.selected {
   z-index: 100000;
   -webkit-box-shadow: #33312f 0px 0px 4px 2px;
   -moz-box-shadow: #33312f 0px 0px 4px 2px;
   box-shadow: #33312f 0px 0px 4px 2px;
 }
-body.in-editor.editing .metaScore-component.media:hover .pager,
-body.in-editor.editing .metaScore-component.controller:hover .pager,
-body.in-editor.editing .metaScore-component.block:hover .pager,
-body.in-editor.editing .metaScore-component.media.dragging .pager,
-body.in-editor.editing .metaScore-component.controller.dragging .pager,
-body.in-editor.editing .metaScore-component.block.dragging .pager {
+.in-editor.editing .metaScore-component.media:hover .pager,
+.in-editor.editing .metaScore-component.controller:hover .pager,
+.in-editor.editing .metaScore-component.block:hover .pager,
+.in-editor.editing .metaScore-component.media.dragging .pager,
+.in-editor.editing .metaScore-component.controller.dragging .pager,
+.in-editor.editing .metaScore-component.block.dragging .pager {
   display: block !important;
 }
-body.in-editor.editing .metaScore-component.element {
+.in-editor.editing .metaScore-component.element {
   outline-width: 1px;
   outline-style: dashed;
 }
-body.in-editor.editing .metaScore-component.element.selected {
+.in-editor.editing .metaScore-component.element.selected {
   display: block;
 }
-body.in-editor.editing .metaScore-component.element.selected[data-type="Cursor"] {
+.in-editor.editing .metaScore-component.element.selected[data-type="Cursor"] {
   -webkit-box-shadow: #ff003c 0px 0px 4px 1px;
   -moz-box-shadow: #ff003c 0px 0px 4px 1px;
   box-shadow: #ff003c 0px 0px 4px 1px;
 }
-body.in-editor.editing .metaScore-component.element.selected[data-type="Image"] {
+.in-editor.editing .metaScore-component.element.selected[data-type="Image"] {
   -webkit-box-shadow: #ff8a00 0px 0px 4px 1px;
   -moz-box-shadow: #ff8a00 0px 0px 4px 1px;
   box-shadow: #ff8a00 0px 0px 4px 1px;
 }
-body.in-editor.editing .metaScore-component.element.selected[data-type="Text"] {
+.in-editor.editing .metaScore-component.element.selected[data-type="Text"] {
   -webkit-box-shadow: #00c176 0px 0px 4px 1px;
   -moz-box-shadow: #00c176 0px 0px 4px 1px;
   box-shadow: #00c176 0px 0px 4px 1px;
 }
-body.in-editor.editing .metaScore-component.element.selected[data-type="Text"] .contents[contenteditable] {
+.in-editor.editing .metaScore-component.element.selected[data-type="Text"] .contents[contenteditable] {
   outline-color: #00c176;
   outline-width: 2px;
   outline-style: solid;

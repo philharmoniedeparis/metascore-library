@@ -472,6 +472,61 @@ metaScore.namespace('player.component').Element = (function () {
     this.removeClass('active');
   };
 
+  /**
+   * Description
+   * @method setDraggable
+   * @param {} draggable
+   * @return MemberExpression
+   */
+  Element.prototype.setDraggable = function(draggable){
+  
+    if(this.getProperty('locked')){
+      return false;
+    }
+    
+    draggable = draggable !== false;
+
+    if(draggable && !this._draggable){
+      this._draggable = new metaScore.Draggable({
+        'target': this,
+        'handle': this,
+        'container': this.parents()
+      });
+    }
+    else if(!draggable && this._draggable){
+      this._draggable.destroy();
+      delete this._draggable;
+    }
+    
+    return this._draggable;
+  
+  };
+
+  /**
+   * Description
+   * @method setResizable
+   * @param {} resizable
+   * @return MemberExpression
+   */
+  Element.prototype.setResizable = function(resizable){
+    
+    resizable = resizable !== false;
+  
+    if(resizable && !this._resizable){
+      this._resizable = new metaScore.Resizable({
+        'target': this,
+        'container': this.parents()
+      });
+    }
+    else if(!resizable && this._resizable){
+      this._resizable.destroy();
+      delete this._resizable;
+    }
+    
+    return this._resizable;
+  
+  };
+
   return Element;
 
 })();

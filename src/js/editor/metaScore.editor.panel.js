@@ -180,32 +180,12 @@ metaScore.namespace('editor').Panel = (function(){
 
   /**
    * Description
-   * @method getDraggable
-   * @return Literal
-   */
-  Panel.prototype.getDraggable = function(){
-    return false;
-  };
-
-  /**
-   * Description
-   * @method getResizable
-   * @return Literal
-   */
-  Panel.prototype.getResizable = function(){
-    return false;
-  };
-
-  /**
-   * Description
    * @method setComponent
    * @param {} component
    * @param {} supressEvent
    * @return ThisExpression
    */
   Panel.prototype.setComponent = function(component, supressEvent){
-    var draggable, resizable;
-
     if(component !== this.getComponent()){
       if(!component){
         return this.unsetComponent();
@@ -220,12 +200,12 @@ metaScore.namespace('editor').Panel = (function(){
       this
         .setupFields(this.component.configs.properties)
         .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
-        .updateDraggable()
-        .updateResizable()
+        .updateDraggable(true)
+        .updateResizable(true)
         .addClass('has-component')
         .getToolbar().setSelectorValue(component.getId(), true);
 
-      if(!(component instanceof metaScore.player.component.Controller)){
+      if(!component.instanceOf('Controller') && !component.instanceOf('Media')){
         this.getToolbar().toggleMenuItem('delete', true);
       }
 
@@ -278,31 +258,23 @@ metaScore.namespace('editor').Panel = (function(){
    */
   Panel.prototype.updateDraggable = function(draggable){
     var component = this.getComponent();
-      
-    if(draggable === undefined){
-      draggable = this.getDraggable();
-    }
+    
+    draggable = component.setDraggable(draggable);
     
     if(draggable){
-      if(!component._draggable){
-        component._draggable = new metaScore.Draggable(draggable);
-        component
-          .addListener('dragstart', this.onComponentDragStart)
-          .addListener('drag', this.onComponentDrag)
-          .addListener('dragend', this.onComponentDragEnd);
-      }
+      component
+        .addListener('dragstart', this.onComponentDragStart)
+        .addListener('drag', this.onComponentDrag)
+        .addListener('dragend', this.onComponentDragEnd);
     }
-    else if(component._draggable){
-      component._draggable.destroy();
-      delete component._draggable;
-      
+    else{      
       component
         .removeListener('dragstart', this.onComponentDragStart)
         .removeListener('drag', this.onComponentDrag)
         .removeListener('dragend', this.onComponentDragEnd);
     }
     
-    this.toggleFields(['x', 'y'], draggable);
+    this.toggleFields(['x', 'y'], draggable ? true : false);
     
     return this;
   };
@@ -316,30 +288,22 @@ metaScore.namespace('editor').Panel = (function(){
   Panel.prototype.updateResizable = function(resizable){
     var component = this.getComponent();
       
-    if(resizable === undefined){
-      resizable = this.getResizable();
-    }
+    resizable = component.setResizable(resizable);
     
     if(resizable){
-      if(!component._resizable){
-        component._resizable = new metaScore.Resizable(resizable);
         component
           .addListener('resizestart', this.onComponentResizeStart)
           .addListener('resize', this.onComponentResize)
           .addListener('resizeend', this.onComponentResizeEnd);
-      }
     }
-    else if(component._resizable){
-      component._resizable.destroy();
-      delete component._resizable;
-      
+    else{      
       component
         .removeListener('resizestart', this.onComponentResizeStart)
         .removeListener('resize', this.onComponentResize)
         .removeListener('resizeend', this.onComponentResizeEnd);
     }
     
-    this.toggleFields(['width', 'height'], resizable);
+    this.toggleFields(['width', 'height'], resizable ? true : false);
     
     return this;
   };
@@ -448,8 +412,8 @@ metaScore.namespace('editor').Panel = (function(){
     
     switch(name){
       case 'locked':
-        this.updateDraggable();
-        this.updateResizable();
+        this.updateDraggable(!value);
+        this.updateResizable(!value);
         break;
         
       case 'name':

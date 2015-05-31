@@ -161,6 +161,52 @@ metaScore.namespace('player.component').Controller = (function () {
     this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
   };
 
+  /**
+   * Description
+   * @method setDraggable
+   * @param {} draggable
+   * @return MemberExpression
+   */
+  Controller.prototype.setDraggable = function(draggable){
+    
+    draggable = draggable !== false;
+  
+    if(this.getProperty('locked')){
+      return false;
+    }
+
+    if(draggable && !this._draggable){    
+      this._draggable = new metaScore.Draggable({
+        'target': this,
+        'handle': this.child('.timer'),
+        'container': this.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
+      });
+    }
+    else if(!draggable && this._draggable){
+      this._draggable.destroy();
+      delete this._draggable;
+    }
+    
+    return this._draggable;
+  
+  };
+
+  /**
+   * Description
+   * @method setResizable
+   * @param {} resizable
+   * @return MemberExpression
+   */
+  Controller.prototype.setResizable = function(resizable){
+  
+    return false;
+  
+  };
+
   return Controller;
 
 })();

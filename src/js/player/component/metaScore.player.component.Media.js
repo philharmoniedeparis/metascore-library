@@ -358,6 +358,40 @@ metaScore.namespace('player.component').Media = (function () {
     return this;
   };
 
+  /**
+   * Description
+   * @method setDraggable
+   * @param {} draggable
+   * @return MemberExpression
+   */
+  Media.prototype.setDraggable = function(draggable){
+    
+    draggable = draggable !== false;
+  
+    if(this.getProperty('locked')){
+      return false;
+    }
+
+    if(draggable && !this._draggable){    
+      this._draggable = new metaScore.Draggable({
+        'target': this,
+        'handle': this.child('video'),
+        'container': this.parents(),
+        'limits': {
+          'top': 0,
+          'left': 0
+        }
+      });
+    }
+    else if(!draggable && this._draggable){
+      this._draggable.destroy();
+      delete this._draggable;
+    }
+    
+    return this._draggable;
+  
+  };
+
   return Media;
 
 })();

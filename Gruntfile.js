@@ -83,7 +83,7 @@ module.exports = function(grunt) {
         dest: sub('dist/%s.player.js')
       },
       'editor': {
-        src: DIST_HEAD_LIST.concat(EDITOR_LIST, TAIL_LIST),
+        src: DIST_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, TAIL_LIST),
         dest: sub('dist/%s.editor.js')
       },
       'player-dev': {
@@ -91,7 +91,7 @@ module.exports = function(grunt) {
         dest: sub('dist/%s.player.js')
       },
       'editor-dev': {
-        src: DEV_HEAD_LIST.concat(EDITOR_LIST, TAIL_LIST),
+        src: DEV_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, TAIL_LIST),
         dest: sub('dist/%s.editor.js')
       },
       'options': {

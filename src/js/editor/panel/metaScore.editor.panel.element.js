@@ -31,43 +31,6 @@ metaScore.namespace('editor.panel').Element = (function () {
 
   metaScore.editor.Panel.extend(ElementPanel);
 
-  /**
-   * Description
-   * @method getDraggable
-   * @return ObjectExpression
-   */
-  ElementPanel.prototype.getDraggable = function(){
-    var component = this.getComponent();
-    
-    if(component.getProperty('locked')){
-      return false;
-    }
-
-    return {
-      'target': component,
-      'handle': component,
-      'container': component.parents()
-    };
-  };
-
-  /**
-   * Description
-   * @method getResizable
-   * @return ObjectExpression
-   */
-  ElementPanel.prototype.getResizable = function(){
-    var component = this.getComponent();
-    
-    if(component.getProperty('locked')){
-      return false;
-    }
-
-    return {
-      'target': component,
-      'container': component.parents()
-    };
-  };
-
   return ElementPanel;
 
 })();
