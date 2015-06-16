@@ -19,9 +19,6 @@ metaScore.Player = (function () {
     Player.parent.call(this, '<div></div>', {'class': 'metaScore-player'});
 
     this
-      .css('width', this.configs.width)
-      .css('height', this.configs.height)
-      .css('border', 'none')
       .addListener('keydown', metaScore.Function.proxy(this.onKey, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKey, this))
       .appendTo(this.configs.container);
@@ -31,8 +28,6 @@ metaScore.Player = (function () {
 
   Player.defaults = {
     'url': '',
-    'width': '100%',
-    'height': '100%',
     'container': 'body',
     'ajax': {},
     'keyboard': true
