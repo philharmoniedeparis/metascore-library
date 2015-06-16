@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "bd4a39";
+    return "60d3ff";
   },
 
   /**
@@ -2899,6 +2899,7 @@ metaScore.Editor = (function(){
 
   Editor.defaults = {
     'container': 'body',
+    'player_url': '',
     'api_url': '',
     'ajax': {}
   };
@@ -4380,7 +4381,7 @@ metaScore.Editor = (function(){
       'autoShow': true
     });
     
-    this.player_frame.attr('src', 'http://metascore.localhost/player/'+ id);
+    this.player_frame.attr('src', this.configs.player_url + id);
     
     return this;
   };
