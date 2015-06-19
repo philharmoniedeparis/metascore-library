@@ -154,9 +154,9 @@ metaScore.namespace('player.component').Controller = (function () {
    * @return 
    */
   Controller.prototype.updateTime = function(time){
-    var centiseconds = metaScore.String.pad(parseInt((time / 10) % 100, 10), 2, '0', 'left'),
-      seconds = metaScore.String.pad(parseInt((time / 1000) % 60, 10), 2, '0', 'left'),
-      minutes = metaScore.String.pad(parseInt((time / 60000), 10), 2, '0', 'left');
+    var centiseconds = metaScore.String.pad(parseInt(time % 100, 10), 2, '0', 'left'),
+      seconds = metaScore.String.pad(parseInt((time / 100) % 60, 10), 2, '0', 'left'),
+      minutes = metaScore.String.pad(parseInt((time / 6000), 10), 2, '0', 'left');
 
     this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
   };

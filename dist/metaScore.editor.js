@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-06-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-06-19 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "60d3ff";
+    return "779ac8";
   },
 
   /**
