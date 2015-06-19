@@ -171,7 +171,7 @@ metaScore.namespace('player.component').Controller = (function () {
     
     draggable = draggable !== false;
   
-    if(this.getProperty('locked')){
+    if(this.getProperty('locked') && draggable){
       return false;
     }
 

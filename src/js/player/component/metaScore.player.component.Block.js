@@ -558,7 +558,7 @@ metaScore.namespace('player.component').Block = (function () {
     
     draggable = draggable !== false;
   
-    if(this.getProperty('locked')){
+    if(this.getProperty('locked') && draggable){
       return false;
     }
 
@@ -591,6 +591,10 @@ metaScore.namespace('player.component').Block = (function () {
   Block.prototype.setResizable = function(resizable){
     
     resizable = resizable !== false;
+  
+    if(this.getProperty('locked') && resizable){
+      return false;
+    }
   
     if(resizable && !this._resizable){
       this._resizable = new metaScore.Resizable({

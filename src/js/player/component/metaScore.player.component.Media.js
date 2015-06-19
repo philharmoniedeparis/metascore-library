@@ -368,7 +368,7 @@ metaScore.namespace('player.component').Media = (function () {
     
     draggable = draggable !== false;
   
-    if(this.getProperty('locked')){
+    if(this.getProperty('locked') && draggable){
       return false;
     }
 

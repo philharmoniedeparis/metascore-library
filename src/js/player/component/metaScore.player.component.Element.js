@@ -479,12 +479,12 @@ metaScore.namespace('player.component').Element = (function () {
    * @return MemberExpression
    */
   Element.prototype.setDraggable = function(draggable){
-  
-    if(this.getProperty('locked')){
-      return false;
-    }
     
     draggable = draggable !== false;
+  
+    if(this.getProperty('locked') && draggable){
+      return false;
+    }
 
     if(draggable && !this._draggable){
       this._draggable = new metaScore.Draggable({
@@ -511,6 +511,10 @@ metaScore.namespace('player.component').Element = (function () {
   Element.prototype.setResizable = function(resizable){
     
     resizable = resizable !== false;
+  
+    if(this.getProperty('locked') && resizable){
+      return false;
+    }
   
     if(resizable && !this._resizable){
       this._resizable = new metaScore.Resizable({
