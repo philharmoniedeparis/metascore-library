@@ -141,6 +141,7 @@ body {
   text-align: center;
   line-height: 30px;
   background-color: #0000fe;
+  cursor: default;
 }
 .metaScore-component.controller .buttons {
   position: relative;

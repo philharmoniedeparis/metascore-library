@@ -16,6 +16,7 @@ metaScore.Resizable = (function () {
     this.configs = this.getConfigs(configs);
 
     this.configs.container = this.configs.container || new metaScore.Dom('body');
+    this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
 
     this.handles = {};
 
@@ -70,7 +71,7 @@ metaScore.Resizable = (function () {
       'h': parseInt(this.configs.target.css('height'), 10)
     };
 
-    this.configs.container
+    this.doc
       .addListener('mousemove', this.onMouseMove, this)
       .addListener('mouseup', this.onMouseUp, this);
 
@@ -149,8 +150,8 @@ metaScore.Resizable = (function () {
    * @param {} evt
    * @return 
    */
-  Resizable.prototype.onMouseUp = function(evt){
-    this.configs.container
+  Resizable.prototype.onMouseUp = function(evt){      
+    this.doc
       .removeListener('mousemove', this.onMouseMove, this)
       .removeListener('mouseup', this.onMouseUp, this);
 

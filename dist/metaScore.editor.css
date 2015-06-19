@@ -138,14 +138,6 @@
 .metaScore-editor .draggable .drag-handle {
   cursor: move;
 }
-.metaScore-editor .metaScore-player {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-.metaScore-editor.sidebar-resizing .metaScore-player {
-  pointer-events: none;
-}
 .metaScore-editor .field.booleanfield.readonly .input-wrapper {
   pointer-events: none;
 }
@@ -233,6 +225,23 @@
   overflow: hidden;
   text-indent: 999px;
 }
+.metaScore-editor .field.imagefield .input-wrapper input {
+  direction: rtl;
+}
+.metaScore-editor .field.imagefield .input-wrapper input::-webkit-input-placeholder {
+  direction: ltr;
+}
+.metaScore-editor .field.imagefield .input-wrapper input::-moz-placeholder {
+  /* firefox 19+ */
+  direction: ltr;
+}
+.metaScore-editor .field.imagefield .input-wrapper input:-ms-input-placeholder {
+  /* ie */
+  direction: ltr;
+}
+.metaScore-editor .field.imagefield .input-wrapper input:-moz-placeholder {
+  direction: ltr;
+}
 .metaScore-editor .field.readonly .input-wrapper {
   opacity: 0.75;
   filter: alpha(opacity=(75));
@@ -300,6 +309,9 @@
   margin: 0;
   padding: 0;
   border: none;
+}
+.metaScore-editor.sidebar-resizing .workspace {
+  pointer-events: none;
 }
 .metaScore-editor .main-menu {
   position: fixed;
@@ -382,6 +394,9 @@
 }
 .metaScore-editor .main-menu button[data-action="help"] {
   background-image: url('img/editor/main-menu/help.png');
+}
+.metaScore-editor .main-menu button[data-action="logout"] {
+  background-image: url('img/editor/main-menu/logout.png');
 }
 .metaScore-editor .main-menu .time {
   display: inline-block;

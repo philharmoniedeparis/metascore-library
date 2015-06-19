@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "779ac8";
+    return "edb257";
   },
 
   /**
@@ -1926,6 +1926,7 @@ metaScore.Draggable = (function () {
     this.configs = this.getConfigs(configs);
 
     this.configs.container = this.configs.container || new metaScore.Dom('body');
+    this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
 
     // fix event handlers scope
     this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
@@ -1965,7 +1966,7 @@ metaScore.Draggable = (function () {
       'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
     };
 
-    this.configs.container
+    this.doc
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
 
@@ -2009,7 +2010,7 @@ metaScore.Draggable = (function () {
    * @return 
    */
   Draggable.prototype.onMouseUp = function(evt){
-    this.configs.container
+    this.doc
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
 
@@ -2218,6 +2219,7 @@ metaScore.Resizable = (function () {
     this.configs = this.getConfigs(configs);
 
     this.configs.container = this.configs.container || new metaScore.Dom('body');
+    this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
 
     this.handles = {};
 
@@ -2272,7 +2274,7 @@ metaScore.Resizable = (function () {
       'h': parseInt(this.configs.target.css('height'), 10)
     };
 
-    this.configs.container
+    this.doc
       .addListener('mousemove', this.onMouseMove, this)
       .addListener('mouseup', this.onMouseUp, this);
 
@@ -2351,8 +2353,8 @@ metaScore.Resizable = (function () {
    * @param {} evt
    * @return 
    */
-  Resizable.prototype.onMouseUp = function(evt){
-    this.configs.container
+  Resizable.prototype.onMouseUp = function(evt){      
+    this.doc
       .removeListener('mousemove', this.onMouseMove, this)
       .removeListener('mouseup', this.onMouseUp, this);
 

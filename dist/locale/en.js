@@ -30,6 +30,7 @@ var metaScoreLocale = {
 	"editor.MainMenu.redo": "Redo",
 	"editor.MainMenu.settings": "Settings",
 	"editor.MainMenu.help": "Help",
+	"editor.MainMenu.logout": "Logout",
 	"editor.field.Image.placeholder": "Browse...",
 	"editor.panel.Block.title": "Block",
 	"editor.panel.Block.menuItems.synched": "Add a synchronized block",

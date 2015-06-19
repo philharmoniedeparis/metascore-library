@@ -16,6 +16,7 @@ metaScore.Draggable = (function () {
     this.configs = this.getConfigs(configs);
 
     this.configs.container = this.configs.container || new metaScore.Dom('body');
+    this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
 
     // fix event handlers scope
     this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
@@ -55,7 +56,7 @@ metaScore.Draggable = (function () {
       'top': parseInt(this.configs.target.css('top'), 10) - evt.clientY
     };
 
-    this.configs.container
+    this.doc
       .addListener('mouseup', this.onMouseUp)
       .addListener('mousemove', this.onMouseMove);
 
@@ -99,7 +100,7 @@ metaScore.Draggable = (function () {
    * @return 
    */
   Draggable.prototype.onMouseUp = function(evt){
-    this.configs.container
+    this.doc
       .removeListener('mousemove', this.onMouseMove)
       .removeListener('mouseup', this.onMouseUp);
 

@@ -137,6 +137,13 @@ metaScore.namespace('editor').MainMenu = (function(){
       .data('action', 'help')
       .appendTo(right);
 
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.Locale.t('editor.MainMenu.logout', 'Logout')
+      })
+      .data('action', 'logout')
+      .appendTo(right);
+
   };
 
   /**

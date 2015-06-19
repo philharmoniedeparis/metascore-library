@@ -30,6 +30,7 @@ var metaScoreLocale = {
 	"editor.MainMenu.redo": "Refaire",
 	"editor.MainMenu.settings": "Paramètres",
 	"editor.MainMenu.help": "Aide",
+	"editor.MainMenu.logout": "Se Déconnecter",
 	"editor.field.Image.placeholder": "Parcourir ...",
 	"editor.panel.Block.title": "Bloc",
 	"editor.panel.Block.menuItems.synched": "Ajouter un bloc synchronisé",
