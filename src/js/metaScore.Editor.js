@@ -872,7 +872,7 @@ metaScore.Editor = (function(){
         block = this.panels.block.getComponent();
 
         if(block){
-          dom = new metaScore.Dom('.page', block);
+          dom = block.find('.page');
           count = dom.count();
 
           if(count > 0){
@@ -892,7 +892,7 @@ metaScore.Editor = (function(){
         block = this.panels.block.getComponent();
 
         if(block){
-          dom = new metaScore.Dom('.page', block);
+          dom = block.find('.page');
           count = dom.count();
 
           if(count > 0){
@@ -1066,7 +1066,7 @@ metaScore.Editor = (function(){
         page = this.panels.page.getComponent();
 
         if(page){
-          dom = new metaScore.Dom('.element', page);
+          dom = page.find('.element');
           count = dom.count();
 
           if(count > 0){
@@ -1086,7 +1086,7 @@ metaScore.Editor = (function(){
         page = this.panels.page.getComponent();
 
         if(page){
-          dom = new metaScore.Dom('.element', page);
+          dom = page.find('.element');
           count = dom.count();
 
           if(count > 0){
