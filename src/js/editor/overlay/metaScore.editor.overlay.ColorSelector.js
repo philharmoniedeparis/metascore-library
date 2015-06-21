@@ -333,8 +333,15 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     value.r = imageData.data[0];
     value.g = imageData.data[1];
     value.b =  imageData.data[2];
+    
+    if(!value.a){
+      value.a = 1;
+      this.updateValue(value, true, true);
+    }
+    else{
+      this.updateValue(value, true, false);
+    }
 
-    this.updateValue(value, true, false);
 
     evt.stopPropagation();
   };
