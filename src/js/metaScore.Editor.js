@@ -829,6 +829,7 @@ metaScore.Editor = (function(){
         if(page){
           panel.unsetComponent();
           block.removePage(page);
+          index--;
           
           if(block.getPageCount() < 1){
             configs = {};
@@ -842,7 +843,7 @@ metaScore.Editor = (function(){
             panel.setComponent(auto_page);
           }
             
-          block.setActivePage(index);
+          block.setActivePage(Math.max(0, index));
 
           this.history.add({
             'undo': function(){
