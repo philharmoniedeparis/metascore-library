@@ -289,39 +289,38 @@
   }
 
   .main-menu{
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     min-width: 900px;
     height: 40px;
+    padding: 0 20px;
+    align-content: space-between;
+    align-items: center;
     overflow: hidden;
     z-index: 9999;
-    padding: 0 10px;
     .gradient(#DADADA, #DADADA, #C8C8C8);
     border-bottom: 2px solid #B2B2B2;
-
-    .left{
-      float: left;
-    }
-    .right{
-      float: right;
+    
+    > .separator{
+      flex: 1;
     }
 
     .logo-philharmonie{
-      display: inline-block;
       width: 102px;
       height: 40px;
-      margin-right: 50px;
-      margin-left: 10px;
+      flex: 0 0 auto;
       vertical-align: middle;
       background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
     }
 
     button{
       width: 20px;
-      height: 18px;
-      margin: 10px;
+      height: 20px;
+      flex: 0 0 auto;
+      margin: 0 10px;
       vertical-align: middle;
       background-size: contain;
 
@@ -334,8 +333,11 @@
       &[data-action="edit"]{
         background-image: url('img/editor/main-menu/edit.png');
       }
-      &[data-action="save"]{
-        background-image: url('img/editor/main-menu/save.png');
+      &[data-action="save-draft"]{
+        background-image: url('img/editor/main-menu/save-draft.png');
+      }
+      &[data-action="publish"]{
+        background-image: url('img/editor/main-menu/publish.png');
       }
       &[data-action="delete"]{
         margin-right: 50px;
@@ -367,17 +369,19 @@
         background-image: url('img/editor/main-menu/help.png');
       }
       &[data-action="logout"]{
+        margin-right: 0;
         background-image: url('img/editor/main-menu/logout.png');
       }
     }
 
     .time{
-      display: inline-block;
-      height: 18px;
-      margin: 10px;
+      height: 20px;
+      flex: 0 0 auto;
+      margin: 0 10px;
+      white-space: nowrap;
       vertical-align: middle;
       font-size: 1.3em;
-      padding-left: 18px;
+      padding-left: 20px;
       background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
 
       input,
@@ -388,12 +392,13 @@
     }
 
     .r-index{
-      display: inline-block;
-      height: 18px;
-      margin: 10px;
+      height: 20px;
+      flex: 0 0 auto;
+      margin: 0 10px;
+      white-space: nowrap;
       vertical-align: middle;
       font-size: 1.3em;
-      padding-left: 18px;
+      padding-left: 20px;
       background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
 
       input{
@@ -894,14 +899,12 @@
 
     &.guide-selector{
       .contents{
-        max-width: 500px;
+        max-width: 700px;
         max-height: 500px;
         padding: 12px 16px;
         overflow: auto;
 
         tr.guide{
-          cursor: pointer;
-
           td.thumbnail{
             padding-right: 10px;
             vertical-align: top;
@@ -934,6 +937,34 @@
               font-size: 11px;
               font-weight: normal;
               color: #B2B2B2;
+            }
+            
+            .revision-wrapper{
+              margin-top: 10px;
+              clear: both;
+              
+              .revisions{
+                float: left;
+                
+                select{
+                  width: 135px;
+                  height: 2em;
+                  
+                  optgroup{
+                    &.archives{
+                      option{
+                        color: #B2B2B2;
+                      }
+                    }
+                  }
+                }
+              }
+              
+              button[data-action="select"]{
+                float: left;
+                height: 2em;
+                background: #B2B2B2;
+              }
             }
           }
 

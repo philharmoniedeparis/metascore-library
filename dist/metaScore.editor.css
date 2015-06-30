@@ -314,15 +314,18 @@
   pointer-events: none;
 }
 .metaScore-editor .main-menu {
+  display: flex;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   min-width: 900px;
   height: 40px;
+  padding: 0 20px;
+  align-content: space-between;
+  align-items: center;
   overflow: hidden;
   z-index: 9999;
-  padding: 0 10px;
   background-color: #dadada;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
   background-image: -webkit-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
@@ -332,25 +335,21 @@
   background-image: linear-gradient(top, #dadada 0%, #c8c8c8 100%);
   border-bottom: 2px solid #B2B2B2;
 }
-.metaScore-editor .main-menu .left {
-  float: left;
-}
-.metaScore-editor .main-menu .right {
-  float: right;
+.metaScore-editor .main-menu > .separator {
+  flex: 1;
 }
 .metaScore-editor .main-menu .logo-philharmonie {
-  display: inline-block;
   width: 102px;
   height: 40px;
-  margin-right: 50px;
-  margin-left: 10px;
+  flex: 0 0 auto;
   vertical-align: middle;
   background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
 }
 .metaScore-editor .main-menu button {
   width: 20px;
-  height: 18px;
-  margin: 10px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin: 0 10px;
   vertical-align: middle;
   background-size: contain;
 }
@@ -363,8 +362,11 @@
 .metaScore-editor .main-menu button[data-action="edit"] {
   background-image: url('img/editor/main-menu/edit.png');
 }
-.metaScore-editor .main-menu button[data-action="save"] {
-  background-image: url('img/editor/main-menu/save.png');
+.metaScore-editor .main-menu button[data-action="save-draft"] {
+  background-image: url('img/editor/main-menu/save-draft.png');
+}
+.metaScore-editor .main-menu button[data-action="publish"] {
+  background-image: url('img/editor/main-menu/publish.png');
 }
 .metaScore-editor .main-menu button[data-action="delete"] {
   margin-right: 50px;
@@ -396,15 +398,17 @@
   background-image: url('img/editor/main-menu/help.png');
 }
 .metaScore-editor .main-menu button[data-action="logout"] {
+  margin-right: 0;
   background-image: url('img/editor/main-menu/logout.png');
 }
 .metaScore-editor .main-menu .time {
-  display: inline-block;
-  height: 18px;
-  margin: 10px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin: 0 10px;
+  white-space: nowrap;
   vertical-align: middle;
   font-size: 1.3em;
-  padding-left: 18px;
+  padding-left: 20px;
   background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
 }
 .metaScore-editor .main-menu .time input,
@@ -413,12 +417,13 @@
   vertical-align: top;
 }
 .metaScore-editor .main-menu .r-index {
-  display: inline-block;
-  height: 18px;
-  margin: 10px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin: 0 10px;
+  white-space: nowrap;
   vertical-align: middle;
   font-size: 1.3em;
-  padding-left: 18px;
+  padding-left: 20px;
   background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
 }
 .metaScore-editor .main-menu .r-index input {
@@ -870,13 +875,10 @@
   background: #eee;
 }
 .metaScore-editor .overlay.guide-selector .contents {
-  max-width: 500px;
+  max-width: 700px;
   max-height: 500px;
   padding: 12px 16px;
   overflow: auto;
-}
-.metaScore-editor .overlay.guide-selector .contents tr.guide {
-  cursor: pointer;
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail {
   padding-right: 10px;
@@ -906,6 +908,25 @@
   font-size: 11px;
   font-weight: normal;
   color: #B2B2B2;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper {
+  margin-top: 10px;
+  clear: both;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions {
+  float: left;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions select {
+  width: 135px;
+  height: 2em;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions select optgroup.archives option {
+  color: #B2B2B2;
+}
+.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper button[data-action="select"] {
+  float: left;
+  height: 2em;
+  background: #B2B2B2;
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide:hover {
   background: #EEE;

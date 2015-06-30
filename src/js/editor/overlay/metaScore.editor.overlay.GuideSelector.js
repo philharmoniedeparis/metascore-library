@@ -70,7 +70,9 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
   GuideSelector.prototype.onLoadSuccess = function(xhr){
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
-      table, row;
+      table, row,
+      revision_wrapper, revision_field, last_vid,
+      groups, button;
 
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
       .appendTo(contents);
@@ -81,17 +83,68 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     else{
       metaScore.Object.each(data, function(key, guide){
         row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
-          .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide]))
           .appendTo(table);
 
         new metaScore.Dom('<td/>', {'class': 'thumbnail'})
           .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail}))
           .appendTo(row);
+        
+        revision_field = new metaScore.editor.field.Select()
+          .addClass('revisions');
+        
+        if('revisions' in guide){
+          groups = {};
+          
+          metaScore.Object.each(guide.revisions, function(vid, revision){
+            var group_id, group_label, group, text;
+            
+            switch(revision.state){
+              case 0: // archives
+                group_id = 'archives';
+                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
+                break;
+                
+              case 1: // published
+                group_id = 'published';
+                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
+                break;
+                
+              case 2: // drafts
+                group_id = 'drafts';
+                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
+                break;
+            }
+            
+            if(!(group_id in groups)){
+              groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
+            }
+            
+            group = groups[group_id];
+            
+            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username', {'!date': revision.date, '!username': revision.username});
+          
+            revision_field.addOption(vid, text, group);
+          });
+          
+          if('latest_revision' in guide){
+            revision_field.setValue(guide.latest_revision);
+          }
+        }
+    
+        button = new metaScore.editor.Button()
+          .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
+          .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
+          .data('action', 'select');
+
+        revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
+          .append(revision_field)
+          .append(button);
 
         new metaScore.Dom('<td/>', {'class': 'details'})
           .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
           .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
           .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
+          .append(revision_wrapper)
           .appendTo(row);
       }, this);
     }
@@ -120,8 +173,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
    * @param {} guide
    * @return 
    */
-  GuideSelector.prototype.onGuideClick = function(guide){
-    this.triggerEvent('select', {'overlay': this, 'guide': guide}, true, false);
+  GuideSelector.prototype.onGuideClick = function(guide, revision_field){
+    this.triggerEvent('select', {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
     this.hide();
   };

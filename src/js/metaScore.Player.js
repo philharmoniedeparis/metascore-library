@@ -221,7 +221,8 @@ metaScore.Player = (function () {
   Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
 
-    this.data('id', this.json.id);
+    this.setId(this.json.id)
+      .setRevision(this.json.vid);
 
     // setup the base url
     if(this.json.base_url){
@@ -298,6 +299,45 @@ metaScore.Player = (function () {
    */
   Player.prototype.getId = function(){
     return this.data('id');
+  };
+
+  /**
+   * Description
+   * @method setId
+   * @return CallExpression
+   */
+  Player.prototype.setId = function(id, supressEvent){
+    this.data('id', id);
+
+    if(supressEvent !== true){
+      this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method getRevision
+   * @return CallExpression
+   */
+  Player.prototype.getRevision = function(){
+    return this.data('vid');
+  };
+
+  /**
+   * Description
+   * @method setRevision
+   * @return CallExpression
+   */
+  Player.prototype.setRevision = function(vid, supressEvent){
+    this.data('vid', vid);
+
+    if(supressEvent !== true){
+      this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
+    }
+    
+    return this;
   };
 
   /**

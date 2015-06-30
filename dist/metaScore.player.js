@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-06-22 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-06-30 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "445d2f";
+    return "9a5035";
   },
 
   /**
@@ -3004,7 +3004,8 @@ metaScore.Player = (function () {
   Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
 
-    this.data('id', this.json.id);
+    this.setId(this.json.id)
+      .setRevision(this.json.vid);
 
     // setup the base url
     if(this.json.base_url){
@@ -3081,6 +3082,45 @@ metaScore.Player = (function () {
    */
   Player.prototype.getId = function(){
     return this.data('id');
+  };
+
+  /**
+   * Description
+   * @method setId
+   * @return CallExpression
+   */
+  Player.prototype.setId = function(id, supressEvent){
+    this.data('id', id);
+
+    if(supressEvent !== true){
+      this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
+    }
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method getRevision
+   * @return CallExpression
+   */
+  Player.prototype.getRevision = function(){
+    return this.data('vid');
+  };
+
+  /**
+   * Description
+   * @method setRevision
+   * @return CallExpression
+   */
+  Player.prototype.setRevision = function(vid, supressEvent){
+    this.data('vid', vid);
+
+    if(supressEvent !== true){
+      this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
+    }
+    
+    return this;
   };
 
   /**

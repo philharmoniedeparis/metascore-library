@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-06-22 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-06-30 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "445d2f";
+    return "9a5035";
   },
 
   /**
@@ -2913,6 +2913,13 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onGuideSaveSuccess = function(xhr){
+    var player = this.getPlayer(),
+      json = JSON.parse(xhr.response);
+    
+    player
+      .setId(json.id, true)
+      .setRevision(json.vid);
+  
     this.loadmask.hide();
     delete this.loadmask;
   };
@@ -2997,7 +3004,9 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onGuideRevertConfirm = function(){
-    this.addPlayer(this.getPlayer().getId());
+    var player = this.getPlayer();
+  
+    this.addPlayer(player.getId(), player.getRevision());
   };
 
   /**
@@ -3006,7 +3015,7 @@ metaScore.Editor = (function(){
    * @param {Object} evt
    */
   Editor.prototype.onGuideSelectorSelect = function(evt){
-    this.addPlayer(evt.detail.guide.id);
+    this.addPlayer(evt.detail.guide.id, evt.detail.vid);
   };
   
   /**
@@ -3080,8 +3089,11 @@ metaScore.Editor = (function(){
       case 'edit':
         this.detailsOverlay.show();
         break;
-      case 'save':
+      case 'save-draft':
         this.saveGuide();
+        break;
+      case 'publish':
+        this.saveGuide(true);
         break;
       case 'download':
         break;
@@ -3912,6 +3924,30 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method onPlayerIdSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerIdSet = function(evt){
+    var player = evt.detail.player;
+
+    window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
+  };
+
+  /**
+   * Description
+   * @method onPlayerRevisionSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerRevisionSet = function(evt){
+    var player = evt.detail.player;
+
+    window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
+  };
+
+  /**
+   * Description
    * @method onPlayerTimeUpdate
    * @param {} evt
    * @return 
@@ -3976,7 +4012,9 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerFrameLoadSuccess = function(evt){    
     this.player_frame.get(0).contentWindow.player
       .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this))
+      .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
+      .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
   };
 
   /**
@@ -4004,7 +4042,7 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onPlayerLoadSuccess = function(evt){    
+  Editor.prototype.onPlayerLoadSuccess = function(evt){  
     this.player = evt.detail.player
       .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
@@ -4024,10 +4062,8 @@ metaScore.Editor = (function(){
       .updateMainmenu()
       .updateBlockSelector();
       
-    //this.detailsOverlay.setValues(data);
+    this.detailsOverlay.setValues(evt.detail.data);
     this.mainmenu.rindexfield.setValue(0, true);
-
-    window.history.replaceState(null, null, '#guide='+ this.player.getId());
 
     this.loadmask.hide();
     delete this.loadmask;
@@ -4246,10 +4282,12 @@ metaScore.Editor = (function(){
    * @chainable
    */
   Editor.prototype.loadPlayerFromHash = function(){
-    var match;
+    var hash, match;
+    
+    hash = window.location.hash;
 
-    if(match = window.location.hash.match(/(#|&)guide=(\d+)/)){
-      this.addPlayer(match[2]);
+    if(match = hash.match(/(#|&)guide=(\d+)(:(\d+))?/)){
+      this.addPlayer(match[2], match[4]);
     }
     
     return this;
@@ -4264,7 +4302,8 @@ metaScore.Editor = (function(){
     var hasPlayer = this.hasOwnProperty('player');
 
     this.mainmenu.toggleButton('edit', hasPlayer);
-    this.mainmenu.toggleButton('save', hasPlayer);
+    this.mainmenu.toggleButton('save-draft', hasPlayer);
+    this.mainmenu.toggleButton('publish', hasPlayer);
     this.mainmenu.toggleButton('delete', hasPlayer);
     this.mainmenu.toggleButton('download', hasPlayer);
 
@@ -4379,12 +4418,18 @@ metaScore.Editor = (function(){
    * @param {} id
    * @chainable 
    */
-  Editor.prototype.addPlayer = function(id){
+  Editor.prototype.addPlayer = function(id, vid){
+    var src = this.configs.player_url + id;
+    
+    if(vid){
+      src += "?vid="+ vid;
+    }
+  
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
     
-    this.player_frame.attr('src', this.configs.player_url + id);
+    this.player_frame.attr('src', src);
     
     return this;
   };
@@ -4424,13 +4469,14 @@ metaScore.Editor = (function(){
    * @method saveGuide
    * @chainable 
    */
-  Editor.prototype.saveGuide = function(){
+  Editor.prototype.saveGuide = function(publish){
     var player = this.getPlayer(),
       id = player.getId(),
       components = player.getComponents('.media, .controller, .block'),
       data = this.detailsOverlay.getValues(),
       component, options;
-      
+    
+    data['publish'] = publish === true;
     data['blocks'] = [];
 
     components.each(function(index, dom){
@@ -4979,62 +5025,76 @@ metaScore.namespace('editor').MainMenu = (function(){
    */
   MainMenu.prototype.setupUI = function(){
 
-    var left, right;
-
-    left = new metaScore.Dom('<div/>', {'class': 'left'}).appendTo(this);
-    right = new metaScore.Dom('<div/>', {'class': 'right'}).appendTo(this);
-
     new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
-      .appendTo(left);
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.new', 'New')
       })
       .data('action', 'new')
-      .appendTo(left);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.open', 'Open')
       })
       .data('action', 'open')
-      .appendTo(left);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.edit', 'Edit')
       })
       .data('action', 'edit')
-      .appendTo(left);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.Locale.t('editor.MainMenu.save', 'Save')
+        'title': metaScore.Locale.t('editor.MainMenu.saveDraft', 'Save as draft')
       })
-      .data('action', 'save')
-      .appendTo(left);
+      .data('action', 'save-draft')
+      .appendTo(this);
+
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.Locale.t('editor.MainMenu.Publish', 'Save & Publish')
+      })
+      .data('action', 'publish')
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.delete', 'Delete')
       })
       .data('action', 'delete')
-      .appendTo(left);
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
       })
       .data('action', 'download')
-      .appendTo(left);
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .appendTo(this);
 
     this.timefield = new metaScore.editor.field.Time()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.time', 'Time')
       })
       .addClass('time')
-      .appendTo(left);
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .appendTo(this);
 
     this.rindexfield = new metaScore.editor.field.Number({
         min: 0,
@@ -5044,57 +5104,66 @@ metaScore.namespace('editor').MainMenu = (function(){
         'title': metaScore.Locale.t('editor.MainMenu.r-index', 'Reading index')
       })
       .addClass('r-index')
-      .appendTo(left);
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
       })
       .data('action', 'edit-toggle')
-      .appendTo(left);
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.revert', 'Revert')
       })
       .data('action', 'revert')
-      .appendTo(left);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.undo', 'Undo')
       })
       .data('action', 'undo')
-      .appendTo(left);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.redo', 'Redo')
       })
       .data('action', 'redo')
-      .appendTo(left);
-
-
+      .appendTo(this);
+      
+    new metaScore.Dom('<div/>', {'class': 'separator'})
+      .css('flex', '20')
+      .appendTo(this);
+      
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')
       })
       .data('action', 'settings')
-      .appendTo(right);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
       })
       .data('action', 'help')
-      .appendTo(right);
+      .appendTo(this);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.logout', 'Logout')
       })
       .data('action', 'logout')
-      .appendTo(right);
+      .appendTo(this);
 
   };
 
@@ -6476,10 +6545,25 @@ metaScore.namespace('editor.field').Select = (function () {
    * @param {} text
    * @chainable
    */
-  SelectField.prototype.addOption = function(value, text){
+  SelectField.prototype.addGroup = function(label){
+    var group = new metaScore.Dom('<optgroup/>', {'label': label});
+    
+    this.input.append(group);
+
+    return group;
+  };
+
+  /**
+   * Description
+   * @method addOption
+   * @param {} value
+   * @param {} text
+   * @chainable
+   */
+  SelectField.prototype.addOption = function(value, text, group){
     var option = new metaScore.Dom('<option/>', {'value': value, 'text': text});
     
-    this.input.append(option);
+    option.appendTo(group ? group : this.input);
 
     return option;
   };
@@ -6492,7 +6576,7 @@ metaScore.namespace('editor.field').Select = (function () {
    * @chainable
    */
   SelectField.prototype.updateOption = function(value, text, attr){
-    var option = this.input.child('option[value="'+ value +'"]');
+    var option = this.input.find('option[value="'+ value +'"]');
     
     option.text(text);
 
@@ -6506,7 +6590,7 @@ metaScore.namespace('editor.field').Select = (function () {
    * @chainable
    */
   SelectField.prototype.removeOption = function(value){
-    var option = this.input.child('option[value="'+ value +'"]');
+    var option = this.input.find('option[value="'+ value +'"]');
     
     option.remove();
 
@@ -8880,7 +8964,9 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
   GuideSelector.prototype.onLoadSuccess = function(xhr){
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
-      table, row;
+      table, row,
+      revision_wrapper, revision_field, last_vid,
+      groups, button;
 
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
       .appendTo(contents);
@@ -8891,17 +8977,68 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     else{
       metaScore.Object.each(data, function(key, guide){
         row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
-          .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide]))
           .appendTo(table);
 
         new metaScore.Dom('<td/>', {'class': 'thumbnail'})
           .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail}))
           .appendTo(row);
+        
+        revision_field = new metaScore.editor.field.Select()
+          .addClass('revisions');
+        
+        if('revisions' in guide){
+          groups = {};
+          
+          metaScore.Object.each(guide.revisions, function(vid, revision){
+            var group_id, group_label, group, text;
+            
+            switch(revision.state){
+              case 0: // archives
+                group_id = 'archives';
+                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
+                break;
+                
+              case 1: // published
+                group_id = 'published';
+                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
+                break;
+                
+              case 2: // drafts
+                group_id = 'drafts';
+                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
+                break;
+            }
+            
+            if(!(group_id in groups)){
+              groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
+            }
+            
+            group = groups[group_id];
+            
+            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username', {'!date': revision.date, '!username': revision.username});
+          
+            revision_field.addOption(vid, text, group);
+          });
+          
+          if('latest_revision' in guide){
+            revision_field.setValue(guide.latest_revision);
+          }
+        }
+    
+        button = new metaScore.editor.Button()
+          .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
+          .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
+          .data('action', 'select');
+
+        revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
+          .append(revision_field)
+          .append(button);
 
         new metaScore.Dom('<td/>', {'class': 'details'})
           .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
           .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
           .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
+          .append(revision_wrapper)
           .appendTo(row);
       }, this);
     }
@@ -8930,8 +9067,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
    * @param {} guide
    * @return 
    */
-  GuideSelector.prototype.onGuideClick = function(guide){
-    this.triggerEvent('select', {'overlay': this, 'guide': guide}, true, false);
+  GuideSelector.prototype.onGuideClick = function(guide, revision_field){
+    this.triggerEvent('select', {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
     this.hide();
   };

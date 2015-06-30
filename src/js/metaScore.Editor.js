@@ -130,6 +130,13 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onGuideSaveSuccess = function(xhr){
+    var player = this.getPlayer(),
+      json = JSON.parse(xhr.response);
+    
+    player
+      .setId(json.id, true)
+      .setRevision(json.vid);
+  
     this.loadmask.hide();
     delete this.loadmask;
   };
@@ -214,7 +221,9 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onGuideRevertConfirm = function(){
-    this.addPlayer(this.getPlayer().getId());
+    var player = this.getPlayer();
+  
+    this.addPlayer(player.getId(), player.getRevision());
   };
 
   /**
@@ -223,7 +232,7 @@ metaScore.Editor = (function(){
    * @param {Object} evt
    */
   Editor.prototype.onGuideSelectorSelect = function(evt){
-    this.addPlayer(evt.detail.guide.id);
+    this.addPlayer(evt.detail.guide.id, evt.detail.vid);
   };
   
   /**
@@ -297,8 +306,11 @@ metaScore.Editor = (function(){
       case 'edit':
         this.detailsOverlay.show();
         break;
-      case 'save':
+      case 'save-draft':
         this.saveGuide();
+        break;
+      case 'publish':
+        this.saveGuide(true);
         break;
       case 'download':
         break;
@@ -1129,6 +1141,30 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method onPlayerIdSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerIdSet = function(evt){
+    var player = evt.detail.player;
+
+    window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
+  };
+
+  /**
+   * Description
+   * @method onPlayerRevisionSet
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onPlayerRevisionSet = function(evt){
+    var player = evt.detail.player;
+
+    window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
+  };
+
+  /**
+   * Description
    * @method onPlayerTimeUpdate
    * @param {} evt
    * @return 
@@ -1193,7 +1229,9 @@ metaScore.Editor = (function(){
   Editor.prototype.onPlayerFrameLoadSuccess = function(evt){    
     this.player_frame.get(0).contentWindow.player
       .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this));
+      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this))
+      .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
+      .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
   };
 
   /**
@@ -1221,7 +1259,7 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onPlayerLoadSuccess = function(evt){    
+  Editor.prototype.onPlayerLoadSuccess = function(evt){  
     this.player = evt.detail.player
       .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
@@ -1241,10 +1279,8 @@ metaScore.Editor = (function(){
       .updateMainmenu()
       .updateBlockSelector();
       
-    //this.detailsOverlay.setValues(data);
+    this.detailsOverlay.setValues(evt.detail.data);
     this.mainmenu.rindexfield.setValue(0, true);
-
-    window.history.replaceState(null, null, '#guide='+ this.player.getId());
 
     this.loadmask.hide();
     delete this.loadmask;
@@ -1463,10 +1499,12 @@ metaScore.Editor = (function(){
    * @chainable
    */
   Editor.prototype.loadPlayerFromHash = function(){
-    var match;
+    var hash, match;
+    
+    hash = window.location.hash;
 
-    if(match = window.location.hash.match(/(#|&)guide=(\d+)/)){
-      this.addPlayer(match[2]);
+    if(match = hash.match(/(#|&)guide=(\d+)(:(\d+))?/)){
+      this.addPlayer(match[2], match[4]);
     }
     
     return this;
@@ -1481,7 +1519,8 @@ metaScore.Editor = (function(){
     var hasPlayer = this.hasOwnProperty('player');
 
     this.mainmenu.toggleButton('edit', hasPlayer);
-    this.mainmenu.toggleButton('save', hasPlayer);
+    this.mainmenu.toggleButton('save-draft', hasPlayer);
+    this.mainmenu.toggleButton('publish', hasPlayer);
     this.mainmenu.toggleButton('delete', hasPlayer);
     this.mainmenu.toggleButton('download', hasPlayer);
 
@@ -1596,12 +1635,18 @@ metaScore.Editor = (function(){
    * @param {} id
    * @chainable 
    */
-  Editor.prototype.addPlayer = function(id){
+  Editor.prototype.addPlayer = function(id, vid){
+    var src = this.configs.player_url + id;
+    
+    if(vid){
+      src += "?vid="+ vid;
+    }
+  
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
     
-    this.player_frame.attr('src', this.configs.player_url + id);
+    this.player_frame.attr('src', src);
     
     return this;
   };
@@ -1641,13 +1686,14 @@ metaScore.Editor = (function(){
    * @method saveGuide
    * @chainable 
    */
-  Editor.prototype.saveGuide = function(){
+  Editor.prototype.saveGuide = function(publish){
     var player = this.getPlayer(),
       id = player.getId(),
       components = player.getComponents('.media, .controller, .block'),
       data = this.detailsOverlay.getValues(),
       component, options;
-      
+    
+    data['publish'] = publish === true;
     data['blocks'] = [];
 
     components.each(function(index, dom){
