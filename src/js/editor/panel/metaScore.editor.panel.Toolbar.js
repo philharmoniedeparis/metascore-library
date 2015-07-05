@@ -32,8 +32,6 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
       this.selector = new metaScore.editor.field.Select()
         .addClass('selector')
         .appendTo(this);
-        
-      this.emptySelector();
     }
 
     if(!metaScore.Var.isEmpty(this.configs.menuItems)){
@@ -127,64 +125,11 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
   /**
    * Description
-   * @method emptySelector
+   * @method getSelector
    * @return ThisExpression
    */
-  Toolbar.prototype.emptySelector = function(){
-    if(this.selector){
-      this.selector.removeOptions();
-    }
-    
-    return this;
-  };
-
-  /**
-   * Description
-   * @method addSelectorOption
-   * @param {} value
-   * @param {} text
-   * @return ThisExpression
-   */
-  Toolbar.prototype.addSelectorOption = function(value, text){
-    var option;
-  
-    if(this.selector){
-      option = this.selector.addOption(value, text);
-    }
-    
-    return option;
-  };
-
-  /**
-   * Description
-   * @method addSelectorOption
-   * @param {} value
-   * @param {} text
-   * @return ThisExpression
-   */
-  Toolbar.prototype.updateSelectorOption = function(value, text){
-    var option;
-    
-    if(this.selector){
-      option = this.selector.updateOption(value, text);
-    }
-    
-    return option;
-  };
-
-  /**
-   * Description
-   * @method setSelectorValue
-   * @param {} value
-   * @param {} supressEvent
-   * @return ThisExpression
-   */
-  Toolbar.prototype.setSelectorValue = function(value, supressEvent){
-    if(this.selector){
-      this.selector.setValue(value, supressEvent);
-    }
-    
-    return this;
+  Toolbar.prototype.getSelector = function(){    
+    return this.selector;
   };
 
   /**

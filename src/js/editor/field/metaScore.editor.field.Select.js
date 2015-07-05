@@ -116,10 +116,10 @@ metaScore.namespace('editor.field').Select = (function () {
 
   /**
    * Description
-   * @method removeOptions
+   * @method clear
    * @return ThisExpression
    */
-  SelectField.prototype.removeOptions = function(){
+  SelectField.prototype.clear = function(){
     this.input.empty();
 
     return this;

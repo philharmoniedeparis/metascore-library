@@ -202,8 +202,9 @@ metaScore.namespace('editor').Panel = (function(){
         .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
         .updateDraggable(true)
         .updateResizable(true)
-        .addClass('has-component')
-        .getToolbar().setSelectorValue(component.getId(), true);
+        .addClass('has-component');
+      
+      this.getToolbar().getSelector().setValue(component.getId(), true);
 
       if(!component.instanceOf('Controller') && !component.instanceOf('Media')){
         this.getToolbar().toggleMenuItem('delete', true);
@@ -226,17 +227,18 @@ metaScore.namespace('editor').Panel = (function(){
    * @return ThisExpression
    */
   Panel.prototype.unsetComponent = function(supressEvent){
-    var component = this.getComponent();
+    var component = this.getComponent(),
+      toolbar = this.getToolbar();
 
-    this
-      .removeClass('has-component')
-      .getToolbar().toggleMenuItem('delete', false);
+    this.removeClass('has-component');
+    toolbar.toggleMenuItem('delete', false);
 
     if(component){
       this
         .updateDraggable(false)
-        .updateResizable(false)
-        .getToolbar().setSelectorValue(null, true);
+        .updateResizable(false);        
+      
+      toolbar.getSelector().setValue(null, true);
 
       component.removeClass('selected');
 
@@ -417,7 +419,7 @@ metaScore.namespace('editor').Panel = (function(){
         break;
         
       case 'name':
-        this.getToolbar().updateSelectorOption(component.getId(), value);
+        this.getToolbar().getSelector().updateOption(component.getId(), value);
         break;
         
       case 'start-time':

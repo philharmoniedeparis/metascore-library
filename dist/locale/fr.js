@@ -16,6 +16,7 @@ var metaScoreLocale = {
 	"editor.onPlayerLoadError.msg": "Une erreur est survenue en essayant de charger le guide. Veuillez ré-essayer.",
 	"editor.onPlayerLoadError.ok": "OK",
 	"editor.onBeforeUnload.msg": "Toutes les données non sauvegardées seront perdues.",
+	"editor.elementSelectorGroupLabel": "Indice de lecture !rindex",
 	"editor.MainMenu.new": "Nouveau",
 	"editor.MainMenu.open": "Ouvrir",
 	"editor.MainMenu.edit": "Modifier",

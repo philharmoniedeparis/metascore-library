@@ -16,6 +16,7 @@
 	"editor.onPlayerLoadError.msg": "An error occured while trying to load the guide. Please try again.",
 	"editor.onPlayerLoadError.ok": "OK",
 	"editor.onBeforeUnload.msg": "Any unsaved data will be lost.",
+	"editor.elementSelectorGroupLabel": "Reading index !rindex",
 	"editor.MainMenu.new": "New",
 	"editor.MainMenu.open": "Open",
 	"editor.MainMenu.edit": "Edit",

@@ -118,21 +118,23 @@ metaScore.Dom = (function () {
   Dom.selectElements = function (selector, parent) {
     var elements;
 
-    if(!parent){
-      parent = document;
-    }
-    else if(parent instanceof Dom){
-      parent = parent.get(0);
-    }
-
-    if(metaScore.Var.is(selector, 'string')) {
-      elements = parent.querySelectorAll(selector);
-    }
-    else if(selector.length) {
-      elements = selector;
-    }
-    else {
-      elements = [selector];
+    if(selector !== undefined){
+      if(!parent){
+        parent = document;
+      }
+      else if(parent instanceof Dom){
+        parent = parent.get(0);
+      }
+      
+      if(metaScore.Var.is(selector, 'string')) {
+        elements = parent.querySelectorAll(selector);
+      }
+      else if('length' in selector) {
+        elements = selector;
+      }
+      else {
+        elements = [selector];
+      }
     }
 
     return elements;

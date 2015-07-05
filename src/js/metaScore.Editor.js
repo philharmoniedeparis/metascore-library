@@ -1538,17 +1538,20 @@ metaScore.Editor = (function(){
    */
   Editor.prototype.updateBlockSelector = function(){
     var block = this.panels.block.getComponent(),
-      toolbar = this.panels.block.getToolbar();
+      toolbar = this.panels.block.getToolbar(),
+      selector = toolbar.getSelector();
   
-    toolbar.emptySelector().addSelectorOption(null, '');
+    selector
+      .clear()
+      .addOption(null, '');
         
     this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, block){
       if(block._metaScore){
-        toolbar.addSelectorOption(block._metaScore.getId(), block._metaScore.getName());
+        selector.addOption(block._metaScore.getId(), block._metaScore.getName());
       }
     }, this);
     
-    toolbar.setSelectorValue(block ? block.getId() : null, true);
+    selector.setValue(block ? block.getId() : null, true);
     
     return this;
   };
@@ -1561,17 +1564,18 @@ metaScore.Editor = (function(){
   Editor.prototype.updatePageSelector = function(){
     var block = this.panels.block.getComponent(),
       page = this.panels.page.getComponent(),
-      toolbar = this.panels.page.getToolbar();
+      toolbar = this.panels.page.getToolbar(),
+      selector = toolbar.getSelector();
   
-    toolbar.emptySelector();
+    selector.clear();
   
     if(block.instanceOf('Block')){
       this.panels.block.getComponent().getPages().each(function(index, page){
-        toolbar.addSelectorOption(page._metaScore.getId(), index+1);
+        selector.addOption(page._metaScore.getId(), index+1);
       }, this);
     }
     
-    toolbar.setSelectorValue(page ? page.getId() : null, true);
+    selector.setValue(page ? page.getId() : null, true);
     
     return this;
   };
@@ -1585,19 +1589,23 @@ metaScore.Editor = (function(){
     var block = this.panels.block.getComponent(),
       page = this.panels.page.getComponent(),
       toolbar = this.panels.element.getToolbar(),
+      selector = toolbar.getSelector(),
       synched = block.getProperty('synched'),
       element, out_of_range,
       page_start_time, page_end_time,
-      element_start_time, element_end_time;
+      element_start_time, element_end_time,
+      rindex, optgroups = {};
       
-    toolbar.emptySelector().addSelectorOption(null, '');
+    // clear the selector
+    selector.clear();
     
-    if(synched){
-      page_start_time = page.getProperty('start-time');
-      page_end_time = page.getProperty('end-time');
-    }
-        
-    if(page.instanceOf('Page')){
+    // fill the list of optgroups
+    if(page.instanceOf('Page')){    
+      if(synched){
+        page_start_time = page.getProperty('start-time');
+        page_end_time = page.getProperty('end-time');
+      }
+      
       page.getElements().each(function(index, dom){
         element = dom._metaScore;
         out_of_range = false;
@@ -1609,13 +1617,46 @@ metaScore.Editor = (function(){
           out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
         }
         
-        toolbar.addSelectorOption(element.getId(), (out_of_range ? '*' : '') + element.getName()).toggleClass('out-of-range', out_of_range);
+        rindex = element.getProperty('r-index') || 0;
+        
+        if(!(rindex in optgroups)){
+          optgroups[rindex] = [];
+        }
+        
+        optgroups[rindex].push({
+          'element': element,
+          'out_of_range': out_of_range
+        });
       }, this);
     }
     
+    // create the optgroups and their options
+    metaScore.Array.each(Object.keys(optgroups).sort(), function(index, rindex){
+      var options = optgroups[rindex],
+        optgroup;
+        
+      // sort options by element names
+      options.sort(function(a, b){
+        return a.element.getName().localeCompare(b.element.getName());
+      });
+    
+      // create the optgroup
+      optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-rindex', rindex);
+      
+      // create the options
+      metaScore.Array.each(options, function(index, option){      
+        var element = option.element,
+          out_of_range = option.out_of_range;
+          
+        selector
+          .addOption(element.getId(), (out_of_range ? '*' : '') + element.getName(), optgroup)
+          .toggleClass('out-of-range', out_of_range);
+      }, this);
+    }, this);
+    
     element = this.panels.element.getComponent();
     
-    toolbar.setSelectorValue(element ? element.getId() : null, true);
+    selector.setValue(element ? element.getId() : null, true);
     
     return this;
   };

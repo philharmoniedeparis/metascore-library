@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-06-30 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-05 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "9a5035";
+    return "4d6005";
   },
 
   /**
@@ -924,21 +924,23 @@ metaScore.Dom = (function () {
   Dom.selectElements = function (selector, parent) {
     var elements;
 
-    if(!parent){
-      parent = document;
-    }
-    else if(parent instanceof Dom){
-      parent = parent.get(0);
-    }
-
-    if(metaScore.Var.is(selector, 'string')) {
-      elements = parent.querySelectorAll(selector);
-    }
-    else if(selector.length) {
-      elements = selector;
-    }
-    else {
-      elements = [selector];
+    if(selector !== undefined){
+      if(!parent){
+        parent = document;
+      }
+      else if(parent instanceof Dom){
+        parent = parent.get(0);
+      }
+      
+      if(metaScore.Var.is(selector, 'string')) {
+        elements = parent.querySelectorAll(selector);
+      }
+      else if('length' in selector) {
+        elements = selector;
+      }
+      else {
+        elements = [selector];
+      }
     }
 
     return elements;
@@ -4321,17 +4323,20 @@ metaScore.Editor = (function(){
    */
   Editor.prototype.updateBlockSelector = function(){
     var block = this.panels.block.getComponent(),
-      toolbar = this.panels.block.getToolbar();
+      toolbar = this.panels.block.getToolbar(),
+      selector = toolbar.getSelector();
   
-    toolbar.emptySelector().addSelectorOption(null, '');
+    selector
+      .clear()
+      .addOption(null, '');
         
     this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, block){
       if(block._metaScore){
-        toolbar.addSelectorOption(block._metaScore.getId(), block._metaScore.getName());
+        selector.addOption(block._metaScore.getId(), block._metaScore.getName());
       }
     }, this);
     
-    toolbar.setSelectorValue(block ? block.getId() : null, true);
+    selector.setValue(block ? block.getId() : null, true);
     
     return this;
   };
@@ -4344,17 +4349,18 @@ metaScore.Editor = (function(){
   Editor.prototype.updatePageSelector = function(){
     var block = this.panels.block.getComponent(),
       page = this.panels.page.getComponent(),
-      toolbar = this.panels.page.getToolbar();
+      toolbar = this.panels.page.getToolbar(),
+      selector = toolbar.getSelector();
   
-    toolbar.emptySelector();
+    selector.clear();
   
     if(block.instanceOf('Block')){
       this.panels.block.getComponent().getPages().each(function(index, page){
-        toolbar.addSelectorOption(page._metaScore.getId(), index+1);
+        selector.addOption(page._metaScore.getId(), index+1);
       }, this);
     }
     
-    toolbar.setSelectorValue(page ? page.getId() : null, true);
+    selector.setValue(page ? page.getId() : null, true);
     
     return this;
   };
@@ -4368,19 +4374,23 @@ metaScore.Editor = (function(){
     var block = this.panels.block.getComponent(),
       page = this.panels.page.getComponent(),
       toolbar = this.panels.element.getToolbar(),
+      selector = toolbar.getSelector(),
       synched = block.getProperty('synched'),
       element, out_of_range,
       page_start_time, page_end_time,
-      element_start_time, element_end_time;
+      element_start_time, element_end_time,
+      rindex, optgroups = {};
       
-    toolbar.emptySelector().addSelectorOption(null, '');
+    // clear the selector
+    selector.clear();
     
-    if(synched){
-      page_start_time = page.getProperty('start-time');
-      page_end_time = page.getProperty('end-time');
-    }
-        
-    if(page.instanceOf('Page')){
+    // fill the list of optgroups
+    if(page.instanceOf('Page')){    
+      if(synched){
+        page_start_time = page.getProperty('start-time');
+        page_end_time = page.getProperty('end-time');
+      }
+      
       page.getElements().each(function(index, dom){
         element = dom._metaScore;
         out_of_range = false;
@@ -4392,13 +4402,46 @@ metaScore.Editor = (function(){
           out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
         }
         
-        toolbar.addSelectorOption(element.getId(), (out_of_range ? '*' : '') + element.getName()).toggleClass('out-of-range', out_of_range);
+        rindex = element.getProperty('r-index') || 0;
+        
+        if(!(rindex in optgroups)){
+          optgroups[rindex] = [];
+        }
+        
+        optgroups[rindex].push({
+          'element': element,
+          'out_of_range': out_of_range
+        });
       }, this);
     }
     
+    // create the optgroups and their options
+    metaScore.Array.each(Object.keys(optgroups).sort(), function(index, rindex){
+      var options = optgroups[rindex],
+        optgroup;
+        
+      // sort options by element names
+      options.sort(function(a, b){
+        return a.element.getName().localeCompare(b.element.getName());
+      });
+    
+      // create the optgroup
+      optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-rindex', rindex);
+      
+      // create the options
+      metaScore.Array.each(options, function(index, option){      
+        var element = option.element,
+          out_of_range = option.out_of_range;
+          
+        selector
+          .addOption(element.getId(), (out_of_range ? '*' : '') + element.getName(), optgroup)
+          .toggleClass('out-of-range', out_of_range);
+      }, this);
+    }, this);
+    
     element = this.panels.element.getComponent();
     
-    toolbar.setSelectorValue(element ? element.getId() : null, true);
+    selector.setValue(element ? element.getId() : null, true);
     
     return this;
   };
@@ -5537,8 +5580,9 @@ metaScore.namespace('editor').Panel = (function(){
         .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
         .updateDraggable(true)
         .updateResizable(true)
-        .addClass('has-component')
-        .getToolbar().setSelectorValue(component.getId(), true);
+        .addClass('has-component');
+      
+      this.getToolbar().getSelector().setValue(component.getId(), true);
 
       if(!component.instanceOf('Controller') && !component.instanceOf('Media')){
         this.getToolbar().toggleMenuItem('delete', true);
@@ -5561,17 +5605,18 @@ metaScore.namespace('editor').Panel = (function(){
    * @return ThisExpression
    */
   Panel.prototype.unsetComponent = function(supressEvent){
-    var component = this.getComponent();
+    var component = this.getComponent(),
+      toolbar = this.getToolbar();
 
-    this
-      .removeClass('has-component')
-      .getToolbar().toggleMenuItem('delete', false);
+    this.removeClass('has-component');
+    toolbar.toggleMenuItem('delete', false);
 
     if(component){
       this
         .updateDraggable(false)
-        .updateResizable(false)
-        .getToolbar().setSelectorValue(null, true);
+        .updateResizable(false);        
+      
+      toolbar.getSelector().setValue(null, true);
 
       component.removeClass('selected');
 
@@ -5752,7 +5797,7 @@ metaScore.namespace('editor').Panel = (function(){
         break;
         
       case 'name':
-        this.getToolbar().updateSelectorOption(component.getId(), value);
+        this.getToolbar().getSelector().updateOption(component.getId(), value);
         break;
         
       case 'start-time':
@@ -6599,10 +6644,10 @@ metaScore.namespace('editor.field').Select = (function () {
 
   /**
    * Description
-   * @method removeOptions
+   * @method clear
    * @return ThisExpression
    */
-  SelectField.prototype.removeOptions = function(){
+  SelectField.prototype.clear = function(){
     this.input.empty();
 
     return this;
@@ -7816,8 +7861,6 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
       this.selector = new metaScore.editor.field.Select()
         .addClass('selector')
         .appendTo(this);
-        
-      this.emptySelector();
     }
 
     if(!metaScore.Var.isEmpty(this.configs.menuItems)){
@@ -7911,64 +7954,11 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
   /**
    * Description
-   * @method emptySelector
+   * @method getSelector
    * @return ThisExpression
    */
-  Toolbar.prototype.emptySelector = function(){
-    if(this.selector){
-      this.selector.removeOptions();
-    }
-    
-    return this;
-  };
-
-  /**
-   * Description
-   * @method addSelectorOption
-   * @param {} value
-   * @param {} text
-   * @return ThisExpression
-   */
-  Toolbar.prototype.addSelectorOption = function(value, text){
-    var option;
-  
-    if(this.selector){
-      option = this.selector.addOption(value, text);
-    }
-    
-    return option;
-  };
-
-  /**
-   * Description
-   * @method addSelectorOption
-   * @param {} value
-   * @param {} text
-   * @return ThisExpression
-   */
-  Toolbar.prototype.updateSelectorOption = function(value, text){
-    var option;
-    
-    if(this.selector){
-      option = this.selector.updateOption(value, text);
-    }
-    
-    return option;
-  };
-
-  /**
-   * Description
-   * @method setSelectorValue
-   * @param {} value
-   * @param {} supressEvent
-   * @return ThisExpression
-   */
-  Toolbar.prototype.setSelectorValue = function(value, supressEvent){
-    if(this.selector){
-      this.selector.setValue(value, supressEvent);
-    }
-    
-    return this;
+  Toolbar.prototype.getSelector = function(){    
+    return this.selector;
   };
 
   /**
