@@ -81,7 +81,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
       contents.text(this.configs.emptyText);
     }
     else{
-      metaScore.Object.each(data, function(key, guide){
+      metaScore.Array.each(data, function(index, guide){
         row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
           .appendTo(table);
 
