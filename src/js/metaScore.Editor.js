@@ -103,8 +103,7 @@ metaScore.Editor = (function(){
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
    
-    new metaScore.Dom(window)
-      .addListener('beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
+    metaScore.Dom.addListener(window, 'beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
 
     this
       .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))

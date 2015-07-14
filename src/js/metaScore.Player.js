@@ -18,10 +18,17 @@ metaScore.Player = (function () {
     // call parent constructor
     Player.parent.call(this, '<div></div>', {'class': 'metaScore-player'});
 
-    this
-      .addListener('keydown', metaScore.Function.proxy(this.onKey, this))
-      .addListener('keyup', metaScore.Function.proxy(this.onKey, this))
-      .appendTo(this.configs.container);
+    if(this.configs.keyboard){
+      this.attr('tabindex', 0)
+        .addListener('keydown', metaScore.Function.proxy(this.onKey, this))
+        .addListener('keyup', metaScore.Function.proxy(this.onKey, this));
+    }
+
+    if(this.configs.api){
+      metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
+    }
+    
+    this.appendTo(this.configs.container);
 
     this.load();
   }
@@ -30,7 +37,8 @@ metaScore.Player = (function () {
     'url': '',
     'container': 'body',
     'ajax': {},
-    'keyboard': true
+    'keyboard': false,
+    'api': false
   };
 
   metaScore.Dom.extend(Player);
@@ -53,15 +61,102 @@ metaScore.Player = (function () {
         break;
       case 37: //left
         if(!skip){
-          this.child('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
+          this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
         }
         evt.preventDefault();
         break;
       case 39: //right
         if(!skip){
-          this.child('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
+          this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
         }
         evt.preventDefault();
+        break;
+    }
+  };
+
+  /**
+   * Description
+   * @method onAPIMessage
+   * @param {} evt
+   * @return 
+   */
+  Player.prototype.onAPIMessage = function(evt){
+    var data, source, origin, method, params;
+    
+    try {
+      data = JSON.parse(evt.data);
+    }
+    catch(e){
+      return false;
+    }
+    
+    if (!('method' in data)) {
+      return false;
+    }
+    
+    source = evt.source;
+    origin = '*'/*event.origin*/;
+    method = data.method;
+    params = 'params' in data ? data.params : null;
+    
+    switch(method){
+      case 'play':
+        this.getMedia().play();
+        break;
+        
+      case 'pause':
+        this.getMedia().pause();
+        break;
+        
+      case 'paused':
+        source.postMessage(JSON.stringify({
+          'callback': params,
+          'params': !this.getMedia().isPlaying()
+        }), origin);
+        break;
+        
+      case 'seek':
+        this.getMedia().setTime(parseFloat(params, 10) * 100);
+        break;
+        
+      case 'time':
+        source.postMessage(JSON.stringify({
+          'callback': params, 
+          'params': this.getMedia().getTime() / 100
+        }), origin);
+        break;
+        
+      case 'addEventListener':
+        switch(params.type){
+          case 'ready':
+            this.addListener('loadsuccess', function(event){
+              source.postMessage(JSON.stringify({
+                'callback': params.callback
+              }), origin);
+            });
+            break;
+            
+          case 'timeupdate':
+            this.addListener(params.type, function(event){
+              source.postMessage(JSON.stringify({
+                'callback': params.callback,
+                'params': event.detail.media.getTime() / 100
+              }), origin);
+            });
+            break;
+            
+          case 'rindex':
+            this.addListener(params.type, function(event){
+              source.postMessage(JSON.stringify({
+                'callback': params.callback,
+                'params': event.detail.value
+              }), origin);
+            });
+            break;
+        }
+        break;
+        
+      case 'removeEventListener':
         break;
     }
   };

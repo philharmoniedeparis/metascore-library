@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-10 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-14 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "891dbf";
+    return "42c27b";
   },
 
   /**
@@ -2888,8 +2888,7 @@ metaScore.Editor = (function(){
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
    
-    new metaScore.Dom(window)
-      .addListener('beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
+    metaScore.Dom.addListener(window, 'beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
 
     this
       .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))

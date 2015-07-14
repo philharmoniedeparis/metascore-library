@@ -83,10 +83,16 @@ body {
   width: 100%;
   height: 100%;
 }
+.metaScore-player:focus {
+  outline: none;
+}
 .metaScore-component {
   position: absolute;
   top: 0;
   left: 0;
+}
+.metaScore-component:focus {
+  outline: none;
 }
 .metaScore-component.media.audio {
   display: none;

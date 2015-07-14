@@ -33,6 +33,9 @@ module.exports = function(grunt) {
         sub('src/js/editor/overlay/%s.*.js'),
         sub('src/js/editor/overlay/popup/%s.*.js')
       ],
+      API_LIST = [
+        sub('src/js/%s.API.js')
+      ],
       DEV_HEAD_LIST = [
         sub('src/js/%s.const.js'),
         sub('src/js/%s.intro.js')
@@ -85,6 +88,10 @@ module.exports = function(grunt) {
       'editor': {
         src: DIST_HEAD_LIST.concat(CORE_LIST, EDITOR_LIST, TAIL_LIST),
         dest: sub('dist/%s.editor.js')
+      },
+      'api': {
+        src: API_LIST,
+        dest: sub('dist/%s.api.js')
       },
       'player-dev': {
         src: DEV_HEAD_LIST.concat(CORE_LIST, PLAYER_LIST, TAIL_LIST),
@@ -140,7 +147,8 @@ module.exports = function(grunt) {
       dist: {
         files: {
           'dist/metaScore.player.min.js': 'dist/metaScore.player.js',
-          'dist/metaScore.editor.min.js': 'dist/metaScore.editor.js'
+          'dist/metaScore.editor.min.js': 'dist/metaScore.editor.js',
+          'dist/metaScore.api.min.js': 'dist/metaScore.api.js'
         }
       },
       options: {
@@ -256,6 +264,7 @@ module.exports = function(grunt) {
     'translate_extract',
     'concat:player',
     'concat:editor',
+    'concat:api',
     'uglify:dist',
     'concat:player-dev',
     'concat:editor-dev',
