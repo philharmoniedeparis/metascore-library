@@ -95,7 +95,7 @@ metaScore.Player = (function () {
     }
     
     source = evt.source;
-    origin = '*'/*event.origin*/;
+    origin = event.origin;
     method = data.method;
     params = 'params' in data ? data.params : null;
     

@@ -1,7 +1,15 @@
 (function(){
 
-  function api(target, callback) {
-  
+  var origin_check = /^http?:\/\/metascore.philharmoniedeparis.fr/;
+
+
+  /**
+   * Description
+   * @constructor
+   * @param {} target
+   * @param {} callback
+   */
+  function api(target, callback) {  
     if(typeof target === "string") {
       target = document.getElementById(target);
     }
@@ -14,12 +22,17 @@
     
     this.target.addEventListener('load', this.onLoad.bind(this, callback), false);
     
-    window.addEventListener('message', this.onMessage.bind(this), false);
-    
+    window.addEventListener('message', this.onMessage.bind(this), false);    
   }
-  
-  api.prototype.postMessage = function(method, params){
-  
+
+  /**
+   * Description
+   * @method postMessage
+   * @param {} method
+   * @param {} params
+   * @return 
+   */
+  api.prototype.postMessage = function(method, params){  
     var data;
     
     if (!this.target.contentWindow.postMessage) {
@@ -31,24 +44,34 @@
       'params': params
     });
 
-    this.target.contentWindow.postMessage(data, this.origin);
-    
+    this.target.contentWindow.postMessage(data, this.origin);    
   };
-  
+
+  /**
+   * Description
+   * @method onLoad
+   * @param {} callback
+   * @return 
+   */
   api.prototype.onLoad = function(callback){
     this.on('ready', function(){
       console.log('ready');
       callback.call(null, this);
     });
   };
-  
-  api.prototype.onMessage = function(event){
-  
+
+  /**
+   * Description
+   * @method onMessage
+   * @param {} event
+   * @return 
+   */
+  api.prototype.onMessage = function(event){  
     var data, callback, params;
     
-    /*if(!(/^http?:\/\/metascore.philharmoniedeparis.fr/).test(event.origin)) {
+    if(!(origin_check).test(event.origin)) {
       return false;
-    }*/
+    }
     
     try {
       data = JSON.parse(event.data);
@@ -63,10 +86,16 @@
     
     params = 'params' in data ? data.params : null;
     
-    callback.call(this, params);
-    
+    callback.call(this, params);    
   };
-  
+
+  /**
+   * Description
+   * @method on
+   * @param {} type
+   * @param {} callback
+   * @return 
+   */
   api.prototype.on = function(type, callback){
     var callback_id = new Date().valueOf().toString() + Math.random();
   
@@ -74,22 +103,37 @@
     
     this.postMessage('addEventListener', {'type': type, 'callback': callback_id});
 
-    return this;
-    
+    return this;    
   };
-  
+
+  /**
+   * Description
+   * @method play
+   * @return 
+   */
   api.prototype.play = function(){
     this.postMessage('play');
 
     return this;
   };
-  
+
+  /**
+   * Description
+   * @method pause
+   * @return 
+   */
   api.prototype.pause = function(){
     this.postMessage('pause');
 
     return this;
   };
-  
+
+  /**
+   * Description
+   * @method paused
+   * @param {} callback
+   * @return 
+   */
   api.prototype.paused = function(callback){
     var callback_id = new Date().valueOf().toString() + Math.random();
     
@@ -99,13 +143,25 @@
 
     return this;
   };
-  
+
+  /**
+   * Description
+   * @method seek
+   * @param {} seconds
+   * @return 
+   */
   api.prototype.seek = function(seconds){
     this.postMessage('seek', seconds);
 
     return this;
   };
-  
+
+  /**
+   * Description
+   * @method time
+   * @param {} callback
+   * @return 
+   */
   api.prototype.time = function(callback){
     var callback_id = new Date().valueOf().toString() + Math.random();
     
