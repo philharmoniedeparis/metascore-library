@@ -56,7 +56,6 @@
    */
   api.prototype.onLoad = function(callback){
     this.on('ready', function(){
-      console.log('ready');
       callback.call(null, this);
     });
   };
