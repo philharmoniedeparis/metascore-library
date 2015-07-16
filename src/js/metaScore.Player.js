@@ -185,6 +185,20 @@ metaScore.Player = (function () {
 
   /**
    * Description
+   * @method onMediaSourcesSet
+   * @param {} evt
+   * @return 
+   */
+  Player.prototype.onMediaSourcesSet = function(evt){    
+    this.getMedia()
+      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this));    
+  };
+
+  /**
+   * Description
    * @method onMediaLoadedMetadata
    * @param {} evt
    * @return 
@@ -339,7 +353,8 @@ metaScore.Player = (function () {
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
         case 'media':
-          this.addMedia(metaScore.Object.extend({}, block, this.json.media));
+          this.addMedia(block);
+          this.getMedia().setSources([this.json.media]);
           break;
           
         case 'controller':
@@ -393,7 +408,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getId = function(){
-    return this.data('id');
+    return this.json.id;
   };
 
   /**
@@ -417,7 +432,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getRevision = function(){
-    return this.data('vid');
+    return this.json.vid;
   };
 
   /**
@@ -451,6 +466,19 @@ metaScore.Player = (function () {
    */
   Player.prototype.getMedia = function(){
     return this.media;
+  };
+
+  /**
+   * Description
+   * @method updateData
+   * @return MemberExpression
+   */
+  Player.prototype.updateData = function(data){
+    metaScore.Object.extend(this.json, data);
+
+    this.updateCSS(this.json.css);
+    this.getMedia().setSources([this.json.media]);
+    this.setRevision(this.json.vid);
   };
 
   /**
@@ -490,10 +518,7 @@ metaScore.Player = (function () {
    */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
-      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+      .addListener('sourcesset', metaScore.Function.proxy(this.onMediaSourcesSet, this))
       .appendTo(this);
 
     if(supressEvent !== true){

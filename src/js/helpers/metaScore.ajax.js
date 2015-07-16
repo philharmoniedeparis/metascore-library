@@ -16,40 +16,6 @@ metaScore.Ajax = (function () {
   metaScore.Class.extend(Ajax);
 
   /**
-   * Create an XMLHttp object
-   * @method createXHR
-   * @return 
-   */
-  Ajax.createXHR = function() {
-
-    var xhr, i, l,
-      activeX = [
-        "MSXML2.XMLHttp.5.0",
-        "MSXML2.XMLHttp.4.0",
-        "MSXML2.XMLHttp.3.0",
-        "MSXML2.XMLHttp",
-        "Microsoft.XMLHttp"
-      ];
-
-    if (typeof XMLHttpRequest !== "undefined") {
-      xhr = new XMLHttpRequest();
-      return xhr;
-    }
-    else if (window.ActiveXObject) {
-      for (i = 0, l = activeX.length; i < l; i++) {
-        try {
-          xhr = new ActiveXObject(activeX[i]);
-          return xhr;
-        }
-        catch (e) {}
-      }
-    }
-
-    throw new Error("XMLHttp object could be created.");
-
-  };
-
-  /**
    * Send an XMLHttp request
    * @method send
    * @param {} url
@@ -59,7 +25,7 @@ metaScore.Ajax = (function () {
   Ajax.send = function(url, options) {
 
     var key,
-      xhr = Ajax.createXHR(),
+      xhr = new XMLHttpRequest(),
       defaults = {
         'method': 'GET',
         'headers': {},
@@ -73,17 +39,6 @@ metaScore.Ajax = (function () {
       };
 
     options = metaScore.Object.extend({}, defaults, options);
-
-    if((options.method === 'POST' || options.method === 'PUT') && !('Content-type' in options.headers)){
-      switch(options.dataType){
-        case 'json':
-          options.headers['Content-type'] = 'application/json;charset=UTF-8';
-          break;
-
-        default:
-          options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-      }
-    }
 
     xhr.open(options.method, url, options.async);
 

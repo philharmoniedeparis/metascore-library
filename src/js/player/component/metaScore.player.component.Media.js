@@ -16,6 +16,8 @@ metaScore.namespace('player.component').Media = (function () {
     // call parent constructor
     Media.parent.call(this, configs);
 
+    this.addClass('media');
+
     this.playing = false;
   }
 
@@ -23,8 +25,6 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.defaults = {
     'type': 'audio',
-    'duration': null,
-    'sources': [],
     'useFrameAnimation': true,
     'properties': {
       'locked': {
@@ -164,22 +164,27 @@ metaScore.namespace('player.component').Media = (function () {
 
   /**
    * Description
-   * @method setupDOM
-   * @return 
+   * @method setSources
+   * @return ThisExpression
    */
-  Media.prototype.setupDOM = function(){
-    var sources = '';
+  Media.prototype.setSources = function(sources, supressEvent){
+    var source_tags = '', type;
+    
+    if(this.el){
+      this.el.remove();
+    }
 
-    // call parent function
-    Media.parent.prototype.setupDOM.call(this);
+    metaScore.Array.each(sources, function(index, source) {      
+      if(index === 0){
+        type = source.type;
+      }
+      
+      source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
+    }, this);
 
-    this.addClass('media '+ this.configs.type);
-
-    metaScore.Array.each(this.configs.sources, function(index, source) {
-      sources += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
-    });
-
-    this.el = new metaScore.Dom('<'+ this.configs.type +'>'+ sources +'</'+ this.configs.type +'>', {'preload': 'auto'})
+    this.addClass(type);
+      
+    this.el = new metaScore.Dom('<'+ type +'>'+ source_tags +'</'+ type +'>', {'preload': 'auto'})
       .appendTo(this);
 
     this.dom = this.el.get(0);
@@ -188,6 +193,13 @@ metaScore.namespace('player.component').Media = (function () {
       .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
       .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
       .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
+
+    if(supressEvent !== true){
+      this.triggerEvent('sourcesset', {'media': this});
+    }
+
+    return this;
+    
   };
 
   /**
@@ -251,10 +263,9 @@ metaScore.namespace('player.component').Media = (function () {
   /**
    * Description
    * @method reset
-   * @param {} supressEvent
    * @return ThisExpression
    */
-  Media.prototype.reset = function(supressEvent) {
+  Media.prototype.reset = function() {
     this.setTime(0);
     
     return this;
@@ -263,10 +274,9 @@ metaScore.namespace('player.component').Media = (function () {
   /**
    * Description
    * @method play
-   * @param {} supressEvent
    * @return ThisExpression
    */
-  Media.prototype.play = function(supressEvent) {
+  Media.prototype.play = function() {
     this.dom.play();
     
     return this;
@@ -275,10 +285,9 @@ metaScore.namespace('player.component').Media = (function () {
   /**
    * Description
    * @method pause
-   * @param {} supressEvent
    * @return ThisExpression
    */
-  Media.prototype.pause = function(supressEvent) {
+  Media.prototype.pause = function() {
     this.dom.pause();
     
     return this;

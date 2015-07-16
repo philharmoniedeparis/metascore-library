@@ -27,6 +27,10 @@ metaScore.namespace('editor').Field = (function () {
       this.setValue(this.configs.value);
     }
 
+    if(this.configs.name && this.input){
+      this.input.attr('name', this.configs.name);
+    }
+
     if(this.configs.disabled){
       this.disable();
     }

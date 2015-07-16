@@ -70,6 +70,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
   GuideSelector.prototype.onLoadSuccess = function(xhr){
     var contents = this.getContents(),
       data = JSON.parse(xhr.response),
+      guides = data.items,
       table, row,
       revision_wrapper, revision_field, last_vid,
       groups, button;
@@ -77,16 +78,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     table = new metaScore.Dom('<table/>', {'class': 'guides'})
       .appendTo(contents);
 
-    if(metaScore.Var.isEmpty(data)){
+    if(metaScore.Var.isEmpty(guides)){
       contents.text(this.configs.emptyText);
     }
     else{
-      metaScore.Array.each(data, function(index, guide){
+      metaScore.Array.each(guides, function(index, guide){
         row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
           .appendTo(table);
 
         new metaScore.Dom('<td/>', {'class': 'thumbnail'})
-          .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail}))
+          .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
           .appendTo(row);
         
         revision_field = new metaScore.editor.field.Select()

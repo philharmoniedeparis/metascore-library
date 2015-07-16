@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-14 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-16 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "106dd0";
+    return "0b97f2";
   },
 
   /**
@@ -379,40 +379,6 @@ metaScore.Ajax = (function () {
   metaScore.Class.extend(Ajax);
 
   /**
-   * Create an XMLHttp object
-   * @method createXHR
-   * @return 
-   */
-  Ajax.createXHR = function() {
-
-    var xhr, i, l,
-      activeX = [
-        "MSXML2.XMLHttp.5.0",
-        "MSXML2.XMLHttp.4.0",
-        "MSXML2.XMLHttp.3.0",
-        "MSXML2.XMLHttp",
-        "Microsoft.XMLHttp"
-      ];
-
-    if (typeof XMLHttpRequest !== "undefined") {
-      xhr = new XMLHttpRequest();
-      return xhr;
-    }
-    else if (window.ActiveXObject) {
-      for (i = 0, l = activeX.length; i < l; i++) {
-        try {
-          xhr = new ActiveXObject(activeX[i]);
-          return xhr;
-        }
-        catch (e) {}
-      }
-    }
-
-    throw new Error("XMLHttp object could be created.");
-
-  };
-
-  /**
    * Send an XMLHttp request
    * @method send
    * @param {} url
@@ -422,7 +388,7 @@ metaScore.Ajax = (function () {
   Ajax.send = function(url, options) {
 
     var key,
-      xhr = Ajax.createXHR(),
+      xhr = new XMLHttpRequest(),
       defaults = {
         'method': 'GET',
         'headers': {},
@@ -436,17 +402,6 @@ metaScore.Ajax = (function () {
       };
 
     options = metaScore.Object.extend({}, defaults, options);
-
-    if((options.method === 'POST' || options.method === 'PUT') && !('Content-type' in options.headers)){
-      switch(options.dataType){
-        case 'json':
-          options.headers['Content-type'] = 'application/json;charset=UTF-8';
-          break;
-
-        default:
-          options.headers['Content-type'] = 'application/x-www-form-urlencoded';
-      }
-    }
 
     xhr.open(options.method, url, options.async);
 
@@ -2970,6 +2925,20 @@ metaScore.Player = (function () {
 
   /**
    * Description
+   * @method onMediaSourcesSet
+   * @param {} evt
+   * @return 
+   */
+  Player.prototype.onMediaSourcesSet = function(evt){    
+    this.getMedia()
+      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this));    
+  };
+
+  /**
+   * Description
    * @method onMediaLoadedMetadata
    * @param {} evt
    * @return 
@@ -3124,7 +3093,8 @@ metaScore.Player = (function () {
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
         case 'media':
-          this.addMedia(metaScore.Object.extend({}, block, this.json.media));
+          this.addMedia(block);
+          this.getMedia().setSources([this.json.media]);
           break;
           
         case 'controller':
@@ -3178,7 +3148,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getId = function(){
-    return this.data('id');
+    return this.json.id;
   };
 
   /**
@@ -3202,7 +3172,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getRevision = function(){
-    return this.data('vid');
+    return this.json.vid;
   };
 
   /**
@@ -3236,6 +3206,19 @@ metaScore.Player = (function () {
    */
   Player.prototype.getMedia = function(){
     return this.media;
+  };
+
+  /**
+   * Description
+   * @method updateData
+   * @return MemberExpression
+   */
+  Player.prototype.updateData = function(data){
+    metaScore.Object.extend(this.json, data);
+
+    this.updateCSS(this.json.css);
+    this.getMedia().setSources([this.json.media]);
+    this.setRevision(this.json.vid);
   };
 
   /**
@@ -3275,10 +3258,7 @@ metaScore.Player = (function () {
    */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
-      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+      .addListener('sourcesset', metaScore.Function.proxy(this.onMediaSourcesSet, this))
       .appendTo(this);
 
     if(supressEvent !== true){
@@ -5242,6 +5222,8 @@ metaScore.namespace('player.component').Media = (function () {
     // call parent constructor
     Media.parent.call(this, configs);
 
+    this.addClass('media');
+
     this.playing = false;
   }
 
@@ -5249,8 +5231,6 @@ metaScore.namespace('player.component').Media = (function () {
 
   Media.defaults = {
     'type': 'audio',
-    'duration': null,
-    'sources': [],
     'useFrameAnimation': true,
     'properties': {
       'locked': {
@@ -5390,22 +5370,27 @@ metaScore.namespace('player.component').Media = (function () {
 
   /**
    * Description
-   * @method setupDOM
-   * @return 
+   * @method setSources
+   * @return ThisExpression
    */
-  Media.prototype.setupDOM = function(){
-    var sources = '';
+  Media.prototype.setSources = function(sources, supressEvent){
+    var source_tags = '', type;
+    
+    if(this.el){
+      this.el.remove();
+    }
 
-    // call parent function
-    Media.parent.prototype.setupDOM.call(this);
+    metaScore.Array.each(sources, function(index, source) {      
+      if(index === 0){
+        type = source.type;
+      }
+      
+      source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
+    }, this);
 
-    this.addClass('media '+ this.configs.type);
-
-    metaScore.Array.each(this.configs.sources, function(index, source) {
-      sources += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
-    });
-
-    this.el = new metaScore.Dom('<'+ this.configs.type +'>'+ sources +'</'+ this.configs.type +'>', {'preload': 'auto'})
+    this.addClass(type);
+      
+    this.el = new metaScore.Dom('<'+ type +'>'+ source_tags +'</'+ type +'>', {'preload': 'auto'})
       .appendTo(this);
 
     this.dom = this.el.get(0);
@@ -5414,6 +5399,13 @@ metaScore.namespace('player.component').Media = (function () {
       .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
       .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
       .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
+
+    if(supressEvent !== true){
+      this.triggerEvent('sourcesset', {'media': this});
+    }
+
+    return this;
+    
   };
 
   /**
@@ -5477,10 +5469,9 @@ metaScore.namespace('player.component').Media = (function () {
   /**
    * Description
    * @method reset
-   * @param {} supressEvent
    * @return ThisExpression
    */
-  Media.prototype.reset = function(supressEvent) {
+  Media.prototype.reset = function() {
     this.setTime(0);
     
     return this;
@@ -5489,10 +5480,9 @@ metaScore.namespace('player.component').Media = (function () {
   /**
    * Description
    * @method play
-   * @param {} supressEvent
    * @return ThisExpression
    */
-  Media.prototype.play = function(supressEvent) {
+  Media.prototype.play = function() {
     this.dom.play();
     
     return this;
@@ -5501,10 +5491,9 @@ metaScore.namespace('player.component').Media = (function () {
   /**
    * Description
    * @method pause
-   * @param {} supressEvent
    * @return ThisExpression
    */
-  Media.prototype.pause = function(supressEvent) {
+  Media.prototype.pause = function() {
     this.dom.pause();
     
     return this;

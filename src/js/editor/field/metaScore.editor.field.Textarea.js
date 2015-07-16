@@ -46,7 +46,7 @@ metaScore.namespace('editor.field').Textarea = (function () {
     this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
       .appendTo(this);
 
-    this.input = new metaScore.Dom('<textarea/>', {'id': uid})
+    this.input = new metaScore.Dom('<textarea></textarea>', {'id': uid})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this.input_wrapper);
   };

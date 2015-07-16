@@ -95,9 +95,6 @@ metaScore.Editor = (function(){
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
       .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
       .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
-      
-    this.detailsOverlay = new metaScore.editor.overlay.GuideInfo()
-      .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this));
 
     new metaScore.Dom('body')
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
@@ -151,7 +148,7 @@ metaScore.Editor = (function(){
     delete this.loadmask;
 
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'An error occured while trying to save the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
       'buttons': {
         'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
       },
@@ -206,7 +203,7 @@ metaScore.Editor = (function(){
     delete this.loadmask;
 
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'An error occured while trying to delete the guide. Please try again.'),
+      'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
       'buttons': {
         'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
       },
@@ -284,8 +281,24 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onMainmenuClick = function(evt){
+  Editor.prototype.onMainmenuClick = function(evt){  
     switch(metaScore.Dom.data(evt.target, 'action')){
+      case 'new':
+        if(this.hasOwnProperty('player')){
+          new metaScore.editor.overlay.Alert({
+              'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
+              'buttons': {
+                'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                'cancel': metaScore.Locale.t('editor.onMainmenuClick.open.no', 'No')
+              },
+              'autoShow': true
+            })
+            .addListener('confirmclick', metaScore.Function.proxy(this.openGuideDetails, this, [true]));
+        }
+        else{
+          this.openGuideDetails(true);
+        }
+        break;
       case 'open':
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
@@ -303,7 +316,7 @@ metaScore.Editor = (function(){
         }
         break;
       case 'edit':
-        this.detailsOverlay.show();
+        this.openGuideDetails();
         break;
       case 'save-draft':
         this.saveGuide();
@@ -1278,7 +1291,6 @@ metaScore.Editor = (function(){
       .updateMainmenu()
       .updateBlockSelector();
       
-    this.detailsOverlay.setValues(evt.detail.data);
     this.mainmenu.rindexfield.setValue(0, true);
 
     this.loadmask.hide();
@@ -1435,14 +1447,24 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method onDetailsOverlaySubmit
+   * @method onGuideDetailsSave
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onDetailsOverlaySubmit = function(evt){
-    var values = evt.detail.values;
+  Editor.prototype.onGuideDetailsSave = function(evt){
+    var data = evt.detail.data;
+    
+    this.addPlayer(data.id, data.vid);
+  };
 
-    this.getPlayer().updateCSS(values.css);
+  /**
+   * Description
+   * @method onGuideDetailsUpdate
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onGuideDetailsUpdate = function(evt){
+    this.getPlayer().updateData(evt.detail.data);
   };
 
   /**
@@ -1708,6 +1730,36 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method openGuideDetails
+   * @chainable 
+   */
+  Editor.prototype.openGuideDetails = function(new_guide){
+    var url, data, callback;
+  
+    if(new_guide === true){
+      url = this.configs.api_url +'guide.json';
+      data = {};
+      callback = metaScore.Function.proxy(this.onGuideDetailsSave, this);
+    }
+    else{
+      url = this.configs.api_url +'guide/'+ this.getPlayer().getId() +'/update.json?vid='+ this.getPlayer().getRevision();
+      data = this.getPlayer().getData();
+      callback = metaScore.Function.proxy(this.onGuideDetailsUpdate, this);
+    }
+    
+    new metaScore.editor.overlay.GuideDetails({
+        'url': url,
+        'data': data,
+        'ajax': this.configs.ajax,
+        'autoShow': true
+      })
+      .addListener('data', callback);
+    
+    return this;
+  };
+
+  /**
+   * Description
    * @method openGuideSelector
    * @chainable 
    */
@@ -1729,8 +1781,9 @@ metaScore.Editor = (function(){
   Editor.prototype.saveGuide = function(publish){
     var player = this.getPlayer(),
       id = player.getId(),
+      vid = player.getRevision(),
       components = player.getComponents('.media, .controller, .block'),
-      data = this.detailsOverlay.getValues(),
+      data = {},
       component, options;
     
     data['publish'] = publish === true;
@@ -1761,7 +1814,7 @@ metaScore.Editor = (function(){
       'autoShow': true
     });
 
-    metaScore.Ajax.put(this.configs.api_url +'guide/'+ id +'.json', options);
+    metaScore.Ajax.post(this.configs.api_url +'guide/'+ id +'/update.json?vid='+ vid, options);
     
     return this;
   };
