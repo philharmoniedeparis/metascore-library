@@ -115,6 +115,19 @@ metaScore.namespace('editor.field').Select = (function () {
   };
 
   /**
+   * Toggle the readonly attribute of the field
+   * @method readonly
+   * @return ThisExpression
+   */
+  SelectField.prototype.readonly = function(readonly){
+    SelectField.parent.prototype.readonly.call(this, readonly);
+    
+    this.input.attr('disabled', this.is_readonly ? "disabled" : null);
+
+    return this;
+  };
+
+  /**
    * Description
    * @method clear
    * @return ThisExpression

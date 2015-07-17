@@ -28,9 +28,9 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
     /**
     * True to make this draggable
     */
-    draggable: false,
+    'draggable': false,
 
-    text: metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
+    'text': metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
   };
 
   metaScore.editor.Overlay.extend(LoadMask);

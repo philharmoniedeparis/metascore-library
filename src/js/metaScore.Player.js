@@ -353,7 +353,7 @@ metaScore.Player = (function () {
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
         case 'media':
-          this.addMedia(block);
+          this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}));
           this.getMedia().setSources([this.json.media]);
           break;
           
@@ -408,7 +408,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getId = function(){
-    return this.json.id;
+    return this.data('id');
   };
 
   /**
@@ -432,7 +432,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getRevision = function(){
-    return this.json.vid;
+    return this.data('vid');
   };
 
   /**
@@ -476,9 +476,17 @@ metaScore.Player = (function () {
   Player.prototype.updateData = function(data){
     metaScore.Object.extend(this.json, data);
 
-    this.updateCSS(this.json.css);
-    this.getMedia().setSources([this.json.media]);
-    this.setRevision(this.json.vid);
+    if('css' in data){
+      this.updateCSS(data.css);
+    }
+    
+    if('media' in data){
+      this.getMedia().setSources([data.media]);
+    }
+    
+    if('vid' in data){
+      this.setRevision(data.vid);
+    }
   };
 
   /**

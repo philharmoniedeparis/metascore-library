@@ -39,6 +39,13 @@
     display: inline-block;
     font-weight: normal;
   }
+  
+  .field.required{
+    label:after{
+      content: '*';
+      color: red;
+    }
+  }
 
   button{
     border: none;
@@ -70,7 +77,7 @@
     }
   }
 
-  .field{
+  .field{  
     &.booleanfield{
       &.readonly{
         .input-wrapper{
@@ -924,7 +931,7 @@
             .title{
               margin: 0;
               font-size: 12px;
-              font-weight: normal;
+              font-weight: bold;
             }
 
             .description{

@@ -25,7 +25,7 @@ metaScore.namespace('editor.field').Textarea = (function () {
     /**
     * Defines the default value
     */
-    value: ''
+    'value': ''
   };
 
   metaScore.editor.Field.extend(TextareaField);

@@ -16,7 +16,7 @@ metaScore.namespace('player.component').Media = (function () {
     // call parent constructor
     Media.parent.call(this, configs);
 
-    this.addClass('media');
+    this.addClass('media').addClass(this.configs.type);
 
     this.playing = false;
   }
@@ -168,23 +168,17 @@ metaScore.namespace('player.component').Media = (function () {
    * @return ThisExpression
    */
   Media.prototype.setSources = function(sources, supressEvent){
-    var source_tags = '', type;
+    var source_tags = '';
     
     if(this.el){
       this.el.remove();
     }
 
     metaScore.Array.each(sources, function(index, source) {      
-      if(index === 0){
-        type = source.type;
-      }
-      
       source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
     }, this);
-
-    this.addClass(type);
       
-    this.el = new metaScore.Dom('<'+ type +'>'+ source_tags +'</'+ type +'>', {'preload': 'auto'})
+    this.el = new metaScore.Dom('<'+ this.configs.type +'>'+ source_tags +'</'+ this.configs.type +'>', {'preload': 'auto'})
       .appendTo(this);
 
     this.dom = this.el.get(0);

@@ -55,12 +55,28 @@ metaScore.namespace('editor.field').File = (function () {
   FileField.prototype.setValue = function(value){
     this.current.empty();
     
-    if(value){
-      new metaScore.Dom('<a/>', {'text': value})
-        .attr('href', value)
+    if(value && ('name' in value) && ('url' in value)){
+      new metaScore.Dom('<a/>', {'text': value.name})
+        .attr('href', value.url)
         .attr('target', '_blank')
         .appendTo(this.current);
     }
+  };
+
+  /**
+   * Description
+   * @method getFile
+   * @param File or FileList file
+   * @return 
+   */
+  FileField.prototype.getFile = function(index){
+    var files = this.input.get(0).files;
+  
+    if(index !== undefined){
+      return files[index];
+    }
+    
+    return files;
   };
 
   return FileField;

@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-17 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "0b97f2";
+    return "b7a483";
   },
 
   /**
@@ -2050,13 +2050,23 @@ metaScore.Function = (function () {
    * @param {} args
    * @return FunctionExpression
    */
-  Function.proxy = function(fn, scope, args){
+  Function.proxy = function(fn, scope, args){  
     if (!metaScore.Var.type(fn, 'function')){
       return undefined;
     }
 
     return function () {
-      return fn.apply(scope || this, args || arguments);
+      var args_array;
+    
+      if(args){
+        args_array = Array.prototype.slice.call(args); // transform args to a true array
+        args_array = args_array.concat(Array.prototype.slice.call(arguments)); // concat passed arguments to the args_array
+      }
+      else{
+        args_array = arguments;
+      }
+    
+      return fn.apply(scope || this, args_array);
     };
   };
 
@@ -2835,6 +2845,13 @@ metaScore.Editor = (function(){
       .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
       .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
       .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
+      
+    this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
+        'submit_text': metaScore.Locale.t('metaScore.editor.detailsOverlay.submit_text', 'Apply')
+      })
+      .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this, ['update']));
+      
+    this.detailsOverlay.getField('type').readonly(true);
 
     new metaScore.Dom('body')
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
@@ -2861,36 +2878,74 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method onGuideSaveSuccess
+   * @method onGuideCreateSuccess
    * @param {} xhr
    * @return 
    */
-  Editor.prototype.onGuideSaveSuccess = function(xhr){
-    var player = this.getPlayer(),
-      json = JSON.parse(xhr.response);
-    
-    player
-      .setId(json.id, true)
-      .setRevision(json.vid);
+  Editor.prototype.onGuideCreateSuccess = function(overlay, xhr){
+    var json = JSON.parse(xhr.response);
   
     this.loadmask.hide();
     delete this.loadmask;
+    
+    overlay.hide();
+      
+    this.addPlayer(json.id, json.vid);
   };
 
   /**
    * Description
-   * @method onGuideSaveError
+   * @method onGuideCreateError
    * @param {} xhr
    * @return 
    */
-  Editor.prototype.onGuideSaveError = function(xhr){
+  Editor.prototype.onGuideCreateError = function(xhr){
     this.loadmask.hide();
     delete this.loadmask;
 
     new metaScore.editor.overlay.Alert({
-      'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
+      'text': metaScore.Locale.t('editor.onGuideCreateError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
       'buttons': {
-        'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
+        'ok': metaScore.Locale.t('editor.onGuideCreateError.ok', 'OK'),
+      },
+      'autoShow': true
+    });
+  };
+
+  /**
+   * Description
+   * @method onGuideUpdateSuccess
+   * @param {} xhr
+   * @return 
+   */
+  Editor.prototype.onGuideUpdateSuccess = function(xhr){
+    var player = this.getPlayer(),
+      json = JSON.parse(xhr.response);
+  
+    this.loadmask.hide();
+    delete this.loadmask;
+    
+    this.detailsOverlay
+      .clearValues(true)
+      .setValues(json, true);
+      
+    this.getPlayer().setRevision(json.vid);
+  };
+
+  /**
+   * Description
+   * @method onGuideUpdateError
+   * @param {} xhr
+   * @return 
+   */
+  Editor.prototype.onGuideUpdateError = function(xhr){
+    this.loadmask.hide();
+    delete this.loadmask;
+
+    new metaScore.editor.overlay.Alert({
+      'text': metaScore.Locale.t('editor.onGuideUpdateError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
+      'buttons': {
+        'ok': metaScore.Locale.t('editor.onGuideUpdateError.ok', 'OK'),
       },
       'autoShow': true
     });
@@ -3024,6 +3079,13 @@ metaScore.Editor = (function(){
   Editor.prototype.onMainmenuClick = function(evt){  
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
+        var callback = metaScore.Function.proxy(function(){      
+          new metaScore.editor.overlay.GuideDetails({
+              'autoShow': true
+            })
+            .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this, ['create']));
+        }, this);
+      
         if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
               'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
@@ -3033,10 +3095,10 @@ metaScore.Editor = (function(){
               },
               'autoShow': true
             })
-            .addListener('confirmclick', metaScore.Function.proxy(this.openGuideDetails, this, [true]));
+            .addListener('confirmclick', callback);
         }
         else{
-          this.openGuideDetails(true);
+          callback();
         }
         break;
       case 'open':
@@ -3056,13 +3118,13 @@ metaScore.Editor = (function(){
         }
         break;
       case 'edit':
-        this.openGuideDetails();
+        this.detailsOverlay.show();
         break;
       case 'save-draft':
-        this.saveGuide();
+        this.updateGuide();
         break;
       case 'publish':
-        this.saveGuide(true);
+        this.updateGuide(true);
         break;
       case 'download':
         break;
@@ -4031,7 +4093,12 @@ metaScore.Editor = (function(){
       .updateMainmenu()
       .updateBlockSelector();
       
-    this.mainmenu.rindexfield.setValue(0, true);
+    this.mainmenu
+      .rindexfield.setValue(0, true);
+    
+    this.detailsOverlay
+      .clearValues(true)
+      .setValues(this.player.getData(), true);
 
     this.loadmask.hide();
     delete this.loadmask;
@@ -4187,24 +4254,41 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method onGuideDetailsSave
+   * @method onDetailsOverlaySubmit
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onGuideDetailsSave = function(evt){
-    var data = evt.detail.data;
+  Editor.prototype.onDetailsOverlaySubmit = function(op, evt){
+    var overlay = evt.detail.overlay,
+      data = evt.detail.values,
+      file;
     
-    this.addPlayer(data.id, data.vid);
-  };
-
-  /**
-   * Description
-   * @method onGuideDetailsUpdate
-   * @param {} evt
-   * @return 
-   */
-  Editor.prototype.onGuideDetailsUpdate = function(evt){
-    this.getPlayer().updateData(evt.detail.data);
+    switch(op){
+      case 'create':
+        this.createGuide(data, overlay);
+        break;
+        
+      default:
+        if('files[thumbnail]' in data){
+          file = data['files[media]'];
+          data['thumbnail'] = {
+            'url': URL.createObjectURL(file),
+            'mime': file.type
+          };
+        }
+        
+        if('files[media]' in data){
+          file = data['files[media]'];
+          data['media'] = {
+            'url': URL.createObjectURL(file),
+            'mime': file.type
+          };
+        }
+        
+        this.getPlayer().updateData(data);
+        overlay.hide();
+        break;
+    }
   };
 
   /**
@@ -4470,36 +4554,6 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method openGuideDetails
-   * @chainable 
-   */
-  Editor.prototype.openGuideDetails = function(new_guide){
-    var url, data, callback;
-  
-    if(new_guide === true){
-      url = this.configs.api_url +'guide.json';
-      data = {};
-      callback = metaScore.Function.proxy(this.onGuideDetailsSave, this);
-    }
-    else{
-      url = this.configs.api_url +'guide/'+ this.getPlayer().getId() +'/update.json?vid='+ this.getPlayer().getRevision();
-      data = this.getPlayer().getData();
-      callback = metaScore.Function.proxy(this.onGuideDetailsUpdate, this);
-    }
-    
-    new metaScore.editor.overlay.GuideDetails({
-        'url': url,
-        'data': data,
-        'ajax': this.configs.ajax,
-        'autoShow': true
-      })
-      .addListener('data', callback);
-    
-    return this;
-  };
-
-  /**
-   * Description
    * @method openGuideSelector
    * @chainable 
    */
@@ -4515,42 +4569,88 @@ metaScore.Editor = (function(){
 
   /**
    * Description
-   * @method saveGuide
+   * @method createGuide
    * @chainable 
    */
-  Editor.prototype.saveGuide = function(publish){
+  Editor.prototype.createGuide = function(details, overlay){
+    var data = new FormData(),
+      options;
+    
+    // append values from the details overlay
+    metaScore.Object.each(details, function(key, value){
+      data.append(key, value);
+    });
+
+    // prepare the Ajax options object
+    options = metaScore.Object.extend({
+      'data': data,
+      'dataType': 'json',
+      'success': metaScore.Function.proxy(this.onGuideCreateSuccess, this, [overlay]),
+      'error': metaScore.Function.proxy(this.onGuideCreateError, this)
+    }, this.configs.ajax);
+
+    // add a loading mask
+    this.loadmask = new metaScore.editor.overlay.LoadMask({
+      'text': metaScore.Locale.t('editor.createGuide.LoadMask.text', 'Saving...'),
+      'autoShow': true
+    });
+
+    metaScore.Ajax.post(this.configs.api_url +'guide.json', options);
+    
+    return this;
+  };
+
+  /**
+   * Description
+   * @method updateGuide
+   * @chainable 
+   */
+  Editor.prototype.updateGuide = function(publish){
     var player = this.getPlayer(),
       id = player.getId(),
       vid = player.getRevision(),
       components = player.getComponents('.media, .controller, .block'),
-      data = {},
+      data = new FormData(),
+      details = this.detailsOverlay.getValues(),
+      blocks = [],
       component, options;
     
-    data['publish'] = publish === true;
-    data['blocks'] = [];
+    // append the publish flag if true
+    if(publish === true){
+      data.append('publish', true);
+    }
+    
+    // append values from the details overlay
+    metaScore.Object.each(details, function(key, value){
+      data.append(key, value);
+    });
 
+    // append blocks data
     components.each(function(index, dom){
       component = dom._metaScore;
     
       if(component.instanceOf('Media')){
-        data['blocks'].push(metaScore.Object.extend({'type': 'media'}, component.getProperties()));
+        data.append('blocks[]', JSON.stringify(metaScore.Object.extend({'type': 'media'}, component.getProperties())));
       }
       else if(component.instanceOf('Controller')){
-        data['blocks'].push(metaScore.Object.extend({'type': 'controller'}, component.getProperties()));
+        data.append('blocks[]', JSON.stringify(metaScore.Object.extend({'type': 'controller'}, component.getProperties())));
       }
       else if(component.instanceOf('Block')){
-        data['blocks'].push(component.getProperties());
+        data.append('blocks[]', JSON.stringify(component.getProperties()));
       }
     }, this);
 
-    options = metaScore.Object.extend({}, {
-      'data': JSON.stringify(data),
+    // prepare the Ajax options object
+    options = metaScore.Object.extend({
+      'data': data,
       'dataType': 'json',
-      'success': metaScore.Function.proxy(this.onGuideSaveSuccess, this),
-      'error': metaScore.Function.proxy(this.onGuideSaveError, this)
+      'success': metaScore.Function.proxy(this.onGuideUpdateSuccess, this),
+      'error': metaScore.Function.proxy(this.onGuideUpdateError, this)
     }, this.configs.ajax);
 
+    // add a loading mask
     this.loadmask = new metaScore.editor.overlay.LoadMask({
+      'text': metaScore.Locale.t('editor.updateGuide.LoadMask.text', 'Saving...'),
       'autoShow': true
     });
 
@@ -4740,8 +4840,15 @@ metaScore.namespace('editor').Field = (function () {
       this.setValue(this.configs.value);
     }
 
-    if(this.configs.name && this.input){
-      this.input.attr('name', this.configs.name);
+    if(this.input){
+      if(this.configs.name){
+        this.input.attr('name', this.configs.name);
+      }
+
+      if(this.configs.required){
+        this.addClass('required');
+        this.input.attr('required', '');
+      }
     }
 
     if(this.configs.disabled){
@@ -4758,17 +4865,22 @@ metaScore.namespace('editor').Field = (function () {
     /**
     * Defines the default value
     */
-    value: null,
+    'value': null,
+
+    /**
+    * Defines whether the field is required
+    */
+    'required': false,
 
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
+    'disabled': false,
 
     /**
     * Defines whether the field is readonly by default
     */
-    readonly: false
+    'readonly': false
   };
 
   metaScore.Dom.extend(Field);
@@ -6425,12 +6537,28 @@ metaScore.namespace('editor.field').File = (function () {
   FileField.prototype.setValue = function(value){
     this.current.empty();
     
-    if(value){
-      new metaScore.Dom('<a/>', {'text': value})
-        .attr('href', value)
+    if(value && ('name' in value) && ('url' in value)){
+      new metaScore.Dom('<a/>', {'text': value.name})
+        .attr('href', value.url)
         .attr('target', '_blank')
         .appendTo(this.current);
     }
+  };
+
+  /**
+   * Description
+   * @method getFile
+   * @param File or FileList file
+   * @return 
+   */
+  FileField.prototype.getFile = function(index){
+    var files = this.input.get(0).files;
+  
+    if(index !== undefined){
+      return files[index];
+    }
+    
+    return files;
   };
 
   return FileField;
@@ -6722,6 +6850,19 @@ metaScore.namespace('editor.field').Select = (function () {
   };
 
   /**
+   * Toggle the readonly attribute of the field
+   * @method readonly
+   * @return ThisExpression
+   */
+  SelectField.prototype.readonly = function(readonly){
+    SelectField.parent.prototype.readonly.call(this, readonly);
+    
+    this.input.attr('disabled', this.is_readonly ? "disabled" : null);
+
+    return this;
+  };
+
+  /**
    * Description
    * @method clear
    * @return ThisExpression
@@ -6797,7 +6938,7 @@ metaScore.namespace('editor.field').Textarea = (function () {
     /**
     * Defines the default value
     */
-    value: ''
+    'value': ''
   };
 
   metaScore.editor.Field.extend(TextareaField);
@@ -8830,6 +8971,8 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
     // call parent constructor
     GuideDetails.parent.call(this, this.configs);
+    
+    this.changed = {};
 
     this.addClass('guide-details');
   }
@@ -8844,12 +8987,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     * The overlay's title
     */
     'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
-    
-    'url': null,
-    
-    'ajax': {},
-    
-    'data': {}
+
+    /**
+    * The overlay's apply button text
+    */
+    'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submit_text', 'Save')
   };
 
   metaScore.editor.Overlay.extend(GuideDetails);
@@ -8860,128 +9002,174 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
    * @return 
    */
   GuideDetails.prototype.setupDOM = function(){
-    var contents;
+    var contents, form;
 
     // call parent method
     GuideDetails.parent.prototype.setupDOM.call(this);
 
     contents = this.getContents();
     
-    this.form = new metaScore.Dom('<form/>')
-      .attr('method', 'POST')
-      .attr('action', this.configs.url)
-      .attr('enctype', 'multipart/form-data')
-      .addListener('submit', metaScore.Function.proxy(this.onSubmit, this))
+    this.fields = {};
+    
+    form = new metaScore.Dom('<form>')
+      .addListener('submit', metaScore.Function.proxy(this.onFormSubmit, this))
       .appendTo(contents);
 
     // Fields
-    new metaScore.editor.field.Text({
+    this.fields['type'] = new metaScore.editor.field.Select({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type', 'Type'),
+        'options': {
+          '': '',
+          'audio': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.audio', 'Audio'),
+          'video': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.video', 'Video')
+        },
+        'required': true
+      })
+      .data('name', 'type')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
+      
+    this.fields['title'] = new metaScore.editor.field.Text({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.title', 'Title'),
-        'name': 'title',
-        'value': 'title' in this.configs.data ? this.configs.data.title : null
+        'required': true
       })
-      .appendTo(this.form);
+      .data('name', 'title')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.Textarea({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.description', 'Description'),
-        'name': 'description',
-        'value': 'description' in this.configs.data ? this.configs.data.description : null
+    this.fields['description'] = new metaScore.editor.field.Textarea({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.description', 'Description')
       })
-      .appendTo(this.form);
+      .data('name', 'description')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.File({
+    this.fields['thumbnail'] = new metaScore.editor.field.File({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail', 'Thumbnail'),
-        'name': 'files[thumbnail]',
         'accept': '.png,.gif,.jpg,.jpeg'
       })
-      .appendTo(this.form);
+      .data('name', 'files[thumbnail]')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.File({
+    this.fields['media'] = new metaScore.editor.field.File({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media', 'Media'),
-        'name': 'files[media]',
         'accept': '.mp4,.m4v,.m4a'
       })
-      .appendTo(this.form);
+      .data('name', 'files[media]')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.Textarea({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.css', 'CSS'),
-        'name': 'css',
-        'value': 'css' in this.configs.data ? this.configs.data.css : null
+    this.fields['css'] = new metaScore.editor.field.Textarea({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.css', 'CSS')
       })
-      .appendTo(this.form);
+      .data('name', 'css')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
     // Buttons
-    new metaScore.editor.Button({'label': 'Save'})
-      .addClass('save')
-      .appendTo(this.form);
+    new metaScore.editor.Button({'label': this.configs.submit_text})
+      .addClass('apply')
+      .appendTo(form);
 
     new metaScore.editor.Button({'label': 'Cancel'})
       .addClass('cancel')
       .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
-      .appendTo(this.form);
+      .appendTo(form);
 
   };
 
   /**
    * Description
-   * @method onApplyClick
+   * @method getField
    * @param {} evt
    * @return 
    */
-  GuideDetails.prototype.onSubmit = function(evt){
-     
-    var form = evt.target,
-      data = new FormData(form),
-      options;
+  GuideDetails.prototype.getField = function(name){
+    var fields = this.fields;
+    
+    if(name){
+      return fields[name];
+    }
+    
+    return fields;
+  };
 
-    options = metaScore.Object.extend({}, {
-      'data': data,
-      'success': metaScore.Function.proxy(this.onSaveSuccess, this),
-      'error': metaScore.Function.proxy(this.onSaveError, this)
-    }, this.configs.ajax);
+  /**
+   * Description
+   * @method setValues
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.setValues = function(values, supressEvent){
+    metaScore.Object.each(values, function(key, value){
+      if(key in this.fields){
+        this.fields[key].setValue(value, supressEvent);
+      }
+    }, this);
+    
+    return this;
+  };
 
-    this.loadmask = new metaScore.editor.overlay.LoadMask({
-      'autoShow': true
-    });
+  /**
+   * Description
+   * @method clearValues
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.clearValues = function(supressEvent){
+    metaScore.Object.each(this.fields, function(key, field){
+      field.setValue(null, supressEvent);
+    }, this);
+    
+    return this;
+  };
 
-    metaScore.Ajax.post(form.action, options);
+  /**
+   * Description
+   * @method getValues
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.getValues = function(){
+    return metaScore.Object.extend({}, this.changed);
+  };
+
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.onFieldValueChange = function(evt){  
+    var field = evt.detail.field,
+      name = field.data('name'),
+      file;
+    
+    if(field instanceof metaScore.editor.field.File){
+      if(file = field.getFile(0)){
+        this.changed[name] = file;
+      }
+      else{
+        delete this.changed[name];
+      }
+    }
+    else{
+      this.changed[name] = evt.detail.value;
+    }
+  };
+
+  /**
+   * Description
+   * @method onFormSubmit
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.onFormSubmit = function(evt){
+    this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
     
     evt.preventDefault();
-  };
-  
-  /**
-  * Description
-  * @method onSaveSuccess
-  * @param {} evt
-  * @return 
-  */
-  GuideDetails.prototype.onSaveSuccess = function(xhr){
-    var data = JSON.parse(xhr.response);
-    
-    this.loadmask.hide();
-    delete this.loadmask;
-    
-    this.triggerEvent('data', {'overlay': this, 'data': data}, true, false);
-    this.hide();
-  };
-  
-  /**
-  * Description
-  * @method onSaveError
-  * @param {} evt
-  * @return 
-  */
-  GuideDetails.prototype.onSaveError = function(xhr){
-    this.loadmask.hide();
-    delete this.loadmask;
-
-    new metaScore.editor.overlay.Alert({
-      'text': metaScore.Locale.t('editor.overlay.GuideDetails.onSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
-      'buttons': {
-        'ok': metaScore.Locale.t('editor.overlay.GuideDetails.onSaveError.ok', 'OK'),
-      },
-      'autoShow': true
-    });
+    evt.stopPropagation();
   };
   
   /**
@@ -9125,7 +9313,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             
             group = groups[group_id];
             
-            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username', {'!date': revision.date, '!username': revision.username});
+            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username (!id:!vid)', {'!date': revision.date, '!username': revision.username, '!id': guide.id, '!vid': vid});
           
             revision_field.addOption(vid, text, group);
           });
@@ -9709,9 +9897,9 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
     /**
     * True to make this draggable
     */
-    draggable: false,
+    'draggable': false,
 
-    text: metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
+    'text': metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
   };
 
   metaScore.editor.Overlay.extend(LoadMask);

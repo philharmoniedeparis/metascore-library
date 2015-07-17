@@ -17,6 +17,8 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
     // call parent constructor
     GuideDetails.parent.call(this, this.configs);
+    
+    this.changed = {};
 
     this.addClass('guide-details');
   }
@@ -31,12 +33,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     * The overlay's title
     */
     'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
-    
-    'url': null,
-    
-    'ajax': {},
-    
-    'data': {}
+
+    /**
+    * The overlay's apply button text
+    */
+    'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submit_text', 'Save')
   };
 
   metaScore.editor.Overlay.extend(GuideDetails);
@@ -47,128 +48,174 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
    * @return 
    */
   GuideDetails.prototype.setupDOM = function(){
-    var contents;
+    var contents, form;
 
     // call parent method
     GuideDetails.parent.prototype.setupDOM.call(this);
 
     contents = this.getContents();
     
-    this.form = new metaScore.Dom('<form/>')
-      .attr('method', 'POST')
-      .attr('action', this.configs.url)
-      .attr('enctype', 'multipart/form-data')
-      .addListener('submit', metaScore.Function.proxy(this.onSubmit, this))
+    this.fields = {};
+    
+    form = new metaScore.Dom('<form>')
+      .addListener('submit', metaScore.Function.proxy(this.onFormSubmit, this))
       .appendTo(contents);
 
     // Fields
-    new metaScore.editor.field.Text({
+    this.fields['type'] = new metaScore.editor.field.Select({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type', 'Type'),
+        'options': {
+          '': '',
+          'audio': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.audio', 'Audio'),
+          'video': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.video', 'Video')
+        },
+        'required': true
+      })
+      .data('name', 'type')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
+      
+    this.fields['title'] = new metaScore.editor.field.Text({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.title', 'Title'),
-        'name': 'title',
-        'value': 'title' in this.configs.data ? this.configs.data.title : null
+        'required': true
       })
-      .appendTo(this.form);
+      .data('name', 'title')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.Textarea({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.description', 'Description'),
-        'name': 'description',
-        'value': 'description' in this.configs.data ? this.configs.data.description : null
+    this.fields['description'] = new metaScore.editor.field.Textarea({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.description', 'Description')
       })
-      .appendTo(this.form);
+      .data('name', 'description')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.File({
+    this.fields['thumbnail'] = new metaScore.editor.field.File({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail', 'Thumbnail'),
-        'name': 'files[thumbnail]',
         'accept': '.png,.gif,.jpg,.jpeg'
       })
-      .appendTo(this.form);
+      .data('name', 'files[thumbnail]')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.File({
+    this.fields['media'] = new metaScore.editor.field.File({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media', 'Media'),
-        'name': 'files[media]',
         'accept': '.mp4,.m4v,.m4a'
       })
-      .appendTo(this.form);
+      .data('name', 'files[media]')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
-    new metaScore.editor.field.Textarea({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.css', 'CSS'),
-        'name': 'css',
-        'value': 'css' in this.configs.data ? this.configs.data.css : null
+    this.fields['css'] = new metaScore.editor.field.Textarea({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.css', 'CSS')
       })
-      .appendTo(this.form);
+      .data('name', 'css')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
 
     // Buttons
-    new metaScore.editor.Button({'label': 'Save'})
-      .addClass('save')
-      .appendTo(this.form);
+    new metaScore.editor.Button({'label': this.configs.submit_text})
+      .addClass('apply')
+      .appendTo(form);
 
     new metaScore.editor.Button({'label': 'Cancel'})
       .addClass('cancel')
       .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
-      .appendTo(this.form);
+      .appendTo(form);
 
   };
 
   /**
    * Description
-   * @method onApplyClick
+   * @method getField
    * @param {} evt
    * @return 
    */
-  GuideDetails.prototype.onSubmit = function(evt){
-     
-    var form = evt.target,
-      data = new FormData(form),
-      options;
+  GuideDetails.prototype.getField = function(name){
+    var fields = this.fields;
+    
+    if(name){
+      return fields[name];
+    }
+    
+    return fields;
+  };
 
-    options = metaScore.Object.extend({}, {
-      'data': data,
-      'success': metaScore.Function.proxy(this.onSaveSuccess, this),
-      'error': metaScore.Function.proxy(this.onSaveError, this)
-    }, this.configs.ajax);
+  /**
+   * Description
+   * @method setValues
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.setValues = function(values, supressEvent){
+    metaScore.Object.each(values, function(key, value){
+      if(key in this.fields){
+        this.fields[key].setValue(value, supressEvent);
+      }
+    }, this);
+    
+    return this;
+  };
 
-    this.loadmask = new metaScore.editor.overlay.LoadMask({
-      'autoShow': true
-    });
+  /**
+   * Description
+   * @method clearValues
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.clearValues = function(supressEvent){
+    metaScore.Object.each(this.fields, function(key, field){
+      field.setValue(null, supressEvent);
+    }, this);
+    
+    return this;
+  };
 
-    metaScore.Ajax.post(form.action, options);
+  /**
+   * Description
+   * @method getValues
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.getValues = function(){
+    return metaScore.Object.extend({}, this.changed);
+  };
+
+  /**
+   * Description
+   * @method onFieldValueChange
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.onFieldValueChange = function(evt){  
+    var field = evt.detail.field,
+      name = field.data('name'),
+      file;
+    
+    if(field instanceof metaScore.editor.field.File){
+      if(file = field.getFile(0)){
+        this.changed[name] = file;
+      }
+      else{
+        delete this.changed[name];
+      }
+    }
+    else{
+      this.changed[name] = evt.detail.value;
+    }
+  };
+
+  /**
+   * Description
+   * @method onFormSubmit
+   * @param {} evt
+   * @return 
+   */
+  GuideDetails.prototype.onFormSubmit = function(evt){
+    this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
     
     evt.preventDefault();
-  };
-  
-  /**
-  * Description
-  * @method onSaveSuccess
-  * @param {} evt
-  * @return 
-  */
-  GuideDetails.prototype.onSaveSuccess = function(xhr){
-    var data = JSON.parse(xhr.response);
-    
-    this.loadmask.hide();
-    delete this.loadmask;
-    
-    this.triggerEvent('data', {'overlay': this, 'data': data}, true, false);
-    this.hide();
-  };
-  
-  /**
-  * Description
-  * @method onSaveError
-  * @param {} evt
-  * @return 
-  */
-  GuideDetails.prototype.onSaveError = function(xhr){
-    this.loadmask.hide();
-    delete this.loadmask;
-
-    new metaScore.editor.overlay.Alert({
-      'text': metaScore.Locale.t('editor.overlay.GuideDetails.onSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
-      'buttons': {
-        'ok': metaScore.Locale.t('editor.overlay.GuideDetails.onSaveError.ok', 'OK'),
-      },
-      'autoShow': true
-    });
+    evt.stopPropagation();
   };
   
   /**

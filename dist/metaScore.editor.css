@@ -111,6 +111,10 @@
   display: inline-block;
   font-weight: normal;
 }
+.metaScore-editor .field.required label:after {
+  content: '*';
+  color: red;
+}
 .metaScore-editor button {
   border: none;
   outline: none;
@@ -897,7 +901,7 @@
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.details .title {
   margin: 0;
   font-size: 12px;
-  font-weight: normal;
+  font-weight: bold;
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.details .description {
   margin: 0;

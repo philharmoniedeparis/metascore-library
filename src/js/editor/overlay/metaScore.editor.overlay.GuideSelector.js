@@ -122,7 +122,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             
             group = groups[group_id];
             
-            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username', {'!date': revision.date, '!username': revision.username});
+            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username (!id:!vid)', {'!date': revision.date, '!username': revision.username, '!id': guide.id, '!vid': vid});
           
             revision_field.addOption(vid, text, group);
           });

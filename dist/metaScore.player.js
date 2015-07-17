@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-17 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "0b97f2";
+    return "b7a483";
   },
 
   /**
@@ -2050,13 +2050,23 @@ metaScore.Function = (function () {
    * @param {} args
    * @return FunctionExpression
    */
-  Function.proxy = function(fn, scope, args){
+  Function.proxy = function(fn, scope, args){  
     if (!metaScore.Var.type(fn, 'function')){
       return undefined;
     }
 
     return function () {
-      return fn.apply(scope || this, args || arguments);
+      var args_array;
+    
+      if(args){
+        args_array = Array.prototype.slice.call(args); // transform args to a true array
+        args_array = args_array.concat(Array.prototype.slice.call(arguments)); // concat passed arguments to the args_array
+      }
+      else{
+        args_array = arguments;
+      }
+    
+      return fn.apply(scope || this, args_array);
     };
   };
 
@@ -3093,7 +3103,7 @@ metaScore.Player = (function () {
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
         case 'media':
-          this.addMedia(block);
+          this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}));
           this.getMedia().setSources([this.json.media]);
           break;
           
@@ -3148,7 +3158,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getId = function(){
-    return this.json.id;
+    return this.data('id');
   };
 
   /**
@@ -3172,7 +3182,7 @@ metaScore.Player = (function () {
    * @return CallExpression
    */
   Player.prototype.getRevision = function(){
-    return this.json.vid;
+    return this.data('vid');
   };
 
   /**
@@ -3216,9 +3226,17 @@ metaScore.Player = (function () {
   Player.prototype.updateData = function(data){
     metaScore.Object.extend(this.json, data);
 
-    this.updateCSS(this.json.css);
-    this.getMedia().setSources([this.json.media]);
-    this.setRevision(this.json.vid);
+    if('css' in data){
+      this.updateCSS(data.css);
+    }
+    
+    if('media' in data){
+      this.getMedia().setSources([data.media]);
+    }
+    
+    if('vid' in data){
+      this.setRevision(data.vid);
+    }
   };
 
   /**
@@ -5222,7 +5240,7 @@ metaScore.namespace('player.component').Media = (function () {
     // call parent constructor
     Media.parent.call(this, configs);
 
-    this.addClass('media');
+    this.addClass('media').addClass(this.configs.type);
 
     this.playing = false;
   }
@@ -5374,23 +5392,17 @@ metaScore.namespace('player.component').Media = (function () {
    * @return ThisExpression
    */
   Media.prototype.setSources = function(sources, supressEvent){
-    var source_tags = '', type;
+    var source_tags = '';
     
     if(this.el){
       this.el.remove();
     }
 
     metaScore.Array.each(sources, function(index, source) {      
-      if(index === 0){
-        type = source.type;
-      }
-      
       source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
     }, this);
-
-    this.addClass(type);
       
-    this.el = new metaScore.Dom('<'+ type +'>'+ source_tags +'</'+ type +'>', {'preload': 'auto'})
+    this.el = new metaScore.Dom('<'+ this.configs.type +'>'+ source_tags +'</'+ this.configs.type +'>', {'preload': 'auto'})
       .appendTo(this);
 
     this.dom = this.el.get(0);

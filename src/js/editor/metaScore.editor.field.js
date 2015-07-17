@@ -27,8 +27,15 @@ metaScore.namespace('editor').Field = (function () {
       this.setValue(this.configs.value);
     }
 
-    if(this.configs.name && this.input){
-      this.input.attr('name', this.configs.name);
+    if(this.input){
+      if(this.configs.name){
+        this.input.attr('name', this.configs.name);
+      }
+
+      if(this.configs.required){
+        this.addClass('required');
+        this.input.attr('required', '');
+      }
     }
 
     if(this.configs.disabled){
@@ -45,17 +52,22 @@ metaScore.namespace('editor').Field = (function () {
     /**
     * Defines the default value
     */
-    value: null,
+    'value': null,
+
+    /**
+    * Defines whether the field is required
+    */
+    'required': false,
 
     /**
     * Defines whether the field is disabled by default
     */
-    disabled: false,
+    'disabled': false,
 
     /**
     * Defines whether the field is readonly by default
     */
-    readonly: false
+    'readonly': false
   };
 
   metaScore.Dom.extend(Field);
