@@ -188,6 +188,18 @@ metaScore.Dom = (function () {
   };
 
   /**
+   * Get the window containing an element
+   * @method getElementWindow
+   * @param {} el
+   * @return {}
+   */
+  Dom.getElementWindow = function(el){
+    var doc = el.ownerDocument;
+      
+    return doc.defaultView || doc.parentWindow;
+  };
+
+  /**
    * Checks if an element has a given class
    * @method hasClass
    * @param {} element
@@ -299,7 +311,9 @@ metaScore.Dom = (function () {
    * @return CallExpression
    */
   Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
-    var event = new CustomEvent(type, {
+    var fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
+    
+    var event = new fn(type, {
       'detail': data,
       'bubbles': bubbles !== false,
       'cancelable': cancelable !== false
@@ -505,17 +519,15 @@ metaScore.Dom = (function () {
    * @return Literal
    */
   Dom.is = function(el, selector){
-    var document, win;
+    var win;
     
     if(el instanceof Element){
       return Element.prototype.matches.call(el, selector);
     }
-      
-    if((document = el.ownerDocument) && (win = document.defaultView || document.parentWindow)){
-      return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
-    }
     
-    return false;
+    win = Dom.getElementWindow(el);
+    
+    return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
   };
   
   /**

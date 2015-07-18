@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-17 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-18 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "b7a483";
+    return "8a7aa9";
   },
 
   /**
@@ -628,6 +628,78 @@ metaScore.Array = (function () {
     return arr;
   };
 
+  /**
+   * Natural Sort algorithm
+   * Author: Jim Palmer (based on chunking idea from Dave Koelle)
+   * Version 0.8 - Released under MIT license
+   * @method naturalSort
+   * @param {} insensitive
+   * @return CallExpression
+   */
+  Array.naturalSort = function(insensitive){
+    return function(a, b){
+      var re = /(^([+\-]?(?:\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[\da-fA-F]+$|\d+)/g,
+        sre = /^\s+|\s+$/g,   // trim pre-post whitespace
+        snre = /\s+/g,        // normalize all whitespace to single ' ' character
+        dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
+        hre = /^0x[0-9a-f]+$/i,
+        ore = /^0/,
+        i = function(s) {
+          return (insensitive && ('' + s).toLowerCase() || '' + s).replace(sre, '');
+        },
+        // convert all to strings strip whitespace
+        x = i(a) || '',
+        y = i(b) || '',
+        // chunk/tokenize
+        xN = x.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
+        yN = y.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
+        // numeric, hex or date detection
+        xD = parseInt(x.match(hre), 16) || (xN.length !== 1 && Date.parse(x)),
+        yD = parseInt(y.match(hre), 16) || xD && y.match(dre) && Date.parse(y) || null,
+        normChunk = function(s, l) {
+          // normalize spaces; find floats not starting with '0', string or 0 if not defined (Clint Priest)
+          return (!s.match(ore) || l === 1) && parseFloat(s) || s.replace(snre, ' ').replace(sre, '') || 0;
+        },
+        oFxNcL, oFyNcL;
+        
+      // first try and sort Hex codes or Dates
+      if(yD){
+        if(xD < yD){
+          return -1;
+        }
+        else if(xD > yD){
+          return 1;
+        }
+      }
+      
+      // natural sorting through split numeric strings and default strings
+      for(var cLoc=0, xNl = xN.length, yNl = yN.length, numS=Math.max(xNl, yNl); cLoc < numS; cLoc++){
+        oFxNcL = normChunk(xN[cLoc], xNl);
+        oFyNcL = normChunk(yN[cLoc], yNl);
+        
+        // handle numeric vs string comparison - number < string - (Kyle Adams)
+        if(isNaN(oFxNcL) !== isNaN(oFyNcL)){
+          return (isNaN(oFxNcL)) ? 1 : -1;
+        }
+        // rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
+        else if(typeof oFxNcL !== typeof oFyNcL){
+          oFxNcL += '';
+          oFyNcL += '';
+        }
+        
+        if(oFxNcL < oFyNcL){
+          return -1;
+        }
+        
+        if(oFxNcL > oFyNcL){
+          return 1;
+        }
+      }
+      
+      return 0;  
+    };
+  };
+
   return Array;
 
 })();
@@ -949,6 +1021,18 @@ metaScore.Dom = (function () {
   };
 
   /**
+   * Get the window containing an element
+   * @method getElementWindow
+   * @param {} el
+   * @return {}
+   */
+  Dom.getElementWindow = function(el){
+    var doc = el.ownerDocument;
+      
+    return doc.defaultView || doc.parentWindow;
+  };
+
+  /**
    * Checks if an element has a given class
    * @method hasClass
    * @param {} element
@@ -1060,7 +1144,9 @@ metaScore.Dom = (function () {
    * @return CallExpression
    */
   Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
-    var event = new CustomEvent(type, {
+    var fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
+    
+    var event = new fn(type, {
       'detail': data,
       'bubbles': bubbles !== false,
       'cancelable': cancelable !== false
@@ -1266,17 +1352,15 @@ metaScore.Dom = (function () {
    * @return Literal
    */
   Dom.is = function(el, selector){
-    var document, win;
+    var win;
     
     if(el instanceof Element){
       return Element.prototype.matches.call(el, selector);
     }
-      
-    if((document = el.ownerDocument) && (win = document.defaultView || document.parentWindow)){
-      return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
-    }
     
-    return false;
+    win = Dom.getElementWindow(el);
+    
+    return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
   };
   
   /**

@@ -1728,11 +1728,11 @@ metaScore.Editor = (function(){
     // create the optgroups and their options
     metaScore.Array.each(Object.keys(optgroups).sort(), function(index, rindex){
       var options = optgroups[rindex],
-        optgroup;
+        optgroup, sortFn = metaScore.Array.naturalSort(true);
         
       // sort options by element names
       options.sort(function(a, b){
-        return a.element.getName().localeCompare(b.element.getName());
+        return sortFn(a.element.getName(), b.element.getName());
       });
     
       // create the optgroup
