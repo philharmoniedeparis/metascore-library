@@ -577,7 +577,7 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
-    var player, panel, blocks, block, count, index, page_configs,
+    var player, panel, block, page_configs,
       action = metaScore.Dom.data(evt.target, 'action');
 
     switch(action){
@@ -632,38 +632,6 @@ metaScore.Editor = (function(){
               block.remove();
             }
           });
-        }
-        break;
-
-      case 'previous':
-        blocks = this.getPlayer().getComponents('.media.video, .controller, .block');
-        count = blocks.count();
-
-        if(count > 0){
-          index = blocks.index('.selected') - 1;
-          if(index < 0){
-            index = count - 1;
-          }
-
-          block = blocks.get(index)._metaScore;
-
-          this.panels.block.setComponent(block);
-        }
-        break;
-
-      case 'next':
-        blocks = this.getPlayer().getComponents('.media.video, .controller, .block');
-        count = blocks.count();
-
-        if(count > 0){
-          index = blocks.index('.selected') + 1;
-          if(index >= count){
-            index = 0;
-          }
-
-          block = blocks.get(index)._metaScore;
-
-          this.panels.block.setComponent(block);
         }
         break;
     }
@@ -848,8 +816,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onPagePanelToolbarClick = function(evt){
     var panel, block, page, 
       start_time, end_time, configs,
-      previous_page, auto_page,
-      dom, count, index,
+      previous_page, auto_page, index,
       action = metaScore.Dom.data(evt.target, 'action');
     
     switch(action){
@@ -942,46 +909,6 @@ metaScore.Editor = (function(){
               block.setActivePage(index);
             }
           });
-        }
-        break;
-
-      case 'previous':
-        block = this.panels.block.getComponent();
-
-        if(block){
-          dom = block.find('.page');
-          count = dom.count();
-
-          if(count > 0){
-            index = dom.index('.selected') - 1;
-            if(index < 0){
-              index = count - 1;
-            }
-
-            page = dom.get(index)._metaScore;
-
-            block.setActivePage(page);
-          }
-        }
-        break;
-
-      case 'next':
-        block = this.panels.block.getComponent();
-
-        if(block){
-          dom = block.find('.page');
-          count = dom.count();
-
-          if(count > 0){
-            index = dom.index('.selected') + 1;
-            if(index >= count){
-              index = 0;
-            }
-
-            page = dom.get(index)._metaScore;
-
-            block.setActivePage(page);
-          }
         }
         break;
     }
@@ -1092,7 +1019,7 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onElementPanelToolbarClick = function(evt){
-    var panel, page, element, dom, count, index,
+    var panel, page, element,
       action = metaScore.Dom.data(evt.target, 'action');
 
     switch(action){
@@ -1136,46 +1063,6 @@ metaScore.Editor = (function(){
               element.remove();
             }
           });
-        }
-        break;
-
-      case 'previous':
-        page = this.panels.page.getComponent();
-
-        if(page){
-          dom = page.find('.element');
-          count = dom.count();
-
-          if(count > 0){
-            index = dom.index('.selected') - 1;
-            if(index < 0){
-              index = count - 1;
-            }
-
-            element = dom.get(index)._metaScore;
-
-            this.panels.element.setComponent(element);
-          }
-        }
-        break;
-
-      case 'next':
-        page = this.panels.page.getComponent();
-
-        if(page){
-          dom = page.find('.element');
-          count = dom.count();
-
-          if(count > 0){
-            index = dom.index('.selected') + 1;
-            if(index >= count){
-              index = 0;
-            }
-
-            element = dom.get(index)._metaScore;
-
-            this.panels.element.setComponent(element);
-          }
         }
         break;
     }
@@ -1632,20 +1519,35 @@ metaScore.Editor = (function(){
    * @chainable 
    */
   Editor.prototype.updateBlockSelector = function(){
-    var block = this.panels.block.getComponent(),
-      toolbar = this.panels.block.getToolbar(),
-      selector = toolbar.getSelector();
+    var toolbar = this.panels.block.getToolbar(),
+      selector = toolbar.getSelector(),
+      block, label;
   
     selector
       .clear()
       .addOption(null, '');
         
-    this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, block){
-      if(block._metaScore){
-        selector.addOption(block._metaScore.getId(), block._metaScore.getName());
+    this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, dom){
+      if(dom._metaScore){
+        block = dom._metaScore;
+        
+        if(block.instanceOf('Block')){
+          if(block.getProperty('synched')){
+            label = metaScore.Locale.t('editor.blockSelectorOptionLabelSynched', '!name (synched)', {'!name': block.getName()});
+          }
+          else{
+            label = metaScore.Locale.t('editor.blockSelectorOptionLabelNotSynched', '!name (not synched)', {'!name': block.getName()});
+          }
+        }
+        else{
+          label = block.getName();
+        }
+        
+        selector.addOption(block.getId(), label);
       }
     }, this);
     
+    block = this.panels.block.getComponent();
     selector.setValue(block ? block.getId() : null, true);
     
     return this;

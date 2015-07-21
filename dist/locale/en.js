@@ -20,6 +20,8 @@ var metaScoreLocale = {
 	"editor.onPlayerLoadError.msg": "An error occured. Please try again.",
 	"editor.onPlayerLoadError.ok": "OK",
 	"editor.onBeforeUnload.msg": "Any unsaved data will be lost.",
+	"editor.blockSelectorOptionLabelSynched": "!name (synched)",
+	"editor.blockSelectorOptionLabelNotSynched": "!name (not synched)",
 	"editor.elementSelectorGroupLabel": "Reading index !rindex",
 	"editor.createGuide.LoadMask.text": "Saving...",
 	"editor.updateGuide.LoadMask.text": "Saving...",

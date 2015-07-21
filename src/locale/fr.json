@@ -20,6 +20,8 @@
 	"editor.onPlayerLoadError.msg": "Une erreur est survenue. Veuillez ré-essayer.",
 	"editor.onPlayerLoadError.ok": "OK",
 	"editor.onBeforeUnload.msg": "Toutes les données non sauvegardées seront perdues.",
+	"editor.blockSelectorOptionLabelSynched": "!name (synchronisé)",
+	"editor.blockSelectorOptionLabelNotSynched": "!name (non synchronisé)",
 	"editor.elementSelectorGroupLabel": "Indice de lecture !rindex",
 	"editor.createGuide.LoadMask.text": "Sauvegarde en cours ...",
 	"editor.updateGuide.LoadMask.text": "Sauvegarde en cours ...",

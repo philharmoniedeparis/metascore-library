@@ -27,6 +27,7 @@ metaScore.namespace('editor').Panel = (function(){
     this.onComponentResizeEnd = metaScore.Function.proxy(this.onComponentResizeEnd, this);
 
     this.toolbar = new metaScore.editor.panel.Toolbar(this.configs.toolbarConfigs)
+      .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onToolbarButtonClick, this))
       .appendTo(this);
 
     this.toolbar.getTitle()
@@ -308,6 +309,55 @@ metaScore.namespace('editor').Panel = (function(){
     this.toggleFields(['width', 'height'], resizable ? true : false);
     
     return this;
+  };
+
+  /**
+   * Description
+   * @method onToolbarButtonClick
+   * @param {} evt
+   * @return 
+   */
+  Panel.prototype.onToolbarButtonClick = function(evt){
+    var selector, options, count, index,
+      action = metaScore.Dom.data(evt.target, 'action');
+
+    switch(action){
+      case 'previous':
+        selector = this.getToolbar().getSelector();
+        options = selector.find('option[value^="component"]');
+        count = options.count();
+        
+        if(count > 0){
+          index = options.index(':checked') - 1;
+          
+          if(index < 0){
+            index = count - 1;
+          }
+          
+          selector.setValue(new metaScore.Dom(options.get(index)).val());
+        }
+        
+        evt.stopPropagation();
+        break;
+
+      case 'next':
+        selector = this.getToolbar().getSelector();
+        options = selector.find('option[value^="component"]');
+        count = options.count();
+        
+        if(count > 0){
+          index = options.index(':checked') + 1;
+          
+          if(index >= count){
+            index = 0;
+          }
+          
+          selector.setValue(new metaScore.Dom(options.get(index)).val());
+        }
+        
+        evt.stopPropagation();
+        break;
+    }
   };
 
   /**
