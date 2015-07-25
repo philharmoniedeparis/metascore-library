@@ -185,20 +185,6 @@ metaScore.Player = (function () {
 
   /**
    * Description
-   * @method onMediaSourcesSet
-   * @param {} evt
-   * @return 
-   */
-  Player.prototype.onMediaSourcesSet = function(evt){    
-    this.getMedia()
-      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
-      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this));    
-  };
-
-  /**
-   * Description
    * @method onMediaLoadedMetadata
    * @param {} evt
    * @return 
@@ -526,7 +512,10 @@ metaScore.Player = (function () {
    */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addListener('sourcesset', metaScore.Function.proxy(this.onMediaSourcesSet, this))
+      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this);
 
     if(supressEvent !== true){

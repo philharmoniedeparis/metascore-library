@@ -99,6 +99,7 @@ metaScore.Editor = (function(){
     this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
         'submit_text': metaScore.Locale.t('metaScore.editor.detailsOverlay.submit_text', 'Apply')
       })
+      .addListener('show', metaScore.Function.proxy(this.onDetailsOverlayShow, this))
       .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this, ['update']));
       
     this.detailsOverlay.getField('type').readonly(true);
@@ -333,6 +334,7 @@ metaScore.Editor = (function(){
           new metaScore.editor.overlay.GuideDetails({
               'autoShow': true
             })
+            .addListener('show', metaScore.Function.proxy(this.onDetailsOverlayShow, this))
             .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this, ['create']));
         }, this);
       
@@ -1391,6 +1393,20 @@ metaScore.Editor = (function(){
 
   /**
    * Description
+   * @method onDetailsOverlayShow
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onDetailsOverlayShow = function(evt){
+    var player = this.getPlayer();
+    
+    if(player){
+      player.getMedia().pause();
+    }
+  };
+
+  /**
+   * Description
    * @method onDetailsOverlaySubmit
    * @param {} evt
    * @return 
@@ -1398,32 +1414,40 @@ metaScore.Editor = (function(){
   Editor.prototype.onDetailsOverlaySubmit = function(op, evt){
     var overlay = evt.detail.overlay,
       data = evt.detail.values,
-      file;
+      file, callback;
     
     switch(op){
       case 'create':
         this.createGuide(data, overlay);
         break;
         
-      default:
-        if('files[thumbnail]' in data){
-          file = data['files[media]'];
-          data['thumbnail'] = {
-            'url': URL.createObjectURL(file),
-            'mime': file.type
-          };
+      case 'update':
+        callback = metaScore.Function.proxy(function(){          
+          this.getPlayer().updateData(data);
+          overlay.setValues(metaScore.Object.extend({}, this.player.getData(), data)).hide();
+        }, this);
+      
+        if('media' in data){
+          this.getMediaFileDuration(data['media'].url, metaScore.Function.proxy(function(duration){
+            if(duration !== this.getPlayer().getMedia().getDuration()){
+              new metaScore.editor.overlay.Alert({
+                  'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.msg', 'The duration of selected media file differs from the current one.<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?'),
+                  'buttons': {
+                    'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.yes', 'Yes'),
+                    'cancel': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.no', 'No')
+                  },
+                  'autoShow': true
+                })
+                .addListener('confirmclick', callback);
+              }
+              else{
+                callback();
+              }
+          }, this));
         }
-        
-        if('files[media]' in data){
-          file = data['files[media]'];
-          data['media'] = {
-            'url': URL.createObjectURL(file),
-            'mime': file.type
-          };
+        else{
+          callback();
         }
-        
-        this.getPlayer().updateData(data);
-        overlay.hide();
         break;
     }
   };
@@ -1730,7 +1754,12 @@ metaScore.Editor = (function(){
     
     // append values from the details overlay
     metaScore.Object.each(details, function(key, value){
-      data.append(key, value);
+      if(key === 'thumbnail' || key === 'media'){
+        data.append('files['+ key +']', value);
+      }
+      else{
+        data.append(key, value);
+      }
     });
 
     // prepare the Ajax options object
@@ -1774,7 +1803,12 @@ metaScore.Editor = (function(){
     
     // append values from the details overlay
     metaScore.Object.each(details, function(key, value){
-      data.append(key, value);
+      if(key === 'thumbnail' || key === 'media'){
+        data.append('files['+ key +']', value);
+      }
+      else{
+        data.append(key, value);
+      }
     });
 
     // append blocks data
@@ -1809,6 +1843,19 @@ metaScore.Editor = (function(){
     metaScore.Ajax.post(this.configs.api_url +'guide/'+ id +'/update.json?vid='+ vid, options);
     
     return this;
+  };
+
+  /**
+   * Description
+   * @method getMediaFileDuration
+   */
+  Editor.prototype.getMediaFileDuration = function(file, callback){  
+    var media = new metaScore.Dom('<audio/>', {'src': file})
+      .addListener('loadedmetadata', function(evt){
+        var duration = parseFloat(media.get(0).duration) * 100;
+        
+        callback(duration);
+      });
   };
 
   return Editor;

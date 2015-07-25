@@ -40,10 +40,16 @@
     font-weight: normal;
   }
   
-  .field.required{
-    label:after{
-      content: '*';
-      color: red;
+  .field{
+    &.required{
+      label:after{
+        content: '*';
+        color: red;
+      }
+    }
+    
+    .description{
+      .opacity(0.5);
     }
   }
 

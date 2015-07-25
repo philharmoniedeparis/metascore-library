@@ -19,6 +19,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     GuideDetails.parent.call(this, this.configs);
     
     this.changed = {};
+    this.previous_values = null;
 
     this.addClass('guide-details');
   }
@@ -63,11 +64,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
     // Fields
     this.fields['type'] = new metaScore.editor.field.Select({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type', 'Type'),
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
         'options': {
           '': '',
-          'audio': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.audio', 'Audio'),
-          'video': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.video', 'Video')
+          'audio': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio'),
+          'video': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
         },
         'required': true
       })
@@ -76,7 +77,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
       .appendTo(form);
       
     this.fields['title'] = new metaScore.editor.field.Text({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.title', 'Title'),
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.title.label', 'Title'),
         'required': true
       })
       .data('name', 'title')
@@ -84,30 +85,32 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
       .appendTo(form);
 
     this.fields['description'] = new metaScore.editor.field.Textarea({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.description', 'Description')
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.description.label', 'Description')
       })
       .data('name', 'description')
       .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .appendTo(form);
 
     this.fields['thumbnail'] = new metaScore.editor.field.File({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail', 'Thumbnail'),
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
+        'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Allowed file types: !types', {'!types': 'png gif jpg jpeg'}),
         'accept': '.png,.gif,.jpg,.jpeg'
       })
-      .data('name', 'files[thumbnail]')
+      .data('name', 'thumbnail')
       .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .appendTo(form);
 
     this.fields['media'] = new metaScore.editor.field.File({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media', 'Media'),
-        'accept': '.mp4,.m4v,.m4a'
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
+        'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
+        'accept': '.mp4,.m4v,.m4a,.mp3'
       })
-      .data('name', 'files[media]')
+      .data('name', 'media')
       .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .appendTo(form);
 
     this.fields['css'] = new metaScore.editor.field.Textarea({
-        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.css', 'CSS')
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.css.label', 'CSS')
       })
       .data('name', 'css')
       .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
@@ -147,12 +150,15 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
    * @param {} evt
    * @return 
    */
-  GuideDetails.prototype.setValues = function(values, supressEvent){
+  GuideDetails.prototype.setValues = function(values, supressEvent){  
     metaScore.Object.each(values, function(key, value){
       if(key in this.fields){
         this.fields[key].setValue(value, supressEvent);
       }
     }, this);
+    
+    this.changed = {};
+    this.previous_values = values;
     
     return this;
   };
@@ -189,19 +195,24 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
    */
   GuideDetails.prototype.onFieldValueChange = function(evt){  
     var field = evt.detail.field,
+      value = evt.detail.value,
       name = field.data('name'),
       file;
     
     if(field instanceof metaScore.editor.field.File){
       if(file = field.getFile(0)){
-        this.changed[name] = file;
+        this.changed[name] = {
+          'name': file.name,
+          'url': URL.createObjectURL(file),
+          'mime': file.type
+        };
       }
       else{
         delete this.changed[name];
       }
     }
-    else{
-      this.changed[name] = evt.detail.value;
+    else{      
+      this.changed[name] = value;
     }
   };
 
@@ -211,7 +222,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
    * @param {} evt
    * @return 
    */
-  GuideDetails.prototype.onFormSubmit = function(evt){
+  GuideDetails.prototype.onFormSubmit = function(evt){  
     this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
     
     evt.preventDefault();
@@ -224,7 +235,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
   * @param {} evt
   * @return 
   */
-  GuideDetails.prototype.onCloseClick = function(evt){
+  GuideDetails.prototype.onCloseClick = function(evt){    
+    if(this.previous_values){
+      this.clearValues(true)
+        .setValues(this.previous_values, true);
+    }
+  
     this.hide();
     
     evt.preventDefault();

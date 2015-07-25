@@ -115,6 +115,10 @@
   content: '*';
   color: red;
 }
+.metaScore-editor .field .description {
+  opacity: 0.5;
+  filter: alpha(opacity=(50));
+}
 .metaScore-editor button {
   border: none;
   outline: none;

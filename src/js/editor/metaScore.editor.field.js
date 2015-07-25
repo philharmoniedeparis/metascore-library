@@ -45,6 +45,10 @@ metaScore.namespace('editor').Field = (function () {
       this.enable();
     }
 
+    if(this.configs.description){
+      this.setDescription(this.configs.description);
+    }
+
     this.readonly(this.configs.readonly);
   }
 
@@ -67,7 +71,12 @@ metaScore.namespace('editor').Field = (function () {
     /**
     * Defines whether the field is readonly by default
     */
-    'readonly': false
+    'readonly': false,
+
+    /**
+    * A description to add to the field
+    */
+    'description': null
   };
 
   metaScore.Dom.extend(Field);
@@ -91,6 +100,20 @@ metaScore.namespace('editor').Field = (function () {
     this.input = new metaScore.Dom('<input/>', {'type': 'text', 'id': uid})
       .addListener('change', metaScore.Function.proxy(this.onChange, this))
       .appendTo(this.input_wrapper);
+  };
+
+  /**
+   * Description
+   * @method setDescription
+   * @return 
+   */
+  Field.prototype.setDescription = function(description){
+    if(!('description' in this)){
+      this.description = new metaScore.Dom('<div/>', {'class': 'description'})
+        .appendTo(this.input_wrapper);
+    }
+    
+    this.description.text(description);  
   };
 
   /**

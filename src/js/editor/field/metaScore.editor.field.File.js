@@ -19,7 +19,7 @@ metaScore.namespace('editor.field').File = (function () {
     FileField.parent.call(this, this.configs);
     
     if(this.configs.accept){
-      this.input.attr('accept', this.configs.accept);
+      this.setAcceptedTypes(this.configs.accept);
     }
 
     this.addClass('filefield');
@@ -39,11 +39,20 @@ metaScore.namespace('editor.field').File = (function () {
   FileField.prototype.setupUI = function(){
     FileField.parent.prototype.setupUI.call(this);
 
-    this.input
-      .attr('type', 'file');
+    this.input.attr('type', 'file');
 
     this.current = new metaScore.Dom('<div/>')
       .appendTo(this.input_wrapper);
+  };
+
+  /**
+   * Description
+   * @method setAcceptedTypes
+   * @param {} types
+   * @return 
+   */
+  FileField.prototype.setAcceptedTypes = function(types){
+    this.input.attr('accept', types);
   };
 
   /**
@@ -53,13 +62,20 @@ metaScore.namespace('editor.field').File = (function () {
    * @return 
    */
   FileField.prototype.setValue = function(value){
+    var info;
+  
     this.current.empty();
     
-    if(value && ('name' in value) && ('url' in value)){
-      new metaScore.Dom('<a/>', {'text': value.name})
-        .attr('href', value.url)
+    this.input.val('');
+    
+    if(value && ('name' in value)){
+      info = new metaScore.Dom('<a/>', {'text': value.name})
         .attr('target', '_blank')
         .appendTo(this.current);
+        
+      if('url' in value){
+        info.attr('href', value.url);
+      }
     }
   };
 

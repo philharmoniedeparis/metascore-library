@@ -99,6 +99,8 @@ metaScore.namespace('editor').Overlay = (function(){
     }
 
     this.appendTo(this.configs.parent);
+    
+    this.triggerEvent('show', {'overlay': this}, true, false);
 
     return this;
   };
@@ -114,6 +116,8 @@ metaScore.namespace('editor').Overlay = (function(){
     }
 
     this.remove();
+    
+    this.triggerEvent('hide', {'overlay': this}, true, false);
 
     return this;
   };

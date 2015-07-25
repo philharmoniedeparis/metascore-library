@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-19 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-24 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "cc9cc6";
+    return "6119bf";
   },
 
   /**
@@ -3019,20 +3019,6 @@ metaScore.Player = (function () {
 
   /**
    * Description
-   * @method onMediaSourcesSet
-   * @param {} evt
-   * @return 
-   */
-  Player.prototype.onMediaSourcesSet = function(evt){    
-    this.getMedia()
-      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
-      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this));    
-  };
-
-  /**
-   * Description
    * @method onMediaLoadedMetadata
    * @param {} evt
    * @return 
@@ -3360,7 +3346,10 @@ metaScore.Player = (function () {
    */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addListener('sourcesset', metaScore.Function.proxy(this.onMediaSourcesSet, this))
+      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this);
 
     if(supressEvent !== true){
@@ -3720,7 +3709,8 @@ metaScore.namespace('player').CuePoint = (function () {
     this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
     this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
-    this.configs.media.addMediaListener('timeupdate', this.onMediaTimeUpdate);
+    this.configs.media
+      .addMediaListener('timeupdate', this.onMediaTimeUpdate);
     
     this.max_error = 0;
   }
@@ -5325,6 +5315,16 @@ metaScore.namespace('player.component').Media = (function () {
     Media.parent.call(this, configs);
 
     this.addClass('media').addClass(this.configs.type);
+      
+    this.el = new metaScore.Dom('<'+ this.configs.type +'></'+ this.configs.type +'>', {'preload': 'auto'})
+      .appendTo(this);
+
+    this.dom = this.el.get(0);
+
+    this
+      .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
+      .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
+      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
 
     this.playing = false;
   }
@@ -5477,24 +5477,14 @@ metaScore.namespace('player.component').Media = (function () {
    */
   Media.prototype.setSources = function(sources, supressEvent){
     var source_tags = '';
-    
-    if(this.el){
-      this.el.remove();
-    }
 
     metaScore.Array.each(sources, function(index, source) {      
       source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
     }, this);
       
-    this.el = new metaScore.Dom('<'+ this.configs.type +'>'+ source_tags +'</'+ this.configs.type +'>', {'preload': 'auto'})
-      .appendTo(this);
-
-    this.dom = this.el.get(0);
-
-    this
-      .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
+    this.el.text(source_tags);
+    
+    this.dom.load();
 
     if(supressEvent !== true){
       this.triggerEvent('sourcesset', {'media': this});
