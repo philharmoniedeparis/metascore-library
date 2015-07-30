@@ -238,6 +238,14 @@ metaScore.namespace('player.component').Page = (function () {
     this.triggerEvent('cuepointend');
   };
 
+  /**
+   * Description
+   * @method onCuePointSeekOut
+   * @param {} cuepoint
+   * @return 
+   */
+  Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointEnd;
+
   return Page;
 
 })();

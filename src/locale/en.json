@@ -93,6 +93,7 @@
 	"editor.overlay.GuideDetails.fields.type.options.video": "Video",
 	"editor.overlay.GuideDetails.fields.title.label": "Title",
 	"editor.overlay.GuideDetails.fields.description.label": "Description",
+	"editor.overlay.GuideDetails.fields.credits.label": "Credits",
 	"editor.overlay.GuideDetails.fields.thumbnail.label": "Thumbnail",
 	"editor.overlay.GuideDetails.fields.thumbnail.description": "Allowed file types: !types",
 	"editor.overlay.GuideDetails.fields.media.label": "Media",

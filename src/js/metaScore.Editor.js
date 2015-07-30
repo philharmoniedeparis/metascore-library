@@ -107,7 +107,7 @@ metaScore.Editor = (function(){
     new metaScore.Dom('body')
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
-   
+      
     metaScore.Dom.addListener(window, 'beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
 
     this
@@ -283,7 +283,9 @@ metaScore.Editor = (function(){
     * @param {} evt
     * @return 
     */
-   Editor.prototype.onKeydown = function(evt){
+  Editor.prototype.onKeydown = function(evt){
+    var player;
+  
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
@@ -291,12 +293,24 @@ metaScore.Editor = (function(){
           evt.preventDefault();
         }
         break;
+        
+      case 72: //h
+        if(evt.ctrlKey){ // Ctrl+h
+          player = this.getPlayer();
+          if(player){
+            player.addClass('show-contents');
+          }
+          evt.preventDefault();
+        }
+        break;
+        
       case 90: //z
         if(evt.ctrlKey){ // Ctrl+z
           this.history.undo();
           evt.preventDefault();
         }
         break;
+        
       case 89: //y
         if(evt.ctrlKey){ // Ctrl+y
           this.history.redo();
@@ -313,10 +327,22 @@ metaScore.Editor = (function(){
     * @return 
     */
    Editor.prototype.onKeyup = function(evt){
+    var player;
+    
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(this.persistentEditing, false);
         evt.preventDefault();
+        break;
+        
+      case 72: //h
+        if(evt.ctrlKey){ // Ctrl+h
+          player = this.getPlayer();
+          if(player){
+            player.removeClass('show-contents');
+          }
+          evt.preventDefault();
+        }
         break;
     }
   };
@@ -1212,7 +1238,7 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onPlayerLoadSuccess = function(evt){  
+  Editor.prototype.onPlayerLoadSuccess = function(evt){
     this.player = evt.detail.player
       .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
@@ -1226,6 +1252,10 @@ metaScore.Editor = (function(){
       .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
       .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
       .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
+      
+    new metaScore.Dom(this.player_frame.get(0).contentWindow.document.body)
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
 
     this
       .setEditing(true)
@@ -1424,7 +1454,7 @@ metaScore.Editor = (function(){
       case 'update':
         callback = metaScore.Function.proxy(function(){          
           this.getPlayer().updateData(data);
-          overlay.setValues(metaScore.Object.extend({}, this.player.getData(), data)).hide();
+          overlay.setValues(metaScore.Object.extend({}, this.player.getData(), data), true).hide();
         }, this);
       
         if('media' in data){

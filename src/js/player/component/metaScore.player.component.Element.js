@@ -474,6 +474,14 @@ metaScore.namespace('player.component').Element = (function () {
 
   /**
    * Description
+   * @method onCuePointSeekOut
+   * @param {} cuepoint
+   * @return 
+   */
+  Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointEnd;
+
+  /**
+   * Description
    * @method setDraggable
    * @param {} draggable
    * @return MemberExpression

@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-07-24 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-07-30 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "6119bf";
+    return "f06f5f";
   },
 
   /**
@@ -630,73 +630,51 @@ metaScore.Array = (function () {
 
   /**
    * Natural Sort algorithm
-   * Author: Jim Palmer (based on chunking idea from Dave Koelle)
-   * Version 0.8 - Released under MIT license
+   * Author: Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/)
+   * Version 0.7 - Released under MIT license
    * @method naturalSort
    * @param {} insensitive
    * @return CallExpression
    */
   Array.naturalSort = function(insensitive){
     return function(a, b){
-      var re = /(^([+\-]?(?:\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)?$|^0x[\da-fA-F]+$|\d+)/g,
-        sre = /^\s+|\s+$/g,   // trim pre-post whitespace
-        snre = /\s+/g,        // normalize all whitespace to single ' ' character
+      var re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi,
+        sre = /(^[ ]*|[ ]*$)/g,
         dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
         hre = /^0x[0-9a-f]+$/i,
         ore = /^0/,
-        i = function(s) {
-          return (insensitive && ('' + s).toLowerCase() || '' + s).replace(sre, '');
-        },
+        i = function(s) { return insensitive && (''+s).toLowerCase() || ''+s },
         // convert all to strings strip whitespace
-        x = i(a) || '',
-        y = i(b) || '',
+        x = i(a).replace(sre, '') || '',
+        y = i(b).replace(sre, '') || '',
         // chunk/tokenize
         xN = x.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
         yN = y.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
         // numeric, hex or date detection
-        xD = parseInt(x.match(hre), 16) || (xN.length !== 1 && Date.parse(x)),
-        yD = parseInt(y.match(hre), 16) || xD && y.match(dre) && Date.parse(y) || null,
-        normChunk = function(s, l) {
-          // normalize spaces; find floats not starting with '0', string or 0 if not defined (Clint Priest)
-          return (!s.match(ore) || l === 1) && parseFloat(s) || s.replace(snre, ' ').replace(sre, '') || 0;
-        },
+        xD = parseInt(x.match(hre)) || (xN.length !== 1 && x.match(dre) && Date.parse(x)),
+        yD = parseInt(y.match(hre)) || xD && y.match(dre) && Date.parse(y) || null,
         oFxNcL, oFyNcL;
-        
       // first try and sort Hex codes or Dates
-      if(yD){
-        if(xD < yD){
-          return -1;
-        }
-        else if(xD > yD){
-          return 1;
-        }
+      if (yD) {
+        if ( xD < yD ) { return -1; }
+        else if ( xD > yD ) { return 1; }
       }
-      
       // natural sorting through split numeric strings and default strings
-      for(var cLoc=0, xNl = xN.length, yNl = yN.length, numS=Math.max(xNl, yNl); cLoc < numS; cLoc++){
-        oFxNcL = normChunk(xN[cLoc], xNl);
-        oFyNcL = normChunk(yN[cLoc], yNl);
-        
-        // handle numeric vs string comparison - number < string - (Kyle Adams)
-        if(isNaN(oFxNcL) !== isNaN(oFyNcL)){
-          return (isNaN(oFxNcL)) ? 1 : -1;
-        }
-        // rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
-        else if(typeof oFxNcL !== typeof oFyNcL){
-          oFxNcL += '';
-          oFyNcL += '';
-        }
-        
-        if(oFxNcL < oFyNcL){
-          return -1;
-        }
-        
-        if(oFxNcL > oFyNcL){
-          return 1;
-        }
+      for(var cLoc=0, numS=Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
+          // find floats not starting with '0', string or 0 if not defined (Clint Priest)
+          oFxNcL = !(xN[cLoc] || '').match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0;
+          oFyNcL = !(yN[cLoc] || '').match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0;
+          // handle numeric vs string comparison - number < string - (Kyle Adams)
+          if (isNaN(oFxNcL) !== isNaN(oFyNcL)) { return (isNaN(oFxNcL)) ? 1 : -1; }
+          // rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
+          else if (typeof oFxNcL !== typeof oFyNcL) {
+              oFxNcL += '';
+              oFyNcL += '';
+          }
+          if (oFxNcL < oFyNcL) { return -1; }
+          if (oFxNcL > oFyNcL) { return 1; }
       }
-      
-      return 0;  
+      return 0;
     };
   };
 
@@ -2941,7 +2919,7 @@ metaScore.Editor = (function(){
     new metaScore.Dom('body')
       .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
       .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
-   
+      
     metaScore.Dom.addListener(window, 'beforeunload', metaScore.Function.proxy(this.onBeforeUnload, this));
 
     this
@@ -3117,7 +3095,9 @@ metaScore.Editor = (function(){
     * @param {} evt
     * @return 
     */
-   Editor.prototype.onKeydown = function(evt){
+  Editor.prototype.onKeydown = function(evt){
+    var player;
+  
     switch(evt.keyCode){
       case 18: //alt
         if(!evt.repeat){
@@ -3125,12 +3105,24 @@ metaScore.Editor = (function(){
           evt.preventDefault();
         }
         break;
+        
+      case 72: //h
+        if(evt.ctrlKey){ // Ctrl+h
+          player = this.getPlayer();
+          if(player){
+            player.addClass('show-contents');
+          }
+          evt.preventDefault();
+        }
+        break;
+        
       case 90: //z
         if(evt.ctrlKey){ // Ctrl+z
           this.history.undo();
           evt.preventDefault();
         }
         break;
+        
       case 89: //y
         if(evt.ctrlKey){ // Ctrl+y
           this.history.redo();
@@ -3147,10 +3139,22 @@ metaScore.Editor = (function(){
     * @return 
     */
    Editor.prototype.onKeyup = function(evt){
+    var player;
+    
     switch(evt.keyCode){
       case 18: //alt
         this.setEditing(this.persistentEditing, false);
         evt.preventDefault();
+        break;
+        
+      case 72: //h
+        if(evt.ctrlKey){ // Ctrl+h
+          player = this.getPlayer();
+          if(player){
+            player.removeClass('show-contents');
+          }
+          evt.preventDefault();
+        }
         break;
     }
   };
@@ -4046,7 +4050,7 @@ metaScore.Editor = (function(){
    * @param {} evt
    * @return 
    */
-  Editor.prototype.onPlayerLoadSuccess = function(evt){  
+  Editor.prototype.onPlayerLoadSuccess = function(evt){
     this.player = evt.detail.player
       .addClass('in-editor')
       .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
@@ -4060,6 +4064,10 @@ metaScore.Editor = (function(){
       .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
       .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
       .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
+      
+    new metaScore.Dom(this.player_frame.get(0).contentWindow.document.body)
+      .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+      .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
 
     this
       .setEditing(true)
@@ -4258,7 +4266,7 @@ metaScore.Editor = (function(){
       case 'update':
         callback = metaScore.Function.proxy(function(){          
           this.getPlayer().updateData(data);
-          overlay.setValues(metaScore.Object.extend({}, this.player.getData(), data)).hide();
+          overlay.setValues(metaScore.Object.extend({}, this.player.getData(), data), true).hide();
         }, this);
       
         if('media' in data){
@@ -9171,6 +9179,13 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
       .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .appendTo(form);
 
+    this.fields['credits'] = new metaScore.editor.field.Textarea({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.credits.label', 'Credits')
+      })
+      .data('name', 'credits')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
+
     this.fields['thumbnail'] = new metaScore.editor.field.File({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
         'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Allowed file types: !types', {'!types': 'png gif jpg jpeg'}),
@@ -9237,7 +9252,6 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
       }
     }, this);
     
-    this.changed = {};
     this.previous_values = values;
     
     return this;

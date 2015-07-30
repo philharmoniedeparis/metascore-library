@@ -740,6 +740,11 @@
 .metaScore-editor .overlay .toolbar .buttons button[data-action="close"] {
   background-image: url('img/editor/overlay/close.png');
 }
+.metaScore-editor .overlay .contents {
+  max-width: 75vw;
+  max-height: 75vh;
+  overflow: auto;
+}
 .metaScore-editor .overlay.color-selector {
   padding: 10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -883,10 +888,7 @@
   background: #eee;
 }
 .metaScore-editor .overlay.guide-selector .contents {
-  max-width: 75vw;
-  max-height: 75vh;
   padding: 12px 16px;
-  overflow: auto;
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail {
   padding-right: 10px;

@@ -91,6 +91,13 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
       .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
       .appendTo(form);
 
+    this.fields['credits'] = new metaScore.editor.field.Textarea({
+        'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.credits.label', 'Credits')
+      })
+      .data('name', 'credits')
+      .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+      .appendTo(form);
+
     this.fields['thumbnail'] = new metaScore.editor.field.File({
         'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
         'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Allowed file types: !types', {'!types': 'png gif jpg jpeg'}),
@@ -157,7 +164,6 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
       }
     }, this);
     
-    this.changed = {};
     this.previous_values = values;
     
     return this;

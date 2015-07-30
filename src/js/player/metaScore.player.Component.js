@@ -184,7 +184,8 @@ metaScore.namespace('player').Component = (function () {
         'outTime': outTime,
         'onStart': this.onCuePointStart ? metaScore.Function.proxy(this.onCuePointStart, this) : null,
         'onUpdate': this.onCuePointUpdate ? metaScore.Function.proxy(this.onCuePointUpdate, this) : null,
-        'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null
+        'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null,
+        'onSeekOut': this.onCuePointSeekOut ? metaScore.Function.proxy(this.onCuePointSeekOut, this) : null
       }));
     }
 

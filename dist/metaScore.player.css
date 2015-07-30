@@ -477,3 +477,6 @@ body {
   outline-width: 2px;
   outline-style: solid;
 }
+.in-editor.editing.show-contents .metaScore-component.element[data-r-index="0"] .contents {
+  display: block;
+}
