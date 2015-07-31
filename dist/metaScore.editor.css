@@ -91,10 +91,10 @@
   height: 0;
 }
 .metaScore-editor div {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  user-select: text;
 }
 .metaScore-editor table {
   margin: 0;

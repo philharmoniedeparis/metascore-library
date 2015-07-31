@@ -1444,7 +1444,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onDetailsOverlaySubmit = function(op, evt){
     var overlay = evt.detail.overlay,
       data = evt.detail.values,
-      file, callback;
+      player, callback;
     
     switch(op){
       case 'create':
@@ -1452,27 +1452,64 @@ metaScore.Editor = (function(){
         break;
         
       case 'update':
+        player = this.getPlayer();
+      
         callback = metaScore.Function.proxy(function(){          
-          this.getPlayer().updateData(data);
-          overlay.setValues(metaScore.Object.extend({}, this.player.getData(), data), true).hide();
+          player.updateData(data);
+          overlay.setValues(metaScore.Object.extend({}, player.getData(), data), true).hide();
         }, this);
       
         if('media' in data){
-          this.getMediaFileDuration(data['media'].url, metaScore.Function.proxy(function(duration){
-            if(duration !== this.getPlayer().getMedia().getDuration()){
-              new metaScore.editor.overlay.Alert({
-                  'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.msg', 'The duration of selected media file differs from the current one.<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?'),
+          this.getMediaFileDuration(data['media'].url, metaScore.Function.proxy(function(new_duration){
+            var old_duration = player.getMedia().getDuration(),
+              blocks = [], block, page;
+          
+            if(new_duration !== old_duration){
+              if(new_duration < old_duration){                
+                player.getComponents('.block').each(function(index, block_dom){
+                  if(block_dom._metaScore){
+                    block = block_dom._metaScore;
+                    
+                    if(block.getProperty('synched')){
+                      block.getPages().each(function(index, page_dom){
+                        if(page_dom._metaScore){
+                          page = page_dom._metaScore;
+                          
+                          if(page.getProperty('start-time') < new_duration){
+                            blocks.push(block.getProperty('name'));
+                            return false;
+                          }
+                        }
+                      });
+                    }
+                  }
+                });
+              }
+              
+              if(blocks.length > 0){
+                new metaScore.editor.overlay.Alert({
+                  'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media file (!new_duration centiseconds) is less than the current one (!old_duration centiseconds).<br/><strong>This will cause some pages of the following blocks to become out of reach: !blocks</strong><br/>Please modify the start time of those pages and try again.', {'!new_duration': new_duration, '!old_duration': old_duration, '!blocks': blocks.join(', ')}),
                   'buttons': {
-                    'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.yes', 'Yes'),
-                    'cancel': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.no', 'No')
+                    'ok': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.ok', 'OK'),
+                  },
+                  'autoShow': true
+                });
+              }
+              else{
+                new metaScore.editor.overlay.Alert({
+                  'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration centiseconds) differs from the current one (!old_duration centiseconds).<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': new_duration, '!old_duration': old_duration}),
+                  'buttons': {
+                    'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
+                    'cancel': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
                   },
                   'autoShow': true
                 })
                 .addListener('confirmclick', callback);
               }
-              else{
-                callback();
-              }
+            }
+            else{
+              callback();
+            }
           }, this));
         }
         else{
