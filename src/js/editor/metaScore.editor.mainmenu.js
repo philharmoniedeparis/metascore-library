@@ -26,6 +26,7 @@ metaScore.namespace('editor').MainMenu = (function(){
    * @return 
    */
   MainMenu.prototype.setupUI = function(){
+    var btn_group, sub_menu;
 
     new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
       .appendTo(this);
@@ -54,19 +55,30 @@ metaScore.namespace('editor').MainMenu = (function(){
       .data('action', 'edit')
       .appendTo(this);
 
+    btn_group = new metaScore.Dom('<div/>', {'class': 'button-group'}).appendTo(this);
+
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.saveDraft', 'Save as draft')
       })
       .data('action', 'save-draft')
-      .appendTo(this);
+      .appendTo(btn_group);
+      
+    sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
     new metaScore.editor.Button()
       .attr({
         'title': metaScore.Locale.t('editor.MainMenu.Publish', 'Save & Publish')
       })
       .data('action', 'publish')
-      .appendTo(this);
+      .appendTo(sub_menu);
+
+    new metaScore.editor.Button()
+      .attr({
+        'title': metaScore.Locale.t('editor.MainMenu.saveCopy', 'Save as copy')
+      })
+      .data('action', 'save-copy')
+      .appendTo(sub_menu);
 
     new metaScore.editor.Button()
       .attr({
@@ -83,6 +95,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
       })
       .data('action', 'download')
+      .disable()
       .appendTo(this);
       
     new metaScore.Dom('<div/>', {'class': 'separator'})
@@ -151,6 +164,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')
       })
       .data('action', 'settings')
+      .disable()
       .appendTo(this);
 
     new metaScore.editor.Button()
@@ -158,6 +172,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
       })
       .data('action', 'help')
+      .disable()
       .appendTo(this);
 
     new metaScore.editor.Button()

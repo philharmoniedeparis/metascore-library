@@ -210,7 +210,8 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         this.changed[name] = {
           'name': file.name,
           'url': URL.createObjectURL(file),
-          'mime': file.type
+          'mime': file.type,
+          'object': file
         };
       }
       else{

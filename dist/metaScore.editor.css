@@ -332,7 +332,6 @@
   padding: 0 20px;
   align-content: space-between;
   align-items: center;
-  overflow: hidden;
   z-index: 9999;
   background-color: #dadada;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #dadada), color-stop(100% #c8c8c8));
@@ -359,7 +358,6 @@
   flex: 0 0 auto;
   margin: 0 10px;
   vertical-align: middle;
-  background-size: contain;
 }
 .metaScore-editor .main-menu button[data-action="new"] {
   background-image: url('img/editor/main-menu/new.png');
@@ -375,6 +373,9 @@
 }
 .metaScore-editor .main-menu button[data-action="publish"] {
   background-image: url('img/editor/main-menu/publish.png');
+}
+.metaScore-editor .main-menu button[data-action="save-copy"] {
+  background-image: url('img/editor/main-menu/save-copy.png');
 }
 .metaScore-editor .main-menu button[data-action="delete"] {
   margin-right: 50px;
@@ -408,6 +409,43 @@
 .metaScore-editor .main-menu button[data-action="logout"] {
   margin-right: 0;
   background-image: url('img/editor/main-menu/logout.png');
+}
+.metaScore-editor .main-menu .button-group {
+  position: relative;
+}
+.metaScore-editor .main-menu .button-group::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  content: "";
+  background: url('img/editor/main-menu/sub-menu.png') no-repeat center center;
+}
+.metaScore-editor .main-menu .button-group .sub-menu {
+  position: absolute;
+  display: none;
+  top: 100%;
+  margin: 0;
+  padding: 5px 0;
+  list-style: none;
+  background: #C8C8C8;
+  border: 1px solid #B2B2B2;
+  border-top: 0;
+  -webkit-box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
+}
+.metaScore-editor .main-menu .button-group .sub-menu button {
+  width: 40px;
+  margin: 5px 0;
+}
+.metaScore-editor .main-menu .button-group:hover::after {
+  opacity: 0.75;
+  filter: alpha(opacity=(75));
+}
+.metaScore-editor .main-menu .button-group:hover .sub-menu {
+  display: block;
 }
 .metaScore-editor .main-menu .time {
   height: 20px;
