@@ -24,7 +24,7 @@ metaScore.namespace('player').CuePoint = (function () {
     this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
     this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
-    this.configs.media.addMediaListener('timeupdate', this.onMediaTimeUpdate);
+    this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
     
     this.max_error = 0;
   }
@@ -75,7 +75,7 @@ metaScore.namespace('player').CuePoint = (function () {
     }
     
     if(this.configs.onSeekOut){
-      this.configs.media.addMediaListener('seeking', this.onMediaSeeked);
+      this.configs.media.addListener('seeking', this.onMediaSeeked);
     }
   };
 
@@ -88,7 +88,7 @@ metaScore.namespace('player').CuePoint = (function () {
   CuePoint.prototype.onMediaSeeked = function(evt){
     var cur_time;
     
-    this.configs.media.removeMediaListener('play', this.onMediaSeeked);
+    this.configs.media.removeListener('play', this.onMediaSeeked);
     
     if(this.configs.onSeekOut){
       cur_time = this.configs.media.getTime();
@@ -160,7 +160,7 @@ metaScore.namespace('player').CuePoint = (function () {
       this.configs.onEnd(this);
     
       if(this.configs.onSeekOut){
-        this.configs.media.addMediaListener('play', this.onMediaSeeked);
+        this.configs.media.addListener('play', this.onMediaSeeked);
       }
     }
     
@@ -181,9 +181,9 @@ metaScore.namespace('player').CuePoint = (function () {
     this.stop(false);
     
     this.configs.media
-      .removeMediaListener('timeupdate', this.onMediaTimeUpdate)
-      .removeMediaListener('seeking', this.onMediaSeeked)
-      .removeMediaListener('play', this.onMediaSeeked);
+      .removeListener('timeupdate', this.onMediaTimeUpdate)
+      .removeListener('seeking', this.onMediaSeeked)
+      .removeListener('play', this.onMediaSeeked);
   };
 
   return CuePoint;

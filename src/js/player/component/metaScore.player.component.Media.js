@@ -19,14 +19,14 @@ metaScore.namespace('player.component').Media = (function () {
     this.addClass('media').addClass(this.configs.type);
       
     this.el = new metaScore.Dom('<'+ this.configs.type +'></'+ this.configs.type +'>', {'preload': 'auto'})
+      .addListener('loadedmetadata', metaScore.Function.proxy(this.onLoadedMetadata, this))
+      .addListener('play', metaScore.Function.proxy(this.onPlay, this))
+      .addListener('pause', metaScore.Function.proxy(this.onPause, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
+      .addListener('seeking', metaScore.Function.proxy(this.onSeeking, this))
       .appendTo(this);
 
     this.dom = this.el.get(0);
-
-    this
-      .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
 
     this.playing = false;
   }
@@ -207,12 +207,24 @@ metaScore.namespace('player.component').Media = (function () {
 
   /**
    * Description
+   * @method onLoadedMetadata
+   * @param {} evt
+   * @return 
+   */
+  Media.prototype.onLoadedMetadata = function(evt) {    
+    this.triggerEvent('loadedmetadata', {'media': this});
+  };
+
+  /**
+   * Description
    * @method onPlay
    * @param {} evt
    * @return 
    */
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
+    
+    this.triggerEvent('play', {'media': this});
     
     if(this.configs.useFrameAnimation){
       this.triggerTimeUpdate();
@@ -227,6 +239,8 @@ metaScore.namespace('player.component').Media = (function () {
    */
   Media.prototype.onPause = function(evt) {
     this.playing = false;
+    
+    this.triggerEvent('pause', {'media': this});
   };
 
   /**
@@ -236,13 +250,19 @@ metaScore.namespace('player.component').Media = (function () {
    * @return 
    */
   Media.prototype.onTimeUpdate = function(evt){
-    if(!(evt instanceof CustomEvent)){
-      evt.stopImmediatePropagation();
-    }
-
     if(!this.configs.useFrameAnimation){
       this.triggerTimeUpdate(false);
     }
+  };
+
+  /**
+   * Description
+   * @method onSeeking
+   * @param {} evt
+   * @return 
+   */
+  Media.prototype.onSeeking = function(evt){
+    this.triggerEvent('seeking', {'media': this});
   };
 
   /**
@@ -298,7 +318,7 @@ metaScore.namespace('player.component').Media = (function () {
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
 
-    this.el.triggerEvent('timeupdate', {'media': this});
+    this.triggerEvent('timeupdate', {'media': this});
   };
 
   /**
@@ -331,34 +351,6 @@ metaScore.namespace('player.component').Media = (function () {
    */
   Media.prototype.getDuration = function() {
     return parseFloat(this.dom.duration) * 100;
-  };
-
-  /**
-   * Description
-   * @method addMediaListener
-   * @param {} type
-   * @param {} callback
-   * @param {} useCapture
-   * @return ThisExpression
-   */
-  Media.prototype.addMediaListener = function(type, callback, useCapture) {
-    this.el.addListener(type, callback, useCapture);
-    
-    return this;
-  };
-
-  /**
-   * Description
-   * @method removeMediaListener
-   * @param {} type
-   * @param {} callback
-   * @param {} useCapture
-   * @return ThisExpression
-   */
-  Media.prototype.removeMediaListener = function(type, callback, useCapture) {
-    this.el.removeListener(type, callback, useCapture);
-    
-    return this;
   };
 
   /**

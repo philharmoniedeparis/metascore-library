@@ -502,10 +502,10 @@ metaScore.Player = (function () {
    */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
-      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+      .addListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+      .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this);
 
     if(supressEvent !== true){

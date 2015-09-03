@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-09-01 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-09-03 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "00da39";
+    return "3acf4a";
   },
 
   /**
@@ -3314,10 +3314,10 @@ metaScore.Player = (function () {
    */
   Player.prototype.addMedia = function(configs, supressEvent){
     this.media = new metaScore.player.component.Media(configs)
-      .addMediaListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
-      .addMediaListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+      .addListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+      .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
+      .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
       .appendTo(this);
 
     if(supressEvent !== true){
@@ -3679,7 +3679,7 @@ metaScore.namespace('player').CuePoint = (function () {
     this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
     this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
-    this.configs.media.addMediaListener('timeupdate', this.onMediaTimeUpdate);
+    this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
     
     this.max_error = 0;
   }
@@ -3730,7 +3730,7 @@ metaScore.namespace('player').CuePoint = (function () {
     }
     
     if(this.configs.onSeekOut){
-      this.configs.media.addMediaListener('seeking', this.onMediaSeeked);
+      this.configs.media.addListener('seeking', this.onMediaSeeked);
     }
   };
 
@@ -3743,7 +3743,7 @@ metaScore.namespace('player').CuePoint = (function () {
   CuePoint.prototype.onMediaSeeked = function(evt){
     var cur_time;
     
-    this.configs.media.removeMediaListener('play', this.onMediaSeeked);
+    this.configs.media.removeListener('play', this.onMediaSeeked);
     
     if(this.configs.onSeekOut){
       cur_time = this.configs.media.getTime();
@@ -3815,7 +3815,7 @@ metaScore.namespace('player').CuePoint = (function () {
       this.configs.onEnd(this);
     
       if(this.configs.onSeekOut){
-        this.configs.media.addMediaListener('play', this.onMediaSeeked);
+        this.configs.media.addListener('play', this.onMediaSeeked);
       }
     }
     
@@ -3836,9 +3836,9 @@ metaScore.namespace('player').CuePoint = (function () {
     this.stop(false);
     
     this.configs.media
-      .removeMediaListener('timeupdate', this.onMediaTimeUpdate)
-      .removeMediaListener('seeking', this.onMediaSeeked)
-      .removeMediaListener('play', this.onMediaSeeked);
+      .removeListener('timeupdate', this.onMediaTimeUpdate)
+      .removeListener('seeking', this.onMediaSeeked)
+      .removeListener('play', this.onMediaSeeked);
   };
 
   return CuePoint;
@@ -5294,14 +5294,14 @@ metaScore.namespace('player.component').Media = (function () {
     this.addClass('media').addClass(this.configs.type);
       
     this.el = new metaScore.Dom('<'+ this.configs.type +'></'+ this.configs.type +'>', {'preload': 'auto'})
+      .addListener('loadedmetadata', metaScore.Function.proxy(this.onLoadedMetadata, this))
+      .addListener('play', metaScore.Function.proxy(this.onPlay, this))
+      .addListener('pause', metaScore.Function.proxy(this.onPause, this))
+      .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
+      .addListener('seeking', metaScore.Function.proxy(this.onSeeking, this))
       .appendTo(this);
 
     this.dom = this.el.get(0);
-
-    this
-      .addMediaListener('play', metaScore.Function.proxy(this.onPlay, this))
-      .addMediaListener('pause', metaScore.Function.proxy(this.onPause, this))
-      .addMediaListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this));
 
     this.playing = false;
   }
@@ -5482,12 +5482,24 @@ metaScore.namespace('player.component').Media = (function () {
 
   /**
    * Description
+   * @method onLoadedMetadata
+   * @param {} evt
+   * @return 
+   */
+  Media.prototype.onLoadedMetadata = function(evt) {    
+    this.triggerEvent('loadedmetadata', {'media': this});
+  };
+
+  /**
+   * Description
    * @method onPlay
    * @param {} evt
    * @return 
    */
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
+    
+    this.triggerEvent('play', {'media': this});
     
     if(this.configs.useFrameAnimation){
       this.triggerTimeUpdate();
@@ -5502,6 +5514,8 @@ metaScore.namespace('player.component').Media = (function () {
    */
   Media.prototype.onPause = function(evt) {
     this.playing = false;
+    
+    this.triggerEvent('pause', {'media': this});
   };
 
   /**
@@ -5511,13 +5525,19 @@ metaScore.namespace('player.component').Media = (function () {
    * @return 
    */
   Media.prototype.onTimeUpdate = function(evt){
-    if(!(evt instanceof CustomEvent)){
-      evt.stopImmediatePropagation();
-    }
-
     if(!this.configs.useFrameAnimation){
       this.triggerTimeUpdate(false);
     }
+  };
+
+  /**
+   * Description
+   * @method onSeeking
+   * @param {} evt
+   * @return 
+   */
+  Media.prototype.onSeeking = function(evt){
+    this.triggerEvent('seeking', {'media': this});
   };
 
   /**
@@ -5573,7 +5593,7 @@ metaScore.namespace('player.component').Media = (function () {
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
 
-    this.el.triggerEvent('timeupdate', {'media': this});
+    this.triggerEvent('timeupdate', {'media': this});
   };
 
   /**
@@ -5606,34 +5626,6 @@ metaScore.namespace('player.component').Media = (function () {
    */
   Media.prototype.getDuration = function() {
     return parseFloat(this.dom.duration) * 100;
-  };
-
-  /**
-   * Description
-   * @method addMediaListener
-   * @param {} type
-   * @param {} callback
-   * @param {} useCapture
-   * @return ThisExpression
-   */
-  Media.prototype.addMediaListener = function(type, callback, useCapture) {
-    this.el.addListener(type, callback, useCapture);
-    
-    return this;
-  };
-
-  /**
-   * Description
-   * @method removeMediaListener
-   * @param {} type
-   * @param {} callback
-   * @param {} useCapture
-   * @return ThisExpression
-   */
-  Media.prototype.removeMediaListener = function(type, callback, useCapture) {
-    this.el.removeListener(type, callback, useCapture);
-    
-    return this;
   };
 
   /**
