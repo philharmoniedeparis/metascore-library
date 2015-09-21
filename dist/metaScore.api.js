@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-09-03 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-09-21 - Oussama Mubarak */
 (function(){
 
   var origin_check = /^http?:\/\/metascore.philharmoniedeparis.fr/;
@@ -10,7 +10,7 @@
    * @param {} target
    * @param {} callback
    */
-  function api(target, callback) {  
+  function api(target, callback) {
     if(typeof target === "string") {
       target = document.getElementById(target);
     }
@@ -111,8 +111,8 @@
    * @method play
    * @return 
    */
-  api.prototype.play = function(){
-    this.postMessage('play');
+  api.prototype.play = function(inTime, outTime, rIndex){
+    this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'rIndex': rIndex});
 
     return this;
   };
@@ -130,6 +130,30 @@
 
   /**
    * Description
+   * @method seek
+   * @param {} seconds
+   * @return 
+   */
+  api.prototype.seek = function(seconds){
+    this.postMessage('seek', {'seconds': parseFloat(seconds)});
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method page
+   * @param {} callback
+   * @return 
+   */
+  api.prototype.page = function(block, index){
+    this.postMessage('page', {'block': block, 'index': parseInt(index)-1});
+
+    return this;
+  };
+
+  /**
+   * Description
    * @method paused
    * @param {} callback
    * @return 
@@ -139,19 +163,7 @@
     
     this.callbacks[callback_id] = callback;
     
-    this.postMessage('paused', callback_id);
-
-    return this;
-  };
-
-  /**
-   * Description
-   * @method seek
-   * @param {} seconds
-   * @return 
-   */
-  api.prototype.seek = function(seconds){
-    this.postMessage('seek', seconds);
+    this.postMessage('paused', {'callback': callback_id});
 
     return this;
   };
@@ -167,10 +179,52 @@
     
     this.callbacks[callback_id] = callback;
     
-    this.postMessage('time', callback_id);
+    this.postMessage('time', {'callback': callback_id});
 
     return this;
   };
+  
+  // Process API links
+  document.addEventListener("DOMContentLoaded", function(event){
+    var links, link, ids = [], iframes, i, callback;
+    
+    links = document.querySelectorAll('a[rel="metascore"][data-guide]');
+    
+    for(i = 0; i < links.length; ++i){
+      link = links[i];
+      
+      if(ids.indexOf(link.dataset.guide) < 0){
+        ids.push(link.dataset.guide);
+      }
+    }
+    
+    if(ids.length > 0){
+      iframes = document.querySelectorAll('iframe.metascore-embed#'+ ids.join(',iframe.metascore-embed#'));
+    
+      callback = function(api){
+        var links, handler;
+        links = document.querySelectorAll('a[rel="metascore"][data-guide="'+ api.target.id +'"]');
+        
+        handler = function(evt){
+          var link = evt.target,
+            action = link.dataset.action,
+            args = link.dataset.args ? link.dataset.args.split(',') : null;
+          
+          if(action in api){
+            api[action].apply(api, args);
+          }
+        };
+    
+        for(var i = 0; i < links.length; ++i){
+          links[i].addEventListener('click', handler);
+        }
+      };
+      
+      for(i = 0; i < iframes.length; ++i){
+        new api(iframes[i], callback);
+      }
+    }
+  });
 
   window.metaScoreAPI = api;
 

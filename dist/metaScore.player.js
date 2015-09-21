@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-09-03 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-09-21 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "3acf4a";
+    return "765d0c";
   },
 
   /**
@@ -2232,214 +2232,6 @@ metaScore.Object = (function () {
 })();
 /**
 * Description
-* @class Resizable
-* @namespace metaScore
-* @extends metaScore.Class
-*/
-
-metaScore.Resizable = (function () {
-
-  /**
-   * Description
-   * @constructor
-   * @param {} configs
-   */
-  function Resizable(configs) {
-    this.configs = this.getConfigs(configs);
-
-    this.configs.container = this.configs.container || new metaScore.Dom('body');
-    this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
-
-    this.handles = {};
-
-    // fix event handlers scope
-    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
-    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
-    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
-
-    metaScore.Array.each(this.configs.directions, function(index, direction){
-      this.handles[direction] = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
-        .data('direction', direction)
-        .addListener('mousedown', this.onMouseDown)
-        .appendTo(this.configs.target);
-    }, this);
-
-    this.enable();
-  }
-
-  Resizable.defaults = {
-    directions: [
-      'top',
-      'right',
-      'bottom',
-      'left',
-      'top-left',
-      'top-right',
-      'bottom-left',
-      'bottom-right'
-    ]
-  };
-
-  metaScore.Class.extend(Resizable);
-
-  /**
-   * Description
-   * @method onMouseDown
-   * @param {} evt
-   * @return 
-   */
-  Resizable.prototype.onMouseDown = function(evt){
-    if(!this.enabled){
-      return;
-    }
-
-    this.start_state = {
-      'handle': evt.target,
-      'x': evt.clientX,
-      'y': evt.clientY,
-      'left': parseInt(this.configs.target.css('left'), 10),
-      'top': parseInt(this.configs.target.css('top'), 10),
-      'w': parseInt(this.configs.target.css('width'), 10),
-      'h': parseInt(this.configs.target.css('height'), 10)
-    };
-
-    this.doc
-      .addListener('mousemove', this.onMouseMove, this)
-      .addListener('mouseup', this.onMouseUp, this);
-
-    this.configs.target
-      .addClass('resizing')
-      .triggerEvent('resizestart', null, false, true);
-
-    evt.stopPropagation();
-  };
-
-  /**
-   * Description
-   * @method onMouseMove
-   * @param {} evt
-   * @return 
-   */
-  Resizable.prototype.onMouseMove = function(evt){
-    var handle = new metaScore.Dom(this.start_state.handle),
-      w, h, top, left;
-
-    switch(handle.data('direction')){
-      case 'top':
-        h = this.start_state.h - evt.clientY + this.start_state.y;
-        top = this.start_state.top + evt.clientY  - this.start_state.y;
-        break;
-      case 'right':
-        w = this.start_state.w + evt.clientX - this.start_state.x;
-        break;
-      case 'bottom':
-        h = this.start_state.h + evt.clientY - this.start_state.y;
-        break;
-      case 'left':
-        w = this.start_state.w - evt.clientX + this.start_state.x;
-        left = this.start_state.left + evt.clientX - this.start_state.x;
-        break;
-      case 'top-left':
-        w = this.start_state.w - evt.clientX + this.start_state.x;
-        h = this.start_state.h - evt.clientY + this.start_state.y;
-        top = this.start_state.top + evt.clientY  - this.start_state.y;
-        left = this.start_state.left + evt.clientX - this.start_state.x;
-        break;
-      case 'top-right':
-        w = this.start_state.w + evt.clientX - this.start_state.x;
-        h = this.start_state.h - evt.clientY + this.start_state.y;
-        top = this.start_state.top + evt.clientY - this.start_state.y;
-        break;
-      case 'bottom-left':
-        w = this.start_state.w - evt.clientX + this.start_state.x;
-        h = this.start_state.h + evt.clientY - this.start_state.y;
-        left = this.start_state.left + evt.clientX - this.start_state.x;
-        break;
-      case 'bottom-right':
-        w = this.start_state.w + evt.clientX - this.start_state.x;
-        h = this.start_state.h + evt.clientY - this.start_state.y;
-        break;
-    }
-
-    if(top !== undefined){
-      this.configs.target.css('top', top +'px');
-    }
-    if(left !== undefined){
-      this.configs.target.css('left', left +'px');
-    }
-
-    this.configs.target
-      .css('width', w +'px')
-      .css('height', h +'px')
-      .triggerEvent('resize', null, false, true);
-
-    evt.stopPropagation();
-  };
-
-  /**
-   * Description
-   * @method onMouseUp
-   * @param {} evt
-   * @return 
-   */
-  Resizable.prototype.onMouseUp = function(evt){      
-    this.doc
-      .removeListener('mousemove', this.onMouseMove, this)
-      .removeListener('mouseup', this.onMouseUp, this);
-
-    this.configs.target
-      .removeClass('resizing')
-      .triggerEvent('resizeend', null, false, true);
-
-    evt.stopPropagation();
-  };
-
-  /**
-   * Description
-   * @method enable
-   * @return ThisExpression
-   */
-  Resizable.prototype.enable = function(){
-    this.configs.target.addClass('resizable');
-
-    this.enabled = true;
-
-    return this;
-  };
-
-  /**
-   * Description
-   * @method disable
-   * @return ThisExpression
-   */
-  Resizable.prototype.disable = function(){
-    this.configs.target.removeClass('resizable');
-
-    this.enabled = false;
-
-    return this;
-  };
-
-  /**
-   * Description
-   * @method destroy
-   * @return ThisExpression
-   */
-  Resizable.prototype.destroy = function(){
-    this.disable();
-
-    metaScore.Object.each(this.handles, function(index, handle){
-      handle.remove();
-    }, this);
-
-    return this;
-  };
-
-  return Resizable;
-
-})();
-/**
-* Description
 * @class String
 * @namespace metaScore
 * @extends metaScore.Class
@@ -2759,6 +2551,214 @@ metaScore.Var = (function () {
 
 })();
 /**
+* Description
+* @class Resizable
+* @namespace metaScore
+* @extends metaScore.Class
+*/
+
+metaScore.Resizable = (function () {
+
+  /**
+   * Description
+   * @constructor
+   * @param {} configs
+   */
+  function Resizable(configs) {
+    this.configs = this.getConfigs(configs);
+
+    this.configs.container = this.configs.container || new metaScore.Dom('body');
+    this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+
+    this.handles = {};
+
+    // fix event handlers scope
+    this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
+    this.onMouseMove = metaScore.Function.proxy(this.onMouseMove, this);
+    this.onMouseUp = metaScore.Function.proxy(this.onMouseUp, this);
+
+    metaScore.Array.each(this.configs.directions, function(index, direction){
+      this.handles[direction] = new metaScore.Dom('<div/>', {'class': 'resize-handle'})
+        .data('direction', direction)
+        .addListener('mousedown', this.onMouseDown)
+        .appendTo(this.configs.target);
+    }, this);
+
+    this.enable();
+  }
+
+  Resizable.defaults = {
+    directions: [
+      'top',
+      'right',
+      'bottom',
+      'left',
+      'top-left',
+      'top-right',
+      'bottom-left',
+      'bottom-right'
+    ]
+  };
+
+  metaScore.Class.extend(Resizable);
+
+  /**
+   * Description
+   * @method onMouseDown
+   * @param {} evt
+   * @return 
+   */
+  Resizable.prototype.onMouseDown = function(evt){
+    if(!this.enabled){
+      return;
+    }
+
+    this.start_state = {
+      'handle': evt.target,
+      'x': evt.clientX,
+      'y': evt.clientY,
+      'left': parseInt(this.configs.target.css('left'), 10),
+      'top': parseInt(this.configs.target.css('top'), 10),
+      'w': parseInt(this.configs.target.css('width'), 10),
+      'h': parseInt(this.configs.target.css('height'), 10)
+    };
+
+    this.doc
+      .addListener('mousemove', this.onMouseMove, this)
+      .addListener('mouseup', this.onMouseUp, this);
+
+    this.configs.target
+      .addClass('resizing')
+      .triggerEvent('resizestart', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onMouseMove
+   * @param {} evt
+   * @return 
+   */
+  Resizable.prototype.onMouseMove = function(evt){
+    var handle = new metaScore.Dom(this.start_state.handle),
+      w, h, top, left;
+
+    switch(handle.data('direction')){
+      case 'top':
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
+        break;
+      case 'right':
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        break;
+      case 'bottom':
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        break;
+      case 'left':
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
+        break;
+      case 'top-left':
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY  - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
+        break;
+      case 'top-right':
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h - evt.clientY + this.start_state.y;
+        top = this.start_state.top + evt.clientY - this.start_state.y;
+        break;
+      case 'bottom-left':
+        w = this.start_state.w - evt.clientX + this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        left = this.start_state.left + evt.clientX - this.start_state.x;
+        break;
+      case 'bottom-right':
+        w = this.start_state.w + evt.clientX - this.start_state.x;
+        h = this.start_state.h + evt.clientY - this.start_state.y;
+        break;
+    }
+
+    if(top !== undefined){
+      this.configs.target.css('top', top +'px');
+    }
+    if(left !== undefined){
+      this.configs.target.css('left', left +'px');
+    }
+
+    this.configs.target
+      .css('width', w +'px')
+      .css('height', h +'px')
+      .triggerEvent('resize', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method onMouseUp
+   * @param {} evt
+   * @return 
+   */
+  Resizable.prototype.onMouseUp = function(evt){      
+    this.doc
+      .removeListener('mousemove', this.onMouseMove, this)
+      .removeListener('mouseup', this.onMouseUp, this);
+
+    this.configs.target
+      .removeClass('resizing')
+      .triggerEvent('resizeend', null, false, true);
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method enable
+   * @return ThisExpression
+   */
+  Resizable.prototype.enable = function(){
+    this.configs.target.addClass('resizable');
+
+    this.enabled = true;
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method disable
+   * @return ThisExpression
+   */
+  Resizable.prototype.disable = function(){
+    this.configs.target.removeClass('resizable');
+
+    this.enabled = false;
+
+    return this;
+  };
+
+  /**
+   * Description
+   * @method destroy
+   * @return ThisExpression
+   */
+  Resizable.prototype.destroy = function(){
+    this.disable();
+
+    metaScore.Object.each(this.handles, function(index, handle){
+      handle.remove();
+    }, this);
+
+    return this;
+  };
+
+  return Resizable;
+
+})();
+/**
 * The i18n handling class
 * @class Locale
 * @namespace metaScore
@@ -2879,7 +2879,8 @@ metaScore.Player = (function () {
    * @return 
    */
   Player.prototype.onAPIMessage = function(evt){
-    var data, source, origin, method, params;
+    var player = this,
+      data, source, origin, method, params, dom;
     
     try {
       data = JSON.parse(evt.data);
@@ -2899,35 +2900,42 @@ metaScore.Player = (function () {
     
     switch(method){
       case 'play':
-        this.getMedia().play();
+        player.play(params.inTime, params.outTime, params.rIndex);
         break;
         
       case 'pause':
-        this.getMedia().pause();
+        player.getMedia().pause();
+        break;
+        
+      case 'seek':
+        player.getMedia().setTime(parseFloat(params.seconds, 10) * 100);
+        break;
+        
+      case 'page':
+        dom = player.getComponent('.block[data-name='+ params.block +']');
+        if(dom._metaScore){
+          dom._metaScore.setActivePage(params.index);
+        }
         break;
         
       case 'paused':
         source.postMessage(JSON.stringify({
-          'callback': params,
-          'params': !this.getMedia().isPlaying()
+          'callback': params.callback,
+          'params': !player.getMedia().isPlaying()
         }), origin);
-        break;
-        
-      case 'seek':
-        this.getMedia().setTime(parseFloat(params, 10) * 100);
         break;
         
       case 'time':
         source.postMessage(JSON.stringify({
-          'callback': params, 
-          'params': this.getMedia().getTime() / 100
+          'callback': params.callback, 
+          'params': player.getMedia().getTime() / 100
         }), origin);
         break;
         
       case 'addEventListener':
         switch(params.type){
           case 'ready':
-            this.addListener('loadsuccess', function(event){
+            player.addListener('loadsuccess', function(event){
               source.postMessage(JSON.stringify({
                 'callback': params.callback
               }), origin);
@@ -2935,7 +2943,7 @@ metaScore.Player = (function () {
             break;
             
           case 'timeupdate':
-            this.addListener(params.type, function(event){
+            player.addListener(params.type, function(event){
               source.postMessage(JSON.stringify({
                 'callback': params.callback,
                 'params': event.detail.media.getTime() / 100
@@ -2944,7 +2952,7 @@ metaScore.Player = (function () {
             break;
             
           case 'rindex':
-            this.addListener(params.type, function(event){
+            player.addListener(params.type, function(event){
               source.postMessage(JSON.stringify({
                 'callback': params.callback,
                 'params': event.detail.value
@@ -3056,34 +3064,7 @@ metaScore.Player = (function () {
    * @return 
    */
   Player.prototype.onTextElementTime = function(evt){
-    var player = this;
-  
-    if(this.linkcuepoint){
-      this.linkcuepoint.destroy();
-    }
-
-    this.linkcuepoint = new metaScore.player.CuePoint({
-      media: this.getMedia(),
-      inTime: evt.detail.inTime,
-      outTime: evt.detail.outTime,
-      onStart: function(cuepoint){
-        player.setReadingIndex(evt.detail.rIndex);
-      },
-      onEnd: function(cuepoint){
-        cuepoint.getMedia().pause();
-      },
-      onSeekOut: function(cuepoint){
-        cuepoint.destroy();
-        delete player.linkcuepoint;
-        
-        player.setReadingIndex(0);
-      },
-      considerError: true
-    });
-
-    this.getMedia()
-      .setTime(evt.detail.inTime)
-      .play();
+    this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.rIndex);
   };
 
   /**
@@ -3122,10 +3103,6 @@ metaScore.Player = (function () {
       new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
         .appendTo(document.head);
     }
-
-    // add style sheets
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': this.json.library_css})
-      .appendTo(document.head);
 
     this.css = new metaScore.StyleSheet()
       .setInternalValue(this.json.css)
@@ -3402,6 +3379,52 @@ metaScore.Player = (function () {
     }
     else{
       media.play();
+    }
+  };
+
+  /**
+   * Description
+   * @method play
+   * @return 
+   */
+  Player.prototype.play = function(inTime, outTime, rIndex){
+    var player = this,
+      media = this.getMedia(); 
+  
+    if(this.cuepoint){
+      this.cuepoint.destroy();
+    }
+    
+    inTime = parseFloat(inTime);
+    outTime = parseFloat(outTime);
+    rIndex = parseInt(rIndex);
+    
+    if(isNaN(inTime)){
+      media.play();
+    }
+    else{
+      this.cuepoint = new metaScore.player.CuePoint({
+        media: this.getMedia(),
+        inTime: inTime,
+        outTime: !isNaN(outTime) ? outTime : null,
+        onStart: function(cuepoint){
+          player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
+        },
+        onEnd: function(cuepoint){
+          cuepoint.getMedia().pause();
+        },
+        onSeekOut: function(cuepoint){
+          cuepoint.destroy();
+          delete player.cuepoint;
+          
+          player.setReadingIndex(0);
+        },
+        considerError: true
+      });
+
+      this.getMedia()
+        .setTime(inTime)
+        .play();
     }
   };
 

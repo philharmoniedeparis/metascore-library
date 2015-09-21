@@ -68,16 +68,16 @@ metaScore.namespace('editor').MainMenu = (function(){
 
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.Locale.t('editor.MainMenu.Publish', 'Save & Publish')
+        'title': metaScore.Locale.t('editor.MainMenu.saveCopy', 'Save as copy')
       })
-      .data('action', 'publish')
+      .data('action', 'save-copy')
       .appendTo(sub_menu);
 
     new metaScore.editor.Button()
       .attr({
-        'title': metaScore.Locale.t('editor.MainMenu.saveCopy', 'Save as copy')
+        'title': metaScore.Locale.t('editor.MainMenu.Publish', 'Save & Publish')
       })
-      .data('action', 'save-copy')
+      .data('action', 'publish')
       .appendTo(sub_menu);
 
     new metaScore.editor.Button()

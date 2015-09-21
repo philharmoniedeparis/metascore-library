@@ -67,7 +67,8 @@ metaScore.Player = (function () {
    * @return 
    */
   Player.prototype.onAPIMessage = function(evt){
-    var data, source, origin, method, params;
+    var player = this,
+      data, source, origin, method, params, dom;
     
     try {
       data = JSON.parse(evt.data);
@@ -87,35 +88,42 @@ metaScore.Player = (function () {
     
     switch(method){
       case 'play':
-        this.getMedia().play();
+        player.play(params.inTime, params.outTime, params.rIndex);
         break;
         
       case 'pause':
-        this.getMedia().pause();
+        player.getMedia().pause();
+        break;
+        
+      case 'seek':
+        player.getMedia().setTime(parseFloat(params.seconds, 10) * 100);
+        break;
+        
+      case 'page':
+        dom = player.getComponent('.block[data-name='+ params.block +']');
+        if(dom._metaScore){
+          dom._metaScore.setActivePage(params.index);
+        }
         break;
         
       case 'paused':
         source.postMessage(JSON.stringify({
-          'callback': params,
-          'params': !this.getMedia().isPlaying()
+          'callback': params.callback,
+          'params': !player.getMedia().isPlaying()
         }), origin);
-        break;
-        
-      case 'seek':
-        this.getMedia().setTime(parseFloat(params, 10) * 100);
         break;
         
       case 'time':
         source.postMessage(JSON.stringify({
-          'callback': params, 
-          'params': this.getMedia().getTime() / 100
+          'callback': params.callback, 
+          'params': player.getMedia().getTime() / 100
         }), origin);
         break;
         
       case 'addEventListener':
         switch(params.type){
           case 'ready':
-            this.addListener('loadsuccess', function(event){
+            player.addListener('loadsuccess', function(event){
               source.postMessage(JSON.stringify({
                 'callback': params.callback
               }), origin);
@@ -123,7 +131,7 @@ metaScore.Player = (function () {
             break;
             
           case 'timeupdate':
-            this.addListener(params.type, function(event){
+            player.addListener(params.type, function(event){
               source.postMessage(JSON.stringify({
                 'callback': params.callback,
                 'params': event.detail.media.getTime() / 100
@@ -132,7 +140,7 @@ metaScore.Player = (function () {
             break;
             
           case 'rindex':
-            this.addListener(params.type, function(event){
+            player.addListener(params.type, function(event){
               source.postMessage(JSON.stringify({
                 'callback': params.callback,
                 'params': event.detail.value
@@ -244,34 +252,7 @@ metaScore.Player = (function () {
    * @return 
    */
   Player.prototype.onTextElementTime = function(evt){
-    var player = this;
-  
-    if(this.linkcuepoint){
-      this.linkcuepoint.destroy();
-    }
-
-    this.linkcuepoint = new metaScore.player.CuePoint({
-      media: this.getMedia(),
-      inTime: evt.detail.inTime,
-      outTime: evt.detail.outTime,
-      onStart: function(cuepoint){
-        player.setReadingIndex(evt.detail.rIndex);
-      },
-      onEnd: function(cuepoint){
-        cuepoint.getMedia().pause();
-      },
-      onSeekOut: function(cuepoint){
-        cuepoint.destroy();
-        delete player.linkcuepoint;
-        
-        player.setReadingIndex(0);
-      },
-      considerError: true
-    });
-
-    this.getMedia()
-      .setTime(evt.detail.inTime)
-      .play();
+    this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.rIndex);
   };
 
   /**
@@ -310,10 +291,6 @@ metaScore.Player = (function () {
       new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
         .appendTo(document.head);
     }
-
-    // add style sheets
-    new metaScore.Dom('<link/>', {'rel': 'stylesheet', 'type': 'text/css', 'href': this.json.library_css})
-      .appendTo(document.head);
 
     this.css = new metaScore.StyleSheet()
       .setInternalValue(this.json.css)
@@ -590,6 +567,52 @@ metaScore.Player = (function () {
     }
     else{
       media.play();
+    }
+  };
+
+  /**
+   * Description
+   * @method play
+   * @return 
+   */
+  Player.prototype.play = function(inTime, outTime, rIndex){
+    var player = this,
+      media = this.getMedia(); 
+  
+    if(this.cuepoint){
+      this.cuepoint.destroy();
+    }
+    
+    inTime = parseFloat(inTime);
+    outTime = parseFloat(outTime);
+    rIndex = parseInt(rIndex);
+    
+    if(isNaN(inTime)){
+      media.play();
+    }
+    else{
+      this.cuepoint = new metaScore.player.CuePoint({
+        media: this.getMedia(),
+        inTime: inTime,
+        outTime: !isNaN(outTime) ? outTime : null,
+        onStart: function(cuepoint){
+          player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
+        },
+        onEnd: function(cuepoint){
+          cuepoint.getMedia().pause();
+        },
+        onSeekOut: function(cuepoint){
+          cuepoint.destroy();
+          delete player.cuepoint;
+          
+          player.setReadingIndex(0);
+        },
+        considerError: true
+      });
+
+      this.getMedia()
+        .setTime(inTime)
+        .play();
     }
   };
 
