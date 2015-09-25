@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-09-21 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-09-25 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "765d0c";
+    return "e36406";
   },
 
   /**
@@ -1238,7 +1238,9 @@ metaScore.Dom = (function () {
     name = this.camel(name);
 
     if(value === null){
-      delete element.dataset[name];
+      if(element.dataset[name]){
+        delete element.dataset[name];
+      }
     }
     else if(value !== undefined){
       element.dataset[name] = value;
@@ -2894,7 +2896,7 @@ metaScore.Player = (function () {
     }
     
     source = evt.source;
-    origin = event.origin;
+    origin = evt.origin;
     method = data.method;
     params = 'params' in data ? data.params : null;
     
@@ -3097,12 +3099,6 @@ metaScore.Player = (function () {
 
     this.setId(this.json.id)
       .setRevision(this.json.vid);
-
-    // setup the base url
-    if(this.json.base_url){
-      new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
-        .appendTo(document.head);
-    }
 
     this.css = new metaScore.StyleSheet()
       .setInternalValue(this.json.css)

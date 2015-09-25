@@ -15,6 +15,8 @@ metaScore.namespace('editor.panel').Block = (function () {
   function BlockPanel(configs) {
     // call parent constructor
     BlockPanel.parent.call(this, configs);
+    
+    this.addClass('block');
   }
 
   BlockPanel.defaults = {

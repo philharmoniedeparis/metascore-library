@@ -82,7 +82,7 @@ metaScore.Player = (function () {
     }
     
     source = evt.source;
-    origin = event.origin;
+    origin = evt.origin;
     method = data.method;
     params = 'params' in data ? data.params : null;
     
@@ -285,12 +285,6 @@ metaScore.Player = (function () {
 
     this.setId(this.json.id)
       .setRevision(this.json.vid);
-
-    // setup the base url
-    if(this.json.base_url){
-      new metaScore.Dom('<base/>', {'href': this.json.base_url, 'target': '_blank'})
-        .appendTo(document.head);
-    }
 
     this.css = new metaScore.StyleSheet()
       .setInternalValue(this.json.css)

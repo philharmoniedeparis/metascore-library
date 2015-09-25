@@ -998,6 +998,9 @@ metaScore.Editor = (function(){
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
     }
+    else{
+      this.panels.text.unsetComponent();
+    }
 
     evt.stopPropagation();
   };
@@ -1807,8 +1810,10 @@ metaScore.Editor = (function(){
   Editor.prototype.loadPlayer = function(id, vid){
     var src = this.configs.player_url + id;
     
+    src += "?in-editor";
+    
     if(vid){
-      src += "?vid="+ vid;
+      src += "&vid="+ vid;
     }
   
     this.loadmask = new metaScore.editor.overlay.LoadMask({

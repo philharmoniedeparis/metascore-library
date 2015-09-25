@@ -55,7 +55,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-qunit');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
@@ -152,7 +151,8 @@ module.exports = function(grunt) {
         }
       },
       options: {
-        banner: BANNER,        
+        banner: BANNER,
+        sourceMap: true,
         compress: {
           global_defs: {
             "DEBUG": false
@@ -177,14 +177,11 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd:'dist/',
-            src: ['**'],
+            src: ['**', '!metaScore.player.js', '!metaScore.editor.js'],
             dest: '../Drupal.git/sites/default/libraries/metaScore'
           }
         ]
       }
-    },
-    qunit: {
-      all: ['test/index.html']
     },
     yuidoc: {
       compile: {
@@ -273,10 +270,6 @@ module.exports = function(grunt) {
     'less',
     'copy:dist',
     'translate_copy'
-  ]);
-  
-  grunt.registerTask('test', [
-    'qunit'
   ]);
   
   grunt.registerTask('doc', [

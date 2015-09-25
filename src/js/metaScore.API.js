@@ -212,6 +212,8 @@
           if(action in api){
             api[action].apply(api, args);
           }
+          
+          evt.preventDefault();
         };
     
         for(var i = 0; i < links.length; ++i){

@@ -15,6 +15,8 @@ metaScore.namespace('editor.panel').Element = (function () {
   function ElementPanel(configs) {
     // call parent constructor
     ElementPanel.parent.call(this, configs);
+    
+    this.addClass('element');
   }
 
   ElementPanel.defaults = {

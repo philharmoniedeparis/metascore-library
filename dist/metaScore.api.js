@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-09-21 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-09-25 - Oussama Mubarak */
 (function(){
 
   var origin_check = /^http?:\/\/metascore.philharmoniedeparis.fr/;
@@ -213,6 +213,8 @@
           if(action in api){
             api[action].apply(api, args);
           }
+          
+          evt.preventDefault();
         };
     
         for(var i = 0; i < links.length; ++i){

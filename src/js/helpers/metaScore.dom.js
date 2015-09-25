@@ -427,7 +427,9 @@ metaScore.Dom = (function () {
     name = this.camel(name);
 
     if(value === null){
-      delete element.dataset[name];
+      if(element.dataset[name]){
+        delete element.dataset[name];
+      }
     }
     else if(value !== undefined){
       element.dataset[name] = value;

@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-09-21 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-09-25 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "765d0c";
+    return "e36406";
   },
 
   /**
@@ -1238,7 +1238,9 @@ metaScore.Dom = (function () {
     name = this.camel(name);
 
     if(value === null){
-      delete element.dataset[name];
+      if(element.dataset[name]){
+        delete element.dataset[name];
+      }
     }
     else if(value !== undefined){
       element.dataset[name] = value;
@@ -3810,6 +3812,9 @@ metaScore.Editor = (function(){
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
     }
+    else{
+      this.panels.text.unsetComponent();
+    }
 
     evt.stopPropagation();
   };
@@ -4619,8 +4624,10 @@ metaScore.Editor = (function(){
   Editor.prototype.loadPlayer = function(id, vid){
     var src = this.configs.player_url + id;
     
+    src += "?in-editor";
+    
     if(vid){
-      src += "?vid="+ vid;
+      src += "&vid="+ vid;
     }
   
     this.loadmask = new metaScore.editor.overlay.LoadMask({
@@ -7567,6 +7574,8 @@ metaScore.namespace('editor.panel').Block = (function () {
   function BlockPanel(configs) {
     // call parent constructor
     BlockPanel.parent.call(this, configs);
+    
+    this.addClass('block');
   }
 
   BlockPanel.defaults = {
@@ -7602,6 +7611,8 @@ metaScore.namespace('editor.panel').Element = (function () {
   function ElementPanel(configs) {
     // call parent constructor
     ElementPanel.parent.call(this, configs);
+    
+    this.addClass('element');
   }
 
   ElementPanel.defaults = {
@@ -7638,6 +7649,8 @@ metaScore.namespace('editor.panel').Page = (function () {
   function PagePanel(configs) {
     // call parent constructor
     PagePanel.parent.call(this, configs);
+    
+    this.addClass('page');
   }
 
   PagePanel.defaults = {
@@ -7672,12 +7685,13 @@ metaScore.namespace('editor.panel').Text = (function () {
   function TextPanel(configs) {
     // call parent constructor
     TextPanel.parent.call(this, configs);
+    
+    this.addClass('text');
 
     // fix event handlers scope
     this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
     this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
     this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
-    this.onComponentContentsMouseup = metaScore.Function.proxy(this.onComponentContentsMouseup, this);
   }
 
   TextPanel.defaults = {
@@ -7704,215 +7718,6 @@ metaScore.namespace('editor.panel').Text = (function () {
           }
           else{
             this.unlock();
-          }
-        }
-      },
-      'foreColor': {
-        'type': 'Color',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.fore-color', 'Font color')
-        },
-        /**
-         * Description
-         * @param {} value
-         * @return 
-         */
-        'setter': function(value){
-          this.execCommand('foreColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
-        }
-      },
-      'backColor': {
-        'type': 'Color',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.back-color', 'Background color')
-        },
-        /**
-         * Description
-         * @param {} value
-         * @return 
-         */
-        'setter': function(value){
-          this.execCommand('backColor', value ? 'rgba('+ value.r +','+ value.g +','+ value.b +','+ value.a +')' : 'inherit');
-        }
-      },
-      'fontName': {
-        'type': 'Select',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.font', 'Font'),
-          'options': {
-            "inherit": '',
-            "Georgia, serif": 'Georgia',
-            "'Times New Roman', Times, serif": 'Times New Roman',
-            "Arial, Helvetica, sans-serif": 'Arial',
-            "'Comic Sans MS', cursive, sans-serif": 'Comic Sans MS',
-            "Impact, Charcoal, sans-serif": 'Impact',
-            "'Lucida Sans Unicode', 'Lucida Grande', sans-serif": 'Lucida Sans Unicode',
-            "Tahoma, Geneva, sans-serif": 'Tahoma',
-            "Verdana, Geneva, sans-serif": 'Verdana',
-            "'Courier New', Courier, monospace": 'Courier New',
-            "'Lucida Console', Monaco, monospace": 'Lucida Console'
-          }
-        },
-        /**
-         * Description
-         * @param {} value
-         * @return 
-         */
-        'setter': function(value){
-          this.execCommand('fontName', value);
-        }
-      },
-      'formatBlock': {
-        'type': 'Select',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.formatBlock', 'Format'),
-          'options': {
-            "p": metaScore.Locale.t('editor.panel.Text.formatBlock.p', 'Normal'),
-            "h1": metaScore.Locale.t('editor.panel.Text.formatBlock.h1', 'Heading 1'),
-            "h2": metaScore.Locale.t('editor.panel.Text.formatBlock.h2', 'Heading 2'),
-            "h3": metaScore.Locale.t('editor.panel.Text.formatBlock.h3', 'Heading 3'),
-            "h4": metaScore.Locale.t('editor.panel.Text.formatBlock.h4', 'Heading 4'),
-            "pre": metaScore.Locale.t('editor.panel.Text.formatBlock.pre', 'Formatted')
-          }
-        },
-        /**
-         * Description
-         * @param {} value
-         * @return 
-         */
-        'setter': function(value){
-          this.execCommand('formatBlock', value);
-        }
-      },
-      'fontSize': {
-        'type': 'Select',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.font-size', 'Font size'),
-          'options': {
-            "1": '1',
-            "2": '2',
-            "3": '3',
-            "4": '4',
-            "5": '5',
-            "6": '6'
-          }
-        },
-        /**
-         * Description
-         * @param {} value
-         * @return 
-         */
-        'setter': function(value){
-          this.execCommand('fontSize', value);
-        }
-      },
-      'formatting': {
-        'type': 'Buttons',
-        'configs': {
-          'label': metaScore.Locale.t('editor.panel.Text.formatting', 'Formatting'),
-          'buttons': {
-            'bold': {
-              'data-action': 'bold',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.bold', 'Bold')
-            },
-            'italic': {
-              'data-action': 'italic',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.italic', 'Italic')
-            },
-            'strikeThrough': {
-              'data-action': 'strikeThrough',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.strikeThrough', 'Strikethrough')
-            },
-            'underline': {
-              'data-action': 'underline',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.underline', 'Underline')
-            },
-            'subscript': {
-              'data-action': 'subscript',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.subscript', 'Subscript')
-            },
-            'superscript': {
-              'data-action': 'superscript',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.superscript', 'Superscript')
-            },
-            'justifyLeft': {
-              'data-action': 'justifyLeft',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyLeft', 'Left')
-            },
-            'justifyCenter': {
-              'data-action': 'justifyCenter',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyCenter', 'Center')
-            },
-            'justifyRight': {
-              'data-action': 'justifyRight',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyRight', 'Right')
-            },
-            'justifyFull': {
-              'data-action': 'justifyFull',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.justifyFull', 'Justify')
-            },
-            'link': {
-              'data-action': 'link',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.link', 'Add/Modify link')
-            },
-            'unlink': {
-              'data-action': 'unlink',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.unlink', 'Remove link')
-            },
-            'insertImage': {
-              'data-action': 'insertImage',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.insertImage', 'Add/Modify image')
-            },
-            'removeFormat': {
-              'data-action': 'removeFormat',
-              'title': metaScore.Locale.t('editor.panel.Text.formatting.removeFormat', 'Remove formatting')
-            }
-          }
-        },
-        /**
-         * Description
-         * @param {} value
-         * @return 
-         */
-        'setter': function(value){
-          var selected, element;
-        
-          switch(value){
-            case 'link':
-              selected = this.getSelectedElement();
-              element = metaScore.Dom.is(selected, 'a') ? selected : null;
-                
-              if(element){
-                this.setSelectedElement(element);
-              }
-
-              new metaScore.editor.overlay.InsertLink({
-                  link: element,
-                  autoShow: true
-                })
-                .addListener('submit', metaScore.Function.proxy(this.onLinkOverlaySubmit, this));
-              break;
-              
-            case 'unlink':
-              selected = this.getSelectedElement();
-              element = metaScore.Dom.is(selected, 'a') ? selected : null;
-                
-              if(element){
-                this.setSelectedElement(element);
-              }
-              
-              this.execCommand(value);
-              break;
-            
-            case 'insertImage':
-              new metaScore.editor.overlay.InsertImage({
-                  autoShow: true
-                })
-                .addListener('submit', metaScore.Function.proxy(this.onImageOverlaySubmit, this));
-              break;
-              
-            default:
-              this.execCommand(value);
           }
         }
       }
@@ -8000,7 +7805,7 @@ metaScore.namespace('editor.panel').Text = (function () {
    * @method lock
    * @return ThisExpression
    */
-  TextPanel.prototype.lock = function(){
+  TextPanel.prototype.lock = function(supressEvent){
     var component = this.getComponent();
     
     if(component){      
@@ -8010,8 +7815,7 @@ metaScore.namespace('editor.panel').Text = (function () {
         .removeListener('click', this.onComponentContentsClick)
         .removeListener('keydown', this.onComponentContentsKey)
         .removeListener('keypress', this.onComponentContentsKey)
-        .removeListener('keyup', this.onComponentContentsKey)
-        .removeListener('mouseup', this.onComponentContentsMouseup);
+        .removeListener('keyup', this.onComponentContentsKey);
         
       this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
         
@@ -8020,6 +7824,10 @@ metaScore.namespace('editor.panel').Text = (function () {
       }
       if(component._resizable){
         component._resizable.enable();
+      }
+
+      if(supressEvent !== true){
+        this.triggerEvent('componentlock', {'component': component}, false);
       }
     }
     
@@ -8031,7 +7839,7 @@ metaScore.namespace('editor.panel').Text = (function () {
    * @method unlock
    * @return ThisExpression
    */
-  TextPanel.prototype.unlock = function(){
+  TextPanel.prototype.unlock = function(supressEvent){
     var component = this.getComponent();
     
     if(component){
@@ -8048,14 +7856,13 @@ metaScore.namespace('editor.panel').Text = (function () {
         .addListener('click', this.onComponentContentsClick)
         .addListener('keydown', this.onComponentContentsKey)
         .addListener('keypress', this.onComponentContentsKey)
-        .addListener('keyup', this.onComponentContentsKey)
-        .addListener('mouseup', this.onComponentContentsMouseup)
-        .focus();
+        .addListener('keyup', this.onComponentContentsKey);
 
-      this
-        .toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true)
-        .execCommand("styleWithCSS", true)
-        .execCommand("enableObjectResizing", true);
+      this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true);
+
+      if(supressEvent !== true){
+        this.triggerEvent('componentunlock', {'component': component}, false);
+      }
     }
     
     return this;
@@ -8098,176 +7905,8 @@ metaScore.namespace('editor.panel').Text = (function () {
    * @param {} evt
    * @return 
    */
-  TextPanel.prototype.onComponentContentsKey = function(evt){
-    if(evt.type === 'keyup'){
-      this.updateButtons();
-    }
-    
+  TextPanel.prototype.onComponentContentsKey = function(evt){    
     evt.stopPropagation();
-  };
-
-  /**
-   * Description
-   * @method onComponentContentsMouseup
-   * @param {} evt
-   * @return 
-   */
-  TextPanel.prototype.onComponentContentsMouseup = function(evt){
-    this.updateButtons();
-  };
-
-  /**
-   * Description
-   * @method updateButtons
-   * @param {} evt
-   * @return 
-   */
-  TextPanel.prototype.updateButtons = function(evt){
-     var component = this.getComponent(),
-      document =  component.contents.get(0).ownerDocument,
-      selected, is_link;
-    
-    selected = this.getSelectedElement();
-    is_link = metaScore.Dom.is(selected, 'a');
-    
-    metaScore.Object.each(this.getField(), function(field_key, field){
-      switch(field_key){
-        case 'formatting':
-          metaScore.Object.each(field.getButtons(), function(button_key, button){
-            switch(button_key){
-              case 'link':
-                button.toggleClass('pressed', is_link);
-                break;
-                
-              default:
-                button.toggleClass('pressed', document.queryCommandState(button_key));
-            }
-          });
-          break;
-                
-        default:
-          field.setValue(document.queryCommandValue(field_key), true);
-      }
-    }, this);
-  };
-
-  /**
-   * Description
-   * @method onLinkOverlaySubmit
-   * @param {} evt
-   * @return 
-   */
-  TextPanel.prototype.onLinkOverlaySubmit = function(evt){
-    var url = evt.detail.url;
-
-    this.execCommand('createLink', url);
-  };
-
-  /**
-   * Description
-   * @method onImageOverlaySubmit
-   * @param {} evt
-   * @return 
-   */
-  TextPanel.prototype.onImageOverlaySubmit = function(evt){
-    var url = evt.detail.url,
-      width = evt.detail.width,
-      height = evt.detail.height,
-      alignment = evt.detail.alignment;
-    
-    this.execCommand('insertHTML', '<img src="'+ url +'" style="width: '+ width +'px; height: '+ height +'px'+ (alignment ? '; float: '+ alignment : "") +';" />');
-  };
-
-  /**
-   * Description
-   * @method getSelectedElement
-   * @return element
-   */
-  TextPanel.prototype.getSelectedElement = function(){
-     var component = this.getComponent(),
-      document =  component.contents.get(0).ownerDocument,
-      selection, range, element;
-    
-    selection = document.getSelection();
-    element = selection.anchorNode;
-    
-    if(element) {
-      return (element.nodeName === "#text" ? element.parentNode : element);
-    }
-  };
-
-
-  /**
-   * Description
-   * @method setSelectedElement
-   */
-  TextPanel.prototype.setSelectedElement = function(element){
-     var component = this.getComponent(),
-      document =  component.contents.get(0).ownerDocument,
-      selection, range;
-    
-    selection = document.getSelection();
-    
-    range = document.createRange();
-    range.selectNodeContents(element);
-    
-    selection.removeAllRanges();
-    selection.addRange(range);
-  };
-  
-  /**
-   * Insert some html at the current caret position
-   * @method pasteHtmlAtCaret
-   */
-  TextPanel.prototype.insertHtmlAtCaret = function(html){
-     var component = this.getComponent(),
-      document =  component.contents.get(0).ownerDocument,
-      selection, range,
-      element, fragment,
-      node, lastNode;
-      
-    selection = document.getSelection();
-
-    if(selection.getRangeAt && selection.rangeCount) {
-      range = selection.getRangeAt(0);
-      range.deleteContents();
-      
-      fragment = range.createContextualFragment(html);
-
-      range.insertNode(fragment);
-    
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-
-    return this;
-  };
-
-  /**
-   * Description
-   * @method execCommand
-   * @param {} command
-   * @param {} value
-   * @return 
-   */
-  TextPanel.prototype.execCommand = function(command, value){
-     var component = this.getComponent(),
-      contents =  component.contents.get(0);
-
-    contents.focus();
-    
-    switch(command){
-      case 'insertHTML':
-        this.insertHtmlAtCaret(value);
-        break;
-        
-      default:
-        contents.ownerDocument.execCommand(command, false, value);
-    }
-    
-    this.updateButtons();
-    
-    return this;
   };
 
   return TextPanel;
@@ -9884,236 +9523,6 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
   };
 
   return InsertImage;
-
-})();
-/**
-* Description
-* @class InsertLink
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
-*/
-
-metaScore.namespace('editor.overlay').InsertLink = (function () {
-
-  /**
-   * Description
-   * @constructor
-   * @param {} configs
-   */
-  function InsertLink(configs) {
-    this.configs = this.getConfigs(configs);
-
-    // call parent constructor
-    InsertLink.parent.call(this, this.configs);
-
-    this.addClass('insert-link');
-
-    this.toggleFields();
-
-    if(this.configs.link){
-      this.setValuesFromLink(this.configs.link);
-    }
-  }
-
-  InsertLink.defaults = {
-    /**
-    * True to add a toolbar with title and close button
-    */
-    toolbar: true,
-
-    /**
-    * The overlay's title
-    */
-    title: metaScore.Locale.t('editor.overlay.InsertLink.title', 'Insert Link'),
-
-    /**
-    * The current link
-    */
-    link: null
-  };
-
-  metaScore.editor.Overlay.extend(InsertLink);
-
-  /**
-   * Description
-   * @method setupDOM
-   * @return 
-   */
-  InsertLink.prototype.setupDOM = function(){
-    var contents;
-
-    // call parent method
-    InsertLink.parent.prototype.setupDOM.call(this);
-
-    contents = this.getContents();
-
-    this.fields = {};
-    this.buttons = {};
-
-    this.fields.type = new metaScore.editor.field.Select({
-        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.type', 'Type'),
-        options: {
-          'url': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.url', 'URL'),
-          'page': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.page', 'Page'),
-          'time': metaScore.Locale.t('editor.overlay.InsertLink.fields.type.time', 'Time')
-        }
-      })
-      .addListener('valuechange', metaScore.Function.proxy(this.onTypeChange, this))
-      .appendTo(contents);
-
-    // URL
-    this.fields.url = new metaScore.editor.field.Text({
-        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.url', 'URL')
-      })
-      .appendTo(contents);
-
-    // Page
-    this.fields.page = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.page', 'Page')
-      })
-      .appendTo(contents);
-
-    // Time
-    this.fields.inTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.in-time', 'Start time'),
-        inButton: true
-      })
-      .appendTo(contents);
-
-    this.fields.outTime = new metaScore.editor.field.Time({
-        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.out-time', 'End time'),
-        inButton: true
-      })
-      .appendTo(contents);
-
-    this.fields.rIndex = new metaScore.editor.field.Number({
-        label: metaScore.Locale.t('editor.overlay.InsertLink.fields.r-index', 'Reading index')
-      })
-      .appendTo(contents);
-
-    // Buttons
-    this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
-      .addClass('apply')
-      .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
-      .appendTo(contents);
-
-    this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
-      .addClass('cancel')
-      .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
-      .appendTo(contents);
-
-  };
-
-  /**
-   * Description
-   * @method setValuesFromLink
-   * @param {} link
-   * @return 
-   */
-  InsertLink.prototype.setValuesFromLink = function(link){
-    var matches;
-
-    if(matches = link.hash.match(/^#p=(\d+)/)){
-      this.fields.type.setValue('page');
-      this.fields.page.setValue(matches[1]);
-    }
-    else if(matches = link.hash.match(/^#t=(\d+),(\d+)&r=(\d+)/)){
-      this.fields.type.setValue('time');
-      this.fields.inTime.setValue(matches[1]);
-      this.fields.outTime.setValue(matches[2]);
-      this.fields.rIndex.setValue(matches[3]);
-    }
-    else{
-      this.fields.type.setValue('url');
-      this.fields.url.setValue(link.href);
-    }
-  };
-
-  /**
-   * Description
-   * @method toggleFields
-   * @return 
-   */
-  InsertLink.prototype.toggleFields = function(){
-    var type = this.fields.type.getValue();
-
-    switch(type){
-      case 'page':
-        this.fields.url.hide();
-        this.fields.page.show();
-        this.fields.inTime.hide();
-        this.fields.outTime.hide();
-        this.fields.rIndex.hide();
-        break;
-
-      case 'time':
-        this.fields.url.hide();
-        this.fields.page.hide();
-        this.fields.inTime.show();
-        this.fields.outTime.show();
-        this.fields.rIndex.show();
-        break;
-
-      default:
-        this.fields.url.show();
-        this.fields.page.hide();
-        this.fields.inTime.hide();
-        this.fields.outTime.hide();
-        this.fields.rIndex.hide();
-    }
-
-  };
-
-  /**
-   * Description
-   * @method onTypeChange
-   * @param {} evt
-   * @return 
-   */
-  InsertLink.prototype.onTypeChange = function(evt){
-    this.toggleFields();
-  };
-
-  /**
-   * Description
-   * @method onApplyClick
-   * @param {} evt
-   * @return 
-   */
-  InsertLink.prototype.onApplyClick = function(evt){
-    var type = this.fields.type.getValue(),
-      url;
-
-    switch(type){
-      case 'page':
-        url = '#p='+ this.fields.page.getValue();
-        break;
-
-      case 'time':
-        url = '#t='+ this.fields.inTime.getValue() +','+ this.fields.outTime.getValue();
-        url += '&r='+ this.fields.rIndex.getValue();
-        break;
-
-      default:
-        url = this.fields.url.getValue();
-    }
-
-    this.triggerEvent('submit', {'overlay': this, 'url': url}, true, false);
-
-    this.hide();
-  };
-
-  /**
-   * Description
-   * @method onCancelClick
-   * @param {} evt
-   * @return 
-   */
-  InsertLink.prototype.onCancelClick = function(evt){
-    this.hide();
-  };
-
-  return InsertLink;
 
 })();
 /**

@@ -15,6 +15,8 @@ metaScore.namespace('editor.panel').Page = (function () {
   function PagePanel(configs) {
     // call parent constructor
     PagePanel.parent.call(this, configs);
+    
+    this.addClass('page');
   }
 
   PagePanel.defaults = {
