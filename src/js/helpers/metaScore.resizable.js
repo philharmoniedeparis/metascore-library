@@ -164,6 +164,15 @@ metaScore.Resizable = (function () {
 
   /**
    * Description
+   * @method getHandle
+   * @return ThisExpression
+   */
+  Resizable.prototype.getHandle = function(direction){
+    return this.handles[direction];
+  };
+
+  /**
+   * Description
    * @method enable
    * @return ThisExpression
    */

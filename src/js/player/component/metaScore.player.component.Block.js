@@ -344,7 +344,6 @@ metaScore.namespace('player.component').Block = (function () {
 
     this.page_wrapper = new metaScore.Dom('<div/>', {'class': 'pages'})
       .addDelegate('.page', 'cuepointstart', metaScore.Function.proxy(this.onPageCuePointStart, this))
-      .addDelegate('.element', 'page', metaScore.Function.proxy(this.onElementPage, this))
       .appendTo(this);
 
     this.pager = new metaScore.player.Pager()
@@ -360,16 +359,6 @@ metaScore.namespace('player.component').Block = (function () {
    */
   Block.prototype.onPageCuePointStart = function(evt){
     this.setActivePage(evt.target._metaScore, 'pagecuepoint');
-  };
-
-  /**
-   * Description
-   * @method onElementPage
-   * @param {} evt
-   * @return 
-   */
-  Block.prototype.onElementPage = function(evt){
-    this.setActivePage(evt.detail.value);
   };
 
   /**

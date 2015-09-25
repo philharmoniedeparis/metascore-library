@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "e36406";
+    return "67faa7";
   },
 
   /**
@@ -2714,6 +2714,15 @@ metaScore.Resizable = (function () {
       .triggerEvent('resizeend', null, false, true);
 
     evt.stopPropagation();
+  };
+
+  /**
+   * Description
+   * @method getHandle
+   * @return ThisExpression
+   */
+  Resizable.prototype.getHandle = function(direction){
+    return this.handles[direction];
   };
 
   /**

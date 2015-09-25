@@ -154,6 +154,18 @@
 
   /**
    * Description
+   * @method rIndex
+   * @param {} callback
+   * @return 
+   */
+  api.prototype.rindex = function(index){
+    this.postMessage('rindex', {'index': parseInt(index)});
+
+    return this;
+  };
+
+  /**
+   * Description
    * @method paused
    * @param {} callback
    * @return 
@@ -207,11 +219,15 @@
         
         handler = function(evt){
           var link = evt.target,
-            action = link.dataset.action,
-            args = link.dataset.args ? link.dataset.args.split(',') : null;
-          
-          if(action in api){
-            api[action].apply(api, args);
+            actions = link.hash.replace(/^#/, '').split('&'),
+            action;
+            
+          for(var i=0,length=actions.length; i<length; i++){
+            action = actions[i].split('=');
+            
+            if(action[0] in api){
+              api[action[0]].apply(api, action[1].split(','));
+            }
           }
           
           evt.preventDefault();

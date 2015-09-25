@@ -100,10 +100,14 @@ metaScore.Player = (function () {
         break;
         
       case 'page':
-        dom = player.getComponent('.block[data-name='+ params.block +']');
+        dom = player.getComponent('.block[data-name="'+ params.block +'"]');
         if(dom._metaScore){
           dom._metaScore.setActivePage(params.index);
         }
+        break;
+        
+      case 'rindex':
+        player.setReadingIndex(!isNaN(params.index) ? params.index : 0);
         break;
         
       case 'paused':
@@ -247,12 +251,27 @@ metaScore.Player = (function () {
 
   /**
    * Description
-   * @method onTextElementTime
+   * @method onTextElementPlay
    * @param {} evt
    * @return 
    */
-  Player.prototype.onTextElementTime = function(evt){
+  Player.prototype.onTextElementPlay = function(evt){
     this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.rIndex);
+  };
+
+  /**
+   * Description
+   * @method onTextElementPage
+   * @param {} evt
+   * @return 
+   */
+  Player.prototype.onTextElementPage = function(evt){
+    var dom;
+    
+    dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
+    if(dom._metaScore){
+      dom._metaScore.setActivePage(evt.detail.index);
+    }
   };
 
   /**
@@ -528,7 +547,8 @@ metaScore.Player = (function () {
         }))
         .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
         .addDelegate('.element[data-type="Cursor"]', 'time', metaScore.Function.proxy(this.onCursorElementTime, this))
-        .addDelegate('.element[data-type="Text"]', 'time', metaScore.Function.proxy(this.onTextElementTime, this));
+        .addDelegate('.element[data-type="Text"]', 'play', metaScore.Function.proxy(this.onTextElementPlay, this))
+        .addDelegate('.element[data-type="Text"]', 'page', metaScore.Function.proxy(this.onTextElementPage, this));
     }
 
     if(supressEvent !== true){
@@ -625,6 +645,11 @@ metaScore.Player = (function () {
       this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
       this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');      
       this.rindex_css.addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
+      
+      this.data('rindex', index);
+    }
+    else{
+      this.data('rindex', null);
     }
 
     if(supressEvent !== true){

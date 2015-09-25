@@ -71,12 +71,12 @@ metaScore.namespace('player.component.element').Text = (function () {
     }
     
     if(link){
-      if(matches = link.hash.match(/^#p=(\d+)/)){
-        this.triggerEvent('page', {'element': this, 'value': parseInt(matches[1])-1});
+      if(matches = link.hash.match(/^#page=([^,]*),(\d+)$/)){
+        this.triggerEvent('page', {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});
         evt.preventDefault();
       }
-      else if(matches = link.hash.match(/^#t=(\d*\.?\d+),(\d*\.?\d+)&r=(\d+)/)){
-        this.triggerEvent('time', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
+      else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
+        this.triggerEvent('play', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
       }
       else{
         window.open(link.href,'_blank');
