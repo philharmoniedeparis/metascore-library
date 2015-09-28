@@ -1,80 +1,3 @@
-/*---------------------------------------------------
-    LESS Prefixer
-  ---------------------------------------------------
-    
-    All of the CSS3 fun, none of the prefixes!
-
-    As a rule, you can use the CSS properties you
-    would expect just by adding a '.':
-
-    box-shadow => .box-shadow(@args)
-
-    Also, when shorthand is available, arguments are
-    not parameterized. Learn CSS, not LESS Prefixer.
-
-    -------------------------------------------------
-    TABLE OF CONTENTS
-    (*) denotes a syntax-sugar helper
-    -------------------------------------------------
-
-        .animation(@args)
-            .animation-delay(@delay)
-            .animation-direction(@direction)
-            .animation-duration(@duration)
-            .animation-iteration-count(@count)
-            .animation-name(@name)
-            .animation-play-state(@state)
-            .animation-timing-function(@function)
-        .background-size(@args)
-        .border-radius(@args)
-        .box-shadow(@args)
-            .inner-shadow(@args) *
-        .box-sizing(@args)
-            .border-box() *
-            .content-box() *
-        .columns(@args)
-            .column-count(@count)
-            .column-gap(@gap)
-            .column-rule(@args)
-            .column-width(@width)
-        .gradient(@default,@start,@stop) *
-            .linear-gradient-top(@default,@color1,@stop1,@color2,@stop2,[@color3,@stop3,@color4,@stop4])*
-            .linear-gradient-left(@default,@color1,@stop1,@color2,@stop2,[@color3,@stop3,@color4,@stop4])*
-        .opacity(@factor)
-        .transform(@args)
-            .rotate(@deg)
-            .scale(@factor)
-            .translate(@x,@y)
-            .translate3d(@x,@y,@z)
-            .translateHardware(@x,@y) *
-        .text-shadow(@args)
-        .transition(@args)
-            .transition-delay(@delay)
-            .transition-duration(@duration)
-            .transition-property(@property)
-            .transition-timing-function(@function)
-
-
-
-    Credit to LESS Elements for the motivation and
-    to CSS3Please.com for implementation.
-
-    Copyright (c) 2012 Joel Sutherland
-    MIT Licensed:
-    http://www.opensource.org/licenses/mit-license.php
-
------------------------------------------------------*/
-/* Animation */
-/* Background Size */
-/* Border Radius */
-/* Box Shadows */
-/* Box Sizing */
-/* Columns */
-/* Gradients */
-/* Opacity */
-/* Text Shadow */
-/* Transforms */
-/* Transitions */
 html,
 body {
   width: 100%;
@@ -107,10 +30,7 @@ body {
   min-height: 50px;
   overflow: hidden;
   -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
   border-radius: 10px;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
   background-clip: padding-box;
 }
 .metaScore-component.media.video video {
@@ -128,10 +48,7 @@ body {
   font-weight: bold;
   font-size: 11px;
   -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
   border-radius: 10px;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
   background-clip: padding-box;
 }
 .metaScore-component.controller:after {
@@ -145,8 +62,9 @@ body {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center center;
-  opacity: 0.5;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
   filter: alpha(opacity=(50));
+  opacity: 0.5;
 }
 .metaScore-component.controller .timer {
   text-align: center;
@@ -196,10 +114,7 @@ body {
   border: 1px solid #cccccc;
   font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
   -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
   border-radius: 10px;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
   background-clip: padding-box;
 }
 .metaScore-component.block button {
@@ -239,10 +154,7 @@ body {
   background-image: url('img/player/pager-buttons.png');
   background-repeat: no-repeat;
   -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
   border-radius: 10px;
-  -webkit-background-clip: padding-box;
-  -moz-background-clip: padding;
   background-clip: padding-box;
   cursor: pointer;
 }
@@ -444,7 +356,6 @@ body {
 .in-editor.editing .metaScore-component.block.selected {
   z-index: 100000;
   -webkit-box-shadow: #33312f 0px 0px 4px 2px;
-  -moz-box-shadow: #33312f 0px 0px 4px 2px;
   box-shadow: #33312f 0px 0px 4px 2px;
 }
 .in-editor.editing .metaScore-component.media:hover .pager,
@@ -464,17 +375,14 @@ body {
 }
 .in-editor.editing .metaScore-component.element.selected[data-type="Cursor"] {
   -webkit-box-shadow: #ff003c 0px 0px 4px 1px;
-  -moz-box-shadow: #ff003c 0px 0px 4px 1px;
   box-shadow: #ff003c 0px 0px 4px 1px;
 }
 .in-editor.editing .metaScore-component.element.selected[data-type="Image"] {
   -webkit-box-shadow: #ff8a00 0px 0px 4px 1px;
-  -moz-box-shadow: #ff8a00 0px 0px 4px 1px;
   box-shadow: #ff8a00 0px 0px 4px 1px;
 }
 .in-editor.editing .metaScore-component.element.selected[data-type="Text"] {
   -webkit-box-shadow: #00c176 0px 0px 4px 1px;
-  -moz-box-shadow: #00c176 0px 0px 4px 1px;
   box-shadow: #00c176 0px 0px 4px 1px;
 }
 .in-editor.editing .metaScore-component.element.selected[data-type="Text"] .contents[contenteditable] {

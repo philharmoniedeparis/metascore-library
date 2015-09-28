@@ -1,5 +1,15 @@
 @import "../../vendor/prefixer.less";
 
+.keyframes(pulsate; {
+  from{
+    .box-shadow(none);
+  }
+  
+  to{
+    .box-shadow(inset 0px 0px 10px 2px rgba(0, 0, 254, 1));
+  }
+});
+
 .metaScore-editor{
   width: 100%;
   height: 100%;
@@ -7,7 +17,7 @@
   padding: 0;
   font: normal 12px/normal Verdana, Geneva, sans-serif;
 
-  .clearfix:after{
+  .clearfix::after{
     visibility: hidden;
     display: block;
     font-size: 0;
@@ -42,7 +52,7 @@
   
   .field{
     &.required{
-      label:after{
+      label::after{
         content: '*';
         color: red;
       }
@@ -504,6 +514,8 @@
     }
 
     .panel{
+      position: relative;
+      
       .toolbar{
         padding: 5px;
         border-bottom: 1px solid #d7d7d7;
@@ -556,7 +568,7 @@
               margin-left: 10px;
               padding-bottom: 2px;
 
-              &:after {
+              &::after {
                 content: "";
                 position: absolute;
                 top: 0;
@@ -607,7 +619,7 @@
               &:hover{
                 opacity: 1;
 
-                &:after {
+                &::after {
                   opacity: 0.75;
                 }
 
@@ -736,6 +748,20 @@
           &.fontStyle{
             border-bottom: none;
           }
+        }
+      }
+      
+      &.has-component{
+        &::after{
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          z-index: 999;
+          animation: pulsate 0.5s ease-out 2 alternate;
+          pointer-events: none;
         }
       }
 
