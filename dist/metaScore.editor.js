@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "aea057";
+    return "9010bd";
   },
 
   /**
@@ -3834,7 +3834,7 @@ metaScore.Editor = (function(){
   Editor.prototype.onElementSet = function(evt){
     var element = evt.detail.component,
       player = this.getPlayer(),
-      time;
+      rindex, time;
 
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
@@ -3843,7 +3843,10 @@ metaScore.Editor = (function(){
       this.panels.text.unsetComponent();
     }
     
-    player.setReadingIndex(element.getProperty('r-index'));
+    rindex = element.getProperty('r-index');
+    if(!isNaN(rindex)){
+      player.setReadingIndex(rindex);
+    }
     
     time = element.getProperty('start-time');
     if(!isNaN(time)){
