@@ -388,9 +388,9 @@ metaScore.Editor = (function(){
         }
         break;
       case 'open':
-        if(this.hasOwnProperty('player')){
-          callback = metaScore.Function.proxy(this.openGuideSelector, this);
+        callback = metaScore.Function.proxy(this.openGuideSelector, this);
         
+        if(this.hasOwnProperty('player')){
           new metaScore.editor.overlay.Alert({
               'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
               'buttons': {
