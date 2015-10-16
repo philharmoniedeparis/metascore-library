@@ -360,9 +360,11 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onMainmenuClick = function(evt){  
+    var callback;
+  
     switch(metaScore.Dom.data(evt.target, 'action')){
       case 'new':
-        var callback = metaScore.Function.proxy(function(){      
+        callback = metaScore.Function.proxy(function(){    
           new metaScore.editor.overlay.GuideDetails({
               'autoShow': true
             })
@@ -387,6 +389,8 @@ metaScore.Editor = (function(){
         break;
       case 'open':
         if(this.hasOwnProperty('player')){
+          callback = metaScore.Function.proxy(this.openGuideSelector, this);
+        
           new metaScore.editor.overlay.Alert({
               'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
               'buttons': {
@@ -395,10 +399,10 @@ metaScore.Editor = (function(){
               },
               'autoShow': true
             })
-            .addListener('confirmclick', metaScore.Function.proxy(this.openGuideSelector, this));
+            .addListener('confirmclick', callback);
         }
         else{
-          this.openGuideSelector();
+          callback();
         }
         break;
       case 'edit':
@@ -408,7 +412,19 @@ metaScore.Editor = (function(){
         this.saveGuide('update');
         break;
       case 'publish':
-        this.saveGuide('update', true);
+        callback = metaScore.Function.proxy(function(){
+          this.saveGuide('update', true);
+        }, this);
+        
+        new metaScore.editor.overlay.Alert({
+            'text': metaScore.Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
+            'buttons': {
+              'confirm': metaScore.Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
+              'cancel': metaScore.Locale.t('editor.onMainmenuClick.publish.no', 'No')
+            },
+            'autoShow': true
+          })
+          .addListener('confirmclick', callback);
         break;
       case 'save-copy':
         this.saveGuide('duplicate');
@@ -993,13 +1009,22 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onElementSet = function(evt){
-    var element = evt.detail.component;
+    var element = evt.detail.component,
+      player = this.getPlayer(),
+      time;
 
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
     }
     else{
       this.panels.text.unsetComponent();
+    }
+    
+    player.setReadingIndex(element.getProperty('r-index'));
+    
+    time = element.getProperty('start-time');
+    if(!isNaN(time)){
+      player.media.setTime(time);
     }
 
     evt.stopPropagation();
