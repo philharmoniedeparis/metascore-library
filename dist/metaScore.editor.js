@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "aea057";
+    return "1a771a";
   },
 
   /**
@@ -3843,7 +3843,7 @@ metaScore.Editor = (function(){
       this.panels.text.unsetComponent();
     }
     
-    player.setReadingIndex(element.getProperty('r-index'));
+    player.setReadingIndex(element.getProperty('r-index') || 0);
     
     time = element.getProperty('start-time');
     if(!isNaN(time)){

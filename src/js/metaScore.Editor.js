@@ -1020,7 +1020,7 @@ metaScore.Editor = (function(){
       this.panels.text.unsetComponent();
     }
     
-    player.setReadingIndex(element.getProperty('r-index'));
+    player.setReadingIndex(element.getProperty('r-index') || 0);
     
     time = element.getProperty('start-time');
     if(!isNaN(time)){
