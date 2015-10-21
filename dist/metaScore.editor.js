@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-10-16 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-10-21 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "46c5bf";
+    return "4959b0";
   },
 
   /**
@@ -2910,7 +2910,7 @@ metaScore.Editor = (function(){
     this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
     this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
     
-    this.player_frame = new metaScore.Dom('<iframe/>', {'class': 'player-frame'}).appendTo(this.workspace)
+    this.player_frame = new metaScore.Dom('<iframe/>', {'src': 'about:blank', 'class': 'player-frame'}).appendTo(this.workspace)
       .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
       .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
     
@@ -3234,6 +3234,9 @@ metaScore.Editor = (function(){
       case 'save-draft':
         this.saveGuide('update');
         break;
+      case 'save-copy':
+        this.saveGuide('duplicate');
+        break;
       case 'publish':
         callback = metaScore.Function.proxy(function(){
           this.saveGuide('update', true);
@@ -3248,9 +3251,6 @@ metaScore.Editor = (function(){
             'autoShow': true
           })
           .addListener('confirmclick', callback);
-        break;
-      case 'save-copy':
-        this.saveGuide('duplicate');
         break;
       case 'download':
         break;
@@ -3833,8 +3833,7 @@ metaScore.Editor = (function(){
    */
   Editor.prototype.onElementSet = function(evt){
     var element = evt.detail.component,
-      player = this.getPlayer(),
-      time;
+      player = this.getPlayer();
 
     if(element.getProperty('type') === 'Text'){
       this.panels.text.setComponent(element);
@@ -3844,11 +3843,6 @@ metaScore.Editor = (function(){
     }
     
     player.setReadingIndex(element.getProperty('r-index') || 0);
-    
-    time = element.getProperty('start-time');
-    if(!isNaN(time)){
-      player.media.setTime(time);
-    }
 
     evt.stopPropagation();
   };
@@ -4386,7 +4380,9 @@ metaScore.Editor = (function(){
    * @return 
    */
   Editor.prototype.onWindowHashChange = function(evt){
-    if(this.hasOwnProperty('player')){
+    var callback = metaScore.Function.proxy(this.loadPlayerFromHash, this);
+  
+    if(this.getPlayer()){
       new metaScore.editor.overlay.Alert({
           'text': metaScore.Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
           'buttons': {
@@ -4395,15 +4391,13 @@ metaScore.Editor = (function(){
           },
           'autoShow': true
         })
-        .addListener('confirmclick', metaScore.Function.proxy(function(new_duration){
-          this.loadPlayerFromHash();
-        }, this))
+        .addListener('confirmclick', callback)
         .addListener('cancelclick', metaScore.Function.proxy(function(new_duration){
           window.history.replaceState(null, null, evt.oldURL);
         }, this));
     }
     else{
-      this.loadPlayerFromHash();
+      callback();
     }
     
     evt.preventDefault();
@@ -4483,8 +4477,8 @@ metaScore.Editor = (function(){
 
     this.mainmenu.toggleButton('edit', hasPlayer);
     this.mainmenu.toggleButton('save-draft', hasPlayer);
-    this.mainmenu.toggleButton('publish', hasPlayer);
     this.mainmenu.toggleButton('save-copy', hasPlayer);
+    this.mainmenu.toggleButton('publish', hasPlayer);
     this.mainmenu.toggleButton('delete', hasPlayer);
     //this.mainmenu.toggleButton('download', hasPlayer);
 
@@ -4656,19 +4650,19 @@ metaScore.Editor = (function(){
    * @chainable 
    */
   Editor.prototype.loadPlayer = function(id, vid){
-    var src = this.configs.player_url + id;
+    var url = this.configs.player_url + id;
     
-    src += "?in-editor";
+    url += "?in-editor";
     
     if(vid){
-      src += "&vid="+ vid;
+      url += "&vid="+ vid;
     }
   
     this.loadmask = new metaScore.editor.overlay.LoadMask({
       'autoShow': true
     });
     
-    this.player_frame.attr('src', src);
+    this.player_frame.get(0).contentWindow.location.replace(url);
     
     return this;
   };
@@ -4681,7 +4675,7 @@ metaScore.Editor = (function(){
   Editor.prototype.removePlayer = function(){    
     delete this.player;
 
-    this.player_frame.attr('src', 'about:blank');
+    this.player_frame.get(0).contentWindow.location.replace('about:blank');
     this.panels.block.unsetComponent();
     this.updateMainmenu();
     
