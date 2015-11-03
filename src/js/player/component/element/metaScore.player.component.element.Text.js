@@ -53,7 +53,7 @@ metaScore.namespace('player.component.element').Text = (function () {
     // call parent function
     Text.parent.prototype.setupDOM.call(this);
 
-    this.data('type', 'text');
+    this.data('type', 'Text');
   };
 
   /**

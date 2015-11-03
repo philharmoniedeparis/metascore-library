@@ -129,7 +129,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     // call parent function
     Cursor.parent.prototype.setupDOM.call(this);
 
-    this.data('type', 'cursor');
+    this.data('type', 'Cursor');
 
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);

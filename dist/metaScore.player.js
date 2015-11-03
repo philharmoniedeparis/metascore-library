@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-10-21 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-11-03 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -178,7 +178,7 @@ metaScore = global.metaScore = {
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "4959b0";
+    return "2800ba";
   },
 
   /**
@@ -6089,7 +6089,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     // call parent function
     Cursor.parent.prototype.setupDOM.call(this);
 
-    this.data('type', 'cursor');
+    this.data('type', 'Cursor');
 
     this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
       .appendTo(this.contents);
@@ -6230,7 +6230,7 @@ metaScore.namespace('player.component.element').Image = (function () {
     // call parent function
     Image.parent.prototype.setupDOM.call(this);
 
-    this.data('type', 'image');
+    this.data('type', 'Image');
   };
 
   return Image;
@@ -6291,7 +6291,7 @@ metaScore.namespace('player.component.element').Text = (function () {
     // call parent function
     Text.parent.prototype.setupDOM.call(this);
 
-    this.data('type', 'text');
+    this.data('type', 'Text');
   };
 
   /**

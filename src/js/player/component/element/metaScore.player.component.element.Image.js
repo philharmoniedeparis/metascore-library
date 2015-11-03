@@ -28,7 +28,7 @@ metaScore.namespace('player.component.element').Image = (function () {
     // call parent function
     Image.parent.prototype.setupDOM.call(this);
 
-    this.data('type', 'image');
+    this.data('type', 'Image');
   };
 
   return Image;
