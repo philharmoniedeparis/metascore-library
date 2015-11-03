@@ -43,10 +43,10 @@ metaScore.Editor = (function(){
       .addListener('resize', metaScore.Function.proxy(this.onSidebarResize, this))
       .addListener('resizeend', metaScore.Function.proxy(this.onSidebarResizeEnd, this));
       
-    new metaScore.Resizable({
-      target: this.sidebar_wrapper,
-      directions: ['left']
-    });
+    this.sidebar_resizer = new metaScore.Resizable({target: this.sidebar_wrapper, directions: ['left']});
+    
+    this.sidebar_resizer.getHandle('left')
+      .addListener('dblclick', metaScore.Function.proxy(this.onSidebarResizeDblclick, this));
     
     this.sidebar =  new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
     
@@ -549,6 +549,18 @@ metaScore.Editor = (function(){
    */
   Editor.prototype.onSidebarResizeEnd = function(evt){
     this.removeClass('sidebar-resizing');
+  };
+
+  /**
+   * Description
+   * @method onSidebarResizeDblclick
+   * @param {} evt
+   * @return 
+   */
+  Editor.prototype.onSidebarResizeDblclick = function(evt){
+    this.toggleClass('sidebar-hidden');
+    
+    this.toggleSidebarResizer();
   };
 
   /**
@@ -1623,8 +1635,26 @@ metaScore.Editor = (function(){
       player.toggleClass('editing', metaScore.editing);
     }
     
+    this.toggleSidebarResizer();
+    
     return this;
     
+  };
+
+  /**
+   * Description
+   * @method toggleSidebarResizer
+   * @chainable
+   */
+  Editor.prototype.toggleSidebarResizer = function(){
+    if(!this.hasClass('editing') || this.hasClass('sidebar-hidden')){
+      this.sidebar_resizer.disable();
+    }
+    else{
+      this.sidebar_resizer.enable();
+    }
+    
+    return this;
   };
 
   /**

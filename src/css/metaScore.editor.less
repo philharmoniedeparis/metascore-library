@@ -310,6 +310,19 @@
       pointer-events: none;
     }
   }
+  
+  &:not(.editing),
+  &.sidebar-hidden{
+    .workspace{
+      right: 9px !important;
+    }
+    
+    .sidebar-wrapper{
+      width: 9px !important;
+      min-width: 9px !important;
+      max-width: 9px !important;
+    }
+  }
 
   .main-menu{
     display: flex;
@@ -683,7 +696,6 @@
 
           &.buttonsfield{
             .input-wrapper{
-              background-image: url('img/editor/wysiwyg/bg.png');
               background-repeat: repeat;
               
               button{
@@ -695,51 +707,6 @@
                 
                 &.pressed{
                   background-color: darken(#EAEAEA, 25%);
-                }
-
-                &[data-action="bold"]{
-                  background-image: url('img/editor/wysiwyg/bold.png');
-                }
-                &[data-action="italic"]{
-                  background-image: url('img/editor/wysiwyg/italic.png');
-                }
-                &[data-action="strikeThrough"]{
-                  background-image: url('img/editor/wysiwyg/strikeThrough.png');
-                }
-                &[data-action="underline"]{
-                  background-image: url('img/editor/wysiwyg/underline.png');
-                }
-                &[data-action="subscript"]{
-                  background-image: url('img/editor/wysiwyg/subscript.png');
-                }
-                &[data-action="superscript"]{
-                  background-image: url('img/editor/wysiwyg/superscript.png');
-                }
-                &[data-action="justifyLeft"]{
-                  background-image: url('img/editor/wysiwyg/justifyLeft.png');
-                  clear: left;
-                }
-                &[data-action="justifyCenter"]{
-                  background-image: url('img/editor/wysiwyg/justifyCenter.png');
-                }
-                &[data-action="justifyRight"]{
-                  background-image: url('img/editor/wysiwyg/justifyRight.png');
-                }
-                &[data-action="justifyFull"]{
-                  background-image: url('img/editor/wysiwyg/justifyFull.png');
-                }
-                &[data-action="link"]{
-                  background-image: url('img/editor/wysiwyg/link.png');
-                  clear: left;
-                }
-                &[data-action="unlink"]{
-                  background-image: url('img/editor/wysiwyg/unlink.png');
-                }
-                &[data-action="insertImage"]{
-                  background-image: url('img/editor/wysiwyg/insertImage.png');
-                }
-                &[data-action="removeFormat"]{
-                  background-image: url('img/editor/wysiwyg/removeFormat.png');
                 }
               }
             }
