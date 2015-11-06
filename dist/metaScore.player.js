@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-11-03 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2015-11-07 - Oussama Mubarak */
 // These constants are used in the build process to enable or disable features in the
 // compiled binary.  Here's how it works:  If you have a const defined like so:
 //
@@ -32,8 +32,6 @@ if (typeof DEBUG === 'undefined') DEBUG = true;
 ;(function (global) {
 "use strict";
 
-var metaScore = global.metaScore;
-
 
 /**
  * Polyfills
@@ -64,6 +62,7 @@ if(Element && !Element.prototype.matches){
 if(Element && !Element.prototype.closest){
   /**
    * Description
+   *
    * @method closest
    * @param {} selector
    * @return Literal
@@ -89,6 +88,7 @@ if(Element && !Element.prototype.closest){
 if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   /**
    * Description
+   *
    * @method CustomEvent
    * @param {} event
    * @param {} params
@@ -129,6 +129,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   if (!window.requestAnimationFrame){
     /**
      * Description
+     *
      * @method requestAnimationFrame
      * @param {} callback
      * @param {} element
@@ -146,6 +147,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   if (!window.cancelAnimationFrame){
     /**
      * Description
+     *
      * @method cancelAnimationFrame
      * @param {} id
      * @return 
@@ -156,16 +158,20 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   }
 }());
 /**
-* The code class
+* The core object <br/>
 * Implements global helper methods
+*
 * @class metaScore
+* @static
 */
 
-metaScore = global.metaScore = {
+var metaScore = {
 
   /**
    * Returns the current version identifier
+   *
    * @method getVersion
+   * @static
    * @return {String} The version identifier
    */
   getVersion: function(){
@@ -174,18 +180,22 @@ metaScore = global.metaScore = {
 
   /**
    * Returns the current revision identifier
+   *
    * @method getRevision
+   * @static
    * @return {String} The revision identifier
    */
   getRevision: function(){
-    return "f7ed98";
+    return "5a8c31";
   },
 
   /**
    * Extends the metaScore namespace
+   *
    * @method namespace
-   * @param {String} The namespace to add
-   * @return {Object} The extended namespace
+   * @static
+   * @param {String} The sub-namespace to create
+   * @return {Object} The sub-namespace
    */
   namespace: function(str){
     var parent = this,
@@ -202,28 +212,32 @@ metaScore = global.metaScore = {
   }
 
 };
-/**
-* The base class
-* Implements a class extension mechanism and defines shared methods 
-* @class Class
-* @namespace metaScore
-*/
-
-metaScore.Class = (function () {
+metaScore.Class = (function(){
 
   /**
+   * The base class <br/>
+   * Implements a class extension mechanism and defines shared methods
+   *
+   * @class Class
    * @constructor
    */
   function Class(){
   }
 
+  /**
+   * Default config values
+   *
+   * @property defaults
+   * @type Object
+   * @default {}
+   */
   Class.defaults = {};
 
   /**
-   * Extends a class by another
+   * Extends a class using the current one
+   *
    * @method extend
-   * @param {Object} child
-   * @return 
+   * @param {Class} child The child class to extend
    */
   Class.extend = function(child){
     child.prototype = Object.create(this.prototype, {
@@ -247,10 +261,11 @@ metaScore.Class = (function () {
   };
 
   /**
-   * Extends the passed configs with default configs
+   * Returns a configs object by overriding the defaults with custom ones
+   *
    * @method getConfigs
-   * @param {Object} configs
-   * @return configs
+   * @param {Object} configs The custom configs
+   * @return {Object} The extended configs
    */
   Class.prototype.getConfigs = function(configs){
     configs = configs || {};
@@ -267,17 +282,13 @@ metaScore.Class = (function () {
   return Class;
 
 })();
-/**
-* A helper class for event handling
-* @class Evented
-* @namespace metaScore
-* @extends metaScore.Class
-*/
-
-metaScore.Evented = (function () {
+metaScore.Evented = (function(){
 
   /**
-   * Description
+   * A base class for event handling
+   *
+   * @class Evented
+   * @extends Class
    * @constructor
    */
   function Evented() {
@@ -290,11 +301,12 @@ metaScore.Evented = (function () {
   metaScore.Class.extend(Evented);
 
   /**
-   * Description
+   * Add an event listener
+   *
    * @method addListener
-   * @param {} type
-   * @param {} listener
-   * @return ThisExpression
+   * @param {String} type The event type to listen to
+   * @param {Function} listener The callback function to associate to this listener
+   * @chainable
    */
   Evented.prototype.addListener = function(type, listener){
     if (typeof this.listeners[type] === "undefined"){
@@ -307,11 +319,12 @@ metaScore.Evented = (function () {
   };
 
   /**
-   * Description
+   * Remove an event listener
+   *
    * @method removeListener
-   * @param {} type
-   * @param {} listener
-   * @return ThisExpression
+   * @param {String} type The event type to stop listen to
+   * @param {Function} listener The callback function associated to this listener
+   * @chainable
    */
   Evented.prototype.removeListener = function(type, listener){
     if(this.listeners[type] instanceof Array){
@@ -328,13 +341,14 @@ metaScore.Evented = (function () {
   };
 
   /**
-   * Description
+   * Trigger an event
+   *
    * @method triggerEvent
-   * @param {} type
-   * @param {} data
-   * @param {} bubbling
-   * @param {} cancelable
-   * @return ThisExpression
+   * @param {String} type The event type
+   * @param {Mixed} data Data to attach to the event via the detail propoerty
+   * @param {Boolean} bubbling Whether the event bubbles up through the DOM or not
+   * @param {Boolean} cancelable Whether the event is cancelable or not
+   * @chainable
    */
   Evented.prototype.triggerEvent = function(type, data, bubbling, cancelable){
     var listeners, event;
@@ -361,16 +375,12 @@ metaScore.Evented = (function () {
   return Evented;
 
 })();
-/**
-* Description
-* @class Ajax
-* @extends metaScore.Class
-*/
-
 metaScore.Ajax = (function () {
 
   /**
-   * Description
+   * Helper class to handle AJAX requests
+   *
+   * @class Ajax
    * @constructor
    */
   function Ajax() {
@@ -380,10 +390,21 @@ metaScore.Ajax = (function () {
 
   /**
    * Send an XMLHttp request
+   *
    * @method send
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return xhr
+   * @static
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request
+   * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
+   * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
+   * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
+   * @param {Object} [options.data={}] Data to be send along with the request
+   * @param {String} [options.dataType='json'] The type of data expected back from the server
+   * @param {Funtion} [options.complete] A function to be called when the request finishes
+   * @param {Funtion} [options.success] A function to be called if the request succeeds
+   * @param {Funtion} [options.error] A function to be called if the request fails
+   * @param {Object} [options.scope=this] The object to which the scope of the above functions should be set
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.send = function(url, options) {
 
@@ -409,11 +430,6 @@ metaScore.Ajax = (function () {
       xhr.setRequestHeader(key, value);
     });
 
-    /**
-     * Description
-     * @method onreadystatechange
-     * @return 
-     */
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if(metaScore.Var.is(options.complete, 'function')){
@@ -439,9 +455,9 @@ metaScore.Ajax = (function () {
   /**
    * Send an XMLHttp GET request
    * @method get
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return CallExpression
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.get = function(url, options) {
 
@@ -454,9 +470,9 @@ metaScore.Ajax = (function () {
   /**
    * Send an XMLHttp POST request
    * @method post
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return CallExpression
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.post = function(url, options) {
 
@@ -469,9 +485,9 @@ metaScore.Ajax = (function () {
   /**
    * Send an XMLHttp PUT request
    * @method put
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return CallExpression
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.put = function(url, options) {
 
@@ -811,12 +827,28 @@ metaScore.Color = (function () {
 })();
 /**
 * Description
+*
 * @class Dom
 * @namespace metaScore
 * @extends metaScore.Class
 */
 
 metaScore.Dom = (function () {
+
+  /**
+   * Fired before an element is removed
+   *
+   * @event beforeremove
+   */
+  var EVT_BEFOREREMOVE = 'beforeremove';
+
+  /**
+   * Fired when a child element is removed
+   *
+   * @event childremove
+   * @param {Object} child The removed child
+   */
+  var EVT_CHILDREMOVE = 'childremove';
 
   /**
    * Description
@@ -1881,11 +1913,11 @@ metaScore.Dom = (function () {
    * @return ThisExpression
    */
   Dom.prototype.remove = function(){
-    if(this.triggerEvent('beforeremove') !== false){
+    if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
       this.each(function(index, element) {
         var parent = element.parentElement;
         Dom.remove(element);
-        Dom.triggerEvent(parent, 'childremove', {'child': element});
+        Dom.triggerEvent(parent, EVT_CHILDREMOVE, {'child': element});
       }, this);
     }
 
@@ -1931,12 +1963,34 @@ metaScore.Dom = (function () {
 })();
 /**
 * Description
+*
 * @class Draggable
 * @namespace metaScore
 * @extends metaScore.Class
 */
 
 metaScore.Draggable = (function () {
+
+  /**
+   * Fired when the dragging started
+   *
+   * @event dragstart
+   */
+  var EVT_DRAGSTART = 'dragstart';
+
+  /**
+   * Fired when a drag occured
+   *
+   * @event drag
+   */
+  var EVT_DRAG = 'drag';
+
+  /**
+   * Fired when the dragging ended
+   *
+   * @event dragend
+   */
+  var EVT_DRAGEND = 'dragend';
 
   /**
    * Description
@@ -1993,7 +2047,7 @@ metaScore.Draggable = (function () {
 
     this.configs.target
       .addClass('dragging')
-      .triggerEvent('dragstart', null, false, true);
+      .triggerEvent(EVT_DRAGSTART, null, false, true);
 
     evt.stopPropagation();
   };
@@ -2019,7 +2073,7 @@ metaScore.Draggable = (function () {
     this.configs.target
       .css('left', left + 'px')
       .css('top', top + 'px')
-      .triggerEvent('drag', null, false, true);
+      .triggerEvent(EVT_DRAG, null, false, true);
 
     evt.stopPropagation();
   };
@@ -2037,7 +2091,7 @@ metaScore.Draggable = (function () {
 
     this.configs.target
       .removeClass('dragging')
-      .triggerEvent('dragend', null, false, true);
+      .triggerEvent(EVT_DRAGEND, null, false, true);
 
     evt.stopPropagation();
   };
@@ -2232,17 +2286,34 @@ metaScore.Object = (function () {
   return Object;
 
 })();
-/**
-* Description
-* @class Resizable
-* @namespace metaScore
-* @extends metaScore.Class
-*/
-
 metaScore.Resizable = (function () {
 
   /**
+   * Fired when a resize started
+   *
+   * @event resizestart
+   */
+  var EVT_RESIZESTART = 'resizestart';
+
+  /**
+   * Fired when a resize occured
+   *
+   * @event resize
+   */
+  var EVT_RESIZE = 'resize';
+
+  /**
+   * Fired when a resize ended
+   *
+   * @event resizeend
+   */
+  var EVT_RESIZEEND = 'resizeend';
+
+  /**
    * Description
+   *
+   * @class Resizable
+   * @extends metaScore.Class
    * @constructor
    * @param {} configs
    */
@@ -2311,7 +2382,7 @@ metaScore.Resizable = (function () {
 
     this.configs.target
       .addClass('resizing')
-      .triggerEvent('resizestart', null, false, true);
+      .triggerEvent(EVT_RESIZESTART, null, false, true);
 
     evt.stopPropagation();
   };
@@ -2373,7 +2444,7 @@ metaScore.Resizable = (function () {
     this.configs.target
       .css('width', w +'px')
       .css('height', h +'px')
-      .triggerEvent('resize', null, false, true);
+      .triggerEvent(EVT_RESIZE, null, false, true);
 
     evt.stopPropagation();
   };
@@ -2391,7 +2462,7 @@ metaScore.Resizable = (function () {
 
     this.configs.target
       .removeClass('resizing')
-      .triggerEvent('resizeend', null, false, true);
+      .triggerEvent(EVT_RESIZEEND, null, false, true);
 
     evt.stopPropagation();
   };
@@ -2769,31 +2840,26 @@ metaScore.Var = (function () {
   return Var;
 
 })();
-/**
-* The i18n handling class
-* @class Locale
-* @namespace metaScore
-* @extends metaScore.Class
-*/
-
-metaScore.Locale = (function () {
+metaScore.Locale = (function(){
 
   /**
-   * Description
+   * The i18n handling class
+   *
+   * @class Locale
    * @constructor
    */
   function Locale() {
   }
 
-  metaScore.Class.extend(Locale);
-
   /**
    * Translate a string
+   *
    * @method t
-   * @param {} key
-   * @param {} str
-   * @param {} args
-   * @return CallExpression
+   * @static
+   * @param {String} key The string identifier
+   * @param {String} str The default string to use if no translation is found
+   * @param {Object} args An object of replacements to make after translation
+   * @return {String} The translated string
    */
   Locale.t = function(key, str, args){
     if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
@@ -2804,11 +2870,13 @@ metaScore.Locale = (function () {
   };
 
   /**
-   * Replace placeholders with sanitized values in a string.
+   * Replace placeholders with sanitized values in a string
+   *
    * @method formatString
-   * @param {} str
-   * @param {} args
-   * @return str
+   * @static
+   * @param {String} str The string to process
+   * @param {Object} args An object of replacements with placeholders as keys
+   * @return {String} The translated string
    */
   Locale.formatString = function(str, args) {
     metaScore.Object.each(args, function(key, value){
@@ -2821,19 +2889,91 @@ metaScore.Locale = (function () {
   return Locale;
 
 })();
-/**
-* The main player class
-* @class Player
-* @namespace metaScore
-* @extends metaScore.Dom
-*/
-
-metaScore.Player = (function () {
+metaScore.Player = (function(){
 
   /**
-   * Description
+   * Fired when the guide's loading finished successfully
+   *
+   * @event load
+   * @param {Object} player The player instance
+   * @param {Object} data The json data loaded
+   */
+  var EVT_LOAD = 'load';
+
+   /**
+    * Fired when the guide's loading failed
+    *
+    * @event loaderror
+    * @param {Object} player The player instance
+    */
+   var EVT_ERROR = 'error';
+
+   /**
+    * Fired when the id is set
+    *
+    * @event idset
+    * @param {Object} player The player instance
+    * @param {Number} id The guide's id
+    */
+   var EVT_IDSET = 'idset';
+
+   /**
+    * Fired when the vid is set
+    *
+    * @event revisionset
+    * @param {Object} player The player instance
+    * @param {Number} vid The guide's vid
+    */
+   var EVT_REVISIONSET = 'revisionset';
+
+   /**
+    * Fired when the media is added
+    *
+    * @event mediaadd
+    * @param {Object} player The player instance
+    * @param {Object} media The media instance
+    */
+   var EVT_MEDIAADD = 'mediaadd';
+
+   /**
+    * Fired when the controller is added
+    *
+    * @event controlleradd
+    * @param {Object} player The player instance
+    * @param {Object} controller The controller instance
+    */
+   var EVT_CONTROLLERADD = 'controlleradd';
+
+   /**
+    * Fired when a block is added
+    *
+    * @event blockadd
+    * @param {Object} player The player instance
+    * @param {Object} block The block instance
+    */
+   var EVT_BLOCKADD = 'blockadd';
+
+   /**
+    * Fired when the reading index is set
+    *
+    * @event rindex
+    * @param {Object} player The player instance
+    * @param {Object} value The reading index value
+    */
+   var EVT_RINDEX = 'rindex';
+
+  /**
+   * Provides the main Player class
+   *
+   * @class Player
+   * @extends Dom
    * @constructor
-   * @param {} configs
+   * @param {Object} configs Custom configs to override defaults
+   * @param {String} [configs.url=''] The URL of the guide's JSON data to load
+   * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
+   * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+   * @param {Boolean} [configs.keyboard=false] Whether to activate keyboard shortcuts or not
+   * @param {Boolean} [configs.api=false] Whether to allow API access or not
    */
   function Player(configs) {
     this.configs = this.getConfigs(configs);
@@ -2861,10 +3001,11 @@ metaScore.Player = (function () {
   metaScore.Dom.extend(Player);
 
   /**
-   * Description
+   * Keydown event callback
+   *
    * @method onKeydown
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {KeyboardEvent} evt The event object
    */
   Player.prototype.onKeydown = function(evt){    
     switch(evt.keyCode){
@@ -2872,10 +3013,12 @@ metaScore.Player = (function () {
         this.togglePlay();
         evt.preventDefault();
         break;
+        
       case 37: //left
         this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
         evt.preventDefault();
         break;
+        
       case 39: //right
         this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
         evt.preventDefault();
@@ -2884,10 +3027,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * API message event callback
+   *
    * @method onAPIMessage
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MessageEvent} evt The event object
    */
   Player.prototype.onAPIMessage = function(evt){
     var player = this,
@@ -2933,10 +3077,10 @@ metaScore.Player = (function () {
         player.setReadingIndex(!isNaN(params.index) ? params.index : 0);
         break;
         
-      case 'paused':
+      case 'playing':
         source.postMessage(JSON.stringify({
           'callback': params.callback,
-          'params': !player.getMedia().isPlaying()
+          'params': player.getMedia().isPlaying()
         }), origin);
         break;
         
@@ -2983,10 +3127,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Controller button click event callback
+   *
    * @method onControllerButtonClick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Player.prototype.onControllerButtonClick = function(evt){
     var action = metaScore.Dom.data(evt.target, 'action');
@@ -3005,40 +3150,44 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Media loadedmetadata event callback
+   *
    * @method onMediaLoadedMetadata
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaLoadedMetadata = function(evt){
     this.getMedia().reset();
   };
 
   /**
-   * Description
+   * Media play event callback
+   *
    * @method onMediaPlay
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaPlay = function(evt){
     this.controller.addClass('playing');
   };
 
   /**
-   * Description
+   * Media pause event callback
+   *
    * @method onMediaPause
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaPause = function(evt){
     this.controller.removeClass('playing');
   };
 
   /**
-   * Description
+   * Media timeupdate event callback
+   *
    * @method onMediaTimeUpdate
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getTime();
@@ -3047,10 +3196,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Block pageactivate event callback
+   *
    * @method onPageActivate
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
@@ -3063,30 +3213,33 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Element of type Cursor time event callback
+   *
    * @method onCursorElementTime
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onCursorElementTime = function(evt){
     this.getMedia().setTime(evt.detail.value);
   };
 
   /**
-   * Description
+   * Element of type Text play event callback
+   *
    * @method onTextElementPlay
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onTextElementPlay = function(evt){
     this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.rIndex);
   };
 
   /**
-   * Description
+   * Element of type Text page event callback
+   *
    * @method onTextElementPage
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onTextElementPage = function(evt){
     var dom;
@@ -3098,10 +3251,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Componenet propchange event callback
+   *
    * @method onComponenetPropChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onComponenetPropChange = function(evt){
     var component = evt.detail.component;
@@ -3117,10 +3271,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * loadsuccess event callback
+   *
    * @method onLoadSuccess
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
@@ -3138,12 +3293,12 @@ metaScore.Player = (function () {
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
         case 'media':
-          this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}));
-          this.getMedia().setSources([this.json.media]);
+          this.media = this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}))
+            .setSources([this.json.media]);
           break;
           
         case 'controller':
-          this.addController(block);
+          this.controller = this.addController(block);
           break;
         
         default:
@@ -3157,25 +3312,27 @@ metaScore.Player = (function () {
 
     this.removeClass('loading');
     
-    this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
+    this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
   };
 
   /**
-   * Description
+   * loaderror event callback
+   *
    * @method onLoadError
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Player.prototype.onLoadError = function(xhr){
     this.removeClass('loading');
     
-    this.triggerEvent('loaderror', {'player': this}, true, false);
+    this.triggerEvent(EVT_ERROR, {'player': this}, true, false);
   };
 
   /**
-   * Description
+   * Load the guide
+   *
    * @method load
-   * @return 
+   * @private
    */
   Player.prototype.load = function(){
     var options;
@@ -3192,75 +3349,82 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Get the id of the loaded guide
+   *
    * @method getId
-   * @return CallExpression
+   * @return {String} The id
    */
   Player.prototype.getId = function(){
     return this.data('id');
   };
 
   /**
-   * Description
+   * Set the id of the loaded guide in a data attribute
+   *
    * @method setId
-   * @return CallExpression
+   * @chainable
    */
   Player.prototype.setId = function(id, supressEvent){
     this.data('id', id);
 
     if(supressEvent !== true){
-      this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
+      this.triggerEvent(EVT_IDSET, {'player': this, 'id': id}, true, false);
     }
     
     return this;
   };
 
   /**
-   * Description
+   * Get the revision id of the loaded guide
+   *
    * @method getRevision
-   * @return CallExpression
+   * @return {String} The revision id
    */
   Player.prototype.getRevision = function(){
     return this.data('vid');
   };
 
   /**
-   * Description
+   * Set the revision id of the loaded guide in a data attribute
+   *
    * @method setRevision
-   * @return CallExpression
+   * @chainable
    */
   Player.prototype.setRevision = function(vid, supressEvent){
     this.data('vid', vid);
 
     if(supressEvent !== true){
-      this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
+      this.triggerEvent(EVT_REVISIONSET, {'player': this, 'vid': vid}, true, false);
     }
     
     return this;
   };
 
   /**
-   * Description
+   * Get the loaded JSON data
+   *
    * @method getData
-   * @return MemberExpression
+   * @return {Object} The JSON data
    */
   Player.prototype.getData = function(){
     return this.json;
   };
 
   /**
-   * Description
+   * Get the media instance
+   *
    * @method getMedia
-   * @return MemberExpression
+   * @return {Media} The media instance
    */
   Player.prototype.getMedia = function(){
     return this.media;
   };
 
   /**
-   * Description
+   * Update the loaded JSON data
+   *
    * @method updateData
-   * @return MemberExpression
+   * @param {Object} data The data key, value pairs to update
    */
   Player.prototype.updateData = function(data){
     metaScore.Object.extend(this.json, data);
@@ -3279,20 +3443,22 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Get a component by CSS selector
+   *
    * @method getComponent
-   * @param {} selector
-   * @return CallExpression
+   * @param {String} selector The CSS selector
+   * @return {Component} The component
    */
   Player.prototype.getComponent = function(selector){    
     return this.getComponents(selector).get(0);
   };
 
   /**
-   * Description
+   * Get components by CSS selector
+   *
    * @method getComponents
-   * @param {} selector
-   * @return components
+   * @param {String} selector The CSS selector
+   * @return {Dom} A Dom instance containing the selected components
    */
   Player.prototype.getComponents = function(selector){
     var components;
@@ -3307,14 +3473,15 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Create and add a Media instance
+   *
    * @method addMedia
-   * @param {} configs
-   * @param {} supressEvent
-   * @return ThisExpression
+   * @param {Object} configs The configurations to send to the Media class
+   * @param {Boolean} [supressEvent=false] Wheather to supress the mediadd event or not
+   * @return {Media} The Media instance
    */
   Player.prototype.addMedia = function(configs, supressEvent){
-    this.media = new metaScore.player.component.Media(configs)
+    var media = new metaScore.player.component.Media(configs)
       .addListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
@@ -3322,37 +3489,39 @@ metaScore.Player = (function () {
       .appendTo(this);
 
     if(supressEvent !== true){
-      this.triggerEvent('mediaadd', {'player': this, 'media': this.media}, true, false);
+      this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
     }
     
-    return this;
+    return media;
   };
 
   /**
-   * Description
+   * Create and add a Controller instance
+   *
    * @method addController
-   * @param {} configs
-   * @param {} supressEvent
-   * @return ThisExpression
+   * @param {Object} configs The configurations to send to the Controller class
+   * @param {Boolean} [supressEvent=false] Wheather to supress the controlleradd event or not
+   * @return {Controller} The Controller instance
    */
   Player.prototype.addController = function(configs, supressEvent){
-    this.controller = new metaScore.player.component.Controller(configs)
+    var controller = new metaScore.player.component.Controller(configs)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .appendTo(this);
 
     if(supressEvent !== true){
-      this.triggerEvent('controlleradd', {'player': this, 'controller': this.controller}, true, false);
+      this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
     }
     
-    return this;
+    return controller;
   };
 
   /**
-   * Description
+   * Create and add a Block instance
+   *
    * @method addBlock
-   * @param {} configs
-   * @param {} supressEvent
-   * @return block
+   * @param {Object} configs The configurations to send to the Block class
+   * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+   * @return {Block} The Block instance
    */
   Player.prototype.addBlock = function(configs, supressEvent){
     var block, page;
@@ -3375,26 +3544,30 @@ metaScore.Player = (function () {
     }
 
     if(supressEvent !== true){
-      this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
+      this.triggerEvent(EVT_BLOCKADD, {'player': this, 'block': block}, true, false);
     }
 
     return block;
   };
 
   /**
-   * Description
+   * Update the custom CSS
+   *
    * @method updateCSS
-   * @param {} value
-   * @return 
+   * @param {String} value The custom CSS value
+   * @chainable
    */
   Player.prototype.updateCSS = function(value){
     this.css.setInternalValue(value);
+    
+    return this;
   };
 
   /**
-   * Description
+   * Toggles the media playing state
+   *
    * @method togglePlay
-   * @return 
+   * @chainable
    */
   Player.prototype.togglePlay = function(){
     var media = this.getMedia();
@@ -3405,12 +3578,18 @@ metaScore.Player = (function () {
     else{
       media.play();
     }
+    
+    return this;
   };
 
   /**
-   * Description
+   * Start playing the media at the current position, or plays a specific extract
+   *
    * @method play
-   * @return 
+   * @param {String} [inTime] The time at which the media should start playing
+   * @param {String} [outTime] The time at which the media should stop playing
+   * @param {String} [rIndex] A reading index to go to while playing
+   * @chainable
    */
   Player.prototype.play = function(inTime, outTime, rIndex){
     var player = this,
@@ -3451,14 +3630,17 @@ metaScore.Player = (function () {
         .setTime(inTime)
         .play();
     }
+    
+    return this;
   };
 
   /**
-   * Description
+   * Set the current reading index
+   *
    * @method setReadingIndex
-   * @param {} index
-   * @param {} supressEvent
-   * @return ThisExpression
+   * @param {Number} index The reading index
+   * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+   * @chainable
    */
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
@@ -3476,7 +3658,7 @@ metaScore.Player = (function () {
     }
 
     if(supressEvent !== true){
-      this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
+      this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
     }
     
     return this;
@@ -3487,12 +3669,23 @@ metaScore.Player = (function () {
 })();
 /**
 * Description
+*
 * @class Component
 * @namespace metaScore.player
 * @extends metaScore.Dom
 */
 
 metaScore.namespace('player').Component = (function () {
+
+  /**
+   * Fired when a property changed
+   *
+   * @event propchange
+   * @param {Object} component The component instance
+   * @param {String} property The name of the property
+   * @param {Mixed} value The new value of the property
+   */
+  var EVT_PROPCHANGE = 'propchange';
 
   /**
    * Description
@@ -3628,7 +3821,7 @@ metaScore.namespace('player').Component = (function () {
       this.configs.properties[name].setter.call(this, value);
       
       if(supressEvent !== true){
-        this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+        this.triggerEvent(EVT_PROPCHANGE, {'component': this, 'property': name, 'value': value});
       }
     }
     
@@ -3708,6 +3901,7 @@ metaScore.namespace('player').Component = (function () {
 })();
 /**
 * Description
+*
 * @class CuePoint
 * @namespace metaScore.player
 * @extends metaScore.Evented
@@ -3899,6 +4093,7 @@ metaScore.namespace('player').CuePoint = (function () {
 })();
 /**
 * Description
+*
 * @class Pager
 * @namespace metaScore.player
 * @extends metaScore.Dom
@@ -3956,12 +4151,41 @@ metaScore.namespace('player').Pager = (function () {
 })();
 /**
 * Description
+*
 * @class Block
 * @namespace metaScore.player.component
 * @extends metaScore.player.Component
 */
 
 metaScore.namespace('player.component').Block = (function () {
+
+  /**
+   * Fired when a page is added
+   *
+   * @event pageadd
+   * @param {Object} block The block instance
+   * @param {Object} page The page instance
+   */
+  var EVT_PAGEADD = 'pageadd';
+
+  /**
+   * Fired when a page is removed
+   *
+   * @event pageremove
+   * @param {Object} block The block instance
+   * @param {Object} page The page instance
+   */
+  var EVT_PAGEREMOVE = 'pageremove';
+
+  /**
+   * Fired when the active page is set
+   *
+   * @event pageactivate
+   * @param {Object} block The block instance
+   * @param {Object} page The page instance
+   * @param {String} basis The reason behind this action
+   */
+  var EVT_PAGEACTIVATE = 'pageactivate';
 
   /**
    * Description
@@ -4385,7 +4609,7 @@ metaScore.namespace('player.component').Block = (function () {
     this.setActivePage(page);
 
     if(supressEvent !== true){
-      this.triggerEvent('pageadd', {'block': this, 'page': page});
+      this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page});
     }
 
     return page;
@@ -4404,7 +4628,7 @@ metaScore.namespace('player.component').Block = (function () {
     page.remove();
 
     if(supressEvent !== true){
-      this.triggerEvent('pageremove', {'block': this, 'page': page});
+      this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});
     }
 
     return page;
@@ -4474,7 +4698,7 @@ metaScore.namespace('player.component').Block = (function () {
       this.updatePager();
 
       if(supressEvent !== true){
-        this.triggerEvent('pageactivate', {'block': this, 'page': page, 'basis': basis});
+        this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'page': page, 'basis': basis});
       }
     }
   };
@@ -4561,6 +4785,7 @@ metaScore.namespace('player.component').Block = (function () {
 })();
 /**
 * Description
+*
 * @class Controller
 * @namespace metaScore.player.component
 * @extends metaScore.player.Component
@@ -4773,6 +4998,7 @@ metaScore.namespace('player.component').Controller = (function () {
 })();
 /**
 * Description
+*
 * @class Element
 * @namespace metaScore.player.component
 * @extends metaScore.player.Component
@@ -5317,12 +5543,61 @@ metaScore.namespace('player.component').Element = (function () {
 })();
 /**
 * Description
+*
 * @class Media
 * @namespace metaScore.player.component
 * @extends metaScore.player.Component
 */
 
 metaScore.namespace('player.component').Media = (function () {
+
+  /**
+   * Fired when the media source is set
+   *
+   * @event sourcesset
+   * @param {Object} media The media instance
+   */
+  var EVT_SOURCESSET = 'sourcesset';
+
+  /**
+   * Fired when the metadata has loaded
+   *
+   * @event loadedmetadata
+   * @param {Object} media The media instance
+   */
+  var EVT_LOADEDMETADATA = 'loadedmetadata';
+
+  /**
+   * Fired when the media starts playing
+   *
+   * @event play
+   * @param {Object} media The media instance
+   */
+  var EVT_PLAY = 'play';
+
+  /**
+   * Fired when the media is paused
+   *
+   * @event pause
+   * @param {Object} media The media instance
+   */
+  var EVT_PAUSE = 'pause';
+
+  /**
+   * Fired when the media is seeking
+   *
+   * @event seeking
+   * @param {Object} media The media instance
+   */
+  var EVT_SEEKING = 'seeking';
+
+  /**
+   * Fired when the media's time changed
+   *
+   * @event timeupdate
+   * @param {Object} media The media instance
+   */
+  var EVT_TIMEUPDATE = 'timeupdate';
 
   /**
    * Description
@@ -5506,7 +5781,7 @@ metaScore.namespace('player.component').Media = (function () {
     this.dom.load();
 
     if(supressEvent !== true){
-      this.triggerEvent('sourcesset', {'media': this});
+      this.triggerEvent(EVT_SOURCESSET, {'media': this});
     }
 
     return this;
@@ -5529,7 +5804,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return 
    */
   Media.prototype.onLoadedMetadata = function(evt) {    
-    this.triggerEvent('loadedmetadata', {'media': this});
+    this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
   };
 
   /**
@@ -5541,7 +5816,7 @@ metaScore.namespace('player.component').Media = (function () {
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
     
-    this.triggerEvent('play', {'media': this});
+    this.triggerEvent(EVT_PLAY, {'media': this});
     
     if(this.configs.useFrameAnimation){
       this.triggerTimeUpdate();
@@ -5557,7 +5832,7 @@ metaScore.namespace('player.component').Media = (function () {
   Media.prototype.onPause = function(evt) {
     this.playing = false;
     
-    this.triggerEvent('pause', {'media': this});
+    this.triggerEvent(EVT_PAUSE, {'media': this});
   };
 
   /**
@@ -5579,7 +5854,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return 
    */
   Media.prototype.onSeeking = function(evt){
-    this.triggerEvent('seeking', {'media': this});
+    this.triggerEvent(EVT_SEEKING, {'media': this});
   };
 
   /**
@@ -5635,7 +5910,7 @@ metaScore.namespace('player.component').Media = (function () {
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
 
-    this.triggerEvent('timeupdate', {'media': this});
+    this.triggerEvent(EVT_TIMEUPDATE, {'media': this});
   };
 
   /**
@@ -5709,12 +5984,36 @@ metaScore.namespace('player.component').Media = (function () {
 })();
 /**
 * Description
+*
 * @class Page
 * @namespace metaScore.player.component
 * @extends metaScore.player.Component
 */
 
 metaScore.namespace('player.component').Page = (function () {
+
+  /**
+   * Fired when an element is added
+   *
+   * @event elementadd
+   * @param {Object} page The page instance
+   * @param {Object} element The element instance
+   */
+  var EVT_ELEMENTADD = 'elementadd';
+
+  /**
+   * Fired when a cuepoint started
+   *
+   * @event cuepointstart
+   */
+  var EVT_CUEPOINTSTART = 'cuepointstart';
+
+  /**
+   * Fired when a cuepoint ended
+   *
+   * @event cuepointend
+   */
+  var EVT_CUEPOINTEND = 'cuepointend';
 
   /**
    * Description
@@ -5896,7 +6195,7 @@ metaScore.namespace('player.component').Page = (function () {
     }
 
     if(supressEvent !== true){
-      this.triggerEvent('elementadd', {'page': this, 'element': element});
+      this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element});
     }
 
     return element;
@@ -5934,7 +6233,7 @@ metaScore.namespace('player.component').Page = (function () {
    * @return 
    */
   Page.prototype.onCuePointStart = function(cuepoint){
-    this.triggerEvent('cuepointstart');
+    this.triggerEvent(EVT_CUEPOINTSTART);
   };
 
   /**
@@ -5944,7 +6243,7 @@ metaScore.namespace('player.component').Page = (function () {
    * @return 
    */
   Page.prototype.onCuePointEnd = function(cuepoint){
-    this.triggerEvent('cuepointend');
+    this.triggerEvent(EVT_CUEPOINTEND);
   };
 
   /**
@@ -5960,12 +6259,22 @@ metaScore.namespace('player.component').Page = (function () {
 })();
 /**
 * Description
+*
 * @class Cursor
 * @namespace metaScore.player.component.element
 * @extends metaScore.player.component.Element
 */
 
 metaScore.namespace('player.component.element').Cursor = (function () {
+
+  /**
+   * Fired when a cursor is clicked, requesting a time update
+   *
+   * @event time
+   * @param {Object} element The element instance
+   * @param {Number} time The time value according to the click position
+   */
+  var EVT_TIME = 'time';
 
   /**
    * Description
@@ -6145,7 +6454,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
     }
 
-    this.triggerEvent('time', {'element': this, 'value': time});
+    this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
   };
 
   /**
@@ -6202,6 +6511,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
 })();
 /**
 * Description
+*
 * @class Image
 * @namespace metaScore.player.component.element
 * @extends metaScore.player.component.Element
@@ -6238,12 +6548,34 @@ metaScore.namespace('player.component.element').Image = (function () {
 })();
 /**
 * Description
+*
 * @class Text
 * @namespace metaScore.player.component.element
 * @extends metaScore.player.component.Element
 */
 
 metaScore.namespace('player.component.element').Text = (function () {
+
+  /**
+   * Fired when a page link is clicked
+   *
+   * @event page
+   * @param {Object} element The element instance
+   * @param {Object} block The block instance
+   * @param {Number} index The page index
+   */
+  var EVT_PAGE = 'page';
+
+  /**
+   * Fired when a play link is clicked
+   *
+   * @event play
+   * @param {Object} element The element instance
+   * @param {Number} inTime The start time
+   * @param {Number} outTime The end time
+   * @param {Number} rIndex The reading index
+   */
+  var EVT_PLAY = 'play';
 
   /**
    * Description
@@ -6310,11 +6642,11 @@ metaScore.namespace('player.component.element').Text = (function () {
     
     if(link){
       if(matches = link.hash.match(/^#page=([^,]*),(\d+)$/)){
-        this.triggerEvent('page', {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});
+        this.triggerEvent(EVT_PAGE, {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});
         evt.preventDefault();
       }
       else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
-        this.triggerEvent('play', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
+        this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
       }
       else{
         window.open(link.href,'_blank');
@@ -6328,6 +6660,6 @@ metaScore.namespace('player.component.element').Text = (function () {
   return Text;
 
 })();
-
+  global.metaScore = metaScore;
 
 } (this));

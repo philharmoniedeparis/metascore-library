@@ -1,8 +1,7 @@
 /**
 * Description
-* @class Textarea
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Textarea
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Textarea = (function () {

@@ -1,11 +1,20 @@
 /**
 * Description
-* @class Alert
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+*
+* @class editor.overlay.Alert
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').Alert = (function () {
+
+  /**
+   * Fired when a button is clicked
+   *
+   * @event buttonclick
+   * @param {Object} alert The alert instance
+   * @param {String} action The buttons's action
+   */
+  var EVT_BUTTONCLICK = 'buttonclick';
 
   /**
    * Description
@@ -99,7 +108,7 @@ metaScore.namespace('editor.overlay').Alert = (function () {
 
     this.hide();
 
-    this.triggerEvent(action +'click', {'alert': this}, false);
+    this.triggerEvent(EVT_BUTTONCLICK, {'alert': this, 'action': action}, false);
 
     evt.stopPropagation();
   };

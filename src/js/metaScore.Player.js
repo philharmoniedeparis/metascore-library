@@ -1,16 +1,88 @@
-/**
-* The main player class
-* @class Player
-* @namespace metaScore
-* @extends metaScore.Dom
-*/
-
-metaScore.Player = (function () {
+metaScore.Player = (function(){
 
   /**
-   * Description
+   * Fired when the guide's loading finished successfully
+   *
+   * @event load
+   * @param {Object} player The player instance
+   * @param {Object} data The json data loaded
+   */
+  var EVT_LOAD = 'load';
+
+   /**
+    * Fired when the guide's loading failed
+    *
+    * @event loaderror
+    * @param {Object} player The player instance
+    */
+   var EVT_ERROR = 'error';
+
+   /**
+    * Fired when the id is set
+    *
+    * @event idset
+    * @param {Object} player The player instance
+    * @param {Number} id The guide's id
+    */
+   var EVT_IDSET = 'idset';
+
+   /**
+    * Fired when the vid is set
+    *
+    * @event revisionset
+    * @param {Object} player The player instance
+    * @param {Number} vid The guide's vid
+    */
+   var EVT_REVISIONSET = 'revisionset';
+
+   /**
+    * Fired when the media is added
+    *
+    * @event mediaadd
+    * @param {Object} player The player instance
+    * @param {Object} media The media instance
+    */
+   var EVT_MEDIAADD = 'mediaadd';
+
+   /**
+    * Fired when the controller is added
+    *
+    * @event controlleradd
+    * @param {Object} player The player instance
+    * @param {Object} controller The controller instance
+    */
+   var EVT_CONTROLLERADD = 'controlleradd';
+
+   /**
+    * Fired when a block is added
+    *
+    * @event blockadd
+    * @param {Object} player The player instance
+    * @param {Object} block The block instance
+    */
+   var EVT_BLOCKADD = 'blockadd';
+
+   /**
+    * Fired when the reading index is set
+    *
+    * @event rindex
+    * @param {Object} player The player instance
+    * @param {Object} value The reading index value
+    */
+   var EVT_RINDEX = 'rindex';
+
+  /**
+   * Provides the main Player class
+   *
+   * @class Player
+   * @extends Dom
    * @constructor
-   * @param {} configs
+   * @param {Object} configs Custom configs to override defaults
+   * @param {String} [configs.url=''] The URL of the guide's JSON data to load
+   * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
+   * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+   * @param {Boolean} [configs.keyboard=false] Whether to activate keyboard shortcuts or not
+   * @param {Boolean} [configs.api=false] Whether to allow API access or not
    */
   function Player(configs) {
     this.configs = this.getConfigs(configs);
@@ -38,10 +110,11 @@ metaScore.Player = (function () {
   metaScore.Dom.extend(Player);
 
   /**
-   * Description
+   * Keydown event callback
+   *
    * @method onKeydown
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {KeyboardEvent} evt The event object
    */
   Player.prototype.onKeydown = function(evt){    
     switch(evt.keyCode){
@@ -49,10 +122,12 @@ metaScore.Player = (function () {
         this.togglePlay();
         evt.preventDefault();
         break;
+        
       case 37: //left
         this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
         evt.preventDefault();
         break;
+        
       case 39: //right
         this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
         evt.preventDefault();
@@ -61,10 +136,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * API message event callback
+   *
    * @method onAPIMessage
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MessageEvent} evt The event object
    */
   Player.prototype.onAPIMessage = function(evt){
     var player = this,
@@ -110,10 +186,10 @@ metaScore.Player = (function () {
         player.setReadingIndex(!isNaN(params.index) ? params.index : 0);
         break;
         
-      case 'paused':
+      case 'playing':
         source.postMessage(JSON.stringify({
           'callback': params.callback,
-          'params': !player.getMedia().isPlaying()
+          'params': player.getMedia().isPlaying()
         }), origin);
         break;
         
@@ -160,10 +236,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Controller button click event callback
+   *
    * @method onControllerButtonClick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Player.prototype.onControllerButtonClick = function(evt){
     var action = metaScore.Dom.data(evt.target, 'action');
@@ -182,40 +259,44 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Media loadedmetadata event callback
+   *
    * @method onMediaLoadedMetadata
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaLoadedMetadata = function(evt){
     this.getMedia().reset();
   };
 
   /**
-   * Description
+   * Media play event callback
+   *
    * @method onMediaPlay
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaPlay = function(evt){
     this.controller.addClass('playing');
   };
 
   /**
-   * Description
+   * Media pause event callback
+   *
    * @method onMediaPause
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaPause = function(evt){
     this.controller.removeClass('playing');
   };
 
   /**
-   * Description
+   * Media timeupdate event callback
+   *
    * @method onMediaTimeUpdate
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Player.prototype.onMediaTimeUpdate = function(evt){
     var currentTime = evt.detail.media.getTime();
@@ -224,10 +305,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Block pageactivate event callback
+   *
    * @method onPageActivate
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onPageActivate = function(evt){
     var block = evt.target._metaScore,
@@ -240,30 +322,33 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Element of type Cursor time event callback
+   *
    * @method onCursorElementTime
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onCursorElementTime = function(evt){
     this.getMedia().setTime(evt.detail.value);
   };
 
   /**
-   * Description
+   * Element of type Text play event callback
+   *
    * @method onTextElementPlay
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onTextElementPlay = function(evt){
     this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.rIndex);
   };
 
   /**
-   * Description
+   * Element of type Text page event callback
+   *
    * @method onTextElementPage
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onTextElementPage = function(evt){
     var dom;
@@ -275,10 +360,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Componenet propchange event callback
+   *
    * @method onComponenetPropChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object
    */
   Player.prototype.onComponenetPropChange = function(evt){
     var component = evt.detail.component;
@@ -294,10 +380,11 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * loadsuccess event callback
+   *
    * @method onLoadSuccess
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Player.prototype.onLoadSuccess = function(xhr){
     this.json = JSON.parse(xhr.response);
@@ -315,12 +402,12 @@ metaScore.Player = (function () {
     metaScore.Array.each(this.json.blocks, function(index, block){
       switch(block.type){
         case 'media':
-          this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}));
-          this.getMedia().setSources([this.json.media]);
+          this.media = this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}))
+            .setSources([this.json.media]);
           break;
           
         case 'controller':
-          this.addController(block);
+          this.controller = this.addController(block);
           break;
         
         default:
@@ -334,25 +421,27 @@ metaScore.Player = (function () {
 
     this.removeClass('loading');
     
-    this.triggerEvent('loadsuccess', {'player': this, 'data': this.json}, true, false);
+    this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
   };
 
   /**
-   * Description
+   * loaderror event callback
+   *
    * @method onLoadError
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Player.prototype.onLoadError = function(xhr){
     this.removeClass('loading');
     
-    this.triggerEvent('loaderror', {'player': this}, true, false);
+    this.triggerEvent(EVT_ERROR, {'player': this}, true, false);
   };
 
   /**
-   * Description
+   * Load the guide
+   *
    * @method load
-   * @return 
+   * @private
    */
   Player.prototype.load = function(){
     var options;
@@ -369,75 +458,82 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Get the id of the loaded guide
+   *
    * @method getId
-   * @return CallExpression
+   * @return {String} The id
    */
   Player.prototype.getId = function(){
     return this.data('id');
   };
 
   /**
-   * Description
+   * Set the id of the loaded guide in a data attribute
+   *
    * @method setId
-   * @return CallExpression
+   * @chainable
    */
   Player.prototype.setId = function(id, supressEvent){
     this.data('id', id);
 
     if(supressEvent !== true){
-      this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
+      this.triggerEvent(EVT_IDSET, {'player': this, 'id': id}, true, false);
     }
     
     return this;
   };
 
   /**
-   * Description
+   * Get the revision id of the loaded guide
+   *
    * @method getRevision
-   * @return CallExpression
+   * @return {String} The revision id
    */
   Player.prototype.getRevision = function(){
     return this.data('vid');
   };
 
   /**
-   * Description
+   * Set the revision id of the loaded guide in a data attribute
+   *
    * @method setRevision
-   * @return CallExpression
+   * @chainable
    */
   Player.prototype.setRevision = function(vid, supressEvent){
     this.data('vid', vid);
 
     if(supressEvent !== true){
-      this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
+      this.triggerEvent(EVT_REVISIONSET, {'player': this, 'vid': vid}, true, false);
     }
     
     return this;
   };
 
   /**
-   * Description
+   * Get the loaded JSON data
+   *
    * @method getData
-   * @return MemberExpression
+   * @return {Object} The JSON data
    */
   Player.prototype.getData = function(){
     return this.json;
   };
 
   /**
-   * Description
+   * Get the media instance
+   *
    * @method getMedia
-   * @return MemberExpression
+   * @return {Media} The media instance
    */
   Player.prototype.getMedia = function(){
     return this.media;
   };
 
   /**
-   * Description
+   * Update the loaded JSON data
+   *
    * @method updateData
-   * @return MemberExpression
+   * @param {Object} data The data key, value pairs to update
    */
   Player.prototype.updateData = function(data){
     metaScore.Object.extend(this.json, data);
@@ -456,20 +552,22 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Get a component by CSS selector
+   *
    * @method getComponent
-   * @param {} selector
-   * @return CallExpression
+   * @param {String} selector The CSS selector
+   * @return {Component} The component
    */
   Player.prototype.getComponent = function(selector){    
     return this.getComponents(selector).get(0);
   };
 
   /**
-   * Description
+   * Get components by CSS selector
+   *
    * @method getComponents
-   * @param {} selector
-   * @return components
+   * @param {String} selector The CSS selector
+   * @return {Dom} A Dom instance containing the selected components
    */
   Player.prototype.getComponents = function(selector){
     var components;
@@ -484,14 +582,15 @@ metaScore.Player = (function () {
   };
 
   /**
-   * Description
+   * Create and add a Media instance
+   *
    * @method addMedia
-   * @param {} configs
-   * @param {} supressEvent
-   * @return ThisExpression
+   * @param {Object} configs The configurations to send to the Media class
+   * @param {Boolean} [supressEvent=false] Wheather to supress the mediadd event or not
+   * @return {Media} The Media instance
    */
   Player.prototype.addMedia = function(configs, supressEvent){
-    this.media = new metaScore.player.component.Media(configs)
+    var media = new metaScore.player.component.Media(configs)
       .addListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
       .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
       .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
@@ -499,37 +598,39 @@ metaScore.Player = (function () {
       .appendTo(this);
 
     if(supressEvent !== true){
-      this.triggerEvent('mediaadd', {'player': this, 'media': this.media}, true, false);
+      this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
     }
     
-    return this;
+    return media;
   };
 
   /**
-   * Description
+   * Create and add a Controller instance
+   *
    * @method addController
-   * @param {} configs
-   * @param {} supressEvent
-   * @return ThisExpression
+   * @param {Object} configs The configurations to send to the Controller class
+   * @param {Boolean} [supressEvent=false] Wheather to supress the controlleradd event or not
+   * @return {Controller} The Controller instance
    */
   Player.prototype.addController = function(configs, supressEvent){
-    this.controller = new metaScore.player.component.Controller(configs)
+    var controller = new metaScore.player.component.Controller(configs)
       .addDelegate('.buttons button', 'click', metaScore.Function.proxy(this.onControllerButtonClick, this))
       .appendTo(this);
 
     if(supressEvent !== true){
-      this.triggerEvent('controlleradd', {'player': this, 'controller': this.controller}, true, false);
+      this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
     }
     
-    return this;
+    return controller;
   };
 
   /**
-   * Description
+   * Create and add a Block instance
+   *
    * @method addBlock
-   * @param {} configs
-   * @param {} supressEvent
-   * @return block
+   * @param {Object} configs The configurations to send to the Block class
+   * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+   * @return {Block} The Block instance
    */
   Player.prototype.addBlock = function(configs, supressEvent){
     var block, page;
@@ -552,26 +653,30 @@ metaScore.Player = (function () {
     }
 
     if(supressEvent !== true){
-      this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
+      this.triggerEvent(EVT_BLOCKADD, {'player': this, 'block': block}, true, false);
     }
 
     return block;
   };
 
   /**
-   * Description
+   * Update the custom CSS
+   *
    * @method updateCSS
-   * @param {} value
-   * @return 
+   * @param {String} value The custom CSS value
+   * @chainable
    */
   Player.prototype.updateCSS = function(value){
     this.css.setInternalValue(value);
+    
+    return this;
   };
 
   /**
-   * Description
+   * Toggles the media playing state
+   *
    * @method togglePlay
-   * @return 
+   * @chainable
    */
   Player.prototype.togglePlay = function(){
     var media = this.getMedia();
@@ -582,12 +687,18 @@ metaScore.Player = (function () {
     else{
       media.play();
     }
+    
+    return this;
   };
 
   /**
-   * Description
+   * Start playing the media at the current position, or plays a specific extract
+   *
    * @method play
-   * @return 
+   * @param {String} [inTime] The time at which the media should start playing
+   * @param {String} [outTime] The time at which the media should stop playing
+   * @param {String} [rIndex] A reading index to go to while playing
+   * @chainable
    */
   Player.prototype.play = function(inTime, outTime, rIndex){
     var player = this,
@@ -628,14 +739,17 @@ metaScore.Player = (function () {
         .setTime(inTime)
         .play();
     }
+    
+    return this;
   };
 
   /**
-   * Description
+   * Set the current reading index
+   *
    * @method setReadingIndex
-   * @param {} index
-   * @param {} supressEvent
-   * @return ThisExpression
+   * @param {Number} index The reading index
+   * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+   * @chainable
    */
   Player.prototype.setReadingIndex = function(index, supressEvent){
     this.rindex_css.removeRules();
@@ -653,7 +767,7 @@ metaScore.Player = (function () {
     }
 
     if(supressEvent !== true){
-      this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
+      this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
     }
     
     return this;

@@ -1,14 +1,18 @@
 /**
-* The code class
+* The core object <br/>
 * Implements global helper methods
+*
 * @class metaScore
+* @static
 */
 
-metaScore = global.metaScore = {
+var metaScore = {
 
   /**
    * Returns the current version identifier
+   *
    * @method getVersion
+   * @static
    * @return {String} The version identifier
    */
   getVersion: function(){
@@ -17,7 +21,9 @@ metaScore = global.metaScore = {
 
   /**
    * Returns the current revision identifier
+   *
    * @method getRevision
+   * @static
    * @return {String} The revision identifier
    */
   getRevision: function(){
@@ -26,9 +32,11 @@ metaScore = global.metaScore = {
 
   /**
    * Extends the metaScore namespace
+   *
    * @method namespace
-   * @param {String} The namespace to add
-   * @return {Object} The extended namespace
+   * @static
+   * @param {String} The sub-namespace to create
+   * @return {Object} The sub-namespace
    */
   namespace: function(str){
     var parent = this,

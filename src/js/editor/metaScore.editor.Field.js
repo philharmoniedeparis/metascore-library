@@ -1,11 +1,19 @@
 /**
 * Description
-* @class Field
-* @namespace metaScore.editor
-* @extends metaScore.Dom
+* @class editor.Field
+* @extends Dom
 */
 
 metaScore.namespace('editor').Field = (function () {
+
+  /**
+   * Fired when the field's value changes
+   *
+   * @event valuechange
+   * @param {Object} field The field instance
+   * @param {Mixed} value The new value
+   */
+  var EVT_VALUECHANGE = 'valuechange';
 
   /**
    * Description
@@ -125,7 +133,7 @@ metaScore.namespace('editor').Field = (function () {
   Field.prototype.onChange = function(evt){
     this.value = this.input.val();
 
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
   };
 
   /**

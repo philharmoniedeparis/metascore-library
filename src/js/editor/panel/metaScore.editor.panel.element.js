@@ -1,8 +1,7 @@
 /**
 * Description
-* @class Element
-* @namespace metaScore.editor.panel
-* @extends metaScore.editor.Panel
+* @class editor.panel.Element
+* @extends editor.Panel
 */
 
 metaScore.namespace('editor.panel').Element = (function () {

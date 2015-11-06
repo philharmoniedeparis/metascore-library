@@ -27,6 +27,7 @@ if(Element && !Element.prototype.matches){
 if(Element && !Element.prototype.closest){
   /**
    * Description
+   *
    * @method closest
    * @param {} selector
    * @return Literal
@@ -52,6 +53,7 @@ if(Element && !Element.prototype.closest){
 if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   /**
    * Description
+   *
    * @method CustomEvent
    * @param {} event
    * @param {} params
@@ -92,6 +94,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   if (!window.requestAnimationFrame){
     /**
      * Description
+     *
      * @method requestAnimationFrame
      * @param {} callback
      * @param {} element
@@ -109,6 +112,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   if (!window.cancelAnimationFrame){
     /**
      * Description
+     *
      * @method cancelAnimationFrame
      * @param {} id
      * @return 

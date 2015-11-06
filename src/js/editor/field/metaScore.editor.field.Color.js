@@ -1,11 +1,19 @@
 /**
 * Description
-* @class Color
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Color
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Color = (function () {
+
+  /**
+   * Fired when the field's value changes
+   *
+   * @event valuechange
+   * @param {Object} field The field instance
+   * @param {Mixed} value The new value
+   */
+  var EVT_VALUECHANGE = 'valuechange';
 
   /**
    * Description
@@ -52,7 +60,7 @@ metaScore.namespace('editor.field').Color = (function () {
       .appendTo(this.input_wrapper);
 
     this.overlay = new metaScore.editor.overlay.ColorSelector()
-      .addListener('select', metaScore.Function.proxy(this.onColorSelect, this));
+      .addListener('submit', metaScore.Function.proxy(this.onColorSubmit, this));
   };
 
   /**
@@ -74,7 +82,7 @@ metaScore.namespace('editor.field').Color = (function () {
       .css('background-color', rgba);
 
     if(supressEvent !== true){
-      this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+      this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     }
 
   };
@@ -97,11 +105,11 @@ metaScore.namespace('editor.field').Color = (function () {
 
   /**
    * Description
-   * @method onColorSelect
+   * @method onColorSubmit
    * @param {} evt
    * @return 
    */
-  ColorField.prototype.onColorSelect = function(evt){
+  ColorField.prototype.onColorSubmit = function(evt){
     var value = evt.detail.value,
       overlay = evt.detail.overlay;
 

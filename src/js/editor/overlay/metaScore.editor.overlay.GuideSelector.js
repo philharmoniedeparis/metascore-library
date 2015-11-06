@@ -1,14 +1,19 @@
-/**
-* Description
-* @class GuideSelector
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
-*/
-
 metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
   /**
+   * Fired when the submit button is clicked
+   *
+   * @event submit
+   * @param {Object} overlay The overlay instance
+   * @param {Object} values The field values
+   */
+  var EVT_SUBMIT = 'submit';
+
+  /**
    * Description
+   *
+   * @class editor.overlay.GuideSelector
+   * @extends editor.Overlay
    * @constructor
    * @param {} configs
    */
@@ -175,7 +180,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
    * @return 
    */
   GuideSelector.prototype.onGuideClick = function(guide, revision_field){
-    this.triggerEvent('select', {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+    this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
     this.hide();
   };

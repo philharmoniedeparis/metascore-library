@@ -1,8 +1,7 @@
 /**
 * Description
 * @class StyleSheet
-* @namespace metaScore
-* @extends metaScore.Dom
+* @extends Dom
 */
 
 metaScore.StyleSheet = (function () {

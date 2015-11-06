@@ -1,11 +1,41 @@
 /**
 * Description
-* @class History
-* @namespace metaScore.editor
-* @extends metaScore.Evented
+* @class editor.History
+* @extends Evented
 */
 
 metaScore.namespace('editor').History = (function(){
+
+  /**
+   * Fired when a command is added
+   *
+   * @event add
+   * @param {Object} command The added command
+   */
+  var EVT_ADD = 'add';
+
+  /**
+   * Fired when a command is undone
+   *
+   * @event undo
+   * @param {Object} command The added command
+   */
+  var EVT_UNDO = 'undo';
+
+  /**
+   * Fired when a command is redone
+   *
+   * @event redo
+   * @param {Object} command The added command
+   */
+  var EVT_REDO = 'redo';
+
+  /**
+   * Fired when the command history is cleared
+   *
+   * @event clear
+   */
+  var EVT_CLEAR = 'clear';
 
   /**
    * Description
@@ -74,7 +104,7 @@ metaScore.namespace('editor').History = (function(){
     // update the index
     this.index = this.commands.length - 1;
 
-    this.triggerEvent('add', {'command': command});
+    this.triggerEvent(EVT_ADD, {'command': command});
 
     return this;
   };
@@ -97,7 +127,7 @@ metaScore.namespace('editor').History = (function(){
     // update the index
     this.index -= 1;
 
-    this.triggerEvent('undo', {'command': command});
+    this.triggerEvent(EVT_UNDO, {'command': command});
 
     return this;
   };
@@ -120,7 +150,7 @@ metaScore.namespace('editor').History = (function(){
     // update the index
     this.index += 1;
 
-    this.triggerEvent('redo', {'command': command});
+    this.triggerEvent(EVT_REDO, {'command': command});
 
     return this;
   };
@@ -137,7 +167,7 @@ metaScore.namespace('editor').History = (function(){
     this.index = -1;
 
     if(length > 0) {
-      this.triggerEvent('clear');
+      this.triggerEvent(EVT_CLEAR);
     }
 
   };

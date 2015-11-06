@@ -1,8 +1,7 @@
 /**
 * Description
 * @class Color
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.Color = (function () {

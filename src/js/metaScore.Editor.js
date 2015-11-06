@@ -1,15 +1,16 @@
-/**
-* The main editor class
-* @class Editor
-* @namespace metaScore
-* @extends metaScore.Dom
-*/
-
 metaScore.Editor = (function(){
 
   /**
+   * Provides the main Editor class
+   *
+   * @class Editor
+   * @extends Dom
    * @constructor
-   * @param {Object} configs
+   * @param {Object} configs Custom configs to override defaults
+   * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
+   * @param {String} [configs.player_url=''] The URL of the guide's JSON data to load
+   * @param {String} [configs.api_url=''] The base URL of the RESTful API
+   * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
    */
   function Editor(configs) {
     this.configs = this.getConfigs(configs);
@@ -35,8 +36,7 @@ metaScore.Editor = (function(){
     this.mainmenu = new metaScore.editor.MainMenu().appendTo(this)
       .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
       .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
-      .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
-      
+      .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));      
     
     this.sidebar_wrapper = new metaScore.Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
       .addListener('resizestart', metaScore.Function.proxy(this.onSidebarResizeStart, this))
@@ -129,10 +129,12 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide creation success callback
+   *
    * @method onGuideCreateSuccess
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {GuideDetails} overlay The GuideDetails overlay that was used to create the guide
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Editor.prototype.onGuideCreateSuccess = function(overlay, xhr){
     var json = JSON.parse(xhr.response);
@@ -146,10 +148,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide creation error callback
+   *
    * @method onGuideCreateError
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Editor.prototype.onGuideCreateError = function(xhr){
     this.loadmask.hide();
@@ -165,10 +168,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide saving success callback
+   *
    * @method onGuideSaveSuccess
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Editor.prototype.onGuideSaveSuccess = function(xhr){
     var player = this.getPlayer(),
@@ -190,10 +194,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide saving error callback
+   *
    * @method onGuideSaveError
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Editor.prototype.onGuideSaveError = function(xhr){
     this.loadmask.hide();
@@ -209,9 +214,10 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide deletion confirm callback
+   *
    * @method onGuideDeleteConfirm
-   * @return 
+   * @private
    */
   Editor.prototype.onGuideDeleteConfirm = function(){
     var id = this.getPlayer().getId(),
@@ -232,10 +238,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide deletion success callback
+   *
    * @method onGuideDeleteSuccess
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Editor.prototype.onGuideDeleteSuccess = function(xhr){
     this.removePlayer();
@@ -245,10 +252,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide deletion error callback
+   *
    * @method onGuideDeleteError
-   * @param {} xhr
-   * @return 
+   * @private
+   * @param {XMLHttpRequest} xhr The XHR request
    */
   Editor.prototype.onGuideDeleteError = function(xhr){
     this.loadmask.hide();
@@ -264,9 +272,10 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Guide revert confirm callback
+   *
    * @method onGuideRevertConfirm
-   * @return 
+   * @private
    */
   Editor.prototype.onGuideRevertConfirm = function(){
     var player = this.getPlayer();
@@ -275,20 +284,22 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
-   * @method onGuideSelectorSelect
-   * @param {Object} evt
+   * GuideSelector submit callback
+   *
+   * @method onGuideSelectorSubmit
+   * @param {CustomEvent} evt The event object. See {{#crossLink "GuideSelector/submit:event"}}GuideSelector.submit{{/crossLink}}
    */
-  Editor.prototype.onGuideSelectorSelect = function(evt){
+  Editor.prototype.onGuideSelectorSubmit = function(evt){
     this.loadPlayer(evt.detail.guide.id, evt.detail.vid);
   };
   
   /**
-    * Description
-    * @method onKeydown
-    * @param {} evt
-    * @return 
-    */
+   * Keydown event callback
+   *
+   * @method onKeydown
+   * @private
+   * @param {KeyboardEvent} evt The event object
+   */
   Editor.prototype.onKeydown = function(evt){
     var player;
   
@@ -327,12 +338,13 @@ metaScore.Editor = (function(){
   };
   
   /**
-    * Description
-    * @method onKeyup
-    * @param {} evt
-    * @return 
-    */
-   Editor.prototype.onKeyup = function(evt){
+   * Keyup event callback
+   *
+   * @method onKeyup
+   * @private
+   * @param {KeyboardEvent} evt The event object
+   */
+  Editor.prototype.onKeyup = function(evt){
     var player;
     
     switch(evt.keyCode){
@@ -354,10 +366,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Mainmenu click event callback
+   *
    * @method onMainmenuClick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Editor.prototype.onMainmenuClick = function(evt){  
     var callback;
@@ -381,12 +394,17 @@ metaScore.Editor = (function(){
               },
               'autoShow': true
             })
-            .addListener('confirmclick', callback);
+            .addListener('buttonclick', function(evt){
+              if(evt.detail.action === 'confirm'){
+                callback();
+              }
+            });
         }
         else{
           callback();
         }
         break;
+        
       case 'open':
         callback = metaScore.Function.proxy(this.openGuideSelector, this);
         
@@ -399,21 +417,29 @@ metaScore.Editor = (function(){
               },
               'autoShow': true
             })
-            .addListener('confirmclick', callback);
+            .addListener('buttonclick', function(evt){
+              if(evt.detail.action === 'confirm'){
+                callback();
+              }
+            });
         }
         else{
           callback();
         }
         break;
+        
       case 'edit':
         this.detailsOverlay.show();
         break;
+        
       case 'save-draft':
         this.saveGuide('update');
         break;
+        
       case 'save-copy':
         this.saveGuide('duplicate');
         break;
+        
       case 'publish':
         callback = metaScore.Function.proxy(function(){
           this.saveGuide('update', true);
@@ -427,11 +453,17 @@ metaScore.Editor = (function(){
             },
             'autoShow': true
           })
-          .addListener('confirmclick', callback);
+          .addListener('buttonclick', function(evt){
+            if(evt.detail.action === 'confirm'){
+              callback();
+            }
+          });
         break;
+        
       case 'download':
         break;
-      case 'delete':
+        
+      case 'delete':        
         new metaScore.editor.overlay.Alert({
             'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide ?'),
             'buttons': {
@@ -440,8 +472,13 @@ metaScore.Editor = (function(){
             },
             'autoShow': true
           })
-          .addListener('confirmclick', metaScore.Function.proxy(this.onGuideDeleteConfirm, this));
+          .addListener('buttonclick', metaScore.Function.proxy(function(evt){
+            if(evt.detail.action === 'confirm'){
+              this.onGuideDeleteConfirm();
+            }
+          }, this));
         break;
+        
       case 'revert':
         new metaScore.editor.overlay.Alert({
             'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version ?<br/><strong>Any unsaved data will be lost.</strong>'),
@@ -451,27 +488,36 @@ metaScore.Editor = (function(){
             },
             'autoShow': true
           })
-          .addListener('confirmclick', metaScore.Function.proxy(this.onGuideRevertConfirm, this));
+          .addListener('buttonclick', metaScore.Function.proxy(function(evt){
+            if(evt.detail.action === 'confirm'){
+              this.onGuideRevertConfirm();
+            }
+          }, this));
         break;
+        
       case 'undo':
         this.history.undo();
         break;
+        
       case 'redo':
         this.history.redo();
         break;
+        
       case 'edit-toggle':
         this.setEditing(!metaScore.editing);
         break;
+        
       case 'settings':
         break;
     }
   };
 
   /**
-   * Description
+   * Mainmenu time field valuechange event callback
+   *
    * @method onMainmenuTimeFieldChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
    */
   Editor.prototype.onMainmenuTimeFieldChange = function(evt){
     var field = evt.target._metaScore,
@@ -481,10 +527,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Mainmenu reading index field valuechange event callback
+   *
    * @method onMainmenuRindexFieldChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Number/valuechange:event"}}Number.valuechange{{/crossLink}}
    */
   Editor.prototype.onMainmenuRindexFieldChange = function(evt){
     var field = evt.target._metaScore,
@@ -494,10 +541,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Time field valuein event callback
+   *
    * @method onTimeFieldIn
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
    */
   Editor.prototype.onTimeFieldIn = function(evt){
     var field = evt.target._metaScore,
@@ -507,10 +555,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Time field valueout event callback
+   *
    * @method onTimeFieldOut
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valueout:event"}}Time.valueout{{/crossLink}}
    */
   Editor.prototype.onTimeFieldOut = function(evt){
     var field = evt.target._metaScore,
@@ -520,20 +569,22 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Sidebar resizestart event callback
+   *
    * @method onSidebarResizeStart
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Resizable/resizestart:event"}}Resizable.resizestart{{/crossLink}}
    */
   Editor.prototype.onSidebarResizeStart = function(evt){
     this.addClass('sidebar-resizing');
   };
 
   /**
-   * Description
+   * Sidebar resize event callback
+   *
    * @method onSidebarResize
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Resizable/resize:event"}}Resizable.resize{{/crossLink}}
    */
   Editor.prototype.onSidebarResize = function(evt){
     var width = parseInt(this.sidebar_wrapper.css('width'), 10);
@@ -542,20 +593,22 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Sidebar resizeend event callback
+   *
    * @method onSidebarResizeEnd
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Resizable/resizeend:event"}}Resizable.resizeend{{/crossLink}}
    */
   Editor.prototype.onSidebarResizeEnd = function(evt){
     this.removeClass('sidebar-resizing');
   };
 
   /**
-   * Description
+   * Sidebar resize handle dblclick event callback
+   *
    * @method onSidebarResizeDblclick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Editor.prototype.onSidebarResizeDblclick = function(evt){
     this.toggleClass('sidebar-hidden');
@@ -564,10 +617,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block panel componentbeforeset event callback
+   *
    * @method onBlockBeforeSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
    */
   Editor.prototype.onBlockBeforeSet = function(evt){
     var block = evt.detail.component;
@@ -577,10 +631,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block panel componentset event callback
+   *
    * @method onBlockSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
    */
   Editor.prototype.onBlockSet = function(evt){
     var block = evt.detail.component;
@@ -603,10 +658,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block panel componentunset event callback
+   *
    * @method onBlockUnset
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
    */
   Editor.prototype.onBlockUnset = function(evt){
     this.panels.page.unsetComponent();
@@ -614,10 +670,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block panel valuechange event callback
+   *
    * @method onBlockPanelValueChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
    */
   Editor.prototype.onBlockPanelValueChange = function(evt){
     var panel = this.panels.block,
@@ -636,10 +693,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block panel toolbar click event callback
+   *
    * @method onBlockPanelToolbarClick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Editor.prototype.onBlockPanelToolbarClick = function(evt){
     var player, panel, block, page_configs,
@@ -705,10 +763,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block panel toolbar selector valuechange event callback
+   *
    * @method onBlockPanelSelectorChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
    */
   Editor.prototype.onBlockPanelSelectorChange = function(evt){
     var id = evt.detail.value,
@@ -727,10 +786,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page panel componentbeforeset event callback
+   *
    * @method onPageBeforeSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
    */
   Editor.prototype.onPageBeforeSet = function(evt){
     var page = evt.detail.component,
@@ -741,10 +801,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page panel componentset event callback
+   *
    * @method onPageSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
    */
   Editor.prototype.onPageSet = function(evt){
     var page = evt.detail.component,
@@ -792,10 +853,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page panel componentunset event callback
+   *
    * @method onPageUnset
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
    */
   Editor.prototype.onPageUnset = function(evt){
     this.panels.element
@@ -807,10 +869,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page panel valuechange event callback
+   *
    * @method onPagePanelValueChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
    */
   Editor.prototype.onPagePanelValueChange = function(evt){
     var editor = this,
@@ -873,10 +936,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page panel toolbar click event callback
+   *
    * @method onPagePanelToolbarClick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Editor.prototype.onPagePanelToolbarClick = function(evt){
     var panel, block, page, 
@@ -982,10 +1046,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page panel toolbar selector valuechange event callback
+   *
    * @method onPagePanelSelectorChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
    */
   Editor.prototype.onPagePanelSelectorChange = function(evt){
     var block = this.panels.block.getComponent(),
@@ -1002,10 +1067,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Element panel componentbeforeset event callback
+   *
    * @method onElementBeforeSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
    */
   Editor.prototype.onElementBeforeSet = function(evt){
     var element = evt.detail.component,
@@ -1015,10 +1081,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Element panel componentset event callback
+   *
    * @method onElementSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
    */
   Editor.prototype.onElementSet = function(evt){
     var element = evt.detail.component,
@@ -1037,10 +1104,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Element panel componentunset event callback
+   *
    * @method onElementUnset
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
    */
   Editor.prototype.onElementUnset = function(evt){
     this.panels.text.unsetComponent();
@@ -1049,10 +1117,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Element panel valuechange event callback
+   *
    * @method onElementPanelValueChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
    */
   Editor.prototype.onElementPanelValueChange = function(evt){
     var editor = this,
@@ -1084,10 +1153,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Element panel toolbar click event callback
+   *
    * @method onElementPanelToolbarClick
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Editor.prototype.onElementPanelToolbarClick = function(evt){
     var panel, page, element,
@@ -1140,10 +1210,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
-   * @method onElementPanelSelectorChange
-   * @param {} evt
-   * @return 
+   * Element panel toolbar selector valuechange event callback
+   *
+   * @method onPagePanelSelectorChange
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
    */
   Editor.prototype.onElementPanelSelectorChange = function(evt){
     var id = evt.detail.value,
@@ -1162,10 +1233,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player idset event callback
+   *
    * @method onPlayerIdSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Player/idset:event"}}Player.idset{{/crossLink}}
    */
   Editor.prototype.onPlayerIdSet = function(evt){
     var player = evt.detail.player;
@@ -1174,10 +1246,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player revisionset event callback
+   *
    * @method onPlayerRevisionSet
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Player/revisionset:event"}}Player.revisionset{{/crossLink}}
    */
   Editor.prototype.onPlayerRevisionSet = function(evt){
     var player = evt.detail.player;
@@ -1186,10 +1259,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Media timeupdate event callback
+   *
    * @method onPlayerTimeUpdate
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Media/timeupdate:event"}}Media.timeupdate{{/crossLink}}
    */
   Editor.prototype.onPlayerTimeUpdate = function(evt){
     var time = evt.detail.media.getTime();
@@ -1198,10 +1272,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player rindex event callback
+   *
    * @method onPlayerReadingIndex
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Player/rindex:event"}}Player.rindex{{/crossLink}}
    */
   Editor.prototype.onPlayerReadingIndex = function(evt){
     var rindex = evt.detail.value;
@@ -1210,20 +1285,22 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player blockadd event callback
+   *
    * @method onPlayerBlockAdd
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Player/blockadd:event"}}Player.blockadd{{/crossLink}}
    */
   Editor.prototype.onPlayerBlockAdd = function(evt){
     this.updateBlockSelector();
   };
 
   /**
-   * Description
+   * Player childremove event callback
+   *
    * @method onPlayerChildRemove
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Dom/childremove:event"}}Dom.childremove{{/crossLink}}
    */
   Editor.prototype.onPlayerChildRemove = function(evt){
     var child = evt.detail.child,
@@ -1243,24 +1320,26 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player frame load event callback
+   *
    * @method onPlayerFrameLoadSuccess
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {UIEvent} evt The event object
    */
   Editor.prototype.onPlayerFrameLoadSuccess = function(evt){    
     this.player_frame.get(0).contentWindow.player
-      .addListener('loadsuccess', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-      .addListener('loaderror', metaScore.Function.proxy(this.onPlayerLoadError, this))
+      .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+      .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
       .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
       .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
   };
 
   /**
-   * Description
+   * Player frame error event callback
+   *
    * @method onPlayerFrameLoadError
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {UIEvent} evt The event object
    */
   Editor.prototype.onPlayerFrameLoadError = function(evt){
     this.loadmask.hide();
@@ -1276,10 +1355,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player load event callback
+   *
    * @method onPlayerLoadSuccess
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
    */
   Editor.prototype.onPlayerLoadSuccess = function(evt){
     this.player = evt.detail.player
@@ -1317,10 +1397,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player error event callback
+   *
    * @method onPlayerLoadError
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Player/error:event"}}Player.error{{/crossLink}}
    */
   Editor.prototype.onPlayerLoadError = function(evt){
     this.loadmask.hide();
@@ -1336,11 +1417,29 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Player click event callback
+   *
+   * @method onPlayerClick
+   * @private
+   * @param {MouseEvent} evt The event object
+   */
+  Editor.prototype.onPlayerClick = function(evt){
+    
+    if(metaScore.editing !== true){
+      return;
+    }
+
+    this.panels.block.unsetComponent();
+
+    evt.stopPropagation();
+  };
+
+  /**
+   * Component click event callback
+   *
    * @method onComponentClick
-   * @param {} evt
-   * @param {} dom
-   * @return 
+   * @private
+   * @param {MouseEvent} evt The event object
    */
   Editor.prototype.onComponentClick = function(evt, dom){
     var component;
@@ -1365,27 +1464,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
-   * @method onPlayerClick
-   * @param {} evt
-   * @return 
-   */
-  Editor.prototype.onPlayerClick = function(evt){
-    
-    if(metaScore.editing !== true){
-      return;
-    }
-
-    this.panels.block.unsetComponent();
-
-    evt.stopPropagation();
-  };
-
-  /**
-   * Description
+   * Block pageadd event callback
+   *
    * @method onBlockPageAdd
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageadd:event"}}Block.pageadd{{/crossLink}}
    */
   Editor.prototype.onBlockPageAdd = function(evt){
     var block = evt.detail.block;
@@ -1398,10 +1481,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Block pageactivate event callback
+   *
    * @method onBlockPageActivate
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageactivate:event"}}Block.pageactivate{{/crossLink}}
    */
   Editor.prototype.onBlockPageActivate = function(evt){
     var page, basis;
@@ -1419,10 +1503,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Page elementadd event callback
+   *
    * @method onPageElementAdd
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
    */
   Editor.prototype.onPageElementAdd = function(evt){
     var page = evt.detail.page;
@@ -1435,40 +1520,44 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * History add event callback
+   *
    * @method onHistoryAdd
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "History/add:event"}}History.add{{/crossLink}}
    */
   Editor.prototype.onHistoryAdd = function(evt){
     this.updateMainmenu();
   };
 
   /**
-   * Description
+   * History undo event callback
+   *
    * @method onHistoryUndo
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "History/undo:event"}}History.undo{{/crossLink}}
    */
   Editor.prototype.onHistoryUndo = function(evt){
     this.updateMainmenu();
   };
 
   /**
-   * Description
+   * History redo event callback
+   *
    * @method onHistoryRedo
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "History/redo:event"}}History.redo{{/crossLink}}
    */
   Editor.prototype.onHistoryRedo = function(evt){
     this.updateMainmenu();
   };
 
   /**
-   * Description
+   * GuideDetails show event callback
+   *
    * @method onDetailsOverlayShow
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "Overlay/show:event"}}Overlay.show{{/crossLink}}
    */
   Editor.prototype.onDetailsOverlayShow = function(evt){
     var player = this.getPlayer();
@@ -1479,10 +1568,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * GuideDetails submit event callback
+   *
    * @method onDetailsOverlaySubmit
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
    */
   Editor.prototype.onDetailsOverlaySubmit = function(op, evt){
     var overlay = evt.detail.overlay,
@@ -1547,7 +1637,11 @@ metaScore.Editor = (function(){
                   },
                   'autoShow': true
                 })
-                .addListener('confirmclick', callback);
+                .addListener('buttonclick', function(evt){
+                  if(evt.detail.action === 'confirm'){
+                    callback();
+                  }
+                });
               }
             }
             else{
@@ -1563,13 +1657,15 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Window hashchange event callback
+   *
    * @method onWindowHashChange
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {HashChangeEvent} evt The event object
    */
   Editor.prototype.onWindowHashChange = function(evt){
-    var callback = metaScore.Function.proxy(this.loadPlayerFromHash, this);
+    var callback = metaScore.Function.proxy(this.loadPlayerFromHash, this),
+      oldURL = evt.oldURL;
   
     if(this.getPlayer()){
       new metaScore.editor.overlay.Alert({
@@ -1580,10 +1676,14 @@ metaScore.Editor = (function(){
           },
           'autoShow': true
         })
-        .addListener('confirmclick', callback)
-        .addListener('cancelclick', metaScore.Function.proxy(function(new_duration){
-          window.history.replaceState(null, null, evt.oldURL);
-        }, this));
+        .addListener('buttonclick', function(evt){
+          if(evt.detail.action === 'confirm'){
+            callback();
+          }
+          else{
+            window.history.replaceState(null, null, oldURL);
+          }
+        });
     }
     else{
       callback();
@@ -1593,10 +1693,11 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Window beforeunload event callback
+   *
    * @method onWindowBeforeUnload
-   * @param {} evt
-   * @return 
+   * @private
+   * @param {Event} evt The event object
    */
   Editor.prototype.onWindowBeforeUnload = function(evt){  
     if(this.hasOwnProperty('player')){
@@ -1606,9 +1707,10 @@ metaScore.Editor = (function(){
 
   /**
    * Updates the editing state
+   *
    * @method setEditing
-   * @param {Boolean} editing
-   * @param {Boolean} sticky
+   * @param {Boolean} editing The new state
+   * @param {Boolean} sticky Whether the new state is persistent or temporary
    * @chainable
    */
   Editor.prototype.setEditing = function(editing, sticky){
@@ -1642,7 +1744,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Toggles the activation of the sidebar resizer
+   *
    * @method toggleSidebarResizer
    * @chainable
    */
@@ -1658,7 +1761,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Loads a player from the location hash
+   *
    * @method loadPlayerFromHash
    * @chainable
    */
@@ -1675,7 +1779,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Updates the states of the mainmenu buttons
+   *
    * @method updateMainmenu
    * @chainable 
    */
@@ -1697,7 +1802,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Updates the selector of the block panel
+   *
    * @method updateBlockSelector
    * @chainable 
    */
@@ -1737,7 +1843,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Updates the selector of the page panel
+   *
    * @method updatePageSelector
    * @chainable 
    */
@@ -1761,7 +1868,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Updates the selector of the element panel
+   *
    * @method updateElementSelector
    * @chainable 
    */
@@ -1842,18 +1950,21 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Get the player instance if any
+   *
    * @method getPlayer
-   * @return MemberExpression
+   * @return {Player} The player instance
    */
   Editor.prototype.getPlayer = function(){  
     return this.player;  
   };
 
   /**
-   * Description
+   * Loads a player by guide id and vid
+   *
    * @method loadPlayer
-   * @param {} id
+   * @param {Number} id The guide's id
+   * @param {Number} vid The guide's revision id 
    * @chainable 
    */
   Editor.prototype.loadPlayer = function(id, vid){
@@ -1875,7 +1986,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Removes the player
+   *
    * @method removePlayer
    * @chainable 
    */
@@ -1890,7 +2002,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Opens the guide selector
+   *
    * @method openGuideSelector
    * @chainable 
    */
@@ -1899,14 +2012,17 @@ metaScore.Editor = (function(){
         'url': this.configs.api_url +'guide.json',
         'autoShow': true
       })
-      .addListener('select', metaScore.Function.proxy(this.onGuideSelectorSelect, this));
+      .addListener('submit', metaScore.Function.proxy(this.onGuideSelectorSubmit, this));
     
     return this;
   };
 
   /**
-   * Description
+   * Creates a new guide
+   *
    * @method createGuide
+   * @param {Object} details The guide's data
+   * @param {GuideDetails} overlay The overlay instance used to create the guide
    * @chainable 
    */
   Editor.prototype.createGuide = function(details, overlay){
@@ -1943,9 +2059,12 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Saves the loaded guide
+   *
    * @method saveGuide
-   * @chainable 
+   * @param {String} action The action to perform when saving ('update' or 'duplicate')
+   * @param {Boolean} publish Whether to published the new revision
+   * @chainable
    */
   Editor.prototype.saveGuide = function(action, publish){
     var player = this.getPlayer(),
@@ -2007,7 +2126,8 @@ metaScore.Editor = (function(){
   };
 
   /**
-   * Description
+   * Get a media file's duration in centiseconds
+   *
    * @method getMediaFileDuration
    */
   Editor.prototype.getMediaFileDuration = function(file, callback){  

@@ -1,8 +1,7 @@
 /**
 * Description
 * @class Object
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.Object = (function () {

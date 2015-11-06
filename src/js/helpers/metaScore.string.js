@@ -1,8 +1,7 @@
 /**
 * Description
 * @class String
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.String = (function () {

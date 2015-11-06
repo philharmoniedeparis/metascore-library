@@ -1,25 +1,29 @@
-/**
-* The base class
-* Implements a class extension mechanism and defines shared methods 
-* @class Class
-* @namespace metaScore
-*/
-
-metaScore.Class = (function () {
+metaScore.Class = (function(){
 
   /**
+   * The base class <br/>
+   * Implements a class extension mechanism and defines shared methods
+   *
+   * @class Class
    * @constructor
    */
   function Class(){
   }
 
+  /**
+   * Default config values
+   *
+   * @property defaults
+   * @type Object
+   * @default {}
+   */
   Class.defaults = {};
 
   /**
-   * Extends a class by another
+   * Extends a class using the current one
+   *
    * @method extend
-   * @param {Object} child
-   * @return 
+   * @param {Class} child The child class to extend
    */
   Class.extend = function(child){
     child.prototype = Object.create(this.prototype, {
@@ -43,10 +47,11 @@ metaScore.Class = (function () {
   };
 
   /**
-   * Extends the passed configs with default configs
+   * Returns a configs object by overriding the defaults with custom ones
+   *
    * @method getConfigs
-   * @param {Object} configs
-   * @return configs
+   * @param {Object} configs The custom configs
+   * @return {Object} The extended configs
    */
   Class.prototype.getConfigs = function(configs){
     configs = configs || {};

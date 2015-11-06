@@ -1,8 +1,8 @@
 /**
 * Description
-* @class Pager
-* @namespace metaScore.player
-* @extends metaScore.Dom
+*
+* @class player.Pager
+* @extends Dom
 */
 
 metaScore.namespace('player').Pager = (function () {

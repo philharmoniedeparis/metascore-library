@@ -1,11 +1,43 @@
 /**
 * Description
-* @class Text
-* @namespace metaScore.editor.panel
-* @extends metaScore.editor.Panel
+*
+* @class editor.panel.Text
+* @extends editor.Panel
 */
 
 metaScore.namespace('editor.panel').Text = (function () {
+
+  /**
+   * Fired when the component is set
+   *
+   * @event componentset
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTSET = 'componentset';
+
+  /**
+   * Fired when the component is unset
+   *
+   * @event componentunset
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTUNSET = 'componentunset';
+
+  /**
+   * Fired when the component is locked
+   *
+   * @event componentlock
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTLOCK = 'componentlock';
+
+  /**
+   * Fired when the component is unlocked
+   *
+   * @event componentunlock
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTUNLOCK = 'componentunlock';
 
   /**
    * Description
@@ -101,7 +133,7 @@ metaScore.namespace('editor.panel').Text = (function () {
         .addClass('has-component');
 
       if(supressEvent !== true){
-        this.triggerEvent('componentset', {'component': component}, false);
+        this.triggerEvent(EVT_COMPONENTSET, {'component': component}, false);
       }
     }
 
@@ -123,7 +155,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       this.component = null;
 
       if(supressEvent !== true){
-        this.triggerEvent('componentunset', {'component': component}, false);
+        this.triggerEvent(EVT_COMPONENTUNSET, {'component': component}, false);
       }
     }
 
@@ -157,7 +189,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       }
 
       if(supressEvent !== true){
-        this.triggerEvent('componentlock', {'component': component}, false);
+        this.triggerEvent(EVT_COMPONENTLOCK, {'component': component}, false);
       }
     }
     
@@ -191,7 +223,7 @@ metaScore.namespace('editor.panel').Text = (function () {
       this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true);
 
       if(supressEvent !== true){
-        this.triggerEvent('componentunlock', {'component': component}, false);
+        this.triggerEvent(EVT_COMPONENTUNLOCK, {'component': component}, false);
       }
     }
     

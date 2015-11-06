@@ -1,8 +1,7 @@
 /**
 * Description
-* @class DropDownMenu
-* @namespace metaScore.editor
-* @extends metaScore.Dom
+* @class editor.DropDownMenu
+* @extends Dom
 */
 
 metaScore.namespace('editor').DropDownMenu = (function () {

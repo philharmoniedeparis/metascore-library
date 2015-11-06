@@ -1,11 +1,26 @@
 /**
 * Description
+*
 * @class Dom
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.Dom = (function () {
+
+  /**
+   * Fired before an element is removed
+   *
+   * @event beforeremove
+   */
+  var EVT_BEFOREREMOVE = 'beforeremove';
+
+  /**
+   * Fired when a child element is removed
+   *
+   * @event childremove
+   * @param {Object} child The removed child
+   */
+  var EVT_CHILDREMOVE = 'childremove';
 
   /**
    * Description
@@ -1070,11 +1085,11 @@ metaScore.Dom = (function () {
    * @return ThisExpression
    */
   Dom.prototype.remove = function(){
-    if(this.triggerEvent('beforeremove') !== false){
+    if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
       this.each(function(index, element) {
         var parent = element.parentElement;
         Dom.remove(element);
-        Dom.triggerEvent(parent, 'childremove', {'child': element});
+        Dom.triggerEvent(parent, EVT_CHILDREMOVE, {'child': element});
       }, this);
     }
 

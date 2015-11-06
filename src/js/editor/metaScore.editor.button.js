@@ -1,8 +1,7 @@
 /**
 * Description
-* @class Button
-* @namespace metaScore.editor
-* @extends metaScore.Dom
+* @class editor.Button
+* @extends Dom
 */
 
 metaScore.namespace('editor').Button = (function () {

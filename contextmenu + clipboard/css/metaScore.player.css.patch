@@ -1,0 +1,20 @@
+ src/css/metaScore.player.less | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/css/metaScore.player.less b/src/css/metaScore.player.less
+index 186393c..5c25da0 100644
+--- a/src/css/metaScore.player.less
++++ b/src/css/metaScore.player.less
+@@ -343,6 +343,12 @@ body{
+ */
+ .in-editor{
+   margin: 0;
++  position: fixed;
++  top: 0;
++  bottom: 0;
++  left: 0;
++  right: 0;
++  overflow: auto;
+ 
+   .draggable{
+     .drag-handle{

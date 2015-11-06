@@ -1,11 +1,19 @@
 /**
 * Description
-* @class Boolean
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Boolean
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Boolean = (function () {
+
+  /**
+   * Fired when the field's value changes
+   *
+   * @event valuechange
+   * @param {Object} field The field instance
+   * @param {Mixed} value The new value
+   */
+  var EVT_VALUECHANGE = 'valuechange';
 
   /**
    * Description
@@ -98,7 +106,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
       this.removeClass('checked');
     }
     
-    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
   };
 
   /**

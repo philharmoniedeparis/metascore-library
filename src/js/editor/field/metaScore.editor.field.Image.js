@@ -1,11 +1,18 @@
 /**
 * Description
-* @class Image
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Image
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Image = (function () {
+
+  /**
+   * Fired when the external filebrowser should be opened
+   *
+   * @event filebrowser
+   * @param {Function} callback The callback to invoke once a file is selected throught the external filebrowser
+   */
+  var EVT_FILEBROWSER = 'filebrowser';
 
   /**
    * Description
@@ -75,7 +82,7 @@ metaScore.namespace('editor.field').Image = (function () {
       return;
     }
     
-    this.triggerEvent('filebrowser', {'callback': this.onFileSelect}, true, false);
+    this.triggerEvent(EVT_FILEBROWSER, {'callback': this.onFileSelect}, true, false);
   };
 
   /**

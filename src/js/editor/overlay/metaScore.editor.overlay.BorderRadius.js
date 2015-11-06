@@ -1,11 +1,20 @@
 /**
 * Description
-* @class BorderRadius
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+*
+* @class editor.overlay.BorderRadius
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').BorderRadius = (function () {
+
+  /**
+   * Fired when the submit button is clicked
+   *
+   * @event submit
+   * @param {Object} overlay The overlay instance
+   * @param {String} value The border radius value in CSS format
+   */
+  var EVT_SUBMIT = 'submit';
 
   /**
    * Description
@@ -208,7 +217,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
    * @return 
    */
   BorderRadius.prototype.onApplyClick = function(evt){  
-    this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
+    this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
     this.hide();
   };
 

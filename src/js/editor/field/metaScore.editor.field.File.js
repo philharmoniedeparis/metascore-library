@@ -1,8 +1,7 @@
 /**
 * Description
-* @class File
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.File
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').File = (function () {

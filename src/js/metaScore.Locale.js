@@ -1,28 +1,23 @@
-/**
-* The i18n handling class
-* @class Locale
-* @namespace metaScore
-* @extends metaScore.Class
-*/
-
-metaScore.Locale = (function () {
+metaScore.Locale = (function(){
 
   /**
-   * Description
+   * The i18n handling class
+   *
+   * @class Locale
    * @constructor
    */
   function Locale() {
   }
 
-  metaScore.Class.extend(Locale);
-
   /**
    * Translate a string
+   *
    * @method t
-   * @param {} key
-   * @param {} str
-   * @param {} args
-   * @return CallExpression
+   * @static
+   * @param {String} key The string identifier
+   * @param {String} str The default string to use if no translation is found
+   * @param {Object} args An object of replacements to make after translation
+   * @return {String} The translated string
    */
   Locale.t = function(key, str, args){
     if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
@@ -33,11 +28,13 @@ metaScore.Locale = (function () {
   };
 
   /**
-   * Replace placeholders with sanitized values in a string.
+   * Replace placeholders with sanitized values in a string
+   *
    * @method formatString
-   * @param {} str
-   * @param {} args
-   * @return str
+   * @static
+   * @param {String} str The string to process
+   * @param {Object} args An object of replacements with placeholders as keys
+   * @return {String} The translated string
    */
   Locale.formatString = function(str, args) {
     metaScore.Object.each(args, function(key, value){

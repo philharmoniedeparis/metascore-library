@@ -1,11 +1,59 @@
 /**
 * Description
-* @class Media
-* @namespace metaScore.player.component
-* @extends metaScore.player.Component
+*
+* @class player.component.Media
+* @extends player.Component
 */
 
 metaScore.namespace('player.component').Media = (function () {
+
+  /**
+   * Fired when the media source is set
+   *
+   * @event sourcesset
+   * @param {Object} media The media instance
+   */
+  var EVT_SOURCESSET = 'sourcesset';
+
+  /**
+   * Fired when the metadata has loaded
+   *
+   * @event loadedmetadata
+   * @param {Object} media The media instance
+   */
+  var EVT_LOADEDMETADATA = 'loadedmetadata';
+
+  /**
+   * Fired when the media starts playing
+   *
+   * @event play
+   * @param {Object} media The media instance
+   */
+  var EVT_PLAY = 'play';
+
+  /**
+   * Fired when the media is paused
+   *
+   * @event pause
+   * @param {Object} media The media instance
+   */
+  var EVT_PAUSE = 'pause';
+
+  /**
+   * Fired when the media is seeking
+   *
+   * @event seeking
+   * @param {Object} media The media instance
+   */
+  var EVT_SEEKING = 'seeking';
+
+  /**
+   * Fired when the media's time changed
+   *
+   * @event timeupdate
+   * @param {Object} media The media instance
+   */
+  var EVT_TIMEUPDATE = 'timeupdate';
 
   /**
    * Description
@@ -189,7 +237,7 @@ metaScore.namespace('player.component').Media = (function () {
     this.dom.load();
 
     if(supressEvent !== true){
-      this.triggerEvent('sourcesset', {'media': this});
+      this.triggerEvent(EVT_SOURCESSET, {'media': this});
     }
 
     return this;
@@ -212,7 +260,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return 
    */
   Media.prototype.onLoadedMetadata = function(evt) {    
-    this.triggerEvent('loadedmetadata', {'media': this});
+    this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
   };
 
   /**
@@ -224,7 +272,7 @@ metaScore.namespace('player.component').Media = (function () {
   Media.prototype.onPlay = function(evt) {
     this.playing = true;
     
-    this.triggerEvent('play', {'media': this});
+    this.triggerEvent(EVT_PLAY, {'media': this});
     
     if(this.configs.useFrameAnimation){
       this.triggerTimeUpdate();
@@ -240,7 +288,7 @@ metaScore.namespace('player.component').Media = (function () {
   Media.prototype.onPause = function(evt) {
     this.playing = false;
     
-    this.triggerEvent('pause', {'media': this});
+    this.triggerEvent(EVT_PAUSE, {'media': this});
   };
 
   /**
@@ -262,7 +310,7 @@ metaScore.namespace('player.component').Media = (function () {
    * @return 
    */
   Media.prototype.onSeeking = function(evt){
-    this.triggerEvent('seeking', {'media': this});
+    this.triggerEvent(EVT_SEEKING, {'media': this});
   };
 
   /**
@@ -318,7 +366,7 @@ metaScore.namespace('player.component').Media = (function () {
       window.requestAnimationFrame(metaScore.Function.proxy(this.triggerTimeUpdate, this));
     }
 
-    this.triggerEvent('timeupdate', {'media': this});
+    this.triggerEvent(EVT_TIMEUPDATE, {'media': this});
   };
 
   /**

@@ -1,8 +1,7 @@
 /**
 * Description
-* @class iFrame
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+* @class editor.overlay.iFrame
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').iFrame = (function () {

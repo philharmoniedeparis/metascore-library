@@ -1,11 +1,21 @@
 /**
 * Description
-* @class Component
-* @namespace metaScore.player
-* @extends metaScore.Dom
+*
+* @class player.Component
+* @extends Dom
 */
 
 metaScore.namespace('player').Component = (function () {
+
+  /**
+   * Fired when a property changed
+   *
+   * @event propchange
+   * @param {Object} component The component instance
+   * @param {String} property The name of the property
+   * @param {Mixed} value The new value of the property
+   */
+  var EVT_PROPCHANGE = 'propchange';
 
   /**
    * Description
@@ -141,7 +151,7 @@ metaScore.namespace('player').Component = (function () {
       this.configs.properties[name].setter.call(this, value);
       
       if(supressEvent !== true){
-        this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+        this.triggerEvent(EVT_PROPCHANGE, {'component': this, 'property': name, 'value': value});
       }
     }
     

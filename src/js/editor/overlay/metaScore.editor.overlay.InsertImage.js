@@ -1,11 +1,23 @@
 /**
 * Description
-* @class InsertImage
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+*
+* @class editor.overlay.InsertImage
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').InsertImage = (function () {
+
+  /**
+   * Fired when the submit button is clicked
+   *
+   * @event submit
+   * @param {Object} overlay The overlay instance
+   * @param {String} url The image's url
+   * @param {Number} width The image's width
+   * @param {Number} height The image's height
+   * @param {String} alignement The image's alignement
+   */
+  var EVT_SUBMIT = 'submit';
 
   /**
    * Description
@@ -243,7 +255,7 @@ metaScore.namespace('editor.overlay').InsertImage = (function () {
     height = this.fields.height.getValue();
     alignment = this.fields.alignment.getValue();
 
-    this.triggerEvent('submit', {'overlay': this, 'url': url, 'width': width, 'height': height, 'alignment': alignment}, true, false);
+    this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'url': url, 'width': width, 'height': height, 'alignment': alignment}, true, false);
 
     this.hide();
   };

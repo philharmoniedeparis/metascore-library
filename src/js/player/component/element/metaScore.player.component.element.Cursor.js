@@ -1,11 +1,20 @@
 /**
 * Description
-* @class Cursor
-* @namespace metaScore.player.component.element
-* @extends metaScore.player.component.Element
+*
+* @class player.component.element.Cursor
+* @extends player.component.Element
 */
 
 metaScore.namespace('player.component.element').Cursor = (function () {
+
+  /**
+   * Fired when a cursor is clicked, requesting a time update
+   *
+   * @event time
+   * @param {Object} element The element instance
+   * @param {Number} time The time value according to the click position
+   */
+  var EVT_TIME = 'time';
 
   /**
    * Description
@@ -185,7 +194,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
       time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
     }
 
-    this.triggerEvent('time', {'element': this, 'value': time});
+    this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
   };
 
   /**

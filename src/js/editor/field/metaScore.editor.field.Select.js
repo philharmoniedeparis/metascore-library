@@ -1,8 +1,7 @@
 /**
 * Description
-* @class Select
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Select
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Select = (function () {

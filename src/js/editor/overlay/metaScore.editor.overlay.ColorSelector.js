@@ -1,11 +1,20 @@
 /**
 * Description
-* @class ColorSelector
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+*
+* @class editor.overlay.ColorSelector
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').ColorSelector = (function () {
+
+  /**
+   * Fired when the submit button is clicked
+   *
+   * @event submit
+   * @param {Object} overlay The overlay instance
+   * @param {Object} value The color value in rgba format
+   */
+  var EVT_SUBMIT = 'submit';
 
   /**
    * Description
@@ -403,7 +412,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
    * @return 
    */
   ColorSelector.prototype.onApplyClick = function(evt){
-    this.triggerEvent('select', {'overlay': this, 'value': this.value}, true, false);
+    this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.value}, true, false);
 
     this.hide();
   };

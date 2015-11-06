@@ -1,11 +1,32 @@
 /**
 * Description
+*
 * @class Draggable
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.Draggable = (function () {
+
+  /**
+   * Fired when the dragging started
+   *
+   * @event dragstart
+   */
+  var EVT_DRAGSTART = 'dragstart';
+
+  /**
+   * Fired when a drag occured
+   *
+   * @event drag
+   */
+  var EVT_DRAG = 'drag';
+
+  /**
+   * Fired when the dragging ended
+   *
+   * @event dragend
+   */
+  var EVT_DRAGEND = 'dragend';
 
   /**
    * Description
@@ -62,7 +83,7 @@ metaScore.Draggable = (function () {
 
     this.configs.target
       .addClass('dragging')
-      .triggerEvent('dragstart', null, false, true);
+      .triggerEvent(EVT_DRAGSTART, null, false, true);
 
     evt.stopPropagation();
   };
@@ -88,7 +109,7 @@ metaScore.Draggable = (function () {
     this.configs.target
       .css('left', left + 'px')
       .css('top', top + 'px')
-      .triggerEvent('drag', null, false, true);
+      .triggerEvent(EVT_DRAG, null, false, true);
 
     evt.stopPropagation();
   };
@@ -106,7 +127,7 @@ metaScore.Draggable = (function () {
 
     this.configs.target
       .removeClass('dragging')
-      .triggerEvent('dragend', null, false, true);
+      .triggerEvent(EVT_DRAGEND, null, false, true);
 
     evt.stopPropagation();
   };

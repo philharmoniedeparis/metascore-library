@@ -1,13 +1,9 @@
-/**
-* Description
-* @class Ajax
-* @extends metaScore.Class
-*/
-
 metaScore.Ajax = (function () {
 
   /**
-   * Description
+   * Helper class to handle AJAX requests
+   *
+   * @class Ajax
    * @constructor
    */
   function Ajax() {
@@ -17,10 +13,21 @@ metaScore.Ajax = (function () {
 
   /**
    * Send an XMLHttp request
+   *
    * @method send
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return xhr
+   * @static
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request
+   * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
+   * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
+   * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
+   * @param {Object} [options.data={}] Data to be send along with the request
+   * @param {String} [options.dataType='json'] The type of data expected back from the server
+   * @param {Funtion} [options.complete] A function to be called when the request finishes
+   * @param {Funtion} [options.success] A function to be called if the request succeeds
+   * @param {Funtion} [options.error] A function to be called if the request fails
+   * @param {Object} [options.scope=this] The object to which the scope of the above functions should be set
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.send = function(url, options) {
 
@@ -46,11 +53,6 @@ metaScore.Ajax = (function () {
       xhr.setRequestHeader(key, value);
     });
 
-    /**
-     * Description
-     * @method onreadystatechange
-     * @return 
-     */
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if(metaScore.Var.is(options.complete, 'function')){
@@ -76,9 +78,9 @@ metaScore.Ajax = (function () {
   /**
    * Send an XMLHttp GET request
    * @method get
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return CallExpression
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.get = function(url, options) {
 
@@ -91,9 +93,9 @@ metaScore.Ajax = (function () {
   /**
    * Send an XMLHttp POST request
    * @method post
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return CallExpression
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.post = function(url, options) {
 
@@ -106,9 +108,9 @@ metaScore.Ajax = (function () {
   /**
    * Send an XMLHttp PUT request
    * @method put
-   * @param {} url
-   * @param {object} options to set for the request; see the defaults variable
-   * @return CallExpression
+   * @param {String} url The URL to which the request is sent
+   * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+   * @return {XMLHttpRequest} The XHR request
    */
   Ajax.put = function(url, options) {
 

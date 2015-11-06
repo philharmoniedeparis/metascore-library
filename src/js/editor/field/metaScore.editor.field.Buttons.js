@@ -1,11 +1,19 @@
 /**
 * Description
-* @class Buttons
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Buttons
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Buttons = (function () {
+
+  /**
+   * Fired when a value is selected though a button click
+   *
+   * @event valuechange
+   * @param {Object} field The field instance
+   * @param {Mixed} value The clicked button's key
+   */
+  var EVT_VALUECHANGE = 'valuechange';
 
   /**
    * Description
@@ -59,7 +67,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
     metaScore.Object.each(this.configs.buttons, function(key, attr){
       this.buttons[key] = new metaScore.Dom('<button/>', attr)
         .addListener('click', function(){
-          field.triggerEvent('valuechange', {'field': field, 'value': key}, true, false);
+          field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': key}, true, false);
         })
         .appendTo(this.input_wrapper);
     }, this);

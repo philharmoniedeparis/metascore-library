@@ -1,8 +1,7 @@
 /**
 * Description
-* @class LoadMask
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+* @class editor.overlay.LoadMask
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').LoadMask = (function () {

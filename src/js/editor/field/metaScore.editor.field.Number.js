@@ -1,8 +1,7 @@
 /**
 * Description
-* @class Number
-* @namespace metaScore.editor.field
-* @extends metaScore.editor.Field
+* @class editor.field.Number
+* @extends editor.Field
 */
 
 metaScore.namespace('editor.field').Number = (function () {

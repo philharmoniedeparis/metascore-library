@@ -1,11 +1,32 @@
 /**
 * Description
-* @class Text
-* @namespace metaScore.player.component.element
-* @extends metaScore.player.component.Element
+*
+* @class player.component.element.Text
+* @extends player.component.Element
 */
 
 metaScore.namespace('player.component.element').Text = (function () {
+
+  /**
+   * Fired when a page link is clicked
+   *
+   * @event page
+   * @param {Object} element The element instance
+   * @param {Object} block The block instance
+   * @param {Number} index The page index
+   */
+  var EVT_PAGE = 'page';
+
+  /**
+   * Fired when a play link is clicked
+   *
+   * @event play
+   * @param {Object} element The element instance
+   * @param {Number} inTime The start time
+   * @param {Number} outTime The end time
+   * @param {Number} rIndex The reading index
+   */
+  var EVT_PLAY = 'play';
 
   /**
    * Description
@@ -72,11 +93,11 @@ metaScore.namespace('player.component.element').Text = (function () {
     
     if(link){
       if(matches = link.hash.match(/^#page=([^,]*),(\d+)$/)){
-        this.triggerEvent('page', {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});
+        this.triggerEvent(EVT_PAGE, {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});
         evt.preventDefault();
       }
       else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
-        this.triggerEvent('play', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
+        this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
       }
       else{
         window.open(link.href,'_blank');

@@ -1,11 +1,34 @@
 /**
 * Description
-* @class Page
-* @namespace metaScore.player.component
-* @extends metaScore.player.Component
+*
+* @class player.component.Page
+* @extends player.Component
 */
 
 metaScore.namespace('player.component').Page = (function () {
+
+  /**
+   * Fired when an element is added
+   *
+   * @event elementadd
+   * @param {Object} page The page instance
+   * @param {Object} element The element instance
+   */
+  var EVT_ELEMENTADD = 'elementadd';
+
+  /**
+   * Fired when a cuepoint started
+   *
+   * @event cuepointstart
+   */
+  var EVT_CUEPOINTSTART = 'cuepointstart';
+
+  /**
+   * Fired when a cuepoint ended
+   *
+   * @event cuepointend
+   */
+  var EVT_CUEPOINTEND = 'cuepointend';
 
   /**
    * Description
@@ -187,7 +210,7 @@ metaScore.namespace('player.component').Page = (function () {
     }
 
     if(supressEvent !== true){
-      this.triggerEvent('elementadd', {'page': this, 'element': element});
+      this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element});
     }
 
     return element;
@@ -225,7 +248,7 @@ metaScore.namespace('player.component').Page = (function () {
    * @return 
    */
   Page.prototype.onCuePointStart = function(cuepoint){
-    this.triggerEvent('cuepointstart');
+    this.triggerEvent(EVT_CUEPOINTSTART);
   };
 
   /**
@@ -235,7 +258,7 @@ metaScore.namespace('player.component').Page = (function () {
    * @return 
    */
   Page.prototype.onCuePointEnd = function(cuepoint){
-    this.triggerEvent('cuepointend');
+    this.triggerEvent(EVT_CUEPOINTEND);
   };
 
   /**

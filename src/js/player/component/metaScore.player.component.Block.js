@@ -1,11 +1,39 @@
 /**
 * Description
-* @class Block
-* @namespace metaScore.player.component
-* @extends metaScore.player.Component
+*
+* @class player.component.Block
+* @extends player.Component
 */
 
 metaScore.namespace('player.component').Block = (function () {
+
+  /**
+   * Fired when a page is added
+   *
+   * @event pageadd
+   * @param {Object} block The block instance
+   * @param {Object} page The page instance
+   */
+  var EVT_PAGEADD = 'pageadd';
+
+  /**
+   * Fired when a page is removed
+   *
+   * @event pageremove
+   * @param {Object} block The block instance
+   * @param {Object} page The page instance
+   */
+  var EVT_PAGEREMOVE = 'pageremove';
+
+  /**
+   * Fired when the active page is set
+   *
+   * @event pageactivate
+   * @param {Object} block The block instance
+   * @param {Object} page The page instance
+   * @param {String} basis The reason behind this action
+   */
+  var EVT_PAGEACTIVATE = 'pageactivate';
 
   /**
    * Description
@@ -429,7 +457,7 @@ metaScore.namespace('player.component').Block = (function () {
     this.setActivePage(page);
 
     if(supressEvent !== true){
-      this.triggerEvent('pageadd', {'block': this, 'page': page});
+      this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page});
     }
 
     return page;
@@ -448,7 +476,7 @@ metaScore.namespace('player.component').Block = (function () {
     page.remove();
 
     if(supressEvent !== true){
-      this.triggerEvent('pageremove', {'block': this, 'page': page});
+      this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});
     }
 
     return page;
@@ -518,7 +546,7 @@ metaScore.namespace('player.component').Block = (function () {
       this.updatePager();
 
       if(supressEvent !== true){
-        this.triggerEvent('pageactivate', {'block': this, 'page': page, 'basis': basis});
+        this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'page': page, 'basis': basis});
       }
     }
   };

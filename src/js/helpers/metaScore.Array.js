@@ -1,8 +1,7 @@
 /**
 * Description
 * @class Array
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.Array = (function () {

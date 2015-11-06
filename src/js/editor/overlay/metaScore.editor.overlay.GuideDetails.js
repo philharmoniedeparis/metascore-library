@@ -1,11 +1,20 @@
 /**
 * Description
-* @class GuideDetails
-* @namespace metaScore.editor.overlay
-* @extends metaScore.editor.Overlay
+*
+* @class editor.overlay.GuideDetails
+* @extends editor.Overlay
 */
 
 metaScore.namespace('editor.overlay').GuideDetails = (function () {
+
+  /**
+   * Fired when the submit button is clicked
+   *
+   * @event submit
+   * @param {Object} overlay The overlay instance
+   * @param {Object} values The field values
+   */
+  var EVT_SUBMIT = 'submit';
 
   /**
    * Description
@@ -230,7 +239,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
    * @return 
    */
   GuideDetails.prototype.onFormSubmit = function(evt){  
-    this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
+    this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'values': this.getValues()}, true, false);
     
     evt.preventDefault();
     evt.stopPropagation();

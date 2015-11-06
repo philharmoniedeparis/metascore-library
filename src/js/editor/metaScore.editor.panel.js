@@ -1,11 +1,44 @@
 /**
 * Description
-* @class Panel
-* @namespace metaScore.editor
-* @extends metaScore.Dom
+* @class editor.Panel
+* @extends Dom
 */
 
 metaScore.namespace('editor').Panel = (function(){
+
+  /**
+   * Fired before a component is set
+   *
+   * @event componentbeforeset
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTBEFORESET = 'componentbeforeset';
+
+  /**
+   * Fired when a component is set
+   *
+   * @event componentset
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTSET = 'componentset';
+
+  /**
+   * Fired when a component is unset
+   *
+   * @event componentunset
+   * @param {Object} component The component instance
+   */
+  var EVT_COMPONENTUNSET = 'componentunset';
+
+  /**
+   * Fired when a component's values change
+   *
+   * @event valueschange
+   * @param {Object} component The component instance
+   * @param {Object} old_values The component instance
+   * @param {Object} new_values The component instance
+   */
+  var EVT_VALUESCHANGE = 'valueschange';
 
   /**
    * Description
@@ -194,7 +227,7 @@ metaScore.namespace('editor').Panel = (function(){
       
       this.unsetComponent(true);
       
-      this.triggerEvent('componentbeforeset', {'component': component}, false);
+      this.triggerEvent(EVT_COMPONENTBEFORESET, {'component': component}, false);
 
       this.component = component;
 
@@ -214,7 +247,7 @@ metaScore.namespace('editor').Panel = (function(){
       component.addClass('selected');
 
       if(supressEvent !== true){
-        this.triggerEvent('componentset', {'component': component}, false);
+        this.triggerEvent(EVT_COMPONENTSET, {'component': component}, false);
       }
     }
 
@@ -246,7 +279,7 @@ metaScore.namespace('editor').Panel = (function(){
       delete this.component;
 
       if(supressEvent !== true){
-        this.triggerEvent('componentunset', {'component': component}, false);
+        this.triggerEvent(EVT_COMPONENTUNSET, {'component': component}, false);
       }
     }
 
@@ -396,7 +429,7 @@ metaScore.namespace('editor').Panel = (function(){
 
     this.updateFieldValues(fields, true);
 
-    this.triggerEvent('valueschange', {'component': component, 'old_values': this._beforeDragValues, 'new_values': this.getValues(fields)}, false);
+    this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': this._beforeDragValues, 'new_values': this.getValues(fields)}, false);
 
     delete this._beforeDragValues;
   };
@@ -437,7 +470,7 @@ metaScore.namespace('editor').Panel = (function(){
 
     this.updateFieldValues(fields, true);
 
-    this.triggerEvent('valueschange', {'component': component, 'old_values': this._beforeResizeValues, 'new_values': this.getValues(fields)}, false);
+    this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': this._beforeResizeValues, 'new_values': this.getValues(fields)}, false);
 
     delete this._beforeResizeValues;
   };
@@ -481,7 +514,7 @@ metaScore.namespace('editor').Panel = (function(){
         break;
     }
 
-    this.triggerEvent('valueschange', {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
+    this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
   };
 
   /**

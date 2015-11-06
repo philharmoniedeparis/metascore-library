@@ -1,11 +1,26 @@
 /**
 * Description
-* @class Overlay
-* @namespace metaScore.editor
-* @extends metaScore.Dom
+* @class editor.Overlay
+* @extends Dom
 */
 
 metaScore.namespace('editor').Overlay = (function(){
+
+  /**
+   * Fired when the overlay is shown
+   *
+   * @event show
+   * @param {Object} overlay The overlay instance
+   */
+  var EVT_SHOW = 'show';
+
+  /**
+   * Fired when the overlay is hidden
+   *
+   * @event hide
+   * @param {Object} overlay The overlay instance
+   */
+  var EVT_HIDE = 'hide';
 
   /**
    * Initialize
@@ -100,7 +115,7 @@ metaScore.namespace('editor').Overlay = (function(){
 
     this.appendTo(this.configs.parent);
     
-    this.triggerEvent('show', {'overlay': this}, true, false);
+    this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
 
     return this;
   };
@@ -117,7 +132,7 @@ metaScore.namespace('editor').Overlay = (function(){
 
     this.remove();
     
-    this.triggerEvent('hide', {'overlay': this}, true, false);
+    this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
 
     return this;
   };

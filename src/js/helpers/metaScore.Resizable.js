@@ -1,14 +1,31 @@
-/**
-* Description
-* @class Resizable
-* @namespace metaScore
-* @extends metaScore.Class
-*/
-
 metaScore.Resizable = (function () {
 
   /**
+   * Fired when a resize started
+   *
+   * @event resizestart
+   */
+  var EVT_RESIZESTART = 'resizestart';
+
+  /**
+   * Fired when a resize occured
+   *
+   * @event resize
+   */
+  var EVT_RESIZE = 'resize';
+
+  /**
+   * Fired when a resize ended
+   *
+   * @event resizeend
+   */
+  var EVT_RESIZEEND = 'resizeend';
+
+  /**
    * Description
+   *
+   * @class Resizable
+   * @extends Class
    * @constructor
    * @param {} configs
    */
@@ -77,7 +94,7 @@ metaScore.Resizable = (function () {
 
     this.configs.target
       .addClass('resizing')
-      .triggerEvent('resizestart', null, false, true);
+      .triggerEvent(EVT_RESIZESTART, null, false, true);
 
     evt.stopPropagation();
   };
@@ -139,7 +156,7 @@ metaScore.Resizable = (function () {
     this.configs.target
       .css('width', w +'px')
       .css('height', h +'px')
-      .triggerEvent('resize', null, false, true);
+      .triggerEvent(EVT_RESIZE, null, false, true);
 
     evt.stopPropagation();
   };
@@ -157,7 +174,7 @@ metaScore.Resizable = (function () {
 
     this.configs.target
       .removeClass('resizing')
-      .triggerEvent('resizeend', null, false, true);
+      .triggerEvent(EVT_RESIZEEND, null, false, true);
 
     evt.stopPropagation();
   };

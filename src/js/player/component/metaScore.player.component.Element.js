@@ -1,8 +1,8 @@
 /**
 * Description
-* @class Element
-* @namespace metaScore.player.component
-* @extends metaScore.player.Component
+*
+* @class player.component.Element
+* @extends player.Component
 */
 
 metaScore.namespace('player.component').Element = (function () {

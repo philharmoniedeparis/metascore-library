@@ -1,8 +1,7 @@
 /**
 * A helper class for variable type detection and value.
 * @class Var
-* @namespace metaScore
-* @extends metaScore.Class
+* @extends Class
 */
 
 metaScore.Var = (function () {

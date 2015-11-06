@@ -1,8 +1,8 @@
 /**
 * Description
-* @class CuePoint
-* @namespace metaScore.player
-* @extends metaScore.Evented
+*
+* @class player.CuePoint
+* @extends Evented
 */
 
 metaScore.namespace('player').CuePoint = (function () {

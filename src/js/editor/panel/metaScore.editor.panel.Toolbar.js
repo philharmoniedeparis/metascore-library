@@ -1,8 +1,7 @@
 /**
 * Description
-* @class Toolbar
-* @namespace metaScore.editor.panel
-* @extends metaScore.Dom
+* @class editor.panel.Toolbar
+* @extends Dom
 */
 
 metaScore.namespace('editor.panel').Toolbar = (function(){

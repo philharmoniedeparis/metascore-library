@@ -1,8 +1,8 @@
 /**
 * Description
-* @class Image
-* @namespace metaScore.player.component.element
-* @extends metaScore.player.component.Element
+*
+* @class player.component.element.Image
+* @extends player.component.Element
 */
 
 metaScore.namespace('player.component.element').Image = (function () {

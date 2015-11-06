@@ -1,8 +1,7 @@
 /**
 * Description
-* @class MainMenu
-* @namespace metaScore.editor
-* @extends metaScore.Dom
+* @class editor.MainMenu
+* @extends Dom
 */
 
 metaScore.namespace('editor').MainMenu = (function(){
