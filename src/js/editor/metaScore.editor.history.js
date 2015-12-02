@@ -6,190 +6,190 @@
 
 metaScore.namespace('editor').History = (function(){
 
-  /**
-   * Fired when a command is added
-   *
-   * @event add
-   * @param {Object} command The added command
-   */
-  var EVT_ADD = 'add';
-
-  /**
-   * Fired when a command is undone
-   *
-   * @event undo
-   * @param {Object} command The added command
-   */
-  var EVT_UNDO = 'undo';
-
-  /**
-   * Fired when a command is redone
-   *
-   * @event redo
-   * @param {Object} command The added command
-   */
-  var EVT_REDO = 'redo';
-
-  /**
-   * Fired when the command history is cleared
-   *
-   * @event clear
-   */
-  var EVT_CLEAR = 'clear';
-
-  /**
-   * Description
-   * @constructor
-   * @param {} configs
-   */
-  function History(configs) {
-    this.configs = this.getConfigs(configs);
-
-    // call parent constructor
-    History.parent.call(this);
-
-    this.commands = [];
-    this.index = -1;
-    this.executing = false;
-  }
-
-  History.defaults = {
     /**
-    * Maximum number of commands to store
-    */
-    max_commands: 30
-  };
+     * Fired when a command is added
+     *
+     * @event add
+     * @param {Object} command The added command
+     */
+    var EVT_ADD = 'add';
 
-  metaScore.Evented.extend(History);
+    /**
+     * Fired when a command is undone
+     *
+     * @event undo
+     * @param {Object} command The added command
+     */
+    var EVT_UNDO = 'undo';
 
-  /**
-   * Description
-   * @method execute
-   * @param {} command
-   * @param {} action
-   * @return ThisExpression
-   */
-  History.prototype.execute = function(command, action) {
-    if (command && (action in command)) {
-      this.executing = true;
-      command[action](command);
-      this.executing = false;
+    /**
+     * Fired when a command is redone
+     *
+     * @event redo
+     * @param {Object} command The added command
+     */
+    var EVT_REDO = 'redo';
+
+    /**
+     * Fired when the command history is cleared
+     *
+     * @event clear
+     */
+    var EVT_CLEAR = 'clear';
+
+    /**
+     * Description
+     * @constructor
+     * @param {} configs
+     */
+    function History(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        History.parent.call(this);
+
+        this.commands = [];
+        this.index = -1;
+        this.executing = false;
     }
 
-    return this;
-  };
+    History.defaults = {
+        /**
+        * Maximum number of commands to store
+        */
+        max_commands: 30
+    };
 
-  /**
-   * Description
-   * @method add
-   * @param {} command
-   * @return ThisExpression
-   */
-  History.prototype.add = function (command){
-    if (this.executing) {
-      return this;
-    }
+    metaScore.Evented.extend(History);
 
-    // invalidate items higher on the stack
-    this.commands.splice(this.index + 1, this.commands.length - this.index);
+    /**
+     * Description
+     * @method execute
+     * @param {} command
+     * @param {} action
+     * @return ThisExpression
+     */
+    History.prototype.execute = function(command, action) {
+        if (command && (action in command)) {
+            this.executing = true;
+            command[action](command);
+            this.executing = false;
+        }
 
-    // insert the new command
-    this.commands.push(command);
+        return this;
+    };
 
-    // remove old commands
-    if(this.commands.length > this.configs.max_commands){
-      this.commands = this.commands.slice(this.configs.max_commands * -1);
-    }
+    /**
+     * Description
+     * @method add
+     * @param {} command
+     * @return ThisExpression
+     */
+    History.prototype.add = function (command){
+        if (this.executing) {
+            return this;
+        }
 
-    // update the index
-    this.index = this.commands.length - 1;
+        // invalidate items higher on the stack
+        this.commands.splice(this.index + 1, this.commands.length - this.index);
 
-    this.triggerEvent(EVT_ADD, {'command': command});
+        // insert the new command
+        this.commands.push(command);
 
-    return this;
-  };
+        // remove old commands
+        if(this.commands.length > this.configs.max_commands){
+            this.commands = this.commands.slice(this.configs.max_commands * -1);
+        }
 
-  /**
-   * Description
-   * @method undo
-   * @return ThisExpression
-   */
-  History.prototype.undo = function() {
-    var command = this.commands[this.index];
+        // update the index
+        this.index = this.commands.length - 1;
 
-    if (!command) {
-      return this;
-    }
+        this.triggerEvent(EVT_ADD, {'command': command});
 
-    // execute the command's undo
-     this.execute(command, 'undo');
+        return this;
+    };
 
-    // update the index
-    this.index -= 1;
+    /**
+     * Description
+     * @method undo
+     * @return ThisExpression
+     */
+    History.prototype.undo = function() {
+        var command = this.commands[this.index];
 
-    this.triggerEvent(EVT_UNDO, {'command': command});
+        if (!command) {
+            return this;
+        }
 
-    return this;
-  };
+        // execute the command's undo
+         this.execute(command, 'undo');
 
-  /**
-   * Description
-   * @method redo
-   * @return ThisExpression
-   */
-  History.prototype.redo = function() {
-    var command = this.commands[this.index + 1];
+        // update the index
+        this.index -= 1;
 
-    if (!command) {
-      return this;
-    }
+        this.triggerEvent(EVT_UNDO, {'command': command});
 
-    // execute the command's redo
-    this.execute(command, 'redo');
+        return this;
+    };
 
-    // update the index
-    this.index += 1;
+    /**
+     * Description
+     * @method redo
+     * @return ThisExpression
+     */
+    History.prototype.redo = function() {
+        var command = this.commands[this.index + 1];
 
-    this.triggerEvent(EVT_REDO, {'command': command});
+        if (!command) {
+            return this;
+        }
 
-    return this;
-  };
+        // execute the command's redo
+        this.execute(command, 'redo');
 
-  /**
-   * Description
-   * @method clear
-   * @return 
-   */
-  History.prototype.clear = function () {
-    var length = this.commands.length;
+        // update the index
+        this.index += 1;
 
-    this.commands = [];
-    this.index = -1;
+        this.triggerEvent(EVT_REDO, {'command': command});
 
-    if(length > 0) {
-      this.triggerEvent(EVT_CLEAR);
-    }
+        return this;
+    };
 
-  };
+    /**
+     * Description
+     * @method clear
+     * @return 
+     */
+    History.prototype.clear = function () {
+        var length = this.commands.length;
 
-  /**
-   * Description
-   * @method hasUndo
-   * @return BinaryExpression
-   */
-  History.prototype.hasUndo = function(){
-    return this.index !== -1;
-  };
+        this.commands = [];
+        this.index = -1;
 
-  /**
-   * Description
-   * @method hasRedo
-   * @return BinaryExpression
-   */
-  History.prototype.hasRedo = function(){
-    return this.index < (this.commands.length - 1);
-  };
+        if(length > 0) {
+            this.triggerEvent(EVT_CLEAR);
+        }
 
-  return History;
+    };
+
+    /**
+     * Description
+     * @method hasUndo
+     * @return BinaryExpression
+     */
+    History.prototype.hasUndo = function(){
+        return this.index !== -1;
+    };
+
+    /**
+     * Description
+     * @method hasRedo
+     * @return BinaryExpression
+     */
+    History.prototype.hasRedo = function(){
+        return this.index < (this.commands.length - 1);
+    };
+
+    return History;
 
 })();

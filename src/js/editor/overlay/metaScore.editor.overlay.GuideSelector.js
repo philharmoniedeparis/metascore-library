@@ -1,190 +1,190 @@
 metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
-  /**
-   * Fired when the submit button is clicked
-   *
-   * @event submit
-   * @param {Object} overlay The overlay instance
-   * @param {Object} values The field values
-   */
-  var EVT_SUBMIT = 'submit';
-
-  /**
-   * Description
-   *
-   * @class editor.overlay.GuideSelector
-   * @extends editor.Overlay
-   * @constructor
-   * @param {} configs
-   */
-  function GuideSelector(configs) {
-    this.configs = this.getConfigs(configs);
-
-    // call parent constructor
-    GuideSelector.parent.call(this, this.configs);
-
-    this.addClass('guide-selector');
-  }
-
-  GuideSelector.defaults = {
     /**
-    * True to add a toolbar with title and close button
-    */
-    toolbar: true,
+     * Fired when the submit button is clicked
+     *
+     * @event submit
+     * @param {Object} overlay The overlay instance
+     * @param {Object} values The field values
+     */
+    var EVT_SUBMIT = 'submit';
 
     /**
-    * The overlay's title
-    */
-    title: metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
+     * Description
+     *
+     * @class editor.overlay.GuideSelector
+     * @extends editor.Overlay
+     * @constructor
+     * @param {} configs
+     */
+    function GuideSelector(configs) {
+        this.configs = this.getConfigs(configs);
 
-    /**
-    * The text to display when no guides are available
-    */
-    emptyText: metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
+        // call parent constructor
+        GuideSelector.parent.call(this, this.configs);
 
-    /**
-    * The url from which to retreive the list of guides
-    */
-    url: null
-  };
-
-  metaScore.editor.Overlay.extend(GuideSelector);
-
-  /**
-   * Description
-   * @method show
-   * @return 
-   */
-  GuideSelector.prototype.show = function(){
-    this.loadmask = new metaScore.editor.overlay.LoadMask({
-      'autoShow': true
-    });
-
-    metaScore.Ajax.get(this.configs.url, {
-      'success': metaScore.Function.proxy(this.onLoadSuccess, this),
-      'error': metaScore.Function.proxy(this.onLoadError, this)
-    });
-  };
-
-  /**
-   * Description
-   * @method onLoadSuccess
-   * @param {} xhr
-   * @return 
-   */
-  GuideSelector.prototype.onLoadSuccess = function(xhr){
-    var contents = this.getContents(),
-      data = JSON.parse(xhr.response),
-      guides = data.items,
-      table, row,
-      revision_wrapper, revision_field, last_vid,
-      groups, button;
-
-    table = new metaScore.Dom('<table/>', {'class': 'guides'})
-      .appendTo(contents);
-
-    if(metaScore.Var.isEmpty(guides)){
-      contents.text(this.configs.emptyText);
+        this.addClass('guide-selector');
     }
-    else{
-      metaScore.Array.each(guides, function(index, guide){
-        row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
-          .appendTo(table);
 
-        new metaScore.Dom('<td/>', {'class': 'thumbnail'})
-          .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
-          .appendTo(row);
-        
-        revision_field = new metaScore.editor.field.Select()
-          .addClass('revisions');
-        
-        if('revisions' in guide){
-          groups = {};
-          
-          metaScore.Object.each(guide.revisions, function(vid, revision){
-            var group_id, group_label, group, text;
-            
-            switch(revision.state){
-              case 0: // archives
-                group_id = 'archives';
-                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
-                break;
-                
-              case 1: // published
-                group_id = 'published';
-                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
-                break;
-                
-              case 2: // drafts
-                group_id = 'drafts';
-                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
-                break;
-            }
-            
-            if(!(group_id in groups)){
-              groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
-            }
-            
-            group = groups[group_id];
-            
-            text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username (!id:!vid)', {'!date': revision.date, '!username': revision.username, '!id': guide.id, '!vid': vid});
-          
-            revision_field.addOption(vid, text, group);
-          });
-          
-          if('latest_revision' in guide){
-            revision_field.setValue(guide.latest_revision);
-          }
+    GuideSelector.defaults = {
+        /**
+        * True to add a toolbar with title and close button
+        */
+        toolbar: true,
+
+        /**
+        * The overlay's title
+        */
+        title: metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
+
+        /**
+        * The text to display when no guides are available
+        */
+        emptyText: metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
+
+        /**
+        * The url from which to retreive the list of guides
+        */
+        url: null
+    };
+
+    metaScore.editor.Overlay.extend(GuideSelector);
+
+    /**
+     * Description
+     * @method show
+     * @return 
+     */
+    GuideSelector.prototype.show = function(){
+        this.loadmask = new metaScore.editor.overlay.LoadMask({
+            'autoShow': true
+        });
+
+        metaScore.Ajax.get(this.configs.url, {
+            'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+            'error': metaScore.Function.proxy(this.onLoadError, this)
+        });
+    };
+
+    /**
+     * Description
+     * @method onLoadSuccess
+     * @param {} xhr
+     * @return 
+     */
+    GuideSelector.prototype.onLoadSuccess = function(xhr){
+        var contents = this.getContents(),
+            data = JSON.parse(xhr.response),
+            guides = data.items,
+            table, row,
+            revision_wrapper, revision_field, last_vid,
+            groups, button;
+
+        table = new metaScore.Dom('<table/>', {'class': 'guides'})
+            .appendTo(contents);
+
+        if(metaScore.Var.isEmpty(guides)){
+            contents.text(this.configs.emptyText);
         }
-    
-        button = new metaScore.editor.Button()
-          .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
-          .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
-          .data('action', 'select');
+        else{
+            metaScore.Array.each(guides, function(index, guide){
+                row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
+                    .appendTo(table);
 
-        revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
-          .append(revision_field)
-          .append(button);
+                new metaScore.Dom('<td/>', {'class': 'thumbnail'})
+                    .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
+                    .appendTo(row);
+                
+                revision_field = new metaScore.editor.field.Select()
+                    .addClass('revisions');
+                
+                if('revisions' in guide){
+                    groups = {};
+                    
+                    metaScore.Object.each(guide.revisions, function(vid, revision){
+                        var group_id, group_label, group, text;
+                        
+                        switch(revision.state){
+                            case 0: // archives
+                                group_id = 'archives';
+                                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
+                                break;
+                                
+                            case 1: // published
+                                group_id = 'published';
+                                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
+                                break;
+                                
+                            case 2: // drafts
+                                group_id = 'drafts';
+                                group_label = metaScore.Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
+                                break;
+                        }
+                        
+                        if(!(group_id in groups)){
+                            groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
+                        }
+                        
+                        group = groups[group_id];
+                        
+                        text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username (!id:!vid)', {'!date': revision.date, '!username': revision.username, '!id': guide.id, '!vid': vid});
+                    
+                        revision_field.addOption(vid, text, group);
+                    });
+                    
+                    if('latest_revision' in guide){
+                        revision_field.setValue(guide.latest_revision);
+                    }
+                }
+        
+                button = new metaScore.editor.Button()
+                    .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
+                    .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
+                    .data('action', 'select');
 
-        new metaScore.Dom('<td/>', {'class': 'details'})
-          .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
-          .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
-          .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
-          .append(revision_wrapper)
-          .appendTo(row);
-      }, this);
-    }
+                revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
+                    .append(revision_field)
+                    .append(button);
 
-    this.loadmask.hide();
-    delete this.loadmask;
+                new metaScore.Dom('<td/>', {'class': 'details'})
+                    .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
+                    .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
+                    .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
+                    .append(revision_wrapper)
+                    .appendTo(row);
+            }, this);
+        }
 
-    if(this.configs.modal){
-      this.mask.appendTo(this.configs.parent);
-    }
+        this.loadmask.hide();
+        delete this.loadmask;
 
-    this.appendTo(this.configs.parent);
-  };
+        if(this.configs.modal){
+            this.mask.appendTo(this.configs.parent);
+        }
 
-  /**
-   * Description
-   * @method onLoadError
-   * @return 
-   */
-  GuideSelector.prototype.onLoadError = function(){
-  };
+        this.appendTo(this.configs.parent);
+    };
 
-  /**
-   * Description
-   * @method onGuideClick
-   * @param {} guide
-   * @return 
-   */
-  GuideSelector.prototype.onGuideClick = function(guide, revision_field){
-    this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+    /**
+     * Description
+     * @method onLoadError
+     * @return 
+     */
+    GuideSelector.prototype.onLoadError = function(){
+    };
 
-    this.hide();
-  };
+    /**
+     * Description
+     * @method onGuideClick
+     * @param {} guide
+     * @return 
+     */
+    GuideSelector.prototype.onGuideClick = function(guide, revision_field){
+        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
-  return GuideSelector;
+        this.hide();
+    };
+
+    return GuideSelector;
 
 })();

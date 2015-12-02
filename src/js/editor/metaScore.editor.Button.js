@@ -6,90 +6,90 @@
 
 metaScore.namespace('editor').Button = (function () {
 
-  /**
-   * Description
-   * @constructor
-   * @param {} configs
-   */
-  function Button(configs) {
-    this.configs = this.getConfigs(configs);
-
-    // call the super constructor.
-    metaScore.Dom.call(this, '<button/>');
-
-    this.disabled = false;
-
-    if(this.configs.label){
-      this.setLabel(this.configs.label);
-    }
-
-    this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-  }
-
-  Button.defaults = {
     /**
-    * A text to add as a label
-    */
-    label: null
-  };
+     * Description
+     * @constructor
+     * @param {} configs
+     */
+    function Button(configs) {
+        this.configs = this.getConfigs(configs);
 
-  metaScore.Dom.extend(Button);
+        // call the super constructor.
+        metaScore.Dom.call(this, '<button/>');
 
-  /**
-   * Description
-   * @method onClick
-   * @param {} evt
-   * @return 
-   */
-  Button.prototype.onClick = function(evt){
-    if(this.disabled){
-      evt.stopPropagation();
-    }
-  };
+        this.disabled = false;
 
-  /**
-   * Description
-   * @method setLabel
-   * @param {} text
-   * @return ThisExpression
-   */
-  Button.prototype.setLabel = function(text){
-    if(this.label === undefined){
-      this.label = new metaScore.Dom('<span/>', {'class': 'label'})
-        .appendTo(this);
+        if(this.configs.label){
+            this.setLabel(this.configs.label);
+        }
+
+        this.addListener('click', metaScore.Function.proxy(this.onClick, this));
     }
 
-    this.label.text(text);
+    Button.defaults = {
+        /**
+        * A text to add as a label
+        */
+        label: null
+    };
 
-    return this;
-  };
+    metaScore.Dom.extend(Button);
 
-  /**
-   * Disable the button
-   * @method disable
-   * @return ThisExpression
-   */
-  Button.prototype.disable = function(){
-    this.disabled = true;
+    /**
+     * Description
+     * @method onClick
+     * @param {} evt
+     * @return 
+     */
+    Button.prototype.onClick = function(evt){
+        if(this.disabled){
+            evt.stopPropagation();
+        }
+    };
 
-    this.addClass('disabled');
+    /**
+     * Description
+     * @method setLabel
+     * @param {} text
+     * @return ThisExpression
+     */
+    Button.prototype.setLabel = function(text){
+        if(this.label === undefined){
+            this.label = new metaScore.Dom('<span/>', {'class': 'label'})
+                .appendTo(this);
+        }
 
-    return this;
-  };
+        this.label.text(text);
 
-  /**
-   * Enable the button
-   * @method enable
-   * @return ThisExpression
-   */
-  Button.prototype.enable = function(){
-    this.disabled = false;
+        return this;
+    };
 
-    this.removeClass('disabled');
+    /**
+     * Disable the button
+     * @method disable
+     * @return ThisExpression
+     */
+    Button.prototype.disable = function(){
+        this.disabled = true;
 
-    return this;
-  };
+        this.addClass('disabled');
 
-  return Button;
+        return this;
+    };
+
+    /**
+     * Enable the button
+     * @method enable
+     * @return ThisExpression
+     */
+    Button.prototype.enable = function(){
+        this.disabled = false;
+
+        this.removeClass('disabled');
+
+        return this;
+    };
+
+    return Button;
 
 })();
