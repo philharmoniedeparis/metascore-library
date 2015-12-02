@@ -26,7 +26,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
         // call parent constructor
         GuideDetails.parent.call(this, this.configs);
-        
+
         this.changed = {};
         this.previous_values = null;
 
@@ -55,7 +55,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     GuideDetails.prototype.setupDOM = function(){
         var contents, form;
@@ -64,9 +64,9 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         GuideDetails.parent.prototype.setupDOM.call(this);
 
         contents = this.getContents();
-        
+
         this.fields = {};
-        
+
         form = new metaScore.Dom('<form>')
             .addListener('submit', metaScore.Function.proxy(this.onFormSubmit, this))
             .appendTo(contents);
@@ -84,7 +84,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .data('name', 'type')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
             .appendTo(form);
-            
+
         this.fields['title'] = new metaScore.editor.field.Text({
                 'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.title.label', 'Title'),
                 'required': true
@@ -148,15 +148,15 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * Description
      * @method getField
      * @param {} evt
-     * @return 
+     * @return
      */
     GuideDetails.prototype.getField = function(name){
         var fields = this.fields;
-        
+
         if(name){
             return fields[name];
         }
-        
+
         return fields;
     };
 
@@ -164,17 +164,17 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * Description
      * @method setValues
      * @param {} evt
-     * @return 
+     * @return
      */
-    GuideDetails.prototype.setValues = function(values, supressEvent){    
+    GuideDetails.prototype.setValues = function(values, supressEvent){
         metaScore.Object.each(values, function(key, value){
             if(key in this.fields){
                 this.fields[key].setValue(value, supressEvent);
             }
         }, this);
-        
+
         this.previous_values = values;
-        
+
         return this;
     };
 
@@ -182,13 +182,13 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * Description
      * @method clearValues
      * @param {} evt
-     * @return 
+     * @return
      */
     GuideDetails.prototype.clearValues = function(supressEvent){
         metaScore.Object.each(this.fields, function(key, field){
             field.setValue(null, supressEvent);
         }, this);
-        
+
         return this;
     };
 
@@ -196,7 +196,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * Description
      * @method getValues
      * @param {} evt
-     * @return 
+     * @return
      */
     GuideDetails.prototype.getValues = function(){
         return metaScore.Object.extend({}, this.changed);
@@ -206,14 +206,14 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * Description
      * @method onFieldValueChange
      * @param {} evt
-     * @return 
+     * @return
      */
-    GuideDetails.prototype.onFieldValueChange = function(evt){    
+    GuideDetails.prototype.onFieldValueChange = function(evt){
         var field = evt.detail.field,
             value = evt.detail.value,
             name = field.data('name'),
             file;
-        
+
         if(field instanceof metaScore.editor.field.File){
             if(file = field.getFile(0)){
                 this.changed[name] = {
@@ -227,7 +227,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
                 delete this.changed[name];
             }
         }
-        else{            
+        else{
             this.changed[name] = value;
         }
     };
@@ -236,29 +236,29 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * Description
      * @method onFormSubmit
      * @param {} evt
-     * @return 
+     * @return
      */
-    GuideDetails.prototype.onFormSubmit = function(evt){    
+    GuideDetails.prototype.onFormSubmit = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'values': this.getValues()}, true, false);
-        
+
         evt.preventDefault();
         evt.stopPropagation();
     };
-    
+
     /**
     * Description
     * @method onCloseClick
     * @param {} evt
-    * @return 
+    * @return
     */
-    GuideDetails.prototype.onCloseClick = function(evt){        
+    GuideDetails.prototype.onCloseClick = function(evt){
         if(this.previous_values){
             this.clearValues(true)
                 .setValues(this.previous_values, true);
         }
-    
+
         this.hide();
-        
+
         evt.preventDefault();
     };
 

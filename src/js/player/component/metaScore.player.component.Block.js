@@ -66,7 +66,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('name', value);
@@ -88,7 +88,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
@@ -110,7 +110,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('left', value +'px');
@@ -132,7 +132,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('top', value +'px');
@@ -154,7 +154,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('width', value +'px');
@@ -176,7 +176,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('height', value +'px');
@@ -198,7 +198,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
@@ -227,7 +227,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
@@ -251,7 +251,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('border-width', value +'px');
@@ -273,7 +273,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
@@ -296,7 +296,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('border-radius', value);
@@ -319,7 +319,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('synched', value);
@@ -344,7 +344,7 @@ metaScore.namespace('player.component').Block = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.getPages().remove();
@@ -362,7 +362,7 @@ metaScore.namespace('player.component').Block = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Block.prototype.setupDOM = function(){
         // call parent function
@@ -383,7 +383,7 @@ metaScore.namespace('player.component').Block = (function () {
      * Description
      * @method onPageCuePointStart
      * @param {} evt
-     * @return 
+     * @return
      */
     Block.prototype.onPageCuePointStart = function(evt){
         this.setActivePage(evt.target._metaScore, 'pagecuepoint');
@@ -393,7 +393,7 @@ metaScore.namespace('player.component').Block = (function () {
      * Description
      * @method onPagerClick
      * @param {} evt
-     * @return 
+     * @return
      */
     Block.prototype.onPagerClick = function(evt){
         var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
@@ -439,7 +439,7 @@ metaScore.namespace('player.component').Block = (function () {
 
         if(configs instanceof metaScore.player.component.Page){
             page = configs;
-            
+
             if(metaScore.Var.is(index, 'number')){
                 page.insertAt(this.page_wrapper, index);
             }
@@ -447,7 +447,7 @@ metaScore.namespace('player.component').Block = (function () {
                 page.appendTo(this.page_wrapper);
             }
         }
-        else{        
+        else{
             page = new metaScore.player.component.Page(metaScore.Object.extend({}, configs, {
                 'container': this.page_wrapper,
                 'index': index
@@ -530,7 +530,7 @@ metaScore.namespace('player.component').Block = (function () {
      * @method setActivePage
      * @param {} page
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     Block.prototype.setActivePage = function(page, basis, supressEvent){
         var pages = this.getPages(), dom;
@@ -554,7 +554,7 @@ metaScore.namespace('player.component').Block = (function () {
     /**
      * Description
      * @method updatePager
-     * @return 
+     * @return
      */
     Block.prototype.updatePager = function(){
         var index = this.getActivePageIndex(),
@@ -572,14 +572,14 @@ metaScore.namespace('player.component').Block = (function () {
      * @return MemberExpression
      */
     Block.prototype.setDraggable = function(draggable){
-        
+
         draggable = draggable !== false;
-    
+
         if(this.getProperty('locked') && draggable){
             return false;
         }
 
-        if(draggable && !this._draggable){ 
+        if(draggable && !this._draggable){
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('.pager'),
@@ -594,9 +594,9 @@ metaScore.namespace('player.component').Block = (function () {
             this._draggable.destroy();
             delete this._draggable;
         }
-        
+
         return this._draggable;
-    
+
     };
 
     /**
@@ -606,13 +606,13 @@ metaScore.namespace('player.component').Block = (function () {
      * @return MemberExpression
      */
     Block.prototype.setResizable = function(resizable){
-        
+
         resizable = resizable !== false;
-    
+
         if(this.getProperty('locked') && resizable){
             return false;
         }
-    
+
         if(resizable && !this._resizable){
             this._resizable = new metaScore.Resizable({
                 'target': this,
@@ -623,9 +623,9 @@ metaScore.namespace('player.component').Block = (function () {
             this._resizable.destroy();
             delete this._resizable;
         }
-        
+
         return this._resizable;
-    
+
     };
 
     return Block;

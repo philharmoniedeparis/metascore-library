@@ -92,7 +92,7 @@ metaScore.namespace('editor').Field = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     Field.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -101,7 +101,7 @@ metaScore.namespace('editor').Field = (function () {
             this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
                 .appendTo(this);
         }
-            
+
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -113,22 +113,22 @@ metaScore.namespace('editor').Field = (function () {
     /**
      * Description
      * @method setDescription
-     * @return 
+     * @return
      */
     Field.prototype.setDescription = function(description){
         if(!('description' in this)){
             this.description = new metaScore.Dom('<div/>', {'class': 'description'})
                 .appendTo(this.input_wrapper);
         }
-        
-        this.description.text(description);    
+
+        this.description.text(description);
     };
 
     /**
      * Description
      * @method onChange
      * @param {} evt
-     * @return 
+     * @return
      */
     Field.prototype.onChange = function(evt){
         this.value = this.input.val();
@@ -141,7 +141,7 @@ metaScore.namespace('editor').Field = (function () {
      * @method setValue
      * @param {} value
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     Field.prototype.setValue = function(value, supressEvent){
         this.input.val(value);
@@ -170,7 +170,7 @@ metaScore.namespace('editor').Field = (function () {
         this.disabled = true;
 
         this.addClass('disabled');
-        
+
         if(this.input){
             this.input.attr('disabled', 'disabled');
         }
@@ -187,7 +187,7 @@ metaScore.namespace('editor').Field = (function () {
         this.disabled = false;
 
         this.removeClass('disabled');
-        
+
         if(this.input){
             this.input.attr('disabled', null);
         }
@@ -204,7 +204,7 @@ metaScore.namespace('editor').Field = (function () {
         this.is_readonly = readonly === true;
 
         this.toggleClass('readonly', this.is_readonly);
-        
+
         if(this.input){
             this.input.attr('readonly', this.is_readonly ? "readonly" : null);
         }

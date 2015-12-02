@@ -46,7 +46,7 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Alert.prototype.setupDOM = function(){
         // call parent method
@@ -68,14 +68,14 @@ metaScore.namespace('editor.overlay').Alert = (function () {
                 this.addButton(action, label);
             }, this);
         }
-        
+
     };
 
     /**
      * Description
      * @method setText
      * @param {} str
-     * @return 
+     * @return
      */
     Alert.prototype.setText = function(str){
         this.text.text(str);
@@ -101,7 +101,7 @@ metaScore.namespace('editor.overlay').Alert = (function () {
      * Description
      * @method onButtonClick
      * @param {} evt
-     * @return 
+     * @return
      */
     Alert.prototype.onButtonClick = function(evt){
         var action = new metaScore.Dom(evt.target).data('action');

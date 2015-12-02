@@ -65,7 +65,7 @@ metaScore.Draggable = (function () {
      * Description
      * @method onMouseDown
      * @param {} evt
-     * @return 
+     * @return
      */
     Draggable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -92,7 +92,7 @@ metaScore.Draggable = (function () {
      * Description
      * @method onMouseMove
      * @param {} evt
-     * @return 
+     * @return
      */
     Draggable.prototype.onMouseMove = function(evt){
         var left = evt.clientX + this.start_state.left,
@@ -118,7 +118,7 @@ metaScore.Draggable = (function () {
      * Description
      * @method onMouseUp
      * @param {} evt
-     * @return 
+     * @return
      */
     Draggable.prototype.onMouseUp = function(evt){
         this.doc

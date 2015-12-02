@@ -93,7 +93,7 @@ metaScore.Player = (function(){
         if(this.configs.api){
             metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
         }
-        
+
         this.appendTo(this.configs.container);
 
         this.load();
@@ -116,18 +116,18 @@ metaScore.Player = (function(){
      * @private
      * @param {KeyboardEvent} evt The event object
      */
-    Player.prototype.onKeydown = function(evt){        
+    Player.prototype.onKeydown = function(evt){
         switch(evt.keyCode){
             case 32: //space-bar
                 this.togglePlay();
                 evt.preventDefault();
                 break;
-                
+
             case 37: //left
                 this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
                 evt.preventDefault();
                 break;
-                
+
             case 39: //right
                 this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
                 evt.preventDefault();
@@ -145,61 +145,61 @@ metaScore.Player = (function(){
     Player.prototype.onAPIMessage = function(evt){
         var player = this,
             data, source, origin, method, params, dom;
-        
+
         try {
             data = JSON.parse(evt.data);
         }
         catch(e){
             return false;
         }
-        
+
         if (!('method' in data)) {
             return false;
         }
-        
+
         source = evt.source;
         origin = evt.origin;
         method = data.method;
         params = 'params' in data ? data.params : null;
-        
+
         switch(method){
             case 'play':
                 player.play(params.inTime, params.outTime, params.rIndex);
                 break;
-                
+
             case 'pause':
                 player.getMedia().pause();
                 break;
-                
+
             case 'seek':
                 player.getMedia().setTime(parseFloat(params.seconds, 10) * 100);
                 break;
-                
+
             case 'page':
                 dom = player.getComponent('.block[data-name="'+ params.block +'"]');
                 if(dom._metaScore){
                     dom._metaScore.setActivePage(params.index);
                 }
                 break;
-                
+
             case 'rindex':
                 player.setReadingIndex(!isNaN(params.index) ? params.index : 0);
                 break;
-                
+
             case 'playing':
                 source.postMessage(JSON.stringify({
                     'callback': params.callback,
                     'params': player.getMedia().isPlaying()
                 }), origin);
                 break;
-                
+
             case 'time':
                 source.postMessage(JSON.stringify({
-                    'callback': params.callback, 
+                    'callback': params.callback,
                     'params': player.getMedia().getTime() / 100
                 }), origin);
                 break;
-                
+
             case 'addEventListener':
                 switch(params.type){
                     case 'ready':
@@ -209,7 +209,7 @@ metaScore.Player = (function(){
                             }), origin);
                         });
                         break;
-                        
+
                     case 'timeupdate':
                         player.addListener(params.type, function(event){
                             source.postMessage(JSON.stringify({
@@ -218,7 +218,7 @@ metaScore.Player = (function(){
                             }), origin);
                         });
                         break;
-                        
+
                     case 'rindex':
                         player.addListener(params.type, function(event){
                             source.postMessage(JSON.stringify({
@@ -229,7 +229,7 @@ metaScore.Player = (function(){
                         break;
                 }
                 break;
-                
+
             case 'removeEventListener':
                 break;
         }
@@ -352,7 +352,7 @@ metaScore.Player = (function(){
      */
     Player.prototype.onTextElementPage = function(evt){
         var dom;
-        
+
         dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
         if(dom._metaScore){
             dom._metaScore.setActivePage(evt.detail.index);
@@ -405,11 +405,11 @@ metaScore.Player = (function(){
                     this.media = this.addMedia(metaScore.Object.extend({}, block, {'type': this.json.type}))
                         .setSources([this.json.media]);
                     break;
-                    
+
                 case 'controller':
                     this.controller = this.addController(block);
                     break;
-                
+
                 default:
                     this.addBlock(block);
             }
@@ -420,7 +420,7 @@ metaScore.Player = (function(){
         }
 
         this.removeClass('loading');
-        
+
         this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
     };
 
@@ -433,7 +433,7 @@ metaScore.Player = (function(){
      */
     Player.prototype.onLoadError = function(xhr){
         this.removeClass('loading');
-        
+
         this.triggerEvent(EVT_ERROR, {'player': this}, true, false);
     };
 
@@ -479,7 +479,7 @@ metaScore.Player = (function(){
         if(supressEvent !== true){
             this.triggerEvent(EVT_IDSET, {'player': this, 'id': id}, true, false);
         }
-        
+
         return this;
     };
 
@@ -505,7 +505,7 @@ metaScore.Player = (function(){
         if(supressEvent !== true){
             this.triggerEvent(EVT_REVISIONSET, {'player': this, 'vid': vid}, true, false);
         }
-        
+
         return this;
     };
 
@@ -541,11 +541,11 @@ metaScore.Player = (function(){
         if('css' in data){
             this.updateCSS(data.css);
         }
-        
+
         if('media' in data){
             this.getMedia().setSources([data.media]);
         }
-        
+
         if('vid' in data){
             this.setRevision(data.vid);
         }
@@ -558,7 +558,7 @@ metaScore.Player = (function(){
      * @param {String} selector The CSS selector
      * @return {Component} The component
      */
-    Player.prototype.getComponent = function(selector){        
+    Player.prototype.getComponent = function(selector){
         return this.getComponents(selector).get(0);
     };
 
@@ -571,9 +571,9 @@ metaScore.Player = (function(){
      */
     Player.prototype.getComponents = function(selector){
         var components;
-        
+
         components = this.find('.metaScore-component');
-        
+
         if(selector){
             components = components.filter(selector);
         }
@@ -600,7 +600,7 @@ metaScore.Player = (function(){
         if(supressEvent !== true){
             this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
         }
-        
+
         return media;
     };
 
@@ -620,7 +620,7 @@ metaScore.Player = (function(){
         if(supressEvent !== true){
             this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
         }
-        
+
         return controller;
     };
 
@@ -668,7 +668,7 @@ metaScore.Player = (function(){
      */
     Player.prototype.updateCSS = function(value){
         this.css.setInternalValue(value);
-        
+
         return this;
     };
 
@@ -680,14 +680,14 @@ metaScore.Player = (function(){
      */
     Player.prototype.togglePlay = function(){
         var media = this.getMedia();
-    
+
         if(media.isPlaying()){
             media.pause();
         }
         else{
             media.play();
         }
-        
+
         return this;
     };
 
@@ -702,16 +702,16 @@ metaScore.Player = (function(){
      */
     Player.prototype.play = function(inTime, outTime, rIndex){
         var player = this,
-            media = this.getMedia(); 
-    
+            media = this.getMedia();
+
         if(this.cuepoint){
             this.cuepoint.destroy();
         }
-        
+
         inTime = parseFloat(inTime);
         outTime = parseFloat(outTime);
         rIndex = parseInt(rIndex);
-        
+
         if(isNaN(inTime)){
             media.play();
         }
@@ -729,7 +729,7 @@ metaScore.Player = (function(){
                 onSeekOut: function(cuepoint){
                     cuepoint.destroy();
                     delete player.cuepoint;
-                    
+
                     player.setReadingIndex(0);
                 },
                 considerError: true
@@ -739,7 +739,7 @@ metaScore.Player = (function(){
                 .setTime(inTime)
                 .play();
         }
-        
+
         return this;
     };
 
@@ -757,9 +757,9 @@ metaScore.Player = (function(){
         if(index !== 0){
             this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;');
             this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');            
+            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
             this.rindex_css.addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
-            
+
             this.data('rindex', index);
         }
         else{
@@ -769,7 +769,7 @@ metaScore.Player = (function(){
         if(supressEvent !== true){
             this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
         }
-        
+
         return this;
     };
 

@@ -37,7 +37,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('name', value);
@@ -56,7 +56,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('type', value);
@@ -78,7 +78,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
@@ -100,7 +100,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('left', value +'px');
@@ -122,7 +122,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('top', value +'px');
@@ -145,7 +145,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('width', value +'px');
@@ -168,7 +168,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('height', value +'px');
@@ -192,7 +192,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('r-index', value);
@@ -215,7 +215,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('z-index', value);
@@ -237,7 +237,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
@@ -266,7 +266,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
@@ -290,7 +290,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.contents.css('border-width', value +'px');
@@ -312,7 +312,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
@@ -335,7 +335,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.contents.css('border-radius', value);
@@ -360,7 +360,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.contents.css('opacity', value);
@@ -386,7 +386,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('start-time', isNaN(value) ? null : value);
@@ -412,7 +412,7 @@ metaScore.namespace('player.component').Element = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('end-time', isNaN(value) ? null : value);
@@ -424,7 +424,7 @@ metaScore.namespace('player.component').Element = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Element.prototype.setupDOM = function(){
         // call parent function
@@ -444,10 +444,10 @@ metaScore.namespace('player.component').Element = (function () {
     Element.prototype.getPage = function(){
         var dom = this.parents().get(0),
             page;
-        
+
         if(dom){
             page = dom._metaScore;
-        
+
         }
         return page;
     };
@@ -456,7 +456,7 @@ metaScore.namespace('player.component').Element = (function () {
      * Description
      * @method onCuePointStart
      * @param {} cuepoint
-     * @return 
+     * @return
      */
     Element.prototype.onCuePointStart = function(cuepoint){
         this.addClass('active');
@@ -466,7 +466,7 @@ metaScore.namespace('player.component').Element = (function () {
      * Description
      * @method onCuePointEnd
      * @param {} cuepoint
-     * @return 
+     * @return
      */
     Element.prototype.onCuePointEnd = function(cuepoint){
         this.removeClass('active');
@@ -476,7 +476,7 @@ metaScore.namespace('player.component').Element = (function () {
      * Description
      * @method onCuePointSeekOut
      * @param {} cuepoint
-     * @return 
+     * @return
      */
     Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointEnd;
 
@@ -487,9 +487,9 @@ metaScore.namespace('player.component').Element = (function () {
      * @return MemberExpression
      */
     Element.prototype.setDraggable = function(draggable){
-        
+
         draggable = draggable !== false;
-    
+
         if(this.getProperty('locked') && draggable){
             return false;
         }
@@ -505,9 +505,9 @@ metaScore.namespace('player.component').Element = (function () {
             this._draggable.destroy();
             delete this._draggable;
         }
-        
+
         return this._draggable;
-    
+
     };
 
     /**
@@ -517,13 +517,13 @@ metaScore.namespace('player.component').Element = (function () {
      * @return MemberExpression
      */
     Element.prototype.setResizable = function(resizable){
-        
+
         resizable = resizable !== false;
-    
+
         if(this.getProperty('locked') && resizable){
             return false;
         }
-    
+
         if(resizable && !this._resizable){
             this._resizable = new metaScore.Resizable({
                 'target': this,
@@ -534,9 +534,9 @@ metaScore.namespace('player.component').Element = (function () {
             this._resizable.destroy();
             delete this._resizable;
         }
-        
+
         return this._resizable;
-    
+
     };
 
     return Element;

@@ -16,7 +16,7 @@ metaScore.StyleSheet = (function () {
 
         // call the super constructor.
         metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
-        
+
         this.el = this.get(0);
 
         // WebKit hack :(
@@ -31,11 +31,11 @@ metaScore.StyleSheet = (function () {
      * @param {} selector
      * @param {} rules
      * @param {} index
-     * @return 
+     * @return
      */
     StyleSheet.prototype.addRule = function(selector, rules, index) {
         var sheet = this.el.sheet;
-        
+
         if(index === undefined){
             index = sheet.cssRules.length;
         }
@@ -56,7 +56,7 @@ metaScore.StyleSheet = (function () {
      */
     StyleSheet.prototype.removeRule = function(index) {
         var sheet = this.el.sheet;
-    
+
         if("deleteRule" in sheet) {
             sheet.deleteRule(index);
         }

@@ -60,7 +60,7 @@ metaScore.namespace('player').Component = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Component.prototype.setupDOM = function(){};
 
@@ -88,9 +88,9 @@ metaScore.namespace('player').Component = (function () {
      * @return CallExpression
      */
     Component.prototype.instanceOf = function(type){
-    
+
         return (type in metaScore.player.component) && (this instanceof metaScore.player.component[type]);
-    
+
     };
 
     /**
@@ -107,7 +107,7 @@ metaScore.namespace('player').Component = (function () {
      * Description
      * @method getProperty
      * @param {} name
-     * @return 
+     * @return
      */
     Component.prototype.getProperty = function(name){
         if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
@@ -144,17 +144,17 @@ metaScore.namespace('player').Component = (function () {
      * @param {} name
      * @param {} value
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     Component.prototype.setProperty = function(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
             this.configs.properties[name].setter.call(this, value);
-            
+
             if(supressEvent !== true){
                 this.triggerEvent(EVT_PROPCHANGE, {'component': this, 'property': name, 'value': value});
             }
         }
-        
+
         return this;
     };
 
@@ -164,13 +164,13 @@ metaScore.namespace('player').Component = (function () {
      * @param {} name
      * @param {} value
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     Component.prototype.setProperties = function(properties, supressEvent){
         metaScore.Object.each(properties, function(key, value){
             this.setProperty(key, value, supressEvent);
         }, this);
-        
+
         return this;
     };
 
@@ -209,9 +209,9 @@ metaScore.namespace('player').Component = (function () {
      * @return MemberExpression
      */
     Component.prototype.setDraggable = function(draggable){
-    
+
         return false;
-    
+
     };
 
     /**
@@ -221,9 +221,9 @@ metaScore.namespace('player').Component = (function () {
      * @return MemberExpression
      */
     Component.prototype.setResizable = function(resizable){
-    
+
         return false;
-    
+
     };
 
     return Component;

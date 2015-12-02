@@ -46,7 +46,7 @@ metaScore.namespace('editor.field').Color = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     ColorField.prototype.setupUI = function(){
         ColorField.parent.prototype.setupUI.call(this);
@@ -68,13 +68,13 @@ metaScore.namespace('editor.field').Color = (function () {
      * @method setValue
      * @param {} value
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     ColorField.prototype.setValue = function(value, supressEvent){
         var rgba;
-    
+
         this.value = value ? metaScore.Color.parse(value) : null;
-        
+
         rgba = this.value ? 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')' : null;
 
         this.input
@@ -91,7 +91,7 @@ metaScore.namespace('editor.field').Color = (function () {
      * Description
      * @method onClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -107,7 +107,7 @@ metaScore.namespace('editor.field').Color = (function () {
      * Description
      * @method onColorSubmit
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorField.prototype.onColorSubmit = function(evt){
         var value = evt.detail.value,
@@ -120,7 +120,7 @@ metaScore.namespace('editor.field').Color = (function () {
      * Description
      * @method onClearClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorField.prototype.onClearClick = function(evt){
         this.setValue(null);

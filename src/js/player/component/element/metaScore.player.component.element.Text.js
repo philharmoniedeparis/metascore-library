@@ -56,7 +56,7 @@ metaScore.namespace('player.component.element').Text = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.contents.text(value);
@@ -68,7 +68,7 @@ metaScore.namespace('player.component.element').Text = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Text.prototype.setupDOM = function(){
         // call parent function
@@ -81,16 +81,16 @@ metaScore.namespace('player.component.element').Text = (function () {
      * Description
      * @method onLinkClick
      * @param {} evt
-     * @return 
+     * @return
      */
     Text.prototype.onLinkClick = function(evt){
         var link = evt.target,
             matches;
-            
+
         if(!metaScore.Dom.is(link, 'a')){
             link = metaScore.Dom.closest(link, 'a');
         }
-        
+
         if(link){
             if(matches = link.hash.match(/^#page=([^,]*),(\d+)$/)){
                 this.triggerEvent(EVT_PAGE, {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});

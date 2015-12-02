@@ -71,7 +71,7 @@ metaScore.namespace('editor.field').Time = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     TimeField.prototype.setupUI = function(){
         var buttons;
@@ -80,7 +80,7 @@ metaScore.namespace('editor.field').Time = (function () {
             this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
-            
+
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -140,7 +140,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * Description
      * @method onChange
      * @param {} evt
-     * @return 
+     * @return
      */
     TimeField.prototype.onChange = function(evt){
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
@@ -150,7 +150,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * Description
      * @method onInput
      * @param {} evt
-     * @return 
+     * @return
      */
     TimeField.prototype.onInput = function(evt){
         var active = this.isActive(),
@@ -175,7 +175,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * Description
      * @method onInClick
      * @param {} evt
-     * @return 
+     * @return
      */
     TimeField.prototype.onInClick = function(evt){
         this.triggerEvent(EVT_VALUEIN);
@@ -185,7 +185,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * Description
      * @method onOutClick
      * @param {} evt
-     * @return 
+     * @return
      */
     TimeField.prototype.onOutClick = function(evt){
         this.triggerEvent(EVT_VALUEOUT);
@@ -196,7 +196,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @method setValue
      * @param {} centiseconds
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     TimeField.prototype.setValue = function(centiseconds, supressEvent){
         var centiseconds_val, seconds_val, minutes_val, hours_val;
@@ -281,11 +281,11 @@ metaScore.namespace('editor.field').Time = (function () {
      */
     TimeField.prototype.setMin = function(min){
         this.configs.min = min;
-        
+
         if(this.getValue() < min){
             this.setValue(min);
         }
-    
+
         return this;
     };
 
@@ -297,11 +297,11 @@ metaScore.namespace('editor.field').Time = (function () {
      */
     TimeField.prototype.setMax = function(max){
         this.configs.max = max;
-        
+
         if(this.getValue() > max){
             this.setValue(max);
         }
-    
+
         return this;
     };
 

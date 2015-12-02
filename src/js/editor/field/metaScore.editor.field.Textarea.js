@@ -32,7 +32,7 @@ metaScore.namespace('editor.field').Textarea = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     TextareaField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -41,7 +41,7 @@ metaScore.namespace('editor.field').Textarea = (function () {
             this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
                 .appendTo(this);
         }
-            
+
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 

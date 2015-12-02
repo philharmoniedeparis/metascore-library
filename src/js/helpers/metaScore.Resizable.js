@@ -71,7 +71,7 @@ metaScore.Resizable = (function () {
      * Description
      * @method onMouseDown
      * @param {} evt
-     * @return 
+     * @return
      */
     Resizable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -103,7 +103,7 @@ metaScore.Resizable = (function () {
      * Description
      * @method onMouseMove
      * @param {} evt
-     * @return 
+     * @return
      */
     Resizable.prototype.onMouseMove = function(evt){
         var handle = new metaScore.Dom(this.start_state.handle),
@@ -165,9 +165,9 @@ metaScore.Resizable = (function () {
      * Description
      * @method onMouseUp
      * @param {} evt
-     * @return 
+     * @return
      */
-    Resizable.prototype.onMouseUp = function(evt){            
+    Resizable.prototype.onMouseUp = function(evt){
         this.doc
             .removeListener('mousemove', this.onMouseMove, this)
             .removeListener('mouseup', this.onMouseUp, this);

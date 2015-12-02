@@ -53,7 +53,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     /**
      * Description
      * @method show
-     * @return 
+     * @return
      */
     GuideSelector.prototype.show = function(){
         this.loadmask = new metaScore.editor.overlay.LoadMask({
@@ -70,7 +70,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * Description
      * @method onLoadSuccess
      * @param {} xhr
-     * @return 
+     * @return
      */
     GuideSelector.prototype.onLoadSuccess = function(xhr){
         var contents = this.getContents(),
@@ -94,49 +94,49 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                 new metaScore.Dom('<td/>', {'class': 'thumbnail'})
                     .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
                     .appendTo(row);
-                
+
                 revision_field = new metaScore.editor.field.Select()
                     .addClass('revisions');
-                
+
                 if('revisions' in guide){
                     groups = {};
-                    
+
                     metaScore.Object.each(guide.revisions, function(vid, revision){
                         var group_id, group_label, group, text;
-                        
+
                         switch(revision.state){
                             case 0: // archives
                                 group_id = 'archives';
                                 group_label = metaScore.Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
                                 break;
-                                
+
                             case 1: // published
                                 group_id = 'published';
                                 group_label = metaScore.Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
                                 break;
-                                
+
                             case 2: // drafts
                                 group_id = 'drafts';
                                 group_label = metaScore.Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
                                 break;
                         }
-                        
+
                         if(!(group_id in groups)){
                             groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
                         }
-                        
+
                         group = groups[group_id];
-                        
+
                         text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username (!id:!vid)', {'!date': revision.date, '!username': revision.username, '!id': guide.id, '!vid': vid});
-                    
+
                         revision_field.addOption(vid, text, group);
                     });
-                    
+
                     if('latest_revision' in guide){
                         revision_field.setValue(guide.latest_revision);
                     }
                 }
-        
+
                 button = new metaScore.editor.Button()
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                     .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
@@ -168,7 +168,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     /**
      * Description
      * @method onLoadError
-     * @return 
+     * @return
      */
     GuideSelector.prototype.onLoadError = function(){
     };
@@ -177,7 +177,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * Description
      * @method onGuideClick
      * @param {} guide
-     * @return 
+     * @return
      */
     GuideSelector.prototype.onGuideClick = function(guide, revision_field){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);

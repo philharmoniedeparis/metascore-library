@@ -67,7 +67,7 @@ metaScore.Color = (function () {
      */
     Color.parse = function(color){
         var rgba, matches;
-        
+
         rgba = {
             r: 0,
             g: 0,

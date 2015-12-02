@@ -25,7 +25,7 @@ metaScore.namespace('player').CuePoint = (function () {
         this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
         this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
-        
+
         this.max_error = 0;
     }
 
@@ -46,7 +46,7 @@ metaScore.namespace('player').CuePoint = (function () {
      * Description
      * @method onMediaTimeUpdate
      * @param {} evt
-     * @return 
+     * @return
      */
     CuePoint.prototype.onMediaTimeUpdate = function(evt){
         var cur_time = this.configs.media.getTime();
@@ -61,10 +61,10 @@ metaScore.namespace('player').CuePoint = (function () {
                 if('previous_time' in this){
                     this.max_error = Math.max(this.max_error, Math.abs(cur_time - this.previous_time));
                 }
-                
+
                 this.previous_time = cur_time;
             }
-        
+
             if((Math.ceil(cur_time) < this.configs.inTime) || ((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime))){
                 this.stop();
             }
@@ -73,7 +73,7 @@ metaScore.namespace('player').CuePoint = (function () {
                 this.configs.onUpdate(this, cur_time);
             }
         }
-        
+
         if(this.configs.onSeekOut){
             this.configs.media.addListener('seeking', this.onMediaSeeked);
         }
@@ -83,16 +83,16 @@ metaScore.namespace('player').CuePoint = (function () {
      * Description
      * @method onMediaSeeked
      * @param {} evt
-     * @return 
+     * @return
      */
     CuePoint.prototype.onMediaSeeked = function(evt){
         var cur_time;
-        
+
         this.configs.media.removeListener('play', this.onMediaSeeked);
-        
+
         if(this.configs.onSeekOut){
             cur_time = this.configs.media.getTime();
-        
+
             if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
                 this.configs.onSeekOut(this);
             }
@@ -129,7 +129,7 @@ metaScore.namespace('player').CuePoint = (function () {
     /**
      * Description
      * @method launch
-     * @return 
+     * @return
      */
     CuePoint.prototype.launch = function(){
         if(this.running){
@@ -153,17 +153,17 @@ metaScore.namespace('player').CuePoint = (function () {
      * Description
      * @method stop
      * @param {} launchCallback
-     * @return 
+     * @return
      */
     CuePoint.prototype.stop = function(launchCallback){
         if(launchCallback !== false && this.configs.onEnd){
             this.configs.onEnd(this);
-        
+
             if(this.configs.onSeekOut){
                 this.configs.media.addListener('play', this.onMediaSeeked);
             }
         }
-        
+
         if(this.configs.considerError){
             this.max_error = 0;
             delete this.previous_time;
@@ -175,11 +175,11 @@ metaScore.namespace('player').CuePoint = (function () {
     /**
      * Description
      * @method destroy
-     * @return 
+     * @return
      */
     CuePoint.prototype.destroy = function(){
         this.stop(false);
-        
+
         this.configs.media
             .removeListener('timeupdate', this.onMediaTimeUpdate)
             .removeListener('seeking', this.onMediaSeeked)

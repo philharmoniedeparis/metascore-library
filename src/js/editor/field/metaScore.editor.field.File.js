@@ -16,7 +16,7 @@ metaScore.namespace('editor.field').File = (function () {
 
         // call parent constructor
         FileField.parent.call(this, this.configs);
-        
+
         if(this.configs.accept){
             this.setAcceptedTypes(this.configs.accept);
         }
@@ -33,7 +33,7 @@ metaScore.namespace('editor.field').File = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     FileField.prototype.setupUI = function(){
         FileField.parent.prototype.setupUI.call(this);
@@ -48,7 +48,7 @@ metaScore.namespace('editor.field').File = (function () {
      * Description
      * @method setAcceptedTypes
      * @param {} types
-     * @return 
+     * @return
      */
     FileField.prototype.setAcceptedTypes = function(types){
         this.input.attr('accept', types);
@@ -58,20 +58,20 @@ metaScore.namespace('editor.field').File = (function () {
      * Description
      * @method setValue
      * @param {} value
-     * @return 
+     * @return
      */
     FileField.prototype.setValue = function(value){
         var info;
-    
+
         this.current.empty();
-        
+
         this.input.val('');
-        
+
         if(value && ('name' in value)){
             info = new metaScore.Dom('<a/>', {'text': value.name})
                 .attr('target', '_blank')
                 .appendTo(this.current);
-                
+
             if('url' in value){
                 info.attr('href', value.url);
             }
@@ -82,15 +82,15 @@ metaScore.namespace('editor.field').File = (function () {
      * Description
      * @method getFile
      * @param File or FileList file
-     * @return 
+     * @return
      */
     FileField.prototype.getFile = function(index){
         var files = this.input.get(0).files;
-    
+
         if(index !== undefined){
             return files[index];
         }
-        
+
         return files;
     };
 

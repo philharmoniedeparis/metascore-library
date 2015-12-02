@@ -42,12 +42,12 @@ window.metaScoreAPI = (function(){
         this.target = target;
         this.origin = '*';
         this.ready = false;
-        
+
         this.callbacks = {};
-        
+
         this.target.addEventListener('load', this.onLoad.bind(this, callback), false);
-        
-        window.addEventListener('message', this.onMessage.bind(this), false);        
+
+        window.addEventListener('message', this.onMessage.bind(this), false);
     }
 
     /**
@@ -57,19 +57,19 @@ window.metaScoreAPI = (function(){
      * @param {String} method The API method to invoke
      * @param {Mixed} params The parameter(s) to send along
      */
-    API.prototype.postMessage = function(method, params){    
+    API.prototype.postMessage = function(method, params){
         var data;
-        
+
         if (!this.target.contentWindow.postMessage) {
             return false;
         }
-        
+
         data = JSON.stringify({
             'method': method,
             'params': params
         });
 
-        this.target.contentWindow.postMessage(data, this.origin);        
+        this.target.contentWindow.postMessage(data, this.origin);
     };
 
     /**
@@ -94,27 +94,27 @@ window.metaScoreAPI = (function(){
      * @method onMessage
      * @param {MessageEvent} evt The event object containing the message details
      */
-    API.prototype.onMessage = function(evt){    
+    API.prototype.onMessage = function(evt){
         var data, callback, params;
-        
+
         if(!(origin_regex).test(evt.origin)) {
             return false;
         }
-        
+
         try {
             data = JSON.parse(evt.data);
         }
         catch(e){
             return false;
         }
-        
+
         if (!('callback' in data) || !(callback = this.callbacks[data.callback])) {
             return false;
         }
-        
+
         params = 'params' in data ? data.params : null;
-        
-        callback.call(this, params);    
+
+        callback.call(this, params);
     };
 
     /**
@@ -127,12 +127,12 @@ window.metaScoreAPI = (function(){
      */
     API.prototype.on = function(type, callback){
         var callback_id = new Date().valueOf().toString() + Math.random();
-    
+
         this.callbacks[callback_id] = callback;
-        
+
         this.postMessage('addEventListener', {'type': type, 'callback': callback_id});
 
-        return this;        
+        return this;
     };
 
     /**
@@ -218,9 +218,9 @@ window.metaScoreAPI = (function(){
      */
     API.prototype.playing = function(callback){
         var callback_id = new Date().valueOf().toString() + Math.random();
-        
+
         this.callbacks[callback_id] = callback;
-        
+
         this.postMessage('playing', {'callback': callback_id});
 
         return this;
@@ -237,9 +237,9 @@ window.metaScoreAPI = (function(){
      */
     API.prototype.time = function(callback){
         var callback_id = new Date().valueOf().toString() + Math.random();
-        
+
         this.callbacks[callback_id] = callback;
-        
+
         this.postMessage('time', {'callback': callback_id});
 
         return this;
@@ -250,45 +250,45 @@ window.metaScoreAPI = (function(){
      */
     document.addEventListener("DOMContentLoaded", function(event){
         var links, link, ids = [], iframes, i, callback;
-        
+
         links = document.querySelectorAll('a[rel="metascore"][data-guide]');
-        
+
         for(i = 0; i < links.length; ++i){
             link = links[i];
-            
+
             if(ids.indexOf(link.dataset.guide) < 0){
                 ids.push(link.dataset.guide);
             }
         }
-        
+
         if(ids.length > 0){
             iframes = document.querySelectorAll('iframe.metascore-embed#'+ ids.join(',iframe.metascore-embed#'));
-        
+
             callback = function(api){
                 var links, handler;
                 links = document.querySelectorAll('a[rel="metascore"][data-guide="'+ api.target.id +'"]');
-                
+
                 handler = function(evt){
                     var link = evt.target,
                         actions = link.hash.replace(/^#/, '').split('&'),
                         action;
-                        
+
                     for(var i=0,length=actions.length; i<length; i++){
                         action = actions[i].split('=');
-                        
+
                         if(action[0] in api){
                             api[action[0]].apply(api, action[1].split(','));
                         }
                     }
-                    
+
                     evt.preventDefault();
                 };
-        
+
                 for(var i = 0; i < links.length; ++i){
                     links[i].addEventListener('click', handler);
                 }
             };
-            
+
             for(i = 0; i < iframes.length; ++i){
                 new API(iframes[i], callback);
             }

@@ -37,7 +37,7 @@ metaScore.namespace('player.component').Controller = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
@@ -59,7 +59,7 @@ metaScore.namespace('player.component').Controller = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('left', value +'px');
@@ -81,7 +81,7 @@ metaScore.namespace('player.component').Controller = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('top', value +'px');
@@ -103,7 +103,7 @@ metaScore.namespace('player.component').Controller = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('border-radius', value);
@@ -115,7 +115,7 @@ metaScore.namespace('player.component').Controller = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Controller.prototype.setupDOM = function(){
         // call parent function
@@ -151,7 +151,7 @@ metaScore.namespace('player.component').Controller = (function () {
      * Description
      * @method updateTime
      * @param {} time
-     * @return 
+     * @return
      */
     Controller.prototype.updateTime = function(time){
         var centiseconds = metaScore.String.pad(parseInt(time % 100, 10), 2, '0', 'left'),
@@ -168,14 +168,14 @@ metaScore.namespace('player.component').Controller = (function () {
      * @return MemberExpression
      */
     Controller.prototype.setDraggable = function(draggable){
-        
+
         draggable = draggable !== false;
-    
+
         if(this.getProperty('locked') && draggable){
             return false;
         }
 
-        if(draggable && !this._draggable){        
+        if(draggable && !this._draggable){
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('.timer'),
@@ -190,9 +190,9 @@ metaScore.namespace('player.component').Controller = (function () {
             this._draggable.destroy();
             delete this._draggable;
         }
-        
+
         return this._draggable;
-    
+
     };
 
     /**
@@ -202,9 +202,9 @@ metaScore.namespace('player.component').Controller = (function () {
      * @return MemberExpression
      */
     Controller.prototype.setResizable = function(resizable){
-    
+
         return false;
-    
+
     };
 
     return Controller;

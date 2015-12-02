@@ -43,7 +43,7 @@ metaScore.namespace('editor.field').Image = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     ImageField.prototype.setupUI = function(){
         ImageField.parent.prototype.setupUI.call(this);
@@ -63,7 +63,7 @@ metaScore.namespace('editor.field').Image = (function () {
      * @method setValue
      * @param {} value
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     ImageField.prototype.setValue = function(value, supressEvent){
         ImageField.parent.prototype.setValue.call(this, value, supressEvent);
@@ -75,13 +75,13 @@ metaScore.namespace('editor.field').Image = (function () {
      * Description
      * @method onClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ImageField.prototype.onClick = function(evt){
         if(this.disabled){
             return;
         }
-        
+
         this.triggerEvent(EVT_FILEBROWSER, {'callback': this.onFileSelect}, true, false);
     };
 
@@ -89,7 +89,7 @@ metaScore.namespace('editor.field').Image = (function () {
      * Description
      * @method onClearClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ImageField.prototype.onClearClick = function(evt){
         this.setValue(null);
@@ -99,7 +99,7 @@ metaScore.namespace('editor.field').Image = (function () {
      * Description
      * @method onFileSelect
      * @param {} url
-     * @return 
+     * @return
      */
     ImageField.prototype.onFileSelect = function(url){
         this.setValue(url);

@@ -47,7 +47,7 @@ metaScore.namespace('editor.panel').Text = (function () {
     function TextPanel(configs) {
         // call parent constructor
         TextPanel.parent.call(this, configs);
-        
+
         this.addClass('text');
 
         // fix event handlers scope
@@ -72,7 +72,7 @@ metaScore.namespace('editor.panel').Text = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     if(value){
@@ -92,7 +92,7 @@ metaScore.namespace('editor.panel').Text = (function () {
      * Description
      * @method onFieldValueChange
      * @param {} evt
-     * @return 
+     * @return
      */
     TextPanel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -122,7 +122,7 @@ metaScore.namespace('editor.panel').Text = (function () {
             if(!component){
                 return this.unsetComponent();
             }
-            
+
             this.unsetComponent(true);
 
             this.component = component;
@@ -148,10 +148,10 @@ metaScore.namespace('editor.panel').Text = (function () {
      */
     TextPanel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent();
-        
+
         this.lock().removeClass('has-component');
 
-        if(component){                
+        if(component){
             this.component = null;
 
             if(supressEvent !== true){
@@ -169,8 +169,8 @@ metaScore.namespace('editor.panel').Text = (function () {
      */
     TextPanel.prototype.lock = function(supressEvent){
         var component = this.getComponent();
-        
-        if(component){            
+
+        if(component){
             component.contents
                 .attr('contenteditable', null)
                 .addListener('dblclick', this.onComponentContentsDblClick)
@@ -178,9 +178,9 @@ metaScore.namespace('editor.panel').Text = (function () {
                 .removeListener('keydown', this.onComponentContentsKey)
                 .removeListener('keypress', this.onComponentContentsKey)
                 .removeListener('keyup', this.onComponentContentsKey);
-                
+
             this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
-                
+
             if(component._draggable){
                 component._draggable.enable();
             }
@@ -192,7 +192,7 @@ metaScore.namespace('editor.panel').Text = (function () {
                 this.triggerEvent(EVT_COMPONENTLOCK, {'component': component}, false);
             }
         }
-        
+
         return this;
     };
 
@@ -203,7 +203,7 @@ metaScore.namespace('editor.panel').Text = (function () {
      */
     TextPanel.prototype.unlock = function(supressEvent){
         var component = this.getComponent();
-        
+
         if(component){
             if(component._draggable){
                 component._draggable.disable();
@@ -211,7 +211,7 @@ metaScore.namespace('editor.panel').Text = (function () {
             if(component._resizable){
                 component._resizable.disable();
             }
-            
+
             component.contents
                 .attr('contenteditable', 'true')
                 .removeListener('dblclick', this.onComponentContentsDblClick)
@@ -226,7 +226,7 @@ metaScore.namespace('editor.panel').Text = (function () {
                 this.triggerEvent(EVT_COMPONENTUNLOCK, {'component': component}, false);
             }
         }
-        
+
         return this;
     };
 
@@ -235,9 +235,9 @@ metaScore.namespace('editor.panel').Text = (function () {
      * @method disable
      * @return CallExpression
      */
-    TextPanel.prototype.disable = function(){        
+    TextPanel.prototype.disable = function(){
         this.lock();
-        
+
         return TextPanel.parent.prototype.disable.call(this);
     };
 
@@ -245,7 +245,7 @@ metaScore.namespace('editor.panel').Text = (function () {
      * Description
      * @method onComponentContentsDblClick
      * @param {} evt
-     * @return 
+     * @return
      */
     TextPanel.prototype.onComponentContentsDblClick = function(evt){
         this.updateFieldValue('locked', false);
@@ -255,7 +255,7 @@ metaScore.namespace('editor.panel').Text = (function () {
      * Description
      * @method onComponentContentsClick
      * @param {} evt
-     * @return 
+     * @return
      */
     TextPanel.prototype.onComponentContentsClick = function(evt){
         evt.stopPropagation();
@@ -265,9 +265,9 @@ metaScore.namespace('editor.panel').Text = (function () {
      * Description
      * @method onComponentContentsKey
      * @param {} evt
-     * @return 
+     * @return
      */
-    TextPanel.prototype.onComponentContentsKey = function(evt){        
+    TextPanel.prototype.onComponentContentsKey = function(evt){
         evt.stopPropagation();
     };
 

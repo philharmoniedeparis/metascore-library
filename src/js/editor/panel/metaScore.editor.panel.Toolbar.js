@@ -127,7 +127,7 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
      * @method getSelector
      * @return ThisExpression
      */
-    Toolbar.prototype.getSelector = function(){        
+    Toolbar.prototype.getSelector = function(){
         return this.selector;
     };
 

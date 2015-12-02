@@ -47,7 +47,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     BorderRadius.prototype.setupDOM = function(){
         var contents;
@@ -119,11 +119,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     /**
      * Description
      * @method onValueChange
-     * @return 
+     * @return
      */
-    BorderRadius.prototype.onValueChange = function(){    
+    BorderRadius.prototype.onValueChange = function(){
         var radius    = '';
-        
+
         radius += this.fields.tlw.getValue() +'px ';
         radius += this.fields.trw.getValue() +'px ';
         radius += this.fields.brw.getValue() +'px ';
@@ -133,7 +133,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
         radius += this.fields.trh.getValue() +'px ';
         radius += this.fields.brh.getValue() +'px ';
         radius += this.fields.blh.getValue() +'px';
-        
+
         this.preview.css('border-radius', radius);
     };
 
@@ -151,9 +151,9 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
                 blw: 0, blh: 0,
                 brw: 0, brh: 0
             };
-        
+
         this.preview.css('border-radius', val);
-        
+
         if(matches = this.preview.css('border-top-left-radius', undefined, true).match(/(\d*)px/g)){
             if(matches.length > 1){
                 values.tlw = matches[0];
@@ -163,7 +163,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
                 values.tlw = values.tlh = matches[0];
             }
         }
-        
+
         if(matches = this.preview.css('border-top-right-radius', undefined, true).match(/(\d*)px/g)){
             if(matches.length > 1){
                 values.trw = matches[0];
@@ -173,7 +173,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
                 values.trw = values.trh = matches[0];
             }
         }
-        
+
         if(matches = this.preview.css('border-bottom-left-radius', undefined, true).match(/(\d*)px/g)){
             if(matches.length > 1){
                 values.blw = matches[0];
@@ -183,7 +183,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
                 values.blw = values.blh = matches[0];
             }
         }
-        
+
         if(matches = this.preview.css('border-bottom-right-radius', undefined, true).match(/(\d*)px/g)){
             if(matches.length > 1){
                 values.brw = matches[0];
@@ -193,11 +193,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
                 values.brw = values.brh = matches[0];
             }
         }
-        
+
         metaScore.Object.each(this.fields, function(key, field){
             field.setValue(parseInt(values[key], 10), true);
         });
-        
+
         return this;
     };
 
@@ -214,9 +214,9 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
      * Description
      * @method onApplyClick
      * @param {} evt
-     * @return 
+     * @return
      */
-    BorderRadius.prototype.onApplyClick = function(evt){    
+    BorderRadius.prototype.onApplyClick = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
         this.hide();
     };

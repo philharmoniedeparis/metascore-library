@@ -65,7 +65,7 @@ metaScore.namespace('player.component').Media = (function () {
         Media.parent.call(this, configs);
 
         this.addClass('media').addClass(this.configs.type);
-            
+
         this.el = new metaScore.Dom('<'+ this.configs.type +'></'+ this.configs.type +'>', {'preload': 'auto'})
             .addListener('loadedmetadata', metaScore.Function.proxy(this.onLoadedMetadata, this))
             .addListener('play', metaScore.Function.proxy(this.onPlay, this))
@@ -101,7 +101,7 @@ metaScore.namespace('player.component').Media = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
@@ -123,7 +123,7 @@ metaScore.namespace('player.component').Media = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('left', value +'px');
@@ -145,7 +145,7 @@ metaScore.namespace('player.component').Media = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('top', value +'px');
@@ -167,7 +167,7 @@ metaScore.namespace('player.component').Media = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('width', value +'px');
@@ -189,7 +189,7 @@ metaScore.namespace('player.component').Media = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('height', value +'px');
@@ -211,7 +211,7 @@ metaScore.namespace('player.component').Media = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.css('border-radius', value);
@@ -228,12 +228,12 @@ metaScore.namespace('player.component').Media = (function () {
     Media.prototype.setSources = function(sources, supressEvent){
         var source_tags = '';
 
-        metaScore.Array.each(sources, function(index, source) {            
+        metaScore.Array.each(sources, function(index, source) {
             source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
         }, this);
-            
+
         this.el.text(source_tags);
-        
+
         this.dom.load();
 
         if(supressEvent !== true){
@@ -241,7 +241,7 @@ metaScore.namespace('player.component').Media = (function () {
         }
 
         return this;
-        
+
     };
 
     /**
@@ -257,9 +257,9 @@ metaScore.namespace('player.component').Media = (function () {
      * Description
      * @method onLoadedMetadata
      * @param {} evt
-     * @return 
+     * @return
      */
-    Media.prototype.onLoadedMetadata = function(evt) {        
+    Media.prototype.onLoadedMetadata = function(evt) {
         this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
     };
 
@@ -267,13 +267,13 @@ metaScore.namespace('player.component').Media = (function () {
      * Description
      * @method onPlay
      * @param {} evt
-     * @return 
+     * @return
      */
     Media.prototype.onPlay = function(evt) {
         this.playing = true;
-        
+
         this.triggerEvent(EVT_PLAY, {'media': this});
-        
+
         if(this.configs.useFrameAnimation){
             this.triggerTimeUpdate();
         }
@@ -283,11 +283,11 @@ metaScore.namespace('player.component').Media = (function () {
      * Description
      * @method onPause
      * @param {} evt
-     * @return 
+     * @return
      */
     Media.prototype.onPause = function(evt) {
         this.playing = false;
-        
+
         this.triggerEvent(EVT_PAUSE, {'media': this});
     };
 
@@ -295,7 +295,7 @@ metaScore.namespace('player.component').Media = (function () {
      * Description
      * @method onTimeUpdate
      * @param {} evt
-     * @return 
+     * @return
      */
     Media.prototype.onTimeUpdate = function(evt){
         if(!this.configs.useFrameAnimation){
@@ -307,7 +307,7 @@ metaScore.namespace('player.component').Media = (function () {
      * Description
      * @method onSeeking
      * @param {} evt
-     * @return 
+     * @return
      */
     Media.prototype.onSeeking = function(evt){
         this.triggerEvent(EVT_SEEKING, {'media': this});
@@ -329,7 +329,7 @@ metaScore.namespace('player.component').Media = (function () {
      */
     Media.prototype.reset = function() {
         this.setTime(0);
-        
+
         return this;
     };
 
@@ -340,7 +340,7 @@ metaScore.namespace('player.component').Media = (function () {
      */
     Media.prototype.play = function() {
         this.dom.play();
-        
+
         return this;
     };
 
@@ -351,7 +351,7 @@ metaScore.namespace('player.component').Media = (function () {
      */
     Media.prototype.pause = function() {
         this.dom.pause();
-        
+
         return this;
     };
 
@@ -359,7 +359,7 @@ metaScore.namespace('player.component').Media = (function () {
      * Description
      * @method triggerTimeUpdate
      * @param {} loop
-     * @return 
+     * @return
      */
     Media.prototype.triggerTimeUpdate = function(loop) {
         if(loop !== false && this.isPlaying()){
@@ -379,7 +379,7 @@ metaScore.namespace('player.component').Media = (function () {
         this.dom.currentTime = parseFloat(time) / 100;
 
         this.triggerTimeUpdate(false);
-        
+
         return this;
     };
 
@@ -408,14 +408,14 @@ metaScore.namespace('player.component').Media = (function () {
      * @return MemberExpression
      */
     Media.prototype.setDraggable = function(draggable){
-        
+
         draggable = draggable !== false;
-    
+
         if(this.getProperty('locked') && draggable){
             return false;
         }
 
-        if(draggable && !this._draggable){        
+        if(draggable && !this._draggable){
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('video'),
@@ -430,9 +430,9 @@ metaScore.namespace('player.component').Media = (function () {
             this._draggable.destroy();
             delete this._draggable;
         }
-        
+
         return this._draggable;
-    
+
     };
 
     return Media;

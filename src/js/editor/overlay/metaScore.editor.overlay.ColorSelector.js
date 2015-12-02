@@ -52,7 +52,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     ColorSelector.prototype.setupDOM = function(){
         // call parent method
@@ -151,7 +151,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * @param {} refillAlpha
      * @param {} updatePositions
      * @param {} updateInputs
-     * @return 
+     * @return
      */
     ColorSelector.prototype.updateValue = function(val, refillAlpha, updatePositions, updateInputs){
 
@@ -203,7 +203,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     /**
      * Description
      * @method fillPrevious
-     * @return 
+     * @return
      */
     ColorSelector.prototype.fillPrevious = function(){
         var context = this.controls.previous.get(0).getContext('2d');
@@ -216,7 +216,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     /**
      * Description
      * @method fillCurrent
-     * @return 
+     * @return
      */
     ColorSelector.prototype.fillCurrent = function(){
         var context = this.controls.current.get(0).getContext('2d');
@@ -229,7 +229,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     /**
      * Description
      * @method fillGradient
-     * @return 
+     * @return
      */
     ColorSelector.prototype.fillGradient = function(){
         var context = this.gradient.canvas.get(0).getContext('2d'),
@@ -264,7 +264,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     /**
      * Description
      * @method fillAlpha
-     * @return 
+     * @return
      */
     ColorSelector.prototype.fillAlpha = function(){
         var context = this.alpha.canvas.get(0).getContext('2d'),
@@ -285,7 +285,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onControlInput
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onControlInput = function(evt){
         var rgba, hsv;
@@ -302,7 +302,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onGradientMousedown
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onGradientMousedown = function(evt){
         this.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
@@ -314,7 +314,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onGradientMouseup
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onGradientMouseup = function(evt){
         this.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
@@ -326,7 +326,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onGradientClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onGradientClick = function(evt){
         var offset = evt.target.getBoundingClientRect(),
@@ -342,7 +342,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         value.r = imageData.data[0];
         value.g = imageData.data[1];
         value.b =    imageData.data[2];
-        
+
         if(!value.a){
             value.a = 1;
             this.updateValue(value, true, true);
@@ -361,7 +361,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onAlphaMousedown
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onAlphaMousedown = function(evt){
         this.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
@@ -373,7 +373,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onAlphaMouseup
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onAlphaMouseup = function(evt){
         this.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
@@ -385,7 +385,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onAlphaClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onAlphaClick = function(evt){
         var offset = evt.target.getBoundingClientRect(),
@@ -409,7 +409,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onApplyClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onApplyClick = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.value}, true, false);
@@ -421,7 +421,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * Description
      * @method onCancelClick
      * @param {} evt
-     * @return 
+     * @return
      */
     ColorSelector.prototype.onCancelClick = function(evt){
         this.hide();

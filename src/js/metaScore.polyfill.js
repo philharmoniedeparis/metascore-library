@@ -1,7 +1,7 @@
 /**
  * Polyfills
  */
- 
+
 // Element.matches
 if(Element && !Element.prototype.matches){
     Element.prototype.matches = Element.prototype.matchesSelector =
@@ -61,7 +61,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
      */
     window.CustomEvent = function(event, params) {
         var evt;
-        
+
         params = params || {
             bubbles: false,
             cancelable: false,
@@ -70,7 +70,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
 
         evt = document.createEvent("CustomEvent");
         evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-        
+
         return evt;
     };
 
@@ -115,7 +115,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
          *
          * @method cancelAnimationFrame
          * @param {} id
-         * @return 
+         * @return
          */
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);

@@ -32,7 +32,7 @@ metaScore.namespace('editor.field').Select = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     SelectField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -41,7 +41,7 @@ metaScore.namespace('editor.field').Select = (function () {
             this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
                 .appendTo(this);
         }
-            
+
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -63,7 +63,7 @@ metaScore.namespace('editor.field').Select = (function () {
      */
     SelectField.prototype.addGroup = function(label){
         var group = new metaScore.Dom('<optgroup/>', {'label': label});
-        
+
         this.input.append(group);
 
         return group;
@@ -78,7 +78,7 @@ metaScore.namespace('editor.field').Select = (function () {
      */
     SelectField.prototype.addOption = function(value, text, group){
         var option = new metaScore.Dom('<option/>', {'value': value, 'text': text});
-        
+
         option.appendTo(group ? group : this.input);
 
         return option;
@@ -93,7 +93,7 @@ metaScore.namespace('editor.field').Select = (function () {
      */
     SelectField.prototype.updateOption = function(value, text, attr){
         var option = this.input.find('option[value="'+ value +'"]');
-        
+
         option.text(text);
 
         return option;
@@ -107,7 +107,7 @@ metaScore.namespace('editor.field').Select = (function () {
      */
     SelectField.prototype.removeOption = function(value){
         var option = this.input.find('option[value="'+ value +'"]');
-        
+
         option.remove();
 
         return option;
@@ -120,7 +120,7 @@ metaScore.namespace('editor.field').Select = (function () {
      */
     SelectField.prototype.readonly = function(readonly){
         SelectField.parent.prototype.readonly.call(this, readonly);
-        
+
         this.input.attr('disabled', this.is_readonly ? "disabled" : null);
 
         return this;

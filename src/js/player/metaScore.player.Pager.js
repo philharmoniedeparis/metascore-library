@@ -42,7 +42,7 @@ metaScore.namespace('player').Pager = (function () {
      * @method updateCount
      * @param {} index
      * @param {} count
-     * @return 
+     * @return
      */
     Pager.prototype.updateCount = function(index, count){
         this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));

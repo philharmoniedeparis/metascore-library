@@ -158,7 +158,7 @@ metaScore.namespace('editor').History = (function(){
     /**
      * Description
      * @method clear
-     * @return 
+     * @return
      */
     History.prototype.clear = function () {
         var length = this.commands.length;

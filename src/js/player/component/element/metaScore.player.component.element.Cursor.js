@@ -52,7 +52,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('direction', value);
@@ -74,7 +74,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('accel', value);
@@ -97,7 +97,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.cursor.css('width', value +'px');
@@ -119,7 +119,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
@@ -132,7 +132,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Cursor.prototype.setupDOM = function(){
         // call parent function
@@ -152,7 +152,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
      * Description
      * @method onClick
      * @param {} evt
-     * @return 
+     * @return
      */
     Cursor.prototype.onClick = function(evt){
         var pos, time,
@@ -202,7 +202,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
      * @method onCuePointUpdate
      * @param {} cuepoint
      * @param {} curTime
-     * @return 
+     * @return
      */
     Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
         var width, height,

@@ -140,7 +140,7 @@ metaScore.Dom = (function () {
             else if(parent instanceof Dom){
                 parent = parent.get(0);
             }
-            
+
             if(metaScore.Var.is(selector, 'string')) {
                 elements = parent.querySelectorAll(selector);
             }
@@ -210,7 +210,7 @@ metaScore.Dom = (function () {
      */
     Dom.getElementWindow = function(el){
         var doc = el.ownerDocument;
-            
+
         return doc.defaultView || doc.parentWindow;
     };
 
@@ -230,7 +230,7 @@ metaScore.Dom = (function () {
      * @method addClass
      * @param {} element
      * @param {} className
-     * @return 
+     * @return
      */
     Dom.addClass = function(element, className){
         var classNames = className.split(" "),
@@ -246,7 +246,7 @@ metaScore.Dom = (function () {
      * @method removeClass
      * @param {} element
      * @param {} className
-     * @return 
+     * @return
      */
     Dom.removeClass = function(element, className){
         var classNames = className.split(" "),
@@ -263,7 +263,7 @@ metaScore.Dom = (function () {
      * @param {} element
      * @param {} className
      * @param {} force
-     * @return 
+     * @return
      */
     Dom.toggleClass = function(element, className, force){
         var classNames = className.split(" "),
@@ -327,7 +327,7 @@ metaScore.Dom = (function () {
      */
     Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
         var fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
-        
+
         var event = new fn(type, {
             'detail': data,
             'bubbles': bubbles !== false,
@@ -373,7 +373,7 @@ metaScore.Dom = (function () {
      * @param {} element
      * @param {} name
      * @param {} value
-     * @return 
+     * @return
      */
     Dom.attr = function(element, name, value){
         if(metaScore.Var.is(name, 'object')){
@@ -458,7 +458,7 @@ metaScore.Dom = (function () {
      * @method append
      * @param {} element
      * @param {} children
-     * @return 
+     * @return
      */
     Dom.append = function(element, children){
         if (!metaScore.Var.is(children, 'array')) {
@@ -475,7 +475,7 @@ metaScore.Dom = (function () {
      * @method before
      * @param {} element
      * @param {} siblings
-     * @return 
+     * @return
      */
     Dom.before = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -492,7 +492,7 @@ metaScore.Dom = (function () {
      * @method after
      * @param {} element
      * @param {} siblings
-     * @return 
+     * @return
      */
     Dom.after = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -508,7 +508,7 @@ metaScore.Dom = (function () {
      * Removes all element children
      * @method empty
      * @param {} element
-     * @return 
+     * @return
      */
     Dom.empty = function(element){
         while(element.firstChild){
@@ -520,7 +520,7 @@ metaScore.Dom = (function () {
      * Removes an element from the dom
      * @method remove
      * @param {} element
-     * @return 
+     * @return
      */
     Dom.remove = function(element){
         if(element.parentElement){
@@ -537,16 +537,16 @@ metaScore.Dom = (function () {
      */
     Dom.is = function(el, selector){
         var win;
-        
+
         if(el instanceof Element){
             return Element.prototype.matches.call(el, selector);
         }
-        
+
         win = Dom.getElementWindow(el);
-        
+
         return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
     };
-    
+
     /**
      * Description
      * @method closest
@@ -556,11 +556,11 @@ metaScore.Dom = (function () {
      */
     Dom.closest = function(el, selector){
         var document, win;
-        
+
         if(el instanceof Element){
             return Element.prototype.closest.call(el, selector);
         }
-            
+
         if(document = el.ownerDocument){
             if(win = document.defaultView || document.parentWindow){
                 if(el instanceof win.Element){
@@ -568,7 +568,7 @@ metaScore.Dom = (function () {
                 }
             }
         }
-        
+
         return null;
     };
 
@@ -576,7 +576,7 @@ metaScore.Dom = (function () {
      * Description
      * @method add
      * @param {} elements
-     * @return 
+     * @return
      */
     Dom.prototype.add = function(elements){
         if('length' in elements){
@@ -716,7 +716,7 @@ metaScore.Dom = (function () {
      * @method each
      * @param {} callback
      * @param {} scope
-     * @return 
+     * @return
      */
     Dom.prototype.each = function(callback, scope){
         scope = scope || this;
@@ -871,7 +871,7 @@ metaScore.Dom = (function () {
      * Description
      * @method text
      * @param {} value
-     * @return 
+     * @return
      */
     Dom.prototype.text = function(value) {
         if(value !== undefined){
@@ -888,7 +888,7 @@ metaScore.Dom = (function () {
      * Description
      * @method val
      * @param {} value
-     * @return 
+     * @return
      */
     Dom.prototype.val = function(value) {
         if(value !== undefined){
@@ -907,7 +907,7 @@ metaScore.Dom = (function () {
      * @method attr
      * @param {} name
      * @param {} value
-     * @return 
+     * @return
      */
     Dom.prototype.attr = function(name, value) {
         if(value !== undefined || metaScore.Var.is(name, 'object')){
@@ -927,7 +927,7 @@ metaScore.Dom = (function () {
      * @param {} name
      * @param {} value
      * @param {} inline
-     * @return 
+     * @return
      */
     Dom.prototype.css = function(name, value, inline) {
         if(value !== undefined){
@@ -946,7 +946,7 @@ metaScore.Dom = (function () {
      * @method data
      * @param {} name
      * @param {} value
-     * @return 
+     * @return
      */
     Dom.prototype.data = function(name, value) {
         if(value !== undefined){
@@ -1005,13 +1005,13 @@ metaScore.Dom = (function () {
      */
     Dom.prototype.insertAt = function(parent, index){
         var element;
-    
+
         if(!(parent instanceof Dom)){
             parent = new Dom(parent);
         }
-        
+
         element = parent.children().get(index);
-        
+
         if(element){
             Dom.before(element, this.elements);
         }

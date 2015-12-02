@@ -22,7 +22,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
      */
     function ButtonsField(configs) {
         this.configs = this.getConfigs(configs);
-        
+
         this.buttons = {};
 
         // fix event handlers scope
@@ -43,7 +43,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
     /**
      * Description
      * @method setValue
-     * @return 
+     * @return
      */
     ButtonsField.prototype.setValue = function(){
     };
@@ -51,7 +51,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     ButtonsField.prototype.setupUI = function(){
         var field = this;
@@ -60,7 +60,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
             this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
-            
+
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -72,7 +72,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
                 .appendTo(this.input_wrapper);
         }, this);
     };
-    
+
     /**
      * Description
      * @method getButtons
@@ -81,7 +81,7 @@ metaScore.namespace('editor.field').Buttons = (function () {
     ButtonsField.prototype.getButtons = function(){
         return this.buttons;
     };
-    
+
     /**
      * Description
      * @method getButton

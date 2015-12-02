@@ -39,7 +39,7 @@ metaScore.namespace('editor').Button = (function () {
      * Description
      * @method onClick
      * @param {} evt
-     * @return 
+     * @return
      */
     Button.prototype.onClick = function(evt){
         if(this.disabled){

@@ -32,7 +32,7 @@ metaScore.namespace('editor').Overlay = (function(){
 
         // call parent constructor
         Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
-        
+
         this.setupDOM();
 
         if(this.configs.autoShow){
@@ -78,7 +78,7 @@ metaScore.namespace('editor').Overlay = (function(){
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Overlay.prototype.setupDOM = function(){
 
@@ -100,7 +100,7 @@ metaScore.namespace('editor').Overlay = (function(){
         if(this.configs.draggable){
             this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
         }
-    
+
     };
 
     /**
@@ -114,7 +114,7 @@ metaScore.namespace('editor').Overlay = (function(){
         }
 
         this.appendTo(this.configs.parent);
-        
+
         this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
 
         return this;
@@ -131,7 +131,7 @@ metaScore.namespace('editor').Overlay = (function(){
         }
 
         this.remove();
-        
+
         this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
 
         return this;
@@ -158,7 +158,7 @@ metaScore.namespace('editor').Overlay = (function(){
     /**
      * Description
      * @method onCloseClick
-     * @return 
+     * @return
      */
     Overlay.prototype.onCloseClick = function(){
         this.hide();

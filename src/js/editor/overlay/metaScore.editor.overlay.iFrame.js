@@ -37,12 +37,12 @@ metaScore.namespace('editor.overlay').iFrame = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     iFrame.prototype.setupDOM = function(){
         // call parent method
         iFrame.parent.prototype.setupDOM.call(this);
-        
+
         this.frame = new metaScore.Dom('<iframe/>', {'src': this.configs.url})
             .appendTo(this.contents);
     };

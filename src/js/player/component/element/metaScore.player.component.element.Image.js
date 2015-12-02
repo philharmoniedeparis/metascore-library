@@ -22,7 +22,7 @@ metaScore.namespace('player.component.element').Image = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Image.prototype.setupDOM = function(){
         // call parent function

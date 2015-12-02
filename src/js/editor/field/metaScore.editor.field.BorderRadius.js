@@ -25,7 +25,7 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     BorderRadiusrField.prototype.setupUI = function(){
         BorderRadiusrField.parent.prototype.setupUI.call(this);
@@ -47,7 +47,7 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
      * @method setValue
      * @param {} value
      * @param {} supressEvent
-     * @return 
+     * @return
      */
     BorderRadiusrField.prototype.setValue = function(value, supressEvent){
         BorderRadiusrField.parent.prototype.setValue.call(this, value, supressEvent);
@@ -59,7 +59,7 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
      * Description
      * @method onClick
      * @param {} evt
-     * @return 
+     * @return
      */
     BorderRadiusrField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -75,7 +75,7 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
      * Description
      * @method onOverlaySubmit
      * @param {} evt
-     * @return 
+     * @return
      */
     BorderRadiusrField.prototype.onOverlaySubmit = function(evt){
         var value = evt.detail.value,
@@ -88,7 +88,7 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
      * Description
      * @method onClearClick
      * @param {} evt
-     * @return 
+     * @return
      */
     BorderRadiusrField.prototype.onClearClick = function(evt){
         this.setValue('0px');

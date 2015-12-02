@@ -22,14 +22,14 @@ metaScore.namespace('editor').MainMenu = (function(){
     /**
      * Description
      * @method setupUI
-     * @return 
+     * @return
      */
     MainMenu.prototype.setupUI = function(){
         var btn_group, sub_menu;
 
         new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
@@ -62,7 +62,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .data('action', 'save-draft')
             .appendTo(btn_group);
-            
+
         sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
         new metaScore.editor.Button()
@@ -85,7 +85,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .data('action', 'delete')
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
@@ -96,7 +96,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .data('action', 'download')
             .disable()
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
@@ -106,7 +106,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .addClass('time')
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
@@ -119,7 +119,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .addClass('r-index')
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
@@ -129,7 +129,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .data('action', 'edit-toggle')
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
@@ -153,11 +153,11 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .data('action', 'redo')
             .appendTo(this);
-            
+
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .css('flex', '20')
             .appendTo(this);
-            
+
         new metaScore.editor.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')

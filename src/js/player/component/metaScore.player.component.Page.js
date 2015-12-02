@@ -60,7 +60,7 @@ metaScore.namespace('player.component').Page = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
@@ -89,7 +89,7 @@ metaScore.namespace('player.component').Page = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
@@ -116,7 +116,7 @@ metaScore.namespace('player.component').Page = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('start-time', isNaN(value) ? null : value);
@@ -142,7 +142,7 @@ metaScore.namespace('player.component').Page = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     this.data('end-time', isNaN(value) ? null : value);
@@ -167,7 +167,7 @@ metaScore.namespace('player.component').Page = (function () {
                 /**
                  * Description
                  * @param {} value
-                 * @return 
+                 * @return
                  */
                 'setter': function(value){
                     metaScore.Array.each(value, function(index, configs){
@@ -181,7 +181,7 @@ metaScore.namespace('player.component').Page = (function () {
     /**
      * Description
      * @method setupDOM
-     * @return 
+     * @return
      */
     Page.prototype.setupDOM = function(){
         // call parent function
@@ -224,11 +224,11 @@ metaScore.namespace('player.component').Page = (function () {
     Page.prototype.getBlock = function(){
         var dom = this.parents().parents().get(0),
             block;
-        
+
         if(dom){
             block = dom._metaScore;
         }
-        
+
         return block;
     };
 
@@ -245,7 +245,7 @@ metaScore.namespace('player.component').Page = (function () {
      * Description
      * @method onCuePointStart
      * @param {} cuepoint
-     * @return 
+     * @return
      */
     Page.prototype.onCuePointStart = function(cuepoint){
         this.triggerEvent(EVT_CUEPOINTSTART);
@@ -255,7 +255,7 @@ metaScore.namespace('player.component').Page = (function () {
      * Description
      * @method onCuePointEnd
      * @param {} cuepoint
-     * @return 
+     * @return
      */
     Page.prototype.onCuePointEnd = function(cuepoint){
         this.triggerEvent(EVT_CUEPOINTEND);
@@ -265,7 +265,7 @@ metaScore.namespace('player.component').Page = (function () {
      * Description
      * @method onCuePointSeekOut
      * @param {} cuepoint
-     * @return 
+     * @return
      */
     Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointEnd;
 
