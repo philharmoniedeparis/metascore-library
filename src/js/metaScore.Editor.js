@@ -1771,7 +1771,7 @@ metaScore.Editor = (function(){
 
         hash = window.location.hash;
 
-        if(match = hash.match(/(#|&)guide=(\d+)(:(\d+))?/)){
+        if(match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/)){
             this.loadPlayer(match[2], match[4]);
         }
 

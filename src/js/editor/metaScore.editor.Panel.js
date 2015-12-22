@@ -244,7 +244,14 @@ metaScore.namespace('editor').Panel = (function(){
                 this.getToolbar().toggleMenuItem('delete', true);
             }
 
-            component.addClass('selected');
+            component
+                .addClass('selected')
+                .addListener('dragstart', this.onComponentDragStart)
+                .addListener('drag', this.onComponentDrag)
+                .addListener('dragend', this.onComponentDragEnd)
+                .addListener('resizestart', this.onComponentResizeStart)
+                .addListener('resize', this.onComponentResize)
+                .addListener('resizeend', this.onComponentResizeEnd);
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_COMPONENTSET, {'component': component}, false);
@@ -274,7 +281,14 @@ metaScore.namespace('editor').Panel = (function(){
 
             toolbar.getSelector().setValue(null, true);
 
-            component.removeClass('selected');
+            component
+                .removeClass('selected')
+                .removeListener('dragstart', this.onComponentDragStart)
+                .removeListener('drag', this.onComponentDrag)
+                .removeListener('dragend', this.onComponentDragEnd)
+                .removeListener('resizestart', this.onComponentResizeStart)
+                .removeListener('resize', this.onComponentResize)
+                .removeListener('resizeend', this.onComponentResizeEnd);
 
             delete this.component;
 
@@ -297,19 +311,6 @@ metaScore.namespace('editor').Panel = (function(){
 
         draggable = component.setDraggable(draggable);
 
-        if(draggable){
-            component
-                .addListener('dragstart', this.onComponentDragStart)
-                .addListener('drag', this.onComponentDrag)
-                .addListener('dragend', this.onComponentDragEnd);
-        }
-        else{
-            component
-                .removeListener('dragstart', this.onComponentDragStart)
-                .removeListener('drag', this.onComponentDrag)
-                .removeListener('dragend', this.onComponentDragEnd);
-        }
-
         this.toggleFields(['x', 'y'], draggable ? true : false);
 
         return this;
@@ -325,19 +326,6 @@ metaScore.namespace('editor').Panel = (function(){
         var component = this.getComponent();
 
         resizable = component.setResizable(resizable);
-
-        if(resizable){
-                component
-                    .addListener('resizestart', this.onComponentResizeStart)
-                    .addListener('resize', this.onComponentResize)
-                    .addListener('resizeend', this.onComponentResizeEnd);
-        }
-        else{
-            component
-                .removeListener('resizestart', this.onComponentResizeStart)
-                .removeListener('resize', this.onComponentResize)
-                .removeListener('resizeend', this.onComponentResizeEnd);
-        }
 
         this.toggleFields(['width', 'height'], resizable ? true : false);
 
