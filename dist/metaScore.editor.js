@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "b6109b";
+        return "4e679e";
     },
 
     /**
@@ -10089,13 +10089,13 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
                 button = new metaScore.editor.Button()
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
-                    .addListener('click', metaScore.Function.proxy(function(evt){
+                    .addListener('click', metaScore.Function.proxy(function(guide, revision_field, evt){
                         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
                         this.hide();
 
                         evt.stopPropagation();
-                    }, this))
+                    }, this, [guide, revision_field]))
                     .data('action', 'select');
 
                 revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
