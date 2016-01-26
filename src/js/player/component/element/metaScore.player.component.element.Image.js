@@ -1,16 +1,18 @@
 /**
-* Description
-*
-* @class player.component.element.Image
-* @extends player.component.Element
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component.element').Image = (function () {
 
     /**
-     * Description
+     * An image element
+     *
+     * @class Cursor
+     * @namespace player.component.element
+     * @extends player.component.Element
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Image(configs) {
         // call parent constructor
@@ -20,13 +22,14 @@ metaScore.namespace('player.component.element').Image = (function () {
     metaScore.player.component.Element.extend(Image);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the image's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Image.prototype.setupDOM = function(){
+    Image.prototype.setupUI = function(){
         // call parent function
-        Image.parent.prototype.setupDOM.call(this);
+        Image.parent.prototype.setupUI.call(this);
 
         this.data('type', 'Image');
     };

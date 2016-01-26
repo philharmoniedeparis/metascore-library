@@ -1,15 +1,18 @@
 /**
-* Description
-* @class editor.panel.Element
-* @extends editor.Panel
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Element = (function () {
 
     /**
-     * Description
+     * A panel for {{#crossLink "player.component.Element"}}{{/crossLink}} components
+     * 
+     * @class Element
+     * @namespace editor.panel
+     * @extends editor.Panel
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={'title':'Element', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function ElementPanel(configs) {
         // call parent constructor
@@ -19,24 +22,25 @@ metaScore.namespace('editor.panel').Element = (function () {
     }
 
     ElementPanel.defaults = {
-        toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
-            title: metaScore.Locale.t('editor.panel.Element.title', 'Element'),
-            menuItems: {
+        toolbarConfigs: {
+            'title': metaScore.Locale.t('editor.panel.Element.title', 'Element'),
+            'menuItems': {
                 'Cursor': metaScore.Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
                 'Image': metaScore.Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
                 'Text': metaScore.Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
                 'delete': metaScore.Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
             }
-        })
+        }
     };
 
     metaScore.editor.Panel.extend(ElementPanel);
 
     /**
-     * Description
+     * The fields' valuechange event handler
+     *
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ElementPanel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -50,27 +54,29 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
 
     /**
-     * Description
+     * The beforeimageset event handler
+     * 
      * @method onBeforeImageSet
-     * @param {} evt
-     * @return
+     * @private
+     * @param {String} property The updated component property's name
+     * @param {String} url The new image url
      */
-    ElementPanel.prototype.onBeforeImageSet = function(property, value){
+    ElementPanel.prototype.onBeforeImageSet = function(property, url){
         var panel = this,
             component = panel.getComponent(),
             old_src, new_src;
 
         old_src = component.getProperty(property);
-        new_src = value;
+        new_src = url;
 
         if(old_src){
-            panel.getImageMetaData(old_src, function(old_metadata){
+            panel.getImageMetadata(old_src, function(old_metadata){
                 var name = component.getProperty('name'),
                     width = component.getProperty('width'),
                     height = component.getProperty('height');
 
                 if((old_metadata.name === name) || (old_metadata.width === width && old_metadata.height === height)){
-                    panel.getImageMetaData(new_src, function(new_metadata){
+                    panel.getImageMetadata(new_src, function(new_metadata){
                         if(old_metadata.name === name){
                             panel.updateFieldValue('name', new_metadata.name);
                         }
@@ -84,7 +90,7 @@ metaScore.namespace('editor.panel').Element = (function () {
             });
         }
         else{
-            panel.getImageMetaData(new_src, function(new_metadata){
+            panel.getImageMetadata(new_src, function(new_metadata){
                 panel.updateFieldValue('name', new_metadata.name);
                 panel.updateFieldValue('width', new_metadata.width);
                 panel.updateFieldValue('height', new_metadata.height);
@@ -94,12 +100,14 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
 
     /**
-     * Description
-     * @method getImageMetaData
-     * @param {} evt
-     * @return
+     * Get an image's metadata (name, width, and height)
+     * 
+     * @method getImageMetadata
+     * @private
+     * @param {String} url The image's url
+     * @param {Function} callback The callback to call with the retreived metadata
      */
-    ElementPanel.prototype.getImageMetaData = function(src, callback){
+    ElementPanel.prototype.getImageMetadata = function(url, callback){
         var img = new metaScore.Dom('<img/>')
             .addListener('load', function(evt){
                 var el = img.get(0),
@@ -115,7 +123,7 @@ metaScore.namespace('editor.panel').Element = (function () {
                     'height': el.naturalHeight
                 });
             })
-            .attr('src', src);
+            .attr('src', url);
     };
 
     return ElementPanel;

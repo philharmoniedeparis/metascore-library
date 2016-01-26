@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class Draggable
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Draggable = (function () {
 
@@ -29,15 +26,20 @@ metaScore.Draggable = (function () {
     var EVT_DRAGEND = 'dragend';
 
     /**
-     * Description
+     * A class for adding draggable behaviors
+     * 
+     * @class Draggable
+     * @extends Class
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Dom} configs.target The Dom object to add the behavior to
+     * @param {Dom} configs.handle The Dom object to use as a dragging handle
+     * @param {Object} [configs.limits={'top': null, 'left': null}] The limits of the dragging
      */
     function Draggable(configs) {
         this.configs = this.getConfigs(configs);
 
-        this.configs.container = this.configs.container || new metaScore.Dom('body');
-        this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+        this.doc = new metaScore.Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
         this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
@@ -50,22 +52,22 @@ metaScore.Draggable = (function () {
     }
 
     Draggable.defaults = {
-        /**
-        * The limits of the dragging
-        */
-        limits: {
-            top: null,
-            left: null
+        'target': null,
+        'handle': null,
+        'limits': {
+            'top': null,
+            'left': null
         }
     };
 
     metaScore.Class.extend(Draggable);
 
     /**
-     * Description
+     * The mousedown event handler
+     * 
      * @method onMouseDown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -89,10 +91,11 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * The mousemove event handler
+     * 
      * @method onMouseMove
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseMove = function(evt){
         var left = evt.clientX + this.start_state.left,
@@ -115,10 +118,11 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * The mouseup event handler
+     * 
      * @method onMouseUp
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseUp = function(evt){
         this.doc
@@ -133,9 +137,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Enable the behavior
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.enable = function(){
         this.configs.target.addClass('draggable');
@@ -148,9 +153,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Disable the behavior
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.disable = function(){
         this.configs.target.removeClass('draggable');
@@ -163,9 +169,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Destroy the behavior
+     * 
      * @method destroy
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.destroy = function(){
         this.disable();

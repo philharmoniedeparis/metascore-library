@@ -1,13 +1,15 @@
 /**
-* Description
-* @class editor.MainMenu
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').MainMenu = (function(){
 
     /**
-     * Description
+     * The editor's main menu
+     *
+     * @class MainMenu
+     * @namespace editor
+     * @extends Dom
      * @constructor
      */
     function MainMenu() {
@@ -20,9 +22,10 @@ metaScore.namespace('editor').MainMenu = (function(){
     metaScore.Dom.extend(MainMenu);
 
     /**
-     * Description
+     * Setup the menu's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     MainMenu.prototype.setupUI = function(){
         var btn_group, sub_menu;
@@ -184,11 +187,12 @@ metaScore.namespace('editor').MainMenu = (function(){
     };
 
     /**
-     * Description
+     * Toogle a button's enabled state
+     *
      * @method toggleButton
-     * @param {} action
-     * @param {} state
-     * @return ThisExpression
+     * @param {String} action The button's associated action
+     * @param {Boolean} state The state to set the button to, the current state is toggled if not provided
+     * @chainable
      */
     MainMenu.prototype.toggleButton = function(action, state){
         this.find('[data-action="'+ action +'"]').toggleClass('disabled', state === false);

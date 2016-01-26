@@ -1,16 +1,18 @@
 /**
-* Description
-*
-* @class player.component.Controller
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Controller = (function () {
 
     /**
-     * Description
+     * A controller component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Controller(configs) {
         // call parent constructor
@@ -26,19 +28,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -48,19 +40,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -70,19 +52,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 }
@@ -92,19 +64,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-radius', value);
                 }
@@ -113,13 +75,14 @@ metaScore.namespace('player.component').Controller = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the controller's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Controller.prototype.setupDOM = function(){
+    Controller.prototype.setupUI = function(){
         // call parent function
-        Controller.parent.prototype.setupDOM.call(this);
+        Controller.parent.prototype.setupUI.call(this);
 
         this.addClass('controller');
 
@@ -139,19 +102,21 @@ metaScore.namespace('player.component').Controller = (function () {
     };
 
     /**
-     * Description
+     * Get the value of the controller's name property
+     * 
      * @method getName
-     * @return Literal
+     * @return {String} The name
      */
     Controller.prototype.getName = function(){
         return '[controller]';
     };
 
     /**
-     * Description
+     * Update the displayed time
+     *
      * @method updateTime
-     * @param {} time
-     * @return
+     * @param {Integer} time The time value in centiseconds
+     * @chainable
      */
     Controller.prototype.updateTime = function(time){
         var centiseconds = metaScore.String.pad(parseInt(time % 100, 10), 2, '0', 'left'),
@@ -159,13 +124,16 @@ metaScore.namespace('player.component').Controller = (function () {
             minutes = metaScore.String.pad(parseInt((time / 6000), 10), 2, '0', 'left');
 
         this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
+        
+        return this;
     };
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Controller.prototype.setDraggable = function(draggable){
 
@@ -179,7 +147,6 @@ metaScore.namespace('player.component').Controller = (function () {
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('.timer'),
-                'container': this.parents(),
                 'limits': {
                     'top': 0,
                     'left': 0
@@ -192,18 +159,6 @@ metaScore.namespace('player.component').Controller = (function () {
         }
 
         return this._draggable;
-
-    };
-
-    /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
-     */
-    Controller.prototype.setResizable = function(resizable){
-
-        return false;
 
     };
 

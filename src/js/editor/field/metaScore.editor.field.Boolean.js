@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.field.Boolean
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Boolean = (function () {
 
@@ -16,9 +14,16 @@ metaScore.namespace('editor.field').Boolean = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A boolean field based on an HTML input[type=checkbox] element
+     *
+     * @class Boolean
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.checked=false] Whether the field is checked by default
+     * @param {Boolean} [configs.checked_value=true] The value when checked
+     * @param {Boolean} [configs.unchecked_value=false] The value when unchecked
      */
     function BooleanField(configs) {
         this.configs = this.getConfigs(configs);
@@ -32,29 +37,18 @@ metaScore.namespace('editor.field').Boolean = (function () {
     }
 
     BooleanField.defaults = {
-
-        /**
-        * Defines whether the field is checked by default
-        */
-        checked: false,
-
-        /**
-        * Defines the value when checked
-        */
-        checked_value: true,
-
-        /**
-        * Defines the value when unchecked
-        */
-        unchecked_value: false
+        'checked': false,
+        'checked_value': true,
+        'unchecked_value': false
     };
 
     metaScore.editor.Field.extend(BooleanField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     BooleanField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -74,10 +68,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BooleanField.prototype.onClick = function(evt){
         if(this.is_readonly){
@@ -86,10 +81,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
     };
 
     /**
-     * Description
+     * The change event handler
+     * 
      * @method onChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BooleanField.prototype.onChange = function(evt){
         if(this.is_readonly){
@@ -110,11 +106,12 @@ metaScore.namespace('editor.field').Boolean = (function () {
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     BooleanField.prototype.setValue = function(value, supressEvent){
         this.input.get(0).checked = value === this.configs.checked_value;
@@ -122,6 +119,8 @@ metaScore.namespace('editor.field').Boolean = (function () {
         if(supressEvent !== true){
             this.input.triggerEvent('change');
         }
+
+        return this;
     };
 
     return BooleanField;

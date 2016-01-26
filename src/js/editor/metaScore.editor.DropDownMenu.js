@@ -1,19 +1,18 @@
 /**
-* Description
-* @class editor.DropDownMenu
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').DropDownMenu = (function () {
 
     /**
-     * Description
+     * A dropdown menu based on an HTML ul element
+     *
+     * @class DropDownMenu
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
      */
-    function DropDownMenu(configs) {
-        this.configs = this.getConfigs(configs);
-
+    function DropDownMenu() {
         // call the super constructor.
         metaScore.Dom.call(this, '<ul/>', {'class': 'dropdown-menu'});
     }
@@ -21,11 +20,12 @@ metaScore.namespace('editor').DropDownMenu = (function () {
     metaScore.Dom.extend(DropDownMenu);
 
     /**
-     * Description
+     * Add an item
+     *
      * @method addItem
-     * @param {} action
-     * @param {} label
-     * @return item
+     * @param {String} action The action associated with the item
+     * @param {String} label The text to display
+     * @return {Dom} item The added item
      */
     DropDownMenu.prototype.addItem = function(action, label){
         var item = new metaScore.Dom('<li/>', {'data-action': action, 'text': label})
@@ -35,11 +35,12 @@ metaScore.namespace('editor').DropDownMenu = (function () {
     };
 
     /**
-     * Description
+     * Toggle an item's enabled state
+     *
      * @method toggleItem
-     * @param {} action
-     * @param {} state
-     * @return ThisExpression
+     * @param {String} action The action associated with the item
+     * @param {Boolean} [state] The state to set the item to, the current state is toggled if not provided
+     * @chainable
      */
     DropDownMenu.prototype.toggleItem = function(action, state){
         this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);

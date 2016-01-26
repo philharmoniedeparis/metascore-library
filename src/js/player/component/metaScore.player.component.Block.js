@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class player.component.Block
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Block = (function () {
 
@@ -36,9 +33,14 @@ metaScore.namespace('player.component').Block = (function () {
     var EVT_PAGEACTIVATE = 'pageactivate';
 
     /**
-     * Description
+     * A block component
+     *
+     * @class Block
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Block(configs) {
         // call parent constructor
@@ -48,26 +50,15 @@ metaScore.namespace('player.component').Block = (function () {
     metaScore.player.Component.extend(Block);
 
     Block.defaults = {
-        'container': null,
         'properties': {
             'name': {
                 'type': 'Text',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.name', 'Name')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('name');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('name', value);
                 }
@@ -77,19 +68,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -99,19 +80,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -121,19 +92,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 },
@@ -143,19 +104,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.width', 'Width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('width', value +'px');
                 }
@@ -165,19 +116,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.height', 'Height')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('height', value +'px');
                 }
@@ -187,19 +128,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -210,11 +141,6 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('background-image', undefined, skipDefault);
 
@@ -224,11 +150,6 @@ metaScore.namespace('player.component').Block = (function () {
 
                     return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
                     this.css('background-image', value);
@@ -239,20 +160,10 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('border-width', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-width', value +'px');
                 }
@@ -262,19 +173,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -285,19 +186,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-radius', value);
                 }
@@ -308,46 +199,26 @@ metaScore.namespace('player.component').Block = (function () {
                     'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),
                     'readonly': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('synched') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('synched', value);
                 }
             },
             'pages': {
                 'editable':false,
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return pages
-                 */
                 'getter': function(skipDefault){
                     var pages = [];
 
-                    this.getPages().each(function(index, page){
-                        pages.push(page._metaScore.getProperties(skipDefault));
-                    }, this);
+                    metaScore.Array.each(this.getPages(), function(index, page){
+                        pages.push(page.getProperties(skipDefault));
+                    });
 
                     return pages;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
-                    this.getPages().remove();
+                    this.removePages();
 
                     metaScore.Array.each(value, function(index, configs){
                         this.addPage(configs);
@@ -360,13 +231,14 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the block's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Block.prototype.setupDOM = function(){
+    Block.prototype.setupUI = function(){
         // call parent function
-        Block.parent.prototype.setupDOM.call(this);
+        Block.parent.prototype.setupUI.call(this);
 
         this.addClass('block');
 
@@ -380,20 +252,22 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Page cuepointstart event handler
+     *
      * @method onPageCuePointStart
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Block.prototype.onPageCuePointStart = function(evt){
         this.setActivePage(evt.target._metaScore, 'pagecuepoint');
     };
 
     /**
-     * Description
+     * Pager click event handler
+     *
      * @method onPagerClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Block.prototype.onPagerClick = function(evt){
         var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
@@ -419,20 +293,29 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Get the block's pages
+     *
      * @method getPages
-     * @return CallExpression
+     * @return {Array} List of pages
      */
     Block.prototype.getPages = function(){
-        return this.page_wrapper.children('.page');
+        var pages = [];
+
+        this.page_wrapper.children('.page').each(function(index, dom){
+            pages.push(dom._metaScore);
+        });
+
+        return pages;
     };
 
     /**
-     * Description
+     * Add a page
+     *
      * @method addPage
-     * @param {} configs
-     * @param {} supressEvent
-     * @return page
+     * @params {Mixed} configs Page configs or a player.component.Page instance
+     * @params {Integer} index The new page's index
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @return {player.component.Page} The added page
      */
     Block.prototype.addPage = function(configs, index, supressEvent){
         var page;
@@ -464,11 +347,12 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Remove a page
+     *
      * @method removePage
-     * @param {} page
-     * @param {} supressEvent
-     * @return page
+     * @params {player.component.Page} page The page to remove
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
+     * @return {player.component.Page} The removed page
      */
     Block.prototype.removePage = function(page, supressEvent){
         var index;
@@ -483,78 +367,96 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Remove all pages
+     *
+     * @method removePages
+     * @chainable
+     */
+    Block.prototype.removePages = function(){
+        this.page_wrapper.children('.page').remove();
+
+        return this;
+    };
+
+    /**
+     * Get a page by index
+     *
      * @method getPage
-     * @param {} index
-     * @return ConditionalExpression
+     * @param {Integer} index The page's index
+     * @return {player.component.Page} The page
      */
     Block.prototype.getPage = function(index){
-        var pages = this.getPages(),
-            page = pages.get(index);
+        var page = this.page_wrapper.child('.page:nth-child('+ index +')');
 
         return page ? page._metaScore : null;
     };
 
     /**
-     * Description
+     * Get the currently active page
+     *
      * @method getActivePage
-     * @return CallExpression
+     * @return {player.component.Page} The page
      */
     Block.prototype.getActivePage = function(){
         return this.getPage(this.getActivePageIndex());
     };
 
     /**
-     * Description
+     * Get the index of the currently active page
+     *
      * @method getActivePageIndex
-     * @return index
+     * @return {Integer} The index
      */
     Block.prototype.getActivePageIndex = function(){
-        var pages = this.getPages(),
-            index = pages.index('.active');
-
-        return index;
+        return this.page_wrapper.children('.page').index('.active');
     };
 
     /**
-     * Description
+     * Get the page count
+     *
      * @method getPageCount
-     * @return CallExpression
+     * @return {Integer} The number of pages
      */
     Block.prototype.getPageCount = function(){
-        return this.getPages().count();
+        return this.page_wrapper.children('.page').count();
     };
 
     /**
-     * Description
+     * Set the active page
+     *
      * @method setActivePage
-     * @param {} page
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} page The page to activate or its index
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
+     * @chainable
      */
     Block.prototype.setActivePage = function(page, basis, supressEvent){
-        var pages = this.getPages(), dom;
-
         if(metaScore.Var.is(page, 'number')){
-            page = pages.get(parseInt(page, 10));
-            page = page ? page._metaScore : null;
+            page = this.getPage(page);
         }
 
         if(page instanceof metaScore.player.component.Page){
-            pages.removeClass('active');
+            metaScore.Array.each(this.getPages(), function(index, page){
+                page.removeClass('active');
+            });
+
             page.addClass('active');
+            
             this.updatePager();
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'page': page, 'basis': basis});
             }
         }
+        
+        return this;
     };
 
     /**
-     * Description
+     * Update the pager
+     *
      * @method updatePager
-     * @return
+     * @private
+     * @chainable
      */
     Block.prototype.updatePager = function(){
         var index = this.getActivePageIndex(),
@@ -563,13 +465,16 @@ metaScore.namespace('player.component').Block = (function () {
         this.pager.updateCount(index, count);
 
         this.data('page-count', count);
+        
+        return this;
     };
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Block.prototype.setDraggable = function(draggable){
 
@@ -583,7 +488,6 @@ metaScore.namespace('player.component').Block = (function () {
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('.pager'),
-                'container': this.parents(),
                 'limits': {
                     'top': 0,
                     'left': 0
@@ -600,10 +504,11 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
+     * Set/Unset the resizable behaviour
+     *
+     * @method setDraggable
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {Resizable} The resizable behaviour
      */
     Block.prototype.setResizable = function(resizable){
 
@@ -615,8 +520,7 @@ metaScore.namespace('player.component').Block = (function () {
 
         if(resizable && !this._resizable){
             this._resizable = new metaScore.Resizable({
-                'target': this,
-                'container': this.parents()
+                'target': this
             });
         }
         else if(!resizable && this._resizable){

@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8">
     <title>Dom - metaScore</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="../assets/yui/yui-base/yui-base-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../assets/css/logo.png" title="metaScore" width="117" height="52"></h1>
+                <h1><img src="..\assets\img\logo.png" title="metaScore"></h1>
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.2</em>
@@ -43,6 +43,7 @@
                                 <li><a href="../classes/Array.html">Array</a></li>
                                 <li><a href="../classes/Class.html">Class</a></li>
                                 <li><a href="../classes/Color.html">Color</a></li>
+                                <li><a href="../classes/CuePoint.html">CuePoint</a></li>
                                 <li><a href="../classes/Dom.html">Dom</a></li>
                                 <li><a href="../classes/Draggable.html">Draggable</a></li>
                                 <li><a href="../classes/Editor.html">Editor</a></li>
@@ -51,15 +52,15 @@
                                 <li><a href="../classes/editor.Field.html">editor.Field</a></li>
                                 <li><a href="../classes/editor.field.Boolean.html">editor.field.Boolean</a></li>
                                 <li><a href="../classes/editor.field.BorderRadius.html">editor.field.BorderRadius</a></li>
-                                <li><a href="../classes/editor.field.Buttons.html">editor.field.Buttons</a></li>
-                                <li><a href="../classes/editor.field.Color.html">editor.field.Color</a></li>
-                                <li><a href="../classes/editor.field.File.html">editor.field.File</a></li>
-                                <li><a href="../classes/editor.field.Image.html">editor.field.Image</a></li>
-                                <li><a href="../classes/editor.field.Number.html">editor.field.Number</a></li>
-                                <li><a href="../classes/editor.field.Select.html">editor.field.Select</a></li>
-                                <li><a href="../classes/editor.field.Text.html">editor.field.Text</a></li>
-                                <li><a href="../classes/editor.field.Textarea.html">editor.field.Textarea</a></li>
-                                <li><a href="../classes/editor.field.Time.html">editor.field.Time</a></li>
+                                <li><a href="../classes/editor.field.ButtonsField.html">editor.field.ButtonsField</a></li>
+                                <li><a href="../classes/editor.field.ColorField.html">editor.field.ColorField</a></li>
+                                <li><a href="../classes/editor.field.FileField.html">editor.field.FileField</a></li>
+                                <li><a href="../classes/editor.field.ImageField.html">editor.field.ImageField</a></li>
+                                <li><a href="../classes/editor.field.NumberField.html">editor.field.NumberField</a></li>
+                                <li><a href="../classes/editor.field.SelectField.html">editor.field.SelectField</a></li>
+                                <li><a href="../classes/editor.field.TextareaField.html">editor.field.TextareaField</a></li>
+                                <li><a href="../classes/editor.field.TextField.html">editor.field.TextField</a></li>
+                                <li><a href="../classes/editor.field.TimeField.html">editor.field.TimeField</a></li>
                                 <li><a href="../classes/editor.History.html">editor.History</a></li>
                                 <li><a href="../classes/editor.MainMenu.html">editor.MainMenu</a></li>
                                 <li><a href="../classes/editor.Overlay.html">editor.Overlay</a></li>
@@ -68,8 +69,6 @@
                                 <li><a href="../classes/editor.overlay.ColorSelector.html">editor.overlay.ColorSelector</a></li>
                                 <li><a href="../classes/editor.overlay.GuideDetails.html">editor.overlay.GuideDetails</a></li>
                                 <li><a href="../classes/editor.overlay.GuideSelector.html">editor.overlay.GuideSelector</a></li>
-                                <li><a href="../classes/editor.overlay.iFrame.html">editor.overlay.iFrame</a></li>
-                                <li><a href="../classes/editor.overlay.InsertImage.html">editor.overlay.InsertImage</a></li>
                                 <li><a href="../classes/editor.overlay.LoadMask.html">editor.overlay.LoadMask</a></li>
                                 <li><a href="../classes/editor.overlay.Toolbar.html">editor.overlay.Toolbar</a></li>
                                 <li><a href="../classes/editor.Panel.html">editor.Panel</a></li>
@@ -87,13 +86,7 @@
                                 <li><a href="../classes/player.Component.html">player.Component</a></li>
                                 <li><a href="../classes/player.component.Block.html">player.component.Block</a></li>
                                 <li><a href="../classes/player.component.Controller.html">player.component.Controller</a></li>
-                                <li><a href="../classes/player.component.Element.html">player.component.Element</a></li>
                                 <li><a href="../classes/player.component.element.Cursor.html">player.component.element.Cursor</a></li>
-                                <li><a href="../classes/player.component.element.Image.html">player.component.element.Image</a></li>
-                                <li><a href="../classes/player.component.element.Text.html">player.component.element.Text</a></li>
-                                <li><a href="../classes/player.component.Media.html">player.component.Media</a></li>
-                                <li><a href="../classes/player.component.Page.html">player.component.Page</a></li>
-                                <li><a href="../classes/player.CuePoint.html">player.CuePoint</a></li>
                                 <li><a href="../classes/player.Pager.html">player.Pager</a></li>
                                 <li><a href="../classes/Resizable.html">Resizable</a></li>
                                 <li><a href="../classes/String.html">String</a></li>
@@ -102,6 +95,9 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/Core.html">Core</a></li>
+                                <li><a href="../modules/Editor.html">Editor</a></li>
+                                <li><a href="../modules/Player.html">Player</a></li>
                             </ul>
                         </div>
                     </div>
@@ -142,19 +138,82 @@
             Extends <a href="../classes/Class.html" class="crosslink">Class</a>
         </div>
 
-        <div class="foundat">
-            Defined in: <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1"><code>src\js\helpers\metaScore.Dom.js:1</code></a>
-        </div>
 
+            Module: <a href="../modules/Core.html">Core</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>Description</p>
+    <p>A class for Dom manipulation</p>
 
 </div>
 
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Dom" class="method item">
+            <h3 class="name"><code>Dom</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[args]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[args]</code>
+                                <span class="type">Mixed</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                <span class="flag multiple" title="This argument may occur one or more times.">multiple</span>
+        
+                            <div class="param-description">
+                                <p>An HTML string and an optional list of attributes to apply, or a CSS selector with an optional parent and an optional list of attributes to apply</p>
+        
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+                <div class="example">
+                    <h4>Example:</h4>
+        
+                    <div class="example-content">
+                        <pre class="code prettyprint"><code>var div = new metaScore.Dom(&#39;&lt;div/&gt;&#39;, {&#39;class&#39;: &#39;my-class&#39;});
+        var body = new metaScore.Dom(&#39;body&#39;);
+        </code></pre>
+                    </div>
+                </div>
+        </div>
+    </div>
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
@@ -173,7 +232,7 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_add">add</a>
 
                             </li>
@@ -184,6 +243,7 @@
                             <li class="index-item method">
                                 <a href="#method_addClass">addClass</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_addDelegate">addDelegate</a>
@@ -192,14 +252,17 @@
                             <li class="index-item method">
                                 <a href="#method_addListener">addListener</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_addListener">addListener</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_after">after</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_append">append</a>
@@ -208,6 +271,7 @@
                             <li class="index-item method">
                                 <a href="#method_append">append</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_appendTo">appendTo</a>
@@ -216,26 +280,26 @@
                             <li class="index-item method">
                                 <a href="#method_attr">attr</a>
 
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_attr">attr</a>
-
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_before">before</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_blur">blur</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_camel">camel</a>
 
+                                    <span class="flag static">static</span>
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_camelReplaceFn">camelReplaceFn</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_child">child</a>
@@ -248,6 +312,7 @@
                             <li class="index-item method">
                                 <a href="#method_closest">closest</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_closest">closest</a>
@@ -260,6 +325,7 @@
                             <li class="index-item method">
                                 <a href="#method_css">css</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_css">css</a>
@@ -272,6 +338,7 @@
                             <li class="index-item method">
                                 <a href="#method_data">data</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_each">each</a>
@@ -280,10 +347,12 @@
                             <li class="index-item method">
                                 <a href="#method_elementsFromString">elementsFromString</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_empty">empty</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_empty">empty</a>
@@ -316,6 +385,7 @@
                             <li class="index-item method">
                                 <a href="#method_getElementWindow">getElementWindow</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_hasClass">hasClass</a>
@@ -324,6 +394,7 @@
                             <li class="index-item method">
                                 <a href="#method_hasClass">hasClass</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_hide">hide</a>
@@ -344,6 +415,7 @@
                             <li class="index-item method">
                                 <a href="#method_is">is</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_parents">parents</a>
@@ -356,6 +428,7 @@
                             <li class="index-item method">
                                 <a href="#method_remove">remove</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_removeClass">removeClass</a>
@@ -364,22 +437,27 @@
                             <li class="index-item method">
                                 <a href="#method_removeClass">removeClass</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_removeListener">removeListener</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_removeListener">removeListener</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_selectElement">selectElement</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_selectElements">selectElements</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_show">show</a>
@@ -388,6 +466,7 @@
                             <li class="index-item method">
                                 <a href="#method_text">text</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_text">text</a>
@@ -396,6 +475,7 @@
                             <li class="index-item method">
                                 <a href="#method_toggleClass">toggleClass</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_toggleClass">toggleClass</a>
@@ -408,6 +488,7 @@
                             <li class="index-item method">
                                 <a href="#method_triggerEvent">triggerEvent</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_val">val</a>
@@ -416,6 +497,11 @@
                             <li class="index-item method">
                                 <a href="#method_val">val</a>
 
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_val">val</a>
+
+                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -424,6 +510,15 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
+                            <li class="index-item property private">
+                                <a href="#property_bubbleEvents">bubbleEvents</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property private">
+                                <a href="#property_camelRe">camelRe</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_defaults">defaults</a>
 
@@ -451,7 +546,7 @@
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_add" class="method item">
+<div id="method_add" class="method item private">
     <h3 class="name"><code>add</code></h3>
 
         <div class="args">
@@ -462,11 +557,9 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -474,8 +567,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l575"><code>src\js\helpers\metaScore.Dom.js:575</code></a>
         </p>
 
 
@@ -483,7 +574,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Add an element to the set of elements managed by the Dom object</p>
 
     </div>
 
@@ -493,23 +584,71 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">elements</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>An array of elements or a single element to add</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
 
-            <div class="returns-description">
-            </div>
+
+</div>
+<div id="method_addClass" class="method item">
+    <h3 class="name"><code>addClass</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>className</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add a CSS class to all the elements managed by the Dom object</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">className</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS class</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -527,20 +666,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l228"><code>src\js\helpers\metaScore.Dom.js:228</code></a>
         </p>
 
 
@@ -548,7 +683,7 @@
     </div>
 
     <div class="description">
-        <p>Adds a given class to an element</p>
+        <p>Add a CSS class to an element</p>
 
     </div>
 
@@ -558,97 +693,29 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">className</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS class</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
-
-
-</div>
-<div id="method_addClass" class="method item">
-    <h3 class="name"><code>addClass</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>className</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l744"><code>src\js\helpers\metaScore.Dom.js:744</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">className</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -667,28 +734,24 @@
                         <code>callback</code>
                 </li>
                 <li class="arg">
-                        <code>scope</code>
+                        <code class="optional">[scope]</code>
                 </li>
                 <li class="arg">
-                        <code>useCapture</code>
+                        <code class="optional">[useCapture]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l803"><code>src\js\helpers\metaScore.Dom.js:803</code></a>
         </p>
 
 
@@ -696,7 +759,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Add an event listener for descendents all the elements managed by the Dom object that match a given selector</p>
 
     </div>
 
@@ -706,65 +769,181 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector to filter descendents by</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">type</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The event type</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">callback</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The callback function to call when the event is captured</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">event</code>
+                                    <span class="type">Event</span>
+
+                                <div class="param-description">
+                                    <p>The original event</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name">match</code>
+                                    <span class="type">Element</span>
+
+                                <div class="param-description">
+                                    <p>The first matched descendent</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope]</code>
+                        <span class="type">Mixed</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>The value to use as this when executing the callback function</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">scope</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[useCapture]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
-                    </div>
+                        <p>Whether the event should be executed in the capturing or in the bubbling phase</p>
 
-                </li>
-                <li class="param">
-                        <code class="param-name">useCapture</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
 
-            <div class="returns-description">
-                    <p>CallExpression</p>
 
-            </div>
+</div>
+<div id="method_addListener" class="method item">
+    <h3 class="name"><code>addListener</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[useCapture]</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add an event listener on all the elements managed by the Dom object</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event type</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
+
+
+                    <div class="param-description">
+                        <p>The callback function to call when the event is captured</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">event</code>
+                                    <span class="type">Event</span>
+
+                                <div class="param-description">
+                                    <p>The event</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[useCapture]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether the event should be executed in the capturing or in the bubbling phase</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -783,25 +962,24 @@
                         <code>callback</code>
                 </li>
                 <li class="arg">
-                        <code>useCapture</code>
+                        <code class="optional">[useCapture]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">HTMLElement</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l284"><code>src\js\helpers\metaScore.Dom.js:284</code></a>
         </p>
 
 
@@ -819,41 +997,58 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">type</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The event type</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">callback</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The callback function to call when the event is captured</p>
+
                     </div>
 
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">event</code>
+                                    <span class="type">Event</span>
+
+                                <div class="param-description">
+                                    <p>The event</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
                 </li>
                 <li class="param">
-                        <code class="param-name">useCapture</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[useCapture]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether the event should be executed in the capturing or in the bubbling phase</p>
+
                     </div>
 
                 </li>
@@ -864,97 +1059,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_addListener" class="method item">
-    <h3 class="name"><code>addListener</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>type</code>
-                </li>
-                <li class="arg">
-                        <code>callback</code>
-                </li>
-                <li class="arg">
-                        <code>useCapture</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l787"><code>src\js\helpers\metaScore.Dom.js:787</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">callback</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">useCapture</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
+                        <span class="type">HTMLElement</span>:
+                    <p>The element</p>
 
             </div>
         </div>
@@ -975,20 +1081,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l490"><code>src\js\helpers\metaScore.Dom.js:490</code></a>
         </p>
 
 
@@ -996,7 +1098,7 @@
     </div>
 
     <div class="description">
-        <p>Inserts siblings after an element</p>
+        <p>Insert siblings after an element</p>
 
     </div>
 
@@ -1006,33 +1108,29 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">siblings</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>An array of elemets or a single element to insert</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -1047,20 +1145,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l963"><code>src\js\helpers\metaScore.Dom.js:963</code></a>
         </p>
 
 
@@ -1068,7 +1162,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Append children to the first element managed by the Dom object</p>
 
     </div>
 
@@ -1078,25 +1172,18 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">children</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>An array of elemets or a single element to append</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -1114,20 +1201,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l456"><code>src\js\helpers\metaScore.Dom.js:456</code></a>
         </p>
 
 
@@ -1135,7 +1218,7 @@
     </div>
 
     <div class="description">
-        <p>Appends children to an element</p>
+        <p>Append children to an element</p>
 
     </div>
 
@@ -1145,33 +1228,29 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">children</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>An array of elemets or a single element to append</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -1186,20 +1265,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l979"><code>src\js\helpers\metaScore.Dom.js:979</code></a>
         </p>
 
 
@@ -1207,7 +1282,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Append each of the elements managed by the Dom object into a given element</p>
 
     </div>
 
@@ -1217,100 +1292,18 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">parent</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>A Dom object or an Element to append the elements to</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_attr" class="method item">
-    <h3 class="name"><code>attr</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>name</code>
-                </li>
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l905"><code>src\js\helpers\metaScore.Dom.js:905</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -1326,25 +1319,24 @@
                         <code>name</code>
                 </li>
                 <li class="arg">
-                        <code>value</code>
+                        <code class="optional">[value]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Mixed</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l370"><code>src\js\helpers\metaScore.Dom.js:370</code></a>
         </p>
 
 
@@ -1352,7 +1344,7 @@
     </div>
 
     <div class="description">
-        <p>Sets an attribute on an element</p>
+        <p>Set or get an attribute on an element</p>
 
     </div>
 
@@ -1362,31 +1354,35 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">name</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The attribute&#39;s name, or a list of name/value pairs</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[value]</code>
+                        <span class="type">Mixed</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The attribute&#39;s value</p>
+
                     </div>
 
                 </li>
@@ -1397,6 +1393,9 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The attribute&#39;s value, nothing is returned for &#39;special&#39; attributes such as &quot;class&quot; or &quot;text&quot;</p>
+
             </div>
         </div>
 
@@ -1416,20 +1415,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l473"><code>src\js\helpers\metaScore.Dom.js:473</code></a>
         </p>
 
 
@@ -1437,7 +1432,7 @@
     </div>
 
     <div class="description">
-        <p>Inserts siblings before an element</p>
+        <p>Insert siblings before an element</p>
 
     </div>
 
@@ -1447,33 +1442,29 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">siblings</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>An array of elemets or a single element to insert</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -1482,20 +1473,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1071"><code>src\js\helpers\metaScore.Dom.js:1071</code></a>
         </p>
 
 
@@ -1503,23 +1490,15 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Remove focus from the first element managed by the Dom object</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
-<div id="method_camel" class="method item">
+<div id="method_camel" class="method item private">
     <h3 class="name"><code>camel</code></h3>
 
         <div class="args">
@@ -1531,19 +1510,19 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
         </span>
 
 
+        <span class="flag private">private</span>
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l75"><code>src\js\helpers\metaScore.Dom.js:75</code></a>
         </p>
 
 
@@ -1551,7 +1530,7 @@
     </div>
 
     <div class="description">
-        <p>Normaliz a string to Camel Case; used for CSS properties</p>
+        <p>Normalize a string to Camel Case</p>
 
     </div>
 
@@ -1561,11 +1540,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">str</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The string to normalize</p>
+
                     </div>
 
                 </li>
@@ -1576,20 +1556,21 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The normalized string</p>
 
             </div>
         </div>
 
 
 </div>
-<div id="method_camelReplaceFn" class="method item">
+<div id="method_camelReplaceFn" class="method item private">
     <h3 class="name"><code>camelReplaceFn</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>all</code>
+                        <code>match</code>
                 </li>
                 <li class="arg">
                         <code>letter</code>
@@ -1598,19 +1579,19 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
         </span>
 
 
+        <span class="flag private">private</span>
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l64"><code>src\js\helpers\metaScore.Dom.js:64</code></a>
         </p>
 
 
@@ -1627,22 +1608,22 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">all</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">match</code>
+                        <span class="type">The matched substring</span>
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">letter</code>
-                        <span class="type">Object</span>
+                        <span class="type">The submatched letter</span>
 
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                 </li>
@@ -1653,7 +1634,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The uppercased letter</p>
 
             </div>
         </div>
@@ -1666,13 +1648,13 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>selector</code>
+                        <code class="optional">[selector]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
         </span>
 
 
@@ -1683,8 +1665,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l684"><code>src\js\helpers\metaScore.Dom.js:684</code></a>
         </p>
 
 
@@ -1692,7 +1672,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get the first child , optionally filtered by a given CSS selector</p>
 
     </div>
 
@@ -1701,12 +1681,14 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[selector]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -1717,7 +1699,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>NewExpression</p>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>A Dom object of the matched child</p>
 
             </div>
         </div>
@@ -1730,13 +1713,13 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>selector</code>
+                        <code class="optional">[selector]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
         </span>
 
 
@@ -1747,8 +1730,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l664"><code>src\js\helpers\metaScore.Dom.js:664</code></a>
         </p>
 
 
@@ -1756,7 +1737,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get all children, optionally filtered by a given CSS selector</p>
 
     </div>
 
@@ -1765,12 +1746,14 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[selector]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -1781,7 +1764,87 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>children</p>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>A Dom object of all matched children</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_closest" class="method item">
+    <h3 class="name"><code>closest</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>element</code>
+                </li>
+                <li class="arg">
+                        <code>selector</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Element</span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the closest ancestor of an element which matches a given CSS selector</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
+
+
+                    <div class="param-description">
+                        <p>The element</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">selector</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS selector</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Element</span>:
+                    <p>The matched element</p>
 
             </div>
         </div>
@@ -1800,7 +1863,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Element</span>
         </span>
 
 
@@ -1811,8 +1874,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1116"><code>src\js\helpers\metaScore.Dom.js:1116</code></a>
         </p>
 
 
@@ -1820,7 +1881,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector</p>
 
     </div>
 
@@ -1830,11 +1891,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -1845,84 +1907,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>found</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_closest" class="method item">
-    <h3 class="name"><code>closest</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>el</code>
-                </li>
-                <li class="arg">
-                        <code>selector</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l550"><code>src\js\helpers\metaScore.Dom.js:550</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">el</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>Literal</p>
+                        <span class="type">Element</span>:
+                    <p>The matched element</p>
 
             </div>
         </div>
@@ -1935,7 +1921,7 @@
         <span class="paren">()</span>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Integer</span>
         </span>
 
 
@@ -1946,8 +1932,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l592"><code>src\js\helpers\metaScore.Dom.js:592</code></a>
         </p>
 
 
@@ -1955,7 +1939,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get the number of elements managed by the Dom object</p>
 
     </div>
 
@@ -1964,7 +1948,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>MemberExpression</p>
+                        <span class="type">Integer</span>:
+                    <p>The number of elements</p>
 
             </div>
         </div>
@@ -1986,25 +1971,24 @@
                         <code>value</code>
                 </li>
                 <li class="arg">
-                        <code>inline</code>
+                        <code class="optional">[inline=false]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l410"><code>src\js\helpers\metaScore.Dom.js:410</code></a>
         </p>
 
 
@@ -2012,7 +1996,7 @@
     </div>
 
     <div class="description">
-        <p>Sets or gets a style property of an element</p>
+        <p>Set or get a CSS style property of an element</p>
 
     </div>
 
@@ -2022,41 +2006,46 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">name</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS property&#39;s name</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS property&#39;s value</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">inline</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[inline=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether to return the inline or computed style value</p>
+
                     </div>
 
                 </li>
@@ -2067,7 +2056,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The CSS style value of the property</p>
 
             </div>
         </div>
@@ -2086,13 +2076,13 @@
                         <code>value</code>
                 </li>
                 <li class="arg">
-                        <code>inline</code>
+                        <code class="optional">[inline=false]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Mixed</span>
         </span>
 
 
@@ -2103,8 +2093,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l924"><code>src\js\helpers\metaScore.Dom.js:924</code></a>
         </p>
 
 
@@ -2112,7 +2100,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element</p>
 
     </div>
 
@@ -2122,31 +2110,35 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">name</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS property&#39;s name</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS property&#39;s value</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">inline</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[inline=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether to return the inline or computed style value</p>
+
                     </div>
 
                 </li>
@@ -2157,6 +2149,87 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the CSS style value of the property of the first element if used as a getter</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_data" class="method item">
+    <h3 class="name"><code>data</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>name</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Mixed</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">name</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The name of the data attribute</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The value of the data attribute</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the value of the data attribute of the first element if used as a getter</p>
+
             </div>
         </div>
 
@@ -2180,19 +2253,18 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l433"><code>src\js\helpers\metaScore.Dom.js:433</code></a>
         </p>
 
 
@@ -2200,7 +2272,7 @@
     </div>
 
     <div class="description">
-        <p>Sets or gets a data string of an element</p>
+        <p>Set or get a custom data attribute of an element</p>
 
     </div>
 
@@ -2210,31 +2282,34 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">name</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The name of the data attribute</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The value of the data attribute</p>
+
                     </div>
 
                 </li>
@@ -2245,83 +2320,9 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>MemberExpression</p>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The value of the data attribute</p>
 
-            </div>
-        </div>
-
-
-</div>
-<div id="method_data" class="method item">
-    <h3 class="name"><code>data</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>name</code>
-                </li>
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l944"><code>src\js\helpers\metaScore.Dom.js:944</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">name</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
             </div>
         </div>
 
@@ -2341,9 +2342,6 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
@@ -2353,8 +2351,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l714"><code>src\js\helpers\metaScore.Dom.js:714</code></a>
         </p>
 
 
@@ -2362,7 +2358,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Interate over all the elements managed by the Dom object</p>
 
     </div>
 
@@ -2372,33 +2368,51 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">callback</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The function that will be executed on every element. The iteration is stopped if the callback return false</p>
+
                     </div>
 
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">index</code>
+                                    <span class="type">Integer</span>
+
+                                <div class="param-description">
+                                    <p>The index of the current element being processed</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name">element</code>
+                                    <span class="type">Element</span>
+
+                                <div class="param-description">
+                                    <p>The element that is currently being processed</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
                 </li>
                 <li class="param">
                         <code class="param-name">scope</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The value to use as this when executing the callback function</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -2414,19 +2428,18 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">HTML NodeList</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l158"><code>src\js\helpers\metaScore.Dom.js:158</code></a>
         </p>
 
 
@@ -2444,11 +2457,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">html</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The HTML string</p>
+
                     </div>
 
                 </li>
@@ -2459,7 +2473,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>Literal</p>
+                        <span class="type">HTML NodeList</span>:
+                    <p>A NodeList of the created elements, or null on error</p>
 
             </div>
         </div>
@@ -2477,20 +2492,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l507"><code>src\js\helpers\metaScore.Dom.js:507</code></a>
         </p>
 
 
@@ -2498,7 +2509,7 @@
     </div>
 
     <div class="description">
-        <p>Removes all element children</p>
+        <p>Remove all element children</p>
 
     </div>
 
@@ -2508,23 +2519,18 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -2533,20 +2539,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1025"><code>src\js\helpers\metaScore.Dom.js:1025</code></a>
         </p>
 
 
@@ -2554,19 +2556,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Remove all children of each element managed by the Dom object</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -2591,7 +2585,6 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Class.html#method_extend">Class</a>:
-        <a href="../files/src_js_metaScore.Class.js.html#l22"><code>src\js\metaScore.Class.js:22</code></a>
         </p>
 
 
@@ -2636,7 +2629,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
         </span>
 
 
@@ -2647,8 +2640,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l611"><code>src\js\helpers\metaScore.Dom.js:611</code></a>
         </p>
 
 
@@ -2656,7 +2647,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Return a new Dom object with the elements filtered by a CSS selector</p>
 
     </div>
 
@@ -2666,11 +2657,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -2681,7 +2673,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>filtered</p>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>The new Dom object</p>
 
             </div>
         </div>
@@ -2700,7 +2693,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
         </span>
 
 
@@ -2711,8 +2704,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l648"><code>src\js\helpers\metaScore.Dom.js:648</code></a>
         </p>
 
 
@@ -2720,7 +2711,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Find all descendents that match a given CSS selector</p>
 
     </div>
 
@@ -2730,11 +2721,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -2745,7 +2737,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>descendents</p>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>A Dom object of all matched descendents</p>
 
             </div>
         </div>
@@ -2757,20 +2750,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1060"><code>src\js\helpers\metaScore.Dom.js:1060</code></a>
         </p>
 
 
@@ -2778,19 +2767,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Set focus on the first element managed by the Dom object</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -2806,7 +2787,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Element</span>
         </span>
 
 
@@ -2817,8 +2798,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l601"><code>src\js\helpers\metaScore.Dom.js:601</code></a>
         </p>
 
 
@@ -2826,7 +2805,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get an element by index from the set of elements managed by the Dom object</p>
 
     </div>
 
@@ -2836,11 +2815,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">index</code>
-                        <span class="type">Object</span>
+                        <span class="type">Integer</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The index of the elements to retreive</p>
+
                     </div>
 
                 </li>
@@ -2851,7 +2831,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>MemberExpression</p>
+                        <span class="type">Element</span>:
+                    <p>The element</p>
 
             </div>
         </div>
@@ -2882,7 +2863,6 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Class.html#method_getConfigs">Class</a>:
-        <a href="../files/src_js_metaScore.Class.js.html#l49"><code>src\js\metaScore.Class.js:49</code></a>
         </p>
 
 
@@ -2930,25 +2910,24 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>el</code>
+                        <code>element</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">HTML Window</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l205"><code>src\js\helpers\metaScore.Dom.js:205</code></a>
         </p>
 
 
@@ -2965,12 +2944,13 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">el</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
@@ -2981,6 +2961,9 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
+                        <span class="type">HTML Window</span>:
+                    <p>The window</p>
+
             </div>
         </div>
 
@@ -2998,7 +2981,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
 
 
@@ -3009,8 +2992,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l727"><code>src\js\helpers\metaScore.Dom.js:727</code></a>
         </p>
 
 
@@ -3018,7 +2999,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Check if an element in the set of elements managed by the Dom object has a given CSS class</p>
 
     </div>
 
@@ -3028,11 +3009,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">className</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS class</p>
+
                     </div>
 
                 </li>
@@ -3043,7 +3025,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>found</p>
+                        <span class="type">Boolean</span>:
+                    <p>Whether a match was found</p>
 
             </div>
         </div>
@@ -3065,19 +3048,18 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l217"><code>src\js\helpers\metaScore.Dom.js:217</code></a>
         </p>
 
 
@@ -3085,7 +3067,7 @@
     </div>
 
     <div class="description">
-        <p>Checks if an element has a given class</p>
+        <p>Check if an element has a given CSS lass</p>
 
     </div>
 
@@ -3095,21 +3077,23 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">className</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS class</p>
+
                     </div>
 
                 </li>
@@ -3120,7 +3104,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
+                        <span class="type">Boolean</span>:
+                    <p>Whether the element has the specified CSS class</p>
 
             </div>
         </div>
@@ -3132,20 +3117,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1049"><code>src\js\helpers\metaScore.Dom.js:1049</code></a>
         </p>
 
 
@@ -3153,19 +3134,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Make all the elements managed by the Dom object invisible</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3181,7 +3154,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Integer</span>
         </span>
 
 
@@ -3192,8 +3165,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l629"><code>src\js\helpers\metaScore.Dom.js:629</code></a>
         </p>
 
 
@@ -3201,7 +3172,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get the index of the first element that matched the given CSS selector</p>
 
     </div>
 
@@ -3211,11 +3182,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -3226,7 +3198,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>found</p>
+                        <span class="type">Integer</span>:
+                    <p>The index of the first matched element, or -1 if none</p>
 
             </div>
         </div>
@@ -3247,20 +3220,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l999"><code>src\js\helpers\metaScore.Dom.js:999</code></a>
         </p>
 
 
@@ -3268,7 +3237,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Append each of the elements managed by the Dom object into a given element at a given position</p>
 
     </div>
 
@@ -3278,35 +3247,29 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">parent</code>
-                        <span class="type">Object</span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        
+                        <p>A Dom object or an Element to append the elements to</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">index</code>
-                        <span class="type">Object</span>
+                        <span class="type">Integer</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The index position to append at</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3322,7 +3285,7 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
 
 
@@ -3333,8 +3296,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1099"><code>src\js\helpers\metaScore.Dom.js:1099</code></a>
         </p>
 
 
@@ -3342,7 +3303,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Check if an element from the elements managed by the Dom object matches a CSS selector</p>
 
     </div>
 
@@ -3352,11 +3313,12 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -3367,7 +3329,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>found</p>
+                        <span class="type">Boolean</span>:
+                    <p>Whether an element matches the CSS selector</p>
 
             </div>
         </div>
@@ -3380,7 +3343,7 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>el</code>
+                        <code>element</code>
                 </li>
                 <li class="arg">
                         <code>selector</code>
@@ -3389,19 +3352,18 @@
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l531"><code>src\js\helpers\metaScore.Dom.js:531</code></a>
         </p>
 
 
@@ -3409,7 +3371,7 @@
     </div>
 
     <div class="description">
-        <p>Checks if an element matches a selector</p>
+        <p>Check if an element matches a CSS selector</p>
 
     </div>
 
@@ -3418,22 +3380,24 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">el</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -3444,7 +3408,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>Literal</p>
+                        <span class="type">Boolean</span>:
+                    <p>Whether the element matches the CSS selector</p>
 
             </div>
         </div>
@@ -3457,13 +3422,13 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>selector</code>
+                        <code class="optional">[selector]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
         </span>
 
 
@@ -3474,8 +3439,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l694"><code>src\js\helpers\metaScore.Dom.js:694</code></a>
         </p>
 
 
@@ -3483,7 +3446,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Get all parents, optionally filtered by a given CSS selector</p>
 
     </div>
 
@@ -3492,12 +3455,14 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[selector]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS selector</p>
+
                     </div>
 
                 </li>
@@ -3508,7 +3473,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>parents</p>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>A Dom object of all matched parents</p>
 
             </div>
         </div>
@@ -3520,20 +3486,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1082"><code>src\js\helpers\metaScore.Dom.js:1082</code></a>
         </p>
 
 
@@ -3541,19 +3503,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Remove all the elements managed by the Dom object from the DOM</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3568,20 +3522,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l519"><code>src\js\helpers\metaScore.Dom.js:519</code></a>
         </p>
 
 
@@ -3589,7 +3539,7 @@
     </div>
 
     <div class="description">
-        <p>Removes an element from the dom</p>
+        <p>Remove an element from the DOM</p>
 
     </div>
 
@@ -3599,23 +3549,71 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
 
-            <div class="returns-description">
-            </div>
+
+</div>
+<div id="method_removeClass" class="method item">
+    <h3 class="name"><code>removeClass</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>className</code>
+                </li>
+            </ul><span class="paren">)</span>
         </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Remove a CSS class from all the elements managed by the Dom object</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">className</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS class</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -3633,20 +3631,16 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l244"><code>src\js\helpers\metaScore.Dom.js:244</code></a>
         </p>
 
 
@@ -3654,7 +3648,7 @@
     </div>
 
     <div class="description">
-        <p>Removes a given class from an element</p>
+        <p>Remove a CSS class from an element</p>
 
     </div>
 
@@ -3664,97 +3658,29 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">className</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The CSS class</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
-
-
-</div>
-<div id="method_removeClass" class="method item">
-    <h3 class="name"><code>removeClass</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>className</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l758"><code>src\js\helpers\metaScore.Dom.js:758</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">className</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3775,20 +3701,17 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
+        <span class="flag static">static</span>
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l835"><code>src\js\helpers\metaScore.Dom.js:835</code></a>
         </p>
 
 
@@ -3796,7 +3719,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Remove an event listener from all the elements managed by the Dom object</p>
 
     </div>
 
@@ -3806,45 +3729,52 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">type</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The event type</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">callback</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The callback function to call when the event is captured</p>
+
                     </div>
 
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">event</code>
+                                    <span class="type">Event</span>
+
+                                <div class="param-description">
+                                    <p>The event</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
                 </li>
                 <li class="param">
                         <code class="param-name">useCapture</code>
-                        <span class="type">Object</span>
+                        <span class="type">Boolean</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether the event should be executed in the capturing or in the bubbling phase</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3863,25 +3793,24 @@
                         <code>callback</code>
                 </li>
                 <li class="arg">
-                        <code>useCapture</code>
+                        <code class="optional">[useCapture]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">HTMLElement</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l301"><code>src\js\helpers\metaScore.Dom.js:301</code></a>
         </p>
 
 
@@ -3899,41 +3828,58 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">type</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The event type</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">callback</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The callback function to call when the event is captured</p>
+
                     </div>
 
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">event</code>
+                                    <span class="type">Event</span>
+
+                                <div class="param-description">
+                                    <p>The event</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
                 </li>
                 <li class="param">
-                        <code class="param-name">useCapture</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[useCapture]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether the event should be executed in the capturing or in the bubbling phase</p>
+
                     </div>
 
                 </li>
@@ -3944,7 +3890,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
+                        <span class="type">HTMLElement</span>:
+                    <p>The element</p>
 
             </div>
         </div>
@@ -3957,28 +3904,27 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>selector</code>
+                        <code>The</code>
                 </li>
                 <li class="arg">
-                        <code>parent</code>
+                        <code class="optional">[parent=document]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">HTMLElement</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l99"><code>src\js\helpers\metaScore.Dom.js:99</code></a>
         </p>
 
 
@@ -3986,7 +3932,7 @@
     </div>
 
     <div class="description">
-        <p>Select a single element by selecor</p>
+        <p>Select a single element by CSS selecor and optional parent</p>
 
     </div>
 
@@ -3995,22 +3941,25 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">The</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>CSS selector</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">parent</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[parent=document]</code>
+                        <span class="type">HTMLElement</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The HTML Element in which to search</p>
+
                     </div>
 
                 </li>
@@ -4021,7 +3970,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>element</p>
+                        <span class="type">HTMLElement</span>:
+                    <p>The found element if any</p>
 
             </div>
         </div>
@@ -4034,28 +3984,27 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>selector</code>
+                        <code>The</code>
                 </li>
                 <li class="arg">
-                        <code>parent</code>
+                        <code class="optional">[parent=document]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Mixed</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l126"><code>src\js\helpers\metaScore.Dom.js:126</code></a>
         </p>
 
 
@@ -4063,7 +4012,7 @@
     </div>
 
     <div class="description">
-        <p>Select elements by selecor</p>
+        <p>Select multiple elements by CSS selecor and optional parent</p>
 
     </div>
 
@@ -4072,22 +4021,25 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">The</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>CSS selector</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">parent</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[parent=document]</code>
+                        <span class="type">HTMLElement</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The HTML Element in which to search</p>
+
                     </div>
 
                 </li>
@@ -4098,7 +4050,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>elements</p>
+                        <span class="type">Mixed</span>:
+                    <p>An HTML NodeList or an array of found elements if any</p>
 
             </div>
         </div>
@@ -4110,20 +4063,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l1038"><code>src\js\helpers\metaScore.Dom.js:1038</code></a>
         </p>
 
 
@@ -4131,81 +4080,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Make all the elements managed by the Dom object visible</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_text" class="method item">
-    <h3 class="name"><code>text</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l870"><code>src\js\helpers\metaScore.Dom.js:870</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -4218,25 +4097,24 @@
                         <code>element</code>
                 </li>
                 <li class="arg">
-                        <code>value</code>
+                        <code class="optional">[html]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l340"><code>src\js\helpers\metaScore.Dom.js:340</code></a>
         </p>
 
 
@@ -4244,7 +4122,7 @@
     </div>
 
     <div class="description">
-        <p>Sets or gets the innerHTML of an element</p>
+        <p>Set or get the innerHTML of an element</p>
 
     </div>
 
@@ -4254,21 +4132,24 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[html]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The value to set</p>
+
                     </div>
 
                 </li>
@@ -4279,29 +4160,27 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>MemberExpression</p>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The innerHTML of the element</p>
 
             </div>
         </div>
 
 
 </div>
-<div id="method_toggleClass" class="method item">
-    <h3 class="name"><code>toggleClass</code></h3>
+<div id="method_text" class="method item">
+    <h3 class="name"><code>text</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>className</code>
-                </li>
-                <li class="arg">
-                        <code>force</code>
+                        <code class="optional">[html]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Mixed</span>
         </span>
 
 
@@ -4312,8 +4191,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l772"><code>src\js\helpers\metaScore.Dom.js:772</code></a>
         </p>
 
 
@@ -4321,7 +4198,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element</p>
 
     </div>
 
@@ -4330,22 +4207,14 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">className</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[html]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
-                    </div>
+                        <p>The value to set</p>
 
-                </li>
-                <li class="param">
-                        <code class="param-name">force</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
                     </div>
 
                 </li>
@@ -4356,7 +4225,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>ThisExpression</p>
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the innerHTML of the first element if used as a getter</p>
 
             </div>
         </div>
@@ -4375,13 +4245,166 @@
                         <code>className</code>
                 </li>
                 <li class="arg">
-                        <code>force</code>
+                        <code class="optional">[force]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Toggle a CSS class on an element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
+
+
+                    <div class="param-description">
+                        <p>The element</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">className</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS class</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[force]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to add or remove the class. The class is toggled if not specified</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_toggleClass" class="method item">
+    <h3 class="name"><code>toggleClass</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>className</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[force]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Toggle a CSS class for all the elements managed by the Dom object</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">className</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS class</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[force]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to add or remove the class. The class is toggled if not specified</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_triggerEvent" class="method item">
+    <h3 class="name"><code>triggerEvent</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[data]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[bubbles=true]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[cancelable=true]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
 
 
@@ -4392,8 +4415,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l260"><code>src\js\helpers\metaScore.Dom.js:260</code></a>
         </p>
 
 
@@ -4401,7 +4422,7 @@
     </div>
 
     <div class="description">
-        <p>Toggles a given class on an element</p>
+        <p>Trigger an event from all the elements managed by the Dom object</p>
 
     </div>
 
@@ -4410,32 +4431,49 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The event type</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">className</code>
+                        <code class="param-name optional">[data]</code>
                         <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Custom data to send with the event. The data is accessible through the event.detail property</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">force</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[bubbles=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether the event bubbles up through the DOM or not</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[cancelable=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether the event is cancelable</p>
+
                     </div>
 
                 </li>
@@ -4446,6 +4484,9 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>Whether no event was cancelled</p>
+
             </div>
         </div>
 
@@ -4463,31 +4504,30 @@
                         <code>type</code>
                 </li>
                 <li class="arg">
-                        <code>data</code>
+                        <code class="optional">[data]</code>
                 </li>
                 <li class="arg">
-                        <code>bubbles</code>
+                        <code class="optional">[bubbles=true]</code>
                 </li>
                 <li class="arg">
-                        <code>cancelable</code>
+                        <code class="optional">[cancelable=true]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Boolean</span>
         </span>
 
 
 
 
+        <span class="flag static">static</span>
 
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l318"><code>src\js\helpers\metaScore.Dom.js:318</code></a>
         </p>
 
 
@@ -4505,51 +4545,59 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
                         <code class="param-name">type</code>
-                        <span class="type">Object</span>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        
+                        <p>The event type</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">data</code>
+                        <code class="param-name optional">[data]</code>
                         <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Custom data to send with the event. The data is accessible through the event.detail property</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">bubbles</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[bubbles=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether the event bubbles up through the DOM or not</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">cancelable</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[cancelable=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>Whether the event is cancelable</p>
+
                     </div>
 
                 </li>
@@ -4560,173 +4608,9 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>CallExpression</p>
+                        <span class="type">Boolean</span>:
+                    <p>Whether the event was not cancelled</p>
 
-            </div>
-        </div>
-
-
-</div>
-<div id="method_triggerEvent" class="method item">
-    <h3 class="name"><code>triggerEvent</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>type</code>
-                </li>
-                <li class="arg">
-                        <code>data</code>
-                </li>
-                <li class="arg">
-                        <code>bubbles</code>
-                </li>
-                <li class="arg">
-                        <code>cancelable</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l851"><code>src\js\helpers\metaScore.Dom.js:851</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">data</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">bubbles</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">cancelable</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>return_value</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_val" class="method item">
-    <h3 class="name"><code>val</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l887"><code>src\js\helpers\metaScore.Dom.js:887</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Description</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
             </div>
         </div>
 
@@ -4741,13 +4625,13 @@
                         <code>element</code>
                 </li>
                 <li class="arg">
-                        <code>value</code>
+                        <code class="optional">[value]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
         <span class="returns-inline">
-            <span class="type"></span>
+            <span class="type">Mixed</span>
         </span>
 
 
@@ -4758,8 +4642,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Dom.js.html#l355"><code>src\js\helpers\metaScore.Dom.js:355</code></a>
         </p>
 
 
@@ -4767,7 +4649,7 @@
     </div>
 
     <div class="description">
-        <p>Sets or gets the value of an element</p>
+        <p>Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element</p>
 
     </div>
 
@@ -4777,21 +4659,24 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">element</code>
-                        <span class="type">Object</span>
+                        <span class="type">HTMLElement</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The element</p>
+
                     </div>
 
                 </li>
                 <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
+                        <code class="param-name optional">[value]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        
+                        <p>The value to set</p>
+
                     </div>
 
                 </li>
@@ -4802,7 +4687,153 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                    <p>MemberExpression</p>
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the value of the first element if used as a getter</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_val" class="method item">
+    <h3 class="name"><code>val</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[value]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Mixed</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the value of all the elements managed by the Dom object, or get the value of the first element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[value]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>The value to set</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the value of the first element if used as a getter</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_val" class="method item">
+    <h3 class="name"><code>val</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>element</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[value]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set or get the value of an element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
+
+
+                    <div class="param-description">
+                        <p>The element</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[value]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>The value to set</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The value of the element</p>
 
             </div>
         </div>
@@ -4814,6 +4845,55 @@
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_bubbleEvents" class="property item private">
+                        <h3 class="name"><code>bubbleEvents</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                            <span class="flag static">static</span>
+                    
+                        <div class="meta">
+                                    <p>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>List of common events that should generaly bubble up</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_camelRe" class="property item private">
+                        <h3 class="name"><code>camelRe</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Regular expression that matches dashed string for camelizing</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_defaults" class="property item inherited">
                         <h3 class="name"><code>defaults</code></h3>
                         <span class="type">Object</span>
@@ -4825,7 +4905,6 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Class.html#property_defaults">Class</a>:
-                            <a href="../files/src_js_metaScore.Class.js.html#l13"><code>src\js\metaScore.Class.js:13</code></a>
                             </p>
                     
                     
@@ -4856,8 +4935,6 @@
                     
                         <div class="meta">
                                     <p>
-                                    Defined in
-                            <a href="../files/src_js_helpers_metaScore.Dom.js.html#l10"><code>src\js\helpers\metaScore.Dom.js:10</code></a>
                             </p>
                     
                     
@@ -4881,8 +4958,6 @@
                     
                         <div class="meta">
                                     <p>
-                                    Defined in
-                            <a href="../files/src_js_helpers_metaScore.Dom.js.html#l17"><code>src\js\helpers\metaScore.Dom.js:17</code></a>
                             </p>
                     
                     

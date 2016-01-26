@@ -1,25 +1,25 @@
 /**
-* Description
-* @class Color
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Color = (function () {
 
     /**
-     * Description
+     * A class for color helper functions
+     * 
+     * @class Color
      * @constructor
      */
     function Color() {
     }
 
-    metaScore.Class.extend(Color);
-
     /**
-     * Description
+     * Convert an RGB value to HSV
+     * 
      * @method rgb2hsv
-     * @param {} rgb
-     * @return ObjectExpression
+     * @static
+     * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
+     * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
      */
     Color.rgb2hsv = function (rgb){
         var r = rgb.r, g = rgb.g, b = rgb.b,
@@ -60,10 +60,12 @@ metaScore.Color = (function () {
     };
 
     /**
-     * Description
+     * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
+     * 
      * @method parse
-     * @param {} color
-     * @return rgba
+     * @static
+     * @param {Mixed} color The CSS value to parse
+     * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
      */
     Color.parse = function(color){
         var rgba, matches;

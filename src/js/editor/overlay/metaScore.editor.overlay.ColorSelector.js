@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class editor.overlay.ColorSelector
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
@@ -17,9 +14,14 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * An overlay to select an RGBA color
+     *
+     * @class ColorSelector
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
      */
     function ColorSelector(configs) {
         this.configs = this.getConfigs(configs);
@@ -35,28 +37,20 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }
 
     ColorSelector.defaults = {
-
-        /**
-        * The parent element in which the overlay will be appended
-        */
-        parent: '.metaScore-editor',
-
-        /**
-        * True to make this draggable
-        */
-        draggable: false
+        'draggable': false
     };
 
     metaScore.editor.Overlay.extend(ColorSelector);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    ColorSelector.prototype.setupDOM = function(){
+    ColorSelector.prototype.setupUI = function(){
         // call parent method
-        ColorSelector.parent.prototype.setupDOM.call(this);
+        ColorSelector.parent.prototype.setupUI.call(this);
 
         this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
         this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
@@ -129,29 +123,32 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * Set the current value
+     * 
      * @method setValue
-     * @param {} val
-     * @return ThisExpression
+     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
+     * @chainable
      */
     ColorSelector.prototype.setValue = function(val){
-        this.previous_value = val;
+        this.updateValue(val);
+
+        this.previous_value = this.value;
 
         this.fillPrevious();
-
-        this.updateValue(val);
 
         return this;
     };
 
     /**
-     * Description
+     * Update the selected value
+     * 
      * @method updateValue
-     * @param {} val
-     * @param {} refillAlpha
-     * @param {} updatePositions
-     * @param {} updateInputs
-     * @return
+     * @private
+     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
+     * @param {Boolean} refillAlpha Whether to refill the alpha indicator canvas
+     * @param {Boolean} updatePositions Whether to update the cursor positions
+     * @param {Boolean} updateInputs Whether to update the input values
+     * @chainable
      */
     ColorSelector.prototype.updateValue = function(val, refillAlpha, updatePositions, updateInputs){
 
@@ -198,38 +195,16 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.fillCurrent();
 
+        return this;
+
     };
 
     /**
-     * Description
-     * @method fillPrevious
-     * @return
-     */
-    ColorSelector.prototype.fillPrevious = function(){
-        var context = this.controls.previous.get(0).getContext('2d');
-
-        context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    };
-
-    /**
-     * Description
-     * @method fillCurrent
-     * @return
-     */
-    ColorSelector.prototype.fillCurrent = function(){
-        var context = this.controls.current.get(0).getContext('2d');
-
-        context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    };
-
-    /**
-     * Description
+     * Fill the gradient's canvas
+     * 
      * @method fillGradient
-     * @return
+     * @private
+     * @chainable
      */
     ColorSelector.prototype.fillGradient = function(){
         var context = this.gradient.canvas.get(0).getContext('2d'),
@@ -259,12 +234,50 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         // Apply gradient to canvas
         context.fillStyle = fill;
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
     };
 
     /**
-     * Description
+     * Fill the previous color indicator canvas
+     * 
+     * @method fillPrevious
+     * @private
+     * @chainable
+     */
+    ColorSelector.prototype.fillPrevious = function(){
+        var context = this.controls.previous.get(0).getContext('2d');
+
+        context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
+    };
+
+    /**
+     * Fill the current color indicator canvas
+     * 
+     * @method fillCurrent
+     * @private
+     * @chainable
+     */
+    ColorSelector.prototype.fillCurrent = function(){
+        var context = this.controls.current.get(0).getContext('2d');
+
+        context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
+    };
+
+    /**
+     * Fill the alpha indicator canvas
+     * 
      * @method fillAlpha
-     * @return
+     * @private
+     * @chainable
      */
     ColorSelector.prototype.fillAlpha = function(){
         var context = this.alpha.canvas.get(0).getContext('2d'),
@@ -279,13 +292,16 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         context.fillStyle = fill;
         context.clearRect(0, 0, context.canvas.width, context.canvas.height);
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
     };
 
     /**
-     * Description
+     * The controls input event handler
+     * 
      * @method onControlInput
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onControlInput = function(evt){
         var rgba, hsv;
@@ -299,10 +315,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The gradient mousedown event handler
+     * 
      * @method onGradientMousedown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onGradientMousedown = function(evt){
         this.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
@@ -311,10 +328,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The gradient mouseup event handler
+     * 
      * @method onGradientMouseup
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onGradientMouseup = function(evt){
         this.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
@@ -323,10 +341,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The gradient click event handler
+     * 
      * @method onGradientClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onGradientClick = function(evt){
         var offset = evt.target.getBoundingClientRect(),
@@ -341,7 +360,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         value.r = imageData.data[0];
         value.g = imageData.data[1];
-        value.b =    imageData.data[2];
+        value.b = imageData.data[2];
 
         if(!value.a){
             value.a = 1;
@@ -355,13 +374,21 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         evt.stopPropagation();
     };
 
+    /**
+     * The gradient mousemove event handler
+     * 
+     * @method onGradientMousemove
+     * @private
+     * @param {Event} evt The event object
+     */
     ColorSelector.prototype.onGradientMousemove = ColorSelector.prototype.onGradientClick;
 
     /**
-     * Description
+     * The alpha mousedown event handler
+     * 
      * @method onAlphaMousedown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onAlphaMousedown = function(evt){
         this.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
@@ -370,10 +397,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The alpha mouseup event handler
+     * 
      * @method onAlphaMouseup
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onAlphaMouseup = function(evt){
         this.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
@@ -382,10 +410,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The alpha click event handler
+     * 
      * @method onAlphaClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onAlphaClick = function(evt){
         var offset = evt.target.getBoundingClientRect(),
@@ -403,13 +432,21 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         evt.stopPropagation();
     };
 
+    /**
+     * The alpha mousemove event handler
+     * 
+     * @method onAlphaClick
+     * @private
+     * @param {Event} evt The event object
+     */
     ColorSelector.prototype.onAlphaMousemove = ColorSelector.prototype.onAlphaClick;
 
     /**
-     * Description
+     * The apply button click event handler
+     * 
      * @method onApplyClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onApplyClick = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.value}, true, false);
@@ -418,10 +455,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The cancel button click event handler
+     * 
      * @method onCancelClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onCancelClick = function(evt){
         this.hide();

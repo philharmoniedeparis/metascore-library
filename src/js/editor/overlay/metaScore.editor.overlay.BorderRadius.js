@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class editor.overlay.BorderRadius
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
@@ -17,9 +14,15 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * An overlay that simplifies the creation of a CSS border-radius value
+     *
+     * @class BorderRadius
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.title='Border Radius'] The overlay's title
      */
     function BorderRadius(configs) {
         this.configs = this.getConfigs(configs);
@@ -31,29 +34,23 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     }
 
     BorderRadius.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: true,
-
-        /**
-        * The overlay's title
-        */
-        title: metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
+        'toolbar': true,
+        'title': metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
     };
 
     metaScore.editor.Overlay.extend(BorderRadius);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    BorderRadius.prototype.setupDOM = function(){
+    BorderRadius.prototype.setupUI = function(){
         var contents;
 
         // call parent method
-        BorderRadius.parent.prototype.setupDOM.call(this);
+        BorderRadius.parent.prototype.setupUI.call(this);
 
         contents = this.getContents();
 
@@ -117,9 +114,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * The valuechange event handler
+     * 
      * @method onValueChange
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadius.prototype.onValueChange = function(){
         var radius    = '';
@@ -138,10 +137,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * Set the current value
+     * 
      * @method setValue
-     * @param {} val
-     * @return ThisExpression
+     * @param {String} val The value in CSS border-radius format
+     * @chainable
      */
     BorderRadius.prototype.setValue = function(val){
         var matches,
@@ -202,25 +202,34 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * Get the current value
+     * 
      * @method getValue
-     * @return CallExpression
+     * @return {String} The value in CSS border-radius format
      */
     BorderRadius.prototype.getValue = function(){
         return this.preview.css('border-radius');
     };
 
     /**
-     * Description
+     * The apply button's click event handler
+     * 
      * @method onApplyClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadius.prototype.onApplyClick = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
         this.hide();
     };
 
+    /**
+     * The cancel button's click event handler
+     * 
+     * @method onCancelClick
+     * @private
+     * @param {Event} evt The event object
+     */
     BorderRadius.prototype.onCancelClick = BorderRadius.prototype.onCloseClick;
 
     return BorderRadius;

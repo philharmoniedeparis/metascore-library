@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class player.component.Media
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Media = (function () {
 
@@ -56,9 +53,14 @@ metaScore.namespace('player.component').Media = (function () {
     var EVT_TIMEUPDATE = 'timeupdate';
 
     /**
-     * Description
+     * A media component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Media(configs){
         // call parent constructor
@@ -90,19 +92,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -112,19 +104,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -134,19 +116,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 },
@@ -156,19 +128,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.width', 'Width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('width', value +'px');
                 }
@@ -178,19 +140,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.height', 'Height')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('height', value +'px');
                 }
@@ -200,19 +152,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-radius', value);
                 }
@@ -221,9 +163,12 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Set the media sources
+     *
      * @method setSources
-     * @return ThisExpression
+     * @param {Array} sources The list of sources as objects with 'url' and 'mime' keys
+     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
+     * @chainable
      */
     Media.prototype.setSources = function(sources, supressEvent){
         var source_tags = '';
@@ -245,29 +190,32 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Get the value of the media's name property
+     * 
      * @method getName
-     * @return Literal
+     * @return {String} The name
      */
     Media.prototype.getName = function(){
         return '[media]';
     };
 
     /**
-     * Description
+     * The loadedmetadata event handler
+     *
      * @method onLoadedMetadata
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onLoadedMetadata = function(evt) {
         this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
     };
 
     /**
-     * Description
+     * The play event handler
+     *
      * @method onPlay
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onPlay = function(evt) {
         this.playing = true;
@@ -280,10 +228,11 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * The pause event handler
+     *
      * @method onPause
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onPause = function(evt) {
         this.playing = false;
@@ -292,10 +241,11 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * The timeupdate event handler
+     *
      * @method onTimeUpdate
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onTimeUpdate = function(evt){
         if(!this.configs.useFrameAnimation){
@@ -304,28 +254,31 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * The seeking event handler
+     *
      * @method onSeeking
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onSeeking = function(evt){
         this.triggerEvent(EVT_SEEKING, {'media': this});
     };
 
     /**
-     * Description
+     * Check whether the media is playing
+     *
      * @method isPlaying
-     * @return MemberExpression
+     * @return {Boolean} Whether the media is playing
      */
     Media.prototype.isPlaying = function() {
         return this.playing;
     };
 
     /**
-     * Description
+     * Reset the media time
+     *
      * @method reset
-     * @return ThisExpression
+     * @chainable
      */
     Media.prototype.reset = function() {
         this.setTime(0);
@@ -334,9 +287,10 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Play the media
+     *
      * @method play
-     * @return ThisExpression
+     * @chainable
      */
     Media.prototype.play = function() {
         this.dom.play();
@@ -345,9 +299,10 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Pause the media
+     *
      * @method pause
-     * @return ThisExpression
+     * @chainable
      */
     Media.prototype.pause = function() {
         this.dom.pause();
@@ -356,10 +311,12 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Trigger the timeupdate event
+     *
      * @method triggerTimeUpdate
-     * @param {} loop
-     * @return
+     * @private
+     * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
+     * @chainable
      */
     Media.prototype.triggerTimeUpdate = function(loop) {
         if(loop !== false && this.isPlaying()){
@@ -367,13 +324,16 @@ metaScore.namespace('player.component').Media = (function () {
         }
 
         this.triggerEvent(EVT_TIMEUPDATE, {'media': this});
+        
+        return this;
     };
 
     /**
-     * Description
+     * Set the media time
+     *
      * @method setTime
-     * @param {} time
-     * @return ThisExpression
+     * @param {Number} time The time in centiseconds
+     * @chainable
      */
     Media.prototype.setTime = function(time) {
         this.dom.currentTime = parseFloat(time) / 100;
@@ -384,28 +344,31 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Get the current media time
+     *
      * @method getTime
-     * @return BinaryExpression
+     * @return {Number} The time in centiseconds
      */
     Media.prototype.getTime = function() {
         return parseFloat(this.dom.currentTime) * 100;
     };
 
     /**
-     * Description
+     * Get the media's duration
+     *
      * @method getDuration
-     * @return BinaryExpression
+     * @return {Number} The duration in centiseconds
      */
     Media.prototype.getDuration = function() {
         return parseFloat(this.dom.duration) * 100;
     };
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Media.prototype.setDraggable = function(draggable){
 
@@ -419,7 +382,6 @@ metaScore.namespace('player.component').Media = (function () {
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('video'),
-                'container': this.parents(),
                 'limits': {
                     'top': 0,
                     'left': 0

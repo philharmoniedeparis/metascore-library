@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.field.Color
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Color = (function () {
 
@@ -16,9 +14,14 @@ metaScore.namespace('editor.field').Color = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A color selection field
+     *
+     * @class ColorField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Mixed} [configs.value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
      */
     function ColorField(configs) {
         this.configs = this.getConfigs(configs);
@@ -30,9 +33,6 @@ metaScore.namespace('editor.field').Color = (function () {
     }
 
     ColorField.defaults = {
-        /**
-        * Defines the default value
-        */
         value: {
             r: 255,
             g: 255,
@@ -44,9 +44,10 @@ metaScore.namespace('editor.field').Color = (function () {
     metaScore.editor.Field.extend(ColorField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     ColorField.prototype.setupUI = function(){
         ColorField.parent.prototype.setupUI.call(this);
@@ -60,15 +61,16 @@ metaScore.namespace('editor.field').Color = (function () {
             .appendTo(this.input_wrapper);
 
         this.overlay = new metaScore.editor.overlay.ColorSelector()
-            .addListener('submit', metaScore.Function.proxy(this.onColorSubmit, this));
+            .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
     };
 
     /**
-     * Description
+     * Set the field'S value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new color's value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     ColorField.prototype.setValue = function(value, supressEvent){
         var rgba;
@@ -85,13 +87,16 @@ metaScore.namespace('editor.field').Color = (function () {
             this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
         }
 
+        return this;
+
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -104,12 +109,13 @@ metaScore.namespace('editor.field').Color = (function () {
     };
 
     /**
-     * Description
-     * @method onColorSubmit
-     * @param {} evt
-     * @return
+     * The overlay's submit event handler
+     * 
+     * @method onOverlaySubmit
+     * @private
+     * @param {Event} evt The event object
      */
-    ColorField.prototype.onColorSubmit = function(evt){
+    ColorField.prototype.onOverlaySubmit = function(evt){
         var value = evt.detail.value,
             overlay = evt.detail.overlay;
 
@@ -117,10 +123,11 @@ metaScore.namespace('editor.field').Color = (function () {
     };
 
     /**
-     * Description
+     * The clear button click event handler
+     * 
      * @method onClearClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorField.prototype.onClearClick = function(evt){
         this.setValue(null);

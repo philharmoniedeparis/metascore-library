@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class player.component.Page
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Page = (function () {
 
@@ -24,16 +21,21 @@ metaScore.namespace('player.component').Page = (function () {
     var EVT_CUEPOINTSTART = 'cuepointstart';
 
     /**
-     * Fired when a cuepoint ended
+     * Fired when a cuepoint stops
      *
-     * @event cuepointend
+     * @event cuepointstop
      */
-    var EVT_CUEPOINTEND = 'cuepointend';
+    var EVT_CUEPOINTSTOP = 'cuepointstop';
 
     /**
-     * Description
+     * A page component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Page(configs) {
         // call parent constructor
@@ -49,19 +51,9 @@ metaScore.namespace('player.component').Page = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -72,11 +64,6 @@ metaScore.namespace('player.component').Page = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('background-image', undefined, skipDefault);
 
@@ -86,11 +73,6 @@ metaScore.namespace('player.component').Page = (function () {
 
                     return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
                     this.css('background-image', value);
@@ -104,20 +86,10 @@ metaScore.namespace('player.component').Page = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('start-time', isNaN(value) ? null : value);
                 }
@@ -130,45 +102,25 @@ metaScore.namespace('player.component').Page = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('end-time', isNaN(value) ? null : value);
                 }
             },
             'elements': {
                 'editable': false,
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return elements
-                 */
                 'getter': function(skipDefault){
                     var elements = [];
 
-                    this.getElements().each(function(index, element){
-                        elements.push(element._metaScore.getProperties(skipDefault));
+                    metaScore.Array.each(this.getElements(), function(index, element){
+                        elements.push(element.getProperties(skipDefault));
                     }, this);
 
                     return elements;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     metaScore.Array.each(value, function(index, configs){
                         this.addElement(configs);
@@ -179,22 +131,24 @@ metaScore.namespace('player.component').Page = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the page's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Page.prototype.setupDOM = function(){
+    Page.prototype.setupUI = function(){
         // call parent function
-        Page.parent.prototype.setupDOM.call(this);
+        Page.parent.prototype.setupUI.call(this);
 
         this.addClass('page');
     };
 
     /**
-     * Description
+     * Add an new element component to this page
+     * 
      * @method addElement
-     * @param {} configs
-     * @return element
+     * @param {Object} configs Configs to use for the element (see {{#crossLink "player.component.Element}"}}{{/crossLink}})
+     * @return {player.component.Element} The element
      */
     Page.prototype.addElement = function(configs, supressEvent){
         var element;
@@ -217,9 +171,10 @@ metaScore.namespace('player.component').Page = (function () {
     };
 
     /**
-     * Description
+     * Get the block component this page belongs to
+     * 
      * @method getBlock
-     * @return CallExpression
+     * @return {player.component.Block}
      */
     Page.prototype.getBlock = function(){
         var dom = this.parents().parents().get(0),
@@ -233,41 +188,51 @@ metaScore.namespace('player.component').Page = (function () {
     };
 
     /**
-     * Description
+     * Get the element components that belong to this page
+     * 
      * @method getElements
-     * @return CallExpression
+     * @return {Array} The list of elements
      */
     Page.prototype.getElements = function(){
-        return this.children('.element');
+        var elements = [];
+
+        this.children('.element').each(function(index, dom){
+            elements.push(dom._metaScore);
+        });
+
+        return elements;
     };
 
     /**
-     * Description
+     * The cuepoint start event handler
+     * 
      * @method onCuePointStart
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Page.prototype.onCuePointStart = function(cuepoint){
+    Page.prototype.onCuePointStart = function(evt){
         this.triggerEvent(EVT_CUEPOINTSTART);
     };
 
     /**
-     * Description
-     * @method onCuePointEnd
-     * @param {} cuepoint
-     * @return
+     * The cuepoint stop event handler
+     * 
+     * @method onCuePointStop
+     * @private
+     * @param {Event} evt The event object
      */
-    Page.prototype.onCuePointEnd = function(cuepoint){
-        this.triggerEvent(EVT_CUEPOINTEND);
+    Page.prototype.onCuePointStop = function(evt){
+        this.triggerEvent(EVT_CUEPOINTSTOP);
     };
 
     /**
-     * Description
+     * The cuepoint seekout event handler
+     * 
      * @method onCuePointSeekOut
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointEnd;
+    Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointStop;
 
     return Page;
 

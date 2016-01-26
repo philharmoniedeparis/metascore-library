@@ -1,28 +1,64 @@
 /**
-* Description
-*
-* @class player.CuePoint
-* @extends Evented
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player').CuePoint = (function () {
 
     /**
-     * Description
+     * Fired when the cuepoint starts
+     *
+     * @event start
+     */
+    var EVT_START = 'start';
+
+    /**
+     * Fired when the cuepoint is active (between the start and end times) and the media time is updated
+     *
+     * @event update
+     */
+    var EVT_UPDATE = 'update';
+
+    /**
+     * Fired when the cuepoint stops
+     *
+     * @event stop
+     */
+    var EVT_STOP = 'stop';
+
+    /**
+     * Fired when the media is seeked outside of the cuepoint's time
+     *
+     * @event seekout
+     */
+    var EVT_SEEKOUT = 'seekout';
+
+    /**
+     * A class for managing media cuepoints to execute actions at specific media times
+     * 
+     * @class CuePoint
+     * @namepsace player
+     * @extends Evented
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {player.component.Media} configs.media The media component to which the cuepoint is attached
+     * @param {Number} configs.inTime The time at which the cuepoint starts
+     * @param {Number} [onfigs.outTime] The time at which the cuepoint stops
+     * @param {Boolean} [onfigs.considerError] Whether to estimate and use the error margin in timed events
      */
     function CuePoint(configs) {
         this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        CuePoint.parent.call(this);
 
         this.id = metaScore.String.uuid();
 
         this.running = false;
 
-        this.launch = metaScore.Function.proxy(this.launch, this);
+        this.start = metaScore.Function.proxy(this.start, this);
         this.stop = metaScore.Function.proxy(this.stop, this);
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
-        this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
+        this.onMediaSeeking = metaScore.Function.proxy(this.onMediaSeeking, this);
 
         this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
 
@@ -35,25 +71,22 @@ metaScore.namespace('player').CuePoint = (function () {
         'media': null,
         'inTime': null,
         'outTime': null,
-        'onStart': null,
-        'onUpdate': null,
-        'onEnd': null,
-        'onSeekOut': null,
         'considerError': false
     };
 
     /**
-     * Description
+     * The media's timeupdate event handler
+     * 
      * @method onMediaTimeUpdate
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     CuePoint.prototype.onMediaTimeUpdate = function(evt){
         var cur_time = this.configs.media.getTime();
 
         if(!this.running){
             if((Math.floor(cur_time) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
-                this.launch();
+                this.start();
             }
         }
         else{
@@ -69,98 +102,82 @@ metaScore.namespace('player').CuePoint = (function () {
                 this.stop();
             }
 
-            if(this.configs.onUpdate){
-                this.configs.onUpdate(this, cur_time);
-            }
-        }
-
-        if(this.configs.onSeekOut){
-            this.configs.media.addListener('seeking', this.onMediaSeeked);
+            this.triggerEvent(EVT_UPDATE);
         }
     };
 
     /**
-     * Description
-     * @method onMediaSeeked
-     * @param {} evt
-     * @return
+     * The media's seek event handler
+     * 
+     * @method onMediaSeeking
+     * @private
+     * @param {Event} evt The event object
      */
-    CuePoint.prototype.onMediaSeeked = function(evt){
-        var cur_time;
+    CuePoint.prototype.onMediaSeeking = function(evt){
+        var media = this.getMedia(),
+            cur_time = media.getTime();
 
-        this.configs.media.removeListener('play', this.onMediaSeeked);
+        media.removeListener('play', this.onMediaSeeking);
 
-        if(this.configs.onSeekOut){
-            cur_time = this.configs.media.getTime();
 
-            if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
-                this.configs.onSeekOut(this);
-            }
+        if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
+            this.triggerEvent(EVT_SEEKOUT);
         }
     };
 
     /**
-     * Description
+     * Get the media component on which this cuepoint is attached
+     * 
      * @method getMedia
-     * @return MemberExpression
+     * @return {player.component.Media} The media component
      */
     CuePoint.prototype.getMedia = function(){
         return this.configs.media;
     };
 
     /**
-     * Description
-     * @method getInTime
-     * @return MemberExpression
+     * Start executing the cuepoint
+     * 
+     * @method start
+     * @private
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
-    CuePoint.prototype.getInTime = function(){
-        return this.configs.inTime;
-    };
-
-    /**
-     * Description
-     * @method getOutTime
-     * @return MemberExpression
-     */
-    CuePoint.prototype.getOutTime = function(){
-        return this.configs.outTime;
-    };
-
-    /**
-     * Description
-     * @method launch
-     * @return
-     */
-    CuePoint.prototype.launch = function(){
+    CuePoint.prototype.start = function(supressEvent){
         if(this.running){
             return;
         }
 
-        if(this.configs.onStart){
-            this.configs.onStart(this);
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_START);
         }
 
-        // stop the cuepoint if it doesn't have an outTime or doesn't have onUpdate and onEnd callbacks
-        if((this.configs.outTime === null) || (!this.configs.onUpdate && !this.configs.onEnd)){
+        // stop the cuepoint if it doesn't have an outTime
+        if(this.configs.outTime === null){
             this.stop();
         }
         else{
+            if(this.hasListener(EVT_SEEKOUT)){
+                this.configs.media.addListener('seeking', this.onMediaSeeking);
+            }
+
             this.running = true;
         }
+
     };
 
     /**
-     * Description
+     * Stop executing the cuepoint
+     * 
      * @method stop
-     * @param {} launchCallback
-     * @return
+     * @private
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
-    CuePoint.prototype.stop = function(launchCallback){
-        if(launchCallback !== false && this.configs.onEnd){
-            this.configs.onEnd(this);
+    CuePoint.prototype.stop = function(supressEvent){
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_STOP);
 
-            if(this.configs.onSeekOut){
-                this.configs.media.addListener('play', this.onMediaSeeked);
+            if(this.hasListener(EVT_SEEKOUT)){
+                this.configs.media.addListener('play', this.onMediaSeeking);
             }
         }
 
@@ -173,17 +190,17 @@ metaScore.namespace('player').CuePoint = (function () {
     };
 
     /**
-     * Description
+     * Destroy the cuepoint
+     * 
      * @method destroy
-     * @return
      */
     CuePoint.prototype.destroy = function(){
-        this.stop(false);
+        this.stop(true);
 
-        this.configs.media
+        this.getMedia()
             .removeListener('timeupdate', this.onMediaTimeUpdate)
-            .removeListener('seeking', this.onMediaSeeked)
-            .removeListener('play', this.onMediaSeeked);
+            .removeListener('seeking', this.onMediaSeeking)
+            .removeListener('play', this.onMediaSeeking);
     };
 
     return CuePoint;

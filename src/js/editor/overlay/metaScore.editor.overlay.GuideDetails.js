@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class editor.overlay.GuideDetails
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
@@ -17,9 +14,16 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * An overlay to update a guide's details (title, description, thumbnail, etc)
+     *
+     * @class GuideDetails
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.title='Guide Info'] The overlay's title
+     * @param {String} [configs.submit_text='Save'] The overlay's submit button label
      */
     function GuideDetails(configs) {
         this.configs = this.getConfigs(configs);
@@ -34,34 +38,24 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     }
 
     GuideDetails.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
         'toolbar': true,
-
-        /**
-        * The overlay's title
-        */
         'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
-
-        /**
-        * The overlay's apply button text
-        */
-        'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submit_text', 'Save')
+        'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
     };
 
     metaScore.editor.Overlay.extend(GuideDetails);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    GuideDetails.prototype.setupDOM = function(){
+    GuideDetails.prototype.setupUI = function(){
         var contents, form;
 
         // call parent method
-        GuideDetails.parent.prototype.setupDOM.call(this);
+        GuideDetails.parent.prototype.setupUI.call(this);
 
         contents = this.getContents();
 
@@ -145,10 +139,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Get a field by name
+     * 
      * @method getField
-     * @param {} evt
-     * @return
+     * @param {String} name The field's name
+     * @return {editor.Field} The field object
      */
     GuideDetails.prototype.getField = function(name){
         var fields = this.fields;
@@ -161,10 +156,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Set the field values
+     * 
      * @method setValues
-     * @param {} evt
-     * @return
+     * @param {Object} values A list of field values in name/value pairs
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     GuideDetails.prototype.setValues = function(values, supressEvent){
         metaScore.Object.each(values, function(key, value){
@@ -179,10 +176,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Clears all field values
+     * 
      * @method clearValues
-     * @param {} evt
-     * @return
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     GuideDetails.prototype.clearValues = function(supressEvent){
         metaScore.Object.each(this.fields, function(key, field){
@@ -193,20 +191,21 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Get all changed field values
+     * 
      * @method getValues
-     * @param {} evt
-     * @return
+     * @return {Object} The values of changed fields in name/value pairs
      */
     GuideDetails.prototype.getValues = function(){
         return metaScore.Object.extend({}, this.changed);
     };
 
     /**
-     * Description
+     * The fields change event handler
+     * 
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     GuideDetails.prototype.onFieldValueChange = function(evt){
         var field = evt.detail.field,
@@ -233,10 +232,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * The form submit event handler
+     * 
      * @method onFormSubmit
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     GuideDetails.prototype.onFormSubmit = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'values': this.getValues()}, true, false);
@@ -246,11 +246,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-    * Description
-    * @method onCloseClick
-    * @param {} evt
-    * @return
-    */
+     * The close button click event handler
+     * 
+     * @method onCloseClick
+     * @private
+     * @param {Event} evt The event object
+     */
     GuideDetails.prototype.onCloseClick = function(evt){
         if(this.previous_values){
             this.clearValues(true)
@@ -262,6 +263,13 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         evt.preventDefault();
     };
 
+    /**
+     * The cancel button click event handler
+     * 
+     * @method onCancelClick
+     * @private
+     * @param {Event} evt The event object
+     */
     GuideDetails.prototype.onCancelClick = GuideDetails.prototype.onCloseClick;
 
     return GuideDetails;

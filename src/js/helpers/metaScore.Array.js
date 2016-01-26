@@ -1,40 +1,40 @@
 /**
-* Description
-* @class Array
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Array = (function () {
 
     /**
-     * Description
+     * A class for array helper functions
+     * 
+     * @class Array
      * @constructor
      */
     function Array() {
     }
 
-    metaScore.Class.extend(Array);
-
     /**
-     * Checks if a value is in an array
+     * Check if a value is in an array
+     * 
      * @method inArray
-     * @param {} value
-     * @param {} arr
-     * @return UnaryExpression
+     * @static
+     * @param {Mixed} needle The value to search
+     * @param {Array} haystack The array
+     * @return {Integer} The index of the first match, -1 if none
      */
-    Array.inArray = function (value, arr) {
+    Array.inArray = function (needle, haystack) {
         var len, i = 0;
 
-        if(arr) {
-            if(arr.indexOf){
-                return arr.indexOf(value);
+        if(haystack) {
+            if(haystack.indexOf){
+                return haystack.indexOf(needle);
             }
 
-            len = arr.length;
+            len = haystack.length;
 
             for ( ; i < len; i++ ) {
                 // Skip accessing in sparse arrays
-                if ( i in arr && arr[i] === value ) {
+                if ( i in haystack && haystack[i] === needle ) {
                     return i;
                 }
             }
@@ -44,20 +44,24 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Copies an array
+     * Copy an array
+     * 
      * @method copy
-     * @param {} arr
-     * @return CallExpression
+     * @static
+     * @param {Array} arr The original array
+     * @return {Array} The copy
      */
     Array.copy = function (arr) {
         return [].concat(arr);
     };
 
     /**
-     * Shuffles elements in an array
+     * Shuffle array elements
+     * 
      * @method shuffle
-     * @param {} arr
-     * @return shuffled
+     * @static
+     * @param {Array} arr The array to shuffle
+     * @return {Array} The shuffled copy of the array
      */
     Array.shuffle = function(arr) {
 
@@ -72,10 +76,12 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Return new array with duplicate values removed
+     * Remove duplicate values from an array
+     * 
      * @method unique
-     * @param {} arr
-     * @return unique
+     * @static
+     * @param {Array} arr The array to remove duplicates from
+     * @return {Array} A copy of the array with no duplicates
      */
     Array.unique = function(arr) {
 
@@ -97,12 +103,16 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Call a function on each element of an array
+     * Iterate over an array with a callback function
+     * 
      * @method each
-     * @param {} arr
-     * @param {} callback
-     * @param {} scope
-     * @return arr
+     * @static
+     * @param {Array} arr The array to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed in the array
+     * @param {Array} callback.value The element that is currently being processed in the array
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Array} The array
      */
     Array.each = function(arr, callback, scope) {
 
@@ -124,30 +134,43 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Remove an element from an array
+     * Remove a elements from an array by value
+     * 
      * @method remove
-     * @param {} arr
-     * @param {} element
-     * @return arr
+     * @static
+     * @param {Array} arr The array to remove the elements from
+     * @param {Mixed} value The value to search for
+     * @return {Array} The array
      */
-    Array.remove = function(arr, element){
-        var index = Array.inArray(element, arr);
+    Array.remove = function(arr, value){
+        var index = Array.inArray(value, arr);
 
         while(index > -1){
             arr.splice(index, 1);
-            index = Array.inArray(element, arr);
+            index = Array.inArray(value, arr);
         }
 
         return arr;
     };
 
     /**
-     * Natural Sort algorithm
-     * Author: Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/)
-     * Version 0.7 - Released under MIT license
+     * Get a natural sort function to use with Array.sort
+     * 
      * @method naturalSort
-     * @param {} insensitive
-     * @return CallExpression
+     * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
+     * @static
+     * @param {Boolean} [insensitive=false] Whether the sort should not be case-sensitive
+     * @return {Function} The sorting function
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(true));
+     *     // ["a1", "A2", "b", "c", "d"]
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(false));
+     *     // ["A2", "a1", "b", "c", "d"]
      */
     Array.naturalSort = function(insensitive){
         return function(a, b){

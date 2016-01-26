@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.field.Buttons
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Buttons = (function () {
 
@@ -16,9 +14,14 @@ metaScore.namespace('editor.field').Buttons = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A simple buttons field based on HTML button elements
+     *
+     * @class ButtonsField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.buttons={}}] The list of buttons as name/attributes pairs
      */
     function ButtonsField(configs) {
         this.configs = this.getConfigs(configs);
@@ -35,23 +38,16 @@ metaScore.namespace('editor.field').Buttons = (function () {
     }
 
     ButtonsField.defaults = {
-        buttons: {}
+        'buttons': {}
     };
 
     metaScore.editor.Field.extend(ButtonsField);
 
     /**
-     * Description
-     * @method setValue
-     * @return
-     */
-    ButtonsField.prototype.setValue = function(){
-    };
-
-    /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     ButtonsField.prototype.setupUI = function(){
         var field = this;
@@ -64,32 +60,44 @@ metaScore.namespace('editor.field').Buttons = (function () {
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        metaScore.Object.each(this.configs.buttons, function(key, attr){
-            this.buttons[key] = new metaScore.Dom('<button/>', attr)
+        metaScore.Object.each(this.configs.buttons, function(name, attr){
+            this.buttons[name] = new metaScore.Dom('<button/>', attr)
                 .addListener('click', function(){
-                    field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': key}, true, false);
+                    field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
                 })
                 .appendTo(this.input_wrapper);
         }, this);
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
+     * @method setValue
+     * @chainable
+     */
+    ButtonsField.prototype.setValue = function(){
+        return this;
+    };
+
+    /**
+     * Get the list of buttons
+     * 
      * @method getButtons
-     * @return MemberExpression
+     * @return {Object} The list of buttons as a name/Dom pair
      */
     ButtonsField.prototype.getButtons = function(){
         return this.buttons;
     };
 
     /**
-     * Description
+     * Get a button by name
+     * 
      * @method getButton
-     * @param {} key
-     * @return MemberExpression
+     * @param {String} name The button's name
+     * @return {Dom} The button's Dom object
      */
-    ButtonsField.prototype.getButton = function(key){
-        return this.buttons[key];
+    ButtonsField.prototype.getButton = function(name){
+        return this.buttons[name];
     };
 
     return ButtonsField;

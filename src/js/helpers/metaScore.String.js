@@ -1,36 +1,49 @@
 /**
-* Description
-* @class String
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.String = (function () {
 
     /**
-     * Description
+     * A class for string helper functions
+     * 
+     * @class String
      * @constructor
      */
     function String() {
     }
 
-    metaScore.Class.extend(String);
-
     /**
      * Capitalize a string
+     * 
      * @method capitalize
-     * @param {} str
-     * @return CallExpression
+     * @param {String} str The string to capitalize
+     * @return {String} The capitalized string
      */
     String.capitalize = function(str){
         return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     };
 
     /**
-     * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+     * Generate a random uuid
+     * 
      * @method uuid
-     * @param {} len
-     * @param {} radix
-     * @return CallExpression
+     * @author Broofa <robert@broofa.com> (http://www.broofa.com/2008/09/javascript-uuid-function/)
+     * @param {Integer} [len] The desired number of characters
+     * @param {Integer} [radix] The number of allowable values for each character
+     * @return {String} The generated uuid
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid();
+     *    // "66209871-857D-4A12-AC7E-E9EEBC2A6AC3"
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid(5);
+     *    // "kryIh"
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid(5, 2);
+     *    // "10100"
      */
     String.uuid = function(len, radix) {
         var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
@@ -52,8 +65,7 @@ metaScore.String = (function () {
             uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
             uuid[14] = '4';
 
-            // Fill in random data.    At i==19 set the high bits of clock sequence as
-            // per rfc4122, sec. 4.1.5
+            // Fill in random data.    At i==19 set the high bits of clock sequence as per rfc4122, sec. 4.1.5
             for (i = 0; i < 36; i++) {
                 if (!uuid[i]) {
                     r = 0 | Math.random()*16;
@@ -66,13 +78,29 @@ metaScore.String = (function () {
     };
 
     /**
-     * Description
+     * Pad a string with another string
+     * 
      * @method pad
-     * @param {} str
-     * @param {} len
-     * @param {} pad
-     * @param {} dir
-     * @return str
+     * @param {String} str The string to pad
+     * @param {Integer} len The desired final string length
+     * @param {String} [pad=" "] The string to pad with
+     * @param {String} [dir="right"] The padding direction ("right", "left" or "both")
+     * @return {String} The padded string
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b");
+     *    // "abb"
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b", "left");
+     *    // "bba"
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b", "both");
+     *    // "bab"
      */
     String.pad = function(str, len, pad, dir) {
         var right, left,

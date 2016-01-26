@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.field.Time
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Time = (function () {
 
@@ -30,9 +28,19 @@ metaScore.namespace('editor.field').Time = (function () {
     var EVT_VALUEOUT = 'valueout';
 
     /**
-     * Description
+     * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
+     *
+     * @class TimeField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Number} [configs.value=0] The default value
+     * @param {Number} [configs.min=0] The minimum allowed value
+     * @param {Number} [configs.max=null] The maximum allowed value
+     * @param {Boolean} [configs.checkbox=false] Whether to show the enable/disable checkbox
+     * @param {Boolean} [configs.inButton=false] Whether to show the in button
+     * @param {Boolean} [configs.outButton=false] Whether to show the out button
      */
     function TimeField(configs) {
         this.configs = this.getConfigs(configs);
@@ -44,34 +52,21 @@ metaScore.namespace('editor.field').Time = (function () {
     }
 
     TimeField.defaults = {
-        /**
-        * Defines the default value
-        */
-        value: 0,
-
-        /**
-        * Defines the minimum value allowed
-        */
-        min: 0,
-
-        /**
-        * Defines the maximum value allowed
-        */
-        max: null,
-
-        checkbox: false,
-
-        inButton: false,
-
-        outButton: false
+        'value': 0,
+        'min': 0,
+        'max': null,
+        'checkbox': false,
+        'inButton': false,
+        'outButton': false
     };
 
     metaScore.editor.Field.extend(TimeField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     TimeField.prototype.setupUI = function(){
         var buttons;
@@ -133,24 +128,25 @@ metaScore.namespace('editor.field').Time = (function () {
         }
 
         this.addListener('change', metaScore.Function.proxy(this.onChange, this));
-
     };
 
     /**
-     * Description
+     * The change event handler
+     * 
      * @method onChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onChange = function(evt){
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     };
 
     /**
-     * Description
+     * The input event handler
+     * 
      * @method onInput
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onInput = function(evt){
         var active = this.isActive(),
@@ -172,31 +168,34 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Description
+     * The in button's click event handler
+     * 
      * @method onInClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onInClick = function(evt){
         this.triggerEvent(EVT_VALUEIN);
     };
 
     /**
-     * Description
+     * The out button's click event handler
+     * 
      * @method onOutClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onOutClick = function(evt){
         this.triggerEvent(EVT_VALUEOUT);
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} centiseconds
-     * @param {} supressEvent
-     * @return
+     * @param {Number} centiseconds The new value in centiseconds
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TimeField.prototype.setValue = function(centiseconds, supressEvent){
         var centiseconds_val, seconds_val, minutes_val, hours_val;
@@ -271,13 +270,16 @@ metaScore.namespace('editor.field').Time = (function () {
         if(supressEvent !== true){
             this.triggerEvent('change');
         }
+
+        return this;
     };
 
     /**
-     * Description
+     * Set the minimum allowed value
+     * 
      * @method setMin
-     * @param {} min
-     * @return ThisExpression
+     * @param {Number} min The minimum allowed value
+     * @chainable
      */
     TimeField.prototype.setMin = function(min){
         this.configs.min = min;
@@ -290,10 +292,11 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Description
+     * Set the maximum allowed value
+     * 
      * @method setMax
-     * @param {} max
-     * @return ThisExpression
+     * @param {Number} max The maximum allowed value
+     * @chainable
      */
     TimeField.prototype.setMax = function(max){
         this.configs.max = max;
@@ -306,18 +309,20 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Description
+     * Check whether the field's checkbox is checked
+     * 
      * @method isActive
-     * @return LogicalExpression
+     * @return {Boolean} Whether the field does not have a checkbox or is active
      */
     TimeField.prototype.isActive = function(){
         return !this.checkbox || this.checkbox.is(":checked");
     };
 
     /**
-     * Disable the button
+     * Disable the field
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     TimeField.prototype.disable = function(){
         this.disabled = true;
@@ -344,9 +349,10 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Enable the button
+     * Enable the field
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     TimeField.prototype.enable = function(){
         var active = this.isActive();

@@ -1,8 +1,6 @@
-/**
-* Description
-* @class editor.Panel
-* @extends Dom
-*/
+/** 
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Panel = (function(){
 
@@ -41,9 +39,14 @@ metaScore.namespace('editor').Panel = (function(){
     var EVT_VALUESCHANGE = 'valueschange';
 
     /**
-     * Description
+     * A generic panel class
+     *
+     * @class Panel
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function Panel(configs) {
         this.configs = this.getConfigs(configs);
@@ -75,21 +78,18 @@ metaScore.namespace('editor').Panel = (function(){
     }
 
     Panel.defaults = {
-        toolbarConfigs: {
-            buttons: [
-                'previous',
-                'next'
-            ]
-        }
+        'toolbarConfigs': {}
     };
 
     metaScore.Dom.extend(Panel);
 
     /**
-     * Description
+     * Setup the panel's fields
+     *
      * @method setupFields
-     * @param {} properties
-     * @return ThisExpression
+     * @private
+     * @param {Object} properties The properties description object
+     * @chainable
      */
     Panel.prototype.setupFields = function(properties){
         var configs, fieldType, field;
@@ -113,44 +113,50 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Get the panel's toolbar
+     *
      * @method getToolbar
-     * @return MemberExpression
+     * @return {editor.panel.Toolbar} The toolbar
      */
     Panel.prototype.getToolbar = function(){
         return this.toolbar;
     };
 
     /**
-     * Description
+     * Get a field by name
+     *
      * @method getField
-     * @param {} key
-     * @return MemberExpression
+     * @param {String} name The name of the field to get
+     * @return {editor.Field} The field
      */
-    Panel.prototype.getField = function(key){
-        if(key === undefined){
+    Panel.prototype.getField = function(name){
+        if(name === undefined){
             return this.fields;
         }
 
-        return this.fields[key];
+        return this.fields[name];
     };
 
     /**
-     * Description
+     * Enable all fields
+     *
      * @method enableFields
-     * @return
+     * @chainable
      */
     Panel.prototype.enableFields = function(){
         metaScore.Object.each(this.fields, function(key, field){
             field.enable();
         }, this);
+        
+        return this;
     };
 
     /**
-     * Description
+     * Show a field by name
+     *
      * @method showField
-     * @param {} name
-     * @return ThisExpression
+     * @param {String} name The name of the field to show
+     * @chainable
      */
     Panel.prototype.showField = function(name){
         this.getField(name).show();
@@ -159,10 +165,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Hide a field by name
+     *
      * @method hideField
-     * @param {} name
-     * @return ThisExpression
+     * @param {String} name The name of the field to show
+     * @chainable
      */
     Panel.prototype.hideField = function(name){
         this.getField(name).hide();
@@ -171,9 +178,10 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Toggle the panel's collapsed state
+     *
      * @method toggleState
-     * @return ThisExpression
+     * @chainable
      */
     Panel.prototype.toggleState = function(){
         this.toggleClass('collapsed');
@@ -182,9 +190,10 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Disable the panel
+     *
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Panel.prototype.disable = function(){
         this.addClass('disabled');
@@ -193,9 +202,10 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Enable the panel
+     *
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Panel.prototype.enable = function(){
         this.removeClass('disabled');
@@ -204,20 +214,22 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Get the currently associated component
+     *
      * @method getComponent
-     * @return MemberExpression
+     * @return {player.Component} The component
      */
     Panel.prototype.getComponent = function(){
         return this.component;
     };
 
     /**
-     * Description
+     * Set the associated component
+     *
      * @method setComponent
-     * @param {} component
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {player.Component} component The component
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.setComponent = function(component, supressEvent){
         if(component !== this.getComponent()){
@@ -262,10 +274,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Unset the associated component
+     *
      * @method unsetComponent
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent(),
@@ -301,15 +314,17 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Set or unset the draggability of the associated component
+     *
      * @method updateDraggable
-     * @param {} draggable
-     * @return ThisExpression
+     * @private
+     * @param {Boolean} draggable Whether the component should be draggable
+     * @chainable
      */
     Panel.prototype.updateDraggable = function(draggable){
         var component = this.getComponent();
 
-        draggable = component.setDraggable(draggable);
+        draggable = metaScore.Var.is(component.setDraggable, 'function') ? component.setDraggable(draggable) : false;
 
         this.toggleFields(['x', 'y'], draggable ? true : false);
 
@@ -317,15 +332,17 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Set or unset the resizability of the associated component
+     *
      * @method updateResizable
-     * @param {} resizable
-     * @return ThisExpression
+     * @private
+     * @param {Boolean} resizable Whether the component should be resizable
+     * @chainable
      */
     Panel.prototype.updateResizable = function(resizable){
         var component = this.getComponent();
 
-        resizable = component.setResizable(resizable);
+        resizable = metaScore.Var.is(component.setResizable, 'function') ? component.setResizable(resizable) : false;
 
         this.toggleFields(['width', 'height'], resizable ? true : false);
 
@@ -333,10 +350,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The toolbar buttons' click event handler
+     *
      * @method onToolbarButtonClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onToolbarButtonClick = function(evt){
         var selector, options, count, index,
@@ -382,10 +400,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's dragstart event handler
+     *
      * @method onComponentDragStart
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDragStart = function(evt){
         var fields = ['x', 'y'];
@@ -394,10 +413,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's drag event handler
+     *
      * @method onComponentDrag
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDrag = function(evt){
         var fields = ['x', 'y'];
@@ -406,10 +426,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's dragend event handler
+     *
      * @method onComponentDragEnd
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDragEnd = function(evt){
         var component = this.getComponent(),
@@ -423,10 +444,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's resizestart event handler
+     *
      * @method onComponentResizeStart
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentResizeStart = function(evt){
         var fields = ['x', 'y', 'width', 'height'];
@@ -435,10 +457,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's resize event handler
+     *
      * @method onComponentResize
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentResize = function(evt){
         var fields = ['x', 'y', 'width', 'height'];
@@ -447,10 +470,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's resizeend event handler
+     *
      * @method onComponentResizeEnd
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentResizeEnd = function(evt){
         var component = this.getComponent(),
@@ -464,10 +488,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The fields' valuechange event handler
+     *
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -506,12 +531,13 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Update a field's value
+     *
      * @method updateFieldValue
-     * @param {} name
-     * @param {} value
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {String} name The field's name
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.updateFieldValue = function(name, value, supressEvent){
         this.getField(name).setValue(value, supressEvent);
@@ -520,11 +546,12 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Update fields' values
+     *
      * @method updateFieldValues
-     * @param {} values
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {Object} values A list of values with the field names as keys
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.updateFieldValues = function(values, supressEvent){
         if(metaScore.Var.is(values, 'array')){
@@ -542,11 +569,12 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Update a component's properties
+     *
      * @method updateProperties
-     * @param {} component
-     * @param {} values
-     * @return ThisExpression
+     * @param {player.Component} component The component to update
+     * @param {Object} values A list of values with the property names as keys
+     * @chainable
      */
     Panel.prototype.updateProperties = function(component, values){
         metaScore.Object.each(values, function(name, value){
@@ -561,11 +589,12 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Toggle the enabled state of some fields
+     *
      * @method toggleFields
-     * @param {} names
-     * @param {} toggle
-     * @return ThisExpression
+     * @param {Array} names The list of field names to toggle
+     * @param {Boolean} toggle Whether the fields are to be enabled or disabled
+     * @chainable
      */
     Panel.prototype.toggleFields = function(names, toggle){
         var field;
@@ -585,27 +614,29 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Get the associated component's property value
+     *
      * @method getValue
-     * @param {} name
-     * @return CallExpression
+     * @param {String} name The propoerty's name
+     * @return {Mixed} The value
      */
     Panel.prototype.getValue = function(name){
         return this.getComponent().getProperty(name);
     };
 
     /**
-     * Description
+     * Get the associated component's properties values
+     *
      * @method getValues
-     * @param {} fields
-     * @return values
+     * @param {Array} [names] The names of properties, if not set, the panel's field names are used
+     * @return {Object} A list of values keyed by property name
      */
-    Panel.prototype.getValues = function(fields){
+    Panel.prototype.getValues = function(names){
         var values = {};
 
-        fields = fields || Object.keys(this.getField());
+        names = names || Object.keys(this.getField());
 
-        metaScore.Array.each(fields, function(index, name){
+        metaScore.Array.each(names, function(index, name){
             if(!this.getField(name).disabled){
                 values[name] = this.getValue(name);
             }

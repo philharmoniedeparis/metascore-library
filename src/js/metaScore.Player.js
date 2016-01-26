@@ -1,3 +1,10 @@
+/**
+ * The Player module defines classes used in player
+ *
+ * @module Player
+ * @main
+ */
+
 metaScore.Player = (function(){
 
     /**
@@ -22,7 +29,7 @@ metaScore.Player = (function(){
         *
         * @event idset
         * @param {Object} player The player instance
-        * @param {Number} id The guide's id
+        * @param {String} id The guide's id
         */
      var EVT_IDSET = 'idset';
 
@@ -31,7 +38,7 @@ metaScore.Player = (function(){
         *
         * @event revisionset
         * @param {Object} player The player instance
-        * @param {Number} vid The guide's vid
+        * @param {Integer} vid The guide's vid
         */
      var EVT_REVISIONSET = 'revisionset';
 
@@ -471,6 +478,8 @@ metaScore.Player = (function(){
      * Set the id of the loaded guide in a data attribute
      *
      * @method setId
+     * @param {String} id The id
+     * @param {Boolean} [supressEvent=false] Whether to supress the idset event
      * @chainable
      */
     Player.prototype.setId = function(id, supressEvent){
@@ -497,6 +506,8 @@ metaScore.Player = (function(){
      * Set the revision id of the loaded guide in a data attribute
      *
      * @method setRevision
+     * @param {String} id The id
+     * @param {Boolean} [supressEvent=false] Whether to supress the revisionset event
      * @chainable
      */
     Player.prototype.setRevision = function(vid, supressEvent){
@@ -586,7 +597,7 @@ metaScore.Player = (function(){
      *
      * @method addMedia
      * @param {Object} configs The configurations to send to the Media class
-     * @param {Boolean} [supressEvent=false] Wheather to supress the mediadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the mediadd event or not
      * @return {Media} The Media instance
      */
     Player.prototype.addMedia = function(configs, supressEvent){
@@ -609,7 +620,7 @@ metaScore.Player = (function(){
      *
      * @method addController
      * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Wheather to supress the controlleradd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
      * @return {Controller} The Controller instance
      */
     Player.prototype.addController = function(configs, supressEvent){
@@ -629,7 +640,7 @@ metaScore.Player = (function(){
      *
      * @method addBlock
      * @param {Object} configs The configurations to send to the Block class
-     * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @return {Block} The Block instance
      */
     Player.prototype.addBlock = function(configs, supressEvent){
@@ -717,27 +728,25 @@ metaScore.Player = (function(){
         }
         else{
             this.cuepoint = new metaScore.player.CuePoint({
-                media: this.getMedia(),
-                inTime: inTime,
-                outTime: !isNaN(outTime) ? outTime : null,
-                onStart: function(cuepoint){
-                    player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
-                },
-                onEnd: function(cuepoint){
-                    cuepoint.getMedia().pause();
-                },
-                onSeekOut: function(cuepoint){
-                    cuepoint.destroy();
-                    delete player.cuepoint;
+                'media': media,
+                'inTime': inTime,
+                'outTime': !isNaN(outTime) ? outTime : null,
+                'considerError': true
+            })
+            .addListener('start', function(evt){
+                player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
+            })
+            .addListener('stop', function(evt){
+                evt.target.getMedia().pause();
+            })
+            .addListener('seekout', function(evt){
+                evt.target.destroy();
+                delete player.cuepoint;
 
-                    player.setReadingIndex(0);
-                },
-                considerError: true
+                player.setReadingIndex(0);
             });
 
-            this.getMedia()
-                .setTime(inTime)
-                .play();
+            media.setTime(inTime).play();
         }
 
         return this;
@@ -747,18 +756,19 @@ metaScore.Player = (function(){
      * Set the current reading index
      *
      * @method setReadingIndex
-     * @param {Number} index The reading index
-     * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+     * @param {Integer} index The reading index
+     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @chainable
      */
     Player.prototype.setReadingIndex = function(index, supressEvent){
         this.rindex_css.removeRules();
 
         if(index !== 0){
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;');
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
-            this.rindex_css.addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
+            this.rindex_css
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
+                .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 
             this.data('rindex', index);
         }

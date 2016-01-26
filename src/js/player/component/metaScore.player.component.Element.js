@@ -1,16 +1,18 @@
 /**
-* Description
-*
-* @class player.component.Element
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Element = (function () {
 
     /**
-     * Description
+     * An element component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Element(configs) {
         // call parent constructor
@@ -26,38 +28,18 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.name', 'Name')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('name');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('name', value);
                 }
             },
             'type': {
                 'editable':false,
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('type');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('type', value);
                 }
@@ -67,19 +49,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -89,19 +61,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -111,19 +73,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 }
@@ -134,19 +86,9 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
                     'min': 10
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('width', value +'px');
                 }
@@ -157,19 +99,9 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
                     'min': 10
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('height', value +'px');
                 }
@@ -180,20 +112,10 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.r-index', 'Reading index'),
                     'min': 0
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.data('r-index');
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('r-index', value);
                 }
@@ -203,20 +125,10 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('z-index', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('z-index', value);
                 }
@@ -226,19 +138,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.background-color', 'Background color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.contents.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -249,11 +151,6 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.contents.css('background-image', undefined, skipDefault);
 
@@ -263,11 +160,6 @@ metaScore.namespace('player.component').Element = (function () {
 
                     return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
                     this.contents.css('background-image', value);
@@ -278,20 +170,10 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.contents.css('border-width', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.css('border-width', value +'px');
                 }
@@ -301,19 +183,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.border-color', 'Border color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('border-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.contents.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -324,19 +196,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.css('border-radius', value);
                 }
@@ -349,19 +211,9 @@ metaScore.namespace('player.component').Element = (function () {
                     'max': 1,
                     'step': 0.1
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('opacity', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.css('opacity', value);
                 }
@@ -374,20 +226,10 @@ metaScore.namespace('player.component').Element = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('start-time', isNaN(value) ? null : value);
                 }
@@ -400,20 +242,10 @@ metaScore.namespace('player.component').Element = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('end-time', isNaN(value) ? null : value);
                 }
@@ -422,13 +254,14 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the element's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Element.prototype.setupDOM = function(){
+    Element.prototype.setupUI = function(){
         // call parent function
-        Element.parent.prototype.setupDOM.call(this);
+        Element.parent.prototype.setupUI.call(this);
 
         this.addClass('element');
 
@@ -437,9 +270,10 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * Description
-     * @method getBlock
-     * @return CallExpression
+     * Get the page component this element belongs to
+     *
+     * @method getPage
+     * @return {player.component.Page} The page
      */
     Element.prototype.getPage = function(){
         var dom = this.parents().get(0),
@@ -447,44 +281,48 @@ metaScore.namespace('player.component').Element = (function () {
 
         if(dom){
             page = dom._metaScore;
-
         }
+        
         return page;
     };
 
     /**
-     * Description
+     * The cuepoint start event handler
+     *
      * @method onCuePointStart
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Element.prototype.onCuePointStart = function(cuepoint){
+    Element.prototype.onCuePointStart = function(evt){
         this.addClass('active');
     };
 
     /**
-     * Description
-     * @method onCuePointEnd
-     * @param {} cuepoint
-     * @return
+     * The cuepoint stop event handler
+     *
+     * @method onCuePointStop
+     * @private
+     * @param {Event} evt The event object
      */
-    Element.prototype.onCuePointEnd = function(cuepoint){
+    Element.prototype.onCuePointStop = function(evt){
         this.removeClass('active');
     };
 
     /**
-     * Description
+     * The cuepoint seekout event handler
+     *
      * @method onCuePointSeekOut
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointEnd;
+    Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointStop;
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Element.prototype.setDraggable = function(draggable){
 
@@ -497,8 +335,7 @@ metaScore.namespace('player.component').Element = (function () {
         if(draggable && !this._draggable){
             this._draggable = new metaScore.Draggable({
                 'target': this,
-                'handle': this,
-                'container': this.parents()
+                'handle': this
             });
         }
         else if(!draggable && this._draggable){
@@ -511,10 +348,11 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
+     * Set/Unset the resizable behaviour
+     *
+     * @method setDraggable
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {Resizable} The resizable behaviour
      */
     Element.prototype.setResizable = function(resizable){
 
@@ -526,8 +364,7 @@ metaScore.namespace('player.component').Element = (function () {
 
         if(resizable && !this._resizable){
             this._resizable = new metaScore.Resizable({
-                'target': this,
-                'container': this.parents()
+                'target': this
             });
         }
         else if(!resizable && this._resizable){

@@ -1,15 +1,18 @@
 /**
-* Description
-* @class editor.field.Textarea
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Textarea = (function () {
 
     /**
-     * Description
+     * A multi-line text field based on an HTML textarea element
+     *
+     * @class TextareaField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.value=''] The default value
      */
     function TextareaField(configs) {
         this.configs = this.getConfigs(configs);
@@ -21,18 +24,16 @@ metaScore.namespace('editor.field').Textarea = (function () {
     }
 
     TextareaField.defaults = {
-        /**
-        * Defines the default value
-        */
         'value': ''
     };
 
     metaScore.editor.Field.extend(TextareaField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     TextareaField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);

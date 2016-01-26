@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class editor.panel.Text
-* @extends editor.Panel
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Text = (function () {
 
@@ -40,9 +37,15 @@ metaScore.namespace('editor.panel').Text = (function () {
     var EVT_COMPONENTUNLOCK = 'componentunlock';
 
     /**
-     * Description
+     * A panel for {{#crossLink "player.component.element.Text"}}{{/crossLink}} components
+     * 
+     * @class Text
+     * @namespace editor.panel
+     * @extends editor.Panel
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={'title':'Text', 'buttons': [], 'selector': false]}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @param {Object} [configs.properties={'locked': ...}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function TextPanel(configs) {
         // call parent constructor
@@ -57,23 +60,17 @@ metaScore.namespace('editor.panel').Text = (function () {
     }
 
     TextPanel.defaults = {
-        toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
-            title: metaScore.Locale.t('editor.panel.Text.title', 'Text'),
-            buttons: [],
-            selector: false
-        }),
-
-        properties: {
+        'toolbarConfigs': {
+            'title': metaScore.Locale.t('editor.panel.Text.title', 'Text'),
+            'buttons': [],
+            'selector': false
+        },
+        'properties': {
             'locked': {
                 'type': 'Boolean',
                 'configs': {
                     'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     if(value){
                         this.lock();
@@ -89,10 +86,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     metaScore.editor.Panel.extend(TextPanel);
 
     /**
-     * Description
+     * The fields' valuechange event handler
+     *
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TextPanel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -111,11 +109,12 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Set the associated component
+     *
      * @method setComponent
-     * @param {} component
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {player.Component} component The component
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.setComponent = function(component, supressEvent){
         if(component !== this.getComponent()){
@@ -141,10 +140,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Unset the associated component
+     *
      * @method unsetComponent
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent();
@@ -163,9 +163,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Lock the associated component
+     * 
      * @method lock
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.lock = function(supressEvent){
         var component = this.getComponent();
@@ -197,9 +199,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Unlock the associated component
+     * 
      * @method unlock
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.unlock = function(supressEvent){
         var component = this.getComponent();
@@ -231,9 +235,10 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Disable the panel
+     *
      * @method disable
-     * @return CallExpression
+     * @chainable
      */
     TextPanel.prototype.disable = function(){
         this.lock();
@@ -242,30 +247,33 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
-     * @method onComponentContentsDblClick
-     * @param {} evt
-     * @return
-     */
-    TextPanel.prototype.onComponentContentsDblClick = function(evt){
-        this.updateFieldValue('locked', false);
-    };
-
-    /**
-     * Description
+     * The component's contents click event handler
+     * 
      * @method onComponentContentsClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TextPanel.prototype.onComponentContentsClick = function(evt){
         evt.stopPropagation();
     };
 
     /**
-     * Description
+     * The component's contents dblclick event handler
+     * 
+     * @method onComponentContentsDblClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    TextPanel.prototype.onComponentContentsDblClick = function(evt){
+        this.updateFieldValue('locked', false);
+    };
+
+    /**
+     * The component's contents key event handler
+     * 
      * @method onComponentContentsKey
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TextPanel.prototype.onComponentContentsKey = function(evt){
         evt.stopPropagation();

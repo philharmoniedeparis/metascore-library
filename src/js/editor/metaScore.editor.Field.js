@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.Field
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Field = (function () {
 
@@ -16,9 +14,18 @@ metaScore.namespace('editor').Field = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A generic field based on an HTML input element
+     *
+     * @class Field
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Mixed} [configs.value=null] The default value
+     * @param {Boolean} [configs.required=false] Whether the field is required
+     * @param {Boolean} [configs.disabled=false] Whether the field is disabled by default
+     * @param {Boolean} [configs.readonly=false] Whether the field is readonly by default
+     * @param {String} [configs.description=''] A description to add to the field
      */
     function Field(configs) {
         this.configs = this.getConfigs(configs);
@@ -61,38 +68,20 @@ metaScore.namespace('editor').Field = (function () {
     }
 
     Field.defaults = {
-        /**
-        * Defines the default value
-        */
         'value': null,
-
-        /**
-        * Defines whether the field is required
-        */
         'required': false,
-
-        /**
-        * Defines whether the field is disabled by default
-        */
         'disabled': false,
-
-        /**
-        * Defines whether the field is readonly by default
-        */
         'readonly': false,
-
-        /**
-        * A description to add to the field
-        */
         'description': null
     };
 
     metaScore.Dom.extend(Field);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     Field.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -105,15 +94,17 @@ metaScore.namespace('editor').Field = (function () {
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        this.input = new metaScore.Dom('<input/>', {'type': 'text', 'id': uid})
+        this.input = new metaScore.Dom('<input/>', {'id': uid})
             .addListener('change', metaScore.Function.proxy(this.onChange, this))
             .appendTo(this.input_wrapper);
     };
 
     /**
-     * Description
+     * Set the description text
+     *
      * @method setDescription
-     * @return
+     * @param {String} description The description text
+     * @chainable
      */
     Field.prototype.setDescription = function(description){
         if(!('description' in this)){
@@ -122,13 +113,16 @@ metaScore.namespace('editor').Field = (function () {
         }
 
         this.description.text(description);
+        
+        return this;
     };
 
     /**
-     * Description
+     * The change event handler
+     *
      * @method onChange
-     * @param {} evt
-     * @return
+     * @param {Event} evt The event object
+     * @private
      */
     Field.prototype.onChange = function(evt){
         this.value = this.input.val();
@@ -137,11 +131,12 @@ metaScore.namespace('editor').Field = (function () {
     };
 
     /**
-     * Description
+     * Set the field's value
+     *
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Field.prototype.setValue = function(value, supressEvent){
         this.input.val(value);
@@ -150,12 +145,15 @@ metaScore.namespace('editor').Field = (function () {
         if(supressEvent !== true){
             this.input.triggerEvent('change');
         }
+        
+        return this;
     };
 
     /**
-     * Description
+     * Get the field's current value
+     *
      * @method getValue
-     * @return MemberExpression
+     * @return {Mixed} The value
      */
     Field.prototype.getValue = function(){
         return this.value;
@@ -163,8 +161,9 @@ metaScore.namespace('editor').Field = (function () {
 
     /**
      * Disable the field
+     *
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Field.prototype.disable = function(){
         this.disabled = true;
@@ -180,8 +179,9 @@ metaScore.namespace('editor').Field = (function () {
 
     /**
      * Enable the field
+     *
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Field.prototype.enable = function(){
         this.disabled = false;
@@ -196,9 +196,11 @@ metaScore.namespace('editor').Field = (function () {
     };
 
     /**
-     * Toggle the readonly attribute of the field
+     * Toggle the field's readonly state
+     *
      * @method readonly
-     * @return ThisExpression
+     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @chainable
      */
     Field.prototype.readonly = function(readonly){
         this.is_readonly = readonly === true;

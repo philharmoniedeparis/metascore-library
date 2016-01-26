@@ -1,21 +1,31 @@
+/**
+ * @module Editor
+ */
+
 metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
     /**
-     * Fired when the submit button is clicked
+     * Fired when a guide's select button is clicked
      *
      * @event submit
      * @param {Object} overlay The overlay instance
-     * @param {Object} values The field values
+     * @param {Object} guide The guide's data
+     * @param {Integer} vid The selected vid of the guide
      */
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * A guide selector overlay
      *
-     * @class editor.overlay.GuideSelector
+     * @class GuideSelector
+     * @namespace editor.overlay
      * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.title='Select a guide'] The overlay's title
+     * @param {String} [configs.empty_text='No guides available'] A text to show when no guides are available
+     * @param {String} [configs.url=''] The url from which to retreive the list of guides
      */
     function GuideSelector(configs) {
         this.configs = this.getConfigs(configs);
@@ -27,33 +37,19 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     }
 
     GuideSelector.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: true,
-
-        /**
-        * The overlay's title
-        */
-        title: metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
-
-        /**
-        * The text to display when no guides are available
-        */
-        emptyText: metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
-
-        /**
-        * The url from which to retreive the list of guides
-        */
-        url: null
+        'toolbar': true,
+        'title': metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
+        'empty_text': metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
+        'url': null
     };
 
     metaScore.editor.Overlay.extend(GuideSelector);
 
     /**
-     * Description
+     * Show the overlay
+     * 
      * @method show
-     * @return
+     * @chainable
      */
     GuideSelector.prototype.show = function(){
         this.loadmask = new metaScore.editor.overlay.LoadMask({
@@ -64,13 +60,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             'success': metaScore.Function.proxy(this.onLoadSuccess, this),
             'error': metaScore.Function.proxy(this.onLoadError, this)
         });
+
+        return this;
     };
 
     /**
-     * Description
+     * The onload success event handler
+     * 
      * @method onLoadSuccess
-     * @param {} xhr
-     * @return
+     * @private
+     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
      */
     GuideSelector.prototype.onLoadSuccess = function(xhr){
         var contents = this.getContents(),
@@ -84,7 +83,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             .appendTo(contents);
 
         if(metaScore.Var.isEmpty(guides)){
-            contents.text(this.configs.emptyText);
+            contents.text(this.configs.empty_text);
         }
         else{
             metaScore.Array.each(guides, function(index, guide){
@@ -139,7 +138,13 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
                 button = new metaScore.editor.Button()
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
-                    .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
+                    .addListener('click', metaScore.Function.proxy(function(evt){
+                        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+
+                        this.hide();
+
+                        evt.stopPropagation();
+                    }, this))
                     .data('action', 'select');
 
                 revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
@@ -166,23 +171,13 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     };
 
     /**
-     * Description
+     * The load error event handler
+     * 
      * @method onLoadError
-     * @return
+     * @private
+     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
      */
-    GuideSelector.prototype.onLoadError = function(){
-    };
-
-    /**
-     * Description
-     * @method onGuideClick
-     * @param {} guide
-     * @return
-     */
-    GuideSelector.prototype.onGuideClick = function(guide, revision_field){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
-
-        this.hide();
+    GuideSelector.prototype.onLoadError = function(xhr){
     };
 
     return GuideSelector;

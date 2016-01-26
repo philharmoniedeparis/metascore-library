@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.History
-* @extends Evented
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').History = (function(){
 
@@ -38,9 +36,14 @@ metaScore.namespace('editor').History = (function(){
     var EVT_CLEAR = 'clear';
 
     /**
-     * Description
+     * An undo/redo manager
+     *
+     * @class History
+     * @namespace editor
+     * @extends Evented
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Integer} [configs.max_commands=30] The maximum number of commands to store
      */
     function History(configs) {
         this.configs = this.getConfigs(configs);
@@ -54,20 +57,19 @@ metaScore.namespace('editor').History = (function(){
     }
 
     History.defaults = {
-        /**
-        * Maximum number of commands to store
-        */
-        max_commands: 30
+        'max_commands': 30
     };
 
     metaScore.Evented.extend(History);
 
     /**
-     * Description
+     * Execute a command's action
+     *
      * @method execute
-     * @param {} command
-     * @param {} action
-     * @return ThisExpression
+     * @private
+     * @param {Object} command The command object
+     * @param {String} action The action ('undo' or 'redo') to execute
+     * @chainable
      */
     History.prototype.execute = function(command, action) {
         if (command && (action in command)) {
@@ -80,10 +82,11 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Add a command
+     *
      * @method add
-     * @param {} command
-     * @return ThisExpression
+     * @param {Object} command The command object. It should contain an 'undo' and a 'redo' function
+     * @chainable
      */
     History.prototype.add = function (command){
         if (this.executing) {
@@ -110,9 +113,10 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Execute the undo action of the current command
+     *
      * @method undo
-     * @return ThisExpression
+     * @chainable
      */
     History.prototype.undo = function() {
         var command = this.commands[this.index];
@@ -133,9 +137,10 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Execute the redo action of the previous command
+     *
      * @method redo
-     * @return ThisExpression
+     * @chainable
      */
     History.prototype.redo = function() {
         var command = this.commands[this.index + 1];
@@ -156,9 +161,10 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Remove all commands
+     *
      * @method clear
-     * @return
+     * @chainable
      */
     History.prototype.clear = function () {
         var length = this.commands.length;
@@ -169,22 +175,26 @@ metaScore.namespace('editor').History = (function(){
         if(length > 0) {
             this.triggerEvent(EVT_CLEAR);
         }
+        
+        return this;
 
     };
 
     /**
-     * Description
+     * Check if an undo action is available
+     *
      * @method hasUndo
-     * @return BinaryExpression
+     * @return {Boolean} Whether an undo action is available
      */
     History.prototype.hasUndo = function(){
         return this.index !== -1;
     };
 
     /**
-     * Description
+     * Check if a redo action is available
+     *
      * @method hasRedo
-     * @return BinaryExpression
+     * @return {Boolean} Whether a redo action is available
      */
     History.prototype.hasRedo = function(){
         return this.index < (this.commands.length - 1);

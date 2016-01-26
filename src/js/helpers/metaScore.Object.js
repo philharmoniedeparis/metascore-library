@@ -1,27 +1,28 @@
 /**
-* Description
-* @class Object
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Object = (function () {
 
     /**
-     * Description
+     * A class for object helper functions
+     * 
+     * @class Object
      * @constructor
      */
     function Object() {
     }
 
-    metaScore.Class.extend(Object);
-
     /**
-     * Merge the contents of two or more objects together into the first object.
+     * Merge the contents of two or more objects together into the first object
+     * 
      * @method extend
-     * @return target
+     * @static
+     * @param {Object} [first] The object to which other objects are merged
+     * @param {Object} [...others] The objects to merge with the first one
+     * @return {Object} The first object
      */
     Object.extend = function() {
-
         var target = arguments[0] || {},
             options,
             i = 1,
@@ -42,31 +43,33 @@ metaScore.Object = (function () {
         }
 
         return target;
-
     };
 
     /**
      * Return a copy of an object
+     * 
      * @method copy
-     * @param {} obj
-     * @return CallExpression
+     * @static
+     * @param {Object} obj The original object
+     * @return {Object} The object copy
      */
     Object.copy = function(obj) {
-
         return Object.extend({}, obj);
-
     };
 
     /**
-     * Call a function on each property of an object
+     * Iterate over an object
+     * 
      * @method each
-     * @param {} obj
-     * @param {} callback
-     * @param {} scope
-     * @return obj
+     * @static
+     * @param {Object} obj The object to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {String} callback.key The key of the current element being processed in the object
+     * @param {Mixed} callback.value The element that is currently being processed in the object
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Object} The object
      */
     Object.each = function(obj, callback, scope) {
-
         var key, value,
             scope_provided = scope !== undefined;
 
@@ -79,7 +82,6 @@ metaScore.Object = (function () {
         }
 
         return obj;
-
     };
 
     return Object;

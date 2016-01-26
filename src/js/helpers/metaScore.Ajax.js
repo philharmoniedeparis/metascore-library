@@ -1,15 +1,17 @@
+/** 
+ * @module Core
+ */
+
 metaScore.Ajax = (function () {
 
     /**
-     * Helper class to handle AJAX requests
+     * A class to handle AJAX requests
      *
      * @class Ajax
      * @constructor
      */
     function Ajax() {
     }
-
-    metaScore.Class.extend(Ajax);
 
     /**
      * Send an XMLHttp request
@@ -77,7 +79,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp GET request
+     * 
      * @method get
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -92,7 +96,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp POST request
+     * 
      * @method post
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -107,7 +113,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp PUT request
+     * 
      * @method put
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request

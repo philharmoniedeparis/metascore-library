@@ -1,11 +1,16 @@
 /**
-* The core object <br/>
-* Implements global helper methods
-*
-* @class metaScore
-* @static
-*/
-
+ * The Core module defines shared classes used in other modules
+ *
+ * @module Core
+ * @main
+ */
+ 
+ /**
+ * The core global object to which all internal classes are attached<br/>
+ *
+ * @class metaScore
+ * @static
+ */
 var metaScore = {
 
     /**
@@ -31,7 +36,7 @@ var metaScore = {
     },
 
     /**
-     * Extends the metaScore namespace
+     * Returns a sub-namespace, creating it if it doesn't already exist
      *
      * @method namespace
      * @static

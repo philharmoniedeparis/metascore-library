@@ -1,19 +1,27 @@
 /**
-* A helper class for variable type detection and value.
-* @class Var
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Var = (function () {
 
     /**
-    * Helper object used by the type function
-    *
-    * @property dot
-    * @type {Object}
-    * @private
-    */
-    var classes2types = {
+     * A class for variable helper functions
+     * 
+     * @class Var
+     * @constructor
+     */
+    function Var() {
+    }
+
+    /**
+     * A list of variable type correspondances
+     *
+     * @property classes2types
+     * @type {Object}
+     * @static
+     * @private
+     */
+    Var.classes2types = {
         "[object Boolean]": "boolean",
         "[object Number]": "number",
         "[object String]": "string",
@@ -25,39 +33,37 @@ metaScore.Var = (function () {
     };
 
     /**
-     * @constructor
-     */
-    function Var() {
-    }
-
-    metaScore.Class.extend(Var);
-
-    /**
      * Get the type of a variable
+     * 
      * @method type
-     * @param {} obj
-     * @return ConditionalExpression
+     * @static
+     * @param {Mixed} obj The variable
+     * @return {String} The type of the variable
      */
     Var.type = function(obj) {
-        return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
+        return obj == null ? String(obj) : Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
     };
 
     /**
-     * Checks if a variable is of a certain type
+     * Check if a variable is of a certain type
+     * 
      * @method is
-     * @param {} obj
-     * @param {} type
-     * @return BinaryExpression
+     * @static
+     * @param {Mixed} obj The variable
+     * @param {String} type The type to check for
+     * @return {Boolean} Whether the variable is of the specified type
      */
     Var.is = function(obj, type) {
         return Var.type(obj) === type.toLowerCase();
     };
 
     /**
-     * Checks if a variable is empty
+     * Check if a variable is empty
+     * 
      * @method isEmpty
-     * @param {} obj
-     * @return Literal
+     * @static
+     * @param {Mixed} obj The variable
+     * @return {Boolean} Whether the variable is empty
      */
     Var.isEmpty = function(obj) {
         if(obj === undefined || obj == null){

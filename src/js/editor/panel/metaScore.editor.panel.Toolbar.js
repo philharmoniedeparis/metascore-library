@@ -1,15 +1,21 @@
 /**
-* Description
-* @class editor.panel.Toolbar
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Toolbar = (function(){
 
     /**
-     * Initialize
+     * A title toolbar for panel's
+     *
+     * @class Toolbar
+     * @namespace editor.panel
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.title=''] The text to display as a title
+     * @param {Array} [configs.buttons=['previous', 'next']] The buttons to display
+     * @param {Boolean} [configs.selector=true] Whether to display a selector
+     * @param {Object} [configs.menuItems={}}] A list of dropdown menu items to display
      */
     function Toolbar(configs) {
         this.configs = this.getConfigs(configs);
@@ -46,64 +52,50 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     }
 
     Toolbar.defaults = {
-        /**
-        * A text to add as a title
-        */
-        title: '',
-
-        buttons: [],
-
-        /**
-        * Whether to replace the title with a selector
-        */
-        selector: true,
-
-        menuItems: {}
+        'title': '',
+        'buttons': ['previous', 'next'],
+        'selector': true,
+        'menuItems': {}
     };
 
     metaScore.Dom.extend(Toolbar);
 
     /**
-     * Description
-     * @method getToggle
-     * @return MemberExpression
-     */
-    Toolbar.prototype.getToggle = function(){
-        return this.toggle;
-    };
-
-    /**
-     * Description
+     * Get the title's Dom object
+     * 
      * @method getTitle
-     * @return MemberExpression
+     * @return {Dom} The Dom object
      */
     Toolbar.prototype.getTitle = function(){
         return this.title;
     };
 
     /**
-     * Description
+     * Get the selector field
+     * 
      * @method getSelector
-     * @return MemberExpression
+     * @return {editor.field.Select} The selector field
      */
     Toolbar.prototype.getSelector = function(){
         return this.selector;
     };
 
     /**
-     * Description
+     * Get the dropdown menu
+     * 
      * @method getMenu
-     * @return MemberExpression
+     * @return {editor.DropDownMenu} The dropdown menu
      */
     Toolbar.prototype.getMenu = function(){
         return this.menu;
     };
 
     /**
-     * Description
+     * Add a button
+     * 
      * @method addButton
-     * @param {} action
-     * @return button
+     * @param {String} action The button's associated action
+     * @return {editor.Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
         var button = new metaScore.editor.Button().data('action', action)
@@ -113,30 +105,23 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     };
 
     /**
-     * Description
+     * Get a button by associated action
+     * 
      * @method getButton
-     * @param {} action
-     * @return CallExpression
+     * @param {String} action The button's associated action
+     * @return {Dom} The button's Dom object
      */
     Toolbar.prototype.getButton = function(action){
         return this.buttons.children('[data-action="'+ action +'"]');
     };
 
     /**
-     * Description
-     * @method getSelector
-     * @return ThisExpression
-     */
-    Toolbar.prototype.getSelector = function(){
-        return this.selector;
-    };
-
-    /**
-     * Description
+     * Toggle the enabled state of a menu item
+     * 
      * @method toggleMenuItem
-     * @param {} action
-     * @param {} state
-     * @return ThisExpression
+     * @param {String} action The item's associated action
+     * @param {Boolean} state The enabled state to set
+     * @chainable
      */
     Toolbar.prototype.toggleMenuItem = function(action, state){
         var menu = this.getMenu();

@@ -1,15 +1,17 @@
 /**
-* Description
-* @class editor.field.BorderRadius
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').BorderRadius = (function () {
 
     /**
-     * Description
+     * A complex field for defining CSS border radius values
+     * 
+     * @class BorderRadius
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
      */
     function BorderRadiusrField(configs) {
         this.configs = this.getConfigs(configs);
@@ -23,9 +25,10 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     metaScore.editor.Field.extend(BorderRadiusrField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     BorderRadiusrField.prototype.setupUI = function(){
         BorderRadiusrField.parent.prototype.setupUI.call(this);
@@ -43,23 +46,27 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     BorderRadiusrField.prototype.setValue = function(value, supressEvent){
         BorderRadiusrField.parent.prototype.setValue.call(this, value, supressEvent);
 
         this.input.attr('title', value);
+
+        return this;
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadiusrField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -72,10 +79,11 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * The overlay's submit event handler
+     * 
      * @method onOverlaySubmit
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadiusrField.prototype.onOverlaySubmit = function(evt){
         var value = evt.detail.value,
@@ -85,10 +93,11 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * The clear button's click event handler
+     * 
      * @method onClearClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadiusrField.prototype.onClearClick = function(evt){
         this.setValue('0px');

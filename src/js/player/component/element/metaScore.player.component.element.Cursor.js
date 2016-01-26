@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class player.component.element.Cursor
-* @extends player.component.Element
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component.element').Cursor = (function () {
 
@@ -17,9 +14,14 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     var EVT_TIME = 'time';
 
     /**
-     * Description
+     * A cursor element
+     *
+     * @class Cursor
+     * @namespace player.component.element
+     * @extends player.component.Element
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Cursor(configs) {
         // call parent constructor
@@ -41,19 +43,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                         'top': metaScore.Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
                     }
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('direction');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('direction', value);
                 }
@@ -63,19 +55,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('accel');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('accel', value);
                 }
@@ -85,20 +67,10 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.cursor.css('width', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.cursor.css('width', value +'px');
                 }
@@ -108,19 +80,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                      return this.cursor.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -130,13 +92,14 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the cursor's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Cursor.prototype.setupDOM = function(){
+    Cursor.prototype.setupUI = function(){
         // call parent function
-        Cursor.parent.prototype.setupDOM.call(this);
+        Cursor.parent.prototype.setupUI.call(this);
 
         this.data('type', 'Cursor');
 
@@ -149,10 +112,11 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * Description
+     * The click event handler
+     *
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Cursor.prototype.onClick = function(evt){
         var pos, time,
@@ -198,18 +162,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * Description
+     * The cuepoint update event handler
+     *
      * @method onCuePointUpdate
-     * @param {} cuepoint
-     * @param {} curTime
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
+    Cursor.prototype.onCuePointUpdate = function(evt){
         var width, height,
-            inTime, outTime, pos,
+            curTime, inTime, outTime, pos,
             direction = this.getProperty('direction'),
             acceleration = this.getProperty('acceleration');
 
+        curTime = evt.target.getMedia().getTime();
         inTime = this.getProperty('start-time');
         outTime = this.getProperty('end-time');
 

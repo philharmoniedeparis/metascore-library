@@ -1,15 +1,18 @@
 /**
-* Description
-* @class editor.Button
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Button = (function () {
 
     /**
-     * Description
+     * A simple button based on an HTML button element
+     *
+     * @class Button
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.label=null] A text to add as a label
      */
     function Button(configs) {
         this.configs = this.getConfigs(configs);
@@ -27,19 +30,17 @@ metaScore.namespace('editor').Button = (function () {
     }
 
     Button.defaults = {
-        /**
-        * A text to add as a label
-        */
-        label: null
+        'label': null
     };
 
     metaScore.Dom.extend(Button);
 
     /**
-     * Description
+     * The click event handler
+     *
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Button.prototype.onClick = function(evt){
         if(this.disabled){
@@ -48,10 +49,11 @@ metaScore.namespace('editor').Button = (function () {
     };
 
     /**
-     * Description
+     * Set the button's text
+     *
      * @method setLabel
-     * @param {} text
-     * @return ThisExpression
+     * @param {String} text The text to use as the label
+     * @chainable
      */
     Button.prototype.setLabel = function(text){
         if(this.label === undefined){
@@ -66,8 +68,9 @@ metaScore.namespace('editor').Button = (function () {
 
     /**
      * Disable the button
+     *
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Button.prototype.disable = function(){
         this.disabled = true;
@@ -79,8 +82,9 @@ metaScore.namespace('editor').Button = (function () {
 
     /**
      * Enable the button
+     *
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Button.prototype.enable = function(){
         this.disabled = false;

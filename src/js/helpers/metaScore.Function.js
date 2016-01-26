@@ -1,27 +1,27 @@
 /**
-* Description
-* @class Function
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Function = (function () {
 
     /**
-     * Description
+     * A class for function helper functions
+     * 
+     * @class Function
      * @constructor
      */
     function Function() {
     }
 
-    metaScore.Class.extend(Function);
-
     /**
-     * Checks if a variable is of a certain type
+     * Create a proxy of a function
+     * 
      * @method proxy
-     * @param {} fn
-     * @param {} scope
-     * @param {} args
-     * @return FunctionExpression
+     * @static
+     * @param {Function} fn The function to proxy
+     * @param {Mixed} scope The value to use as this when executing the proxy function
+     * @param {Array} args Extra arguments to preppend to the passed arguments when the proxy function is called
+     * @return {Function} The proxy function
      */
     Function.proxy = function(fn, scope, args){
         if (!metaScore.Var.type(fn, 'function')){
@@ -42,13 +42,6 @@ metaScore.Function = (function () {
             return fn.apply(scope || this, args_array);
         };
     };
-
-    /**
-     * A reusable empty function
-     * @method emptyFn
-     * @return
-     */
-    Function.emptyFn = function(){};
 
     return Function;
 

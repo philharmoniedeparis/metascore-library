@@ -1,34 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-12-22 - Oussama Mubarak */
-// These constants are used in the build process to enable or disable features in the
-// compiled binary.    Here's how it works:    If you have a const defined like so:
-//
-//     const MY_FEATURE_IS_ENABLED = false;
-//
-// ...And the compiler (UglifyJS) sees this in your code:
-//
-//     if (MY_FEATURE_IS_ENABLED) {
-//         doSomeStuff();
-//     }
-//
-// ...Then the if statement (and everything in it) is removed - it is
-// considered dead code.    If it's set to a truthy value:
-//
-//     const MY_FEATURE_IS_ENABLED = true;
-//
-// ...Then the compiler leaves the if (and everything in it) alone.
-//
-// If you add more consts here, you need to initialize them in metaScore.core.js
-// to true.    So if you add:
-//
-//     const MY_FEATURE_IS_ENABLED = /* any value */;
-//
-// Then in metaScore.core.js you need to add:
-//
-//     if (typeof MY_AWESOME_FEATURE_IS_ENABLED === 'undefined') {
-//         MY_FEATURE_IS_ENABLED = true;
-//     }
-
-if (typeof DEBUG === 'undefined') DEBUG = true;
+/*! metaScore - v0.0.2 - 2016-01-26 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -158,13 +128,18 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
     }
 }());
 /**
-* The core object <br/>
-* Implements global helper methods
-*
-* @class metaScore
-* @static
-*/
-
+ * The Core module defines shared classes used in other modules
+ *
+ * @module Core
+ * @main
+ */
+ 
+ /**
+ * The core global object to which all internal classes are attached<br/>
+ *
+ * @class metaScore
+ * @static
+ */
 var metaScore = {
 
     /**
@@ -186,11 +161,11 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "9bcaba";
+        return "b6109b";
     },
 
     /**
-     * Extends the metaScore namespace
+     * Returns a sub-namespace, creating it if it doesn't already exist
      *
      * @method namespace
      * @static
@@ -212,6 +187,10 @@ var metaScore = {
     }
 
 };
+/**
+ * @module Core
+ */
+
 metaScore.Class = (function(){
 
     /**
@@ -282,6 +261,10 @@ metaScore.Class = (function(){
     return Class;
 
 })();
+/**
+ * @module Core
+ */
+
 metaScore.Evented = (function(){
 
     /**
@@ -341,6 +324,21 @@ metaScore.Evented = (function(){
     };
 
     /**
+     * Check if a listener is attached to a given event type
+     *
+     * @method hasListener
+     * @param {String} type The event type
+     * @return {Boolean} Whether a listener is attached
+     */
+    Evented.prototype.hasListener = function(type){
+        if(this.listeners[type] instanceof Array){
+            return this.listeners[type].length > 0;
+        }
+
+        return false;
+    };
+
+    /**
      * Trigger an event
      *
      * @method triggerEvent
@@ -375,18 +373,20 @@ metaScore.Evented = (function(){
     return Evented;
 
 })();
+/** 
+ * @module Core
+ */
+
 metaScore.Ajax = (function () {
 
     /**
-     * Helper class to handle AJAX requests
+     * A class to handle AJAX requests
      *
      * @class Ajax
      * @constructor
      */
     function Ajax() {
     }
-
-    metaScore.Class.extend(Ajax);
 
     /**
      * Send an XMLHttp request
@@ -454,7 +454,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp GET request
+     * 
      * @method get
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -469,7 +471,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp POST request
+     * 
      * @method post
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -484,7 +488,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp PUT request
+     * 
      * @method put
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -501,42 +507,42 @@ metaScore.Ajax = (function () {
 
 })();
 /**
-* Description
-* @class Array
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Array = (function () {
 
     /**
-     * Description
+     * A class for array helper functions
+     * 
+     * @class Array
      * @constructor
      */
     function Array() {
     }
 
-    metaScore.Class.extend(Array);
-
     /**
-     * Checks if a value is in an array
+     * Check if a value is in an array
+     * 
      * @method inArray
-     * @param {} value
-     * @param {} arr
-     * @return UnaryExpression
+     * @static
+     * @param {Mixed} needle The value to search
+     * @param {Array} haystack The array
+     * @return {Integer} The index of the first match, -1 if none
      */
-    Array.inArray = function (value, arr) {
+    Array.inArray = function (needle, haystack) {
         var len, i = 0;
 
-        if(arr) {
-            if(arr.indexOf){
-                return arr.indexOf(value);
+        if(haystack) {
+            if(haystack.indexOf){
+                return haystack.indexOf(needle);
             }
 
-            len = arr.length;
+            len = haystack.length;
 
             for ( ; i < len; i++ ) {
                 // Skip accessing in sparse arrays
-                if ( i in arr && arr[i] === value ) {
+                if ( i in haystack && haystack[i] === needle ) {
                     return i;
                 }
             }
@@ -546,20 +552,24 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Copies an array
+     * Copy an array
+     * 
      * @method copy
-     * @param {} arr
-     * @return CallExpression
+     * @static
+     * @param {Array} arr The original array
+     * @return {Array} The copy
      */
     Array.copy = function (arr) {
         return [].concat(arr);
     };
 
     /**
-     * Shuffles elements in an array
+     * Shuffle array elements
+     * 
      * @method shuffle
-     * @param {} arr
-     * @return shuffled
+     * @static
+     * @param {Array} arr The array to shuffle
+     * @return {Array} The shuffled copy of the array
      */
     Array.shuffle = function(arr) {
 
@@ -574,10 +584,12 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Return new array with duplicate values removed
+     * Remove duplicate values from an array
+     * 
      * @method unique
-     * @param {} arr
-     * @return unique
+     * @static
+     * @param {Array} arr The array to remove duplicates from
+     * @return {Array} A copy of the array with no duplicates
      */
     Array.unique = function(arr) {
 
@@ -599,12 +611,16 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Call a function on each element of an array
+     * Iterate over an array with a callback function
+     * 
      * @method each
-     * @param {} arr
-     * @param {} callback
-     * @param {} scope
-     * @return arr
+     * @static
+     * @param {Array} arr The array to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed in the array
+     * @param {Array} callback.value The element that is currently being processed in the array
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Array} The array
      */
     Array.each = function(arr, callback, scope) {
 
@@ -626,30 +642,43 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Remove an element from an array
+     * Remove a elements from an array by value
+     * 
      * @method remove
-     * @param {} arr
-     * @param {} element
-     * @return arr
+     * @static
+     * @param {Array} arr The array to remove the elements from
+     * @param {Mixed} value The value to search for
+     * @return {Array} The array
      */
-    Array.remove = function(arr, element){
-        var index = Array.inArray(element, arr);
+    Array.remove = function(arr, value){
+        var index = Array.inArray(value, arr);
 
         while(index > -1){
             arr.splice(index, 1);
-            index = Array.inArray(element, arr);
+            index = Array.inArray(value, arr);
         }
 
         return arr;
     };
 
     /**
-     * Natural Sort algorithm
-     * Author: Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/)
-     * Version 0.7 - Released under MIT license
+     * Get a natural sort function to use with Array.sort
+     * 
      * @method naturalSort
-     * @param {} insensitive
-     * @return CallExpression
+     * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
+     * @static
+     * @param {Boolean} [insensitive=false] Whether the sort should not be case-sensitive
+     * @return {Function} The sorting function
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(true));
+     *     // ["a1", "A2", "b", "c", "d"]
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(false));
+     *     // ["A2", "a1", "b", "c", "d"]
      */
     Array.naturalSort = function(insensitive){
         return function(a, b){
@@ -697,27 +726,27 @@ metaScore.Array = (function () {
 
 })();
 /**
-* Description
-* @class Color
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Color = (function () {
 
     /**
-     * Description
+     * A class for color helper functions
+     * 
+     * @class Color
      * @constructor
      */
     function Color() {
     }
 
-    metaScore.Class.extend(Color);
-
     /**
-     * Description
+     * Convert an RGB value to HSV
+     * 
      * @method rgb2hsv
-     * @param {} rgb
-     * @return ObjectExpression
+     * @static
+     * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
+     * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
      */
     Color.rgb2hsv = function (rgb){
         var r = rgb.r, g = rgb.g, b = rgb.b,
@@ -758,10 +787,12 @@ metaScore.Color = (function () {
     };
 
     /**
-     * Description
+     * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
+     * 
      * @method parse
-     * @param {} color
-     * @return rgba
+     * @static
+     * @param {Mixed} color The CSS value to parse
+     * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
      */
     Color.parse = function(color){
         var rgba, matches;
@@ -824,11 +855,8 @@ metaScore.Color = (function () {
 
 })();
 /**
-* Description
-*
-* @class Dom
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Dom = (function () {
 
@@ -848,8 +876,16 @@ metaScore.Dom = (function () {
     var EVT_CHILDREMOVE = 'childremove';
 
     /**
-     * Description
+     * A class for Dom manipulation
+     * 
+     * @class Dom
+     * @extends Class
      * @constructor
+     * @param {Mixed} [...args] An HTML string and an optional list of attributes to apply, or a CSS selector with an optional parent and an optional list of attributes to apply
+     * 
+     * @example
+     *     var div = new metaScore.Dom('<div/>', {'class': 'my-class'});
+     *     var body = new metaScore.Dom('body');
      */
     function Dom() {
         var elements;
@@ -877,39 +913,20 @@ metaScore.Dom = (function () {
     metaScore.Class.extend(Dom);
 
     /**
-    * Regular expression that matches an element's string
-    */
-    Dom.stringRe = /^<(.)+>$/;
-
-    /**
-    * Regular expression that matches dashed string for camelizing
-    */
+     * Regular expression that matches dashed string for camelizing
+     *
+     * @property camelRe
+     * @private
+     */
     Dom.camelRe = /-([\da-z])/gi;
 
     /**
-     * Helper function used by the camel function
-     * @method camelReplaceFn
-     * @param {} all
-     * @param {} letter
-     * @return CallExpression
+     * List of common events that should generaly bubble up
+     * 
+     * @property bubbleEvents
+     * @static
+     * @private
      */
-    Dom.camelReplaceFn = function(all, letter) {
-        return letter.toUpperCase();
-    };
-
-    /**
-     * Normaliz a string to Camel Case; used for CSS properties
-     * @method camel
-     * @param {} str
-     * @return CallExpression
-     */
-    Dom.camel = function(str){
-        return str.replace(Dom.camelRe, Dom.camelReplaceFn);
-    };
-
-    /**
-    * List of event that should generaly bubble up
-    */
     Dom.bubbleEvents = {
         'click': true,
         'submit': true,
@@ -922,11 +939,40 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Select a single element by selecor
+     * Helper function used by the camel function
+     * 
+     * @method camelReplaceFn
+     * @static
+     * @private
+     * @param {The matched substring} match
+     * @param {The submatched letter} letter
+     * @return {String} The uppercased letter
+     */
+    Dom.camelReplaceFn = function(match, letter) {
+        return letter.toUpperCase();
+    };
+
+    /**
+     * Normalize a string to Camel Case
+     * 
+     * @method camel
+     * @static
+     * @private
+     * @param {String} str The string to normalize
+     * @return {String} The normalized string
+     */
+    Dom.camel = function(str){
+        return str.replace(Dom.camelRe, Dom.camelReplaceFn);
+    };
+
+    /**
+     * Select a single element by CSS selecor and optional parent
+     * 
      * @method selectElement
-     * @param {} selector
-     * @param {} parent
-     * @return element
+     * @static
+     * @param {String} The CSS selector
+     * @param {HTMLElement} [parent=document] The HTML Element in which to search
+     * @return {HTMLElement} The found element if any
      */
     Dom.selectElement = function (selector, parent) {
         var element;
@@ -949,11 +995,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Select elements by selecor
+     * Select multiple elements by CSS selecor and optional parent
+     * 
      * @method selectElements
-     * @param {} selector
-     * @param {} parent
-     * @return elements
+     * @static
+     * @param {String} The CSS selector
+     * @param {HTMLElement} [parent=document] The HTML Element in which to search
+     * @return {Mixed} An HTML NodeList or an array of found elements if any
      */
     Dom.selectElements = function (selector, parent) {
         var elements;
@@ -982,9 +1030,11 @@ metaScore.Dom = (function () {
 
     /**
      * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+     * 
      * @method elementsFromString
-     * @param {} html
-     * @return Literal
+     * @static
+     * @param {String} html The HTML string
+     * @return {HTML NodeList} A NodeList of the created elements, or null on error
      */
     Dom.elementsFromString = function(html){
         var wrapMap = {
@@ -1029,33 +1079,38 @@ metaScore.Dom = (function () {
 
     /**
      * Get the window containing an element
+     * 
      * @method getElementWindow
-     * @param {} el
-     * @return {}
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {HTML Window} The window
      */
-    Dom.getElementWindow = function(el){
-        var doc = el.ownerDocument;
+    Dom.getElementWindow = function(element){
+        var doc = element.ownerDocument;
 
         return doc.defaultView || doc.parentWindow;
     };
 
     /**
-     * Checks if an element has a given class
+     * Check if an element has a given CSS lass
+     * 
      * @method hasClass
-     * @param {} element
-     * @param {} className
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
+     * @return {Boolean} Whether the element has the specified CSS class
      */
     Dom.hasClass = function(element, className){
         return element.classList.contains(className);
     };
 
     /**
-     * Adds a given class to an element
+     * Add a CSS class to an element
+     * 
      * @method addClass
-     * @param {} element
-     * @param {} className
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
      */
     Dom.addClass = function(element, className){
         var classNames = className.split(" "),
@@ -1067,11 +1122,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes a given class from an element
+     * Remove a CSS class from an element
+     * 
      * @method removeClass
-     * @param {} element
-     * @param {} className
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
      */
     Dom.removeClass = function(element, className){
         var classNames = className.split(" "),
@@ -1083,12 +1139,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Toggles a given class on an element
+     * Toggle a CSS class on an element
+     * 
      * @method toggleClass
-     * @param {} element
-     * @param {} className
-     * @param {} force
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
+     * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
      */
     Dom.toggleClass = function(element, className, force){
         var classNames = className.split(" "),
@@ -1108,47 +1165,59 @@ metaScore.Dom = (function () {
 
     /**
      * Add an event listener on an element
+     * 
      * @method addListener
-     * @param {} element
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
      */
     Dom.addListener = function(element, type, callback, useCapture){
         if(useCapture === undefined){
             useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
         }
 
-        return element.addEventListener(type, callback, useCapture);
+        element.addEventListener(type, callback, useCapture);
+
+        return element;
     };
 
     /**
      * Remove an event listener from an element
+     * 
      * @method removeListener
-     * @param {} element
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
      */
     Dom.removeListener = function(element, type, callback, useCapture){
         if(useCapture === undefined){
             useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
         }
 
-        return element.removeEventListener(type, callback, useCapture);
+        element.removeEventListener(type, callback, useCapture);
+
+        return element;
     };
 
     /**
      * Trigger an event from an element
+     * 
      * @method triggerEvent
-     * @param {} element
-     * @param {} type
-     * @param {} data
-     * @param {} bubbles
-     * @param {} cancelable
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
+     * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
+     * @param {Boolean} [cancelable=true] Whether the event is cancelable
+     * @return {Boolean} Whether the event was not cancelled
      */
     Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
         var fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
@@ -1163,26 +1232,30 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets the innerHTML of an element
+     * Set or get the innerHTML of an element
+     * 
      * @method text
-     * @param {} element
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} [html] The value to set
+     * @return {String} The innerHTML of the element
      */
-    Dom.text = function(element, value){
-        if(value !== undefined){
-            element.innerHTML = value;
+    Dom.text = function(element, html){
+        if(html !== undefined){
+            element.innerHTML = html;
         }
 
         return element.innerHTML;
     };
 
     /**
-     * Sets or gets the value of an element
+     * Set or get the value of an element
+     * 
      * @method val
-     * @param {} element
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {String} The value of the element
      */
     Dom.val = function(element, value){
         if(value !== undefined){
@@ -1193,12 +1266,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets an attribute on an element
+     * Set or get an attribute on an element
+     * 
      * @method attr
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} name The attribute's name, or a list of name/value pairs
+     * @param {Mixed} [value] The attribute's value
+     * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
      */
     Dom.attr = function(element, name, value){
         if(metaScore.Var.is(name, 'object')){
@@ -1233,13 +1308,15 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets a style property of an element
+     * Set or get a CSS style property of an element
+     * 
      * @method css
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @param {} inline
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} name The CSS property's name
+     * @param {String} value The CSS property's value
+     * @param {Boolean} [inline=false] Whether to return the inline or computed style value
+     * @return {String} The CSS style value of the property
      */
     Dom.css = function(element, name, value, inline){
         var camel, style;
@@ -1256,12 +1333,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets a data string of an element
+     * Set or get a custom data attribute of an element
+     * 
      * @method data
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} name The name of the data attribute
+     * @param {String} value The value of the data attribute
+     * @return {String} The value of the data attribute
      */
     Dom.data = function(element, name, value){
         name = this.camel(name);
@@ -1279,11 +1358,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Appends children to an element
+     * Append children to an element
+     * 
      * @method append
-     * @param {} element
-     * @param {} children
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} children An array of elemets or a single element to append
      */
     Dom.append = function(element, children){
         if (!metaScore.Var.is(children, 'array')) {
@@ -1296,11 +1376,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Inserts siblings before an element
+     * Insert siblings before an element
+     * 
      * @method before
-     * @param {} element
-     * @param {} siblings
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     Dom.before = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -1313,11 +1394,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Inserts siblings after an element
+     * Insert siblings after an element
      * @method after
-     * @param {} element
-     * @param {} siblings
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     Dom.after = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -1330,10 +1411,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes all element children
+     * Remove all element children
+     * 
      * @method empty
-     * @param {} element
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
      */
     Dom.empty = function(element){
         while(element.firstChild){
@@ -1342,10 +1424,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes an element from the dom
+     * Remove an element from the DOM
+     * 
      * @method remove
-     * @param {} element
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
      */
     Dom.remove = function(element){
         if(element.parentElement){
@@ -1354,42 +1437,46 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Checks if an element matches a selector
+     * Check if an element matches a CSS selector
+     * 
      * @method is
-     * @param {} el
-     * @param {} selector
-     * @return Literal
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} selector The CSS selector
+     * @return {Boolean} Whether the element matches the CSS selector
      */
-    Dom.is = function(el, selector){
+    Dom.is = function(element, selector){
         var win;
 
-        if(el instanceof Element){
-            return Element.prototype.matches.call(el, selector);
+        if(element instanceof Element){
+            return Element.prototype.matches.call(element, selector);
         }
 
-        win = Dom.getElementWindow(el);
+        win = Dom.getElementWindow(element);
 
-        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
+        return (element instanceof win.Element) && Element.prototype.matches.call(element, selector);
     };
 
     /**
-     * Description
+     * Get the closest ancestor of an element which matches a given CSS selector
+     * 
      * @method closest
-     * @param {} el
-     * @param {} selector
-     * @return Literal
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} selector The CSS selector
+     * @return {Element} The matched element
      */
-    Dom.closest = function(el, selector){
+    Dom.closest = function(element, selector){
         var document, win;
 
-        if(el instanceof Element){
-            return Element.prototype.closest.call(el, selector);
+        if(element instanceof Element){
+            return Element.prototype.closest.call(element, selector);
         }
 
-        if(document = el.ownerDocument){
+        if(document = element.ownerDocument){
             if(win = document.defaultView || document.parentWindow){
-                if(el instanceof win.Element){
-                    return Element.prototype.closest.call(el, selector);
+                if(element instanceof win.Element){
+                    return Element.prototype.closest.call(element, selector);
                 }
             }
         }
@@ -1398,10 +1485,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an element to the set of elements managed by the Dom object
+     * 
      * @method add
-     * @param {} elements
-     * @return
+     * @private
+     * @param {Mixed} elements An array of elements or a single element to add
      */
     Dom.prototype.add = function(elements){
         if('length' in elements){
@@ -1415,29 +1503,32 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the number of elements managed by the Dom object
+     * 
      * @method count
-     * @return MemberExpression
+     * @return {Integer} The number of elements
      */
     Dom.prototype.count = function(){
         return this.elements.length;
     };
 
     /**
-     * Description
+     * Get an element by index from the set of elements managed by the Dom object
+     * 
      * @method get
-     * @param {} index
-     * @return MemberExpression
+     * @param {Integer} index The index of the elements to retreive
+     * @return {Element} The element
      */
     Dom.prototype.get = function(index){
         return this.elements[index];
     };
 
     /**
-     * Description
+     * Return a new Dom object with the elements filtered by a CSS selector
+     * 
      * @method filter
-     * @param {} selector
-     * @return filtered
+     * @param {String} selector The CSS selector
+     * @return {Dom} The new Dom object
      */
     Dom.prototype.filter = function(selector){
         var filtered = new Dom();
@@ -1452,10 +1543,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the index of the first element that matched the given CSS selector
+     * 
      * @method index
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Integer} The index of the first matched element, or -1 if none
      */
     Dom.prototype.index = function(selector){
         var found = -1;
@@ -1471,10 +1563,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Find all descendents that match a given CSS selector
+     * 
      * @method find
-     * @param {} selector
-     * @return descendents
+     * @param {String} selector The CSS selector
+     * @return {Dom} A Dom object of all matched descendents
      */
     Dom.prototype.find = function(selector){
         var descendents = new Dom();
@@ -1487,10 +1580,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get all children, optionally filtered by a given CSS selector
+     * 
      * @method children
-     * @param {} selector
-     * @return children
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched children
      */
     Dom.prototype.children = function(selector){
         var children = new Dom();
@@ -1507,20 +1601,22 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the first child , optionally filtered by a given CSS selector
+     * 
      * @method child
-     * @param {} selector
-     * @return NewExpression
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of the matched child
      */
     Dom.prototype.child = function(selector){
         return new Dom(this.children(selector).get(0));
     };
 
     /**
-     * Description
+     * Get all parents, optionally filtered by a given CSS selector
+     * 
      * @method parents
-     * @param {} selector
-     * @return parents
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched parents
      */
     Dom.prototype.parents = function(selector){
         var parents = new Dom();
@@ -1537,11 +1633,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Interate over all the elements managed by the Dom object
+     * 
      * @method each
-     * @param {} callback
-     * @param {} scope
-     * @return
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed
+     * @param {Element} callback.element The element that is currently being processed
+     * @param {Mixed} scope The value to use as this when executing the callback function
      */
     Dom.prototype.each = function(callback, scope){
         scope = scope || this;
@@ -1550,10 +1648,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Check if an element in the set of elements managed by the Dom object has a given CSS class
+     * 
      * @method hasClass
-     * @param {} className
-     * @return found
+     * @param {String} className The CSS class
+     * @return {Boolean} Whether a match was found
      */
     Dom.prototype.hasClass = function(className) {
         var found;
@@ -1567,10 +1666,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add a CSS class to all the elements managed by the Dom object
+     * 
      * @method addClass
-     * @param {} className
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @chainable
      */
     Dom.prototype.addClass = function(className) {
         this.each(function(index, element) {
@@ -1581,10 +1681,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove a CSS class from all the elements managed by the Dom object
+     * 
      * @method removeClass
-     * @param {} className
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @chainable
      */
     Dom.prototype.removeClass = function(className) {
         this.each(function(index, element) {
@@ -1595,11 +1696,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Toggle a CSS class for all the elements managed by the Dom object
+     * 
      * @method toggleClass
-     * @param {} className
-     * @param {} force
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
+     * @chainable
      */
     Dom.prototype.toggleClass = function(className, force) {
         this.each(function(index, element) {
@@ -1610,12 +1712,15 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an event listener on all the elements managed by the Dom object
+     * 
      * @method addListener
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return ThisExpression
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.addListener = function(type, callback, useCapture) {
      this.each(function(index, element) {
@@ -1626,19 +1731,22 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
+     * 
      * @method addDelegate
-     * @param {} selector
-     * @param {} type
-     * @param {} callback
-     * @param {} scope
-     * @param {} useCapture
-     * @return CallExpression
+     * @param {String} selector The CSS selector to filter descendents by
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The original event
+     * @param {Element} callback.match The first matched descendent
+     * @param {Mixed} [scope] The value to use as this when executing the callback function
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
         scope = scope || this;
 
-        return this.addListener(type, function(evt){
+        this.addListener(type, function(evt){
             var element = evt.target,
                 match;
 
@@ -1655,15 +1763,20 @@ metaScore.Dom = (function () {
                 callback.call(scope, evt, match);
             }
         }, useCapture);
+
+        return this;
     };
 
     /**
-     * Description
+     * Remove an event listener from all the elements managed by the Dom object
+     * 
      * @method removeListener
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return ThisExpression
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} useCapture Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.removeListener = function(type, callback, useCapture) {
         this.each(function(index, element) {
@@ -1674,13 +1787,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Trigger an event from all the elements managed by the Dom object
+     * 
      * @method triggerEvent
-     * @param {} type
-     * @param {} data
-     * @param {} bubbles
-     * @param {} cancelable
-     * @return return_value
+     * @param {String} type The event type
+     * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
+     * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
+     * @param {Boolean} [cancelable=true] Whether the event is cancelable
+     * @return {Boolean} Whether no event was cancelled
      */
     Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
         var return_value = true;
@@ -1693,10 +1807,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element
+     * 
      * @method text
-     * @param {} value
-     * @return
+     * @param {String} [html] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the innerHTML of the first element if used as a getter
      */
     Dom.prototype.text = function(value) {
         if(value !== undefined){
@@ -1710,10 +1825,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set the value of all the elements managed by the Dom object, or get the value of the first element
+     * 
      * @method val
-     * @param {} value
-     * @return
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     Dom.prototype.val = function(value) {
         if(value !== undefined){
@@ -1728,11 +1844,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
-     * @method attr
-     * @param {} name
-     * @param {} value
-     * @return
+     * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
+     * 
+     * @method val
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     Dom.prototype.attr = function(name, value) {
         if(value !== undefined || metaScore.Var.is(name, 'object')){
@@ -1747,12 +1864,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element
+     * 
      * @method css
-     * @param {} name
-     * @param {} value
-     * @param {} inline
-     * @return
+     * @param {String} name The CSS property's name
+     * @param {String} value The CSS property's value
+     * @param {Boolean} [inline=false] Whether to return the inline or computed style value
+     * @return {Mixed} The Dom object if used as a setter, the CSS style value of the property of the first element if used as a getter
      */
     Dom.prototype.css = function(name, value, inline) {
         if(value !== undefined){
@@ -1767,11 +1885,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element
+     * 
      * @method data
-     * @param {} name
-     * @param {} value
-     * @return
+     * @param {String} name The name of the data attribute
+     * @param {String} value The value of the data attribute
+     * @return {Mixed} The Dom object if used as a setter, the value of the data attribute of the first element if used as a getter
      */
     Dom.prototype.data = function(name, value) {
         if(value !== undefined){
@@ -1786,10 +1905,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append children to the first element managed by the Dom object
+     * 
      * @method append
-     * @param {} children
-     * @return ThisExpression
+     * @param {Mixed} children An array of elemets or a single element to append
+     * @chainable
      */
     Dom.prototype.append = function(children){
         if(children instanceof Dom){
@@ -1802,10 +1922,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append each of the elements managed by the Dom object into a given element
+     * 
      * @method appendTo
-     * @param {} parent
-     * @return ThisExpression
+     * @param {Mixed} parent A Dom object or an Element to append the elements to
+     * @chainable
      */
     Dom.prototype.appendTo = function(parent){
         if(!(parent instanceof Dom)){
@@ -1822,11 +1943,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append each of the elements managed by the Dom object into a given element at a given position
+     * 
      * @method insertAt
-     * @param {} parent
-     * @param {} index
-     * @return ThisExpression
+     * @param {Mixed} parent A Dom object or an Element to append the elements to
+     * @param {Integer} index The index position to append at
+     * @chainable
      */
     Dom.prototype.insertAt = function(parent, index){
         var element;
@@ -1848,9 +1970,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove all children of each element managed by the Dom object 
+     * 
      * @method empty
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.empty = function(){
         this.each(function(index, element) {
@@ -1861,9 +1984,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Make all the elements managed by the Dom object visible
+     * 
      * @method show
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.show = function(){
         this.css('display', '');
@@ -1872,9 +1996,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Make all the elements managed by the Dom object invisible
+     * 
      * @method hide
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.hide = function(){
         this.css('display', 'none');
@@ -1883,9 +2008,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set focus on the first element managed by the Dom object
+     * 
      * @method focus
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.focus = function(){
         this.get(0).focus();
@@ -1894,9 +2020,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove focus from the first element managed by the Dom object
+     * 
      * @method blur
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.blur = function(){
         this.get(0).blur();
@@ -1905,9 +2032,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove all the elements managed by the Dom object from the DOM
+     * 
      * @method remove
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.remove = function(){
         if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
@@ -1922,10 +2050,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Check if an element from the elements managed by the Dom object matches a CSS selector
+     * 
      * @method is
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Boolean} Whether an element matches the CSS selector
      */
     Dom.prototype.is = function(selector){
         var found;
@@ -1939,10 +2068,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector
+     * 
      * @method closest
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Element} The matched element
      */
     Dom.prototype.closest = function(selector){
         var found;
@@ -1959,11 +2089,8 @@ metaScore.Dom = (function () {
 
 })();
 /**
-* Description
-*
-* @class Draggable
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Draggable = (function () {
 
@@ -1989,15 +2116,20 @@ metaScore.Draggable = (function () {
     var EVT_DRAGEND = 'dragend';
 
     /**
-     * Description
+     * A class for adding draggable behaviors
+     * 
+     * @class Draggable
+     * @extends Class
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Dom} configs.target The Dom object to add the behavior to
+     * @param {Dom} configs.handle The Dom object to use as a dragging handle
+     * @param {Object} [configs.limits={'top': null, 'left': null}] The limits of the dragging
      */
     function Draggable(configs) {
         this.configs = this.getConfigs(configs);
 
-        this.configs.container = this.configs.container || new metaScore.Dom('body');
-        this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+        this.doc = new metaScore.Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
         this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
@@ -2010,22 +2142,22 @@ metaScore.Draggable = (function () {
     }
 
     Draggable.defaults = {
-        /**
-        * The limits of the dragging
-        */
-        limits: {
-            top: null,
-            left: null
+        'target': null,
+        'handle': null,
+        'limits': {
+            'top': null,
+            'left': null
         }
     };
 
     metaScore.Class.extend(Draggable);
 
     /**
-     * Description
+     * The mousedown event handler
+     * 
      * @method onMouseDown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -2049,10 +2181,11 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * The mousemove event handler
+     * 
      * @method onMouseMove
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseMove = function(evt){
         var left = evt.clientX + this.start_state.left,
@@ -2075,10 +2208,11 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * The mouseup event handler
+     * 
      * @method onMouseUp
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseUp = function(evt){
         this.doc
@@ -2093,9 +2227,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Enable the behavior
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.enable = function(){
         this.configs.target.addClass('draggable');
@@ -2108,9 +2243,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Disable the behavior
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.disable = function(){
         this.configs.target.removeClass('draggable');
@@ -2123,9 +2259,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Destroy the behavior
+     * 
      * @method destroy
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.destroy = function(){
         this.disable();
@@ -2139,29 +2276,29 @@ metaScore.Draggable = (function () {
 
 })();
 /**
-* Description
-* @class Function
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Function = (function () {
 
     /**
-     * Description
+     * A class for function helper functions
+     * 
+     * @class Function
      * @constructor
      */
     function Function() {
     }
 
-    metaScore.Class.extend(Function);
-
     /**
-     * Checks if a variable is of a certain type
+     * Create a proxy of a function
+     * 
      * @method proxy
-     * @param {} fn
-     * @param {} scope
-     * @param {} args
-     * @return FunctionExpression
+     * @static
+     * @param {Function} fn The function to proxy
+     * @param {Mixed} scope The value to use as this when executing the proxy function
+     * @param {Array} args Extra arguments to preppend to the passed arguments when the proxy function is called
+     * @return {Function} The proxy function
      */
     Function.proxy = function(fn, scope, args){
         if (!metaScore.Var.type(fn, 'function')){
@@ -2183,40 +2320,87 @@ metaScore.Function = (function () {
         };
     };
 
-    /**
-     * A reusable empty function
-     * @method emptyFn
-     * @return
-     */
-    Function.emptyFn = function(){};
-
     return Function;
 
 })();
 /**
-* Description
-* @class Object
-* @extends Class
-*/
+ * @module Core
+ */
+
+metaScore.Locale = (function(){
+
+    /**
+     * The i18n handling class
+     *
+     * @class Locale
+     * @constructor
+     */
+    function Locale() {
+    }
+
+    /**
+     * Translate a string
+     *
+     * @method t
+     * @static
+     * @param {String} key The string identifier
+     * @param {String} str The default string to use if no translation is found
+     * @param {Object} args An object of replacements to make after translation
+     * @return {String} The translated string
+     */
+    Locale.t = function(key, str, args){
+        if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
+            str = metaScoreLocale[key];
+        }
+
+        return Locale.formatString(str, args);
+    };
+
+    /**
+     * Replace placeholders with sanitized values in a string
+     *
+     * @method formatString
+     * @static
+     * @param {String} str The string to process
+     * @param {Object} args An object of replacements with placeholders as keys
+     * @return {String} The translated string
+     */
+    Locale.formatString = function(str, args) {
+        metaScore.Object.each(args, function(key, value){
+            str = str.replace(key, args[key]);
+        }, this);
+
+        return str;
+    };
+
+    return Locale;
+
+})();
+/**
+ * @module Core
+ */
 
 metaScore.Object = (function () {
 
     /**
-     * Description
+     * A class for object helper functions
+     * 
+     * @class Object
      * @constructor
      */
     function Object() {
     }
 
-    metaScore.Class.extend(Object);
-
     /**
-     * Merge the contents of two or more objects together into the first object.
+     * Merge the contents of two or more objects together into the first object
+     * 
      * @method extend
-     * @return target
+     * @static
+     * @param {Object} [first] The object to which other objects are merged
+     * @param {Object} [...others] The objects to merge with the first one
+     * @return {Object} The first object
      */
     Object.extend = function() {
-
         var target = arguments[0] || {},
             options,
             i = 1,
@@ -2237,31 +2421,33 @@ metaScore.Object = (function () {
         }
 
         return target;
-
     };
 
     /**
      * Return a copy of an object
+     * 
      * @method copy
-     * @param {} obj
-     * @return CallExpression
+     * @static
+     * @param {Object} obj The original object
+     * @return {Object} The object copy
      */
     Object.copy = function(obj) {
-
         return Object.extend({}, obj);
-
     };
 
     /**
-     * Call a function on each property of an object
+     * Iterate over an object
+     * 
      * @method each
-     * @param {} obj
-     * @param {} callback
-     * @param {} scope
-     * @return obj
+     * @static
+     * @param {Object} obj The object to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {String} callback.key The key of the current element being processed in the object
+     * @param {Mixed} callback.value The element that is currently being processed in the object
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Object} The object
      */
     Object.each = function(obj, callback, scope) {
-
         var key, value,
             scope_provided = scope !== undefined;
 
@@ -2274,12 +2460,15 @@ metaScore.Object = (function () {
         }
 
         return obj;
-
     };
 
     return Object;
 
 })();
+/**
+ * @module Core
+ */
+
 metaScore.Resizable = (function () {
 
     /**
@@ -2304,18 +2493,19 @@ metaScore.Resizable = (function () {
     var EVT_RESIZEEND = 'resizeend';
 
     /**
-     * Description
-     *
+     * A class for adding resizable behaviors
+     * 
      * @class Resizable
      * @extends Class
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Dom} configs.target The Dom object to add the behavior to
+     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed 
      */
     function Resizable(configs) {
         this.configs = this.getConfigs(configs);
 
-        this.configs.container = this.configs.container || new metaScore.Dom('body');
-        this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+        this.doc = new metaScore.Dom(this.configs.target.get(0).ownerDocument);
 
         this.handles = {};
 
@@ -2335,7 +2525,8 @@ metaScore.Resizable = (function () {
     }
 
     Resizable.defaults = {
-        directions: [
+        'target': null,
+        'directions': [
             'top',
             'right',
             'bottom',
@@ -2350,10 +2541,11 @@ metaScore.Resizable = (function () {
     metaScore.Class.extend(Resizable);
 
     /**
-     * Description
+     * The mousedown event handler
+     * 
      * @method onMouseDown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -2382,10 +2574,11 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * The mousemove event handler
+     * 
      * @method onMouseMove
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseMove = function(evt){
         var handle = new metaScore.Dom(this.start_state.handle),
@@ -2444,10 +2637,11 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * The mouseup event handler
+     * 
      * @method onMouseUp
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseUp = function(evt){
         this.doc
@@ -2462,18 +2656,20 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Get a handle
      * @method getHandle
-     * @return ThisExpression
+     * @param {String} direction The direction of the handle to get
+     * @return {Dom} The handle
      */
     Resizable.prototype.getHandle = function(direction){
         return this.handles[direction];
     };
 
     /**
-     * Description
+     * Enable the behavior
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.enable = function(){
         this.configs.target.addClass('resizable');
@@ -2484,9 +2680,10 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Disable the behavior
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.disable = function(){
         this.configs.target.removeClass('resizable');
@@ -2497,9 +2694,10 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Destroy the behavior
+     * 
      * @method destroy
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.destroy = function(){
         this.disable();
@@ -2515,38 +2713,51 @@ metaScore.Resizable = (function () {
 
 })();
 /**
-* Description
-* @class String
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.String = (function () {
 
     /**
-     * Description
+     * A class for string helper functions
+     * 
+     * @class String
      * @constructor
      */
     function String() {
     }
 
-    metaScore.Class.extend(String);
-
     /**
      * Capitalize a string
+     * 
      * @method capitalize
-     * @param {} str
-     * @return CallExpression
+     * @param {String} str The string to capitalize
+     * @return {String} The capitalized string
      */
     String.capitalize = function(str){
         return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     };
 
     /**
-     * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+     * Generate a random uuid
+     * 
      * @method uuid
-     * @param {} len
-     * @param {} radix
-     * @return CallExpression
+     * @author Broofa <robert@broofa.com> (http://www.broofa.com/2008/09/javascript-uuid-function/)
+     * @param {Integer} [len] The desired number of characters
+     * @param {Integer} [radix] The number of allowable values for each character
+     * @return {String} The generated uuid
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid();
+     *    // "66209871-857D-4A12-AC7E-E9EEBC2A6AC3"
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid(5);
+     *    // "kryIh"
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid(5, 2);
+     *    // "10100"
      */
     String.uuid = function(len, radix) {
         var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
@@ -2568,8 +2779,7 @@ metaScore.String = (function () {
             uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
             uuid[14] = '4';
 
-            // Fill in random data.    At i==19 set the high bits of clock sequence as
-            // per rfc4122, sec. 4.1.5
+            // Fill in random data.    At i==19 set the high bits of clock sequence as per rfc4122, sec. 4.1.5
             for (i = 0; i < 36; i++) {
                 if (!uuid[i]) {
                     r = 0 | Math.random()*16;
@@ -2582,13 +2792,29 @@ metaScore.String = (function () {
     };
 
     /**
-     * Description
+     * Pad a string with another string
+     * 
      * @method pad
-     * @param {} str
-     * @param {} len
-     * @param {} pad
-     * @param {} dir
-     * @return str
+     * @param {String} str The string to pad
+     * @param {Integer} len The desired final string length
+     * @param {String} [pad=" "] The string to pad with
+     * @param {String} [dir="right"] The padding direction ("right", "left" or "both")
+     * @return {String} The padded string
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b");
+     *    // "abb"
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b", "left");
+     *    // "bba"
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b", "both");
+     *    // "bab"
      */
     String.pad = function(str, len, pad, dir) {
         var right, left,
@@ -2625,41 +2851,40 @@ metaScore.String = (function () {
 
 })();
 /**
-* Description
-* @class StyleSheet
-* @extends Dom
-*/
+ * @module Core
+ */
 
 metaScore.StyleSheet = (function () {
 
     /**
-     * Description
+     * A class for CSS style sheet manipulation
+     * 
+     * @class StyleSheet
+     * @extends Dom
      * @constructor
-     * @param {} configs
      */
-    function StyleSheet(configs) {
-        this.configs = this.getConfigs(configs);
-
+    function StyleSheet() {
         // call the super constructor.
         metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
 
         this.el = this.get(0);
 
-        // WebKit hack :(
+        // WebKit hack
         this.setInternalValue("");
     }
 
     metaScore.Dom.extend(StyleSheet);
 
     /**
-     * Adds a CSS rule to the style sheet
+     * Add a CSS rule to the style sheet
+     * 
      * @method addRule
-     * @param {} selector
-     * @param {} rules
-     * @param {} index
-     * @return
+     * @param {String} selector The CSS selector for the rule
+     * @param {String} rule The style definitions for the rule
+     * @param {Integer} [index] The index position of the rule
+     * @chainable
      */
-    StyleSheet.prototype.addRule = function(selector, rules, index) {
+    StyleSheet.prototype.addRule = function(selector, rule, index) {
         var sheet = this.el.sheet;
 
         if(index === undefined){
@@ -2667,18 +2892,21 @@ metaScore.StyleSheet = (function () {
         }
 
         if("insertRule" in sheet) {
-            return sheet.insertRule(selector + "{" + rules + "}", index);
+            sheet.insertRule(selector + "{" + rule + "}", index);
         }
         else if("addRule" in sheet) {
-            return sheet.addRule(selector, rules, index);
+            sheet.addRule(selector, rule, index);
         }
+
+        return this;
     };
 
     /**
-     * Removes a CSS rule from the style sheet
+     * Remove a CSS rule from the style sheet
+     * 
      * @method removeRule
-     * @param {} index
-     * @return ThisExpression
+     * @param {Integer} The index position of the rule to remove
+     * @chainable
      */
     StyleSheet.prototype.removeRule = function(index) {
         var sheet = this.el.sheet;
@@ -2694,10 +2922,11 @@ metaScore.StyleSheet = (function () {
     };
 
     /**
-     * Removes the first CSS rule that matches a selector
+     * Remove the first CSS rule that matches a selector
+     * 
      * @method removeRulesBySelector
-     * @param {} selector
-     * @return ThisExpression
+     * @param {String} selector The CSS selector of the rule to remove
+     * @chainable
      */
     StyleSheet.prototype.removeRulesBySelector = function(selector) {
         var sheet = this.el.sheet,
@@ -2716,9 +2945,10 @@ metaScore.StyleSheet = (function () {
     };
 
     /**
-     * Removes all CSS rule from the style sheet
+     * Remove all CSS rule from the style sheet
+     * 
      * @method removeRules
-     * @return ThisExpression
+     * @chainable
      */
     StyleSheet.prototype.removeRules = function() {
         var sheet = this.el.sheet,
@@ -2732,10 +2962,11 @@ metaScore.StyleSheet = (function () {
     };
 
     /**
-     * Set the internal text value
+     * Set the internal text value of the style sheet
+     * 
      * @method setInternalValue
-     * @param {} value
-     * @return ThisExpression
+     * @param {String} value The CSS rules
+     * @chainable
      */
     StyleSheet.prototype.setInternalValue = function(value) {
         if(this.el.styleSheet){
@@ -2752,21 +2983,29 @@ metaScore.StyleSheet = (function () {
 
 })();
 /**
-* A helper class for variable type detection and value.
-* @class Var
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Var = (function () {
 
     /**
-    * Helper object used by the type function
-    *
-    * @property dot
-    * @type {Object}
-    * @private
-    */
-    var classes2types = {
+     * A class for variable helper functions
+     * 
+     * @class Var
+     * @constructor
+     */
+    function Var() {
+    }
+
+    /**
+     * A list of variable type correspondances
+     *
+     * @property classes2types
+     * @type {Object}
+     * @static
+     * @private
+     */
+    Var.classes2types = {
         "[object Boolean]": "boolean",
         "[object Number]": "number",
         "[object String]": "string",
@@ -2778,39 +3017,37 @@ metaScore.Var = (function () {
     };
 
     /**
-     * @constructor
-     */
-    function Var() {
-    }
-
-    metaScore.Class.extend(Var);
-
-    /**
      * Get the type of a variable
+     * 
      * @method type
-     * @param {} obj
-     * @return ConditionalExpression
+     * @static
+     * @param {Mixed} obj The variable
+     * @return {String} The type of the variable
      */
     Var.type = function(obj) {
-        return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
+        return obj == null ? String(obj) : Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
     };
 
     /**
-     * Checks if a variable is of a certain type
+     * Check if a variable is of a certain type
+     * 
      * @method is
-     * @param {} obj
-     * @param {} type
-     * @return BinaryExpression
+     * @static
+     * @param {Mixed} obj The variable
+     * @param {String} type The type to check for
+     * @return {Boolean} Whether the variable is of the specified type
      */
     Var.is = function(obj, type) {
         return Var.type(obj) === type.toLowerCase();
     };
 
     /**
-     * Checks if a variable is empty
+     * Check if a variable is empty
+     * 
      * @method isEmpty
-     * @param {} obj
-     * @return Literal
+     * @static
+     * @param {Mixed} obj The variable
+     * @return {Boolean} Whether the variable is empty
      */
     Var.isEmpty = function(obj) {
         if(obj === undefined || obj == null){
@@ -2831,55 +3068,13 @@ metaScore.Var = (function () {
     return Var;
 
 })();
-metaScore.Locale = (function(){
-
-    /**
-     * The i18n handling class
-     *
-     * @class Locale
-     * @constructor
-     */
-    function Locale() {
-    }
-
-    /**
-     * Translate a string
-     *
-     * @method t
-     * @static
-     * @param {String} key The string identifier
-     * @param {String} str The default string to use if no translation is found
-     * @param {Object} args An object of replacements to make after translation
-     * @return {String} The translated string
-     */
-    Locale.t = function(key, str, args){
-        if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
-            str = metaScoreLocale[key];
-        }
-
-        return Locale.formatString(str, args);
-    };
-
-    /**
-     * Replace placeholders with sanitized values in a string
-     *
-     * @method formatString
-     * @static
-     * @param {String} str The string to process
-     * @param {Object} args An object of replacements with placeholders as keys
-     * @return {String} The translated string
-     */
-    Locale.formatString = function(str, args) {
-        metaScore.Object.each(args, function(key, value){
-            str = str.replace(key, args[key]);
-        }, this);
-
-        return str;
-    };
-
-    return Locale;
-
-})();
+/**
+ * The Editor module defines classes used in editor
+ *
+ * @module Editor
+ * @main
+ */
+ 
 metaScore.Editor = (function(){
 
     /**
@@ -2890,7 +3085,7 @@ metaScore.Editor = (function(){
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
-     * @param {String} [configs.player_url=''] The URL of the guide's JSON data to load
+     * @param {String} [configs.player_url=''] The base URL of players
      * @param {String} [configs.api_url=''] The base URL of the RESTful API
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
@@ -2899,10 +3094,6 @@ metaScore.Editor = (function(){
 
         // call parent constructor
         Editor.parent.call(this, '<div/>', {'class': 'metaScore-editor'});
-
-        if(DEBUG){
-            metaScore.Editor.instance = this;
-        }
 
         if(this.configs.container){
             this.appendTo(this.configs.container);
@@ -3002,7 +3193,7 @@ metaScore.Editor = (function(){
     }
 
     metaScore.Dom.extend(Editor);
-
+    
     Editor.defaults = {
         'container': 'body',
         'player_url': '',
@@ -4486,14 +4677,10 @@ metaScore.Editor = (function(){
                                         block = block_dom._metaScore;
 
                                         if(block.getProperty('synched')){
-                                            block.getPages().each(function(index, page_dom){
-                                                if(page_dom._metaScore){
-                                                    page = page_dom._metaScore;
-
-                                                    if(page.getProperty('start-time') < new_duration){
-                                                        blocks.push(block.getProperty('name'));
-                                                        return false;
-                                                    }
+                                            metaScore.Array.each(block.getPages(), function(index, page){
+                                                if(page.getProperty('start-time') < new_duration){
+                                                    blocks.push(block.getProperty('name'));
+                                                    return false;
                                                 }
                                             });
                                         }
@@ -4629,6 +4816,7 @@ metaScore.Editor = (function(){
      * Toggles the activation of the sidebar resizer
      *
      * @method toggleSidebarResizer
+     * @private
      * @chainable
      */
     Editor.prototype.toggleSidebarResizer = function(){
@@ -4646,6 +4834,7 @@ metaScore.Editor = (function(){
      * Loads a player from the location hash
      *
      * @method loadPlayerFromHash
+     * @private
      * @chainable
      */
     Editor.prototype.loadPlayerFromHash = function(){
@@ -4664,6 +4853,7 @@ metaScore.Editor = (function(){
      * Updates the states of the mainmenu buttons
      *
      * @method updateMainmenu
+     * @private
      * @chainable
      */
     Editor.prototype.updateMainmenu = function(){
@@ -4687,6 +4877,7 @@ metaScore.Editor = (function(){
      * Updates the selector of the block panel
      *
      * @method updateBlockSelector
+     * @private
      * @chainable
      */
     Editor.prototype.updateBlockSelector = function(){
@@ -4728,6 +4919,7 @@ metaScore.Editor = (function(){
      * Updates the selector of the page panel
      *
      * @method updatePageSelector
+     * @private
      * @chainable
      */
     Editor.prototype.updatePageSelector = function(){
@@ -4739,9 +4931,9 @@ metaScore.Editor = (function(){
         selector.clear();
 
         if(block.instanceOf('Block')){
-            this.panels.block.getComponent().getPages().each(function(index, page){
-                selector.addOption(page._metaScore.getId(), index+1);
-            }, this);
+            metaScore.Array.each(block.getPages(), function(index, page){
+                selector.addOption(page.getId(), index+1);
+            });
         }
 
         selector.setValue(page ? page.getId() : null, true);
@@ -4753,6 +4945,7 @@ metaScore.Editor = (function(){
      * Updates the selector of the element panel
      *
      * @method updateElementSelector
+     * @private
      * @chainable
      */
     Editor.prototype.updateElementSelector = function(){
@@ -4776,8 +4969,7 @@ metaScore.Editor = (function(){
                 page_end_time = page.getProperty('end-time');
             }
 
-            page.getElements().each(function(index, dom){
-                element = dom._metaScore;
+            metaScore.Array.each(page.getElements(), function(index, element){
                 out_of_range = false;
 
                 if(synched){
@@ -4845,17 +5037,15 @@ metaScore.Editor = (function(){
      * Loads a player by guide id and vid
      *
      * @method loadPlayer
-     * @param {Number} id The guide's id
-     * @param {Number} vid The guide's revision id
+     * @param {String} id The guide's id
+     * @param {Integer} vid The guide's revision id
      * @chainable
      */
     Editor.prototype.loadPlayer = function(id, vid){
         var url = this.configs.player_url + id;
 
-        url += "?in-editor";
-
         if(vid){
-            url += "&vid="+ vid;
+            url += "?vid="+ vid;
         }
 
         this.loadmask = new metaScore.editor.overlay.LoadMask({
@@ -4903,6 +5093,7 @@ metaScore.Editor = (function(){
      * Creates a new guide
      *
      * @method createGuide
+     * @private
      * @param {Object} details The guide's data
      * @param {GuideDetails} overlay The overlay instance used to create the guide
      * @chainable
@@ -5011,9 +5202,12 @@ metaScore.Editor = (function(){
      * Get a media file's duration in centiseconds
      *
      * @method getMediaFileDuration
+     * @private
+     * @param {String} url The file's url
+     * @param {Function} callback A callback function to call with the duration
      */
-    Editor.prototype.getMediaFileDuration = function(file, callback){
-        var media = new metaScore.Dom('<audio/>', {'src': file})
+    Editor.prototype.getMediaFileDuration = function(url, callback){
+        var media = new metaScore.Dom('<audio/>', {'src': url})
             .addListener('loadedmetadata', function(evt){
                 var duration = parseFloat(media.get(0).duration) * 100;
 
@@ -5025,17 +5219,20 @@ metaScore.Editor = (function(){
 
 })();
 /**
-* Description
-* @class editor.Button
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Button = (function () {
 
     /**
-     * Description
+     * A simple button based on an HTML button element
+     *
+     * @class Button
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.label=null] A text to add as a label
      */
     function Button(configs) {
         this.configs = this.getConfigs(configs);
@@ -5053,19 +5250,17 @@ metaScore.namespace('editor').Button = (function () {
     }
 
     Button.defaults = {
-        /**
-        * A text to add as a label
-        */
-        label: null
+        'label': null
     };
 
     metaScore.Dom.extend(Button);
 
     /**
-     * Description
+     * The click event handler
+     *
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Button.prototype.onClick = function(evt){
         if(this.disabled){
@@ -5074,10 +5269,11 @@ metaScore.namespace('editor').Button = (function () {
     };
 
     /**
-     * Description
+     * Set the button's text
+     *
      * @method setLabel
-     * @param {} text
-     * @return ThisExpression
+     * @param {String} text The text to use as the label
+     * @chainable
      */
     Button.prototype.setLabel = function(text){
         if(this.label === undefined){
@@ -5092,8 +5288,9 @@ metaScore.namespace('editor').Button = (function () {
 
     /**
      * Disable the button
+     *
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Button.prototype.disable = function(){
         this.disabled = true;
@@ -5105,8 +5302,9 @@ metaScore.namespace('editor').Button = (function () {
 
     /**
      * Enable the button
+     *
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Button.prototype.enable = function(){
         this.disabled = false;
@@ -5120,21 +5318,20 @@ metaScore.namespace('editor').Button = (function () {
 
 })();
 /**
-* Description
-* @class editor.DropDownMenu
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').DropDownMenu = (function () {
 
     /**
-     * Description
+     * A dropdown menu based on an HTML ul element
+     *
+     * @class DropDownMenu
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
      */
-    function DropDownMenu(configs) {
-        this.configs = this.getConfigs(configs);
-
+    function DropDownMenu() {
         // call the super constructor.
         metaScore.Dom.call(this, '<ul/>', {'class': 'dropdown-menu'});
     }
@@ -5142,11 +5339,12 @@ metaScore.namespace('editor').DropDownMenu = (function () {
     metaScore.Dom.extend(DropDownMenu);
 
     /**
-     * Description
+     * Add an item
+     *
      * @method addItem
-     * @param {} action
-     * @param {} label
-     * @return item
+     * @param {String} action The action associated with the item
+     * @param {String} label The text to display
+     * @return {Dom} item The added item
      */
     DropDownMenu.prototype.addItem = function(action, label){
         var item = new metaScore.Dom('<li/>', {'data-action': action, 'text': label})
@@ -5156,11 +5354,12 @@ metaScore.namespace('editor').DropDownMenu = (function () {
     };
 
     /**
-     * Description
+     * Toggle an item's enabled state
+     *
      * @method toggleItem
-     * @param {} action
-     * @param {} state
-     * @return ThisExpression
+     * @param {String} action The action associated with the item
+     * @param {Boolean} [state] The state to set the item to, the current state is toggled if not provided
+     * @chainable
      */
     DropDownMenu.prototype.toggleItem = function(action, state){
         this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
@@ -5172,10 +5371,8 @@ metaScore.namespace('editor').DropDownMenu = (function () {
 
 })();
 /**
-* Description
-* @class editor.Field
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Field = (function () {
 
@@ -5189,9 +5386,18 @@ metaScore.namespace('editor').Field = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A generic field based on an HTML input element
+     *
+     * @class Field
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Mixed} [configs.value=null] The default value
+     * @param {Boolean} [configs.required=false] Whether the field is required
+     * @param {Boolean} [configs.disabled=false] Whether the field is disabled by default
+     * @param {Boolean} [configs.readonly=false] Whether the field is readonly by default
+     * @param {String} [configs.description=''] A description to add to the field
      */
     function Field(configs) {
         this.configs = this.getConfigs(configs);
@@ -5234,38 +5440,20 @@ metaScore.namespace('editor').Field = (function () {
     }
 
     Field.defaults = {
-        /**
-        * Defines the default value
-        */
         'value': null,
-
-        /**
-        * Defines whether the field is required
-        */
         'required': false,
-
-        /**
-        * Defines whether the field is disabled by default
-        */
         'disabled': false,
-
-        /**
-        * Defines whether the field is readonly by default
-        */
         'readonly': false,
-
-        /**
-        * A description to add to the field
-        */
         'description': null
     };
 
     metaScore.Dom.extend(Field);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     Field.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -5278,15 +5466,17 @@ metaScore.namespace('editor').Field = (function () {
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        this.input = new metaScore.Dom('<input/>', {'type': 'text', 'id': uid})
+        this.input = new metaScore.Dom('<input/>', {'id': uid})
             .addListener('change', metaScore.Function.proxy(this.onChange, this))
             .appendTo(this.input_wrapper);
     };
 
     /**
-     * Description
+     * Set the description text
+     *
      * @method setDescription
-     * @return
+     * @param {String} description The description text
+     * @chainable
      */
     Field.prototype.setDescription = function(description){
         if(!('description' in this)){
@@ -5295,13 +5485,16 @@ metaScore.namespace('editor').Field = (function () {
         }
 
         this.description.text(description);
+        
+        return this;
     };
 
     /**
-     * Description
+     * The change event handler
+     *
      * @method onChange
-     * @param {} evt
-     * @return
+     * @param {Event} evt The event object
+     * @private
      */
     Field.prototype.onChange = function(evt){
         this.value = this.input.val();
@@ -5310,11 +5503,12 @@ metaScore.namespace('editor').Field = (function () {
     };
 
     /**
-     * Description
+     * Set the field's value
+     *
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Field.prototype.setValue = function(value, supressEvent){
         this.input.val(value);
@@ -5323,12 +5517,15 @@ metaScore.namespace('editor').Field = (function () {
         if(supressEvent !== true){
             this.input.triggerEvent('change');
         }
+        
+        return this;
     };
 
     /**
-     * Description
+     * Get the field's current value
+     *
      * @method getValue
-     * @return MemberExpression
+     * @return {Mixed} The value
      */
     Field.prototype.getValue = function(){
         return this.value;
@@ -5336,8 +5533,9 @@ metaScore.namespace('editor').Field = (function () {
 
     /**
      * Disable the field
+     *
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Field.prototype.disable = function(){
         this.disabled = true;
@@ -5353,8 +5551,9 @@ metaScore.namespace('editor').Field = (function () {
 
     /**
      * Enable the field
+     *
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Field.prototype.enable = function(){
         this.disabled = false;
@@ -5369,9 +5568,11 @@ metaScore.namespace('editor').Field = (function () {
     };
 
     /**
-     * Toggle the readonly attribute of the field
+     * Toggle the field's readonly state
+     *
      * @method readonly
-     * @return ThisExpression
+     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @chainable
      */
     Field.prototype.readonly = function(readonly){
         this.is_readonly = readonly === true;
@@ -5389,10 +5590,8 @@ metaScore.namespace('editor').Field = (function () {
 
 })();
 /**
-* Description
-* @class editor.History
-* @extends Evented
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').History = (function(){
 
@@ -5428,9 +5627,14 @@ metaScore.namespace('editor').History = (function(){
     var EVT_CLEAR = 'clear';
 
     /**
-     * Description
+     * An undo/redo manager
+     *
+     * @class History
+     * @namespace editor
+     * @extends Evented
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Integer} [configs.max_commands=30] The maximum number of commands to store
      */
     function History(configs) {
         this.configs = this.getConfigs(configs);
@@ -5444,20 +5648,19 @@ metaScore.namespace('editor').History = (function(){
     }
 
     History.defaults = {
-        /**
-        * Maximum number of commands to store
-        */
-        max_commands: 30
+        'max_commands': 30
     };
 
     metaScore.Evented.extend(History);
 
     /**
-     * Description
+     * Execute a command's action
+     *
      * @method execute
-     * @param {} command
-     * @param {} action
-     * @return ThisExpression
+     * @private
+     * @param {Object} command The command object
+     * @param {String} action The action ('undo' or 'redo') to execute
+     * @chainable
      */
     History.prototype.execute = function(command, action) {
         if (command && (action in command)) {
@@ -5470,10 +5673,11 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Add a command
+     *
      * @method add
-     * @param {} command
-     * @return ThisExpression
+     * @param {Object} command The command object. It should contain an 'undo' and a 'redo' function
+     * @chainable
      */
     History.prototype.add = function (command){
         if (this.executing) {
@@ -5500,9 +5704,10 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Execute the undo action of the current command
+     *
      * @method undo
-     * @return ThisExpression
+     * @chainable
      */
     History.prototype.undo = function() {
         var command = this.commands[this.index];
@@ -5523,9 +5728,10 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Execute the redo action of the previous command
+     *
      * @method redo
-     * @return ThisExpression
+     * @chainable
      */
     History.prototype.redo = function() {
         var command = this.commands[this.index + 1];
@@ -5546,9 +5752,10 @@ metaScore.namespace('editor').History = (function(){
     };
 
     /**
-     * Description
+     * Remove all commands
+     *
      * @method clear
-     * @return
+     * @chainable
      */
     History.prototype.clear = function () {
         var length = this.commands.length;
@@ -5559,22 +5766,26 @@ metaScore.namespace('editor').History = (function(){
         if(length > 0) {
             this.triggerEvent(EVT_CLEAR);
         }
+        
+        return this;
 
     };
 
     /**
-     * Description
+     * Check if an undo action is available
+     *
      * @method hasUndo
-     * @return BinaryExpression
+     * @return {Boolean} Whether an undo action is available
      */
     History.prototype.hasUndo = function(){
         return this.index !== -1;
     };
 
     /**
-     * Description
+     * Check if a redo action is available
+     *
      * @method hasRedo
-     * @return BinaryExpression
+     * @return {Boolean} Whether a redo action is available
      */
     History.prototype.hasRedo = function(){
         return this.index < (this.commands.length - 1);
@@ -5584,15 +5795,17 @@ metaScore.namespace('editor').History = (function(){
 
 })();
 /**
-* Description
-* @class editor.MainMenu
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').MainMenu = (function(){
 
     /**
-     * Description
+     * The editor's main menu
+     *
+     * @class MainMenu
+     * @namespace editor
+     * @extends Dom
      * @constructor
      */
     function MainMenu() {
@@ -5605,9 +5818,10 @@ metaScore.namespace('editor').MainMenu = (function(){
     metaScore.Dom.extend(MainMenu);
 
     /**
-     * Description
+     * Setup the menu's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     MainMenu.prototype.setupUI = function(){
         var btn_group, sub_menu;
@@ -5769,11 +5983,12 @@ metaScore.namespace('editor').MainMenu = (function(){
     };
 
     /**
-     * Description
+     * Toogle a button's enabled state
+     *
      * @method toggleButton
-     * @param {} action
-     * @param {} state
-     * @return ThisExpression
+     * @param {String} action The button's associated action
+     * @param {Boolean} state The state to set the button to, the current state is toggled if not provided
+     * @chainable
      */
     MainMenu.prototype.toggleButton = function(action, state){
         this.find('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
@@ -5785,10 +6000,8 @@ metaScore.namespace('editor').MainMenu = (function(){
 
 })();
 /**
-* Description
-* @class editor.Overlay
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Overlay = (function(){
 
@@ -5809,9 +6022,19 @@ metaScore.namespace('editor').Overlay = (function(){
     var EVT_HIDE = 'hide';
 
     /**
-     * Initialize
+     * A generic overlay class
+     *
+     * @class Overlay
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
+     * @param {Boolean} [configs.draggable=true] Whether the overlay is draggable
+     * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
+     * @param {Boolean} [configs.toolbar=false] Whether to add a toolbar with title and close button
+     * @param {String} [configs.title=''] The overlay's title
      */
     function Overlay(configs) {
         this.configs = this.getConfigs(configs);
@@ -5819,7 +6042,7 @@ metaScore.namespace('editor').Overlay = (function(){
         // call parent constructor
         Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
 
-        this.setupDOM();
+        this.setupUI();
 
         if(this.configs.autoShow){
             this.show();
@@ -5827,46 +6050,23 @@ metaScore.namespace('editor').Overlay = (function(){
     }
 
     Overlay.defaults = {
-
-        /**
-        * The parent element in which the overlay will be appended
-        */
-        parent: '.metaScore-editor',
-
-        /**
-        * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-        */
-        modal: true,
-
-        /**
-        * True to make this draggable
-        */
-        draggable: true,
-
-        /**
-        * True to show automatically
-        */
-        autoShow: false,
-
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: false,
-
-        /**
-        * The overlay's title
-        */
-        title: ''
+        'parent': '.metaScore-editor',
+        'modal': true,
+        'draggable': true,
+        'autoShow': false,
+        'toolbar': false,
+        'title': ''
     };
 
     metaScore.Dom.extend(Overlay);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    Overlay.prototype.setupDOM = function(){
+    Overlay.prototype.setupUI = function(){
 
         if(this.configs.modal){
             this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
@@ -5890,9 +6090,10 @@ metaScore.namespace('editor').Overlay = (function(){
     };
 
     /**
-     * Description
+     * Show the overlay
+     *
      * @method show
-     * @return ThisExpression
+     * @chainable
      */
     Overlay.prototype.show = function(){
         if(this.configs.modal){
@@ -5907,9 +6108,10 @@ metaScore.namespace('editor').Overlay = (function(){
     };
 
     /**
-     * Description
+     * Hide the overlay
+     *
      * @method hide
-     * @return ThisExpression
+     * @chainable
      */
     Overlay.prototype.hide = function(){
         if(this.configs.modal){
@@ -5924,40 +6126,42 @@ metaScore.namespace('editor').Overlay = (function(){
     };
 
     /**
-     * Description
+     * Get the overlay's toolbar
+     *
      * @method getToolbar
-     * @return MemberExpression
+     * @return {editor.overlay.Toolbar} The toolbar
      */
     Overlay.prototype.getToolbar = function(){
         return this.toolbar;
     };
 
     /**
-     * Description
+     * Get the overlay's contents
+     *
      * @method getContents
-     * @return MemberExpression
+     * @return {Dom} The contents
      */
     Overlay.prototype.getContents = function(){
         return this.contents;
     };
 
     /**
-     * Description
+     * The close button's click handler
+     *
      * @method onCloseClick
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Overlay.prototype.onCloseClick = function(){
+    Overlay.prototype.onCloseClick = function(evt){
         this.hide();
     };
 
     return Overlay;
 
 })();
-/**
-* Description
-* @class editor.Panel
-* @extends Dom
-*/
+/** 
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Panel = (function(){
 
@@ -5996,9 +6200,14 @@ metaScore.namespace('editor').Panel = (function(){
     var EVT_VALUESCHANGE = 'valueschange';
 
     /**
-     * Description
+     * A generic panel class
+     *
+     * @class Panel
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function Panel(configs) {
         this.configs = this.getConfigs(configs);
@@ -6030,21 +6239,18 @@ metaScore.namespace('editor').Panel = (function(){
     }
 
     Panel.defaults = {
-        toolbarConfigs: {
-            buttons: [
-                'previous',
-                'next'
-            ]
-        }
+        'toolbarConfigs': {}
     };
 
     metaScore.Dom.extend(Panel);
 
     /**
-     * Description
+     * Setup the panel's fields
+     *
      * @method setupFields
-     * @param {} properties
-     * @return ThisExpression
+     * @private
+     * @param {Object} properties The properties description object
+     * @chainable
      */
     Panel.prototype.setupFields = function(properties){
         var configs, fieldType, field;
@@ -6068,44 +6274,50 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Get the panel's toolbar
+     *
      * @method getToolbar
-     * @return MemberExpression
+     * @return {editor.panel.Toolbar} The toolbar
      */
     Panel.prototype.getToolbar = function(){
         return this.toolbar;
     };
 
     /**
-     * Description
+     * Get a field by name
+     *
      * @method getField
-     * @param {} key
-     * @return MemberExpression
+     * @param {String} name The name of the field to get
+     * @return {editor.Field} The field
      */
-    Panel.prototype.getField = function(key){
-        if(key === undefined){
+    Panel.prototype.getField = function(name){
+        if(name === undefined){
             return this.fields;
         }
 
-        return this.fields[key];
+        return this.fields[name];
     };
 
     /**
-     * Description
+     * Enable all fields
+     *
      * @method enableFields
-     * @return
+     * @chainable
      */
     Panel.prototype.enableFields = function(){
         metaScore.Object.each(this.fields, function(key, field){
             field.enable();
         }, this);
+        
+        return this;
     };
 
     /**
-     * Description
+     * Show a field by name
+     *
      * @method showField
-     * @param {} name
-     * @return ThisExpression
+     * @param {String} name The name of the field to show
+     * @chainable
      */
     Panel.prototype.showField = function(name){
         this.getField(name).show();
@@ -6114,10 +6326,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Hide a field by name
+     *
      * @method hideField
-     * @param {} name
-     * @return ThisExpression
+     * @param {String} name The name of the field to show
+     * @chainable
      */
     Panel.prototype.hideField = function(name){
         this.getField(name).hide();
@@ -6126,9 +6339,10 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Toggle the panel's collapsed state
+     *
      * @method toggleState
-     * @return ThisExpression
+     * @chainable
      */
     Panel.prototype.toggleState = function(){
         this.toggleClass('collapsed');
@@ -6137,9 +6351,10 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Disable the panel
+     *
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Panel.prototype.disable = function(){
         this.addClass('disabled');
@@ -6148,9 +6363,10 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Enable the panel
+     *
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Panel.prototype.enable = function(){
         this.removeClass('disabled');
@@ -6159,20 +6375,22 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Get the currently associated component
+     *
      * @method getComponent
-     * @return MemberExpression
+     * @return {player.Component} The component
      */
     Panel.prototype.getComponent = function(){
         return this.component;
     };
 
     /**
-     * Description
+     * Set the associated component
+     *
      * @method setComponent
-     * @param {} component
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {player.Component} component The component
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.setComponent = function(component, supressEvent){
         if(component !== this.getComponent()){
@@ -6217,10 +6435,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Unset the associated component
+     *
      * @method unsetComponent
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent(),
@@ -6256,15 +6475,17 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Set or unset the draggability of the associated component
+     *
      * @method updateDraggable
-     * @param {} draggable
-     * @return ThisExpression
+     * @private
+     * @param {Boolean} draggable Whether the component should be draggable
+     * @chainable
      */
     Panel.prototype.updateDraggable = function(draggable){
         var component = this.getComponent();
 
-        draggable = component.setDraggable(draggable);
+        draggable = metaScore.Var.is(component.setDraggable, 'function') ? component.setDraggable(draggable) : false;
 
         this.toggleFields(['x', 'y'], draggable ? true : false);
 
@@ -6272,15 +6493,17 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Set or unset the resizability of the associated component
+     *
      * @method updateResizable
-     * @param {} resizable
-     * @return ThisExpression
+     * @private
+     * @param {Boolean} resizable Whether the component should be resizable
+     * @chainable
      */
     Panel.prototype.updateResizable = function(resizable){
         var component = this.getComponent();
 
-        resizable = component.setResizable(resizable);
+        resizable = metaScore.Var.is(component.setResizable, 'function') ? component.setResizable(resizable) : false;
 
         this.toggleFields(['width', 'height'], resizable ? true : false);
 
@@ -6288,10 +6511,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The toolbar buttons' click event handler
+     *
      * @method onToolbarButtonClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onToolbarButtonClick = function(evt){
         var selector, options, count, index,
@@ -6337,10 +6561,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's dragstart event handler
+     *
      * @method onComponentDragStart
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDragStart = function(evt){
         var fields = ['x', 'y'];
@@ -6349,10 +6574,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's drag event handler
+     *
      * @method onComponentDrag
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDrag = function(evt){
         var fields = ['x', 'y'];
@@ -6361,10 +6587,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's dragend event handler
+     *
      * @method onComponentDragEnd
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDragEnd = function(evt){
         var component = this.getComponent(),
@@ -6378,10 +6605,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's resizestart event handler
+     *
      * @method onComponentResizeStart
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentResizeStart = function(evt){
         var fields = ['x', 'y', 'width', 'height'];
@@ -6390,10 +6618,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's resize event handler
+     *
      * @method onComponentResize
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentResize = function(evt){
         var fields = ['x', 'y', 'width', 'height'];
@@ -6402,10 +6631,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The component's resizeend event handler
+     *
      * @method onComponentResizeEnd
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onComponentResizeEnd = function(evt){
         var component = this.getComponent(),
@@ -6419,10 +6649,11 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * The fields' valuechange event handler
+     *
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Panel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -6461,12 +6692,13 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Update a field's value
+     *
      * @method updateFieldValue
-     * @param {} name
-     * @param {} value
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {String} name The field's name
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.updateFieldValue = function(name, value, supressEvent){
         this.getField(name).setValue(value, supressEvent);
@@ -6475,11 +6707,12 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Update fields' values
+     *
      * @method updateFieldValues
-     * @param {} values
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {Object} values A list of values with the field names as keys
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     Panel.prototype.updateFieldValues = function(values, supressEvent){
         if(metaScore.Var.is(values, 'array')){
@@ -6497,11 +6730,12 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Update a component's properties
+     *
      * @method updateProperties
-     * @param {} component
-     * @param {} values
-     * @return ThisExpression
+     * @param {player.Component} component The component to update
+     * @param {Object} values A list of values with the property names as keys
+     * @chainable
      */
     Panel.prototype.updateProperties = function(component, values){
         metaScore.Object.each(values, function(name, value){
@@ -6516,11 +6750,12 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Toggle the enabled state of some fields
+     *
      * @method toggleFields
-     * @param {} names
-     * @param {} toggle
-     * @return ThisExpression
+     * @param {Array} names The list of field names to toggle
+     * @param {Boolean} toggle Whether the fields are to be enabled or disabled
+     * @chainable
      */
     Panel.prototype.toggleFields = function(names, toggle){
         var field;
@@ -6540,27 +6775,29 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Description
+     * Get the associated component's property value
+     *
      * @method getValue
-     * @param {} name
-     * @return CallExpression
+     * @param {String} name The propoerty's name
+     * @return {Mixed} The value
      */
     Panel.prototype.getValue = function(name){
         return this.getComponent().getProperty(name);
     };
 
     /**
-     * Description
+     * Get the associated component's properties values
+     *
      * @method getValues
-     * @param {} fields
-     * @return values
+     * @param {Array} [names] The names of properties, if not set, the panel's field names are used
+     * @return {Object} A list of values keyed by property name
      */
-    Panel.prototype.getValues = function(fields){
+    Panel.prototype.getValues = function(names){
         var values = {};
 
-        fields = fields || Object.keys(this.getField());
+        names = names || Object.keys(this.getField());
 
-        metaScore.Array.each(fields, function(index, name){
+        metaScore.Array.each(names, function(index, name){
             if(!this.getField(name).disabled){
                 values[name] = this.getValue(name);
             }
@@ -6573,10 +6810,8 @@ metaScore.namespace('editor').Panel = (function(){
 
 })();
 /**
-* Description
-* @class editor.field.Boolean
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Boolean = (function () {
 
@@ -6590,9 +6825,16 @@ metaScore.namespace('editor.field').Boolean = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A boolean field based on an HTML input[type=checkbox] element
+     *
+     * @class Boolean
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.checked=false] Whether the field is checked by default
+     * @param {Boolean} [configs.checked_value=true] The value when checked
+     * @param {Boolean} [configs.unchecked_value=false] The value when unchecked
      */
     function BooleanField(configs) {
         this.configs = this.getConfigs(configs);
@@ -6606,29 +6848,18 @@ metaScore.namespace('editor.field').Boolean = (function () {
     }
 
     BooleanField.defaults = {
-
-        /**
-        * Defines whether the field is checked by default
-        */
-        checked: false,
-
-        /**
-        * Defines the value when checked
-        */
-        checked_value: true,
-
-        /**
-        * Defines the value when unchecked
-        */
-        unchecked_value: false
+        'checked': false,
+        'checked_value': true,
+        'unchecked_value': false
     };
 
     metaScore.editor.Field.extend(BooleanField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     BooleanField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -6648,10 +6879,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BooleanField.prototype.onClick = function(evt){
         if(this.is_readonly){
@@ -6660,10 +6892,11 @@ metaScore.namespace('editor.field').Boolean = (function () {
     };
 
     /**
-     * Description
+     * The change event handler
+     * 
      * @method onChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BooleanField.prototype.onChange = function(evt){
         if(this.is_readonly){
@@ -6684,11 +6917,12 @@ metaScore.namespace('editor.field').Boolean = (function () {
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     BooleanField.prototype.setValue = function(value, supressEvent){
         this.input.get(0).checked = value === this.configs.checked_value;
@@ -6696,23 +6930,27 @@ metaScore.namespace('editor.field').Boolean = (function () {
         if(supressEvent !== true){
             this.input.triggerEvent('change');
         }
+
+        return this;
     };
 
     return BooleanField;
 
 })();
 /**
-* Description
-* @class editor.field.BorderRadius
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').BorderRadius = (function () {
 
     /**
-     * Description
+     * A complex field for defining CSS border radius values
+     * 
+     * @class BorderRadius
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
      */
     function BorderRadiusrField(configs) {
         this.configs = this.getConfigs(configs);
@@ -6726,9 +6964,10 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     metaScore.editor.Field.extend(BorderRadiusrField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     BorderRadiusrField.prototype.setupUI = function(){
         BorderRadiusrField.parent.prototype.setupUI.call(this);
@@ -6746,23 +6985,27 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     BorderRadiusrField.prototype.setValue = function(value, supressEvent){
         BorderRadiusrField.parent.prototype.setValue.call(this, value, supressEvent);
 
         this.input.attr('title', value);
+
+        return this;
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadiusrField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -6775,10 +7018,11 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * The overlay's submit event handler
+     * 
      * @method onOverlaySubmit
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadiusrField.prototype.onOverlaySubmit = function(evt){
         var value = evt.detail.value,
@@ -6788,10 +7032,11 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * The clear button's click event handler
+     * 
      * @method onClearClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadiusrField.prototype.onClearClick = function(evt){
         this.setValue('0px');
@@ -6801,10 +7046,8 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
 
 })();
 /**
-* Description
-* @class editor.field.Buttons
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Buttons = (function () {
 
@@ -6818,9 +7061,14 @@ metaScore.namespace('editor.field').Buttons = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A simple buttons field based on HTML button elements
+     *
+     * @class ButtonsField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.buttons={}}] The list of buttons as name/attributes pairs
      */
     function ButtonsField(configs) {
         this.configs = this.getConfigs(configs);
@@ -6837,23 +7085,16 @@ metaScore.namespace('editor.field').Buttons = (function () {
     }
 
     ButtonsField.defaults = {
-        buttons: {}
+        'buttons': {}
     };
 
     metaScore.editor.Field.extend(ButtonsField);
 
     /**
-     * Description
-     * @method setValue
-     * @return
-     */
-    ButtonsField.prototype.setValue = function(){
-    };
-
-    /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     ButtonsField.prototype.setupUI = function(){
         var field = this;
@@ -6866,42 +7107,52 @@ metaScore.namespace('editor.field').Buttons = (function () {
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        metaScore.Object.each(this.configs.buttons, function(key, attr){
-            this.buttons[key] = new metaScore.Dom('<button/>', attr)
+        metaScore.Object.each(this.configs.buttons, function(name, attr){
+            this.buttons[name] = new metaScore.Dom('<button/>', attr)
                 .addListener('click', function(){
-                    field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': key}, true, false);
+                    field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
                 })
                 .appendTo(this.input_wrapper);
         }, this);
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
+     * @method setValue
+     * @chainable
+     */
+    ButtonsField.prototype.setValue = function(){
+        return this;
+    };
+
+    /**
+     * Get the list of buttons
+     * 
      * @method getButtons
-     * @return MemberExpression
+     * @return {Object} The list of buttons as a name/Dom pair
      */
     ButtonsField.prototype.getButtons = function(){
         return this.buttons;
     };
 
     /**
-     * Description
+     * Get a button by name
+     * 
      * @method getButton
-     * @param {} key
-     * @return MemberExpression
+     * @param {String} name The button's name
+     * @return {Dom} The button's Dom object
      */
-    ButtonsField.prototype.getButton = function(key){
-        return this.buttons[key];
+    ButtonsField.prototype.getButton = function(name){
+        return this.buttons[name];
     };
 
     return ButtonsField;
 
 })();
 /**
-* Description
-* @class editor.field.Color
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Color = (function () {
 
@@ -6915,9 +7166,14 @@ metaScore.namespace('editor.field').Color = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Description
+     * A color selection field
+     *
+     * @class ColorField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Mixed} [configs.value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
      */
     function ColorField(configs) {
         this.configs = this.getConfigs(configs);
@@ -6929,9 +7185,6 @@ metaScore.namespace('editor.field').Color = (function () {
     }
 
     ColorField.defaults = {
-        /**
-        * Defines the default value
-        */
         value: {
             r: 255,
             g: 255,
@@ -6943,9 +7196,10 @@ metaScore.namespace('editor.field').Color = (function () {
     metaScore.editor.Field.extend(ColorField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     ColorField.prototype.setupUI = function(){
         ColorField.parent.prototype.setupUI.call(this);
@@ -6959,15 +7213,16 @@ metaScore.namespace('editor.field').Color = (function () {
             .appendTo(this.input_wrapper);
 
         this.overlay = new metaScore.editor.overlay.ColorSelector()
-            .addListener('submit', metaScore.Function.proxy(this.onColorSubmit, this));
+            .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
     };
 
     /**
-     * Description
+     * Set the field'S value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} value The new color's value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     ColorField.prototype.setValue = function(value, supressEvent){
         var rgba;
@@ -6984,13 +7239,16 @@ metaScore.namespace('editor.field').Color = (function () {
             this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
         }
 
+        return this;
+
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -7003,12 +7261,13 @@ metaScore.namespace('editor.field').Color = (function () {
     };
 
     /**
-     * Description
-     * @method onColorSubmit
-     * @param {} evt
-     * @return
+     * The overlay's submit event handler
+     * 
+     * @method onOverlaySubmit
+     * @private
+     * @param {Event} evt The event object
      */
-    ColorField.prototype.onColorSubmit = function(evt){
+    ColorField.prototype.onOverlaySubmit = function(evt){
         var value = evt.detail.value,
             overlay = evt.detail.overlay;
 
@@ -7016,10 +7275,11 @@ metaScore.namespace('editor.field').Color = (function () {
     };
 
     /**
-     * Description
+     * The clear button click event handler
+     * 
      * @method onClearClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorField.prototype.onClearClick = function(evt){
         this.setValue(null);
@@ -7029,17 +7289,20 @@ metaScore.namespace('editor.field').Color = (function () {
 
 })();
 /**
-* Description
-* @class editor.field.File
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').File = (function () {
 
     /**
-     * Description
+     * A file field based on an HTML input[type=file] element
+     *
+     * @class FileField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.accept=null] The list of accepted file types (see {{#crossLink "editor.field.FileField/setAcceptedTypes:method"}}{{/crossLink}})
      */
     function FileField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7061,9 +7324,10 @@ metaScore.namespace('editor.field').File = (function () {
     metaScore.editor.Field.extend(FileField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     FileField.prototype.setupUI = function(){
         FileField.parent.prototype.setupUI.call(this);
@@ -7075,20 +7339,23 @@ metaScore.namespace('editor.field').File = (function () {
     };
 
     /**
-     * Description
+     * Set the accepted file types
+     * 
      * @method setAcceptedTypes
-     * @param {} types
-     * @return
+     * @param {String} types A comma seperated list of accepted file types (ex: ".gif,.jpg,.png,.doc" or "audio/*,video/*,image/*")
      */
     FileField.prototype.setAcceptedTypes = function(types){
         this.input.attr('accept', types);
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} value
-     * @return
+     * @param {Object} [value] The new value
+     * @param {String} value.name The file's name
+     * @param {String} [value.url] The file's url
+     * @chainable
      */
     FileField.prototype.setValue = function(value){
         var info;
@@ -7106,13 +7373,17 @@ metaScore.namespace('editor.field').File = (function () {
                 info.attr('href', value.url);
             }
         }
+
+        return this;
     };
 
     /**
-     * Description
+     * Helper function to get a selected file from the HTML input field
+     * 
      * @method getFile
-     * @param File or FileList file
-     * @return
+     * @private
+     * @param {Integer} [index] The index of the selected file, all files will be returned if not provided
+     * @return {Mixed} The <a href="https://developer.mozilla.org/en-US/docs/Web/API/File" target="_blank">File</a> or <a href="https://developer.mozilla.org/en/docs/Web/API/FileList" target="_blank">FileList</a>
      */
     FileField.prototype.getFile = function(index){
         var files = this.input.get(0).files;
@@ -7128,10 +7399,8 @@ metaScore.namespace('editor.field').File = (function () {
 
 })();
 /**
-* Description
-* @class editor.field.Image
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Image = (function () {
 
@@ -7139,14 +7408,19 @@ metaScore.namespace('editor.field').Image = (function () {
      * Fired when the external filebrowser should be opened
      *
      * @event filebrowser
-     * @param {Function} callback The callback to invoke once a file is selected throught the external filebrowser
+     * @param {Function} callback The callback to invoke once a file is selected throught the external file browser
      */
     var EVT_FILEBROWSER = 'filebrowser';
 
     /**
-     * Description
+     * An image field wich depends on an external file browser to function
+     *
+     * @class ImageField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.placeholder="Browse..."] A placeholder text
      */
     function ImageField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7161,18 +7435,16 @@ metaScore.namespace('editor.field').Image = (function () {
     }
 
     ImageField.defaults = {
-        /**
-        * Defines the placeholder
-        */
-        placeholder: metaScore.Locale.t('editor.field.Image.placeholder', 'Browse...')
+        'placeholder': metaScore.Locale.t('editor.field.Image.placeholder', 'Browse...')
     };
 
     metaScore.editor.Field.extend(ImageField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     ImageField.prototype.setupUI = function(){
         ImageField.parent.prototype.setupUI.call(this);
@@ -7188,23 +7460,27 @@ metaScore.namespace('editor.field').Image = (function () {
     };
 
     /**
-     * Description
+     * Set the field'S value
+     * 
      * @method setValue
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {String} value The image file's url
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     ImageField.prototype.setValue = function(value, supressEvent){
         ImageField.parent.prototype.setValue.call(this, value, supressEvent);
 
         this.input.attr('title', value);
+
+        return this;
     };
 
     /**
-     * Description
+     * The click event handler
+     * 
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ImageField.prototype.onClick = function(evt){
         if(this.disabled){
@@ -7215,20 +7491,22 @@ metaScore.namespace('editor.field').Image = (function () {
     };
 
     /**
-     * Description
+     * The clear button click event handler
+     * 
      * @method onClearClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ImageField.prototype.onClearClick = function(evt){
         this.setValue(null);
     };
 
     /**
-     * Description
+     * The file select event handler
+     * 
      * @method onFileSelect
-     * @param {} url
-     * @return
+     * @private
+     * @param {String} url The image file's url
      */
     ImageField.prototype.onFileSelect = function(url){
         this.setValue(url);
@@ -7238,17 +7516,22 @@ metaScore.namespace('editor.field').Image = (function () {
 
 })();
 /**
-* Description
-* @class editor.field.Number
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Number = (function () {
 
     /**
-     * Description
+     * A number field based on an HTML input[type=number] element
+     *
+     * @class NumberField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Number} [configs.value=0] The default value
+     * @param {Number} [configs.min=null] The minimum allowed value
+     * @param {Number} [configs.max=null] The maximum allowed value
      */
     function NumberField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7260,28 +7543,18 @@ metaScore.namespace('editor.field').Number = (function () {
     }
 
     NumberField.defaults = {
-        /**
-        * Defines the default value
-        */
-        value: 0,
-
-        /**
-        * Defines the minimum value allowed
-        */
-        min: null,
-
-        /**
-        * Defines the maximum value allowed
-        */
-        max: null
+        'value': 0,
+        'min': null,
+        'max': null
     };
 
     metaScore.editor.Field.extend(NumberField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     NumberField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -7303,17 +7576,20 @@ metaScore.namespace('editor.field').Number = (function () {
 
 })();
 /**
-* Description
-* @class editor.field.Select
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Select = (function () {
 
     /**
-     * Description
+     * A select list field based on an HTML select element
+     *
+     * @class SelectField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.options={}}] A list of select options as key/value pairs
      */
     function SelectField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7325,18 +7601,16 @@ metaScore.namespace('editor.field').Select = (function () {
     }
 
     SelectField.defaults = {
-        /**
-        * Defines the maximum value allowed
-        */
-        options: {}
+        'options': {}
     };
 
     metaScore.editor.Field.extend(SelectField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     SelectField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -7359,11 +7633,11 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
-     * @method addOption
-     * @param {} value
-     * @param {} text
-     * @chainable
+     * Adds an option group to the select list
+     * 
+     * @method addGroup
+     * @param {String} label The group's text label
+     * @return {Dom} The created Dom object
      */
     SelectField.prototype.addGroup = function(label){
         var group = new metaScore.Dom('<optgroup/>', {'label': label});
@@ -7374,11 +7648,13 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
+     * Add an option to the select list
+     * 
      * @method addOption
-     * @param {} value
-     * @param {} text
-     * @chainable
+     * @param {String} value The option's value
+     * @param {String} text The option's label
+     * @param {Dom} [group] The group to append the option to, it will be appended to the root list if not specified
+     * @return {Dom} The created Dom object
      */
     SelectField.prototype.addOption = function(value, text, group){
         var option = new metaScore.Dom('<option/>', {'value': value, 'text': text});
@@ -7389,13 +7665,14 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
+     * Update an option's label by value
+     * 
      * @method updateOption
-     * @param {} value
-     * @param {} text
-     * @chainable
+     * @param {String} value The value of the option to update
+     * @param {String} text The new label's text
+     * @return {Dom} The option's Dom object
      */
-    SelectField.prototype.updateOption = function(value, text, attr){
+    SelectField.prototype.updateOption = function(value, text){
         var option = this.input.find('option[value="'+ value +'"]');
 
         option.text(text);
@@ -7404,10 +7681,11 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
+     * Remove an option by value
+     * 
      * @method removeOption
-     * @param {} value
-     * @chainable
+     * @param {String} value The value of the option to remove
+     * @return {Dom} The option's Dom object
      */
     SelectField.prototype.removeOption = function(value){
         var option = this.input.find('option[value="'+ value +'"]');
@@ -7418,9 +7696,23 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
+     * Remove all groups and options
+     * 
+     * @method clear
+     * @chainable
+     */
+    SelectField.prototype.clear = function(){
+        this.input.empty();
+
+        return this;
+    };
+
+    /**
      * Toggle the readonly attribute of the field
+     * 
      * @method readonly
-     * @return ThisExpression
+     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @chainable
      */
     SelectField.prototype.readonly = function(readonly){
         SelectField.parent.prototype.readonly.call(this, readonly);
@@ -7430,32 +7722,24 @@ metaScore.namespace('editor.field').Select = (function () {
         return this;
     };
 
-    /**
-     * Description
-     * @method clear
-     * @return ThisExpression
-     */
-    SelectField.prototype.clear = function(){
-        this.input.empty();
-
-        return this;
-    };
-
     return SelectField;
 
 })();
 /**
-* Description
-* @class editor.field.Text
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Text = (function () {
 
     /**
-     * Description
+     * A single-line text field based on an HTML input[type=text] element
+     *
+     * @class TextField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.value=''] The default value
      */
     function TextField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7467,29 +7751,41 @@ metaScore.namespace('editor.field').Text = (function () {
     }
 
     TextField.defaults = {
-        /**
-        * Defines the default value
-        */
-        value: ''
+        'value': ''
     };
 
     metaScore.editor.Field.extend(TextField);
+
+    /**
+     * Setup the field's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    TextField.prototype.setupUI = function(){
+        TextField.parent.prototype.setupUI.call(this);
+
+        this.input.attr('type', 'text');
+    };
 
     return TextField;
 
 })();
 /**
-* Description
-* @class editor.field.Textarea
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Textarea = (function () {
 
     /**
-     * Description
+     * A multi-line text field based on an HTML textarea element
+     *
+     * @class TextareaField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.value=''] The default value
      */
     function TextareaField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7501,18 +7797,16 @@ metaScore.namespace('editor.field').Textarea = (function () {
     }
 
     TextareaField.defaults = {
-        /**
-        * Defines the default value
-        */
         'value': ''
     };
 
     metaScore.editor.Field.extend(TextareaField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     TextareaField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -7534,10 +7828,8 @@ metaScore.namespace('editor.field').Textarea = (function () {
 
 })();
 /**
-* Description
-* @class editor.field.Time
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Time = (function () {
 
@@ -7565,9 +7857,19 @@ metaScore.namespace('editor.field').Time = (function () {
     var EVT_VALUEOUT = 'valueout';
 
     /**
-     * Description
+     * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
+     *
+     * @class TimeField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Number} [configs.value=0] The default value
+     * @param {Number} [configs.min=0] The minimum allowed value
+     * @param {Number} [configs.max=null] The maximum allowed value
+     * @param {Boolean} [configs.checkbox=false] Whether to show the enable/disable checkbox
+     * @param {Boolean} [configs.inButton=false] Whether to show the in button
+     * @param {Boolean} [configs.outButton=false] Whether to show the out button
      */
     function TimeField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7579,34 +7881,21 @@ metaScore.namespace('editor.field').Time = (function () {
     }
 
     TimeField.defaults = {
-        /**
-        * Defines the default value
-        */
-        value: 0,
-
-        /**
-        * Defines the minimum value allowed
-        */
-        min: 0,
-
-        /**
-        * Defines the maximum value allowed
-        */
-        max: null,
-
-        checkbox: false,
-
-        inButton: false,
-
-        outButton: false
+        'value': 0,
+        'min': 0,
+        'max': null,
+        'checkbox': false,
+        'inButton': false,
+        'outButton': false
     };
 
     metaScore.editor.Field.extend(TimeField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     TimeField.prototype.setupUI = function(){
         var buttons;
@@ -7668,24 +7957,25 @@ metaScore.namespace('editor.field').Time = (function () {
         }
 
         this.addListener('change', metaScore.Function.proxy(this.onChange, this));
-
     };
 
     /**
-     * Description
+     * The change event handler
+     * 
      * @method onChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onChange = function(evt){
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     };
 
     /**
-     * Description
+     * The input event handler
+     * 
      * @method onInput
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onInput = function(evt){
         var active = this.isActive(),
@@ -7707,31 +7997,34 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Description
+     * The in button's click event handler
+     * 
      * @method onInClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onInClick = function(evt){
         this.triggerEvent(EVT_VALUEIN);
     };
 
     /**
-     * Description
+     * The out button's click event handler
+     * 
      * @method onOutClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TimeField.prototype.onOutClick = function(evt){
         this.triggerEvent(EVT_VALUEOUT);
     };
 
     /**
-     * Description
+     * Set the field's value
+     * 
      * @method setValue
-     * @param {} centiseconds
-     * @param {} supressEvent
-     * @return
+     * @param {Number} centiseconds The new value in centiseconds
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TimeField.prototype.setValue = function(centiseconds, supressEvent){
         var centiseconds_val, seconds_val, minutes_val, hours_val;
@@ -7806,13 +8099,16 @@ metaScore.namespace('editor.field').Time = (function () {
         if(supressEvent !== true){
             this.triggerEvent('change');
         }
+
+        return this;
     };
 
     /**
-     * Description
+     * Set the minimum allowed value
+     * 
      * @method setMin
-     * @param {} min
-     * @return ThisExpression
+     * @param {Number} min The minimum allowed value
+     * @chainable
      */
     TimeField.prototype.setMin = function(min){
         this.configs.min = min;
@@ -7825,10 +8121,11 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Description
+     * Set the maximum allowed value
+     * 
      * @method setMax
-     * @param {} max
-     * @return ThisExpression
+     * @param {Number} max The maximum allowed value
+     * @chainable
      */
     TimeField.prototype.setMax = function(max){
         this.configs.max = max;
@@ -7841,18 +8138,20 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Description
+     * Check whether the field's checkbox is checked
+     * 
      * @method isActive
-     * @return LogicalExpression
+     * @return {Boolean} Whether the field does not have a checkbox or is active
      */
     TimeField.prototype.isActive = function(){
         return !this.checkbox || this.checkbox.is(":checked");
     };
 
     /**
-     * Disable the button
+     * Disable the field
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     TimeField.prototype.disable = function(){
         this.disabled = true;
@@ -7879,9 +8178,10 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * Enable the button
+     * Enable the field
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     TimeField.prototype.enable = function(){
         var active = this.isActive();
@@ -7913,17 +8213,20 @@ metaScore.namespace('editor.field').Time = (function () {
 
 })();
 /**
-* Description
-* @class editor.panel.Block
-* @extends editor.Panel
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Block = (function () {
 
     /**
-     * Description
+     * A panel for {{#crossLink "player.component.Block"}}{{/crossLink}} components
+     * 
+     * @class Block
+     * @namespace editor.panel
+     * @extends editor.Panel
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={'title':'Block', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function BlockPanel(configs) {
         // call parent constructor
@@ -7933,14 +8236,14 @@ metaScore.namespace('editor.panel').Block = (function () {
     }
 
     BlockPanel.defaults = {
-        toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
-            title: metaScore.Locale.t('editor.panel.Block.title', 'Block'),
-            menuItems: {
+        'toolbarConfigs': {
+            'title': metaScore.Locale.t('editor.panel.Block.title', 'Block'),
+            'menuItems': {
                 'synched': metaScore.Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
                 'non-synched': metaScore.Locale.t('editor.panel.Block.menuItems.non-synched', 'Add a non-synchronized block'),
                 'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
             }
-        })
+        }
     };
 
     metaScore.editor.Panel.extend(BlockPanel);
@@ -7949,17 +8252,20 @@ metaScore.namespace('editor.panel').Block = (function () {
 
 })();
 /**
-* Description
-* @class editor.panel.Element
-* @extends editor.Panel
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Element = (function () {
 
     /**
-     * Description
+     * A panel for {{#crossLink "player.component.Element"}}{{/crossLink}} components
+     * 
+     * @class Element
+     * @namespace editor.panel
+     * @extends editor.Panel
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={'title':'Element', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function ElementPanel(configs) {
         // call parent constructor
@@ -7969,24 +8275,25 @@ metaScore.namespace('editor.panel').Element = (function () {
     }
 
     ElementPanel.defaults = {
-        toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
-            title: metaScore.Locale.t('editor.panel.Element.title', 'Element'),
-            menuItems: {
+        toolbarConfigs: {
+            'title': metaScore.Locale.t('editor.panel.Element.title', 'Element'),
+            'menuItems': {
                 'Cursor': metaScore.Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
                 'Image': metaScore.Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
                 'Text': metaScore.Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
                 'delete': metaScore.Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
             }
-        })
+        }
     };
 
     metaScore.editor.Panel.extend(ElementPanel);
 
     /**
-     * Description
+     * The fields' valuechange event handler
+     *
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ElementPanel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -8000,27 +8307,29 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
 
     /**
-     * Description
+     * The beforeimageset event handler
+     * 
      * @method onBeforeImageSet
-     * @param {} evt
-     * @return
+     * @private
+     * @param {String} property The updated component property's name
+     * @param {String} url The new image url
      */
-    ElementPanel.prototype.onBeforeImageSet = function(property, value){
+    ElementPanel.prototype.onBeforeImageSet = function(property, url){
         var panel = this,
             component = panel.getComponent(),
             old_src, new_src;
 
         old_src = component.getProperty(property);
-        new_src = value;
+        new_src = url;
 
         if(old_src){
-            panel.getImageMetaData(old_src, function(old_metadata){
+            panel.getImageMetadata(old_src, function(old_metadata){
                 var name = component.getProperty('name'),
                     width = component.getProperty('width'),
                     height = component.getProperty('height');
 
                 if((old_metadata.name === name) || (old_metadata.width === width && old_metadata.height === height)){
-                    panel.getImageMetaData(new_src, function(new_metadata){
+                    panel.getImageMetadata(new_src, function(new_metadata){
                         if(old_metadata.name === name){
                             panel.updateFieldValue('name', new_metadata.name);
                         }
@@ -8034,7 +8343,7 @@ metaScore.namespace('editor.panel').Element = (function () {
             });
         }
         else{
-            panel.getImageMetaData(new_src, function(new_metadata){
+            panel.getImageMetadata(new_src, function(new_metadata){
                 panel.updateFieldValue('name', new_metadata.name);
                 panel.updateFieldValue('width', new_metadata.width);
                 panel.updateFieldValue('height', new_metadata.height);
@@ -8044,12 +8353,14 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
 
     /**
-     * Description
-     * @method getImageMetaData
-     * @param {} evt
-     * @return
+     * Get an image's metadata (name, width, and height)
+     * 
+     * @method getImageMetadata
+     * @private
+     * @param {String} url The image's url
+     * @param {Function} callback The callback to call with the retreived metadata
      */
-    ElementPanel.prototype.getImageMetaData = function(src, callback){
+    ElementPanel.prototype.getImageMetadata = function(url, callback){
         var img = new metaScore.Dom('<img/>')
             .addListener('load', function(evt){
                 var el = img.get(0),
@@ -8065,24 +8376,27 @@ metaScore.namespace('editor.panel').Element = (function () {
                     'height': el.naturalHeight
                 });
             })
-            .attr('src', src);
+            .attr('src', url);
     };
 
     return ElementPanel;
 
 })();
 /**
-* Description
-* @class editor.panel.Page
-* @extends editor.Panel
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Page = (function () {
 
     /**
-     * Description
+     * A panel for {{#crossLink "player.component.Page"}}{{/crossLink}} components
+     * 
+     * @class Page
+     * @namespace editor.panel
+     * @extends editor.Panel
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={'title':'Page', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function PagePanel(configs) {
         // call parent constructor
@@ -8092,13 +8406,13 @@ metaScore.namespace('editor.panel').Page = (function () {
     }
 
     PagePanel.defaults = {
-        toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
-            title: metaScore.Locale.t('editor.panel.Page.title', 'Page'),
-            menuItems: {
+        toolbarConfigs: {
+            'title': metaScore.Locale.t('editor.panel.Page.title', 'Page'),
+            'menuItems': {
                 'new': metaScore.Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
                 'delete': metaScore.Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
             }
-        })
+        }
     };
 
     metaScore.editor.Panel.extend(PagePanel);
@@ -8107,11 +8421,8 @@ metaScore.namespace('editor.panel').Page = (function () {
 
 })();
 /**
-* Description
-*
-* @class editor.panel.Text
-* @extends editor.Panel
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Text = (function () {
 
@@ -8148,9 +8459,15 @@ metaScore.namespace('editor.panel').Text = (function () {
     var EVT_COMPONENTUNLOCK = 'componentunlock';
 
     /**
-     * Description
+     * A panel for {{#crossLink "player.component.element.Text"}}{{/crossLink}} components
+     * 
+     * @class Text
+     * @namespace editor.panel
+     * @extends editor.Panel
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.toolbarConfigs={'title':'Text', 'buttons': [], 'selector': false]}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @param {Object} [configs.properties={'locked': ...}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     function TextPanel(configs) {
         // call parent constructor
@@ -8165,23 +8482,17 @@ metaScore.namespace('editor.panel').Text = (function () {
     }
 
     TextPanel.defaults = {
-        toolbarConfigs: metaScore.Object.extend({}, metaScore.editor.Panel.defaults.toolbarConfigs, {
-            title: metaScore.Locale.t('editor.panel.Text.title', 'Text'),
-            buttons: [],
-            selector: false
-        }),
-
-        properties: {
+        'toolbarConfigs': {
+            'title': metaScore.Locale.t('editor.panel.Text.title', 'Text'),
+            'buttons': [],
+            'selector': false
+        },
+        'properties': {
             'locked': {
                 'type': 'Boolean',
                 'configs': {
                     'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     if(value){
                         this.lock();
@@ -8197,10 +8508,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     metaScore.editor.Panel.extend(TextPanel);
 
     /**
-     * Description
+     * The fields' valuechange event handler
+     *
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TextPanel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
@@ -8219,11 +8531,12 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Set the associated component
+     *
      * @method setComponent
-     * @param {} component
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {player.Component} component The component
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.setComponent = function(component, supressEvent){
         if(component !== this.getComponent()){
@@ -8249,10 +8562,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Unset the associated component
+     *
      * @method unsetComponent
-     * @param {} supressEvent
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent();
@@ -8271,9 +8585,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Lock the associated component
+     * 
      * @method lock
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.lock = function(supressEvent){
         var component = this.getComponent();
@@ -8305,9 +8621,11 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Unlock the associated component
+     * 
      * @method unlock
-     * @return ThisExpression
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     TextPanel.prototype.unlock = function(supressEvent){
         var component = this.getComponent();
@@ -8339,9 +8657,10 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
+     * Disable the panel
+     *
      * @method disable
-     * @return CallExpression
+     * @chainable
      */
     TextPanel.prototype.disable = function(){
         this.lock();
@@ -8350,30 +8669,33 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
-     * Description
-     * @method onComponentContentsDblClick
-     * @param {} evt
-     * @return
-     */
-    TextPanel.prototype.onComponentContentsDblClick = function(evt){
-        this.updateFieldValue('locked', false);
-    };
-
-    /**
-     * Description
+     * The component's contents click event handler
+     * 
      * @method onComponentContentsClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TextPanel.prototype.onComponentContentsClick = function(evt){
         evt.stopPropagation();
     };
 
     /**
-     * Description
+     * The component's contents dblclick event handler
+     * 
+     * @method onComponentContentsDblClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    TextPanel.prototype.onComponentContentsDblClick = function(evt){
+        this.updateFieldValue('locked', false);
+    };
+
+    /**
+     * The component's contents key event handler
+     * 
      * @method onComponentContentsKey
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     TextPanel.prototype.onComponentContentsKey = function(evt){
         evt.stopPropagation();
@@ -8383,17 +8705,23 @@ metaScore.namespace('editor.panel').Text = (function () {
 
 })();
 /**
-* Description
-* @class editor.panel.Toolbar
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.panel').Toolbar = (function(){
 
     /**
-     * Initialize
+     * A title toolbar for panel's
+     *
+     * @class Toolbar
+     * @namespace editor.panel
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.title=''] The text to display as a title
+     * @param {Array} [configs.buttons=['previous', 'next']] The buttons to display
+     * @param {Boolean} [configs.selector=true] Whether to display a selector
+     * @param {Object} [configs.menuItems={}}] A list of dropdown menu items to display
      */
     function Toolbar(configs) {
         this.configs = this.getConfigs(configs);
@@ -8430,64 +8758,50 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     }
 
     Toolbar.defaults = {
-        /**
-        * A text to add as a title
-        */
-        title: '',
-
-        buttons: [],
-
-        /**
-        * Whether to replace the title with a selector
-        */
-        selector: true,
-
-        menuItems: {}
+        'title': '',
+        'buttons': ['previous', 'next'],
+        'selector': true,
+        'menuItems': {}
     };
 
     metaScore.Dom.extend(Toolbar);
 
     /**
-     * Description
-     * @method getToggle
-     * @return MemberExpression
-     */
-    Toolbar.prototype.getToggle = function(){
-        return this.toggle;
-    };
-
-    /**
-     * Description
+     * Get the title's Dom object
+     * 
      * @method getTitle
-     * @return MemberExpression
+     * @return {Dom} The Dom object
      */
     Toolbar.prototype.getTitle = function(){
         return this.title;
     };
 
     /**
-     * Description
+     * Get the selector field
+     * 
      * @method getSelector
-     * @return MemberExpression
+     * @return {editor.field.Select} The selector field
      */
     Toolbar.prototype.getSelector = function(){
         return this.selector;
     };
 
     /**
-     * Description
+     * Get the dropdown menu
+     * 
      * @method getMenu
-     * @return MemberExpression
+     * @return {editor.DropDownMenu} The dropdown menu
      */
     Toolbar.prototype.getMenu = function(){
         return this.menu;
     };
 
     /**
-     * Description
+     * Add a button
+     * 
      * @method addButton
-     * @param {} action
-     * @return button
+     * @param {String} action The button's associated action
+     * @return {editor.Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
         var button = new metaScore.editor.Button().data('action', action)
@@ -8497,30 +8811,23 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
     };
 
     /**
-     * Description
+     * Get a button by associated action
+     * 
      * @method getButton
-     * @param {} action
-     * @return CallExpression
+     * @param {String} action The button's associated action
+     * @return {Dom} The button's Dom object
      */
     Toolbar.prototype.getButton = function(action){
         return this.buttons.children('[data-action="'+ action +'"]');
     };
 
     /**
-     * Description
-     * @method getSelector
-     * @return ThisExpression
-     */
-    Toolbar.prototype.getSelector = function(){
-        return this.selector;
-    };
-
-    /**
-     * Description
+     * Toggle the enabled state of a menu item
+     * 
      * @method toggleMenuItem
-     * @param {} action
-     * @param {} state
-     * @return ThisExpression
+     * @param {String} action The item's associated action
+     * @param {Boolean} state The enabled state to set
+     * @chainable
      */
     Toolbar.prototype.toggleMenuItem = function(action, state){
         var menu = this.getMenu();
@@ -8536,11 +8843,8 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
 
 })();
 /**
-* Description
-*
-* @class editor.overlay.Alert
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').Alert = (function () {
 
@@ -8554,9 +8858,16 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     var EVT_BUTTONCLICK = 'buttonclick';
 
     /**
-     * Description
+     * An alert overlay to show a simple message with buttons
+     *
+     * @class Alert
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
+     * @param {String} [configs.text=''] The message's text
+     * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
      */
     function Alert(configs) {
         this.configs = this.getConfigs(configs);
@@ -8568,26 +8879,22 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     }
 
     Alert.defaults = {
-        /**
-        * True to make this draggable
-        */
-        draggable: false,
-
-        text: '',
-
-        buttons: []
+        'draggable': false,
+        'text': '',
+        'buttons': {}
     };
 
     metaScore.editor.Overlay.extend(Alert);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    Alert.prototype.setupDOM = function(){
+    Alert.prototype.setupUI = function(){
         // call parent method
-        Alert.parent.prototype.setupDOM.call(this);
+        Alert.parent.prototype.setupUI.call(this);
 
         this.text = new metaScore.Dom('<div/>', {'class': 'text'})
             .appendTo(this.contents);
@@ -8609,21 +8916,25 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     };
 
     /**
-     * Description
+     * Set the message's text
+     * 
      * @method setText
-     * @param {} str
-     * @return
+     * @param {String} str The message's text
+     * @chainable
      */
     Alert.prototype.setText = function(str){
         this.text.text(str);
+
+        return this;
     };
 
     /**
-     * Description
+     * Add a button
+     * 
      * @method addButton
-     * @param {} action
-     * @param {} label
-     * @return button
+     * @param {String} action The button's associated action
+     * @param {String} label The button's text label
+     * @return {Button} The button object
      */
     Alert.prototype.addButton = function(action, label){
         var button = new metaScore.editor.Button()
@@ -8635,10 +8946,11 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     };
 
     /**
-     * Description
+     * The button click event handler
+     * 
      * @method onButtonClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Alert.prototype.onButtonClick = function(evt){
         var action = new metaScore.Dom(evt.target).data('action');
@@ -8654,11 +8966,8 @@ metaScore.namespace('editor.overlay').Alert = (function () {
 
 })();
 /**
-* Description
-*
-* @class editor.overlay.BorderRadius
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
@@ -8672,9 +8981,15 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * An overlay that simplifies the creation of a CSS border-radius value
+     *
+     * @class BorderRadius
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.title='Border Radius'] The overlay's title
      */
     function BorderRadius(configs) {
         this.configs = this.getConfigs(configs);
@@ -8686,29 +9001,23 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     }
 
     BorderRadius.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: true,
-
-        /**
-        * The overlay's title
-        */
-        title: metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
+        'toolbar': true,
+        'title': metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
     };
 
     metaScore.editor.Overlay.extend(BorderRadius);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    BorderRadius.prototype.setupDOM = function(){
+    BorderRadius.prototype.setupUI = function(){
         var contents;
 
         // call parent method
-        BorderRadius.parent.prototype.setupDOM.call(this);
+        BorderRadius.parent.prototype.setupUI.call(this);
 
         contents = this.getContents();
 
@@ -8772,9 +9081,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * The valuechange event handler
+     * 
      * @method onValueChange
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadius.prototype.onValueChange = function(){
         var radius    = '';
@@ -8793,10 +9104,11 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * Set the current value
+     * 
      * @method setValue
-     * @param {} val
-     * @return ThisExpression
+     * @param {String} val The value in CSS border-radius format
+     * @chainable
      */
     BorderRadius.prototype.setValue = function(val){
         var matches,
@@ -8857,36 +9169,42 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     };
 
     /**
-     * Description
+     * Get the current value
+     * 
      * @method getValue
-     * @return CallExpression
+     * @return {String} The value in CSS border-radius format
      */
     BorderRadius.prototype.getValue = function(){
         return this.preview.css('border-radius');
     };
 
     /**
-     * Description
+     * The apply button's click event handler
+     * 
      * @method onApplyClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     BorderRadius.prototype.onApplyClick = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
         this.hide();
     };
 
+    /**
+     * The cancel button's click event handler
+     * 
+     * @method onCancelClick
+     * @private
+     * @param {Event} evt The event object
+     */
     BorderRadius.prototype.onCancelClick = BorderRadius.prototype.onCloseClick;
 
     return BorderRadius;
 
 })();
 /**
-* Description
-*
-* @class editor.overlay.ColorSelector
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
@@ -8900,9 +9218,14 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * An overlay to select an RGBA color
+     *
+     * @class ColorSelector
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
      */
     function ColorSelector(configs) {
         this.configs = this.getConfigs(configs);
@@ -8918,28 +9241,20 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }
 
     ColorSelector.defaults = {
-
-        /**
-        * The parent element in which the overlay will be appended
-        */
-        parent: '.metaScore-editor',
-
-        /**
-        * True to make this draggable
-        */
-        draggable: false
+        'draggable': false
     };
 
     metaScore.editor.Overlay.extend(ColorSelector);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    ColorSelector.prototype.setupDOM = function(){
+    ColorSelector.prototype.setupUI = function(){
         // call parent method
-        ColorSelector.parent.prototype.setupDOM.call(this);
+        ColorSelector.parent.prototype.setupUI.call(this);
 
         this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
         this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
@@ -9012,29 +9327,32 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * Set the current value
+     * 
      * @method setValue
-     * @param {} val
-     * @return ThisExpression
+     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
+     * @chainable
      */
     ColorSelector.prototype.setValue = function(val){
-        this.previous_value = val;
+        this.updateValue(val);
+
+        this.previous_value = this.value;
 
         this.fillPrevious();
-
-        this.updateValue(val);
 
         return this;
     };
 
     /**
-     * Description
+     * Update the selected value
+     * 
      * @method updateValue
-     * @param {} val
-     * @param {} refillAlpha
-     * @param {} updatePositions
-     * @param {} updateInputs
-     * @return
+     * @private
+     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
+     * @param {Boolean} refillAlpha Whether to refill the alpha indicator canvas
+     * @param {Boolean} updatePositions Whether to update the cursor positions
+     * @param {Boolean} updateInputs Whether to update the input values
+     * @chainable
      */
     ColorSelector.prototype.updateValue = function(val, refillAlpha, updatePositions, updateInputs){
 
@@ -9081,38 +9399,16 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.fillCurrent();
 
+        return this;
+
     };
 
     /**
-     * Description
-     * @method fillPrevious
-     * @return
-     */
-    ColorSelector.prototype.fillPrevious = function(){
-        var context = this.controls.previous.get(0).getContext('2d');
-
-        context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    };
-
-    /**
-     * Description
-     * @method fillCurrent
-     * @return
-     */
-    ColorSelector.prototype.fillCurrent = function(){
-        var context = this.controls.current.get(0).getContext('2d');
-
-        context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    };
-
-    /**
-     * Description
+     * Fill the gradient's canvas
+     * 
      * @method fillGradient
-     * @return
+     * @private
+     * @chainable
      */
     ColorSelector.prototype.fillGradient = function(){
         var context = this.gradient.canvas.get(0).getContext('2d'),
@@ -9142,12 +9438,50 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         // Apply gradient to canvas
         context.fillStyle = fill;
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
     };
 
     /**
-     * Description
+     * Fill the previous color indicator canvas
+     * 
+     * @method fillPrevious
+     * @private
+     * @chainable
+     */
+    ColorSelector.prototype.fillPrevious = function(){
+        var context = this.controls.previous.get(0).getContext('2d');
+
+        context.fillStyle = "rgba("+ this.previous_value.r +","+ this.previous_value.g +","+ this.previous_value.b +","+ this.previous_value.a +")";
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
+    };
+
+    /**
+     * Fill the current color indicator canvas
+     * 
+     * @method fillCurrent
+     * @private
+     * @chainable
+     */
+    ColorSelector.prototype.fillCurrent = function(){
+        var context = this.controls.current.get(0).getContext('2d');
+
+        context.fillStyle = "rgba("+ this.value.r +","+ this.value.g +","+ this.value.b +","+ this.value.a +")";
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
+    };
+
+    /**
+     * Fill the alpha indicator canvas
+     * 
      * @method fillAlpha
-     * @return
+     * @private
+     * @chainable
      */
     ColorSelector.prototype.fillAlpha = function(){
         var context = this.alpha.canvas.get(0).getContext('2d'),
@@ -9162,13 +9496,16 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         context.fillStyle = fill;
         context.clearRect(0, 0, context.canvas.width, context.canvas.height);
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+        return this;
     };
 
     /**
-     * Description
+     * The controls input event handler
+     * 
      * @method onControlInput
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onControlInput = function(evt){
         var rgba, hsv;
@@ -9182,10 +9519,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The gradient mousedown event handler
+     * 
      * @method onGradientMousedown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onGradientMousedown = function(evt){
         this.gradient.canvas.addListener('mousemove', this.onGradientMousemove);
@@ -9194,10 +9532,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The gradient mouseup event handler
+     * 
      * @method onGradientMouseup
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onGradientMouseup = function(evt){
         this.gradient.canvas.removeListener('mousemove', this.onGradientMousemove);
@@ -9206,10 +9545,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The gradient click event handler
+     * 
      * @method onGradientClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onGradientClick = function(evt){
         var offset = evt.target.getBoundingClientRect(),
@@ -9224,7 +9564,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         value.r = imageData.data[0];
         value.g = imageData.data[1];
-        value.b =    imageData.data[2];
+        value.b = imageData.data[2];
 
         if(!value.a){
             value.a = 1;
@@ -9238,13 +9578,21 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         evt.stopPropagation();
     };
 
+    /**
+     * The gradient mousemove event handler
+     * 
+     * @method onGradientMousemove
+     * @private
+     * @param {Event} evt The event object
+     */
     ColorSelector.prototype.onGradientMousemove = ColorSelector.prototype.onGradientClick;
 
     /**
-     * Description
+     * The alpha mousedown event handler
+     * 
      * @method onAlphaMousedown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onAlphaMousedown = function(evt){
         this.alpha.canvas.addListener('mousemove', this.onAlphaMousemove);
@@ -9253,10 +9601,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The alpha mouseup event handler
+     * 
      * @method onAlphaMouseup
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onAlphaMouseup = function(evt){
         this.alpha.canvas.removeListener('mousemove', this.onAlphaMousemove);
@@ -9265,10 +9614,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The alpha click event handler
+     * 
      * @method onAlphaClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onAlphaClick = function(evt){
         var offset = evt.target.getBoundingClientRect(),
@@ -9286,13 +9636,21 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         evt.stopPropagation();
     };
 
+    /**
+     * The alpha mousemove event handler
+     * 
+     * @method onAlphaClick
+     * @private
+     * @param {Event} evt The event object
+     */
     ColorSelector.prototype.onAlphaMousemove = ColorSelector.prototype.onAlphaClick;
 
     /**
-     * Description
+     * The apply button click event handler
+     * 
      * @method onApplyClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onApplyClick = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.value}, true, false);
@@ -9301,10 +9659,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     };
 
     /**
-     * Description
+     * The cancel button click event handler
+     * 
      * @method onCancelClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     ColorSelector.prototype.onCancelClick = function(evt){
         this.hide();
@@ -9314,11 +9673,8 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
 })();
 /**
-* Description
-*
-* @class editor.overlay.GuideDetails
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
@@ -9332,9 +9688,16 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * An overlay to update a guide's details (title, description, thumbnail, etc)
+     *
+     * @class GuideDetails
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.title='Guide Info'] The overlay's title
+     * @param {String} [configs.submit_text='Save'] The overlay's submit button label
      */
     function GuideDetails(configs) {
         this.configs = this.getConfigs(configs);
@@ -9349,34 +9712,24 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     }
 
     GuideDetails.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
         'toolbar': true,
-
-        /**
-        * The overlay's title
-        */
         'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
-
-        /**
-        * The overlay's apply button text
-        */
-        'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submit_text', 'Save')
+        'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
     };
 
     metaScore.editor.Overlay.extend(GuideDetails);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    GuideDetails.prototype.setupDOM = function(){
+    GuideDetails.prototype.setupUI = function(){
         var contents, form;
 
         // call parent method
-        GuideDetails.parent.prototype.setupDOM.call(this);
+        GuideDetails.parent.prototype.setupUI.call(this);
 
         contents = this.getContents();
 
@@ -9460,10 +9813,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Get a field by name
+     * 
      * @method getField
-     * @param {} evt
-     * @return
+     * @param {String} name The field's name
+     * @return {editor.Field} The field object
      */
     GuideDetails.prototype.getField = function(name){
         var fields = this.fields;
@@ -9476,10 +9830,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Set the field values
+     * 
      * @method setValues
-     * @param {} evt
-     * @return
+     * @param {Object} values A list of field values in name/value pairs
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     GuideDetails.prototype.setValues = function(values, supressEvent){
         metaScore.Object.each(values, function(key, value){
@@ -9494,10 +9850,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Clears all field values
+     * 
      * @method clearValues
-     * @param {} evt
-     * @return
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
      */
     GuideDetails.prototype.clearValues = function(supressEvent){
         metaScore.Object.each(this.fields, function(key, field){
@@ -9508,20 +9865,21 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * Get all changed field values
+     * 
      * @method getValues
-     * @param {} evt
-     * @return
+     * @return {Object} The values of changed fields in name/value pairs
      */
     GuideDetails.prototype.getValues = function(){
         return metaScore.Object.extend({}, this.changed);
     };
 
     /**
-     * Description
+     * The fields change event handler
+     * 
      * @method onFieldValueChange
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     GuideDetails.prototype.onFieldValueChange = function(evt){
         var field = evt.detail.field,
@@ -9548,10 +9906,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-     * Description
+     * The form submit event handler
+     * 
      * @method onFormSubmit
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     GuideDetails.prototype.onFormSubmit = function(evt){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'values': this.getValues()}, true, false);
@@ -9561,11 +9920,12 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     };
 
     /**
-    * Description
-    * @method onCloseClick
-    * @param {} evt
-    * @return
-    */
+     * The close button click event handler
+     * 
+     * @method onCloseClick
+     * @private
+     * @param {Event} evt The event object
+     */
     GuideDetails.prototype.onCloseClick = function(evt){
         if(this.previous_values){
             this.clearValues(true)
@@ -9577,29 +9937,46 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         evt.preventDefault();
     };
 
+    /**
+     * The cancel button click event handler
+     * 
+     * @method onCancelClick
+     * @private
+     * @param {Event} evt The event object
+     */
     GuideDetails.prototype.onCancelClick = GuideDetails.prototype.onCloseClick;
 
     return GuideDetails;
 
 })();
+/**
+ * @module Editor
+ */
+
 metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
     /**
-     * Fired when the submit button is clicked
+     * Fired when a guide's select button is clicked
      *
      * @event submit
      * @param {Object} overlay The overlay instance
-     * @param {Object} values The field values
+     * @param {Object} guide The guide's data
+     * @param {Integer} vid The selected vid of the guide
      */
     var EVT_SUBMIT = 'submit';
 
     /**
-     * Description
+     * A guide selector overlay
      *
-     * @class editor.overlay.GuideSelector
+     * @class GuideSelector
+     * @namespace editor.overlay
      * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.title='Select a guide'] The overlay's title
+     * @param {String} [configs.empty_text='No guides available'] A text to show when no guides are available
+     * @param {String} [configs.url=''] The url from which to retreive the list of guides
      */
     function GuideSelector(configs) {
         this.configs = this.getConfigs(configs);
@@ -9611,33 +9988,19 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     }
 
     GuideSelector.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: true,
-
-        /**
-        * The overlay's title
-        */
-        title: metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
-
-        /**
-        * The text to display when no guides are available
-        */
-        emptyText: metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
-
-        /**
-        * The url from which to retreive the list of guides
-        */
-        url: null
+        'toolbar': true,
+        'title': metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
+        'empty_text': metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
+        'url': null
     };
 
     metaScore.editor.Overlay.extend(GuideSelector);
 
     /**
-     * Description
+     * Show the overlay
+     * 
      * @method show
-     * @return
+     * @chainable
      */
     GuideSelector.prototype.show = function(){
         this.loadmask = new metaScore.editor.overlay.LoadMask({
@@ -9648,13 +10011,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             'success': metaScore.Function.proxy(this.onLoadSuccess, this),
             'error': metaScore.Function.proxy(this.onLoadError, this)
         });
+
+        return this;
     };
 
     /**
-     * Description
+     * The onload success event handler
+     * 
      * @method onLoadSuccess
-     * @param {} xhr
-     * @return
+     * @private
+     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
      */
     GuideSelector.prototype.onLoadSuccess = function(xhr){
         var contents = this.getContents(),
@@ -9668,7 +10034,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             .appendTo(contents);
 
         if(metaScore.Var.isEmpty(guides)){
-            contents.text(this.configs.emptyText);
+            contents.text(this.configs.empty_text);
         }
         else{
             metaScore.Array.each(guides, function(index, guide){
@@ -9723,7 +10089,13 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
                 button = new metaScore.editor.Button()
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
-                    .addListener('click', metaScore.Function.proxy(this.onGuideClick, this, [guide, revision_field]))
+                    .addListener('click', metaScore.Function.proxy(function(evt){
+                        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+
+                        this.hide();
+
+                        evt.stopPropagation();
+                    }, this))
                     .data('action', 'select');
 
                 revision_wrapper = new metaScore.Dom('<div/>', {'class': 'revision-wrapper'})
@@ -9750,315 +10122,34 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     };
 
     /**
-     * Description
+     * The load error event handler
+     * 
      * @method onLoadError
-     * @return
+     * @private
+     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
      */
-    GuideSelector.prototype.onLoadError = function(){
-    };
-
-    /**
-     * Description
-     * @method onGuideClick
-     * @param {} guide
-     * @return
-     */
-    GuideSelector.prototype.onGuideClick = function(guide, revision_field){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
-
-        this.hide();
+    GuideSelector.prototype.onLoadError = function(xhr){
     };
 
     return GuideSelector;
 
 })();
 /**
-* Description
-*
-* @class editor.overlay.InsertImage
-* @extends editor.Overlay
-*/
-
-metaScore.namespace('editor.overlay').InsertImage = (function () {
-
-    /**
-     * Fired when the submit button is clicked
-     *
-     * @event submit
-     * @param {Object} overlay The overlay instance
-     * @param {String} url The image's url
-     * @param {Number} width The image's width
-     * @param {Number} height The image's height
-     * @param {String} alignement The image's alignement
-     */
-    var EVT_SUBMIT = 'submit';
-
-    /**
-     * Description
-     * @constructor
-     * @param {} configs
-     */
-    function InsertImage(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        InsertImage.parent.call(this, this.configs);
-
-        this.addClass('insert-image');
-
-        if(this.configs.image){
-            this.setValuesFromImage(this.configs.image);
-        }
-    }
-
-    InsertImage.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: true,
-
-        /**
-        * The overlay's title
-        */
-        title: metaScore.Locale.t('editor.overlay.InsertImage.title', 'Insert Image'),
-
-        /**
-        * The current image
-        */
-        image: null
-    };
-
-    metaScore.editor.Overlay.extend(InsertImage);
-
-    /**
-     * Description
-     * @method setupDOM
-     * @return
-     */
-    InsertImage.prototype.setupDOM = function(){
-        var contents, size_wrapper, size_buttons;
-
-        // call parent method
-        InsertImage.parent.prototype.setupDOM.call(this);
-
-        contents = this.getContents();
-
-        this.fields = {};
-        this.buttons = {};
-
-        // URL
-        this.fields.image = new metaScore.editor.field.Image({
-                'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.image', 'Image')
-            })
-            .addClass('image')
-            .addListener('valuechange', metaScore.Function.proxy(this.onURLChange, this))
-            .appendTo(contents);
-
-        size_wrapper = new metaScore.Dom('<div/>', {'class': 'size-wrapper clearfix'})
-            .appendTo(contents);
-
-        // Width
-        this.fields.width = new metaScore.editor.field.Number({
-                'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.width', 'Width'),
-                'min': 0
-            })
-            .addClass('width')
-            .addListener('valuechange', metaScore.Function.proxy(this.onWidthChange, this))
-            .appendTo(size_wrapper);
-
-        size_buttons = new metaScore.Dom('<div/>', {'class': 'size-buttons'})
-            .appendTo(size_wrapper);
-
-        // Lock ratio
-        this.fields.lock_ratio = new metaScore.editor.field.Boolean({
-                'checked': true,
-                'label': '&nbsp;'
-            })
-            .addClass('lock-ratio')
-            .attr('title', metaScore.Locale.t('editor.overlay.InsertImage.lock-ratio', 'Lock ratio'))
-            .addListener('valuechange', metaScore.Function.proxy(this.onLockRatioChange, this))
-            .appendTo(size_buttons);
-
-        // Reset
-        this.fields.reset_size = new metaScore.editor.Button({
-            })
-            .addClass('reset-size')
-            .attr('title', metaScore.Locale.t('editor.overlay.InsertImage.reset-size', 'Reset size'))
-            .addListener('click', metaScore.Function.proxy(this.onRevertSizeClick, this))
-            .appendTo(size_buttons);
-
-        // Height
-        this.fields.height = new metaScore.editor.field.Number({
-                'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.height', 'Height'),
-                'min': 0
-            })
-            .addClass('height')
-            .addListener('valuechange', metaScore.Function.proxy(this.onHeightChange, this))
-            .appendTo(size_wrapper);
-
-        // Alignment
-        this.fields.alignment = new metaScore.editor.field.Select({
-                'label': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment', 'Alignment'),
-                'options': {
-                    '': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.unset', '&lt;not set&gt;'),
-                    'left': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.left', 'Left'),
-                    'right': metaScore.Locale.t('editor.overlay.InsertImage.fields.alignment.right', 'Right')
-                }
-            })
-            .addClass('alignment')
-            .appendTo(contents);
-
-        // Buttons
-        this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
-            .addClass('apply')
-            .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
-            .appendTo(contents);
-
-        this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
-            .addClass('cancel')
-            .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
-            .appendTo(contents);
-
-    };
-
-    /**
-     * Description
-     * @method setValuesFromLink
-     * @param {} link
-     * @return
-     */
-    InsertImage.prototype.setValuesFromImage = function(image){
-        this.fields.image.setValue(image.url);
-    };
-
-    /**
-     * Description
-     * @method onURLChange
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onURLChange = function(evt){
-        var url = evt.detail.value;
-
-        if(url){
-            new metaScore.Dom('<img/>')
-                .addListener('load', metaScore.Function.proxy(function(evt){
-                    this.img = evt.target;
-
-                    this.fields.width.setValue(this.img.width, true);
-                    this.fields.height.setValue(this.img.height, true);
-                }, this))
-                .attr('src', url);
-        }
-    };
-
-    /**
-     * Description
-     * @method onWidthChange
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onWidthChange = function(evt){
-        var lock_ratio = this.fields.lock_ratio.getValue(),
-            width, height;
-
-        if(lock_ratio && this.img){
-            width = this.fields.width.getValue();
-            height = Math.round(width * this.img.height / this.img.width);
-
-            this.fields.height.setValue(height, true);
-        }
-    };
-
-    /**
-     * Description
-     * @method onHeightChange
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onHeightChange = function(evt){
-        var lock_ratio = this.fields.lock_ratio.getValue(),
-            width, height;
-
-        if(lock_ratio && this.img){
-            height = this.fields.height.getValue();
-            width = Math.round(height * this.img.width / this.img.height);
-
-            this.fields.width.setValue(width, true);
-        }
-    };
-
-    /**
-     * Description
-     * @method onRatioChange
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onLockRatioChange = function(evt){
-        var lock_ratio = evt.detail.value;
-
-        if(lock_ratio && this.img){
-            this.fields.width.setValue(this.fields.width.getValue());
-        }
-    };
-
-    /**
-     * Description
-     * @method onRevertSizeClick
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onRevertSizeClick = function(evt){
-        if(this.img){
-            this.fields.width.setValue(this.img.width);
-            this.fields.height.setValue(this.img.height);
-        }
-    };
-
-    /**
-     * Description
-     * @method onApplyClick
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onApplyClick = function(evt){
-        var url, width, height, alignment;
-
-        url = this.fields.image.getValue();
-        width = this.fields.width.getValue();
-        height = this.fields.height.getValue();
-        alignment = this.fields.alignment.getValue();
-
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'url': url, 'width': width, 'height': height, 'alignment': alignment}, true, false);
-
-        this.hide();
-    };
-
-    /**
-     * Description
-     * @method onCancelClick
-     * @param {} evt
-     * @return
-     */
-    InsertImage.prototype.onCancelClick = function(evt){
-        this.hide();
-    };
-
-    return InsertImage;
-
-})();
-/**
-* Description
-* @class editor.overlay.LoadMask
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').LoadMask = (function () {
 
     /**
-     * Description
+     * A loading mask
+     *
+     * @class LoadMask
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the mask is draggable
+     * @param {String} [configs.text='Loading...'] The text to display
      */
     function LoadMask(configs) {
         this.configs = this.getConfigs(configs);
@@ -10073,11 +10164,7 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
     }
 
     LoadMask.defaults = {
-        /**
-        * True to make this draggable
-        */
         'draggable': false,
-
         'text': metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
     };
 
@@ -10087,17 +10174,20 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
 
 })();
 /**
-* Description
-* @class editor.overlay.Toolbar
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').Toolbar = (function(){
 
     /**
-     * Initialize
+     * A title toolbar for overlay's
+     *
+     * @class Toolbar
+     * @namespace editor.overlay
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.title=null] The text to display as a title
      */
     function Toolbar(configs) {
         this.configs = this.getConfigs(configs);
@@ -10117,28 +10207,27 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     }
 
     Toolbar.defaults = {
-        /**
-        * A text to add as a title
-        */
-        title: null
+        'title': null
     };
 
     metaScore.Dom.extend(Toolbar);
 
     /**
-     * Description
+     * Get the title's Dom
+     * 
      * @method getTitle
-     * @return MemberExpression
+     * @return {Dom} The Dom object
      */
     Toolbar.prototype.getTitle = function(){
         return this.title;
     };
 
     /**
-     * Description
+     * Add a button
+     * 
      * @method addButton
-     * @param {} action
-     * @return button
+     * @param {String} action The action associated with the button
+     * @return {editor.Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
         var button = new metaScore.editor.Button().data('action', action)
@@ -10148,10 +10237,11 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     };
 
     /**
-     * Description
+     * Get a button by associated action
+     * 
      * @method getButton
-     * @param {} action
-     * @return CallExpression
+     * @param {String} action The action associated with the button
+     * @return {Dom} The button
      */
     Toolbar.prototype.getButton = function(action){
         return this.buttons.children('[data-action="'+ action +'"]');
@@ -10160,58 +10250,7 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     return Toolbar;
 
 })();
-/**
-* Description
-* @class editor.overlay.iFrame
-* @extends editor.Overlay
-*/
-
-metaScore.namespace('editor.overlay').iFrame = (function () {
-
-    /**
-     * Description
-     * @constructor
-     * @param {} configs
-     */
-    function iFrame(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        iFrame.parent.call(this, this.configs);
-
-        this.addClass('iframe');
-    }
-
-    iFrame.defaults = {
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: true,
-
-        /**
-        * The iframe url
-        */
-        url: null
-    };
-
-    metaScore.editor.Overlay.extend(iFrame);
-
-    /**
-     * Description
-     * @method setupDOM
-     * @return
-     */
-    iFrame.prototype.setupDOM = function(){
-        // call parent method
-        iFrame.parent.prototype.setupDOM.call(this);
-
-        this.frame = new metaScore.Dom('<iframe/>', {'src': this.configs.url})
-            .appendTo(this.contents);
-    };
-
-    return iFrame;
-
-})();
+    // attach the metaScore object to the global scope
     global.metaScore = metaScore;
 
 } (this));

@@ -1,3 +1,7 @@
+/**
+ * @module Core
+ */
+
 metaScore.Resizable = (function () {
 
     /**
@@ -22,18 +26,19 @@ metaScore.Resizable = (function () {
     var EVT_RESIZEEND = 'resizeend';
 
     /**
-     * Description
-     *
+     * A class for adding resizable behaviors
+     * 
      * @class Resizable
      * @extends Class
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Dom} configs.target The Dom object to add the behavior to
+     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed 
      */
     function Resizable(configs) {
         this.configs = this.getConfigs(configs);
 
-        this.configs.container = this.configs.container || new metaScore.Dom('body');
-        this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+        this.doc = new metaScore.Dom(this.configs.target.get(0).ownerDocument);
 
         this.handles = {};
 
@@ -53,7 +58,8 @@ metaScore.Resizable = (function () {
     }
 
     Resizable.defaults = {
-        directions: [
+        'target': null,
+        'directions': [
             'top',
             'right',
             'bottom',
@@ -68,10 +74,11 @@ metaScore.Resizable = (function () {
     metaScore.Class.extend(Resizable);
 
     /**
-     * Description
+     * The mousedown event handler
+     * 
      * @method onMouseDown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -100,10 +107,11 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * The mousemove event handler
+     * 
      * @method onMouseMove
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseMove = function(evt){
         var handle = new metaScore.Dom(this.start_state.handle),
@@ -162,10 +170,11 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * The mouseup event handler
+     * 
      * @method onMouseUp
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseUp = function(evt){
         this.doc
@@ -180,18 +189,20 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Get a handle
      * @method getHandle
-     * @return ThisExpression
+     * @param {String} direction The direction of the handle to get
+     * @return {Dom} The handle
      */
     Resizable.prototype.getHandle = function(direction){
         return this.handles[direction];
     };
 
     /**
-     * Description
+     * Enable the behavior
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.enable = function(){
         this.configs.target.addClass('resizable');
@@ -202,9 +213,10 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Disable the behavior
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.disable = function(){
         this.configs.target.removeClass('resizable');
@@ -215,9 +227,10 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Destroy the behavior
+     * 
      * @method destroy
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.destroy = function(){
         this.disable();

@@ -1,15 +1,18 @@
 /**
-* Description
-* @class editor.field.Select
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Select = (function () {
 
     /**
-     * Description
+     * A select list field based on an HTML select element
+     *
+     * @class SelectField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.options={}}] A list of select options as key/value pairs
      */
     function SelectField(configs) {
         this.configs = this.getConfigs(configs);
@@ -21,18 +24,16 @@ metaScore.namespace('editor.field').Select = (function () {
     }
 
     SelectField.defaults = {
-        /**
-        * Defines the maximum value allowed
-        */
-        options: {}
+        'options': {}
     };
 
     metaScore.editor.Field.extend(SelectField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     SelectField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
@@ -55,11 +56,11 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
-     * @method addOption
-     * @param {} value
-     * @param {} text
-     * @chainable
+     * Adds an option group to the select list
+     * 
+     * @method addGroup
+     * @param {String} label The group's text label
+     * @return {Dom} The created Dom object
      */
     SelectField.prototype.addGroup = function(label){
         var group = new metaScore.Dom('<optgroup/>', {'label': label});
@@ -70,11 +71,13 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
+     * Add an option to the select list
+     * 
      * @method addOption
-     * @param {} value
-     * @param {} text
-     * @chainable
+     * @param {String} value The option's value
+     * @param {String} text The option's label
+     * @param {Dom} [group] The group to append the option to, it will be appended to the root list if not specified
+     * @return {Dom} The created Dom object
      */
     SelectField.prototype.addOption = function(value, text, group){
         var option = new metaScore.Dom('<option/>', {'value': value, 'text': text});
@@ -85,13 +88,14 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
+     * Update an option's label by value
+     * 
      * @method updateOption
-     * @param {} value
-     * @param {} text
-     * @chainable
+     * @param {String} value The value of the option to update
+     * @param {String} text The new label's text
+     * @return {Dom} The option's Dom object
      */
-    SelectField.prototype.updateOption = function(value, text, attr){
+    SelectField.prototype.updateOption = function(value, text){
         var option = this.input.find('option[value="'+ value +'"]');
 
         option.text(text);
@@ -100,10 +104,11 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Description
+     * Remove an option by value
+     * 
      * @method removeOption
-     * @param {} value
-     * @chainable
+     * @param {String} value The value of the option to remove
+     * @return {Dom} The option's Dom object
      */
     SelectField.prototype.removeOption = function(value){
         var option = this.input.find('option[value="'+ value +'"]');
@@ -114,25 +119,28 @@ metaScore.namespace('editor.field').Select = (function () {
     };
 
     /**
-     * Toggle the readonly attribute of the field
-     * @method readonly
-     * @return ThisExpression
+     * Remove all groups and options
+     * 
+     * @method clear
+     * @chainable
      */
-    SelectField.prototype.readonly = function(readonly){
-        SelectField.parent.prototype.readonly.call(this, readonly);
-
-        this.input.attr('disabled', this.is_readonly ? "disabled" : null);
+    SelectField.prototype.clear = function(){
+        this.input.empty();
 
         return this;
     };
 
     /**
-     * Description
-     * @method clear
-     * @return ThisExpression
+     * Toggle the readonly attribute of the field
+     * 
+     * @method readonly
+     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @chainable
      */
-    SelectField.prototype.clear = function(){
-        this.input.empty();
+    SelectField.prototype.readonly = function(readonly){
+        SelectField.parent.prototype.readonly.call(this, readonly);
+
+        this.input.attr('disabled', this.is_readonly ? "disabled" : null);
 
         return this;
     };

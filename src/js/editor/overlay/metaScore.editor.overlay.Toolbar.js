@@ -1,15 +1,18 @@
 /**
-* Description
-* @class editor.overlay.Toolbar
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').Toolbar = (function(){
 
     /**
-     * Initialize
+     * A title toolbar for overlay's
+     *
+     * @class Toolbar
+     * @namespace editor.overlay
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.title=null] The text to display as a title
      */
     function Toolbar(configs) {
         this.configs = this.getConfigs(configs);
@@ -29,28 +32,27 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     }
 
     Toolbar.defaults = {
-        /**
-        * A text to add as a title
-        */
-        title: null
+        'title': null
     };
 
     metaScore.Dom.extend(Toolbar);
 
     /**
-     * Description
+     * Get the title's Dom
+     * 
      * @method getTitle
-     * @return MemberExpression
+     * @return {Dom} The Dom object
      */
     Toolbar.prototype.getTitle = function(){
         return this.title;
     };
 
     /**
-     * Description
+     * Add a button
+     * 
      * @method addButton
-     * @param {} action
-     * @return button
+     * @param {String} action The action associated with the button
+     * @return {editor.Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
         var button = new metaScore.editor.Button().data('action', action)
@@ -60,10 +62,11 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     };
 
     /**
-     * Description
+     * Get a button by associated action
+     * 
      * @method getButton
-     * @param {} action
-     * @return CallExpression
+     * @param {String} action The action associated with the button
+     * @return {Dom} The button
      */
     Toolbar.prototype.getButton = function(action){
         return this.buttons.children('[data-action="'+ action +'"]');

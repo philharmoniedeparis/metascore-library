@@ -1,15 +1,20 @@
 /**
-* Description
-* @class editor.field.Number
-* @extends editor.Field
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.field').Number = (function () {
 
     /**
-     * Description
+     * A number field based on an HTML input[type=number] element
+     *
+     * @class NumberField
+     * @namespace editor.field
+     * @extends editor.Field
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Number} [configs.value=0] The default value
+     * @param {Number} [configs.min=null] The minimum allowed value
+     * @param {Number} [configs.max=null] The maximum allowed value
      */
     function NumberField(configs) {
         this.configs = this.getConfigs(configs);
@@ -21,28 +26,18 @@ metaScore.namespace('editor.field').Number = (function () {
     }
 
     NumberField.defaults = {
-        /**
-        * Defines the default value
-        */
-        value: 0,
-
-        /**
-        * Defines the minimum value allowed
-        */
-        min: null,
-
-        /**
-        * Defines the maximum value allowed
-        */
-        max: null
+        'value': 0,
+        'min': null,
+        'max': null
     };
 
     metaScore.editor.Field.extend(NumberField);
 
     /**
-     * Description
+     * Setup the field's UI
+     *
      * @method setupUI
-     * @return
+     * @private
      */
     NumberField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);

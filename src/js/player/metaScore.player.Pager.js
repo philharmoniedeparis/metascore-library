@@ -1,20 +1,18 @@
 /**
-* Description
-*
-* @class player.Pager
-* @extends Dom
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player').Pager = (function () {
 
     /**
-     * Description
+     * A pager for block components
+     *
+     * @class Pager
+     * @namespace player
+     * @extends Dom
      * @constructor
-     * @param {} configs
      */
-    function Pager(configs) {
-        this.configs = this.getConfigs(configs);
-
+    function Pager() {
         // call parent constructor
         Pager.parent.call(this, '<div/>', {'class': 'pager'});
 
@@ -38,11 +36,12 @@ metaScore.namespace('player').Pager = (function () {
     metaScore.Dom.extend(Pager);
 
     /**
-     * Description
+     * Update the page counter
+     * 
      * @method updateCount
-     * @param {} index
-     * @param {} count
-     * @return
+     * @param {Integer} index The index of the block's active page
+     * @param {Integer} count The number of pages
+     * @chainable
      */
     Pager.prototype.updateCount = function(index, count){
         this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
@@ -50,6 +49,8 @@ metaScore.namespace('player').Pager = (function () {
         this.buttons.first.toggleClass('inactive', index < 1);
         this.buttons.previous.toggleClass('inactive', index < 1);
         this.buttons.next.toggleClass('inactive', index >= count - 1);
+
+        return this;
     };
 
     return Pager;

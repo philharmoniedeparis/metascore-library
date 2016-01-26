@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class Dom
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Dom = (function () {
 
@@ -23,8 +20,16 @@ metaScore.Dom = (function () {
     var EVT_CHILDREMOVE = 'childremove';
 
     /**
-     * Description
+     * A class for Dom manipulation
+     * 
+     * @class Dom
+     * @extends Class
      * @constructor
+     * @param {Mixed} [...args] An HTML string and an optional list of attributes to apply, or a CSS selector with an optional parent and an optional list of attributes to apply
+     * 
+     * @example
+     *     var div = new metaScore.Dom('<div/>', {'class': 'my-class'});
+     *     var body = new metaScore.Dom('body');
      */
     function Dom() {
         var elements;
@@ -52,39 +57,20 @@ metaScore.Dom = (function () {
     metaScore.Class.extend(Dom);
 
     /**
-    * Regular expression that matches an element's string
-    */
-    Dom.stringRe = /^<(.)+>$/;
-
-    /**
-    * Regular expression that matches dashed string for camelizing
-    */
+     * Regular expression that matches dashed string for camelizing
+     *
+     * @property camelRe
+     * @private
+     */
     Dom.camelRe = /-([\da-z])/gi;
 
     /**
-     * Helper function used by the camel function
-     * @method camelReplaceFn
-     * @param {} all
-     * @param {} letter
-     * @return CallExpression
+     * List of common events that should generaly bubble up
+     * 
+     * @property bubbleEvents
+     * @static
+     * @private
      */
-    Dom.camelReplaceFn = function(all, letter) {
-        return letter.toUpperCase();
-    };
-
-    /**
-     * Normaliz a string to Camel Case; used for CSS properties
-     * @method camel
-     * @param {} str
-     * @return CallExpression
-     */
-    Dom.camel = function(str){
-        return str.replace(Dom.camelRe, Dom.camelReplaceFn);
-    };
-
-    /**
-    * List of event that should generaly bubble up
-    */
     Dom.bubbleEvents = {
         'click': true,
         'submit': true,
@@ -97,11 +83,40 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Select a single element by selecor
+     * Helper function used by the camel function
+     * 
+     * @method camelReplaceFn
+     * @static
+     * @private
+     * @param {The matched substring} match
+     * @param {The submatched letter} letter
+     * @return {String} The uppercased letter
+     */
+    Dom.camelReplaceFn = function(match, letter) {
+        return letter.toUpperCase();
+    };
+
+    /**
+     * Normalize a string to Camel Case
+     * 
+     * @method camel
+     * @static
+     * @private
+     * @param {String} str The string to normalize
+     * @return {String} The normalized string
+     */
+    Dom.camel = function(str){
+        return str.replace(Dom.camelRe, Dom.camelReplaceFn);
+    };
+
+    /**
+     * Select a single element by CSS selecor and optional parent
+     * 
      * @method selectElement
-     * @param {} selector
-     * @param {} parent
-     * @return element
+     * @static
+     * @param {String} The CSS selector
+     * @param {HTMLElement} [parent=document] The HTML Element in which to search
+     * @return {HTMLElement} The found element if any
      */
     Dom.selectElement = function (selector, parent) {
         var element;
@@ -124,11 +139,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Select elements by selecor
+     * Select multiple elements by CSS selecor and optional parent
+     * 
      * @method selectElements
-     * @param {} selector
-     * @param {} parent
-     * @return elements
+     * @static
+     * @param {String} The CSS selector
+     * @param {HTMLElement} [parent=document] The HTML Element in which to search
+     * @return {Mixed} An HTML NodeList or an array of found elements if any
      */
     Dom.selectElements = function (selector, parent) {
         var elements;
@@ -157,9 +174,11 @@ metaScore.Dom = (function () {
 
     /**
      * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+     * 
      * @method elementsFromString
-     * @param {} html
-     * @return Literal
+     * @static
+     * @param {String} html The HTML string
+     * @return {HTML NodeList} A NodeList of the created elements, or null on error
      */
     Dom.elementsFromString = function(html){
         var wrapMap = {
@@ -204,33 +223,38 @@ metaScore.Dom = (function () {
 
     /**
      * Get the window containing an element
+     * 
      * @method getElementWindow
-     * @param {} el
-     * @return {}
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {HTML Window} The window
      */
-    Dom.getElementWindow = function(el){
-        var doc = el.ownerDocument;
+    Dom.getElementWindow = function(element){
+        var doc = element.ownerDocument;
 
         return doc.defaultView || doc.parentWindow;
     };
 
     /**
-     * Checks if an element has a given class
+     * Check if an element has a given CSS lass
+     * 
      * @method hasClass
-     * @param {} element
-     * @param {} className
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
+     * @return {Boolean} Whether the element has the specified CSS class
      */
     Dom.hasClass = function(element, className){
         return element.classList.contains(className);
     };
 
     /**
-     * Adds a given class to an element
+     * Add a CSS class to an element
+     * 
      * @method addClass
-     * @param {} element
-     * @param {} className
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
      */
     Dom.addClass = function(element, className){
         var classNames = className.split(" "),
@@ -242,11 +266,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes a given class from an element
+     * Remove a CSS class from an element
+     * 
      * @method removeClass
-     * @param {} element
-     * @param {} className
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
      */
     Dom.removeClass = function(element, className){
         var classNames = className.split(" "),
@@ -258,12 +283,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Toggles a given class on an element
+     * Toggle a CSS class on an element
+     * 
      * @method toggleClass
-     * @param {} element
-     * @param {} className
-     * @param {} force
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
+     * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
      */
     Dom.toggleClass = function(element, className, force){
         var classNames = className.split(" "),
@@ -283,47 +309,59 @@ metaScore.Dom = (function () {
 
     /**
      * Add an event listener on an element
+     * 
      * @method addListener
-     * @param {} element
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
      */
     Dom.addListener = function(element, type, callback, useCapture){
         if(useCapture === undefined){
             useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
         }
 
-        return element.addEventListener(type, callback, useCapture);
+        element.addEventListener(type, callback, useCapture);
+
+        return element;
     };
 
     /**
      * Remove an event listener from an element
+     * 
      * @method removeListener
-     * @param {} element
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
      */
     Dom.removeListener = function(element, type, callback, useCapture){
         if(useCapture === undefined){
             useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
         }
 
-        return element.removeEventListener(type, callback, useCapture);
+        element.removeEventListener(type, callback, useCapture);
+
+        return element;
     };
 
     /**
      * Trigger an event from an element
+     * 
      * @method triggerEvent
-     * @param {} element
-     * @param {} type
-     * @param {} data
-     * @param {} bubbles
-     * @param {} cancelable
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
+     * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
+     * @param {Boolean} [cancelable=true] Whether the event is cancelable
+     * @return {Boolean} Whether the event was not cancelled
      */
     Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
         var fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
@@ -338,26 +376,30 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets the innerHTML of an element
+     * Set or get the innerHTML of an element
+     * 
      * @method text
-     * @param {} element
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} [html] The value to set
+     * @return {String} The innerHTML of the element
      */
-    Dom.text = function(element, value){
-        if(value !== undefined){
-            element.innerHTML = value;
+    Dom.text = function(element, html){
+        if(html !== undefined){
+            element.innerHTML = html;
         }
 
         return element.innerHTML;
     };
 
     /**
-     * Sets or gets the value of an element
+     * Set or get the value of an element
+     * 
      * @method val
-     * @param {} element
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {String} The value of the element
      */
     Dom.val = function(element, value){
         if(value !== undefined){
@@ -368,12 +410,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets an attribute on an element
+     * Set or get an attribute on an element
+     * 
      * @method attr
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} name The attribute's name, or a list of name/value pairs
+     * @param {Mixed} [value] The attribute's value
+     * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
      */
     Dom.attr = function(element, name, value){
         if(metaScore.Var.is(name, 'object')){
@@ -408,13 +452,15 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets a style property of an element
+     * Set or get a CSS style property of an element
+     * 
      * @method css
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @param {} inline
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} name The CSS property's name
+     * @param {String} value The CSS property's value
+     * @param {Boolean} [inline=false] Whether to return the inline or computed style value
+     * @return {String} The CSS style value of the property
      */
     Dom.css = function(element, name, value, inline){
         var camel, style;
@@ -431,12 +477,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets a data string of an element
+     * Set or get a custom data attribute of an element
+     * 
      * @method data
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} name The name of the data attribute
+     * @param {String} value The value of the data attribute
+     * @return {String} The value of the data attribute
      */
     Dom.data = function(element, name, value){
         name = this.camel(name);
@@ -454,11 +502,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Appends children to an element
+     * Append children to an element
+     * 
      * @method append
-     * @param {} element
-     * @param {} children
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} children An array of elemets or a single element to append
      */
     Dom.append = function(element, children){
         if (!metaScore.Var.is(children, 'array')) {
@@ -471,11 +520,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Inserts siblings before an element
+     * Insert siblings before an element
+     * 
      * @method before
-     * @param {} element
-     * @param {} siblings
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     Dom.before = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -488,11 +538,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Inserts siblings after an element
+     * Insert siblings after an element
      * @method after
-     * @param {} element
-     * @param {} siblings
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     Dom.after = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -505,10 +555,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes all element children
+     * Remove all element children
+     * 
      * @method empty
-     * @param {} element
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
      */
     Dom.empty = function(element){
         while(element.firstChild){
@@ -517,10 +568,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes an element from the dom
+     * Remove an element from the DOM
+     * 
      * @method remove
-     * @param {} element
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
      */
     Dom.remove = function(element){
         if(element.parentElement){
@@ -529,42 +581,46 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Checks if an element matches a selector
+     * Check if an element matches a CSS selector
+     * 
      * @method is
-     * @param {} el
-     * @param {} selector
-     * @return Literal
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} selector The CSS selector
+     * @return {Boolean} Whether the element matches the CSS selector
      */
-    Dom.is = function(el, selector){
+    Dom.is = function(element, selector){
         var win;
 
-        if(el instanceof Element){
-            return Element.prototype.matches.call(el, selector);
+        if(element instanceof Element){
+            return Element.prototype.matches.call(element, selector);
         }
 
-        win = Dom.getElementWindow(el);
+        win = Dom.getElementWindow(element);
 
-        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
+        return (element instanceof win.Element) && Element.prototype.matches.call(element, selector);
     };
 
     /**
-     * Description
+     * Get the closest ancestor of an element which matches a given CSS selector
+     * 
      * @method closest
-     * @param {} el
-     * @param {} selector
-     * @return Literal
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} selector The CSS selector
+     * @return {Element} The matched element
      */
-    Dom.closest = function(el, selector){
+    Dom.closest = function(element, selector){
         var document, win;
 
-        if(el instanceof Element){
-            return Element.prototype.closest.call(el, selector);
+        if(element instanceof Element){
+            return Element.prototype.closest.call(element, selector);
         }
 
-        if(document = el.ownerDocument){
+        if(document = element.ownerDocument){
             if(win = document.defaultView || document.parentWindow){
-                if(el instanceof win.Element){
-                    return Element.prototype.closest.call(el, selector);
+                if(element instanceof win.Element){
+                    return Element.prototype.closest.call(element, selector);
                 }
             }
         }
@@ -573,10 +629,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an element to the set of elements managed by the Dom object
+     * 
      * @method add
-     * @param {} elements
-     * @return
+     * @private
+     * @param {Mixed} elements An array of elements or a single element to add
      */
     Dom.prototype.add = function(elements){
         if('length' in elements){
@@ -590,29 +647,32 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the number of elements managed by the Dom object
+     * 
      * @method count
-     * @return MemberExpression
+     * @return {Integer} The number of elements
      */
     Dom.prototype.count = function(){
         return this.elements.length;
     };
 
     /**
-     * Description
+     * Get an element by index from the set of elements managed by the Dom object
+     * 
      * @method get
-     * @param {} index
-     * @return MemberExpression
+     * @param {Integer} index The index of the elements to retreive
+     * @return {Element} The element
      */
     Dom.prototype.get = function(index){
         return this.elements[index];
     };
 
     /**
-     * Description
+     * Return a new Dom object with the elements filtered by a CSS selector
+     * 
      * @method filter
-     * @param {} selector
-     * @return filtered
+     * @param {String} selector The CSS selector
+     * @return {Dom} The new Dom object
      */
     Dom.prototype.filter = function(selector){
         var filtered = new Dom();
@@ -627,10 +687,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the index of the first element that matched the given CSS selector
+     * 
      * @method index
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Integer} The index of the first matched element, or -1 if none
      */
     Dom.prototype.index = function(selector){
         var found = -1;
@@ -646,10 +707,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Find all descendents that match a given CSS selector
+     * 
      * @method find
-     * @param {} selector
-     * @return descendents
+     * @param {String} selector The CSS selector
+     * @return {Dom} A Dom object of all matched descendents
      */
     Dom.prototype.find = function(selector){
         var descendents = new Dom();
@@ -662,10 +724,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get all children, optionally filtered by a given CSS selector
+     * 
      * @method children
-     * @param {} selector
-     * @return children
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched children
      */
     Dom.prototype.children = function(selector){
         var children = new Dom();
@@ -682,20 +745,22 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the first child , optionally filtered by a given CSS selector
+     * 
      * @method child
-     * @param {} selector
-     * @return NewExpression
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of the matched child
      */
     Dom.prototype.child = function(selector){
         return new Dom(this.children(selector).get(0));
     };
 
     /**
-     * Description
+     * Get all parents, optionally filtered by a given CSS selector
+     * 
      * @method parents
-     * @param {} selector
-     * @return parents
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched parents
      */
     Dom.prototype.parents = function(selector){
         var parents = new Dom();
@@ -712,11 +777,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Interate over all the elements managed by the Dom object
+     * 
      * @method each
-     * @param {} callback
-     * @param {} scope
-     * @return
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed
+     * @param {Element} callback.element The element that is currently being processed
+     * @param {Mixed} scope The value to use as this when executing the callback function
      */
     Dom.prototype.each = function(callback, scope){
         scope = scope || this;
@@ -725,10 +792,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Check if an element in the set of elements managed by the Dom object has a given CSS class
+     * 
      * @method hasClass
-     * @param {} className
-     * @return found
+     * @param {String} className The CSS class
+     * @return {Boolean} Whether a match was found
      */
     Dom.prototype.hasClass = function(className) {
         var found;
@@ -742,10 +810,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add a CSS class to all the elements managed by the Dom object
+     * 
      * @method addClass
-     * @param {} className
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @chainable
      */
     Dom.prototype.addClass = function(className) {
         this.each(function(index, element) {
@@ -756,10 +825,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove a CSS class from all the elements managed by the Dom object
+     * 
      * @method removeClass
-     * @param {} className
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @chainable
      */
     Dom.prototype.removeClass = function(className) {
         this.each(function(index, element) {
@@ -770,11 +840,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Toggle a CSS class for all the elements managed by the Dom object
+     * 
      * @method toggleClass
-     * @param {} className
-     * @param {} force
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
+     * @chainable
      */
     Dom.prototype.toggleClass = function(className, force) {
         this.each(function(index, element) {
@@ -785,12 +856,15 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an event listener on all the elements managed by the Dom object
+     * 
      * @method addListener
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return ThisExpression
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.addListener = function(type, callback, useCapture) {
      this.each(function(index, element) {
@@ -801,19 +875,22 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
+     * 
      * @method addDelegate
-     * @param {} selector
-     * @param {} type
-     * @param {} callback
-     * @param {} scope
-     * @param {} useCapture
-     * @return CallExpression
+     * @param {String} selector The CSS selector to filter descendents by
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The original event
+     * @param {Element} callback.match The first matched descendent
+     * @param {Mixed} [scope] The value to use as this when executing the callback function
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
         scope = scope || this;
 
-        return this.addListener(type, function(evt){
+        this.addListener(type, function(evt){
             var element = evt.target,
                 match;
 
@@ -830,15 +907,20 @@ metaScore.Dom = (function () {
                 callback.call(scope, evt, match);
             }
         }, useCapture);
+
+        return this;
     };
 
     /**
-     * Description
+     * Remove an event listener from all the elements managed by the Dom object
+     * 
      * @method removeListener
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return ThisExpression
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} useCapture Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.removeListener = function(type, callback, useCapture) {
         this.each(function(index, element) {
@@ -849,13 +931,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Trigger an event from all the elements managed by the Dom object
+     * 
      * @method triggerEvent
-     * @param {} type
-     * @param {} data
-     * @param {} bubbles
-     * @param {} cancelable
-     * @return return_value
+     * @param {String} type The event type
+     * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
+     * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
+     * @param {Boolean} [cancelable=true] Whether the event is cancelable
+     * @return {Boolean} Whether no event was cancelled
      */
     Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
         var return_value = true;
@@ -868,10 +951,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element
+     * 
      * @method text
-     * @param {} value
-     * @return
+     * @param {String} [html] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the innerHTML of the first element if used as a getter
      */
     Dom.prototype.text = function(value) {
         if(value !== undefined){
@@ -885,10 +969,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set the value of all the elements managed by the Dom object, or get the value of the first element
+     * 
      * @method val
-     * @param {} value
-     * @return
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     Dom.prototype.val = function(value) {
         if(value !== undefined){
@@ -903,11 +988,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
-     * @method attr
-     * @param {} name
-     * @param {} value
-     * @return
+     * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
+     * 
+     * @method val
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     Dom.prototype.attr = function(name, value) {
         if(value !== undefined || metaScore.Var.is(name, 'object')){
@@ -922,12 +1008,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element
+     * 
      * @method css
-     * @param {} name
-     * @param {} value
-     * @param {} inline
-     * @return
+     * @param {String} name The CSS property's name
+     * @param {String} value The CSS property's value
+     * @param {Boolean} [inline=false] Whether to return the inline or computed style value
+     * @return {Mixed} The Dom object if used as a setter, the CSS style value of the property of the first element if used as a getter
      */
     Dom.prototype.css = function(name, value, inline) {
         if(value !== undefined){
@@ -942,11 +1029,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element
+     * 
      * @method data
-     * @param {} name
-     * @param {} value
-     * @return
+     * @param {String} name The name of the data attribute
+     * @param {String} value The value of the data attribute
+     * @return {Mixed} The Dom object if used as a setter, the value of the data attribute of the first element if used as a getter
      */
     Dom.prototype.data = function(name, value) {
         if(value !== undefined){
@@ -961,10 +1049,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append children to the first element managed by the Dom object
+     * 
      * @method append
-     * @param {} children
-     * @return ThisExpression
+     * @param {Mixed} children An array of elemets or a single element to append
+     * @chainable
      */
     Dom.prototype.append = function(children){
         if(children instanceof Dom){
@@ -977,10 +1066,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append each of the elements managed by the Dom object into a given element
+     * 
      * @method appendTo
-     * @param {} parent
-     * @return ThisExpression
+     * @param {Mixed} parent A Dom object or an Element to append the elements to
+     * @chainable
      */
     Dom.prototype.appendTo = function(parent){
         if(!(parent instanceof Dom)){
@@ -997,11 +1087,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append each of the elements managed by the Dom object into a given element at a given position
+     * 
      * @method insertAt
-     * @param {} parent
-     * @param {} index
-     * @return ThisExpression
+     * @param {Mixed} parent A Dom object or an Element to append the elements to
+     * @param {Integer} index The index position to append at
+     * @chainable
      */
     Dom.prototype.insertAt = function(parent, index){
         var element;
@@ -1023,9 +1114,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove all children of each element managed by the Dom object 
+     * 
      * @method empty
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.empty = function(){
         this.each(function(index, element) {
@@ -1036,9 +1128,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Make all the elements managed by the Dom object visible
+     * 
      * @method show
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.show = function(){
         this.css('display', '');
@@ -1047,9 +1140,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Make all the elements managed by the Dom object invisible
+     * 
      * @method hide
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.hide = function(){
         this.css('display', 'none');
@@ -1058,9 +1152,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set focus on the first element managed by the Dom object
+     * 
      * @method focus
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.focus = function(){
         this.get(0).focus();
@@ -1069,9 +1164,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove focus from the first element managed by the Dom object
+     * 
      * @method blur
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.blur = function(){
         this.get(0).blur();
@@ -1080,9 +1176,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove all the elements managed by the Dom object from the DOM
+     * 
      * @method remove
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.remove = function(){
         if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
@@ -1097,10 +1194,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Check if an element from the elements managed by the Dom object matches a CSS selector
+     * 
      * @method is
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Boolean} Whether an element matches the CSS selector
      */
     Dom.prototype.is = function(selector){
         var found;
@@ -1114,10 +1212,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector
+     * 
      * @method closest
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Element} The matched element
      */
     Dom.prototype.closest = function(selector){
         var found;

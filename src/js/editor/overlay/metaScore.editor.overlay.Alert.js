@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class editor.overlay.Alert
-* @extends editor.Overlay
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor.overlay').Alert = (function () {
 
@@ -17,9 +14,16 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     var EVT_BUTTONCLICK = 'buttonclick';
 
     /**
-     * Description
+     * An alert overlay to show a simple message with buttons
+     *
+     * @class Alert
+     * @namespace editor.overlay
+     * @extends editor.Overlay
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
+     * @param {String} [configs.text=''] The message's text
+     * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
      */
     function Alert(configs) {
         this.configs = this.getConfigs(configs);
@@ -31,26 +35,22 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     }
 
     Alert.defaults = {
-        /**
-        * True to make this draggable
-        */
-        draggable: false,
-
-        text: '',
-
-        buttons: []
+        'draggable': false,
+        'text': '',
+        'buttons': {}
     };
 
     metaScore.editor.Overlay.extend(Alert);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    Alert.prototype.setupDOM = function(){
+    Alert.prototype.setupUI = function(){
         // call parent method
-        Alert.parent.prototype.setupDOM.call(this);
+        Alert.parent.prototype.setupUI.call(this);
 
         this.text = new metaScore.Dom('<div/>', {'class': 'text'})
             .appendTo(this.contents);
@@ -72,21 +72,25 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     };
 
     /**
-     * Description
+     * Set the message's text
+     * 
      * @method setText
-     * @param {} str
-     * @return
+     * @param {String} str The message's text
+     * @chainable
      */
     Alert.prototype.setText = function(str){
         this.text.text(str);
+
+        return this;
     };
 
     /**
-     * Description
+     * Add a button
+     * 
      * @method addButton
-     * @param {} action
-     * @param {} label
-     * @return button
+     * @param {String} action The button's associated action
+     * @param {String} label The button's text label
+     * @return {Button} The button object
      */
     Alert.prototype.addButton = function(action, label){
         var button = new metaScore.editor.Button()
@@ -98,10 +102,11 @@ metaScore.namespace('editor.overlay').Alert = (function () {
     };
 
     /**
-     * Description
+     * The button click event handler
+     * 
      * @method onButtonClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Alert.prototype.onButtonClick = function(evt){
         var action = new metaScore.Dom(evt.target).data('action');

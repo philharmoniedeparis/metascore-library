@@ -6,6 +6,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Array",
         "Class",
         "Color",
+        "CuePoint",
         "Dom",
         "Draggable",
         "Editor",
@@ -27,24 +28,22 @@ YUI.add("yuidoc-meta", function(Y) {
         "editor.Panel",
         "editor.field.Boolean",
         "editor.field.BorderRadius",
-        "editor.field.Buttons",
-        "editor.field.Color",
-        "editor.field.File",
-        "editor.field.Image",
-        "editor.field.Number",
-        "editor.field.Select",
-        "editor.field.Text",
-        "editor.field.Textarea",
-        "editor.field.Time",
+        "editor.field.ButtonsField",
+        "editor.field.ColorField",
+        "editor.field.FileField",
+        "editor.field.ImageField",
+        "editor.field.NumberField",
+        "editor.field.SelectField",
+        "editor.field.TextField",
+        "editor.field.TextareaField",
+        "editor.field.TimeField",
         "editor.overlay.Alert",
         "editor.overlay.BorderRadius",
         "editor.overlay.ColorSelector",
         "editor.overlay.GuideDetails",
         "editor.overlay.GuideSelector",
-        "editor.overlay.InsertImage",
         "editor.overlay.LoadMask",
         "editor.overlay.Toolbar",
-        "editor.overlay.iFrame",
         "editor.panel.Block",
         "editor.panel.Element",
         "editor.panel.Page",
@@ -52,18 +51,32 @@ YUI.add("yuidoc-meta", function(Y) {
         "editor.panel.Toolbar",
         "metaScore",
         "player.Component",
-        "player.CuePoint",
         "player.Pager",
         "player.component.Block",
         "player.component.Controller",
-        "player.component.Element",
-        "player.component.Media",
-        "player.component.Page",
-        "player.component.element.Cursor",
-        "player.component.element.Image",
-        "player.component.element.Text"
+        "player.component.element.Cursor"
     ],
-    "modules": [],
-    "allModules": []
+    "modules": [
+        "Core",
+        "Editor",
+        "Player"
+    ],
+    "allModules": [
+        {
+            "displayName": "Core",
+            "name": "Core",
+            "description": "The Core module defines shared classes used in other modules"
+        },
+        {
+            "displayName": "Editor",
+            "name": "Editor",
+            "description": "The Editor module defines classes used in editor"
+        },
+        {
+            "displayName": "Player",
+            "name": "Player",
+            "description": "The Player module defines classes used in player"
+        }
+    ]
 } };
 });

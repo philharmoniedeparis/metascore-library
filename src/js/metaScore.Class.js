@@ -1,3 +1,7 @@
+/**
+ * @module Core
+ */
+
 metaScore.Class = (function(){
 
     /**

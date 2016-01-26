@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8">
     <title>Draggable - metaScore</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
     <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+    <script src="../assets/yui/yui-base/yui-base-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../assets/css/logo.png" title="metaScore" width="117" height="52"></h1>
+                <h1><img src="..\assets\img\logo.png" title="metaScore"></h1>
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 0.0.2</em>
@@ -43,6 +43,7 @@
                                 <li><a href="../classes/Array.html">Array</a></li>
                                 <li><a href="../classes/Class.html">Class</a></li>
                                 <li><a href="../classes/Color.html">Color</a></li>
+                                <li><a href="../classes/CuePoint.html">CuePoint</a></li>
                                 <li><a href="../classes/Dom.html">Dom</a></li>
                                 <li><a href="../classes/Draggable.html">Draggable</a></li>
                                 <li><a href="../classes/Editor.html">Editor</a></li>
@@ -51,15 +52,15 @@
                                 <li><a href="../classes/editor.Field.html">editor.Field</a></li>
                                 <li><a href="../classes/editor.field.Boolean.html">editor.field.Boolean</a></li>
                                 <li><a href="../classes/editor.field.BorderRadius.html">editor.field.BorderRadius</a></li>
-                                <li><a href="../classes/editor.field.Buttons.html">editor.field.Buttons</a></li>
-                                <li><a href="../classes/editor.field.Color.html">editor.field.Color</a></li>
-                                <li><a href="../classes/editor.field.File.html">editor.field.File</a></li>
-                                <li><a href="../classes/editor.field.Image.html">editor.field.Image</a></li>
-                                <li><a href="../classes/editor.field.Number.html">editor.field.Number</a></li>
-                                <li><a href="../classes/editor.field.Select.html">editor.field.Select</a></li>
-                                <li><a href="../classes/editor.field.Text.html">editor.field.Text</a></li>
-                                <li><a href="../classes/editor.field.Textarea.html">editor.field.Textarea</a></li>
-                                <li><a href="../classes/editor.field.Time.html">editor.field.Time</a></li>
+                                <li><a href="../classes/editor.field.ButtonsField.html">editor.field.ButtonsField</a></li>
+                                <li><a href="../classes/editor.field.ColorField.html">editor.field.ColorField</a></li>
+                                <li><a href="../classes/editor.field.FileField.html">editor.field.FileField</a></li>
+                                <li><a href="../classes/editor.field.ImageField.html">editor.field.ImageField</a></li>
+                                <li><a href="../classes/editor.field.NumberField.html">editor.field.NumberField</a></li>
+                                <li><a href="../classes/editor.field.SelectField.html">editor.field.SelectField</a></li>
+                                <li><a href="../classes/editor.field.TextareaField.html">editor.field.TextareaField</a></li>
+                                <li><a href="../classes/editor.field.TextField.html">editor.field.TextField</a></li>
+                                <li><a href="../classes/editor.field.TimeField.html">editor.field.TimeField</a></li>
                                 <li><a href="../classes/editor.History.html">editor.History</a></li>
                                 <li><a href="../classes/editor.MainMenu.html">editor.MainMenu</a></li>
                                 <li><a href="../classes/editor.Overlay.html">editor.Overlay</a></li>
@@ -68,8 +69,6 @@
                                 <li><a href="../classes/editor.overlay.ColorSelector.html">editor.overlay.ColorSelector</a></li>
                                 <li><a href="../classes/editor.overlay.GuideDetails.html">editor.overlay.GuideDetails</a></li>
                                 <li><a href="../classes/editor.overlay.GuideSelector.html">editor.overlay.GuideSelector</a></li>
-                                <li><a href="../classes/editor.overlay.iFrame.html">editor.overlay.iFrame</a></li>
-                                <li><a href="../classes/editor.overlay.InsertImage.html">editor.overlay.InsertImage</a></li>
                                 <li><a href="../classes/editor.overlay.LoadMask.html">editor.overlay.LoadMask</a></li>
                                 <li><a href="../classes/editor.overlay.Toolbar.html">editor.overlay.Toolbar</a></li>
                                 <li><a href="../classes/editor.Panel.html">editor.Panel</a></li>
@@ -87,13 +86,7 @@
                                 <li><a href="../classes/player.Component.html">player.Component</a></li>
                                 <li><a href="../classes/player.component.Block.html">player.component.Block</a></li>
                                 <li><a href="../classes/player.component.Controller.html">player.component.Controller</a></li>
-                                <li><a href="../classes/player.component.Element.html">player.component.Element</a></li>
                                 <li><a href="../classes/player.component.element.Cursor.html">player.component.element.Cursor</a></li>
-                                <li><a href="../classes/player.component.element.Image.html">player.component.element.Image</a></li>
-                                <li><a href="../classes/player.component.element.Text.html">player.component.element.Text</a></li>
-                                <li><a href="../classes/player.component.Media.html">player.component.Media</a></li>
-                                <li><a href="../classes/player.component.Page.html">player.component.Page</a></li>
-                                <li><a href="../classes/player.CuePoint.html">player.CuePoint</a></li>
                                 <li><a href="../classes/player.Pager.html">player.Pager</a></li>
                                 <li><a href="../classes/Resizable.html">Resizable</a></li>
                                 <li><a href="../classes/String.html">String</a></li>
@@ -102,6 +95,9 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/Core.html">Core</a></li>
+                                <li><a href="../modules/Editor.html">Editor</a></li>
+                                <li><a href="../modules/Player.html">Player</a></li>
                             </ul>
                         </div>
                     </div>
@@ -142,19 +138,104 @@
             Extends <a href="../classes/Class.html" class="crosslink">Class</a>
         </div>
 
-        <div class="foundat">
-            Defined in: <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l1"><code>src\js\helpers\metaScore.Draggable.js:1</code></a>
-        </div>
 
+            Module: <a href="../modules/Core.html">Core</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>Description</p>
+    <p>A class for adding draggable behaviors</p>
 
 </div>
 
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Draggable" class="method item">
+            <h3 class="name"><code>Draggable</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>configs</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">configs</code>
+                                <span class="type">Object</span>
+        
+        
+                            <div class="param-description">
+                                <p>Custom configs to override defaults</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">target</code>
+                                            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
+        
+                                        <div class="param-description">
+                                            <p>The Dom object to add the behavior to</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">handle</code>
+                                            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
+        
+                                        <div class="param-description">
+                                            <p>The Dom object to use as a dragging handle</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[limits={&#x27;top&#x27;: null, &#x27;left&#x27;: null}]</code>
+                                            <span class="type">Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The limits of the dragging</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
@@ -193,15 +274,15 @@
                                 <a href="#method_getConfigs">getConfigs</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_onMouseDown">onMouseDown</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_onMouseMove">onMouseMove</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method private">
                                 <a href="#method_onMouseUp">onMouseUp</a>
 
                             </li>
@@ -248,20 +329,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l165"><code>src\js\helpers\metaScore.Draggable.js:165</code></a>
         </p>
 
 
@@ -269,19 +346,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Destroy the behavior</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -290,20 +359,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l150"><code>src\js\helpers\metaScore.Draggable.js:150</code></a>
         </p>
 
 
@@ -311,19 +376,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Disable the behavior</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -332,20 +389,16 @@
 
         <span class="paren">()</span>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
 
 
 
+        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l135"><code>src\js\helpers\metaScore.Draggable.js:135</code></a>
         </p>
 
 
@@ -353,19 +406,11 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>Enable the behavior</p>
 
     </div>
 
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                    <p>ThisExpression</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -390,7 +435,6 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Class.html#method_extend">Class</a>:
-        <a href="../files/src_js_metaScore.Class.js.html#l22"><code>src\js\metaScore.Class.js:22</code></a>
         </p>
 
 
@@ -447,7 +491,6 @@
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Class.html#method_getConfigs">Class</a>:
-        <a href="../files/src_js_metaScore.Class.js.html#l49"><code>src\js\metaScore.Class.js:49</code></a>
         </p>
 
 
@@ -489,7 +532,7 @@
 
 
 </div>
-<div id="method_onMouseDown" class="method item">
+<div id="method_onMouseDown" class="method item private">
     <h3 class="name"><code>onMouseDown</code></h3>
 
         <div class="args">
@@ -500,11 +543,9 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -512,8 +553,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l64"><code>src\js\helpers\metaScore.Draggable.js:64</code></a>
         </p>
 
 
@@ -521,7 +560,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>The mousedown event handler</p>
 
     </div>
 
@@ -531,27 +570,22 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">evt</code>
-                        <span class="type">Object</span>
+                        <span class="type">Event</span>
 
 
                     <div class="param-description">
-                         
+                        <p>The event object</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
-<div id="method_onMouseMove" class="method item">
+<div id="method_onMouseMove" class="method item private">
     <h3 class="name"><code>onMouseMove</code></h3>
 
         <div class="args">
@@ -562,11 +596,9 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -574,8 +606,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l91"><code>src\js\helpers\metaScore.Draggable.js:91</code></a>
         </p>
 
 
@@ -583,7 +613,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>The mousemove event handler</p>
 
     </div>
 
@@ -593,27 +623,22 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">evt</code>
-                        <span class="type">Object</span>
+                        <span class="type">Event</span>
 
 
                     <div class="param-description">
-                         
+                        <p>The event object</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
-<div id="method_onMouseUp" class="method item">
+<div id="method_onMouseUp" class="method item private">
     <h3 class="name"><code>onMouseUp</code></h3>
 
         <div class="args">
@@ -624,11 +649,9 @@
             </ul><span class="paren">)</span>
         </div>
 
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
 
 
+        <span class="flag private">private</span>
 
 
 
@@ -636,8 +659,6 @@
 
     <div class="meta">
                 <p>
-                Defined in
-        <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l117"><code>src\js\helpers\metaScore.Draggable.js:117</code></a>
         </p>
 
 
@@ -645,7 +666,7 @@
     </div>
 
     <div class="description">
-        <p>Description</p>
+        <p>The mouseup event handler</p>
 
     </div>
 
@@ -655,23 +676,18 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">evt</code>
-                        <span class="type">Object</span>
+                        <span class="type">Event</span>
 
 
                     <div class="param-description">
-                         
+                        <p>The event object</p>
+
                     </div>
 
                 </li>
             </ul>
         </div>
 
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-            </div>
-        </div>
 
 
 </div>
@@ -691,7 +707,6 @@
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Class.html#property_defaults">Class</a>:
-                            <a href="../files/src_js_metaScore.Class.js.html#l13"><code>src\js\metaScore.Class.js:13</code></a>
                             </p>
                     
                     
@@ -722,8 +737,6 @@
                     
                         <div class="meta">
                                     <p>
-                                    Defined in
-                            <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l17"><code>src\js\helpers\metaScore.Draggable.js:17</code></a>
                             </p>
                     
                     
@@ -747,8 +760,6 @@
                     
                         <div class="meta">
                                     <p>
-                                    Defined in
-                            <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l24"><code>src\js\helpers\metaScore.Draggable.js:24</code></a>
                             </p>
                     
                     
@@ -772,8 +783,6 @@
                     
                         <div class="meta">
                                     <p>
-                                    Defined in
-                            <a href="../files/src_js_helpers_metaScore.Draggable.js.html#l10"><code>src\js\helpers\metaScore.Draggable.js:10</code></a>
                             </p>
                     
                     

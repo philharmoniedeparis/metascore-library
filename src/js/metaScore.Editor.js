@@ -1,3 +1,10 @@
+/**
+ * The Editor module defines classes used in editor
+ *
+ * @module Editor
+ * @main
+ */
+ 
 metaScore.Editor = (function(){
 
     /**
@@ -8,7 +15,7 @@ metaScore.Editor = (function(){
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
-     * @param {String} [configs.player_url=''] The URL of the guide's JSON data to load
+     * @param {String} [configs.player_url=''] The base URL of players
      * @param {String} [configs.api_url=''] The base URL of the RESTful API
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
@@ -17,10 +24,6 @@ metaScore.Editor = (function(){
 
         // call parent constructor
         Editor.parent.call(this, '<div/>', {'class': 'metaScore-editor'});
-
-        if(DEBUG){
-            metaScore.Editor.instance = this;
-        }
 
         if(this.configs.container){
             this.appendTo(this.configs.container);
@@ -120,7 +123,7 @@ metaScore.Editor = (function(){
     }
 
     metaScore.Dom.extend(Editor);
-
+    
     Editor.defaults = {
         'container': 'body',
         'player_url': '',
@@ -1604,14 +1607,10 @@ metaScore.Editor = (function(){
                                         block = block_dom._metaScore;
 
                                         if(block.getProperty('synched')){
-                                            block.getPages().each(function(index, page_dom){
-                                                if(page_dom._metaScore){
-                                                    page = page_dom._metaScore;
-
-                                                    if(page.getProperty('start-time') < new_duration){
-                                                        blocks.push(block.getProperty('name'));
-                                                        return false;
-                                                    }
+                                            metaScore.Array.each(block.getPages(), function(index, page){
+                                                if(page.getProperty('start-time') < new_duration){
+                                                    blocks.push(block.getProperty('name'));
+                                                    return false;
                                                 }
                                             });
                                         }
@@ -1747,6 +1746,7 @@ metaScore.Editor = (function(){
      * Toggles the activation of the sidebar resizer
      *
      * @method toggleSidebarResizer
+     * @private
      * @chainable
      */
     Editor.prototype.toggleSidebarResizer = function(){
@@ -1764,6 +1764,7 @@ metaScore.Editor = (function(){
      * Loads a player from the location hash
      *
      * @method loadPlayerFromHash
+     * @private
      * @chainable
      */
     Editor.prototype.loadPlayerFromHash = function(){
@@ -1782,6 +1783,7 @@ metaScore.Editor = (function(){
      * Updates the states of the mainmenu buttons
      *
      * @method updateMainmenu
+     * @private
      * @chainable
      */
     Editor.prototype.updateMainmenu = function(){
@@ -1805,6 +1807,7 @@ metaScore.Editor = (function(){
      * Updates the selector of the block panel
      *
      * @method updateBlockSelector
+     * @private
      * @chainable
      */
     Editor.prototype.updateBlockSelector = function(){
@@ -1846,6 +1849,7 @@ metaScore.Editor = (function(){
      * Updates the selector of the page panel
      *
      * @method updatePageSelector
+     * @private
      * @chainable
      */
     Editor.prototype.updatePageSelector = function(){
@@ -1857,9 +1861,9 @@ metaScore.Editor = (function(){
         selector.clear();
 
         if(block.instanceOf('Block')){
-            this.panels.block.getComponent().getPages().each(function(index, page){
-                selector.addOption(page._metaScore.getId(), index+1);
-            }, this);
+            metaScore.Array.each(block.getPages(), function(index, page){
+                selector.addOption(page.getId(), index+1);
+            });
         }
 
         selector.setValue(page ? page.getId() : null, true);
@@ -1871,6 +1875,7 @@ metaScore.Editor = (function(){
      * Updates the selector of the element panel
      *
      * @method updateElementSelector
+     * @private
      * @chainable
      */
     Editor.prototype.updateElementSelector = function(){
@@ -1894,8 +1899,7 @@ metaScore.Editor = (function(){
                 page_end_time = page.getProperty('end-time');
             }
 
-            page.getElements().each(function(index, dom){
-                element = dom._metaScore;
+            metaScore.Array.each(page.getElements(), function(index, element){
                 out_of_range = false;
 
                 if(synched){
@@ -1963,17 +1967,15 @@ metaScore.Editor = (function(){
      * Loads a player by guide id and vid
      *
      * @method loadPlayer
-     * @param {Number} id The guide's id
-     * @param {Number} vid The guide's revision id
+     * @param {String} id The guide's id
+     * @param {Integer} vid The guide's revision id
      * @chainable
      */
     Editor.prototype.loadPlayer = function(id, vid){
         var url = this.configs.player_url + id;
 
-        url += "?in-editor";
-
         if(vid){
-            url += "&vid="+ vid;
+            url += "?vid="+ vid;
         }
 
         this.loadmask = new metaScore.editor.overlay.LoadMask({
@@ -2021,6 +2023,7 @@ metaScore.Editor = (function(){
      * Creates a new guide
      *
      * @method createGuide
+     * @private
      * @param {Object} details The guide's data
      * @param {GuideDetails} overlay The overlay instance used to create the guide
      * @chainable
@@ -2129,9 +2132,12 @@ metaScore.Editor = (function(){
      * Get a media file's duration in centiseconds
      *
      * @method getMediaFileDuration
+     * @private
+     * @param {String} url The file's url
+     * @param {Function} callback A callback function to call with the duration
      */
-    Editor.prototype.getMediaFileDuration = function(file, callback){
-        var media = new metaScore.Dom('<audio/>', {'src': file})
+    Editor.prototype.getMediaFileDuration = function(url, callback){
+        var media = new metaScore.Dom('<audio/>', {'src': url})
             .addListener('loadedmetadata', function(evt){
                 var duration = parseFloat(media.get(0).duration) * 100;
 

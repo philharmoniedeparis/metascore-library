@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class player.component.element.Text
-* @extends player.component.Element
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component.element').Text = (function () {
 
@@ -13,7 +10,7 @@ metaScore.namespace('player.component.element').Text = (function () {
      * @event page
      * @param {Object} element The element instance
      * @param {Object} block The block instance
-     * @param {Number} index The page index
+     * @param {Integer} index The page index
      */
     var EVT_PAGE = 'page';
 
@@ -24,14 +21,19 @@ metaScore.namespace('player.component.element').Text = (function () {
      * @param {Object} element The element instance
      * @param {Number} inTime The start time
      * @param {Number} outTime The end time
-     * @param {Number} rIndex The reading index
+     * @param {Integer} rIndex The reading index
      */
     var EVT_PLAY = 'play';
 
     /**
-     * Description
+     * A text element
+     *
+     * @class Cursor
+     * @namespace player.component.element
+     * @extends player.component.Element
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Text(configs) {
         // call parent constructor
@@ -46,18 +48,9 @@ metaScore.namespace('player.component.element').Text = (function () {
         'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
             'text': {
                 'editable':false,
-                /**
-                 * Description
-                 * @return CallExpression
-                 */
                 'getter': function(){
                     return this.contents.text();
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.text(value);
                 }
@@ -66,22 +59,24 @@ metaScore.namespace('player.component.element').Text = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the text's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Text.prototype.setupDOM = function(){
+    Text.prototype.setupUI = function(){
         // call parent function
-        Text.parent.prototype.setupDOM.call(this);
+        Text.parent.prototype.setupUI.call(this);
 
         this.data('type', 'Text');
     };
 
     /**
-     * Description
+     * The link click event handler
+     *
      * @method onLinkClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Text.prototype.onLinkClick = function(evt){
         var link = evt.target,

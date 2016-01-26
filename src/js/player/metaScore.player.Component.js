@@ -1,9 +1,6 @@
 /**
-* Description
-*
-* @class player.Component
-* @extends Dom
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player').Component = (function () {
 
@@ -18,9 +15,16 @@ metaScore.namespace('player').Component = (function () {
     var EVT_PROPCHANGE = 'propchange';
 
     /**
-     * Description
+     * A generic component class
+     * 
+     * @class Component
+     * @namespace player
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.container=null The Dom instance to which the component should be appended
+     * @param {Integer} [configs.index=null The index position at which the component should be appended
+     * @param {Object} [configs.properties={}} A list of the component properties as name/descriptor pairs
      */
     function Component(configs) {
         this.configs = this.getConfigs(configs);
@@ -44,7 +48,7 @@ metaScore.namespace('player').Component = (function () {
             this.addListener(key, value);
         }, this);
 
-        this.setupDOM();
+        this.setupUI();
 
         this.setProperties(this.configs);
     }
@@ -58,56 +62,61 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the component's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Component.prototype.setupDOM = function(){};
+    Component.prototype.setupUI = function(){};
 
     /**
-     * Description
+     * Get the component's id
+     * 
      * @method getId
-     * @return CallExpression
+     * @return {String} The id
      */
     Component.prototype.getId = function(){
         return this.attr('id');
     };
 
     /**
-     * Description
+     * Get the value of the component's name property
+     * 
      * @method getName
-     * @return CallExpression
+     * @return {String} The name
      */
     Component.prototype.getName = function(){
         return this.getProperty('name');
     };
 
     /**
-     * Description
+     * Check if the component is of a given type
+     * 
      * @method instanceOf
-     * @return CallExpression
+     * @param {String} type The type to check for
+     * @return {Boolean} Whether the component is of the given type
      */
     Component.prototype.instanceOf = function(type){
-
         return (type in metaScore.player.component) && (this instanceof metaScore.player.component[type]);
-
     };
 
     /**
-     * Description
+     * Check if the component has a given property
+     * 
      * @method hasProperty
-     * @param {} name
-     * @return BinaryExpression
+     * @param {String} name The property's name
+     * @return {Boolean} Whether the component has the given property
      */
     Component.prototype.hasProperty = function(name){
         return name in this.configs.properties;
     };
 
     /**
-     * Description
+     * Get the value of a given property
+     * 
      * @method getProperty
-     * @param {} name
-     * @return
+     * @param {String} name The name of the property
+     * @return {Mixed} The value of the property
      */
     Component.prototype.getProperty = function(name){
         if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
@@ -116,10 +125,11 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Get the values of all properties
+     * 
      * @method getProperties
-     * @param {} skipDefaults
-     * @return values
+     * @param {Boolean} skipDefaults Whether to skip properties that have the default value
+     * @return {Object} The values of the properties as name/value pairs
      */
     Component.prototype.getProperties = function(skipDefaults){
         var values = {},
@@ -139,12 +149,13 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Set the value of a given property
+     * 
      * @method setProperty
-     * @param {} name
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {String} name The name of the property
+     * @param {Mixed} value The value to set
+     * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
+     * @chainable
      */
     Component.prototype.setProperty = function(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
@@ -159,12 +170,12 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Set property values
+     * 
      * @method setProperties
-     * @param {} name
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Object} properties The list of properties to set as name/value pairs
+     * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
+     * @chainable
      */
     Component.prototype.setProperties = function(properties, supressEvent){
         metaScore.Object.each(properties, function(key, value){
@@ -175,10 +186,11 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Set a cuepoint on the component
+     * 
      * @method setCuePoint
-     * @param {} configs
-     * @return MemberExpression
+     * @param {Object} configs Custom configs to override defaults
+     * @return {player.CuePoint} The created cuepoint
      */
     Component.prototype.setCuePoint = function(configs){
         var inTime = this.getProperty('start-time'),
@@ -191,39 +203,27 @@ metaScore.namespace('player').Component = (function () {
         if(inTime != null || outTime != null){
             this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
                 'inTime': inTime,
-                'outTime': outTime,
-                'onStart': this.onCuePointStart ? metaScore.Function.proxy(this.onCuePointStart, this) : null,
-                'onUpdate': this.onCuePointUpdate ? metaScore.Function.proxy(this.onCuePointUpdate, this) : null,
-                'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null,
-                'onSeekOut': this.onCuePointSeekOut ? metaScore.Function.proxy(this.onCuePointSeekOut, this) : null
+                'outTime': outTime
             }));
+            
+            if(this.onCuePointStart){
+                this.cuepoint.addListener('start', metaScore.Function.proxy(this.onCuePointStart, this));
+            }
+            
+            if(this.onCuePointUpdate){
+                this.cuepoint.addListener('update', metaScore.Function.proxy(this.onCuePointUpdate, this));
+            }
+            
+            if(this.onCuePointStop){
+                this.cuepoint.addListener('stop', metaScore.Function.proxy(this.onCuePointStop, this));
+            }
+            
+            if(this.onCuePointSeekOut){
+                this.cuepoint.addListener('seekout', metaScore.Function.proxy(this.onCuePointSeekOut, this));
+            }
         }
 
         return this.cuepoint;
-    };
-
-    /**
-     * Description
-     * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
-     */
-    Component.prototype.setDraggable = function(draggable){
-
-        return false;
-
-    };
-
-    /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
-     */
-    Component.prototype.setResizable = function(resizable){
-
-        return false;
-
     };
 
     return Component;

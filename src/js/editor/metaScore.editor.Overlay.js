@@ -1,8 +1,6 @@
 /**
-* Description
-* @class editor.Overlay
-* @extends Dom
-*/
+ * @module Editor
+ */
 
 metaScore.namespace('editor').Overlay = (function(){
 
@@ -23,9 +21,19 @@ metaScore.namespace('editor').Overlay = (function(){
     var EVT_HIDE = 'hide';
 
     /**
-     * Initialize
+     * A generic overlay class
+     *
+     * @class Overlay
+     * @namespace editor
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
+     * @param {Boolean} [configs.draggable=true] Whether the overlay is draggable
+     * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
+     * @param {Boolean} [configs.toolbar=false] Whether to add a toolbar with title and close button
+     * @param {String} [configs.title=''] The overlay's title
      */
     function Overlay(configs) {
         this.configs = this.getConfigs(configs);
@@ -33,7 +41,7 @@ metaScore.namespace('editor').Overlay = (function(){
         // call parent constructor
         Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
 
-        this.setupDOM();
+        this.setupUI();
 
         if(this.configs.autoShow){
             this.show();
@@ -41,46 +49,23 @@ metaScore.namespace('editor').Overlay = (function(){
     }
 
     Overlay.defaults = {
-
-        /**
-        * The parent element in which the overlay will be appended
-        */
-        parent: '.metaScore-editor',
-
-        /**
-        * True to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-        */
-        modal: true,
-
-        /**
-        * True to make this draggable
-        */
-        draggable: true,
-
-        /**
-        * True to show automatically
-        */
-        autoShow: false,
-
-        /**
-        * True to add a toolbar with title and close button
-        */
-        toolbar: false,
-
-        /**
-        * The overlay's title
-        */
-        title: ''
+        'parent': '.metaScore-editor',
+        'modal': true,
+        'draggable': true,
+        'autoShow': false,
+        'toolbar': false,
+        'title': ''
     };
 
     metaScore.Dom.extend(Overlay);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
      */
-    Overlay.prototype.setupDOM = function(){
+    Overlay.prototype.setupUI = function(){
 
         if(this.configs.modal){
             this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
@@ -104,9 +89,10 @@ metaScore.namespace('editor').Overlay = (function(){
     };
 
     /**
-     * Description
+     * Show the overlay
+     *
      * @method show
-     * @return ThisExpression
+     * @chainable
      */
     Overlay.prototype.show = function(){
         if(this.configs.modal){
@@ -121,9 +107,10 @@ metaScore.namespace('editor').Overlay = (function(){
     };
 
     /**
-     * Description
+     * Hide the overlay
+     *
      * @method hide
-     * @return ThisExpression
+     * @chainable
      */
     Overlay.prototype.hide = function(){
         if(this.configs.modal){
@@ -138,29 +125,33 @@ metaScore.namespace('editor').Overlay = (function(){
     };
 
     /**
-     * Description
+     * Get the overlay's toolbar
+     *
      * @method getToolbar
-     * @return MemberExpression
+     * @return {editor.overlay.Toolbar} The toolbar
      */
     Overlay.prototype.getToolbar = function(){
         return this.toolbar;
     };
 
     /**
-     * Description
+     * Get the overlay's contents
+     *
      * @method getContents
-     * @return MemberExpression
+     * @return {Dom} The contents
      */
     Overlay.prototype.getContents = function(){
         return this.contents;
     };
 
     /**
-     * Description
+     * The close button's click handler
+     *
      * @method onCloseClick
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Overlay.prototype.onCloseClick = function(){
+    Overlay.prototype.onCloseClick = function(evt){
         this.hide();
     };
 

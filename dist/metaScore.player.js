@@ -1,34 +1,4 @@
-/*! metaScore - v0.0.2 - 2015-12-22 - Oussama Mubarak */
-// These constants are used in the build process to enable or disable features in the
-// compiled binary.    Here's how it works:    If you have a const defined like so:
-//
-//     const MY_FEATURE_IS_ENABLED = false;
-//
-// ...And the compiler (UglifyJS) sees this in your code:
-//
-//     if (MY_FEATURE_IS_ENABLED) {
-//         doSomeStuff();
-//     }
-//
-// ...Then the if statement (and everything in it) is removed - it is
-// considered dead code.    If it's set to a truthy value:
-//
-//     const MY_FEATURE_IS_ENABLED = true;
-//
-// ...Then the compiler leaves the if (and everything in it) alone.
-//
-// If you add more consts here, you need to initialize them in metaScore.core.js
-// to true.    So if you add:
-//
-//     const MY_FEATURE_IS_ENABLED = /* any value */;
-//
-// Then in metaScore.core.js you need to add:
-//
-//     if (typeof MY_AWESOME_FEATURE_IS_ENABLED === 'undefined') {
-//         MY_FEATURE_IS_ENABLED = true;
-//     }
-
-if (typeof DEBUG === 'undefined') DEBUG = true;
+/*! metaScore - v0.0.2 - 2016-01-26 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -158,13 +128,18 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
     }
 }());
 /**
-* The core object <br/>
-* Implements global helper methods
-*
-* @class metaScore
-* @static
-*/
-
+ * The Core module defines shared classes used in other modules
+ *
+ * @module Core
+ * @main
+ */
+ 
+ /**
+ * The core global object to which all internal classes are attached<br/>
+ *
+ * @class metaScore
+ * @static
+ */
 var metaScore = {
 
     /**
@@ -186,11 +161,11 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "9bcaba";
+        return "b6109b";
     },
 
     /**
-     * Extends the metaScore namespace
+     * Returns a sub-namespace, creating it if it doesn't already exist
      *
      * @method namespace
      * @static
@@ -212,6 +187,10 @@ var metaScore = {
     }
 
 };
+/**
+ * @module Core
+ */
+
 metaScore.Class = (function(){
 
     /**
@@ -282,6 +261,10 @@ metaScore.Class = (function(){
     return Class;
 
 })();
+/**
+ * @module Core
+ */
+
 metaScore.Evented = (function(){
 
     /**
@@ -341,6 +324,21 @@ metaScore.Evented = (function(){
     };
 
     /**
+     * Check if a listener is attached to a given event type
+     *
+     * @method hasListener
+     * @param {String} type The event type
+     * @return {Boolean} Whether a listener is attached
+     */
+    Evented.prototype.hasListener = function(type){
+        if(this.listeners[type] instanceof Array){
+            return this.listeners[type].length > 0;
+        }
+
+        return false;
+    };
+
+    /**
      * Trigger an event
      *
      * @method triggerEvent
@@ -375,18 +373,20 @@ metaScore.Evented = (function(){
     return Evented;
 
 })();
+/** 
+ * @module Core
+ */
+
 metaScore.Ajax = (function () {
 
     /**
-     * Helper class to handle AJAX requests
+     * A class to handle AJAX requests
      *
      * @class Ajax
      * @constructor
      */
     function Ajax() {
     }
-
-    metaScore.Class.extend(Ajax);
 
     /**
      * Send an XMLHttp request
@@ -454,7 +454,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp GET request
+     * 
      * @method get
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -469,7 +471,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp POST request
+     * 
      * @method post
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -484,7 +488,9 @@ metaScore.Ajax = (function () {
 
     /**
      * Send an XMLHttp PUT request
+     * 
      * @method put
+     * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
      * @return {XMLHttpRequest} The XHR request
@@ -501,42 +507,42 @@ metaScore.Ajax = (function () {
 
 })();
 /**
-* Description
-* @class Array
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Array = (function () {
 
     /**
-     * Description
+     * A class for array helper functions
+     * 
+     * @class Array
      * @constructor
      */
     function Array() {
     }
 
-    metaScore.Class.extend(Array);
-
     /**
-     * Checks if a value is in an array
+     * Check if a value is in an array
+     * 
      * @method inArray
-     * @param {} value
-     * @param {} arr
-     * @return UnaryExpression
+     * @static
+     * @param {Mixed} needle The value to search
+     * @param {Array} haystack The array
+     * @return {Integer} The index of the first match, -1 if none
      */
-    Array.inArray = function (value, arr) {
+    Array.inArray = function (needle, haystack) {
         var len, i = 0;
 
-        if(arr) {
-            if(arr.indexOf){
-                return arr.indexOf(value);
+        if(haystack) {
+            if(haystack.indexOf){
+                return haystack.indexOf(needle);
             }
 
-            len = arr.length;
+            len = haystack.length;
 
             for ( ; i < len; i++ ) {
                 // Skip accessing in sparse arrays
-                if ( i in arr && arr[i] === value ) {
+                if ( i in haystack && haystack[i] === needle ) {
                     return i;
                 }
             }
@@ -546,20 +552,24 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Copies an array
+     * Copy an array
+     * 
      * @method copy
-     * @param {} arr
-     * @return CallExpression
+     * @static
+     * @param {Array} arr The original array
+     * @return {Array} The copy
      */
     Array.copy = function (arr) {
         return [].concat(arr);
     };
 
     /**
-     * Shuffles elements in an array
+     * Shuffle array elements
+     * 
      * @method shuffle
-     * @param {} arr
-     * @return shuffled
+     * @static
+     * @param {Array} arr The array to shuffle
+     * @return {Array} The shuffled copy of the array
      */
     Array.shuffle = function(arr) {
 
@@ -574,10 +584,12 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Return new array with duplicate values removed
+     * Remove duplicate values from an array
+     * 
      * @method unique
-     * @param {} arr
-     * @return unique
+     * @static
+     * @param {Array} arr The array to remove duplicates from
+     * @return {Array} A copy of the array with no duplicates
      */
     Array.unique = function(arr) {
 
@@ -599,12 +611,16 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Call a function on each element of an array
+     * Iterate over an array with a callback function
+     * 
      * @method each
-     * @param {} arr
-     * @param {} callback
-     * @param {} scope
-     * @return arr
+     * @static
+     * @param {Array} arr The array to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed in the array
+     * @param {Array} callback.value The element that is currently being processed in the array
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Array} The array
      */
     Array.each = function(arr, callback, scope) {
 
@@ -626,30 +642,43 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Remove an element from an array
+     * Remove a elements from an array by value
+     * 
      * @method remove
-     * @param {} arr
-     * @param {} element
-     * @return arr
+     * @static
+     * @param {Array} arr The array to remove the elements from
+     * @param {Mixed} value The value to search for
+     * @return {Array} The array
      */
-    Array.remove = function(arr, element){
-        var index = Array.inArray(element, arr);
+    Array.remove = function(arr, value){
+        var index = Array.inArray(value, arr);
 
         while(index > -1){
             arr.splice(index, 1);
-            index = Array.inArray(element, arr);
+            index = Array.inArray(value, arr);
         }
 
         return arr;
     };
 
     /**
-     * Natural Sort algorithm
-     * Author: Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/)
-     * Version 0.7 - Released under MIT license
+     * Get a natural sort function to use with Array.sort
+     * 
      * @method naturalSort
-     * @param {} insensitive
-     * @return CallExpression
+     * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
+     * @static
+     * @param {Boolean} [insensitive=false] Whether the sort should not be case-sensitive
+     * @return {Function} The sorting function
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(true));
+     *     // ["a1", "A2", "b", "c", "d"]
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(false));
+     *     // ["A2", "a1", "b", "c", "d"]
      */
     Array.naturalSort = function(insensitive){
         return function(a, b){
@@ -697,27 +726,27 @@ metaScore.Array = (function () {
 
 })();
 /**
-* Description
-* @class Color
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Color = (function () {
 
     /**
-     * Description
+     * A class for color helper functions
+     * 
+     * @class Color
      * @constructor
      */
     function Color() {
     }
 
-    metaScore.Class.extend(Color);
-
     /**
-     * Description
+     * Convert an RGB value to HSV
+     * 
      * @method rgb2hsv
-     * @param {} rgb
-     * @return ObjectExpression
+     * @static
+     * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
+     * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
      */
     Color.rgb2hsv = function (rgb){
         var r = rgb.r, g = rgb.g, b = rgb.b,
@@ -758,10 +787,12 @@ metaScore.Color = (function () {
     };
 
     /**
-     * Description
+     * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
+     * 
      * @method parse
-     * @param {} color
-     * @return rgba
+     * @static
+     * @param {Mixed} color The CSS value to parse
+     * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
      */
     Color.parse = function(color){
         var rgba, matches;
@@ -824,11 +855,8 @@ metaScore.Color = (function () {
 
 })();
 /**
-* Description
-*
-* @class Dom
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Dom = (function () {
 
@@ -848,8 +876,16 @@ metaScore.Dom = (function () {
     var EVT_CHILDREMOVE = 'childremove';
 
     /**
-     * Description
+     * A class for Dom manipulation
+     * 
+     * @class Dom
+     * @extends Class
      * @constructor
+     * @param {Mixed} [...args] An HTML string and an optional list of attributes to apply, or a CSS selector with an optional parent and an optional list of attributes to apply
+     * 
+     * @example
+     *     var div = new metaScore.Dom('<div/>', {'class': 'my-class'});
+     *     var body = new metaScore.Dom('body');
      */
     function Dom() {
         var elements;
@@ -877,39 +913,20 @@ metaScore.Dom = (function () {
     metaScore.Class.extend(Dom);
 
     /**
-    * Regular expression that matches an element's string
-    */
-    Dom.stringRe = /^<(.)+>$/;
-
-    /**
-    * Regular expression that matches dashed string for camelizing
-    */
+     * Regular expression that matches dashed string for camelizing
+     *
+     * @property camelRe
+     * @private
+     */
     Dom.camelRe = /-([\da-z])/gi;
 
     /**
-     * Helper function used by the camel function
-     * @method camelReplaceFn
-     * @param {} all
-     * @param {} letter
-     * @return CallExpression
+     * List of common events that should generaly bubble up
+     * 
+     * @property bubbleEvents
+     * @static
+     * @private
      */
-    Dom.camelReplaceFn = function(all, letter) {
-        return letter.toUpperCase();
-    };
-
-    /**
-     * Normaliz a string to Camel Case; used for CSS properties
-     * @method camel
-     * @param {} str
-     * @return CallExpression
-     */
-    Dom.camel = function(str){
-        return str.replace(Dom.camelRe, Dom.camelReplaceFn);
-    };
-
-    /**
-    * List of event that should generaly bubble up
-    */
     Dom.bubbleEvents = {
         'click': true,
         'submit': true,
@@ -922,11 +939,40 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Select a single element by selecor
+     * Helper function used by the camel function
+     * 
+     * @method camelReplaceFn
+     * @static
+     * @private
+     * @param {The matched substring} match
+     * @param {The submatched letter} letter
+     * @return {String} The uppercased letter
+     */
+    Dom.camelReplaceFn = function(match, letter) {
+        return letter.toUpperCase();
+    };
+
+    /**
+     * Normalize a string to Camel Case
+     * 
+     * @method camel
+     * @static
+     * @private
+     * @param {String} str The string to normalize
+     * @return {String} The normalized string
+     */
+    Dom.camel = function(str){
+        return str.replace(Dom.camelRe, Dom.camelReplaceFn);
+    };
+
+    /**
+     * Select a single element by CSS selecor and optional parent
+     * 
      * @method selectElement
-     * @param {} selector
-     * @param {} parent
-     * @return element
+     * @static
+     * @param {String} The CSS selector
+     * @param {HTMLElement} [parent=document] The HTML Element in which to search
+     * @return {HTMLElement} The found element if any
      */
     Dom.selectElement = function (selector, parent) {
         var element;
@@ -949,11 +995,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Select elements by selecor
+     * Select multiple elements by CSS selecor and optional parent
+     * 
      * @method selectElements
-     * @param {} selector
-     * @param {} parent
-     * @return elements
+     * @static
+     * @param {String} The CSS selector
+     * @param {HTMLElement} [parent=document] The HTML Element in which to search
+     * @return {Mixed} An HTML NodeList or an array of found elements if any
      */
     Dom.selectElements = function (selector, parent) {
         var elements;
@@ -982,9 +1030,11 @@ metaScore.Dom = (function () {
 
     /**
      * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+     * 
      * @method elementsFromString
-     * @param {} html
-     * @return Literal
+     * @static
+     * @param {String} html The HTML string
+     * @return {HTML NodeList} A NodeList of the created elements, or null on error
      */
     Dom.elementsFromString = function(html){
         var wrapMap = {
@@ -1029,33 +1079,38 @@ metaScore.Dom = (function () {
 
     /**
      * Get the window containing an element
+     * 
      * @method getElementWindow
-     * @param {} el
-     * @return {}
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {HTML Window} The window
      */
-    Dom.getElementWindow = function(el){
-        var doc = el.ownerDocument;
+    Dom.getElementWindow = function(element){
+        var doc = element.ownerDocument;
 
         return doc.defaultView || doc.parentWindow;
     };
 
     /**
-     * Checks if an element has a given class
+     * Check if an element has a given CSS lass
+     * 
      * @method hasClass
-     * @param {} element
-     * @param {} className
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
+     * @return {Boolean} Whether the element has the specified CSS class
      */
     Dom.hasClass = function(element, className){
         return element.classList.contains(className);
     };
 
     /**
-     * Adds a given class to an element
+     * Add a CSS class to an element
+     * 
      * @method addClass
-     * @param {} element
-     * @param {} className
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
      */
     Dom.addClass = function(element, className){
         var classNames = className.split(" "),
@@ -1067,11 +1122,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes a given class from an element
+     * Remove a CSS class from an element
+     * 
      * @method removeClass
-     * @param {} element
-     * @param {} className
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
      */
     Dom.removeClass = function(element, className){
         var classNames = className.split(" "),
@@ -1083,12 +1139,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Toggles a given class on an element
+     * Toggle a CSS class on an element
+     * 
      * @method toggleClass
-     * @param {} element
-     * @param {} className
-     * @param {} force
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} className The CSS class
+     * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
      */
     Dom.toggleClass = function(element, className, force){
         var classNames = className.split(" "),
@@ -1108,47 +1165,59 @@ metaScore.Dom = (function () {
 
     /**
      * Add an event listener on an element
+     * 
      * @method addListener
-     * @param {} element
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
      */
     Dom.addListener = function(element, type, callback, useCapture){
         if(useCapture === undefined){
             useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
         }
 
-        return element.addEventListener(type, callback, useCapture);
+        element.addEventListener(type, callback, useCapture);
+
+        return element;
     };
 
     /**
      * Remove an event listener from an element
+     * 
      * @method removeListener
-     * @param {} element
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
      */
     Dom.removeListener = function(element, type, callback, useCapture){
         if(useCapture === undefined){
             useCapture = ('type' in Dom.bubbleEvents) ? Dom.bubbleEvents[type] : false;
         }
 
-        return element.removeEventListener(type, callback, useCapture);
+        element.removeEventListener(type, callback, useCapture);
+
+        return element;
     };
 
     /**
      * Trigger an event from an element
+     * 
      * @method triggerEvent
-     * @param {} element
-     * @param {} type
-     * @param {} data
-     * @param {} bubbles
-     * @param {} cancelable
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
+     * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
+     * @param {Boolean} [cancelable=true] Whether the event is cancelable
+     * @return {Boolean} Whether the event was not cancelled
      */
     Dom.triggerEvent = function(element, type, data, bubbles, cancelable){
         var fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
@@ -1163,26 +1232,30 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets the innerHTML of an element
+     * Set or get the innerHTML of an element
+     * 
      * @method text
-     * @param {} element
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} [html] The value to set
+     * @return {String} The innerHTML of the element
      */
-    Dom.text = function(element, value){
-        if(value !== undefined){
-            element.innerHTML = value;
+    Dom.text = function(element, html){
+        if(html !== undefined){
+            element.innerHTML = html;
         }
 
         return element.innerHTML;
     };
 
     /**
-     * Sets or gets the value of an element
+     * Set or get the value of an element
+     * 
      * @method val
-     * @param {} element
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {String} The value of the element
      */
     Dom.val = function(element, value){
         if(value !== undefined){
@@ -1193,12 +1266,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets an attribute on an element
+     * Set or get an attribute on an element
+     * 
      * @method attr
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} name The attribute's name, or a list of name/value pairs
+     * @param {Mixed} [value] The attribute's value
+     * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
      */
     Dom.attr = function(element, name, value){
         if(metaScore.Var.is(name, 'object')){
@@ -1233,13 +1308,15 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets a style property of an element
+     * Set or get a CSS style property of an element
+     * 
      * @method css
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @param {} inline
-     * @return CallExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} name The CSS property's name
+     * @param {String} value The CSS property's value
+     * @param {Boolean} [inline=false] Whether to return the inline or computed style value
+     * @return {String} The CSS style value of the property
      */
     Dom.css = function(element, name, value, inline){
         var camel, style;
@@ -1256,12 +1333,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Sets or gets a data string of an element
+     * Set or get a custom data attribute of an element
+     * 
      * @method data
-     * @param {} element
-     * @param {} name
-     * @param {} value
-     * @return MemberExpression
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} name The name of the data attribute
+     * @param {String} value The value of the data attribute
+     * @return {String} The value of the data attribute
      */
     Dom.data = function(element, name, value){
         name = this.camel(name);
@@ -1279,11 +1358,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Appends children to an element
+     * Append children to an element
+     * 
      * @method append
-     * @param {} element
-     * @param {} children
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} children An array of elemets or a single element to append
      */
     Dom.append = function(element, children){
         if (!metaScore.Var.is(children, 'array')) {
@@ -1296,11 +1376,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Inserts siblings before an element
+     * Insert siblings before an element
+     * 
      * @method before
-     * @param {} element
-     * @param {} siblings
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     Dom.before = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -1313,11 +1394,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Inserts siblings after an element
+     * Insert siblings after an element
      * @method after
-     * @param {} element
-     * @param {} siblings
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     Dom.after = function(element, siblings){
         if (!metaScore.Var.is(siblings, 'array')) {
@@ -1330,10 +1411,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes all element children
+     * Remove all element children
+     * 
      * @method empty
-     * @param {} element
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
      */
     Dom.empty = function(element){
         while(element.firstChild){
@@ -1342,10 +1424,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Removes an element from the dom
+     * Remove an element from the DOM
+     * 
      * @method remove
-     * @param {} element
-     * @return
+     * @static
+     * @param {HTMLElement} element The element
      */
     Dom.remove = function(element){
         if(element.parentElement){
@@ -1354,42 +1437,46 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Checks if an element matches a selector
+     * Check if an element matches a CSS selector
+     * 
      * @method is
-     * @param {} el
-     * @param {} selector
-     * @return Literal
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} selector The CSS selector
+     * @return {Boolean} Whether the element matches the CSS selector
      */
-    Dom.is = function(el, selector){
+    Dom.is = function(element, selector){
         var win;
 
-        if(el instanceof Element){
-            return Element.prototype.matches.call(el, selector);
+        if(element instanceof Element){
+            return Element.prototype.matches.call(element, selector);
         }
 
-        win = Dom.getElementWindow(el);
+        win = Dom.getElementWindow(element);
 
-        return (el instanceof win.Element) && Element.prototype.matches.call(el, selector);
+        return (element instanceof win.Element) && Element.prototype.matches.call(element, selector);
     };
 
     /**
-     * Description
+     * Get the closest ancestor of an element which matches a given CSS selector
+     * 
      * @method closest
-     * @param {} el
-     * @param {} selector
-     * @return Literal
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} selector The CSS selector
+     * @return {Element} The matched element
      */
-    Dom.closest = function(el, selector){
+    Dom.closest = function(element, selector){
         var document, win;
 
-        if(el instanceof Element){
-            return Element.prototype.closest.call(el, selector);
+        if(element instanceof Element){
+            return Element.prototype.closest.call(element, selector);
         }
 
-        if(document = el.ownerDocument){
+        if(document = element.ownerDocument){
             if(win = document.defaultView || document.parentWindow){
-                if(el instanceof win.Element){
-                    return Element.prototype.closest.call(el, selector);
+                if(element instanceof win.Element){
+                    return Element.prototype.closest.call(element, selector);
                 }
             }
         }
@@ -1398,10 +1485,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an element to the set of elements managed by the Dom object
+     * 
      * @method add
-     * @param {} elements
-     * @return
+     * @private
+     * @param {Mixed} elements An array of elements or a single element to add
      */
     Dom.prototype.add = function(elements){
         if('length' in elements){
@@ -1415,29 +1503,32 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the number of elements managed by the Dom object
+     * 
      * @method count
-     * @return MemberExpression
+     * @return {Integer} The number of elements
      */
     Dom.prototype.count = function(){
         return this.elements.length;
     };
 
     /**
-     * Description
+     * Get an element by index from the set of elements managed by the Dom object
+     * 
      * @method get
-     * @param {} index
-     * @return MemberExpression
+     * @param {Integer} index The index of the elements to retreive
+     * @return {Element} The element
      */
     Dom.prototype.get = function(index){
         return this.elements[index];
     };
 
     /**
-     * Description
+     * Return a new Dom object with the elements filtered by a CSS selector
+     * 
      * @method filter
-     * @param {} selector
-     * @return filtered
+     * @param {String} selector The CSS selector
+     * @return {Dom} The new Dom object
      */
     Dom.prototype.filter = function(selector){
         var filtered = new Dom();
@@ -1452,10 +1543,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the index of the first element that matched the given CSS selector
+     * 
      * @method index
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Integer} The index of the first matched element, or -1 if none
      */
     Dom.prototype.index = function(selector){
         var found = -1;
@@ -1471,10 +1563,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Find all descendents that match a given CSS selector
+     * 
      * @method find
-     * @param {} selector
-     * @return descendents
+     * @param {String} selector The CSS selector
+     * @return {Dom} A Dom object of all matched descendents
      */
     Dom.prototype.find = function(selector){
         var descendents = new Dom();
@@ -1487,10 +1580,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get all children, optionally filtered by a given CSS selector
+     * 
      * @method children
-     * @param {} selector
-     * @return children
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched children
      */
     Dom.prototype.children = function(selector){
         var children = new Dom();
@@ -1507,20 +1601,22 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the first child , optionally filtered by a given CSS selector
+     * 
      * @method child
-     * @param {} selector
-     * @return NewExpression
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of the matched child
      */
     Dom.prototype.child = function(selector){
         return new Dom(this.children(selector).get(0));
     };
 
     /**
-     * Description
+     * Get all parents, optionally filtered by a given CSS selector
+     * 
      * @method parents
-     * @param {} selector
-     * @return parents
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched parents
      */
     Dom.prototype.parents = function(selector){
         var parents = new Dom();
@@ -1537,11 +1633,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Interate over all the elements managed by the Dom object
+     * 
      * @method each
-     * @param {} callback
-     * @param {} scope
-     * @return
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed
+     * @param {Element} callback.element The element that is currently being processed
+     * @param {Mixed} scope The value to use as this when executing the callback function
      */
     Dom.prototype.each = function(callback, scope){
         scope = scope || this;
@@ -1550,10 +1648,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Check if an element in the set of elements managed by the Dom object has a given CSS class
+     * 
      * @method hasClass
-     * @param {} className
-     * @return found
+     * @param {String} className The CSS class
+     * @return {Boolean} Whether a match was found
      */
     Dom.prototype.hasClass = function(className) {
         var found;
@@ -1567,10 +1666,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add a CSS class to all the elements managed by the Dom object
+     * 
      * @method addClass
-     * @param {} className
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @chainable
      */
     Dom.prototype.addClass = function(className) {
         this.each(function(index, element) {
@@ -1581,10 +1681,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove a CSS class from all the elements managed by the Dom object
+     * 
      * @method removeClass
-     * @param {} className
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @chainable
      */
     Dom.prototype.removeClass = function(className) {
         this.each(function(index, element) {
@@ -1595,11 +1696,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Toggle a CSS class for all the elements managed by the Dom object
+     * 
      * @method toggleClass
-     * @param {} className
-     * @param {} force
-     * @return ThisExpression
+     * @param {String} className The CSS class
+     * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
+     * @chainable
      */
     Dom.prototype.toggleClass = function(className, force) {
         this.each(function(index, element) {
@@ -1610,12 +1712,15 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an event listener on all the elements managed by the Dom object
+     * 
      * @method addListener
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return ThisExpression
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.addListener = function(type, callback, useCapture) {
      this.each(function(index, element) {
@@ -1626,19 +1731,22 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
+     * 
      * @method addDelegate
-     * @param {} selector
-     * @param {} type
-     * @param {} callback
-     * @param {} scope
-     * @param {} useCapture
-     * @return CallExpression
+     * @param {String} selector The CSS selector to filter descendents by
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The original event
+     * @param {Element} callback.match The first matched descendent
+     * @param {Mixed} [scope] The value to use as this when executing the callback function
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.addDelegate = function(selector, type, callback, scope, useCapture) {
         scope = scope || this;
 
-        return this.addListener(type, function(evt){
+        this.addListener(type, function(evt){
             var element = evt.target,
                 match;
 
@@ -1655,15 +1763,20 @@ metaScore.Dom = (function () {
                 callback.call(scope, evt, match);
             }
         }, useCapture);
+
+        return this;
     };
 
     /**
-     * Description
+     * Remove an event listener from all the elements managed by the Dom object
+     * 
      * @method removeListener
-     * @param {} type
-     * @param {} callback
-     * @param {} useCapture
-     * @return ThisExpression
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} useCapture Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
      */
     Dom.prototype.removeListener = function(type, callback, useCapture) {
         this.each(function(index, element) {
@@ -1674,13 +1787,14 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Trigger an event from all the elements managed by the Dom object
+     * 
      * @method triggerEvent
-     * @param {} type
-     * @param {} data
-     * @param {} bubbles
-     * @param {} cancelable
-     * @return return_value
+     * @param {String} type The event type
+     * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
+     * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
+     * @param {Boolean} [cancelable=true] Whether the event is cancelable
+     * @return {Boolean} Whether no event was cancelled
      */
     Dom.prototype.triggerEvent = function(type, data, bubbles, cancelable){
         var return_value = true;
@@ -1693,10 +1807,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element
+     * 
      * @method text
-     * @param {} value
-     * @return
+     * @param {String} [html] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the innerHTML of the first element if used as a getter
      */
     Dom.prototype.text = function(value) {
         if(value !== undefined){
@@ -1710,10 +1825,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set the value of all the elements managed by the Dom object, or get the value of the first element
+     * 
      * @method val
-     * @param {} value
-     * @return
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     Dom.prototype.val = function(value) {
         if(value !== undefined){
@@ -1728,11 +1844,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
-     * @method attr
-     * @param {} name
-     * @param {} value
-     * @return
+     * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
+     * 
+     * @method val
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     Dom.prototype.attr = function(name, value) {
         if(value !== undefined || metaScore.Var.is(name, 'object')){
@@ -1747,12 +1864,13 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element
+     * 
      * @method css
-     * @param {} name
-     * @param {} value
-     * @param {} inline
-     * @return
+     * @param {String} name The CSS property's name
+     * @param {String} value The CSS property's value
+     * @param {Boolean} [inline=false] Whether to return the inline or computed style value
+     * @return {Mixed} The Dom object if used as a setter, the CSS style value of the property of the first element if used as a getter
      */
     Dom.prototype.css = function(name, value, inline) {
         if(value !== undefined){
@@ -1767,11 +1885,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element
+     * 
      * @method data
-     * @param {} name
-     * @param {} value
-     * @return
+     * @param {String} name The name of the data attribute
+     * @param {String} value The value of the data attribute
+     * @return {Mixed} The Dom object if used as a setter, the value of the data attribute of the first element if used as a getter
      */
     Dom.prototype.data = function(name, value) {
         if(value !== undefined){
@@ -1786,10 +1905,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append children to the first element managed by the Dom object
+     * 
      * @method append
-     * @param {} children
-     * @return ThisExpression
+     * @param {Mixed} children An array of elemets or a single element to append
+     * @chainable
      */
     Dom.prototype.append = function(children){
         if(children instanceof Dom){
@@ -1802,10 +1922,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append each of the elements managed by the Dom object into a given element
+     * 
      * @method appendTo
-     * @param {} parent
-     * @return ThisExpression
+     * @param {Mixed} parent A Dom object or an Element to append the elements to
+     * @chainable
      */
     Dom.prototype.appendTo = function(parent){
         if(!(parent instanceof Dom)){
@@ -1822,11 +1943,12 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Append each of the elements managed by the Dom object into a given element at a given position
+     * 
      * @method insertAt
-     * @param {} parent
-     * @param {} index
-     * @return ThisExpression
+     * @param {Mixed} parent A Dom object or an Element to append the elements to
+     * @param {Integer} index The index position to append at
+     * @chainable
      */
     Dom.prototype.insertAt = function(parent, index){
         var element;
@@ -1848,9 +1970,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove all children of each element managed by the Dom object 
+     * 
      * @method empty
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.empty = function(){
         this.each(function(index, element) {
@@ -1861,9 +1984,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Make all the elements managed by the Dom object visible
+     * 
      * @method show
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.show = function(){
         this.css('display', '');
@@ -1872,9 +1996,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Make all the elements managed by the Dom object invisible
+     * 
      * @method hide
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.hide = function(){
         this.css('display', 'none');
@@ -1883,9 +2008,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Set focus on the first element managed by the Dom object
+     * 
      * @method focus
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.focus = function(){
         this.get(0).focus();
@@ -1894,9 +2020,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove focus from the first element managed by the Dom object
+     * 
      * @method blur
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.blur = function(){
         this.get(0).blur();
@@ -1905,9 +2032,10 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Remove all the elements managed by the Dom object from the DOM
+     * 
      * @method remove
-     * @return ThisExpression
+     * @chainable
      */
     Dom.prototype.remove = function(){
         if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
@@ -1922,10 +2050,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Check if an element from the elements managed by the Dom object matches a CSS selector
+     * 
      * @method is
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Boolean} Whether an element matches the CSS selector
      */
     Dom.prototype.is = function(selector){
         var found;
@@ -1939,10 +2068,11 @@ metaScore.Dom = (function () {
     };
 
     /**
-     * Description
+     * Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector
+     * 
      * @method closest
-     * @param {} selector
-     * @return found
+     * @param {String} selector The CSS selector
+     * @return {Element} The matched element
      */
     Dom.prototype.closest = function(selector){
         var found;
@@ -1959,11 +2089,8 @@ metaScore.Dom = (function () {
 
 })();
 /**
-* Description
-*
-* @class Draggable
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Draggable = (function () {
 
@@ -1989,15 +2116,20 @@ metaScore.Draggable = (function () {
     var EVT_DRAGEND = 'dragend';
 
     /**
-     * Description
+     * A class for adding draggable behaviors
+     * 
+     * @class Draggable
+     * @extends Class
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Dom} configs.target The Dom object to add the behavior to
+     * @param {Dom} configs.handle The Dom object to use as a dragging handle
+     * @param {Object} [configs.limits={'top': null, 'left': null}] The limits of the dragging
      */
     function Draggable(configs) {
         this.configs = this.getConfigs(configs);
 
-        this.configs.container = this.configs.container || new metaScore.Dom('body');
-        this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+        this.doc = new metaScore.Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
         this.onMouseDown = metaScore.Function.proxy(this.onMouseDown, this);
@@ -2010,22 +2142,22 @@ metaScore.Draggable = (function () {
     }
 
     Draggable.defaults = {
-        /**
-        * The limits of the dragging
-        */
-        limits: {
-            top: null,
-            left: null
+        'target': null,
+        'handle': null,
+        'limits': {
+            'top': null,
+            'left': null
         }
     };
 
     metaScore.Class.extend(Draggable);
 
     /**
-     * Description
+     * The mousedown event handler
+     * 
      * @method onMouseDown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -2049,10 +2181,11 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * The mousemove event handler
+     * 
      * @method onMouseMove
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseMove = function(evt){
         var left = evt.clientX + this.start_state.left,
@@ -2075,10 +2208,11 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * The mouseup event handler
+     * 
      * @method onMouseUp
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Draggable.prototype.onMouseUp = function(evt){
         this.doc
@@ -2093,9 +2227,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Enable the behavior
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.enable = function(){
         this.configs.target.addClass('draggable');
@@ -2108,9 +2243,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Disable the behavior
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.disable = function(){
         this.configs.target.removeClass('draggable');
@@ -2123,9 +2259,10 @@ metaScore.Draggable = (function () {
     };
 
     /**
-     * Description
+     * Destroy the behavior
+     * 
      * @method destroy
-     * @return ThisExpression
+     * @chainable
      */
     Draggable.prototype.destroy = function(){
         this.disable();
@@ -2139,29 +2276,29 @@ metaScore.Draggable = (function () {
 
 })();
 /**
-* Description
-* @class Function
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Function = (function () {
 
     /**
-     * Description
+     * A class for function helper functions
+     * 
+     * @class Function
      * @constructor
      */
     function Function() {
     }
 
-    metaScore.Class.extend(Function);
-
     /**
-     * Checks if a variable is of a certain type
+     * Create a proxy of a function
+     * 
      * @method proxy
-     * @param {} fn
-     * @param {} scope
-     * @param {} args
-     * @return FunctionExpression
+     * @static
+     * @param {Function} fn The function to proxy
+     * @param {Mixed} scope The value to use as this when executing the proxy function
+     * @param {Array} args Extra arguments to preppend to the passed arguments when the proxy function is called
+     * @return {Function} The proxy function
      */
     Function.proxy = function(fn, scope, args){
         if (!metaScore.Var.type(fn, 'function')){
@@ -2183,40 +2320,87 @@ metaScore.Function = (function () {
         };
     };
 
-    /**
-     * A reusable empty function
-     * @method emptyFn
-     * @return
-     */
-    Function.emptyFn = function(){};
-
     return Function;
 
 })();
 /**
-* Description
-* @class Object
-* @extends Class
-*/
+ * @module Core
+ */
+
+metaScore.Locale = (function(){
+
+    /**
+     * The i18n handling class
+     *
+     * @class Locale
+     * @constructor
+     */
+    function Locale() {
+    }
+
+    /**
+     * Translate a string
+     *
+     * @method t
+     * @static
+     * @param {String} key The string identifier
+     * @param {String} str The default string to use if no translation is found
+     * @param {Object} args An object of replacements to make after translation
+     * @return {String} The translated string
+     */
+    Locale.t = function(key, str, args){
+        if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
+            str = metaScoreLocale[key];
+        }
+
+        return Locale.formatString(str, args);
+    };
+
+    /**
+     * Replace placeholders with sanitized values in a string
+     *
+     * @method formatString
+     * @static
+     * @param {String} str The string to process
+     * @param {Object} args An object of replacements with placeholders as keys
+     * @return {String} The translated string
+     */
+    Locale.formatString = function(str, args) {
+        metaScore.Object.each(args, function(key, value){
+            str = str.replace(key, args[key]);
+        }, this);
+
+        return str;
+    };
+
+    return Locale;
+
+})();
+/**
+ * @module Core
+ */
 
 metaScore.Object = (function () {
 
     /**
-     * Description
+     * A class for object helper functions
+     * 
+     * @class Object
      * @constructor
      */
     function Object() {
     }
 
-    metaScore.Class.extend(Object);
-
     /**
-     * Merge the contents of two or more objects together into the first object.
+     * Merge the contents of two or more objects together into the first object
+     * 
      * @method extend
-     * @return target
+     * @static
+     * @param {Object} [first] The object to which other objects are merged
+     * @param {Object} [...others] The objects to merge with the first one
+     * @return {Object} The first object
      */
     Object.extend = function() {
-
         var target = arguments[0] || {},
             options,
             i = 1,
@@ -2237,31 +2421,33 @@ metaScore.Object = (function () {
         }
 
         return target;
-
     };
 
     /**
      * Return a copy of an object
+     * 
      * @method copy
-     * @param {} obj
-     * @return CallExpression
+     * @static
+     * @param {Object} obj The original object
+     * @return {Object} The object copy
      */
     Object.copy = function(obj) {
-
         return Object.extend({}, obj);
-
     };
 
     /**
-     * Call a function on each property of an object
+     * Iterate over an object
+     * 
      * @method each
-     * @param {} obj
-     * @param {} callback
-     * @param {} scope
-     * @return obj
+     * @static
+     * @param {Object} obj The object to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {String} callback.key The key of the current element being processed in the object
+     * @param {Mixed} callback.value The element that is currently being processed in the object
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Object} The object
      */
     Object.each = function(obj, callback, scope) {
-
         var key, value,
             scope_provided = scope !== undefined;
 
@@ -2274,12 +2460,15 @@ metaScore.Object = (function () {
         }
 
         return obj;
-
     };
 
     return Object;
 
 })();
+/**
+ * @module Core
+ */
+
 metaScore.Resizable = (function () {
 
     /**
@@ -2304,18 +2493,19 @@ metaScore.Resizable = (function () {
     var EVT_RESIZEEND = 'resizeend';
 
     /**
-     * Description
-     *
+     * A class for adding resizable behaviors
+     * 
      * @class Resizable
      * @extends Class
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Dom} configs.target The Dom object to add the behavior to
+     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed 
      */
     function Resizable(configs) {
         this.configs = this.getConfigs(configs);
 
-        this.configs.container = this.configs.container || new metaScore.Dom('body');
-        this.doc = new metaScore.Dom(this.configs.container.get(0).ownerDocument);
+        this.doc = new metaScore.Dom(this.configs.target.get(0).ownerDocument);
 
         this.handles = {};
 
@@ -2335,7 +2525,8 @@ metaScore.Resizable = (function () {
     }
 
     Resizable.defaults = {
-        directions: [
+        'target': null,
+        'directions': [
             'top',
             'right',
             'bottom',
@@ -2350,10 +2541,11 @@ metaScore.Resizable = (function () {
     metaScore.Class.extend(Resizable);
 
     /**
-     * Description
+     * The mousedown event handler
+     * 
      * @method onMouseDown
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
@@ -2382,10 +2574,11 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * The mousemove event handler
+     * 
      * @method onMouseMove
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseMove = function(evt){
         var handle = new metaScore.Dom(this.start_state.handle),
@@ -2444,10 +2637,11 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * The mouseup event handler
+     * 
      * @method onMouseUp
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Resizable.prototype.onMouseUp = function(evt){
         this.doc
@@ -2462,18 +2656,20 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Get a handle
      * @method getHandle
-     * @return ThisExpression
+     * @param {String} direction The direction of the handle to get
+     * @return {Dom} The handle
      */
     Resizable.prototype.getHandle = function(direction){
         return this.handles[direction];
     };
 
     /**
-     * Description
+     * Enable the behavior
+     * 
      * @method enable
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.enable = function(){
         this.configs.target.addClass('resizable');
@@ -2484,9 +2680,10 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Disable the behavior
+     * 
      * @method disable
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.disable = function(){
         this.configs.target.removeClass('resizable');
@@ -2497,9 +2694,10 @@ metaScore.Resizable = (function () {
     };
 
     /**
-     * Description
+     * Destroy the behavior
+     * 
      * @method destroy
-     * @return ThisExpression
+     * @chainable
      */
     Resizable.prototype.destroy = function(){
         this.disable();
@@ -2515,38 +2713,51 @@ metaScore.Resizable = (function () {
 
 })();
 /**
-* Description
-* @class String
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.String = (function () {
 
     /**
-     * Description
+     * A class for string helper functions
+     * 
+     * @class String
      * @constructor
      */
     function String() {
     }
 
-    metaScore.Class.extend(String);
-
     /**
      * Capitalize a string
+     * 
      * @method capitalize
-     * @param {} str
-     * @return CallExpression
+     * @param {String} str The string to capitalize
+     * @return {String} The capitalized string
      */
     String.capitalize = function(str){
         return str.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
     };
 
     /**
-     * Generate a random uuid (see http://www.broofa.com/2008/09/javascript-uuid-function/)
+     * Generate a random uuid
+     * 
      * @method uuid
-     * @param {} len
-     * @param {} radix
-     * @return CallExpression
+     * @author Broofa <robert@broofa.com> (http://www.broofa.com/2008/09/javascript-uuid-function/)
+     * @param {Integer} [len] The desired number of characters
+     * @param {Integer} [radix] The number of allowable values for each character
+     * @return {String} The generated uuid
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid();
+     *    // "66209871-857D-4A12-AC7E-E9EEBC2A6AC3"
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid(5);
+     *    // "kryIh"
+     *
+     * @exqmple
+     *    var id = metaScore.String.uuid(5, 2);
+     *    // "10100"
      */
     String.uuid = function(len, radix) {
         var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
@@ -2568,8 +2779,7 @@ metaScore.String = (function () {
             uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
             uuid[14] = '4';
 
-            // Fill in random data.    At i==19 set the high bits of clock sequence as
-            // per rfc4122, sec. 4.1.5
+            // Fill in random data.    At i==19 set the high bits of clock sequence as per rfc4122, sec. 4.1.5
             for (i = 0; i < 36; i++) {
                 if (!uuid[i]) {
                     r = 0 | Math.random()*16;
@@ -2582,13 +2792,29 @@ metaScore.String = (function () {
     };
 
     /**
-     * Description
+     * Pad a string with another string
+     * 
      * @method pad
-     * @param {} str
-     * @param {} len
-     * @param {} pad
-     * @param {} dir
-     * @return str
+     * @param {String} str The string to pad
+     * @param {Integer} len The desired final string length
+     * @param {String} [pad=" "] The string to pad with
+     * @param {String} [dir="right"] The padding direction ("right", "left" or "both")
+     * @return {String} The padded string
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b");
+     *    // "abb"
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b", "left");
+     *    // "bba"
+     *
+     * @exqmple
+     *    var str = "a";
+     *    var padded = metaScore.String.pad(str, 3, "b", "both");
+     *    // "bab"
      */
     String.pad = function(str, len, pad, dir) {
         var right, left,
@@ -2625,41 +2851,40 @@ metaScore.String = (function () {
 
 })();
 /**
-* Description
-* @class StyleSheet
-* @extends Dom
-*/
+ * @module Core
+ */
 
 metaScore.StyleSheet = (function () {
 
     /**
-     * Description
+     * A class for CSS style sheet manipulation
+     * 
+     * @class StyleSheet
+     * @extends Dom
      * @constructor
-     * @param {} configs
      */
-    function StyleSheet(configs) {
-        this.configs = this.getConfigs(configs);
-
+    function StyleSheet() {
         // call the super constructor.
         metaScore.Dom.call(this, '<style/>', {'type': 'text/css'});
 
         this.el = this.get(0);
 
-        // WebKit hack :(
+        // WebKit hack
         this.setInternalValue("");
     }
 
     metaScore.Dom.extend(StyleSheet);
 
     /**
-     * Adds a CSS rule to the style sheet
+     * Add a CSS rule to the style sheet
+     * 
      * @method addRule
-     * @param {} selector
-     * @param {} rules
-     * @param {} index
-     * @return
+     * @param {String} selector The CSS selector for the rule
+     * @param {String} rule The style definitions for the rule
+     * @param {Integer} [index] The index position of the rule
+     * @chainable
      */
-    StyleSheet.prototype.addRule = function(selector, rules, index) {
+    StyleSheet.prototype.addRule = function(selector, rule, index) {
         var sheet = this.el.sheet;
 
         if(index === undefined){
@@ -2667,18 +2892,21 @@ metaScore.StyleSheet = (function () {
         }
 
         if("insertRule" in sheet) {
-            return sheet.insertRule(selector + "{" + rules + "}", index);
+            sheet.insertRule(selector + "{" + rule + "}", index);
         }
         else if("addRule" in sheet) {
-            return sheet.addRule(selector, rules, index);
+            sheet.addRule(selector, rule, index);
         }
+
+        return this;
     };
 
     /**
-     * Removes a CSS rule from the style sheet
+     * Remove a CSS rule from the style sheet
+     * 
      * @method removeRule
-     * @param {} index
-     * @return ThisExpression
+     * @param {Integer} The index position of the rule to remove
+     * @chainable
      */
     StyleSheet.prototype.removeRule = function(index) {
         var sheet = this.el.sheet;
@@ -2694,10 +2922,11 @@ metaScore.StyleSheet = (function () {
     };
 
     /**
-     * Removes the first CSS rule that matches a selector
+     * Remove the first CSS rule that matches a selector
+     * 
      * @method removeRulesBySelector
-     * @param {} selector
-     * @return ThisExpression
+     * @param {String} selector The CSS selector of the rule to remove
+     * @chainable
      */
     StyleSheet.prototype.removeRulesBySelector = function(selector) {
         var sheet = this.el.sheet,
@@ -2716,9 +2945,10 @@ metaScore.StyleSheet = (function () {
     };
 
     /**
-     * Removes all CSS rule from the style sheet
+     * Remove all CSS rule from the style sheet
+     * 
      * @method removeRules
-     * @return ThisExpression
+     * @chainable
      */
     StyleSheet.prototype.removeRules = function() {
         var sheet = this.el.sheet,
@@ -2732,10 +2962,11 @@ metaScore.StyleSheet = (function () {
     };
 
     /**
-     * Set the internal text value
+     * Set the internal text value of the style sheet
+     * 
      * @method setInternalValue
-     * @param {} value
-     * @return ThisExpression
+     * @param {String} value The CSS rules
+     * @chainable
      */
     StyleSheet.prototype.setInternalValue = function(value) {
         if(this.el.styleSheet){
@@ -2752,21 +2983,29 @@ metaScore.StyleSheet = (function () {
 
 })();
 /**
-* A helper class for variable type detection and value.
-* @class Var
-* @extends Class
-*/
+ * @module Core
+ */
 
 metaScore.Var = (function () {
 
     /**
-    * Helper object used by the type function
-    *
-    * @property dot
-    * @type {Object}
-    * @private
-    */
-    var classes2types = {
+     * A class for variable helper functions
+     * 
+     * @class Var
+     * @constructor
+     */
+    function Var() {
+    }
+
+    /**
+     * A list of variable type correspondances
+     *
+     * @property classes2types
+     * @type {Object}
+     * @static
+     * @private
+     */
+    Var.classes2types = {
         "[object Boolean]": "boolean",
         "[object Number]": "number",
         "[object String]": "string",
@@ -2778,39 +3017,37 @@ metaScore.Var = (function () {
     };
 
     /**
-     * @constructor
-     */
-    function Var() {
-    }
-
-    metaScore.Class.extend(Var);
-
-    /**
      * Get the type of a variable
+     * 
      * @method type
-     * @param {} obj
-     * @return ConditionalExpression
+     * @static
+     * @param {Mixed} obj The variable
+     * @return {String} The type of the variable
      */
     Var.type = function(obj) {
-        return obj == null ? String(obj) : classes2types[ Object.prototype.toString.call(obj) ] || "object";
+        return obj == null ? String(obj) : Var.classes2types[ Object.prototype.toString.call(obj) ] || "object";
     };
 
     /**
-     * Checks if a variable is of a certain type
+     * Check if a variable is of a certain type
+     * 
      * @method is
-     * @param {} obj
-     * @param {} type
-     * @return BinaryExpression
+     * @static
+     * @param {Mixed} obj The variable
+     * @param {String} type The type to check for
+     * @return {Boolean} Whether the variable is of the specified type
      */
     Var.is = function(obj, type) {
         return Var.type(obj) === type.toLowerCase();
     };
 
     /**
-     * Checks if a variable is empty
+     * Check if a variable is empty
+     * 
      * @method isEmpty
-     * @param {} obj
-     * @return Literal
+     * @static
+     * @param {Mixed} obj The variable
+     * @return {Boolean} Whether the variable is empty
      */
     Var.isEmpty = function(obj) {
         if(obj === undefined || obj == null){
@@ -2831,55 +3068,13 @@ metaScore.Var = (function () {
     return Var;
 
 })();
-metaScore.Locale = (function(){
+/**
+ * The Player module defines classes used in player
+ *
+ * @module Player
+ * @main
+ */
 
-    /**
-     * The i18n handling class
-     *
-     * @class Locale
-     * @constructor
-     */
-    function Locale() {
-    }
-
-    /**
-     * Translate a string
-     *
-     * @method t
-     * @static
-     * @param {String} key The string identifier
-     * @param {String} str The default string to use if no translation is found
-     * @param {Object} args An object of replacements to make after translation
-     * @return {String} The translated string
-     */
-    Locale.t = function(key, str, args){
-        if(typeof(metaScoreLocale) !== "undefined" && metaScoreLocale.hasOwnProperty(key)){
-            str = metaScoreLocale[key];
-        }
-
-        return Locale.formatString(str, args);
-    };
-
-    /**
-     * Replace placeholders with sanitized values in a string
-     *
-     * @method formatString
-     * @static
-     * @param {String} str The string to process
-     * @param {Object} args An object of replacements with placeholders as keys
-     * @return {String} The translated string
-     */
-    Locale.formatString = function(str, args) {
-        metaScore.Object.each(args, function(key, value){
-            str = str.replace(key, args[key]);
-        }, this);
-
-        return str;
-    };
-
-    return Locale;
-
-})();
 metaScore.Player = (function(){
 
     /**
@@ -2904,7 +3099,7 @@ metaScore.Player = (function(){
         *
         * @event idset
         * @param {Object} player The player instance
-        * @param {Number} id The guide's id
+        * @param {String} id The guide's id
         */
      var EVT_IDSET = 'idset';
 
@@ -2913,7 +3108,7 @@ metaScore.Player = (function(){
         *
         * @event revisionset
         * @param {Object} player The player instance
-        * @param {Number} vid The guide's vid
+        * @param {Integer} vid The guide's vid
         */
      var EVT_REVISIONSET = 'revisionset';
 
@@ -3353,6 +3548,8 @@ metaScore.Player = (function(){
      * Set the id of the loaded guide in a data attribute
      *
      * @method setId
+     * @param {String} id The id
+     * @param {Boolean} [supressEvent=false] Whether to supress the idset event
      * @chainable
      */
     Player.prototype.setId = function(id, supressEvent){
@@ -3379,6 +3576,8 @@ metaScore.Player = (function(){
      * Set the revision id of the loaded guide in a data attribute
      *
      * @method setRevision
+     * @param {String} id The id
+     * @param {Boolean} [supressEvent=false] Whether to supress the revisionset event
      * @chainable
      */
     Player.prototype.setRevision = function(vid, supressEvent){
@@ -3468,7 +3667,7 @@ metaScore.Player = (function(){
      *
      * @method addMedia
      * @param {Object} configs The configurations to send to the Media class
-     * @param {Boolean} [supressEvent=false] Wheather to supress the mediadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the mediadd event or not
      * @return {Media} The Media instance
      */
     Player.prototype.addMedia = function(configs, supressEvent){
@@ -3491,7 +3690,7 @@ metaScore.Player = (function(){
      *
      * @method addController
      * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Wheather to supress the controlleradd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
      * @return {Controller} The Controller instance
      */
     Player.prototype.addController = function(configs, supressEvent){
@@ -3511,7 +3710,7 @@ metaScore.Player = (function(){
      *
      * @method addBlock
      * @param {Object} configs The configurations to send to the Block class
-     * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @return {Block} The Block instance
      */
     Player.prototype.addBlock = function(configs, supressEvent){
@@ -3599,27 +3798,25 @@ metaScore.Player = (function(){
         }
         else{
             this.cuepoint = new metaScore.player.CuePoint({
-                media: this.getMedia(),
-                inTime: inTime,
-                outTime: !isNaN(outTime) ? outTime : null,
-                onStart: function(cuepoint){
-                    player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
-                },
-                onEnd: function(cuepoint){
-                    cuepoint.getMedia().pause();
-                },
-                onSeekOut: function(cuepoint){
-                    cuepoint.destroy();
-                    delete player.cuepoint;
+                'media': media,
+                'inTime': inTime,
+                'outTime': !isNaN(outTime) ? outTime : null,
+                'considerError': true
+            })
+            .addListener('start', function(evt){
+                player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
+            })
+            .addListener('stop', function(evt){
+                evt.target.getMedia().pause();
+            })
+            .addListener('seekout', function(evt){
+                evt.target.destroy();
+                delete player.cuepoint;
 
-                    player.setReadingIndex(0);
-                },
-                considerError: true
+                player.setReadingIndex(0);
             });
 
-            this.getMedia()
-                .setTime(inTime)
-                .play();
+            media.setTime(inTime).play();
         }
 
         return this;
@@ -3629,18 +3826,19 @@ metaScore.Player = (function(){
      * Set the current reading index
      *
      * @method setReadingIndex
-     * @param {Number} index The reading index
-     * @param {Boolean} [supressEvent=false] Wheather to supress the blockadd event or not
+     * @param {Integer} index The reading index
+     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @chainable
      */
     Player.prototype.setReadingIndex = function(index, supressEvent){
         this.rindex_css.removeRules();
 
         if(index !== 0){
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;');
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;');
-            this.rindex_css.addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;');
-            this.rindex_css.addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
+            this.rindex_css
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
+                .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 
             this.data('rindex', index);
         }
@@ -3659,11 +3857,8 @@ metaScore.Player = (function(){
 
 })();
 /**
-* Description
-*
-* @class player.Component
-* @extends Dom
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player').Component = (function () {
 
@@ -3678,9 +3873,16 @@ metaScore.namespace('player').Component = (function () {
     var EVT_PROPCHANGE = 'propchange';
 
     /**
-     * Description
+     * A generic component class
+     * 
+     * @class Component
+     * @namespace player
+     * @extends Dom
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.container=null The Dom instance to which the component should be appended
+     * @param {Integer} [configs.index=null The index position at which the component should be appended
+     * @param {Object} [configs.properties={}} A list of the component properties as name/descriptor pairs
      */
     function Component(configs) {
         this.configs = this.getConfigs(configs);
@@ -3704,7 +3906,7 @@ metaScore.namespace('player').Component = (function () {
             this.addListener(key, value);
         }, this);
 
-        this.setupDOM();
+        this.setupUI();
 
         this.setProperties(this.configs);
     }
@@ -3718,56 +3920,61 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the component's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Component.prototype.setupDOM = function(){};
+    Component.prototype.setupUI = function(){};
 
     /**
-     * Description
+     * Get the component's id
+     * 
      * @method getId
-     * @return CallExpression
+     * @return {String} The id
      */
     Component.prototype.getId = function(){
         return this.attr('id');
     };
 
     /**
-     * Description
+     * Get the value of the component's name property
+     * 
      * @method getName
-     * @return CallExpression
+     * @return {String} The name
      */
     Component.prototype.getName = function(){
         return this.getProperty('name');
     };
 
     /**
-     * Description
+     * Check if the component is of a given type
+     * 
      * @method instanceOf
-     * @return CallExpression
+     * @param {String} type The type to check for
+     * @return {Boolean} Whether the component is of the given type
      */
     Component.prototype.instanceOf = function(type){
-
         return (type in metaScore.player.component) && (this instanceof metaScore.player.component[type]);
-
     };
 
     /**
-     * Description
+     * Check if the component has a given property
+     * 
      * @method hasProperty
-     * @param {} name
-     * @return BinaryExpression
+     * @param {String} name The property's name
+     * @return {Boolean} Whether the component has the given property
      */
     Component.prototype.hasProperty = function(name){
         return name in this.configs.properties;
     };
 
     /**
-     * Description
+     * Get the value of a given property
+     * 
      * @method getProperty
-     * @param {} name
-     * @return
+     * @param {String} name The name of the property
+     * @return {Mixed} The value of the property
      */
     Component.prototype.getProperty = function(name){
         if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
@@ -3776,10 +3983,11 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Get the values of all properties
+     * 
      * @method getProperties
-     * @param {} skipDefaults
-     * @return values
+     * @param {Boolean} skipDefaults Whether to skip properties that have the default value
+     * @return {Object} The values of the properties as name/value pairs
      */
     Component.prototype.getProperties = function(skipDefaults){
         var values = {},
@@ -3799,12 +4007,13 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Set the value of a given property
+     * 
      * @method setProperty
-     * @param {} name
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {String} name The name of the property
+     * @param {Mixed} value The value to set
+     * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
+     * @chainable
      */
     Component.prototype.setProperty = function(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
@@ -3819,12 +4028,12 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Set property values
+     * 
      * @method setProperties
-     * @param {} name
-     * @param {} value
-     * @param {} supressEvent
-     * @return
+     * @param {Object} properties The list of properties to set as name/value pairs
+     * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
+     * @chainable
      */
     Component.prototype.setProperties = function(properties, supressEvent){
         metaScore.Object.each(properties, function(key, value){
@@ -3835,10 +4044,11 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
-     * Description
+     * Set a cuepoint on the component
+     * 
      * @method setCuePoint
-     * @param {} configs
-     * @return MemberExpression
+     * @param {Object} configs Custom configs to override defaults
+     * @return {player.CuePoint} The created cuepoint
      */
     Component.prototype.setCuePoint = function(configs){
         var inTime = this.getProperty('start-time'),
@@ -3851,69 +4061,93 @@ metaScore.namespace('player').Component = (function () {
         if(inTime != null || outTime != null){
             this.cuepoint = new metaScore.player.CuePoint(metaScore.Object.extend({}, configs, {
                 'inTime': inTime,
-                'outTime': outTime,
-                'onStart': this.onCuePointStart ? metaScore.Function.proxy(this.onCuePointStart, this) : null,
-                'onUpdate': this.onCuePointUpdate ? metaScore.Function.proxy(this.onCuePointUpdate, this) : null,
-                'onEnd': this.onCuePointEnd ? metaScore.Function.proxy(this.onCuePointEnd, this) : null,
-                'onSeekOut': this.onCuePointSeekOut ? metaScore.Function.proxy(this.onCuePointSeekOut, this) : null
+                'outTime': outTime
             }));
+            
+            if(this.onCuePointStart){
+                this.cuepoint.addListener('start', metaScore.Function.proxy(this.onCuePointStart, this));
+            }
+            
+            if(this.onCuePointUpdate){
+                this.cuepoint.addListener('update', metaScore.Function.proxy(this.onCuePointUpdate, this));
+            }
+            
+            if(this.onCuePointStop){
+                this.cuepoint.addListener('stop', metaScore.Function.proxy(this.onCuePointStop, this));
+            }
+            
+            if(this.onCuePointSeekOut){
+                this.cuepoint.addListener('seekout', metaScore.Function.proxy(this.onCuePointSeekOut, this));
+            }
         }
 
         return this.cuepoint;
-    };
-
-    /**
-     * Description
-     * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
-     */
-    Component.prototype.setDraggable = function(draggable){
-
-        return false;
-
-    };
-
-    /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
-     */
-    Component.prototype.setResizable = function(resizable){
-
-        return false;
-
     };
 
     return Component;
 
 })();
 /**
-* Description
-*
-* @class player.CuePoint
-* @extends Evented
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player').CuePoint = (function () {
 
     /**
-     * Description
+     * Fired when the cuepoint starts
+     *
+     * @event start
+     */
+    var EVT_START = 'start';
+
+    /**
+     * Fired when the cuepoint is active (between the start and end times) and the media time is updated
+     *
+     * @event update
+     */
+    var EVT_UPDATE = 'update';
+
+    /**
+     * Fired when the cuepoint stops
+     *
+     * @event stop
+     */
+    var EVT_STOP = 'stop';
+
+    /**
+     * Fired when the media is seeked outside of the cuepoint's time
+     *
+     * @event seekout
+     */
+    var EVT_SEEKOUT = 'seekout';
+
+    /**
+     * A class for managing media cuepoints to execute actions at specific media times
+     * 
+     * @class CuePoint
+     * @namepsace player
+     * @extends Evented
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {player.component.Media} configs.media The media component to which the cuepoint is attached
+     * @param {Number} configs.inTime The time at which the cuepoint starts
+     * @param {Number} [onfigs.outTime] The time at which the cuepoint stops
+     * @param {Boolean} [onfigs.considerError] Whether to estimate and use the error margin in timed events
      */
     function CuePoint(configs) {
         this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        CuePoint.parent.call(this);
 
         this.id = metaScore.String.uuid();
 
         this.running = false;
 
-        this.launch = metaScore.Function.proxy(this.launch, this);
+        this.start = metaScore.Function.proxy(this.start, this);
         this.stop = metaScore.Function.proxy(this.stop, this);
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
-        this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
+        this.onMediaSeeking = metaScore.Function.proxy(this.onMediaSeeking, this);
 
         this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
 
@@ -3926,25 +4160,22 @@ metaScore.namespace('player').CuePoint = (function () {
         'media': null,
         'inTime': null,
         'outTime': null,
-        'onStart': null,
-        'onUpdate': null,
-        'onEnd': null,
-        'onSeekOut': null,
         'considerError': false
     };
 
     /**
-     * Description
+     * The media's timeupdate event handler
+     * 
      * @method onMediaTimeUpdate
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     CuePoint.prototype.onMediaTimeUpdate = function(evt){
         var cur_time = this.configs.media.getTime();
 
         if(!this.running){
             if((Math.floor(cur_time) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
-                this.launch();
+                this.start();
             }
         }
         else{
@@ -3960,98 +4191,82 @@ metaScore.namespace('player').CuePoint = (function () {
                 this.stop();
             }
 
-            if(this.configs.onUpdate){
-                this.configs.onUpdate(this, cur_time);
-            }
-        }
-
-        if(this.configs.onSeekOut){
-            this.configs.media.addListener('seeking', this.onMediaSeeked);
+            this.triggerEvent(EVT_UPDATE);
         }
     };
 
     /**
-     * Description
-     * @method onMediaSeeked
-     * @param {} evt
-     * @return
+     * The media's seek event handler
+     * 
+     * @method onMediaSeeking
+     * @private
+     * @param {Event} evt The event object
      */
-    CuePoint.prototype.onMediaSeeked = function(evt){
-        var cur_time;
+    CuePoint.prototype.onMediaSeeking = function(evt){
+        var media = this.getMedia(),
+            cur_time = media.getTime();
 
-        this.configs.media.removeListener('play', this.onMediaSeeked);
+        media.removeListener('play', this.onMediaSeeking);
 
-        if(this.configs.onSeekOut){
-            cur_time = this.configs.media.getTime();
 
-            if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
-                this.configs.onSeekOut(this);
-            }
+        if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
+            this.triggerEvent(EVT_SEEKOUT);
         }
     };
 
     /**
-     * Description
+     * Get the media component on which this cuepoint is attached
+     * 
      * @method getMedia
-     * @return MemberExpression
+     * @return {player.component.Media} The media component
      */
     CuePoint.prototype.getMedia = function(){
         return this.configs.media;
     };
 
     /**
-     * Description
-     * @method getInTime
-     * @return MemberExpression
+     * Start executing the cuepoint
+     * 
+     * @method start
+     * @private
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
-    CuePoint.prototype.getInTime = function(){
-        return this.configs.inTime;
-    };
-
-    /**
-     * Description
-     * @method getOutTime
-     * @return MemberExpression
-     */
-    CuePoint.prototype.getOutTime = function(){
-        return this.configs.outTime;
-    };
-
-    /**
-     * Description
-     * @method launch
-     * @return
-     */
-    CuePoint.prototype.launch = function(){
+    CuePoint.prototype.start = function(supressEvent){
         if(this.running){
             return;
         }
 
-        if(this.configs.onStart){
-            this.configs.onStart(this);
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_START);
         }
 
-        // stop the cuepoint if it doesn't have an outTime or doesn't have onUpdate and onEnd callbacks
-        if((this.configs.outTime === null) || (!this.configs.onUpdate && !this.configs.onEnd)){
+        // stop the cuepoint if it doesn't have an outTime
+        if(this.configs.outTime === null){
             this.stop();
         }
         else{
+            if(this.hasListener(EVT_SEEKOUT)){
+                this.configs.media.addListener('seeking', this.onMediaSeeking);
+            }
+
             this.running = true;
         }
+
     };
 
     /**
-     * Description
+     * Stop executing the cuepoint
+     * 
      * @method stop
-     * @param {} launchCallback
-     * @return
+     * @private
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
-    CuePoint.prototype.stop = function(launchCallback){
-        if(launchCallback !== false && this.configs.onEnd){
-            this.configs.onEnd(this);
+    CuePoint.prototype.stop = function(supressEvent){
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_STOP);
 
-            if(this.configs.onSeekOut){
-                this.configs.media.addListener('play', this.onMediaSeeked);
+            if(this.hasListener(EVT_SEEKOUT)){
+                this.configs.media.addListener('play', this.onMediaSeeking);
             }
         }
 
@@ -4064,39 +4279,37 @@ metaScore.namespace('player').CuePoint = (function () {
     };
 
     /**
-     * Description
+     * Destroy the cuepoint
+     * 
      * @method destroy
-     * @return
      */
     CuePoint.prototype.destroy = function(){
-        this.stop(false);
+        this.stop(true);
 
-        this.configs.media
+        this.getMedia()
             .removeListener('timeupdate', this.onMediaTimeUpdate)
-            .removeListener('seeking', this.onMediaSeeked)
-            .removeListener('play', this.onMediaSeeked);
+            .removeListener('seeking', this.onMediaSeeking)
+            .removeListener('play', this.onMediaSeeking);
     };
 
     return CuePoint;
 
 })();
 /**
-* Description
-*
-* @class player.Pager
-* @extends Dom
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player').Pager = (function () {
 
     /**
-     * Description
+     * A pager for block components
+     *
+     * @class Pager
+     * @namespace player
+     * @extends Dom
      * @constructor
-     * @param {} configs
      */
-    function Pager(configs) {
-        this.configs = this.getConfigs(configs);
-
+    function Pager() {
         // call parent constructor
         Pager.parent.call(this, '<div/>', {'class': 'pager'});
 
@@ -4120,11 +4333,12 @@ metaScore.namespace('player').Pager = (function () {
     metaScore.Dom.extend(Pager);
 
     /**
-     * Description
+     * Update the page counter
+     * 
      * @method updateCount
-     * @param {} index
-     * @param {} count
-     * @return
+     * @param {Integer} index The index of the block's active page
+     * @param {Integer} count The number of pages
+     * @chainable
      */
     Pager.prototype.updateCount = function(index, count){
         this.count.text(metaScore.Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
@@ -4132,17 +4346,16 @@ metaScore.namespace('player').Pager = (function () {
         this.buttons.first.toggleClass('inactive', index < 1);
         this.buttons.previous.toggleClass('inactive', index < 1);
         this.buttons.next.toggleClass('inactive', index >= count - 1);
+
+        return this;
     };
 
     return Pager;
 
 })();
 /**
-* Description
-*
-* @class player.component.Block
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Block = (function () {
 
@@ -4175,9 +4388,14 @@ metaScore.namespace('player.component').Block = (function () {
     var EVT_PAGEACTIVATE = 'pageactivate';
 
     /**
-     * Description
+     * A block component
+     *
+     * @class Block
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Block(configs) {
         // call parent constructor
@@ -4187,26 +4405,15 @@ metaScore.namespace('player.component').Block = (function () {
     metaScore.player.Component.extend(Block);
 
     Block.defaults = {
-        'container': null,
         'properties': {
             'name': {
                 'type': 'Text',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.name', 'Name')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('name');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('name', value);
                 }
@@ -4216,19 +4423,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -4238,19 +4435,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -4260,19 +4447,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 },
@@ -4282,19 +4459,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.width', 'Width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('width', value +'px');
                 }
@@ -4304,19 +4471,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.height', 'Height')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('height', value +'px');
                 }
@@ -4326,19 +4483,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -4349,11 +4496,6 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('background-image', undefined, skipDefault);
 
@@ -4363,11 +4505,6 @@ metaScore.namespace('player.component').Block = (function () {
 
                     return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
                     this.css('background-image', value);
@@ -4378,20 +4515,10 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('border-width', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-width', value +'px');
                 }
@@ -4401,19 +4528,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -4424,19 +4541,9 @@ metaScore.namespace('player.component').Block = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-radius', value);
                 }
@@ -4447,46 +4554,26 @@ metaScore.namespace('player.component').Block = (function () {
                     'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),
                     'readonly': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('synched') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('synched', value);
                 }
             },
             'pages': {
                 'editable':false,
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return pages
-                 */
                 'getter': function(skipDefault){
                     var pages = [];
 
-                    this.getPages().each(function(index, page){
-                        pages.push(page._metaScore.getProperties(skipDefault));
-                    }, this);
+                    metaScore.Array.each(this.getPages(), function(index, page){
+                        pages.push(page.getProperties(skipDefault));
+                    });
 
                     return pages;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
-                    this.getPages().remove();
+                    this.removePages();
 
                     metaScore.Array.each(value, function(index, configs){
                         this.addPage(configs);
@@ -4499,13 +4586,14 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the block's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Block.prototype.setupDOM = function(){
+    Block.prototype.setupUI = function(){
         // call parent function
-        Block.parent.prototype.setupDOM.call(this);
+        Block.parent.prototype.setupUI.call(this);
 
         this.addClass('block');
 
@@ -4519,20 +4607,22 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Page cuepointstart event handler
+     *
      * @method onPageCuePointStart
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Block.prototype.onPageCuePointStart = function(evt){
         this.setActivePage(evt.target._metaScore, 'pagecuepoint');
     };
 
     /**
-     * Description
+     * Pager click event handler
+     *
      * @method onPagerClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Block.prototype.onPagerClick = function(evt){
         var active = !metaScore.Dom.hasClass(evt.target, 'inactive'),
@@ -4558,20 +4648,29 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Get the block's pages
+     *
      * @method getPages
-     * @return CallExpression
+     * @return {Array} List of pages
      */
     Block.prototype.getPages = function(){
-        return this.page_wrapper.children('.page');
+        var pages = [];
+
+        this.page_wrapper.children('.page').each(function(index, dom){
+            pages.push(dom._metaScore);
+        });
+
+        return pages;
     };
 
     /**
-     * Description
+     * Add a page
+     *
      * @method addPage
-     * @param {} configs
-     * @param {} supressEvent
-     * @return page
+     * @params {Mixed} configs Page configs or a player.component.Page instance
+     * @params {Integer} index The new page's index
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @return {player.component.Page} The added page
      */
     Block.prototype.addPage = function(configs, index, supressEvent){
         var page;
@@ -4603,11 +4702,12 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Remove a page
+     *
      * @method removePage
-     * @param {} page
-     * @param {} supressEvent
-     * @return page
+     * @params {player.component.Page} page The page to remove
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
+     * @return {player.component.Page} The removed page
      */
     Block.prototype.removePage = function(page, supressEvent){
         var index;
@@ -4622,78 +4722,96 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
+     * Remove all pages
+     *
+     * @method removePages
+     * @chainable
+     */
+    Block.prototype.removePages = function(){
+        this.page_wrapper.children('.page').remove();
+
+        return this;
+    };
+
+    /**
+     * Get a page by index
+     *
      * @method getPage
-     * @param {} index
-     * @return ConditionalExpression
+     * @param {Integer} index The page's index
+     * @return {player.component.Page} The page
      */
     Block.prototype.getPage = function(index){
-        var pages = this.getPages(),
-            page = pages.get(index);
+        var page = this.page_wrapper.child('.page:nth-child('+ index +')');
 
         return page ? page._metaScore : null;
     };
 
     /**
-     * Description
+     * Get the currently active page
+     *
      * @method getActivePage
-     * @return CallExpression
+     * @return {player.component.Page} The page
      */
     Block.prototype.getActivePage = function(){
         return this.getPage(this.getActivePageIndex());
     };
 
     /**
-     * Description
+     * Get the index of the currently active page
+     *
      * @method getActivePageIndex
-     * @return index
+     * @return {Integer} The index
      */
     Block.prototype.getActivePageIndex = function(){
-        var pages = this.getPages(),
-            index = pages.index('.active');
-
-        return index;
+        return this.page_wrapper.children('.page').index('.active');
     };
 
     /**
-     * Description
+     * Get the page count
+     *
      * @method getPageCount
-     * @return CallExpression
+     * @return {Integer} The number of pages
      */
     Block.prototype.getPageCount = function(){
-        return this.getPages().count();
+        return this.page_wrapper.children('.page').count();
     };
 
     /**
-     * Description
+     * Set the active page
+     *
      * @method setActivePage
-     * @param {} page
-     * @param {} supressEvent
-     * @return
+     * @param {Mixed} page The page to activate or its index
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
+     * @chainable
      */
     Block.prototype.setActivePage = function(page, basis, supressEvent){
-        var pages = this.getPages(), dom;
-
         if(metaScore.Var.is(page, 'number')){
-            page = pages.get(parseInt(page, 10));
-            page = page ? page._metaScore : null;
+            page = this.getPage(page);
         }
 
         if(page instanceof metaScore.player.component.Page){
-            pages.removeClass('active');
+            metaScore.Array.each(this.getPages(), function(index, page){
+                page.removeClass('active');
+            });
+
             page.addClass('active');
+            
             this.updatePager();
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'page': page, 'basis': basis});
             }
         }
+        
+        return this;
     };
 
     /**
-     * Description
+     * Update the pager
+     *
      * @method updatePager
-     * @return
+     * @private
+     * @chainable
      */
     Block.prototype.updatePager = function(){
         var index = this.getActivePageIndex(),
@@ -4702,13 +4820,16 @@ metaScore.namespace('player.component').Block = (function () {
         this.pager.updateCount(index, count);
 
         this.data('page-count', count);
+        
+        return this;
     };
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Block.prototype.setDraggable = function(draggable){
 
@@ -4722,7 +4843,6 @@ metaScore.namespace('player.component').Block = (function () {
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('.pager'),
-                'container': this.parents(),
                 'limits': {
                     'top': 0,
                     'left': 0
@@ -4739,10 +4859,11 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
+     * Set/Unset the resizable behaviour
+     *
+     * @method setDraggable
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {Resizable} The resizable behaviour
      */
     Block.prototype.setResizable = function(resizable){
 
@@ -4754,8 +4875,7 @@ metaScore.namespace('player.component').Block = (function () {
 
         if(resizable && !this._resizable){
             this._resizable = new metaScore.Resizable({
-                'target': this,
-                'container': this.parents()
+                'target': this
             });
         }
         else if(!resizable && this._resizable){
@@ -4771,18 +4891,20 @@ metaScore.namespace('player.component').Block = (function () {
 
 })();
 /**
-* Description
-*
-* @class player.component.Controller
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Controller = (function () {
 
     /**
-     * Description
+     * A controller component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Controller(configs) {
         // call parent constructor
@@ -4798,19 +4920,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -4820,19 +4932,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -4842,19 +4944,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 }
@@ -4864,19 +4956,9 @@ metaScore.namespace('player.component').Controller = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-radius', value);
                 }
@@ -4885,13 +4967,14 @@ metaScore.namespace('player.component').Controller = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the controller's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Controller.prototype.setupDOM = function(){
+    Controller.prototype.setupUI = function(){
         // call parent function
-        Controller.parent.prototype.setupDOM.call(this);
+        Controller.parent.prototype.setupUI.call(this);
 
         this.addClass('controller');
 
@@ -4911,19 +4994,21 @@ metaScore.namespace('player.component').Controller = (function () {
     };
 
     /**
-     * Description
+     * Get the value of the controller's name property
+     * 
      * @method getName
-     * @return Literal
+     * @return {String} The name
      */
     Controller.prototype.getName = function(){
         return '[controller]';
     };
 
     /**
-     * Description
+     * Update the displayed time
+     *
      * @method updateTime
-     * @param {} time
-     * @return
+     * @param {Integer} time The time value in centiseconds
+     * @chainable
      */
     Controller.prototype.updateTime = function(time){
         var centiseconds = metaScore.String.pad(parseInt(time % 100, 10), 2, '0', 'left'),
@@ -4931,13 +5016,16 @@ metaScore.namespace('player.component').Controller = (function () {
             minutes = metaScore.String.pad(parseInt((time / 6000), 10), 2, '0', 'left');
 
         this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
+        
+        return this;
     };
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Controller.prototype.setDraggable = function(draggable){
 
@@ -4951,7 +5039,6 @@ metaScore.namespace('player.component').Controller = (function () {
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('.timer'),
-                'container': this.parents(),
                 'limits': {
                     'top': 0,
                     'left': 0
@@ -4967,34 +5054,24 @@ metaScore.namespace('player.component').Controller = (function () {
 
     };
 
-    /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
-     */
-    Controller.prototype.setResizable = function(resizable){
-
-        return false;
-
-    };
-
     return Controller;
 
 })();
 /**
-* Description
-*
-* @class player.component.Element
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Element = (function () {
 
     /**
-     * Description
+     * An element component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Element(configs) {
         // call parent constructor
@@ -5010,38 +5087,18 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.name', 'Name')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('name');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('name', value);
                 }
             },
             'type': {
                 'editable':false,
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('type');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('type', value);
                 }
@@ -5051,19 +5108,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -5073,19 +5120,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -5095,19 +5132,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 }
@@ -5118,19 +5145,9 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
                     'min': 10
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('width', value +'px');
                 }
@@ -5141,19 +5158,9 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
                     'min': 10
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('height', value +'px');
                 }
@@ -5164,20 +5171,10 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.r-index', 'Reading index'),
                     'min': 0
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.data('r-index');
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('r-index', value);
                 }
@@ -5187,20 +5184,10 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('z-index', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('z-index', value);
                 }
@@ -5210,19 +5197,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.background-color', 'Background color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.contents.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -5233,11 +5210,6 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.contents.css('background-image', undefined, skipDefault);
 
@@ -5247,11 +5219,6 @@ metaScore.namespace('player.component').Element = (function () {
 
                     return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
                     this.contents.css('background-image', value);
@@ -5262,20 +5229,10 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.contents.css('border-width', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.css('border-width', value +'px');
                 }
@@ -5285,19 +5242,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.border-color', 'Border color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('border-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.contents.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -5308,19 +5255,9 @@ metaScore.namespace('player.component').Element = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.css('border-radius', value);
                 }
@@ -5333,19 +5270,9 @@ metaScore.namespace('player.component').Element = (function () {
                     'max': 1,
                     'step': 0.1
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.contents.css('opacity', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.css('opacity', value);
                 }
@@ -5358,20 +5285,10 @@ metaScore.namespace('player.component').Element = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('start-time', isNaN(value) ? null : value);
                 }
@@ -5384,20 +5301,10 @@ metaScore.namespace('player.component').Element = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('end-time', isNaN(value) ? null : value);
                 }
@@ -5406,13 +5313,14 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the element's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Element.prototype.setupDOM = function(){
+    Element.prototype.setupUI = function(){
         // call parent function
-        Element.parent.prototype.setupDOM.call(this);
+        Element.parent.prototype.setupUI.call(this);
 
         this.addClass('element');
 
@@ -5421,9 +5329,10 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * Description
-     * @method getBlock
-     * @return CallExpression
+     * Get the page component this element belongs to
+     *
+     * @method getPage
+     * @return {player.component.Page} The page
      */
     Element.prototype.getPage = function(){
         var dom = this.parents().get(0),
@@ -5431,44 +5340,48 @@ metaScore.namespace('player.component').Element = (function () {
 
         if(dom){
             page = dom._metaScore;
-
         }
+        
         return page;
     };
 
     /**
-     * Description
+     * The cuepoint start event handler
+     *
      * @method onCuePointStart
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Element.prototype.onCuePointStart = function(cuepoint){
+    Element.prototype.onCuePointStart = function(evt){
         this.addClass('active');
     };
 
     /**
-     * Description
-     * @method onCuePointEnd
-     * @param {} cuepoint
-     * @return
+     * The cuepoint stop event handler
+     *
+     * @method onCuePointStop
+     * @private
+     * @param {Event} evt The event object
      */
-    Element.prototype.onCuePointEnd = function(cuepoint){
+    Element.prototype.onCuePointStop = function(evt){
         this.removeClass('active');
     };
 
     /**
-     * Description
+     * The cuepoint seekout event handler
+     *
      * @method onCuePointSeekOut
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointEnd;
+    Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointStop;
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Element.prototype.setDraggable = function(draggable){
 
@@ -5481,8 +5394,7 @@ metaScore.namespace('player.component').Element = (function () {
         if(draggable && !this._draggable){
             this._draggable = new metaScore.Draggable({
                 'target': this,
-                'handle': this,
-                'container': this.parents()
+                'handle': this
             });
         }
         else if(!draggable && this._draggable){
@@ -5495,10 +5407,11 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * Description
-     * @method setResizable
-     * @param {} resizable
-     * @return MemberExpression
+     * Set/Unset the resizable behaviour
+     *
+     * @method setDraggable
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {Resizable} The resizable behaviour
      */
     Element.prototype.setResizable = function(resizable){
 
@@ -5510,8 +5423,7 @@ metaScore.namespace('player.component').Element = (function () {
 
         if(resizable && !this._resizable){
             this._resizable = new metaScore.Resizable({
-                'target': this,
-                'container': this.parents()
+                'target': this
             });
         }
         else if(!resizable && this._resizable){
@@ -5527,11 +5439,8 @@ metaScore.namespace('player.component').Element = (function () {
 
 })();
 /**
-* Description
-*
-* @class player.component.Media
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Media = (function () {
 
@@ -5584,9 +5493,14 @@ metaScore.namespace('player.component').Media = (function () {
     var EVT_TIMEUPDATE = 'timeupdate';
 
     /**
-     * Description
+     * A media component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Media(configs){
         // call parent constructor
@@ -5618,19 +5532,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return BinaryExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
                 }
@@ -5640,19 +5544,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.x', 'X')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('left', value +'px');
                 }
@@ -5662,19 +5556,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.y', 'Y')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('top', value +'px');
                 },
@@ -5684,19 +5568,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.width', 'Width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('width', value +'px');
                 }
@@ -5706,19 +5580,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.height', 'Height')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('height', value +'px');
                 }
@@ -5728,19 +5592,9 @@ metaScore.namespace('player.component').Media = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.border-radius', 'Border radius')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('border-radius', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.css('border-radius', value);
                 }
@@ -5749,9 +5603,12 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Set the media sources
+     *
      * @method setSources
-     * @return ThisExpression
+     * @param {Array} sources The list of sources as objects with 'url' and 'mime' keys
+     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
+     * @chainable
      */
     Media.prototype.setSources = function(sources, supressEvent){
         var source_tags = '';
@@ -5773,29 +5630,32 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Get the value of the media's name property
+     * 
      * @method getName
-     * @return Literal
+     * @return {String} The name
      */
     Media.prototype.getName = function(){
         return '[media]';
     };
 
     /**
-     * Description
+     * The loadedmetadata event handler
+     *
      * @method onLoadedMetadata
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onLoadedMetadata = function(evt) {
         this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
     };
 
     /**
-     * Description
+     * The play event handler
+     *
      * @method onPlay
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onPlay = function(evt) {
         this.playing = true;
@@ -5808,10 +5668,11 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * The pause event handler
+     *
      * @method onPause
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onPause = function(evt) {
         this.playing = false;
@@ -5820,10 +5681,11 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * The timeupdate event handler
+     *
      * @method onTimeUpdate
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onTimeUpdate = function(evt){
         if(!this.configs.useFrameAnimation){
@@ -5832,28 +5694,31 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * The seeking event handler
+     *
      * @method onSeeking
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Media.prototype.onSeeking = function(evt){
         this.triggerEvent(EVT_SEEKING, {'media': this});
     };
 
     /**
-     * Description
+     * Check whether the media is playing
+     *
      * @method isPlaying
-     * @return MemberExpression
+     * @return {Boolean} Whether the media is playing
      */
     Media.prototype.isPlaying = function() {
         return this.playing;
     };
 
     /**
-     * Description
+     * Reset the media time
+     *
      * @method reset
-     * @return ThisExpression
+     * @chainable
      */
     Media.prototype.reset = function() {
         this.setTime(0);
@@ -5862,9 +5727,10 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Play the media
+     *
      * @method play
-     * @return ThisExpression
+     * @chainable
      */
     Media.prototype.play = function() {
         this.dom.play();
@@ -5873,9 +5739,10 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Pause the media
+     *
      * @method pause
-     * @return ThisExpression
+     * @chainable
      */
     Media.prototype.pause = function() {
         this.dom.pause();
@@ -5884,10 +5751,12 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Trigger the timeupdate event
+     *
      * @method triggerTimeUpdate
-     * @param {} loop
-     * @return
+     * @private
+     * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
+     * @chainable
      */
     Media.prototype.triggerTimeUpdate = function(loop) {
         if(loop !== false && this.isPlaying()){
@@ -5895,13 +5764,16 @@ metaScore.namespace('player.component').Media = (function () {
         }
 
         this.triggerEvent(EVT_TIMEUPDATE, {'media': this});
+        
+        return this;
     };
 
     /**
-     * Description
+     * Set the media time
+     *
      * @method setTime
-     * @param {} time
-     * @return ThisExpression
+     * @param {Number} time The time in centiseconds
+     * @chainable
      */
     Media.prototype.setTime = function(time) {
         this.dom.currentTime = parseFloat(time) / 100;
@@ -5912,28 +5784,31 @@ metaScore.namespace('player.component').Media = (function () {
     };
 
     /**
-     * Description
+     * Get the current media time
+     *
      * @method getTime
-     * @return BinaryExpression
+     * @return {Number} The time in centiseconds
      */
     Media.prototype.getTime = function() {
         return parseFloat(this.dom.currentTime) * 100;
     };
 
     /**
-     * Description
+     * Get the media's duration
+     *
      * @method getDuration
-     * @return BinaryExpression
+     * @return {Number} The duration in centiseconds
      */
     Media.prototype.getDuration = function() {
         return parseFloat(this.dom.duration) * 100;
     };
 
     /**
-     * Description
+     * Set/Unset the draggable behaviour
+     *
      * @method setDraggable
-     * @param {} draggable
-     * @return MemberExpression
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {Draggable} The draggable behaviour
      */
     Media.prototype.setDraggable = function(draggable){
 
@@ -5947,7 +5822,6 @@ metaScore.namespace('player.component').Media = (function () {
             this._draggable = new metaScore.Draggable({
                 'target': this,
                 'handle': this.child('video'),
-                'container': this.parents(),
                 'limits': {
                     'top': 0,
                     'left': 0
@@ -5967,11 +5841,8 @@ metaScore.namespace('player.component').Media = (function () {
 
 })();
 /**
-* Description
-*
-* @class player.component.Page
-* @extends player.Component
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component').Page = (function () {
 
@@ -5992,16 +5863,21 @@ metaScore.namespace('player.component').Page = (function () {
     var EVT_CUEPOINTSTART = 'cuepointstart';
 
     /**
-     * Fired when a cuepoint ended
+     * Fired when a cuepoint stops
      *
-     * @event cuepointend
+     * @event cuepointstop
      */
-    var EVT_CUEPOINTEND = 'cuepointend';
+    var EVT_CUEPOINTSTOP = 'cuepointstop';
 
     /**
-     * Description
+     * A page component
+     *
+     * @class Controller
+     * @namespace player.component
+     * @extends player.Component
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Page(configs) {
         // call parent constructor
@@ -6017,19 +5893,9 @@ metaScore.namespace('player.component').Page = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Page.background-color', 'Background color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -6040,11 +5906,6 @@ metaScore.namespace('player.component').Page = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Page.background-image', 'Background image')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.css('background-image', undefined, skipDefault);
 
@@ -6054,11 +5915,6 @@ metaScore.namespace('player.component').Page = (function () {
 
                     return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
                     this.css('background-image', value);
@@ -6072,20 +5928,10 @@ metaScore.namespace('player.component').Page = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('start-time', isNaN(value) ? null : value);
                 }
@@ -6098,45 +5944,25 @@ metaScore.namespace('player.component').Page = (function () {
                     'inButton': true,
                     'outButton': true
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));
                     return isNaN(value) ? null : value;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('end-time', isNaN(value) ? null : value);
                 }
             },
             'elements': {
                 'editable': false,
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return elements
-                 */
                 'getter': function(skipDefault){
                     var elements = [];
 
-                    this.getElements().each(function(index, element){
-                        elements.push(element._metaScore.getProperties(skipDefault));
+                    metaScore.Array.each(this.getElements(), function(index, element){
+                        elements.push(element.getProperties(skipDefault));
                     }, this);
 
                     return elements;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     metaScore.Array.each(value, function(index, configs){
                         this.addElement(configs);
@@ -6147,22 +5973,24 @@ metaScore.namespace('player.component').Page = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the page's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Page.prototype.setupDOM = function(){
+    Page.prototype.setupUI = function(){
         // call parent function
-        Page.parent.prototype.setupDOM.call(this);
+        Page.parent.prototype.setupUI.call(this);
 
         this.addClass('page');
     };
 
     /**
-     * Description
+     * Add an new element component to this page
+     * 
      * @method addElement
-     * @param {} configs
-     * @return element
+     * @param {Object} configs Configs to use for the element (see {{#crossLink "player.component.Element}"}}{{/crossLink}})
+     * @return {player.component.Element} The element
      */
     Page.prototype.addElement = function(configs, supressEvent){
         var element;
@@ -6185,9 +6013,10 @@ metaScore.namespace('player.component').Page = (function () {
     };
 
     /**
-     * Description
+     * Get the block component this page belongs to
+     * 
      * @method getBlock
-     * @return CallExpression
+     * @return {player.component.Block}
      */
     Page.prototype.getBlock = function(){
         var dom = this.parents().parents().get(0),
@@ -6201,51 +6030,58 @@ metaScore.namespace('player.component').Page = (function () {
     };
 
     /**
-     * Description
+     * Get the element components that belong to this page
+     * 
      * @method getElements
-     * @return CallExpression
+     * @return {Array} The list of elements
      */
     Page.prototype.getElements = function(){
-        return this.children('.element');
+        var elements = [];
+
+        this.children('.element').each(function(index, dom){
+            elements.push(dom._metaScore);
+        });
+
+        return elements;
     };
 
     /**
-     * Description
+     * The cuepoint start event handler
+     * 
      * @method onCuePointStart
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Page.prototype.onCuePointStart = function(cuepoint){
+    Page.prototype.onCuePointStart = function(evt){
         this.triggerEvent(EVT_CUEPOINTSTART);
     };
 
     /**
-     * Description
-     * @method onCuePointEnd
-     * @param {} cuepoint
-     * @return
+     * The cuepoint stop event handler
+     * 
+     * @method onCuePointStop
+     * @private
+     * @param {Event} evt The event object
      */
-    Page.prototype.onCuePointEnd = function(cuepoint){
-        this.triggerEvent(EVT_CUEPOINTEND);
+    Page.prototype.onCuePointStop = function(evt){
+        this.triggerEvent(EVT_CUEPOINTSTOP);
     };
 
     /**
-     * Description
+     * The cuepoint seekout event handler
+     * 
      * @method onCuePointSeekOut
-     * @param {} cuepoint
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointEnd;
+    Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointStop;
 
     return Page;
 
 })();
 /**
-* Description
-*
-* @class player.component.element.Cursor
-* @extends player.component.Element
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component.element').Cursor = (function () {
 
@@ -6259,9 +6095,14 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     var EVT_TIME = 'time';
 
     /**
-     * Description
+     * A cursor element
+     *
+     * @class Cursor
+     * @namespace player.component.element
+     * @extends player.component.Element
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Cursor(configs) {
         // call parent constructor
@@ -6283,19 +6124,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                         'top': metaScore.Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
                     }
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('direction');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('direction', value);
                 }
@@ -6305,19 +6136,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                     return this.data('accel');
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.data('accel', value);
                 }
@@ -6327,20 +6148,10 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return ConditionalExpression
-                 */
                 'getter': function(skipDefault){
                     var value = this.cursor.css('width', undefined, skipDefault);
                     return value !== null ? parseInt(value, 10) : null;
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.cursor.css('width', value +'px');
                 }
@@ -6350,19 +6161,9 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
                 },
-                /**
-                 * Description
-                 * @param {} skipDefault
-                 * @return CallExpression
-                 */
                 'getter': function(skipDefault){
                      return this.cursor.css('background-color', undefined, skipDefault);
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     var color = metaScore.Color.parse(value);
                     this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
@@ -6372,13 +6173,14 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the cursor's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Cursor.prototype.setupDOM = function(){
+    Cursor.prototype.setupUI = function(){
         // call parent function
-        Cursor.parent.prototype.setupDOM.call(this);
+        Cursor.parent.prototype.setupUI.call(this);
 
         this.data('type', 'Cursor');
 
@@ -6391,10 +6193,11 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * Description
+     * The click event handler
+     *
      * @method onClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Cursor.prototype.onClick = function(evt){
         var pos, time,
@@ -6440,18 +6243,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * Description
+     * The cuepoint update event handler
+     *
      * @method onCuePointUpdate
-     * @param {} cuepoint
-     * @param {} curTime
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
-    Cursor.prototype.onCuePointUpdate = function(cuepoint, curTime){
+    Cursor.prototype.onCuePointUpdate = function(evt){
         var width, height,
-            inTime, outTime, pos,
+            curTime, inTime, outTime, pos,
             direction = this.getProperty('direction'),
             acceleration = this.getProperty('acceleration');
 
+        curTime = evt.target.getMedia().getTime();
         inTime = this.getProperty('start-time');
         outTime = this.getProperty('end-time');
 
@@ -6492,18 +6296,20 @@ metaScore.namespace('player.component.element').Cursor = (function () {
 
 })();
 /**
-* Description
-*
-* @class player.component.element.Image
-* @extends player.component.Element
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component.element').Image = (function () {
 
     /**
-     * Description
+     * An image element
+     *
+     * @class Cursor
+     * @namespace player.component.element
+     * @extends player.component.Element
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Image(configs) {
         // call parent constructor
@@ -6513,13 +6319,14 @@ metaScore.namespace('player.component.element').Image = (function () {
     metaScore.player.component.Element.extend(Image);
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the image's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Image.prototype.setupDOM = function(){
+    Image.prototype.setupUI = function(){
         // call parent function
-        Image.parent.prototype.setupDOM.call(this);
+        Image.parent.prototype.setupUI.call(this);
 
         this.data('type', 'Image');
     };
@@ -6528,11 +6335,8 @@ metaScore.namespace('player.component.element').Image = (function () {
 
 })();
 /**
-* Description
-*
-* @class player.component.element.Text
-* @extends player.component.Element
-*/
+ * @module Player
+ */
 
 metaScore.namespace('player.component.element').Text = (function () {
 
@@ -6542,7 +6346,7 @@ metaScore.namespace('player.component.element').Text = (function () {
      * @event page
      * @param {Object} element The element instance
      * @param {Object} block The block instance
-     * @param {Number} index The page index
+     * @param {Integer} index The page index
      */
     var EVT_PAGE = 'page';
 
@@ -6553,14 +6357,19 @@ metaScore.namespace('player.component.element').Text = (function () {
      * @param {Object} element The element instance
      * @param {Number} inTime The start time
      * @param {Number} outTime The end time
-     * @param {Number} rIndex The reading index
+     * @param {Integer} rIndex The reading index
      */
     var EVT_PLAY = 'play';
 
     /**
-     * Description
+     * A text element
+     *
+     * @class Cursor
+     * @namespace player.component.element
+     * @extends player.component.Element
      * @constructor
-     * @param {} configs
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     function Text(configs) {
         // call parent constructor
@@ -6575,18 +6384,9 @@ metaScore.namespace('player.component.element').Text = (function () {
         'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
             'text': {
                 'editable':false,
-                /**
-                 * Description
-                 * @return CallExpression
-                 */
                 'getter': function(){
                     return this.contents.text();
                 },
-                /**
-                 * Description
-                 * @param {} value
-                 * @return
-                 */
                 'setter': function(value){
                     this.contents.text(value);
                 }
@@ -6595,22 +6395,24 @@ metaScore.namespace('player.component.element').Text = (function () {
     };
 
     /**
-     * Description
-     * @method setupDOM
-     * @return
+     * Setup the text's UI
+     * 
+     * @method setupUI
+     * @private
      */
-    Text.prototype.setupDOM = function(){
+    Text.prototype.setupUI = function(){
         // call parent function
-        Text.parent.prototype.setupDOM.call(this);
+        Text.parent.prototype.setupUI.call(this);
 
         this.data('type', 'Text');
     };
 
     /**
-     * Description
+     * The link click event handler
+     *
      * @method onLinkClick
-     * @param {} evt
-     * @return
+     * @private
+     * @param {Event} evt The event object
      */
     Text.prototype.onLinkClick = function(evt){
         var link = evt.target,
@@ -6640,6 +6442,7 @@ metaScore.namespace('player.component.element').Text = (function () {
     return Text;
 
 })();
+    // attach the metaScore object to the global scope
     global.metaScore = metaScore;
 
 } (this));

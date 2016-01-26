@@ -1,3 +1,7 @@
+/**
+ * @module Core
+ */
+
 metaScore.Evented = (function(){
 
     /**
@@ -54,6 +58,21 @@ metaScore.Evented = (function(){
         }
 
         return this;
+    };
+
+    /**
+     * Check if a listener is attached to a given event type
+     *
+     * @method hasListener
+     * @param {String} type The event type
+     * @return {Boolean} Whether a listener is attached
+     */
+    Evented.prototype.hasListener = function(type){
+        if(this.listeners[type] instanceof Array){
+            return this.listeners[type].length > 0;
+        }
+
+        return false;
     };
 
     /**

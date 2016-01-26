@@ -1,11 +1,16 @@
-/*! metaScore - v0.0.2 - 2015-12-22 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-01-26 - Oussama Mubarak */
+/**
+ * @module Player
+ */
+
 window.metaScoreAPI = (function(){
 
     /**
      * A regular expression used to test incoming messages origin
      *
+     * @property _origin_regex
      * @private
-     * @property origin_regex
+     * @type Object
      */
     var origin_regex = /^http?:\/\/metascore.philharmoniedeparis.fr/;
 
@@ -57,6 +62,7 @@ window.metaScoreAPI = (function(){
      * @method postMessage
      * @param {String} method The API method to invoke
      * @param {Mixed} params The parameter(s) to send along
+     * @chainable
      */
     API.prototype.postMessage = function(method, params){
         var data;
@@ -71,13 +77,15 @@ window.metaScoreAPI = (function(){
         });
 
         this.target.contentWindow.postMessage(data, this.origin);
+
+        return this;
     };
 
     /**
      * Callback called when the player finished loading
      *
-     * @private
      * @method onLoad
+     * @private
      * @param {Function} callback A callback called once the player finished loading
      * @param {API} callback.api The API instance
      */
@@ -91,8 +99,8 @@ window.metaScoreAPI = (function(){
      * Callback called when a message is received from the player
      * If the received message contains a callback id, it will be invoked with any passed parameters
      *
-     * @private
      * @method onMessage
+     * @private
      * @param {MessageEvent} evt The event object containing the message details
      */
     API.prototype.onMessage = function(evt){
@@ -185,7 +193,7 @@ window.metaScoreAPI = (function(){
      *
      * @method page
      * @param {String} block The page's block name
-     * @param {Number} index The page's index
+     * @param {Integer} index The page's index
      * @chainable
      */
     API.prototype.page = function(block, index){
@@ -199,7 +207,7 @@ window.metaScoreAPI = (function(){
      * Used to set the reading index of the player
      *
      * @method rIndex
-     * @param {Number} index The reading index to set
+     * @param {Integer} index The reading index to set
      * @chainable
      */
     API.prototype.rindex = function(index){
