@@ -225,7 +225,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['Gruntfile.js'].concat('src/**', '!src/locale/**', '!src/js/locale/**'),
-                tasks: ['build', 'drupal'],
+                tasks: ['default'],
                 options: {
                     interrupt: true
                 }

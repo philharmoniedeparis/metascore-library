@@ -1923,13 +1923,13 @@ metaScore.Editor = (function(){
         }
 
         // create the optgroups and their options
-        metaScore.Array.each(Object.keys(optgroups).sort(), function(index, rindex){
+        metaScore.Array.each(Object.keys(optgroups).sort(metaScore.Array.naturalSortInsensitive), function(index, rindex){
             var options = optgroups[rindex],
-                optgroup, sortFn = metaScore.Array.naturalSort(true);
+                optgroup;
 
             // sort options by element names
             options.sort(function(a, b){
-                return sortFn(a.element.getName(), b.element.getName());
+                return metaScore.Array.naturalSortInsensitive(a.element.getName(), b.element.getName());
             });
 
             // create the optgroup

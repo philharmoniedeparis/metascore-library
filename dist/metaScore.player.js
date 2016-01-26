@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "4e679e";
+        return "3a62ea";
     },
 
     /**
@@ -662,7 +662,7 @@ metaScore.Array = (function () {
     };
 
     /**
-     * Get a natural sort function to use with Array.sort
+     * A natural sort function generator
      * 
      * @method naturalSort
      * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
@@ -721,6 +721,29 @@ metaScore.Array = (function () {
             return 0;
         };
     };
+
+    /**
+     * A natural case-insentive sorting function to use with Array.sort
+     * 
+     * @method naturalSortInsensitive
+     * @static
+     * @param {String} a The first string to compare
+     * @param {String} b The second string to compare
+     * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     */
+    Array.naturalSortInsensitive = Array.naturalSort(true);
+    
+
+    /**
+     * A natural case-sentive sorting function to use with Array.sort
+     * 
+     * @method naturalSortInsensitive
+     * @static
+     * @param {String} a The first string to compare
+     * @param {String} b The second string to compare
+     * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     */
+    Array.naturalSortSensitive = Array.naturalSort(false);
 
     return Array;
 

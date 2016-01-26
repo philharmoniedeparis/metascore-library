@@ -6230,7 +6230,7 @@
         {
             "file": "src\\js\\helpers\\metaScore.Array.js",
             "line": 156,
-            "description": "Get a natural sort function to use with Array.sort",
+            "description": "A natural sort function generator",
             "itemtype": "method",
             "name": "naturalSort",
             "author": "Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7",
@@ -6252,6 +6252,58 @@
                 "\n    var arr = [\"c\", \"A2\", \"a1\", \"d\", \"b\"];\n    arr.sort(metaScore.Array.naturalSort(true));\n    // [\"a1\", \"A2\", \"b\", \"c\", \"d\"]",
                 "\n    var arr = [\"c\", \"A2\", \"a1\", \"d\", \"b\"];\n    arr.sort(metaScore.Array.naturalSort(false));\n    // [\"A2\", \"a1\", \"b\", \"c\", \"d\"]"
             ],
+            "class": "Array",
+            "module": "Core"
+        },
+        {
+            "file": "src\\js\\helpers\\metaScore.Array.js",
+            "line": 217,
+            "description": "A natural case-insentive sorting function to use with Array.sort",
+            "itemtype": "method",
+            "name": "naturalSortInsensitive",
+            "static": 1,
+            "params": [
+                {
+                    "name": "a",
+                    "description": "The first string to compare",
+                    "type": "String"
+                },
+                {
+                    "name": "b",
+                    "description": "The second string to compare",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort",
+                "type": "Integer"
+            },
+            "class": "Array",
+            "module": "Core"
+        },
+        {
+            "file": "src\\js\\helpers\\metaScore.Array.js",
+            "line": 229,
+            "description": "A natural case-sentive sorting function to use with Array.sort",
+            "itemtype": "method",
+            "name": "naturalSortInsensitive",
+            "static": 1,
+            "params": [
+                {
+                    "name": "a",
+                    "description": "The first string to compare",
+                    "type": "String"
+                },
+                {
+                    "name": "b",
+                    "description": "The second string to compare",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort",
+                "type": "Integer"
+            },
             "class": "Array",
             "module": "Core"
         },
