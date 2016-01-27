@@ -106,6 +106,46 @@
 .metaScore-editor .field.booleanfield.readonly .input-wrapper {
   pointer-events: none;
 }
+.metaScore-editor .field.numberfield .input-wrapper {
+  position: relative;
+}
+.metaScore-editor .field.numberfield .input-wrapper .buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2em;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+}
+.metaScore-editor .field.numberfield .input-wrapper .buttons button {
+  padding: 0;
+  overflow: hidden;
+  text-indent: 999px;
+  background-color: #eeeeee;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 40%;
+}
+.metaScore-editor .field.numberfield .input-wrapper .buttons button[data-action="spin-down"] {
+  background-image: url('img/editor/field/number/spinner-arrow-down.png');
+}
+.metaScore-editor .field.numberfield .input-wrapper .buttons button[data-action="spin-up"] {
+  background-image: url('img/editor/field/number/spinner-arrow-up.png');
+}
+.metaScore-editor .field.numberfield.vertical .input-wrapper .buttons {
+  flex-direction: row;
+}
+.metaScore-editor .field.numberfield.vertical .input-wrapper .buttons button {
+  background-size: 50%;
+}
+.metaScore-editor .field.numberfield.vertical .input-wrapper .buttons button[data-action="spin-down"] {
+  background-image: url('img/editor/field/number/spinner-arrow-left.png');
+}
+.metaScore-editor .field.numberfield.vertical .input-wrapper .buttons button[data-action="spin-up"] {
+  background-image: url('img/editor/field/number/spinner-arrow-right.png');
+}
 .metaScore-editor .field.timefield .input-wrapper {
   display: inline-block;
   vertical-align: top;

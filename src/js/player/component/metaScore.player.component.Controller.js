@@ -59,6 +59,19 @@ metaScore.namespace('player.component').Controller = (function () {
                     this.css('top', value +'px');
                 }
             },
+            'z-index': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('z-index', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('z-index', value);
+                }
+            },
             'border-radius': {
                 'type': 'BorderRadius',
                 'configs': {

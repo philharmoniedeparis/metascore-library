@@ -53,25 +53,30 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         ColorSelector.parent.prototype.setupUI.call(this);
 
         this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
+        
         this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
             .addListener('click', metaScore.Function.proxy(this.onGradientClick, this))
             .addListener('mousedown', metaScore.Function.proxy(this.onGradientMousedown, this))
             .addListener('mouseup', metaScore.Function.proxy(this.onGradientMouseup, this))
             .appendTo(this.gradient);
+            
         this.gradient.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.gradient);
 
         this.alpha = new metaScore.Dom('<div/>', {'class': 'alpha'}).appendTo(this.contents);
+        
         this.alpha.canvas = new metaScore.Dom('<canvas/>', {'width': '20', 'height': '255'})
             .addListener('click', metaScore.Function.proxy(this.onAlphaClick, this))
             .addListener('mousedown', metaScore.Function.proxy(this.onAlphaMousedown, this))
             .addListener('mouseup', metaScore.Function.proxy(this.onAlphaMouseup, this))
             .appendTo(this.alpha);
+            
         this.alpha.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.alpha);
 
         this.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(this.contents);
 
         this.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
             .append(this.controls.r)
@@ -79,6 +84,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
             .append(this.controls.g)
@@ -86,6 +92,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
             .append(this.controls.b)
@@ -93,17 +100,20 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
             .append(this.controls.a)
             .appendTo(this.controls);
 
         this.controls.current = new metaScore.Dom('<canvas/>');
+        
         new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
             .append(this.controls.current)
             .appendTo(this.controls);
 
         this.controls.previous = new metaScore.Dom('<canvas/>');
+        
         new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
             .append(this.controls.previous)
             .appendTo(this.controls);

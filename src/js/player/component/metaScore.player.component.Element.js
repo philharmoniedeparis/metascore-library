@@ -168,7 +168,8 @@ metaScore.namespace('player.component').Element = (function () {
             'border-width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width')
+                    'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width'),
+                    'min': 0
                 },
                 'getter': function(skipDefault){
                     var value = this.contents.css('border-width', undefined, skipDefault);

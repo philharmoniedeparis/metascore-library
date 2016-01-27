@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-01-26 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-01-27 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "3a62ea";
+        return "372fbc";
     },
 
     /**
@@ -3366,7 +3366,58 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaLoadedMetadata = function(evt){
+        console.log('onMediaLoadedMetadata');
         this.getMedia().reset();
+    };
+
+    /**
+     * Media waiting event callback
+     *
+     * @method onMediaWaiting
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaWaiting = function(evt){
+        console.log('onMediaWaiting');
+        this.addClass('media-waiting');
+    };
+
+    /**
+     * Media seeking event callback
+     *
+     * @method onMediaSeeking
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaSeeking = function(evt){
+        console.log('onMediaSeeking');
+        this.addClass('media-waiting');
+    };
+
+    /**
+     * Media seeked event callback
+     *
+     * @method onMediaSeeked
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaSeeked = function(evt){
+        console.log('onMediaSeeked');
+        this.removeClass('media-waiting');
+    };
+
+    /**
+     * Media playing event callback
+     *
+     * @method onMediaPlaying
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaPlaying = function(evt){
+        console.log('onMediaPlaying');
+        this.removeClass('media-waiting');
+        
+        this.controller.addClass('playing');
     };
 
     /**
@@ -3377,6 +3428,9 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPlay = function(evt){
+        console.log('onMediaPlay');
+        this.removeClass('media-waiting');
+        
         this.controller.addClass('playing');
     };
 
@@ -3388,6 +3442,9 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPause = function(evt){
+        console.log('onMediaPause');
+        this.removeClass('media-waiting');
+        
         this.controller.removeClass('playing');
     };
 
@@ -3399,9 +3456,78 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaTimeUpdate = function(evt){
+        console.log('onMediaTimeUpdate');
         var currentTime = evt.detail.media.getTime();
 
         this.controller.updateTime(currentTime);
+    };
+
+    /**
+     * Media suspend event callback
+     *
+     * @method onMediaSuspend
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaSuspend = function(evt){
+        console.log('onMediaSuspend');
+        this.removeClass('media-waiting');
+    };
+
+    /**
+     * Media suspend event callback
+     *
+     * @method onMediaStalled
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaStalled = function(evt){
+        console.log('onMediaStalled');
+        this.removeClass('media-waiting');
+    };
+
+    /**
+     * Media error event callback
+     *
+     * @method onMediaError
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaError = function(evt){
+        var error = evt.target.error,
+            text;
+        
+        this.removeClass('media-waiting');
+        
+        switch(error.code) {
+            case error.MEDIA_ERR_ABORTED:
+                text = metaScore.Locale.t('player.onMediaError.Aborted.msg', 'You aborted the media playback.');
+                break;
+                
+            case error.MEDIA_ERR_NETWORK:
+                text = metaScore.Locale.t('player.onMediaError.Network.msg', 'A network error caused the media download to fail.');
+                break;
+                
+            case error.MEDIA_ERR_DECODE:
+                text = metaScore.Locale.t('player.onMediaError.Decode.msg', 'The media playback was aborted due to a format problem.');
+                break;
+                
+            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                text = metaScore.Locale.t('player.onMediaError.NotSupported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
+                break;
+                
+            default:
+                text = metaScore.Locale.t('player.onMediaError.Default.msg', 'An unknown error occurred.');
+                break;
+        }
+        
+        new metaScore.editor.overlay.Alert({
+            'text': text,
+            'buttons': {
+                'ok': metaScore.Locale.t('editor.onMediaError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
     };
 
     /**
@@ -3696,9 +3822,16 @@ metaScore.Player = (function(){
     Player.prototype.addMedia = function(configs, supressEvent){
         var media = new metaScore.player.component.Media(configs)
             .addListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+            .addListener('waiting', metaScore.Function.proxy(this.onMediaWaiting, this))
+            .addListener('seeking', metaScore.Function.proxy(this.onMediaSeeking, this))
+            .addListener('seeked', metaScore.Function.proxy(this.onMediaSeeked, this))
+            .addListener('playing', metaScore.Function.proxy(this.onMediaPlaying, this))
             .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
             .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
             .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+            .addListener('suspend', metaScore.Function.proxy(this.onMediaSuspend, this))
+            .addListener('stalled', metaScore.Function.proxy(this.onMediaStalled, this))
+            .addListener('error', metaScore.Function.proxy(this.onMediaError, this))
             .appendTo(this);
 
         if(supressEvent !== true){
@@ -4456,7 +4589,8 @@ metaScore.namespace('player.component').Block = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Block.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -4480,7 +4614,8 @@ metaScore.namespace('player.component').Block = (function () {
             'width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.width', 'Width')
+                    'label': metaScore.Locale.t('player.component.Block.width', 'Width'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
@@ -4499,6 +4634,19 @@ metaScore.namespace('player.component').Block = (function () {
                 },
                 'setter': function(value){
                     this.css('height', value +'px');
+                }
+            },
+            'z-index': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('z-index', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('z-index', value);
                 }
             },
             'background-color': {
@@ -4536,7 +4684,8 @@ metaScore.namespace('player.component').Block = (function () {
             'border-width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
+                    'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width'),
+                    'min': 0
                 },
                 'getter': function(skipDefault){
                     var value = this.css('border-width', undefined, skipDefault);
@@ -4974,6 +5123,19 @@ metaScore.namespace('player.component').Controller = (function () {
                     this.css('top', value +'px');
                 }
             },
+            'z-index': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('z-index', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('z-index', value);
+                }
+            },
             'border-radius': {
                 'type': 'BorderRadius',
                 'configs': {
@@ -5250,7 +5412,8 @@ metaScore.namespace('player.component').Element = (function () {
             'border-width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width')
+                    'label': metaScore.Locale.t('player.component.Element.border-width', 'Border width'),
+                    'min': 0
                 },
                 'getter': function(skipDefault){
                     var value = this.contents.css('border-width', undefined, skipDefault);
@@ -5610,6 +5773,59 @@ metaScore.namespace('player.component').Media = (function () {
                     this.css('height', value +'px');
                 }
             },
+            'z-index': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('z-index', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('z-index', value);
+                }
+            },
+            'background-color': {
+                'type': 'Color',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
+                },
+                'getter': function(skipDefault){
+                    return this.css('background-color', undefined, skipDefault);
+                },
+                'setter': function(value){
+                    var color = metaScore.Color.parse(value);
+                    this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                }
+            },
+            'border-width': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width'),
+                    'min': 0
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('border-width', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('border-width', value +'px');
+                }
+            },
+            'border-color': {
+                'type': 'Color',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
+                },
+                'getter': function(skipDefault){
+                    return this.css('border-color', undefined, skipDefault);
+                },
+                'setter': function(value){
+                    var color = metaScore.Color.parse(value);
+                    this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                }
+            },
             'border-radius': {
                 'type': 'BorderRadius',
                 'configs': {
@@ -5857,6 +6073,35 @@ metaScore.namespace('player.component').Media = (function () {
         }
 
         return this._draggable;
+
+    };
+
+    /**
+     * Set/Unset the resizable behaviour
+     *
+     * @method setDraggable
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {Resizable} The resizable behaviour
+     */
+    Media.prototype.setResizable = function(resizable){
+
+        resizable = resizable !== false;
+
+        if(this.getProperty('locked') && resizable){
+            return false;
+        }
+
+        if(resizable && !this._resizable){
+            this._resizable = new metaScore.Resizable({
+                'target': this
+            });
+        }
+        else if(!resizable && this._resizable){
+            this._resizable.destroy();
+            delete this._resizable;
+        }
+
+        return this._resizable;
 
     };
 

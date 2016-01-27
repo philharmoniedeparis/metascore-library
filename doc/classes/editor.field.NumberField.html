@@ -69,6 +69,7 @@
                                 <li><a href="../classes/editor.overlay.ColorSelector.html">editor.overlay.ColorSelector</a></li>
                                 <li><a href="../classes/editor.overlay.GuideDetails.html">editor.overlay.GuideDetails</a></li>
                                 <li><a href="../classes/editor.overlay.GuideSelector.html">editor.overlay.GuideSelector</a></li>
+                                <li><a href="../classes/editor.overlay.iFrame.html">editor.overlay.iFrame</a></li>
                                 <li><a href="../classes/editor.overlay.LoadMask.html">editor.overlay.LoadMask</a></li>
                                 <li><a href="../classes/editor.overlay.Toolbar.html">editor.overlay.Toolbar</a></li>
                                 <li><a href="../classes/editor.Panel.html">editor.Panel</a></li>
@@ -229,6 +230,50 @@
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[step=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The spin up/down step amount</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[spinButtons=true]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether to show the in spin buttons</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[spinInterval=200]</code>
+                                            <span class="type">Integer</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The speed of the spinner buttons</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[spinDirection=&#x27;horizontal&#x27;]</code>
+                                            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The direction of the spin buttons</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -372,6 +417,30 @@
                                 <a href="#method_onChange">onChange</a>
 
                             </li>
+                            <li class="index-item method private">
+                                <a href="#method_onInput">onInput</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onKeyDown">onKeyDown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onMouseWheel">onMouseWheel</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onSpinBtnMouseDown">onSpinBtnMouseDown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onSpinBtnMouseOut">onSpinBtnMouseOut</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onSpinBtnMouseUp">onSpinBtnMouseUp</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_parents">parents</a>
 
@@ -392,6 +461,14 @@
                                 <a href="#method_setDescription">setDescription</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_setMax">setMax</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_setMin">setMin</a>
+
+                            </li>
                             <li class="index-item method private inherited">
                                 <a href="#method_setupUI">setupUI</a>
 
@@ -402,6 +479,14 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_show">show</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_spinDown">spinDown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_spinUp">spinUp</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -2117,7 +2202,7 @@
 
 
 </div>
-<div id="method_onChange" class="method item private inherited">
+<div id="method_onChange" class="method item private">
     <h3 class="name"><code>onChange</code></h3>
 
         <div class="args">
@@ -2137,8 +2222,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_onChange">editor.Field</a>:
+            <p>Inherited from
+            <a href="../classes/editor.Field.html#method_onChange">
+                editor.Field
+            </a>
         </p>
 
 
@@ -2147,6 +2234,324 @@
 
     <div class="description">
         <p>The change event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onInput" class="method item private">
+    <h3 class="name"><code>onInput</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The input event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onKeyDown" class="method item private">
+    <h3 class="name"><code>onKeyDown</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The keydown event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onMouseWheel" class="method item private">
+    <h3 class="name"><code>onMouseWheel</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The mousewheel event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onSpinBtnMouseDown" class="method item private">
+    <h3 class="name"><code>onSpinBtnMouseDown</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The spin button&#39;s mousedown event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onSpinBtnMouseOut" class="method item private">
+    <h3 class="name"><code>onSpinBtnMouseOut</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The spin button&#39;s mouseout event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onSpinBtnMouseUp" class="method item private">
+    <h3 class="name"><code>onSpinBtnMouseUp</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The spin button&#39;s mouseup event handler</p>
 
     </div>
 
@@ -2431,6 +2836,112 @@
 
 
 </div>
+<div id="method_setMax" class="method item">
+    <h3 class="name"><code>setMax</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>value</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the maximum allowed value</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>The maximum allowed value</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_setMin" class="method item">
+    <h3 class="name"><code>setMin</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>value</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the minimum allowed value</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>The minimum allowed value</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_setupUI" class="method item private">
     <h3 class="name"><code>setupUI</code></h3>
 
@@ -2464,7 +2975,7 @@
 
 
 </div>
-<div id="method_setValue" class="method item inherited">
+<div id="method_setValue" class="method item">
     <h3 class="name"><code>setValue</code></h3>
 
         <div class="args">
@@ -2487,8 +2998,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_setValue">editor.Field</a>:
+            <p>Inherited from
+            <a href="../classes/editor.Field.html#method_setValue">
+                editor.Field
+            </a>
         </p>
 
 
@@ -2506,7 +3019,7 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type">Mixed</span>
+                        <span class="type">Number</span>
 
 
                     <div class="param-description">
@@ -2556,6 +3069,66 @@
 
     <div class="description">
         <p>Make all the elements managed by the Dom object visible</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_spinDown" class="method item private">
+    <h3 class="name"><code>spinDown</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Decrement the value by one step</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_spinUp" class="method item private">
+    <h3 class="name"><code>spinUp</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Increment the value by one step</p>
 
     </div>
 
@@ -3002,7 +3575,7 @@
                     
                     
                     </div>
-                    <div id="event_valuechange" class="events item inherited">
+                    <div id="event_valuechange" class="events item">
                         <h3 class="name"><code>valuechange</code></h3>
                         <span class="type"></span>
                     
@@ -3011,8 +3584,10 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/editor.Field.html#event_valuechange">editor.Field</a>:
+                                <p>Inherited from
+                                <a href="../classes/editor.Field.html#event_valuechange">
+                                    editor.Field
+                                </a>
                             </p>
                     
                     

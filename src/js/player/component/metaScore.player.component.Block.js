@@ -78,7 +78,8 @@ metaScore.namespace('player.component').Block = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Block.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -102,7 +103,8 @@ metaScore.namespace('player.component').Block = (function () {
             'width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.width', 'Width')
+                    'label': metaScore.Locale.t('player.component.Block.width', 'Width'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
@@ -121,6 +123,19 @@ metaScore.namespace('player.component').Block = (function () {
                 },
                 'setter': function(value){
                     this.css('height', value +'px');
+                }
+            },
+            'z-index': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('z-index', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('z-index', value);
                 }
             },
             'background-color': {
@@ -158,7 +173,8 @@ metaScore.namespace('player.component').Block = (function () {
             'border-width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width')
+                    'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width'),
+                    'min': 0
                 },
                 'getter': function(skipDefault){
                     var value = this.css('border-width', undefined, skipDefault);

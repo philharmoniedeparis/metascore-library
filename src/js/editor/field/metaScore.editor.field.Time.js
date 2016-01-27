@@ -160,9 +160,6 @@ metaScore.namespace('editor.field').Time = (function () {
 
             this.setValue(centiseconds_val + (seconds_val * 100) + (minutes_val * 6000) + (hours_val * 360000));
         }
-        else{
-            this.setValue(null);
-        }
 
         evt.stopPropagation();
     };
@@ -278,14 +275,14 @@ metaScore.namespace('editor.field').Time = (function () {
      * Set the minimum allowed value
      * 
      * @method setMin
-     * @param {Number} min The minimum allowed value
+     * @param {Number} value The minimum allowed value
      * @chainable
      */
-    TimeField.prototype.setMin = function(min){
-        this.configs.min = min;
+    TimeField.prototype.setMin = function(value){
+        this.configs.min = value;
 
-        if(this.getValue() < min){
-            this.setValue(min);
+        if(this.getValue() < value){
+            this.setValue(value);
         }
 
         return this;
@@ -295,14 +292,14 @@ metaScore.namespace('editor.field').Time = (function () {
      * Set the maximum allowed value
      * 
      * @method setMax
-     * @param {Number} max The maximum allowed value
+     * @param {Number} value The maximum allowed value
      * @chainable
      */
-    TimeField.prototype.setMax = function(max){
-        this.configs.max = max;
+    TimeField.prototype.setMax = function(value){
+        this.configs.max = value;
 
-        if(this.getValue() > max){
-            this.setValue(max);
+        if(this.getValue() > value){
+            this.setValue(value);
         }
 
         return this;

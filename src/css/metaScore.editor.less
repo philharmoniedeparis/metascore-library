@@ -102,6 +102,61 @@
       }
     }
     
+    &.numberfield{
+        .input-wrapper{
+            position: relative;
+            
+            .buttons{
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 2em;
+                display: flex;
+                flex-direction: column-reverse;
+                justify-content: center;
+                
+                button{
+                    padding: 0;
+                    overflow: hidden;
+                    text-indent: 999px;
+                    background-color: rgb(238, 238, 238);
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    background-size: 40%;
+                    
+                    &[data-action="spin-down"]{
+                        background-image: url('img/editor/field/number/spinner-arrow-down.png');
+                    }
+                    
+                    &[data-action="spin-up"]{
+                        background-image: url('img/editor/field/number/spinner-arrow-up.png');
+                    }
+                }
+            }
+        }
+            
+        &.vertical{
+            .input-wrapper{
+                .buttons{
+                    flex-direction: row;
+                    
+                    button{     
+                        background-size: 50%; 
+                        
+                        &[data-action="spin-down"]{
+                            background-image: url('img/editor/field/number/spinner-arrow-left.png');
+                        }
+                        
+                        &[data-action="spin-up"]{
+                            background-image: url('img/editor/field/number/spinner-arrow-right.png');
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     &.timefield{
       .input-wrapper{
         display: inline-block;

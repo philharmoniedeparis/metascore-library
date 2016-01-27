@@ -60,42 +60,42 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
         this.preview = new metaScore.Dom('<div/>', {'class': 'preview'})
             .appendTo(contents);
 
-        this.fields.tlw = new metaScore.editor.field.Number({min: 0})
+        this.fields.tlw = new metaScore.editor.field.Number({'min': 0})
             .addClass('tlw')
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .appendTo(this.preview);
 
-        this.fields.tlh = new metaScore.editor.field.Number({min: 0})
+        this.fields.tlh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('tlh')
             .appendTo(this.preview);
 
-        this.fields.trw = new metaScore.editor.field.Number({min: 0})
+        this.fields.trw = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('trw')
             .appendTo(this.preview);
 
-        this.fields.trh = new metaScore.editor.field.Number({min: 0})
+        this.fields.trh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('trh')
             .appendTo(this.preview);
 
-        this.fields.brw = new metaScore.editor.field.Number({min: 0})
+        this.fields.brw = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('brw')
             .appendTo(this.preview);
 
-        this.fields.brh = new metaScore.editor.field.Number({min: 0})
+        this.fields.brh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('brh')
             .appendTo(this.preview);
 
-        this.fields.blw = new metaScore.editor.field.Number({min: 0})
+        this.fields.blw = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('blw')
             .appendTo(this.preview);
 
-        this.fields.blh = new metaScore.editor.field.Number({min: 0})
+        this.fields.blh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('blh')
             .appendTo(this.preview);

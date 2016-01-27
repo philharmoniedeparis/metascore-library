@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-01-26 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-01-27 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "3a62ea";
+        return "372fbc";
     },
 
     /**
@@ -5657,7 +5657,7 @@ metaScore.namespace('editor').History = (function(){
      * @extends Evented
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Integer} [configs.max_commands=30] The maximum number of commands to store
+     * @param {Integer} [configs.max_commands=30] The max number of commands to store
      */
     function History(configs) {
         this.configs = this.getConfigs(configs);
@@ -5933,8 +5933,8 @@ metaScore.namespace('editor').MainMenu = (function(){
             .appendTo(this);
 
         this.rindexfield = new metaScore.editor.field.Number({
-                min: 0,
-                max: 999
+                'min': 0,
+                'max': 999
             })
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.r-index', 'Reading index')
@@ -7545,6 +7545,15 @@ metaScore.namespace('editor.field').Image = (function () {
 metaScore.namespace('editor.field').Number = (function () {
 
     /**
+     * Fired when the field's value changes
+     *
+     * @event valuechange
+     * @param {Object} field The field instance
+     * @param {Mixed} value The new value
+     */
+    var EVT_VALUECHANGE = 'valuechange';
+
+    /**
      * A number field based on an HTML input[type=number] element
      *
      * @class NumberField
@@ -7555,12 +7564,19 @@ metaScore.namespace('editor.field').Number = (function () {
      * @param {Number} [configs.value=0] The default value
      * @param {Number} [configs.min=null] The minimum allowed value
      * @param {Number} [configs.max=null] The maximum allowed value
+     * @param {Number} [configs.step=1] The spin up/down step amount
+     * @param {Boolean} [configs.spinButtons=true] Whether to show the in spin buttons
+     * @param {Integer} [configs.spinInterval=200] The speed of the spinner buttons
+     * @param {String} [configs.spinDirection='horizontal'] The direction of the spin buttons
      */
     function NumberField(configs) {
         this.configs = this.getConfigs(configs);
 
         // call parent constructor
         NumberField.parent.call(this, this.configs);
+        
+        this.spinDown = metaScore.Function.proxy(this.spinDown, this);
+        this.spinUp = metaScore.Function.proxy(this.spinUp, this);
 
         this.addClass('numberfield');
     }
@@ -7568,7 +7584,11 @@ metaScore.namespace('editor.field').Number = (function () {
     NumberField.defaults = {
         'value': 0,
         'min': null,
-        'max': null
+        'max': null,
+        'step': 1,
+        'spinButtons': true,
+        'spinInterval': 200,
+        'spinDirection': 'horizontal'
     };
 
     metaScore.editor.Field.extend(NumberField);
@@ -7580,7 +7600,8 @@ metaScore.namespace('editor.field').Number = (function () {
      * @private
      */
     NumberField.prototype.setupUI = function(){
-        var uid = 'field-'+ metaScore.String.uuid(5);
+        var uid = 'field-'+ metaScore.String.uuid(5),
+            buttons;
 
         if(this.configs.label){
             this.label = new metaScore.Dom('<label/>', {'for': uid, 'text': this.configs.label})
@@ -7590,9 +7611,230 @@ metaScore.namespace('editor.field').Number = (function () {
         this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        this.input = new metaScore.Dom('<input/>', {'type': 'number', 'id': uid, 'min': this.configs.min, 'max': this.configs.max, 'step': this.configs.step})
-            .addListener('change', metaScore.Function.proxy(this.onChange, this))
+        this.input = new metaScore.Dom('<input/>', {'type': 'text', 'id': uid})
+            .addListener('input', metaScore.Function.proxy(this.onInput, this))
+            .addListener('mousewheel', metaScore.Function.proxy(this.onMouseWheel, this))
+            .addListener('DOMMouseScroll', metaScore.Function.proxy(this.onMouseWheel, this))
+            .addListener('keydown', metaScore.Function.proxy(this.onKeyDown, this))
             .appendTo(this.input_wrapper);
+
+        if(this.configs.spinButtons){
+            buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+                .appendTo(this.input_wrapper);
+                
+            this.spindown_btn = new metaScore.Dom('<button/>', {'text': '-', 'data-action': 'spin-down'})
+                .addListener('mousedown', metaScore.Function.proxy(this.onSpinBtnMouseDown, this))
+                .addListener('mouseup', metaScore.Function.proxy(this.onSpinBtnMouseUp, this))
+                .addListener('mouseout', metaScore.Function.proxy(this.onSpinBtnMouseOut, this))
+                .appendTo(buttons);
+                
+            this.spinup_btn = new metaScore.Dom('<button/>', {'text': '+', 'data-action': 'spin-up'})
+                .addListener('mousedown', metaScore.Function.proxy(this.onSpinBtnMouseDown, this))
+                .addListener('mouseup', metaScore.Function.proxy(this.onSpinBtnMouseUp, this))
+                .addListener('mouseout', metaScore.Function.proxy(this.onSpinBtnMouseOut, this))
+                .appendTo(buttons);
+        }
+        
+        this.addClass(this.configs.spinDirection === 'vertical' ? 'vertical' : 'horizontal');
+
+        this.addListener('change', metaScore.Function.proxy(this.onChange, this));
+    };
+
+    /**
+     * The change event handler
+     * 
+     * @method onChange
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onChange = function(evt){
+        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+    };
+
+    /**
+     * The input event handler
+     * 
+     * @method onInput
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onInput = function(evt){
+        this.setValue(this.input.val());
+        
+        evt.stopPropagation();
+    };
+
+    /**
+     * The mousewheel event handler
+     * 
+     * @method onMouseWheel
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onMouseWheel = function(evt){
+        if(this.input.is(':focus')){
+            if(evt.wheelDelta > 0){
+                this.setValue(this.getValue() + this.configs.step);
+            }
+            else{
+                this.setValue(this.getValue() - this.configs.step);
+            }
+        
+            evt.preventDefault();
+        }
+    };
+
+    /**
+     * The keydown event handler
+     * 
+     * @method onKeyDown
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onKeyDown = function(evt){
+        switch(evt.keyCode){
+            case 38:
+                this.spinUp();
+                evt.preventDefault();
+                break;
+                
+            case 40:
+                this.spinDown();
+                evt.preventDefault();
+                break;
+        }
+    };
+
+    /**
+     * The spin button's mousedown event handler
+     * 
+     * @method onSpinBtnMouseDown
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onSpinBtnMouseDown = function(evt){
+        var fn;
+
+        switch(metaScore.Dom.data(evt.target, 'action')){
+            case 'spin-down':
+                fn = this.spinDown;
+                break;
+                
+            default:
+                fn = this.spinUp;
+        }
+        
+        fn();
+        
+        this.interval = setInterval(fn, this.configs.spinInterval);
+    };
+
+    /**
+     * The spin button's mouseup event handler
+     * 
+     * @method onSpinBtnMouseUp
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onSpinBtnMouseUp = function(evt){
+        clearInterval(this.interval);
+    };
+
+    /**
+     * The spin button's mouseout event handler
+     * 
+     * @method onSpinBtnMouseOut
+     * @private
+     * @param {Event} evt The event object
+     */
+    NumberField.prototype.onSpinBtnMouseOut = NumberField.prototype.onSpinBtnMouseUp;
+
+    /**
+     * Decrement the value by one step
+     * 
+     * @method spinDown
+     * @private
+     */
+    NumberField.prototype.spinDown = function(){
+        this.setValue(this.getValue() - this.configs.step);
+    };
+
+    /**
+     * Increment the value by one step
+     * 
+     * @method spinUp
+     * @private
+     */
+    NumberField.prototype.spinUp = function(){
+        this.setValue(this.getValue() + this.configs.step);
+    };
+
+    /**
+     * Set the field's value
+     * 
+     * @method setValue
+     * @param {Number} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    NumberField.prototype.setValue = function(value, supressEvent){
+        value = parseFloat(value);
+        
+        if(!isNaN(value)){
+            this.value = value;
+        }
+        else if(isNaN(this.value)){
+            this.value = 0;
+        }
+
+        if(this.configs.min !== null){
+            this.value = Math.max(this.value, this.configs.min);
+        }
+        if(this.configs.max !== null){
+            this.value = Math.min(this.value, this.configs.max);
+        }
+        
+        this.input.val(this.value);
+    
+        if(supressEvent !== true){
+            this.triggerEvent('change');
+        }
+
+        return this;
+    };
+
+    /**
+     * Set the minimum allowed value
+     * 
+     * @method setMin
+     * @param {Number} value The minimum allowed value
+     * @chainable
+     */
+    NumberField.prototype.setMin = function(value){
+        this.configs.min = value;
+
+        if(this.getValue() < value){
+            this.setValue(value);
+        }
+
+        return this;
+    };
+
+    /**
+     * Set the maximum allowed value
+     * 
+     * @method setMax
+     * @param {Number} value The maximum allowed value
+     * @chainable
+     */
+    NumberField.prototype.setMax = function(value){
+        this.configs.max = value;
+
+        if(this.getValue() > value){
+            this.setValue(value);
+        }
+
+        return this;
     };
 
     return NumberField;
@@ -8012,9 +8254,6 @@ metaScore.namespace('editor.field').Time = (function () {
 
             this.setValue(centiseconds_val + (seconds_val * 100) + (minutes_val * 6000) + (hours_val * 360000));
         }
-        else{
-            this.setValue(null);
-        }
 
         evt.stopPropagation();
     };
@@ -8130,14 +8369,14 @@ metaScore.namespace('editor.field').Time = (function () {
      * Set the minimum allowed value
      * 
      * @method setMin
-     * @param {Number} min The minimum allowed value
+     * @param {Number} value The minimum allowed value
      * @chainable
      */
-    TimeField.prototype.setMin = function(min){
-        this.configs.min = min;
+    TimeField.prototype.setMin = function(value){
+        this.configs.min = value;
 
-        if(this.getValue() < min){
-            this.setValue(min);
+        if(this.getValue() < value){
+            this.setValue(value);
         }
 
         return this;
@@ -8147,14 +8386,14 @@ metaScore.namespace('editor.field').Time = (function () {
      * Set the maximum allowed value
      * 
      * @method setMax
-     * @param {Number} max The maximum allowed value
+     * @param {Number} value The maximum allowed value
      * @chainable
      */
-    TimeField.prototype.setMax = function(max){
-        this.configs.max = max;
+    TimeField.prototype.setMax = function(value){
+        this.configs.max = value;
 
-        if(this.getValue() > max){
-            this.setValue(max);
+        if(this.getValue() > value){
+            this.setValue(value);
         }
 
         return this;
@@ -9050,42 +9289,42 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
         this.preview = new metaScore.Dom('<div/>', {'class': 'preview'})
             .appendTo(contents);
 
-        this.fields.tlw = new metaScore.editor.field.Number({min: 0})
+        this.fields.tlw = new metaScore.editor.field.Number({'min': 0})
             .addClass('tlw')
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .appendTo(this.preview);
 
-        this.fields.tlh = new metaScore.editor.field.Number({min: 0})
+        this.fields.tlh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('tlh')
             .appendTo(this.preview);
 
-        this.fields.trw = new metaScore.editor.field.Number({min: 0})
+        this.fields.trw = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('trw')
             .appendTo(this.preview);
 
-        this.fields.trh = new metaScore.editor.field.Number({min: 0})
+        this.fields.trh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('trh')
             .appendTo(this.preview);
 
-        this.fields.brw = new metaScore.editor.field.Number({min: 0})
+        this.fields.brw = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('brw')
             .appendTo(this.preview);
 
-        this.fields.brh = new metaScore.editor.field.Number({min: 0})
+        this.fields.brh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('brh')
             .appendTo(this.preview);
 
-        this.fields.blw = new metaScore.editor.field.Number({min: 0})
+        this.fields.blw = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('blw')
             .appendTo(this.preview);
 
-        this.fields.blh = new metaScore.editor.field.Number({min: 0})
+        this.fields.blh = new metaScore.editor.field.Number({'min': 0})
             .addListener('valuechange', metaScore.Function.proxy(this.onValueChange, this))
             .addClass('blh')
             .appendTo(this.preview);
@@ -9280,25 +9519,30 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
         ColorSelector.parent.prototype.setupUI.call(this);
 
         this.gradient = new metaScore.Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
+        
         this.gradient.canvas = new metaScore.Dom('<canvas/>', {'width': '255', 'height': '255'})
             .addListener('click', metaScore.Function.proxy(this.onGradientClick, this))
             .addListener('mousedown', metaScore.Function.proxy(this.onGradientMousedown, this))
             .addListener('mouseup', metaScore.Function.proxy(this.onGradientMouseup, this))
             .appendTo(this.gradient);
+            
         this.gradient.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.gradient);
 
         this.alpha = new metaScore.Dom('<div/>', {'class': 'alpha'}).appendTo(this.contents);
+        
         this.alpha.canvas = new metaScore.Dom('<canvas/>', {'width': '20', 'height': '255'})
             .addListener('click', metaScore.Function.proxy(this.onAlphaClick, this))
             .addListener('mousedown', metaScore.Function.proxy(this.onAlphaMousedown, this))
             .addListener('mouseup', metaScore.Function.proxy(this.onAlphaMouseup, this))
             .appendTo(this.alpha);
+            
         this.alpha.position = new metaScore.Dom('<div/>', {'class': 'position'}).appendTo(this.alpha);
 
         this.controls = new metaScore.Dom('<div/>', {'class': 'controls'}).appendTo(this.contents);
 
         this.controls.r = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'R', 'for': 'r'}))
             .append(this.controls.r)
@@ -9306,6 +9550,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.controls.g = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'g'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'G', 'for': 'g'}))
             .append(this.controls.g)
@@ -9313,6 +9558,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.controls.b = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'b'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'B', 'for': 'b'}))
             .append(this.controls.b)
@@ -9320,17 +9566,20 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
 
         this.controls.a = new metaScore.Dom('<input/>', {'type': 'number', 'min': '0', 'max': '1', 'step': '0.01', 'name': 'a'})
             .addListener('input', metaScore.Function.proxy(this.onControlInput, this));
+            
         new metaScore.Dom('<div/>', {'class': 'control-wrapper'})
             .append(new metaScore.Dom('<label/>', {'text': 'A', 'for': 'a'}))
             .append(this.controls.a)
             .appendTo(this.controls);
 
         this.controls.current = new metaScore.Dom('<canvas/>');
+        
         new metaScore.Dom('<div/>', {'class': 'canvas-wrapper current'})
             .append(this.controls.current)
             .appendTo(this.controls);
 
         this.controls.previous = new metaScore.Dom('<canvas/>');
+        
         new metaScore.Dom('<div/>', {'class': 'canvas-wrapper previous'})
             .append(this.controls.previous)
             .appendTo(this.controls);
@@ -10271,6 +10520,57 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
     };
 
     return Toolbar;
+
+})();
+/**
+ * @module Editor
+ */
+
+metaScore.namespace('editor.overlay').iFrame = (function () {
+
+
+    /**
+     * An iframe overlay
+     *
+     * @class iFrame
+     * @namespace editor.overlay
+     * @extends editor.Overlay
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.url=null] The iframe's url
+     */
+    function iFrame(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        iFrame.parent.call(this, this.configs);
+
+        this.addClass('iframe');
+    }
+
+    iFrame.defaults = {
+        'toolbar': true,
+        'url': null
+    };
+
+    metaScore.editor.Overlay.extend(iFrame);
+
+    /**
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    iFrame.prototype.setupUI = function(){
+        // call parent method
+        iFrame.parent.prototype.setupUI.call(this);
+
+        this.frame = new metaScore.Dom('<iframe/>', {'src': this.configs.url})
+            .appendTo(this.contents);
+    };
+
+    return iFrame;
 
 })();
     // attach the metaScore object to the global scope

@@ -43,7 +43,7 @@ metaScore.namespace('editor').History = (function(){
      * @extends Evented
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Integer} [configs.max_commands=30] The maximum number of commands to store
+     * @param {Integer} [configs.max_commands=30] The max number of commands to store
      */
     function History(configs) {
         this.configs = this.getConfigs(configs);

@@ -273,7 +273,58 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaLoadedMetadata = function(evt){
+        console.log('onMediaLoadedMetadata');
         this.getMedia().reset();
+    };
+
+    /**
+     * Media waiting event callback
+     *
+     * @method onMediaWaiting
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaWaiting = function(evt){
+        console.log('onMediaWaiting');
+        this.addClass('media-waiting');
+    };
+
+    /**
+     * Media seeking event callback
+     *
+     * @method onMediaSeeking
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaSeeking = function(evt){
+        console.log('onMediaSeeking');
+        this.addClass('media-waiting');
+    };
+
+    /**
+     * Media seeked event callback
+     *
+     * @method onMediaSeeked
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaSeeked = function(evt){
+        console.log('onMediaSeeked');
+        this.removeClass('media-waiting');
+    };
+
+    /**
+     * Media playing event callback
+     *
+     * @method onMediaPlaying
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaPlaying = function(evt){
+        console.log('onMediaPlaying');
+        this.removeClass('media-waiting');
+        
+        this.controller.addClass('playing');
     };
 
     /**
@@ -284,6 +335,9 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPlay = function(evt){
+        console.log('onMediaPlay');
+        this.removeClass('media-waiting');
+        
         this.controller.addClass('playing');
     };
 
@@ -295,6 +349,9 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPause = function(evt){
+        console.log('onMediaPause');
+        this.removeClass('media-waiting');
+        
         this.controller.removeClass('playing');
     };
 
@@ -306,9 +363,78 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaTimeUpdate = function(evt){
+        console.log('onMediaTimeUpdate');
         var currentTime = evt.detail.media.getTime();
 
         this.controller.updateTime(currentTime);
+    };
+
+    /**
+     * Media suspend event callback
+     *
+     * @method onMediaSuspend
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaSuspend = function(evt){
+        console.log('onMediaSuspend');
+        this.removeClass('media-waiting');
+    };
+
+    /**
+     * Media suspend event callback
+     *
+     * @method onMediaStalled
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaStalled = function(evt){
+        console.log('onMediaStalled');
+        this.removeClass('media-waiting');
+    };
+
+    /**
+     * Media error event callback
+     *
+     * @method onMediaError
+     * @private
+     * @param {Event} evt The event object
+     */
+    Player.prototype.onMediaError = function(evt){
+        var error = evt.target.error,
+            text;
+        
+        this.removeClass('media-waiting');
+        
+        switch(error.code) {
+            case error.MEDIA_ERR_ABORTED:
+                text = metaScore.Locale.t('player.onMediaError.Aborted.msg', 'You aborted the media playback.');
+                break;
+                
+            case error.MEDIA_ERR_NETWORK:
+                text = metaScore.Locale.t('player.onMediaError.Network.msg', 'A network error caused the media download to fail.');
+                break;
+                
+            case error.MEDIA_ERR_DECODE:
+                text = metaScore.Locale.t('player.onMediaError.Decode.msg', 'The media playback was aborted due to a format problem.');
+                break;
+                
+            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                text = metaScore.Locale.t('player.onMediaError.NotSupported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
+                break;
+                
+            default:
+                text = metaScore.Locale.t('player.onMediaError.Default.msg', 'An unknown error occurred.');
+                break;
+        }
+        
+        new metaScore.editor.overlay.Alert({
+            'text': text,
+            'buttons': {
+                'ok': metaScore.Locale.t('editor.onMediaError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
     };
 
     /**
@@ -603,9 +729,16 @@ metaScore.Player = (function(){
     Player.prototype.addMedia = function(configs, supressEvent){
         var media = new metaScore.player.component.Media(configs)
             .addListener('loadedmetadata', metaScore.Function.proxy(this.onMediaLoadedMetadata, this))
+            .addListener('waiting', metaScore.Function.proxy(this.onMediaWaiting, this))
+            .addListener('seeking', metaScore.Function.proxy(this.onMediaSeeking, this))
+            .addListener('seeked', metaScore.Function.proxy(this.onMediaSeeked, this))
+            .addListener('playing', metaScore.Function.proxy(this.onMediaPlaying, this))
             .addListener('play', metaScore.Function.proxy(this.onMediaPlay, this))
             .addListener('pause', metaScore.Function.proxy(this.onMediaPause, this))
             .addListener('timeupdate', metaScore.Function.proxy(this.onMediaTimeUpdate, this))
+            .addListener('suspend', metaScore.Function.proxy(this.onMediaSuspend, this))
+            .addListener('stalled', metaScore.Function.proxy(this.onMediaStalled, this))
+            .addListener('error', metaScore.Function.proxy(this.onMediaError, this))
             .appendTo(this);
 
         if(supressEvent !== true){

@@ -147,6 +147,59 @@ metaScore.namespace('player.component').Media = (function () {
                     this.css('height', value +'px');
                 }
             },
+            'z-index': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('z-index', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('z-index', value);
+                }
+            },
+            'background-color': {
+                'type': 'Color',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.background-color', 'Background color')
+                },
+                'getter': function(skipDefault){
+                    return this.css('background-color', undefined, skipDefault);
+                },
+                'setter': function(value){
+                    var color = metaScore.Color.parse(value);
+                    this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                }
+            },
+            'border-width': {
+                'type': 'Number',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.border-width', 'Border width'),
+                    'min': 0
+                },
+                'getter': function(skipDefault){
+                    var value = this.css('border-width', undefined, skipDefault);
+                    return value !== null ? parseInt(value, 10) : null;
+                },
+                'setter': function(value){
+                    this.css('border-width', value +'px');
+                }
+            },
+            'border-color': {
+                'type': 'Color',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.border-color', 'Border color')
+                },
+                'getter': function(skipDefault){
+                    return this.css('border-color', undefined, skipDefault);
+                },
+                'setter': function(value){
+                    var color = metaScore.Color.parse(value);
+                    this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                }
+            },
             'border-radius': {
                 'type': 'BorderRadius',
                 'configs': {
@@ -394,6 +447,35 @@ metaScore.namespace('player.component').Media = (function () {
         }
 
         return this._draggable;
+
+    };
+
+    /**
+     * Set/Unset the resizable behaviour
+     *
+     * @method setDraggable
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {Resizable} The resizable behaviour
+     */
+    Media.prototype.setResizable = function(resizable){
+
+        resizable = resizable !== false;
+
+        if(this.getProperty('locked') && resizable){
+            return false;
+        }
+
+        if(resizable && !this._resizable){
+            this._resizable = new metaScore.Resizable({
+                'target': this
+            });
+        }
+        else if(!resizable && this._resizable){
+            this._resizable.destroy();
+            delete this._resizable;
+        }
+
+        return this._resizable;
 
     };
 

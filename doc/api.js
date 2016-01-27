@@ -44,6 +44,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "editor.overlay.GuideSelector",
         "editor.overlay.LoadMask",
         "editor.overlay.Toolbar",
+        "editor.overlay.iFrame",
         "editor.panel.Block",
         "editor.panel.Element",
         "editor.panel.Page",

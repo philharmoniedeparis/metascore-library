@@ -29,6 +29,8 @@ body {
   min-width: 50px;
   min-height: 50px;
   overflow: hidden;
+  background-color: #000000;
+  border: 0px solid #000000;
   -webkit-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
@@ -37,7 +39,6 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  background-color: #000000;
 }
 .metaScore-component.controller {
   width: 90px;
@@ -106,7 +107,6 @@ body {
   width: 200px;
   height: 200px;
   overflow: hidden;
-  z-index: 99999;
   color: #424242;
   background-repeat: no-repeat;
   background-position: left top;
@@ -116,6 +116,7 @@ body {
   -webkit-border-radius: 10px;
   border-radius: 10px;
   background-clip: padding-box;
+  isolation: isolate;
 }
 .metaScore-component.block button {
   padding: 0;
@@ -129,7 +130,7 @@ body {
   height: 20px;
   background-color: rgba(214, 214, 214, 0.6);
   text-align: right;
-  z-index: 99998;
+  z-index: 2147483647;
 }
 .metaScore-component.block .pager .count {
   display: inline-block;
@@ -354,7 +355,7 @@ body {
 .in-editor.editing .metaScore-component.media.selected,
 .in-editor.editing .metaScore-component.controller.selected,
 .in-editor.editing .metaScore-component.block.selected {
-  z-index: 100000;
+  z-index: 2147483647 !important;
   -webkit-box-shadow: #33312f 0px 0px 4px 2px;
   box-shadow: #33312f 0px 0px 4px 2px;
 }
