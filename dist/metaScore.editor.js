@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "372fbc";
+        return "2c21c1";
     },
 
     /**
@@ -7672,13 +7672,12 @@ metaScore.namespace('editor.field').Number = (function () {
      * @param {Event} evt The event object
      */
     NumberField.prototype.onMouseWheel = function(evt){
+        var delta;
+        
         if(this.input.is(':focus')){
-            if(evt.wheelDelta > 0){
-                this.setValue(this.getValue() + this.configs.step);
-            }
-            else{
-                this.setValue(this.getValue() - this.configs.step);
-            }
+            delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
+            
+            this.setValue(this.getValue() + (this.configs.step * delta));
         
             evt.preventDefault();
         }

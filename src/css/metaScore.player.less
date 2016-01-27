@@ -3,486 +3,486 @@
 
 html,
 body{
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 body{
-  margin: 0;
-  font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+    margin: 0;
+    font: normal 11px Verdana, Arial, Helvetica, sans-serif;
 }
 
 .metaScore-player{
-  width: 100%;
-  height: 100%;
-  
-  &:focus{
-    outline: none;
-  }
+    width: 100%;
+    height: 100%;
+    
+    &:focus{
+        outline: none;
+    }
 }
 
 .metaScore-component{
-  position: absolute;
-  top: 0;
-  left: 0;
-  
-  &:focus{
-    outline: none;
-  }
-
-  &.media{
-    &.audio{
-      display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    &:focus{
+        outline: none;
     }
 
-    &.video{
-      min-width: 50px;
-      min-height: 50px;
-      overflow: hidden;
-      background-color: rgb(0, 0, 0);
-      border: 0px solid rgb(0, 0, 0);
-      .border-radius(10px);
+    &.media{
+        &.audio{
+            display: none;
+        }
 
-      video{
-        display: block;
+        &.video{
+            min-width: 50px;
+            min-height: 50px;
+            overflow: hidden;
+            background-color: rgb(0, 0, 0);
+            border: 0px solid rgb(0, 0, 0);
+            .border-radius(10px);
+
+            video{
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    &.controller{
+        width: 90px;
+        height: 100px;
+        overflow: hidden;
+        color: rgb(221,221,221);
+        background-color: rgb(204,204,204);
+        font-weight: bold;
+        font-size: 11px;
+        .border-radius(10px);
+        
+        &:after{
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 5px;
+            width: 100%;
+            height: 17px;
+            background-image: url('img/player/logo.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+            .opacity(0.5);
+        }
+
+        .timer{
+            text-align: center;
+            line-height: 30px;
+            background-color: rgb(0,0,254);
+            cursor: default;
+        }
+
+        .buttons{
+            position: relative;
+
+            button{
+                position: absolute;
+                border: none;
+                outline: none;
+                background-color: transparent;
+                background-image: url('img/player/controller-buttons.png');
+                background-repeat: no-repeat;
+
+                &[data-action="rewind"]{
+                    top: 22px;
+                    left: 10px;
+                    width: 10px;
+                    height: 11px;
+                    background-position: -16px -17px;
+                }
+
+                &[data-action="play"]{
+                    top: 5px;
+                    left: 23px;
+                    width: 43px;
+                    height: 43px;
+                    background-position: -47px 0;
+                }
+            }
+        }
+
+        &.playing{
+            .buttons{
+                button{
+                    &[data-action="play"]{
+                        background-position: -94px 0;
+                    }
+                }
+            }
+        }
+    }
+
+    &.block{
+        min-width: 50px;
+        min-height: 50px;
+        width: 200px;
+        height: 200px;
+        overflow: hidden;
+        color: rgb(66, 66, 66);
+        background-repeat: no-repeat;
+        background-position: left top;
+        background-color: rgb(238, 238, 238);
+        border: 1px solid rgb(204, 204, 204);
+        font: normal 11px/normal Verdana, Arial, Helvetica, sans-serif;
+        .border-radius(10px);
+        isolation: isolate;
+
+        button{
+            padding: 0;
+        }
+
+        .pager{
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: rgba(214, 214, 214, 0.6);
+            text-align: right;
+            z-index: 2147483647;
+
+            .count{
+                display: inline-block;
+                margin-right: 10px;
+                color: rgb(99, 99, 99);
+                font-size: 10px;
+                font-weight: bold;
+                vertical-align: middle;
+                cursor: default;
+            }
+
+            .buttons{
+                display: inline-block;
+                margin-right:    2px;
+                vertical-align: middle;
+
+                .button{
+                    display: inline-block;
+                    width: 17px;
+                    height: 17px;
+                    margin: 1px 2px;
+                    background-color: rgb(255, 255, 255);
+                    background-image: url('img/player/pager-buttons.png');
+                    background-repeat: no-repeat;
+                    .border-radius(10px);
+                    cursor: pointer;
+
+                    &.inactive{
+                        cursor: default;
+                    }
+
+                    &[data-action="first"]{
+                        background-position: 4px 4px;
+
+                        &.inactive{
+                            background-position: 4px -14px;
+                        }
+                    }
+                    &[data-action="previous"]{
+                        background-position: -14px 4px;
+
+                        &.inactive{
+                            background-position: -14px -14px;
+                        }
+                    }
+                    &[data-action="next"]{
+                        background-position: -33px 4px;
+
+                        &.inactive{
+                            background-position: -33px -14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &:hover{
+        .pager{
+            display: block;
+        }
+
+        &[data-page-count="0"],
+        &[data-page-count="1"]{
+            .pager{
+                display: none;
+            }
+        }
+    }
+
+    &.page{
+        display: none;
         width: 100%;
         height: 100%;
-      }
-    }
-  }
-
-  &.controller{
-    width: 90px;
-    height: 100px;
-    overflow: hidden;
-    color: rgb(221,221,221);
-    background-color: rgb(204,204,204);
-    font-weight: bold;
-    font-size: 11px;
-    .border-radius(10px);
-    
-    &:after{
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 5px;
-      width: 100%;
-      height: 17px;
-      background-image: url('img/player/logo.png');
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: center center;
-      .opacity(0.5);
-    }
-
-    .timer{
-      text-align: center;
-      line-height: 30px;
-      background-color: rgb(0,0,254);
-      cursor: default;
-    }
-
-    .buttons{
-      position: relative;
-
-      button{
-        position: absolute;
-        border: none;
-        outline: none;
-        background-color: transparent;
-        background-image: url('img/player/controller-buttons.png');
-        background-repeat: no-repeat;
-
-        &[data-action="rewind"]{
-          top: 22px;
-          left: 10px;
-          width: 10px;
-          height: 11px;
-          background-position: -16px -17px;
-        }
-
-        &[data-action="play"]{
-          top: 5px;
-          left: 23px;
-          width: 43px;
-          height: 43px;
-          background-position: -47px 0;
-        }
-      }
-    }
-
-    &.playing{
-      .buttons{
-        button{
-          &[data-action="play"]{
-            background-position: -94px 0;
-          }
-        }
-      }
-    }
-  }
-
-  &.block{
-    min-width: 50px;
-    min-height: 50px;
-    width: 200px;
-    height: 200px;
-    overflow: hidden;
-    color: rgb(66, 66, 66);
-    background-repeat: no-repeat;
-    background-position: left top;
-    background-color: rgb(238, 238, 238);
-    border: 1px solid rgb(204, 204, 204);
-    font: normal 11px/normal Verdana, Arial, Helvetica, sans-serif;
-    .border-radius(10px);
-    isolation: isolate;
-
-    button{
-      padding: 0;
-    }
-
-    .pager{
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 20px;
-      background-color: rgba(214, 214, 214, 0.6);
-      text-align: right;
-      z-index: 2147483647;
-
-      .count{
-        display: inline-block;
-        margin-right: 10px;
-        color: rgb(99, 99, 99);
-        font-size: 10px;
-        font-weight: bold;
-        vertical-align: middle;
-        cursor: default;
-      }
-
-      .buttons{
-        display: inline-block;
-        margin-right:  2px;
-        vertical-align: middle;
-
-        .button{
-          display: inline-block;
-          width: 17px;
-          height: 17px;
-          margin: 1px 2px;
-          background-color: rgb(255, 255, 255);
-          background-image: url('img/player/pager-buttons.png');
-          background-repeat: no-repeat;
-          .border-radius(10px);
-          cursor: pointer;
-
-          &.inactive{
-            cursor: default;
-          }
-
-          &[data-action="first"]{
-            background-position: 4px 4px;
-
-            &.inactive{
-              background-position: 4px -14px;
-            }
-          }
-          &[data-action="previous"]{
-            background-position: -14px 4px;
-
-            &.inactive{
-              background-position: -14px -14px;
-            }
-          }
-          &[data-action="next"]{
-            background-position: -33px 4px;
-
-            &.inactive{
-              background-position: -33px -14px;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  &:hover{
-    .pager{
-      display: block;
-    }
-
-    &[data-page-count="0"],
-    &[data-page-count="1"]{
-      .pager{
-        display: none;
-      }
-    }
-  }
-
-  &.page{
-    display: none;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-repeat: no-repeat;
-    background-position: left top;
-
-    &.active{
-      display: block;
-    }
-  }
-
-  &.element{
-    display: none;
-    width: 50px;
-    height: 50px;
-    min-width: 10px;
-    min-height: 10px;
-
-    .contents{
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-repeat: no-repeat;
-      background-position: left top;
-      border: 0 solid rgb(0, 0, 0);
-      .box-sizing(border-box);
-    }
-
-    &:not([data-r-index]),
-    &[data-r-index="0"]{
-      display: block;
-    
-      &:not([data-start-time]),
-      &.active{      
-        .contents{
-          display: block;
-        }
-      }
-    }
-
-    &[data-type="Cursor"]{
-      z-index: 9999;
-
-      .cursor{
-        position: absolute;
-        background-color: rgb(0, 0, 0);
-      }
-
-      &:not([data-direction]),
-      &[data-direction="right"]{
-        .cursor{
-          width: 1px;
-          height: 100% !important;
-          top: initial !important;
-          right: initial !important;
-          bottom: initial !important;
-          left: 0;
-        }
-      }
-
-      &[data-direction="left"]{
-        .cursor{
-          width: 1px;
-          height: 100% !important;
-          top: initial !important;
-          right: 0;
-          bottom: initial !important;
-          left: initial !important;
-        }
-      }
-
-      &[data-direction="bottom"]{
-        .cursor{
-          width: 100% !important;
-          height: 1px;
-          top: 0;
-          right: initial !important;
-          bottom: initial !important;
-          left: initial !important;
-        }
-      }
-
-      &[data-direction="top"]{
-        .cursor{
-          width: 100% !important;
-          height: 1px;
-          top: initial !important;
-          right: initial !important;
-          bottom: 0;
-          left: initial !important;
-        }
-      }
-    }
-    &[data-type="Image"]{
-
-    }
-    &[data-type="Text"]{
-      .contents{
         overflow: auto;
+        background-repeat: no-repeat;
+        background-position: left top;
 
-        .text{
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
+        &.active{
+            display: block;
         }
-      }
     }
-  }
+
+    &.element{
+        display: none;
+        width: 50px;
+        height: 50px;
+        min-width: 10px;
+        min-height: 10px;
+
+        .contents{
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-repeat: no-repeat;
+            background-position: left top;
+            border: 0 solid rgb(0, 0, 0);
+            .box-sizing(border-box);
+        }
+
+        &:not([data-r-index]),
+        &[data-r-index="0"]{
+            display: block;
+        
+            &:not([data-start-time]),
+            &.active{            
+                .contents{
+                    display: block;
+                }
+            }
+        }
+
+        &[data-type="Cursor"]{
+            z-index: 9999;
+
+            .cursor{
+                position: absolute;
+                background-color: rgb(0, 0, 0);
+            }
+
+            &:not([data-direction]),
+            &[data-direction="right"]{
+                .cursor{
+                    width: 1px;
+                    height: 100% !important;
+                    top: initial !important;
+                    right: initial !important;
+                    bottom: initial !important;
+                    left: 0;
+                }
+            }
+
+            &[data-direction="left"]{
+                .cursor{
+                    width: 1px;
+                    height: 100% !important;
+                    top: initial !important;
+                    right: 0;
+                    bottom: initial !important;
+                    left: initial !important;
+                }
+            }
+
+            &[data-direction="bottom"]{
+                .cursor{
+                    width: 100% !important;
+                    height: 1px;
+                    top: 0;
+                    right: initial !important;
+                    bottom: initial !important;
+                    left: initial !important;
+                }
+            }
+
+            &[data-direction="top"]{
+                .cursor{
+                    width: 100% !important;
+                    height: 1px;
+                    top: initial !important;
+                    right: initial !important;
+                    bottom: 0;
+                    left: initial !important;
+                }
+            }
+        }
+        &[data-type="Image"]{
+
+        }
+        &[data-type="Text"]{
+            .contents{
+                overflow: auto;
+
+                .text{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+    }
 }
 
 /*
 * Special styles when embedded in editor
 */
 .in-editor{
-  margin: 0;
+    margin: 0;
 
-  .draggable{
-    .drag-handle{
-      cursor: move;
+    .draggable{
+        .drag-handle{
+            cursor: move;
+        }
     }
-  }
 
-  .resizable{
-    .resize-handle{
-      position: absolute;
-      display: none;
-      width: 10px;
-      height: 10px;
-      z-index: 99997;
-
-      &[data-direction="top"]{
-        top: 0px;
-        left: 50%;
-        margin-left: -5px;
-        cursor: n-resize;
-      }
-      &[data-direction="right"]{
-        right: 0px;
-        top: 50%;
-        margin-top: -5px;
-        cursor: e-resize;
-      }
-      &[data-direction="bottom"]{
-        bottom: 0px;
-        left: 50%;
-        margin-left: -5px;
-        cursor: s-resize;
-      }
-      &[data-direction="left"]{
-        left: px;
-        top: 50%;
-        margin-top: -5px;
-        cursor: w-resize;
-      }
-
-      &[data-direction="top-right"]{
-        top: 0px;
-        right: 0px;
-        cursor: ne-resize;
-      }
-      &[data-direction="top-left"]{
-        top: 0px;
-        left: 0px;
-        cursor: nw-resize;
-      }
-      &[data-direction="bottom-left"]{
-        bottom: 0px;
-        left: 0px;
-        cursor: sw-resize;
-      }
-      &[data-direction="bottom-right"]{
-        bottom: 0px;
-        right: 0px;
-        cursor: se-resize;
-      }
-    }
-  }
-
-  .metaScore-component{
-    &.element{
-      &[data-type="Cursor"]{
-        outline-color: @cursor-outline;
-      }
-
-      &[data-type="Image"]{
-        outline-color: @image-outline;
-      }
-
-      &[data-type="Text"]{
-        outline-color: @text-outline;
-      }
-    }
-  }
-
-  &.editing{
     .resizable{
-      .resize-handle{
-        display: block;
-      }
+        .resize-handle{
+            position: absolute;
+            display: none;
+            width: 10px;
+            height: 10px;
+            z-index: 99997;
+
+            &[data-direction="top"]{
+                top: 0px;
+                left: 50%;
+                margin-left: -5px;
+                cursor: n-resize;
+            }
+            &[data-direction="right"]{
+                right: 0px;
+                top: 50%;
+                margin-top: -5px;
+                cursor: e-resize;
+            }
+            &[data-direction="bottom"]{
+                bottom: 0px;
+                left: 50%;
+                margin-left: -5px;
+                cursor: s-resize;
+            }
+            &[data-direction="left"]{
+                left: px;
+                top: 50%;
+                margin-top: -5px;
+                cursor: w-resize;
+            }
+
+            &[data-direction="top-right"]{
+                top: 0px;
+                right: 0px;
+                cursor: ne-resize;
+            }
+            &[data-direction="top-left"]{
+                top: 0px;
+                left: 0px;
+                cursor: nw-resize;
+            }
+            &[data-direction="bottom-left"]{
+                bottom: 0px;
+                left: 0px;
+                cursor: sw-resize;
+            }
+            &[data-direction="bottom-right"]{
+                bottom: 0px;
+                right: 0px;
+                cursor: se-resize;
+            }
+        }
     }
 
     .metaScore-component{
-      &.media,
-      &.controller,
-      &.block{
-        &.selected{
-          z-index: 2147483647 !important;
-          .box-shadow(@block-outline 0px 0px 4px 2px);
-        }
-
-        &:hover,
-        &.dragging{
-          .pager{
-            display: block !important;
-          }
-        }
-      }
-
-      &.element{
-        outline-width: 1px;
-        outline-style: dashed;
-
-        &.selected{
-          display: block;
-
-          &[data-type="Cursor"]{
-            .box-shadow(@cursor-outline 0px 0px 4px 1px);
-          }
-
-          &[data-type="Image"]{
-            .box-shadow(@image-outline 0px 0px 4px 1px);
-          }
-
-          &[data-type="Text"]{
-            .box-shadow(@text-outline 0px 0px 4px 1px);
-            
-            .contents{
-              &[contenteditable]{
-                outline-color: @text-outline;
-                outline-width: 2px;
-                outline-style: solid;
-              }
+        &.element{
+            &[data-type="Cursor"]{
+                outline-color: @cursor-outline;
             }
-          }
+
+            &[data-type="Image"]{
+                outline-color: @image-outline;
+            }
+
+            &[data-type="Text"]{
+                outline-color: @text-outline;
+            }
         }
-      }
     }
-  
-    &.show-contents{
-      .metaScore-component.element[data-r-index="0"]{
-        .contents{
-          display: block;
+
+    &.editing{
+        .resizable{
+            .resize-handle{
+                display: block;
+            }
         }
-      }
+
+        .metaScore-component{
+            &.media,
+            &.controller,
+            &.block{
+                &.selected{
+                    z-index: 2147483647 !important;
+                    .box-shadow(@block-outline 0px 0px 4px 2px);
+                }
+
+                &:hover,
+                &.dragging{
+                    .pager{
+                        display: block !important;
+                    }
+                }
+            }
+
+            &.element{
+                outline-width: 1px;
+                outline-style: dashed;
+
+                &.selected{
+                    display: block;
+
+                    &[data-type="Cursor"]{
+                        .box-shadow(@cursor-outline 0px 0px 4px 1px);
+                    }
+
+                    &[data-type="Image"]{
+                        .box-shadow(@image-outline 0px 0px 4px 1px);
+                    }
+
+                    &[data-type="Text"]{
+                        .box-shadow(@text-outline 0px 0px 4px 1px);
+                        
+                        .contents{
+                            &[contenteditable]{
+                                outline-color: @text-outline;
+                                outline-width: 2px;
+                                outline-style: solid;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+        &.show-contents{
+            .metaScore-component.element[data-r-index="0"]{
+                .contents{
+                    display: block;
+                }
+            }
+        }
     }
-  }
 }

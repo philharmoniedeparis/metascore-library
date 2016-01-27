@@ -1,1258 +1,1277 @@
 @import "../../vendor/prefixer.less";
 
 .keyframes(pulsate; {
-  from{
-    .box-shadow(none);
-  }
-  
-  to{
-    .box-shadow(inset 0px 0px 10px 2px rgba(0, 0, 254, 1));
-  }
+    from{
+        .box-shadow(none);
+    }
+    
+    to{
+        .box-shadow(inset 0px 0px 10px 2px rgba(0, 0, 254, 1));
+    }
 });
 
 .metaScore-editor{
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font: normal 12px/normal Verdana, Geneva, sans-serif;
-
-  .clearfix::after{
-    visibility: hidden;
-    display: block;
-    font-size: 0;
-    content: " ";
-    clear: both;
-    height: 0;
-  }
-
-  div{
-    -moz-user-select: text;
-    -khtml-user-select: text;
-    -webkit-user-select: text;
-    user-select: text;
-  }
-
-  table{
+    width: 100%;
+    height: 100%;
     margin: 0;
-    border: none;
-    border-collapse: collapse;
-    border-spacing: 0;
+    padding: 0;
+    font: normal 12px/normal Verdana, Geneva, sans-serif;
 
-    td, th{
-      padding: 0;
-      border: 0;
-    }
-  }
-
-  label{
-    display: inline-block;
-    font-weight: normal;
-  }
-  
-  .field{
-    &.required{
-      label::after{
-        content: '*';
-        color: red;
-      }
-    }
-    
-    .description{
-      .opacity(0.5);
-    }
-  }
-
-  button{
-    border: none;
-    outline: none;
-    background-color: transparent;
-    background-position: center center;
-    background-repeat: no-repeat;
-    cursor: pointer;
-
-    &:hover{
-      .opacity(0.75);
-    }
-    &:active{
-      .opacity(0.5);
-    }
-    &.disabled{
-      .opacity(0.25);
-      cursor: default;
+    .clearfix::after{
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
     }
 
-    span{
-      pointer-events: none;
+    div{
+        -moz-user-select: text;
+        -khtml-user-select: text;
+        -webkit-user-select: text;
+        user-select: text;
     }
-  }
 
-  .draggable{
-    .drag-handle{
-      cursor: move;
-    }
-  }
+    table{
+        margin: 0;
+        border: none;
+        border-collapse: collapse;
+        border-spacing: 0;
 
-  .field{  
-    &.booleanfield{
-      &.readonly{
-        .input-wrapper{
-          pointer-events: none;
-        }
-      }
-    }
-    
-    &.numberfield{
-        .input-wrapper{
-            position: relative;
-            
-            .buttons{
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                width: 2em;
-                display: flex;
-                flex-direction: column-reverse;
-                justify-content: center;
-                
-                button{
-                    padding: 0;
-                    overflow: hidden;
-                    text-indent: 999px;
-                    background-color: rgb(238, 238, 238);
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    background-size: 40%;
-                    
-                    &[data-action="spin-down"]{
-                        background-image: url('img/editor/field/number/spinner-arrow-down.png');
-                    }
-                    
-                    &[data-action="spin-up"]{
-                        background-image: url('img/editor/field/number/spinner-arrow-up.png');
-                    }
-                }
-            }
-        }
-            
-        &.vertical{
-            .input-wrapper{
-                .buttons{
-                    flex-direction: row;
-                    
-                    button{     
-                        background-size: 50%; 
-                        
-                        &[data-action="spin-down"]{
-                            background-image: url('img/editor/field/number/spinner-arrow-left.png');
-                        }
-                        
-                        &[data-action="spin-up"]{
-                            background-image: url('img/editor/field/number/spinner-arrow-right.png');
-                        }
-                    }
-                }
-            }
+        td, th{
+            padding: 0;
+            border: 0;
         }
     }
-    
-    &.timefield{
-      .input-wrapper{
+
+    label{
         display: inline-block;
-        vertical-align: top;
-
-        input[type="checkbox"]{
-          float: left;
-        }
-
-        input[type="number"]{
-          width: 1em !important;
-          height: 100%;
-          border: none;
-          background: none;
-          text-align: right;
-          font-family: Tahoma, Geneva, sans-serif;
-
-          -moz-appearance: textfield;
-          &::-webkit-outer-spin-button,
-          &::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-          }
-        }
-
-        .separator{
-          font-size: 0.8em;
-        }
-
-        .buttons{
-          float: right;
-          height: 100%;
-
-          button{
-            display: inline-block;
-            width: 15px;
-            height: 100%;
-            margin-left: 5px;
-            overflow: hidden;
-            text-indent: 999px;
-
-            &[data-action="in"]{
-              background: transparent url('img/editor/field/time/in.png') no-repeat center center;
-            }
-
-            &[data-action="out"]{
-              background: transparent url('img/editor/field/time/out.png') no-repeat center center;
-            }
-          }
-        }
-      }
-    }
-
-    &.colorfield{
-      .input-wrapper{
-        background: url('img/editor/transparency-grid.png') repeat left top;
-
-        input{
-          background-image: url('img/editor/field/color/picker.png');
-          background-repeat: no-repeat;
-          background-position: left center;
-          background-size: contain;
-
-          &:hover{
-            opacity: 1;
-          }
-        }
-      }
-
-      &.disabled{
-        .input-wrapper{
-          button{
-            cursor: default;
-          }
-        }
-      }
-    }
-
-    &.borderradiusrfield,
-    &.imagefield,
-    &.colorfield{
-      .input-wrapper{
-        position: relative;
-
-        input{
-          width: 100%;
-          padding-right: 17px !important;
-          .box-sizing(border-box);
-        }
-
-        button[data-action="clear"]{
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 17px;
-          min-width: 0;
-          height: 100%;
-          margin: 0;
-          background: url('img/editor/field/clear.png') no-repeat center center;
-          overflow: hidden;
-          text-indent: 999px;
-        }
-      }
+        font-weight: normal;
     }
     
-    &.imagefield{
-      .input-wrapper{
-        input{
-          direction: rtl;
+    .field{
+        &.required{
+            label::after{
+                content: '*';
+                color: red;
+            }
+        }
         
-          &::-webkit-input-placeholder {
-            direction: ltr;
-          }
-          &::-moz-placeholder {/* firefox 19+ */
-            direction: ltr;
-          }
-          &:-ms-input-placeholder {/* ie */
-            direction: ltr;
-          }
-          &:-moz-placeholder{
-            direction: ltr;
-          }
+        .description{
+            .opacity(0.5);
         }
-      }
-    }
-    
-    &.readonly{
-      .input-wrapper{
-        .opacity(0.75);
-        cursor: default;
-      }
-    }
-    
-    &.disabled{
-      .opacity(0.25);
-      cursor: default;
-    }
-  }
-
-  .ruler{
-    position: absolute;
-
-    &.horizontal{
-      left: 0;
-      right: 0;
-      top: 42px;
-      height: 19px;
-      background: url('img/editor/ruler-h.png') no-repeat top left;
-    }
-
-    &.vertical{
-      left: 0;
-      top: 42px;
-      bottom: 0;
-      width: 19px;
-      background: url('img/editor/ruler-v.png') no-repeat top left;
-    }
-  }
-
-  .workspace{
-    position: absolute;
-    left: 19px;
-    right: 285px;
-    top: 61px;
-    bottom: 0;
-    min-width: 700px;
-    overflow: hidden;
-    background: #fff;
-
-    .grid{
-      position: absolute;
-      display: none;
-      width: 100%;
-      height: 100%;
-      z-index: 999;
-      pointer-events: none;
-      background: url('img/editor/grid.png');
-      background-size: 10px 10px;
-      .opacity(0.2);
-    }
-
-    .version{
-      position: absolute;
-      bottom: 5px;
-      right: 25px;
-      z-index: 999;
-      font-size: 0.75em;
-      opacity: 0.75;
-
-      -moz-user-select: initial;
-      -khtml-user-select: initial;
-      -webkit-user-select: initial;
-      user-select: initial;
-    }
-    
-    .player-frame{
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      border: none;
-    }
-  }
-  
-  &.sidebar-resizing{
-    .workspace{
-      pointer-events: none;
-    }
-  }
-  
-  &:not(.editing),
-  &.sidebar-hidden{
-    .workspace{
-      right: 9px !important;
-    }
-    
-    .sidebar-wrapper{
-      width: 9px !important;
-      min-width: 9px !important;
-      max-width: 9px !important;
-    }
-  }
-
-  .main-menu{
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    min-width: 900px;
-    height: 40px;
-    padding: 0 20px;
-    align-content: space-between;
-    align-items: center;
-    z-index: 9999;
-    .gradient(#DADADA, #DADADA, #C8C8C8);
-    border-bottom: 2px solid #B2B2B2;
-    
-    > .separator{
-      flex: 1;
-    }
-
-    .logo-philharmonie{
-      width: 102px;
-      height: 40px;
-      flex: 0 0 auto;
-      vertical-align: middle;
-      background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
     }
 
     button{
-      width: 20px;
-      height: 20px;
-      flex: 0 0 auto;
-      margin: 0 10px;
-      vertical-align: middle;
-
-      &[data-action="new"]{
-        background-image: url('img/editor/main-menu/new.png');
-      }
-      &[data-action="open"]{
-        background-image: url('img/editor/main-menu/open.png');
-      }
-      &[data-action="edit"]{
-        background-image: url('img/editor/main-menu/edit.png');
-      }
-      &[data-action="save-draft"]{
-        background-image: url('img/editor/main-menu/save-draft.png');
-      }
-      &[data-action="save-copy"]{
-        background-image: url('img/editor/main-menu/save-copy.png');
-      }
-      &[data-action="publish"]{
-        background-image: url('img/editor/main-menu/publish.png');
-      }
-      &[data-action="delete"]{
-        margin-right: 50px;
-        background-image: url('img/editor/main-menu/delete.png');
-      }
-      &[data-action="download"]{
-        margin-right: 50px;
-        background-image: url('img/editor/main-menu/download.png');
-      }
-      &[data-action="revert"]{
-        margin-left: 50px;
-        background-image: url('img/editor/main-menu/revert.png');
-      }
-      &[data-action="undo"]{
-        background-image: url('img/editor/main-menu/undo.png');
-      }
-      &[data-action="redo"]{
-        margin-right: 50px;
-        background-image: url('img/editor/main-menu/redo.png');
-      }
-      &[data-action="edit-toggle"]{
-        margin-right: 50px;
-        background-image: url('img/editor/main-menu/edit-toggle.png');
-      }
-      &[data-action="settings"]{
-        background-image: url('img/editor/main-menu/settings.png');
-      }
-      &[data-action="help"]{
-        background-image: url('img/editor/main-menu/help.png');
-      }
-      &[data-action="logout"]{
-        margin-right: 0;
-        background-image: url('img/editor/main-menu/logout.png');
-      }
-    }
-    
-    .button-group{
-      position: relative;
-      
-      &::after {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        width: 8px;
-        content: "";
-        background: url('img/editor/main-menu/sub-menu.png') no-repeat center center;
-      }
-      
-      .sub-menu{
-        position: absolute;
-        display: none;
-        top: 100%;
-        margin: 0;
-        padding: 5px 0;
-        list-style: none;
-        background: #C8C8C8;
-        border: 1px solid #B2B2B2;
-        border-top: 0;
-        .box-shadow(0px 1px 1px 0px rgba(0,0,0,0.25));
-        
-        button{
-          width: 40px;
-          margin: 5px 0;
-        }
-      }
-      
-      &:hover{
-        &::after {
-          .opacity(0.75);
-        }
-        
-        .sub-menu{
-          display: block;
-        }
-      }
-    }
-
-    .time{
-      height: 20px;
-      flex: 0 0 auto;
-      margin: 0 10px;
-      white-space: nowrap;
-      vertical-align: middle;
-      font-size: 1.3em;
-      padding-left: 20px;
-      background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
-
-      input,
-      .separator{
-        color: #505050;
-        vertical-align: top;
-      }
-    }
-
-    .r-index{
-      height: 20px;
-      flex: 0 0 auto;
-      margin: 0 10px;
-      white-space: nowrap;
-      vertical-align: middle;
-      font-size: 1.3em;
-      padding-left: 20px;
-      background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
-
-      input{
-        width: 3em;
-        height: 100%;
-        color: #505050;
         border: none;
-        background: none;
-        text-align: right;
-        vertical-align: top;
-        font-family: Tahoma, Geneva, sans-serif;
-      }
-    }
-  }
+        outline: none;
+        background-color: transparent;
+        background-position: center center;
+        background-repeat: no-repeat;
+        cursor: pointer;
 
-  .sidebar-wrapper{
-    position: fixed;
-    right: 0;
-    top: 42px;
-    bottom: 0;
-    width: 285px;
-    min-width: 280px;
-    max-width: 500px;
-    overflow: hidden;
-    background: #f2f2f2;
-    border-left: 1px solid #b2b2b2;
-    
-    .resize-handle{
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 9px;
-      height:100%;
-      cursor: col-resize;
-      background: #e6e6e6 url('img/editor/sidebar/resizer-handle.png') no-repeat center center;
-      
-      &:hover{
-        background-color: #d9d9d9;
-      }
-    }
-    
-    .sidebar{
-      height: 100%;
-      padding-left: 9px;
-      overflow: auto;
-      overflow-y: scroll;
-    }
-
-    .panel{
-      position: relative;
-      
-      .toolbar{
-        padding: 5px;
-        border-bottom: 1px solid #d7d7d7;
-        .linear-gradient-top(#fefefe, #fefefe, 0%, #fcfcfc, 32%, #fafafa, 36%, #f3f3f3, 100%);
-
-        .title{
-          float: left;
-          padding-left: 18px;
-          margin-right: 5px;
-          font-weight: bold;
-          line-height: 18px;
-          background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
-          cursor: pointer;
-          .opacity(0.8);
+        &:hover{
+            .opacity(0.75);
         }
-
-        .selector{
-          float: right;
-
-          select{
-            width: 100px;
-            background: none;
-            border: none;
-
-            &:empty{
-              display: none;
-            }
-          }
-        }
-
-        .buttons{
-          float: right;
-
-          button{
-            width: 16px;
-            height: 16px;
-            background-repeat: no-repeat;
-            background-position: center center;
-            vertical-align: middle;
-
-            &[data-action="previous"]{
-              background-image: url('img/editor/panel/previous.png');
-            }
-            &[data-action="next"]{
-              background-image: url('img/editor/panel/next.png');
-              margin-left: -1px;
-            }
-            &[data-action="menu"]{
-              position: relative;
-              margin-left: 10px;
-              padding-bottom: 2px;
-
-              &::after {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                background: url('img/editor/panel/menu.png') no-repeat center center;
-              }
-
-              .dropdown-menu{
-                display: none;
-                position: absolute;
-                right: 0;
-                top: 100%;
-                margin: 0px;
-                padding: 0px;
-                padding-top: 2px;
-                list-style-type: none;
-                background: #fff;
-                z-index: 999;
-
-                li{
-                  min-width: 50px;
-                  margin-bottom: -1px;
-                  padding: 3px 4px;
-                  font-size: 0.8em;
-                  border: 1px solid #ccc;
-                  text-align: right;
-                  white-space: nowrap;
-
-                  &:hover{
-                    background: #eee;
-                  }
-
-                  &:active{
-                    opacity: 0.75;
-                  }
-
-                  &.disabled{
-                    pointer-events: none;
-                    background: none;
-                    opacity: 0.5;
-                    cursor: default;
-                  }
-                }
-              }
-
-              &:hover{
-                opacity: 1;
-
-                &::after {
-                  opacity: 0.75;
-                }
-
-                .dropdown-menu{
-                  display: block;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      .fields{
-        display: table;
-        width: 100%;
-        font-size: 0.9em;
-        background: #fff;
-        border-collapse: collapse;
-        
-        .field{
-          display: table-row;
-          border-bottom: 1px solid #b2b2b2;
-
-          label{
-            display: table-cell;
-            width: 130px;
-            padding: 5px;
-            color: #7b7b7b;
-            border-right: 1px solid #d7d7d7;
-            white-space: nowrap;
-          }
-
-          .input-wrapper{
-            display: table-cell;
-            margin: 0;
-            padding: 0;
-            vertical-align: middle;
-            
-            input{
-              width: 100%;
-              height: 24px;
-              margin: 0;
-              padding: 0;
-              border: none;
-
-              &[type="checkbox"]{
-                width: auto;
-              }
-            }
-          }
-
-          &.selectfield{
-            select{
-              display: block;
-              width: 100%;
-              height: 100%;
-              margin: 0;
-              border: none;
-            }
-          }
-
-          &.buttonsfield{
-            .input-wrapper{
-              background-repeat: repeat;
-              
-              button{
-                float: left;
-                width: 20px;
-                height: 20px;
-                background-repeat: no-repeat;
-                background-position: center center;
-                
-                &.pressed{
-                  background-color: darken(#EAEAEA, 25%);
-                }
-              }
-            }
-          }
-
-          &.fontStyle{
-            border-bottom: none;
-          }
-        }
-      }
-      
-      &.has-component{
-        &::after{
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          z-index: 999;
-          animation: pulsate 0.5s ease-out 2 alternate;
-          pointer-events: none;
-        }
-      }
-
-      &.collapsed,
-      &:not(.has-component),
-      &.disabled{
-        .toolbar{
-          .title{
-            background-image: url('img/editor/panel/collapsed.png');
-          }
-        }
-
-        .fields{
-          display: none;
-        }
-      }
-
-      &:not(.has-component),
-      &.disabled{
-        .toolbar{
-          .title{
-            pointer-events: none;
-          }
-        }
-      }
-
-      &.disabled{
-        pointer-events: none;
-        opacity: 0.5;
-      }
-    }
-  }
-
-  .overlay{
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    padding: 0;
-    background: #fff;
-    z-index: 99999;
-    .transform(translate(-50%, -50%));
-
-    .toolbar{
-      padding: 10px 16px;
-      border-bottom: 2px solid #B2B2B2;
-      .gradient(#DADADA, #DADADA, #C8C8C8);
-
-      .title{
-        float: left;
-        font-weight: bold;
-        color: #5D5D5D;
-      }
-
-      .buttons{
-        margin-left: 16px;
-        float: right;
-
-        button{
-          width: 16px;
-          height: 16px;
-          background-repeat: no-repeat;
-          background-position: center center;
-          vertical-align: middle;
-
-          &[data-action="close"]{
-            background-image: url('img/editor/overlay/close.png');
-          }
-        }
-      }
-    }
-    
-    .contents{
-      max-width: 75vw;
-      max-height: 75vh;
-      overflow: auto;
-    }
-
-    &.color-selector{
-      padding: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.2);
-      .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
-      .border-radius(10px);
-
-      canvas{
-        display: block;
-      }
-
-      .gradient{
-        position: relative;
-        float: left;
-        cursor: crosshair;
-
-        .position{
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 8px;
-          height: 8px;
-          margin: -6px 0 0 -6px;
-          border: 2px solid #000;
-          .border-radius(50%);
-          pointer-events: none;
-        }
-      }
-      .alpha{
-        position: relative;
-        float: left;
-        background: url('img/editor/transparency-grid.png') repeat left top;
-
-        .position{
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 10px;
-          height: 2px;
-          margin-top: -1px;
-          background: #000;
-          pointer-events: none;
-        }
-      }
-      .controls{
-        width: 80px;
-        float: left;
-        margin-left: 10px;
-        pointer-events: none;
-
-        input[type=number]{
-          width: 3em;
-          margin: 0.25em 0.5em;
-          border: 2px inset;
-          pointer-events: auto;
-        }
-
-        button{
-          width: 100%;
-          padding: 0.5em;
-          background: #ccc;
-          pointer-events: auto;
-
-          &.cancel{
-            background: #eee;
-          }
-        }
-
-        .canvas-wrapper{
-          height: 40px;
-          border: 1px solid #ccc;
-          background: url('img/editor/transparency-grid.png') repeat left top;
-
-          &.current{
-            margin-top: 5px;
-          }
-
-          &.previous{
-            height: 10px;
-            margin-bottom: 5px;
-            margin-top: -1px;
-          }
-
-          canvas{
-            width: 100%;
-            height: 100%;
-          }
-        }
-      }
-    }
-
-    &.border-radius{
-      .contents{
-        padding: 12px 16px;
-        
-        .preview{
-          position: relative;
-          width: 200px;
-          height: 200px;
-          margin: 50px 75px;
-          border: 2px solid #0000fe;
-        }
-            
-        .field{
-          position: absolute;
-          top: 0;
-          left: 0;
-        
-          input{
-            width: 40px;
-          }
-          
-          &.tlw,
-          &.trw{
-            top: -30px;
-          }
-          &.tlh,
-          &.blh{
-            left: -52px;
-          }
-          &.trw,
-          &.brw{
-            left: 158px;
-          }
-          &.trh,
-          &.brh{
-            left: 210px;
-          }
-          &.brw,
-          &.blw{
-            top: 210px;
-          }
-          &.brh,
-          &.blh{
-            top: 178px;
-          }
-        }
-
-        button{
-          min-width: 60px;
-          margin-right: 0.5em;
-          padding: 0.5em;
-          background: #ccc;
-          pointer-events: auto;
-
-          &.cancel{
-            background: #eee;
-          }
-        }
-      }
-    }
-
-    &.guide-selector{
-      .contents{
-        padding: 12px 16px;
-
-        tr.guide{
-          td.thumbnail{
-            padding-right: 10px;
-            vertical-align: top;
-
-            img{
-              display: inline-block;
-              width: 155px;
-              height: 123px;
-              background: #DADADA url('img/editor/default-thumbnail.png') no-repeat center center;
-            }
-          }
-
-          td.details{
-            padding-bottom: 10px;
-            vertical-align: top;
-
-            .title{
-              margin: 0;
-              font-size: 12px;
-              font-weight: bold;
-            }
-
-            .description{
-              margin: 0;
-              font-size: 11px;
-            }
-
-            .author{
-              margin: 0;
-              font-size: 11px;
-              font-weight: normal;
-              color: #B2B2B2;
-            }
-            
-            .revision-wrapper{
-              margin-top: 10px;
-              display: flex;
-              
-              .revisions{
-                flex: 1;
-                
-                select{
-                  width: 100%;
-                  height: 2em;
-                  
-                  optgroup{
-                    &.archives{
-                      option{
-                        color: #B2B2B2;
-                      }
-                    }
-                  }
-                }
-              }
-              
-              button[data-action="select"]{
-                flex: 0 0 auto;
-                height: 2em;
-                background: #B2B2B2;
-              }
-            }
-          }
-
-          &:hover{
-            background: #EEE;
-          }
-        }
-      }
-    }
-
-    &.guide-details,
-    &.insert-link,
-    &.insert-image{
-      .contents{
-        min-width: 300px;
-        padding: 12px 16px;
-
-        .field{
-          display: block;
-          margin-bottom: 1em;
-
-          label{
-            display: block;
-            font-weight: bold;
-          }
-
-          textarea{
-            width: 100%;
-            min-height: 5em;
-          }
-        }
-
-        button{
-          min-width: 60px;
-          margin-right: 0.5em;
-          padding: 0.5em;
-          background: #ccc;
-          pointer-events: auto;
-
-          &.cancel{
-            background: #eee;
-          }
-        }
-      }
-    }
-
-    &.guide-details{
-      .contents{
-        min-width: 500px;
-      }
-    }
-    
-    &.insert-image{
-      .size-wrapper{
-        position: relative;
-        
-        .width,
-        .height{
-          width: 50%;
-          
-          input{
-            width: 100%;
-            .box-sizing(border-box);
-          }
-        }
-        
-        .size-buttons{
-          position: absolute;
-          margin-left: 55%;
-          margin-top: -8px;
-          
-          .lock-ratio{
-            float: left;
-            margin-right: 10px;
-            
-            input{
-              display: none;
-            }
-            
-            label{
-              display: inline-block;
-              width:16px;
-              height:16px;
-              background: url('img/editor/overlay/insert-image/lock-open.png') no-repeat center center;
-              cursor: pointer;
-            }
-            
-            &.checked{
-              label{
-                background-image: url('img/editor/overlay/insert-image/lock.png');
-              }
-            }
-          }
-          
-          .reset-size{
-            float: left;
-            min-width: 0;
-            width:16px;
-            height:16px;
-            background: url('img/editor/overlay/insert-image/reset.png') no-repeat center center;
-          }
-        }
-      }
-    }
-
-    &.iframe{
-      .contents{        
-        iframe{
-          min-width: 800px;
-          min-height: 500px;
-          border: none;
-        }
-      }
-    }
-
-    &.alert{
-      .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
-      .border-radius(10px);
-
-      .contents{
-        padding: 12px 16px;
-        text-align: center;
-
-        .buttons{
-          margin-top: 1em;
-          text-align: center;
-
-          button{
-            min-width: 60px;
-            margin: 0 0.5em;
-            padding: 0.5em;
-            background: #ccc;
-
-            &[data-action="cancel"]{
-              opacity: 0.75;
-              
-              &:hover{
-                opacity: 0.4;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    &.loadmask{
-      .contents{
-        padding: 12px 16px 12px 45px;
-        background: #FFFFFF url('img/editor/loader.gif') no-repeat 16px center;
-      }
-    }
-  }
-
-  .overlay-mask{
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 99999;
-  }
-
-  &.editing{
-    .main-menu{
-       button{
-          &[data-action="edit-toggle"]{
+        &:active{
             .opacity(0.5);
-          }
-       }
+        }
+        &.disabled{
+            .opacity(0.25);
+            cursor: default;
+        }
+
+        span{
+            pointer-events: none;
+        }
+    }
+
+    .draggable{
+        .drag-handle{
+            cursor: move;
+        }
+    }
+
+    .field{    
+        &.booleanfield{
+            &.readonly{
+                .input-wrapper{
+                    pointer-events: none;
+                }
+            }
+        }
+        
+        &.numberfield{
+            .input-wrapper{
+                position: relative;
+                
+                input{
+                    padding-right: 2em;
+                }
+                
+                .buttons{
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    width: 2em;
+                    display: none;
+                    flex-direction: column-reverse;
+                    justify-content: center;
+                    
+                    button{
+                        padding: 0;
+                        overflow: hidden;
+                        text-indent: 999px;
+                        background-color: rgb(238, 238, 238);
+                        background-repeat: no-repeat;
+                        background-position: center center;
+                        background-size: 40%;
+                        
+                        &[data-action="spin-down"]{
+                            background-image: url('img/editor/field/number/spinner-arrow-down.png');
+                        }
+                        
+                        &[data-action="spin-up"]{
+                            background-image: url('img/editor/field/number/spinner-arrow-up.png');
+                        }
+                    }
+                }
+            }
+                    
+            &.vertical{
+                .input-wrapper{
+                    .buttons{
+                        flex-direction: row;
+                        
+                        button{         
+                            background-size: 50%; 
+                            
+                            &[data-action="spin-down"]{
+                                background-image: url('img/editor/field/number/spinner-arrow-left.png');
+                            }
+                            
+                            &[data-action="spin-up"]{
+                                background-image: url('img/editor/field/number/spinner-arrow-right.png');
+                            }
+                        }
+                    }
+                }
+            }
+            
+            &:hover{
+                .buttons{
+                    display: flex;
+                }
+            }
+        }
+        
+        &.timefield{
+            .input-wrapper{
+                display: inline-block;
+                vertical-align: top;
+
+                input[type="checkbox"]{
+                    float: left;
+                }
+
+                input[type="number"]{
+                    width: 1em !important;
+                    height: 100%;
+                    border: none;
+                    background: none;
+                    text-align: right;
+                    font-family: Tahoma, Geneva, sans-serif;
+
+                    -moz-appearance: textfield;
+                    &::-webkit-outer-spin-button,
+                    &::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                    }
+                }
+
+                .separator{
+                    font-size: 0.8em;
+                }
+
+                .buttons{
+                    float: right;
+                    height: 100%;
+
+                    button{
+                        display: inline-block;
+                        width: 15px;
+                        height: 100%;
+                        margin-left: 5px;
+                        overflow: hidden;
+                        text-indent: 999px;
+
+                        &[data-action="in"]{
+                            background: transparent url('img/editor/field/time/in.png') no-repeat center center;
+                        }
+
+                        &[data-action="out"]{
+                            background: transparent url('img/editor/field/time/out.png') no-repeat center center;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.colorfield{
+            .input-wrapper{
+                background: url('img/editor/transparency-grid.png') repeat left top;
+
+                input{
+                    background-image: url('img/editor/field/color/picker.png');
+                    background-repeat: no-repeat;
+                    background-position: left center;
+                    background-size: contain;
+
+                    &:hover{
+                        opacity: 1;
+                    }
+                }
+            }
+
+            &.disabled{
+                .input-wrapper{
+                    button{
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.borderradiusrfield,
+        &.imagefield,
+        &.colorfield{
+            .input-wrapper{
+                position: relative;
+
+                input{
+                    width: 100%;
+                    padding-right: 17px !important;
+                    .box-sizing(border-box);
+                }
+
+                button[data-action="clear"]{
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 17px;
+                    min-width: 0;
+                    height: 100%;
+                    margin: 0;
+                    background: url('img/editor/field/clear.png') no-repeat center center;
+                    overflow: hidden;
+                    text-indent: 999px;
+                }
+            }
+        }
+        
+        &.imagefield{
+            .input-wrapper{
+                input{
+                    direction: rtl;
+                
+                    &::-webkit-input-placeholder {
+                        direction: ltr;
+                    }
+                    &::-moz-placeholder {/* firefox 19+ */
+                        direction: ltr;
+                    }
+                    &:-ms-input-placeholder {/* ie */
+                        direction: ltr;
+                    }
+                    &:-moz-placeholder{
+                        direction: ltr;
+                    }
+                }
+            }
+        }
+        
+        &.readonly{
+            .input-wrapper{
+                .opacity(0.75);
+                cursor: default;
+            }
+        }
+        
+        &.disabled{
+            .opacity(0.25);
+            cursor: default;
+        }
+    }
+
+    .ruler{
+        position: absolute;
+
+        &.horizontal{
+            left: 0;
+            right: 0;
+            top: 42px;
+            height: 19px;
+            background: url('img/editor/ruler-h.png') no-repeat top left;
+        }
+
+        &.vertical{
+            left: 0;
+            top: 42px;
+            bottom: 0;
+            width: 19px;
+            background: url('img/editor/ruler-v.png') no-repeat top left;
+        }
     }
 
     .workspace{
-      .grid{
-        display: block;
-      }
+        position: absolute;
+        left: 19px;
+        right: 285px;
+        top: 61px;
+        bottom: 0;
+        min-width: 700px;
+        overflow: hidden;
+        background: #fff;
+
+        .grid{
+            position: absolute;
+            display: none;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            pointer-events: none;
+            background: url('img/editor/grid.png');
+            background-size: 10px 10px;
+            .opacity(0.2);
+        }
+
+        .version{
+            position: absolute;
+            bottom: 5px;
+            right: 25px;
+            z-index: 999;
+            font-size: 0.75em;
+            opacity: 0.75;
+
+            -moz-user-select: initial;
+            -khtml-user-select: initial;
+            -webkit-user-select: initial;
+            user-select: initial;
+        }
+        
+        .player-frame{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
     }
-  }
+    
+    &.sidebar-resizing{
+        .workspace{
+            pointer-events: none;
+        }
+    }
+    
+    &:not(.editing),
+    &.sidebar-hidden{
+        .workspace{
+            right: 9px !important;
+        }
+        
+        .sidebar-wrapper{
+            width: 9px !important;
+            min-width: 9px !important;
+            max-width: 9px !important;
+        }
+    }
+
+    .main-menu{
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        min-width: 900px;
+        height: 40px;
+        padding: 0 20px;
+        align-content: space-between;
+        align-items: center;
+        z-index: 9999;
+        .gradient(#DADADA, #DADADA, #C8C8C8);
+        border-bottom: 2px solid #B2B2B2;
+        
+        > .separator{
+            flex: 1;
+        }
+
+        .logo-philharmonie{
+            width: 102px;
+            height: 40px;
+            flex: 0 0 auto;
+            vertical-align: middle;
+            background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
+        }
+
+        > button,
+        .button-group > button{
+            width: 1.5em;
+            height: 1.5em;
+            flex: 0 0 auto;
+            margin: 0 10px;
+            vertical-align: middle;
+
+            &[data-action="new"]{
+                background-image: url('img/editor/main-menu/new.png');
+            }
+            &[data-action="open"]{
+                background-image: url('img/editor/main-menu/open.png');
+            }
+            &[data-action="edit"]{
+                background-image: url('img/editor/main-menu/edit.png');
+            }
+            &[data-action="save-draft"]{
+                background-image: url('img/editor/main-menu/save-draft.png');
+            }
+            &[data-action="save-copy"]{
+                background-image: url('img/editor/main-menu/save-copy.png');
+            }
+            &[data-action="publish"]{
+                background-image: url('img/editor/main-menu/publish.png');
+            }
+            &[data-action="delete"]{
+                margin-right: 50px;
+                background-image: url('img/editor/main-menu/delete.png');
+            }
+            &[data-action="download"]{
+                margin-right: 50px;
+                background-image: url('img/editor/main-menu/download.png');
+            }
+            &[data-action="revert"]{
+                margin-left: 50px;
+                background-image: url('img/editor/main-menu/revert.png');
+            }
+            &[data-action="undo"]{
+                background-image: url('img/editor/main-menu/undo.png');
+            }
+            &[data-action="redo"]{
+                margin-right: 50px;
+                background-image: url('img/editor/main-menu/redo.png');
+            }
+            &[data-action="edit-toggle"]{
+                margin-right: 50px;
+                background-image: url('img/editor/main-menu/edit-toggle.png');
+            }
+            &[data-action="settings"]{
+                background-image: url('img/editor/main-menu/settings.png');
+            }
+            &[data-action="help"]{
+                background-image: url('img/editor/main-menu/help.png');
+            }
+            &[data-action="logout"]{
+                margin-right: 0;
+                background-image: url('img/editor/main-menu/logout.png');
+            }
+        }
+        
+        .button-group{
+            position: relative;
+            
+            &::after {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                width: 8px;
+                content: "";
+                background: url('img/editor/main-menu/sub-menu.png') no-repeat center center;
+            }
+            
+            .sub-menu{
+                position: absolute;
+                display: none;
+                top: 100%;
+                margin: 0;
+                padding: 5px 0;
+                list-style: none;
+                background: #C8C8C8;
+                border: 1px solid #B2B2B2;
+                border-top: 0;
+                .box-shadow(0px 1px 1px 0px rgba(0,0,0,0.25));
+                
+                button{
+                    width: 40px;
+                    margin: 5px 0;
+                }
+            }
+            
+            &:hover{
+                &::after {
+                    .opacity(0.75);
+                }
+                
+                .sub-menu{
+                    display: block;
+                }
+            }
+        }
+
+        .time{
+            flex: 0 0 auto;
+            margin: 0 10px;
+            white-space: nowrap;
+            vertical-align: middle;
+            font-size: 1.3em;
+            padding-left: 2em;
+            background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
+            background-size: contain;
+
+            input,
+            .separator{
+                color: #505050;
+                vertical-align: top;
+            }
+        }
+
+        .r-index{
+            flex: 0 0 auto;
+            margin: 0 10px;
+            white-space: nowrap;
+            vertical-align: middle;
+            font-size: 1.3em;
+            padding-left: 2em;
+            background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
+            background-size: contain;
+            
+            .input-wrapper{
+                input{
+                    width: 3em;
+                    height: 100%;
+                    padding-right: 1em;
+                    color: #505050;
+                    border: none;
+                    background: none;
+                    text-align: left;
+                    vertical-align: top;
+                    font-family: Tahoma, Geneva, sans-serif;
+                }
+                
+                .buttons{
+                    width: 1em;                    
+                }
+            }
+        }
+    }
+
+    .sidebar-wrapper{
+        position: fixed;
+        right: 0;
+        top: 42px;
+        bottom: 0;
+        width: 285px;
+        min-width: 280px;
+        max-width: 500px;
+        overflow: hidden;
+        background: #f2f2f2;
+        border-left: 1px solid #b2b2b2;
+        
+        .resize-handle{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 9px;
+            height:100%;
+            cursor: col-resize;
+            background: #e6e6e6 url('img/editor/sidebar/resizer-handle.png') no-repeat center center;
+            
+            &:hover{
+                background-color: #d9d9d9;
+            }
+        }
+        
+        .sidebar{
+            height: 100%;
+            padding-left: 9px;
+            overflow: auto;
+            overflow-y: scroll;
+        }
+
+        .panel{
+            position: relative;
+            
+            .toolbar{
+                padding: 5px;
+                border-bottom: 1px solid #d7d7d7;
+                .linear-gradient-top(#fefefe, #fefefe, 0%, #fcfcfc, 32%, #fafafa, 36%, #f3f3f3, 100%);
+
+                .title{
+                    float: left;
+                    padding-left: 18px;
+                    margin-right: 5px;
+                    font-weight: bold;
+                    line-height: 18px;
+                    background: transparent url('img/editor/panel/expanded.png') no-repeat left center;
+                    cursor: pointer;
+                    .opacity(0.8);
+                }
+
+                .selector{
+                    float: right;
+
+                    select{
+                        width: 100px;
+                        background: none;
+                        border: none;
+
+                        &:empty{
+                            display: none;
+                        }
+                    }
+                }
+
+                .buttons{
+                    float: right;
+
+                    button{
+                        width: 16px;
+                        height: 16px;
+                        background-repeat: no-repeat;
+                        background-position: center center;
+                        vertical-align: middle;
+
+                        &[data-action="previous"]{
+                            background-image: url('img/editor/panel/previous.png');
+                        }
+                        &[data-action="next"]{
+                            background-image: url('img/editor/panel/next.png');
+                            margin-left: -1px;
+                        }
+                        &[data-action="menu"]{
+                            position: relative;
+                            margin-left: 10px;
+                            padding-bottom: 2px;
+
+                            &::after {
+                                content: "";
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                bottom: 0;
+                                right: 0;
+                                background: url('img/editor/panel/menu.png') no-repeat center center;
+                            }
+
+                            .dropdown-menu{
+                                display: none;
+                                position: absolute;
+                                right: 0;
+                                top: 100%;
+                                margin: 0px;
+                                padding: 0px;
+                                padding-top: 2px;
+                                list-style-type: none;
+                                background: #fff;
+                                z-index: 999;
+
+                                li{
+                                    min-width: 50px;
+                                    margin-bottom: -1px;
+                                    padding: 3px 4px;
+                                    font-size: 0.8em;
+                                    border: 1px solid #ccc;
+                                    text-align: right;
+                                    white-space: nowrap;
+
+                                    &:hover{
+                                        background: #eee;
+                                    }
+
+                                    &:active{
+                                        opacity: 0.75;
+                                    }
+
+                                    &.disabled{
+                                        pointer-events: none;
+                                        background: none;
+                                        opacity: 0.5;
+                                        cursor: default;
+                                    }
+                                }
+                            }
+
+                            &:hover{
+                                opacity: 1;
+
+                                &::after {
+                                    opacity: 0.75;
+                                }
+
+                                .dropdown-menu{
+                                    display: block;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .fields{
+                display: table;
+                width: 100%;
+                font-size: 0.9em;
+                background: #fff;
+                border-collapse: collapse;
+                
+                .field{
+                    display: table-row;
+                    border-bottom: 1px solid #b2b2b2;
+
+                    label{
+                        display: table-cell;
+                        width: 130px;
+                        padding: 5px;
+                        color: #7b7b7b;
+                        border-right: 1px solid #d7d7d7;
+                        white-space: nowrap;
+                    }
+
+                    .input-wrapper{
+                        display: table-cell;
+                        margin: 0;
+                        padding: 0;
+                        vertical-align: middle;
+                        
+                        input{
+                            width: 100%;
+                            height: 24px;
+                            margin: 0;
+                            padding: 0;
+                            border: none;
+
+                            &[type="checkbox"]{
+                                width: auto;
+                            }
+                        }
+                    }
+
+                    &.selectfield{
+                        select{
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            margin: 0;
+                            border: none;
+                        }
+                    }
+
+                    &.buttonsfield{
+                        .input-wrapper{
+                            background-repeat: repeat;
+                            
+                            button{
+                                float: left;
+                                width: 20px;
+                                height: 20px;
+                                background-repeat: no-repeat;
+                                background-position: center center;
+                                
+                                &.pressed{
+                                    background-color: darken(#EAEAEA, 25%);
+                                }
+                            }
+                        }
+                    }
+
+                    &.fontStyle{
+                        border-bottom: none;
+                    }
+                }
+            }
+            
+            &.has-component{
+                &::after{
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    z-index: 999;
+                    animation: pulsate 0.5s ease-out 2 alternate;
+                    pointer-events: none;
+                }
+            }
+
+            &.collapsed,
+            &:not(.has-component),
+            &.disabled{
+                .toolbar{
+                    .title{
+                        background-image: url('img/editor/panel/collapsed.png');
+                    }
+                }
+
+                .fields{
+                    display: none;
+                }
+            }
+
+            &:not(.has-component),
+            &.disabled{
+                .toolbar{
+                    .title{
+                        pointer-events: none;
+                    }
+                }
+            }
+
+            &.disabled{
+                pointer-events: none;
+                opacity: 0.5;
+            }
+        }
+    }
+
+    .overlay{
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        padding: 0;
+        background: #fff;
+        z-index: 99999;
+        .transform(translate(-50%, -50%));
+
+        .toolbar{
+            padding: 10px 16px;
+            border-bottom: 2px solid #B2B2B2;
+            .gradient(#DADADA, #DADADA, #C8C8C8);
+
+            .title{
+                float: left;
+                font-weight: bold;
+                color: #5D5D5D;
+            }
+
+            .buttons{
+                margin-left: 16px;
+                float: right;
+
+                button{
+                    width: 16px;
+                    height: 16px;
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    vertical-align: middle;
+
+                    &[data-action="close"]{
+                        background-image: url('img/editor/overlay/close.png');
+                    }
+                }
+            }
+        }
+        
+        .contents{
+            max-width: 75vw;
+            max-height: 75vh;
+            overflow: auto;
+        }
+
+        &.color-selector{
+            padding: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
+            .border-radius(10px);
+
+            canvas{
+                display: block;
+            }
+
+            .gradient{
+                position: relative;
+                float: left;
+                cursor: crosshair;
+
+                .position{
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 8px;
+                    height: 8px;
+                    margin: -6px 0 0 -6px;
+                    border: 2px solid #000;
+                    .border-radius(50%);
+                    pointer-events: none;
+                }
+            }
+            .alpha{
+                position: relative;
+                float: left;
+                background: url('img/editor/transparency-grid.png') repeat left top;
+
+                .position{
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 10px;
+                    height: 2px;
+                    margin-top: -1px;
+                    background: #000;
+                    pointer-events: none;
+                }
+            }
+            .controls{
+                width: 80px;
+                float: left;
+                margin-left: 10px;
+                pointer-events: none;
+
+                input[type=number]{
+                    width: 3em;
+                    margin: 0.25em 0.5em;
+                    border: 2px inset;
+                    pointer-events: auto;
+                }
+
+                button{
+                    width: 100%;
+                    padding: 0.5em;
+                    background: #ccc;
+                    pointer-events: auto;
+
+                    &.cancel{
+                        background: #eee;
+                    }
+                }
+
+                .canvas-wrapper{
+                    height: 40px;
+                    border: 1px solid #ccc;
+                    background: url('img/editor/transparency-grid.png') repeat left top;
+
+                    &.current{
+                        margin-top: 5px;
+                    }
+
+                    &.previous{
+                        height: 10px;
+                        margin-bottom: 5px;
+                        margin-top: -1px;
+                    }
+
+                    canvas{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
+        }
+
+        &.border-radius{
+            .contents{
+                padding: 12px 16px;
+                
+                .preview{
+                    position: relative;
+                    width: 200px;
+                    height: 200px;
+                    margin: 50px 75px;
+                    background: rgb(238, 238, 238);
+                    border: 2px solid #0000fe;
+                }
+                        
+                .field{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                
+                    input{
+                        width: 1.5em;
+                    }
+                    
+                    &.tlw,
+                    &.trw{
+                        top: -30px;
+                    }
+                    &.tlh,
+                    &.blh{
+                        left: -60px;
+                    }
+                    &.trw,
+                    &.brw{
+                        left: 158px;
+                    }
+                    &.trh,
+                    &.brh{
+                        left: 210px;
+                    }
+                    &.brw,
+                    &.blw{
+                        top: 210px;
+                    }
+                    &.brh,
+                    &.blh{
+                        top: 178px;
+                    }
+                }
+
+                > button{
+                    min-width: 60px;
+                    margin-right: 0.5em;
+                    padding: 0.5em;
+                    background: #ccc;
+                    pointer-events: auto;
+
+                    &.cancel{
+                        background: #eee;
+                    }
+                }
+            }
+        }
+
+        &.guide-selector{
+            .contents{
+                padding: 12px 16px;
+
+                tr.guide{
+                    td.thumbnail{
+                        padding-right: 10px;
+                        vertical-align: top;
+
+                        img{
+                            display: inline-block;
+                            width: 155px;
+                            height: 123px;
+                            background: #DADADA url('img/editor/default-thumbnail.png') no-repeat center center;
+                        }
+                    }
+
+                    td.details{
+                        padding-bottom: 10px;
+                        vertical-align: top;
+
+                        .title{
+                            margin: 0;
+                            font-size: 12px;
+                            font-weight: bold;
+                        }
+
+                        .description{
+                            margin: 0;
+                            font-size: 11px;
+                        }
+
+                        .author{
+                            margin: 0;
+                            font-size: 11px;
+                            font-weight: normal;
+                            color: #B2B2B2;
+                        }
+                        
+                        .revision-wrapper{
+                            margin-top: 10px;
+                            display: flex;
+                            
+                            .revisions{
+                                flex: 1;
+                                
+                                select{
+                                    width: 100%;
+                                    height: 2em;
+                                    
+                                    optgroup{
+                                        &.archives{
+                                            option{
+                                                color: #B2B2B2;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            button[data-action="select"]{
+                                flex: 0 0 auto;
+                                height: 2em;
+                                background: #B2B2B2;
+                            }
+                        }
+                    }
+
+                    &:hover{
+                        background: #EEE;
+                    }
+                }
+            }
+        }
+
+        &.guide-details,
+        &.insert-link,
+        &.insert-image{
+            .contents{
+                min-width: 300px;
+                padding: 12px 16px;
+
+                .field{
+                    display: block;
+                    margin-bottom: 1em;
+
+                    label{
+                        display: block;
+                        font-weight: bold;
+                    }
+
+                    textarea{
+                        width: 100%;
+                        min-height: 5em;
+                    }
+                }
+
+                button{
+                    min-width: 60px;
+                    margin-right: 0.5em;
+                    padding: 0.5em;
+                    background: #ccc;
+                    pointer-events: auto;
+
+                    &.cancel{
+                        background: #eee;
+                    }
+                }
+            }
+        }
+
+        &.guide-details{
+            .contents{
+                min-width: 500px;
+            }
+        }
+        
+        &.insert-image{
+            .size-wrapper{
+                position: relative;
+                
+                .width,
+                .height{
+                    width: 50%;
+                    
+                    input{
+                        width: 100%;
+                        .box-sizing(border-box);
+                    }
+                }
+                
+                .size-buttons{
+                    position: absolute;
+                    margin-left: 55%;
+                    margin-top: -8px;
+                    
+                    .lock-ratio{
+                        float: left;
+                        margin-right: 10px;
+                        
+                        input{
+                            display: none;
+                        }
+                        
+                        label{
+                            display: inline-block;
+                            width:16px;
+                            height:16px;
+                            background: url('img/editor/overlay/insert-image/lock-open.png') no-repeat center center;
+                            cursor: pointer;
+                        }
+                        
+                        &.checked{
+                            label{
+                                background-image: url('img/editor/overlay/insert-image/lock.png');
+                            }
+                        }
+                    }
+                    
+                    .reset-size{
+                        float: left;
+                        min-width: 0;
+                        width:16px;
+                        height:16px;
+                        background: url('img/editor/overlay/insert-image/reset.png') no-repeat center center;
+                    }
+                }
+            }
+        }
+
+        &.iframe{
+            .contents{                
+                iframe{
+                    min-width: 800px;
+                    min-height: 500px;
+                    border: none;
+                }
+            }
+        }
+
+        &.alert{
+            .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
+            .border-radius(10px);
+
+            .contents{
+                padding: 12px 16px;
+                text-align: center;
+
+                .buttons{
+                    margin-top: 1em;
+                    text-align: center;
+
+                    button{
+                        min-width: 60px;
+                        margin: 0 0.5em;
+                        padding: 0.5em;
+                        background: #ccc;
+
+                        &[data-action="cancel"]{
+                            opacity: 0.75;
+                            
+                            &:hover{
+                                opacity: 0.4;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.loadmask{
+            .contents{
+                padding: 12px 16px 12px 45px;
+                background: #FFFFFF url('img/editor/loader.gif') no-repeat 16px center;
+            }
+        }
+    }
+
+    .overlay-mask{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 99999;
+    }
+
+    &.editing{
+        .main-menu{
+             button{
+                    &[data-action="edit-toggle"]{
+                        .opacity(0.5);
+                    }
+             }
+        }
+
+        .workspace{
+            .grid{
+                display: block;
+            }
+        }
+    }
 }

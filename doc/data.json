@@ -3229,7 +3229,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 147,
+            "line": 146,
             "description": "The keydown event handler",
             "itemtype": "method",
             "name": "onKeyDown",
@@ -3248,7 +3248,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 168,
+            "line": 167,
             "description": "The spin button's mousedown event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseDown",
@@ -3267,7 +3267,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 192,
+            "line": 191,
             "description": "The spin button's mouseup event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseUp",
@@ -3286,7 +3286,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 203,
+            "line": 202,
             "description": "The spin button's mouseout event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseOut",
@@ -3305,7 +3305,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 212,
+            "line": 211,
             "description": "Decrement the value by one step",
             "itemtype": "method",
             "name": "spinDown",
@@ -3317,7 +3317,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 222,
+            "line": 221,
             "description": "Increment the value by one step",
             "itemtype": "method",
             "name": "spinUp",
@@ -3329,7 +3329,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 232,
+            "line": 231,
             "description": "Set the field's value",
             "itemtype": "method",
             "name": "setValue",
@@ -3352,7 +3352,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 266,
+            "line": 265,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -3370,7 +3370,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 283,
+            "line": 282,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
