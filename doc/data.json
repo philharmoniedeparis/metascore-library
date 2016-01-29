@@ -3643,7 +3643,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 167,
+            "line": 170,
             "description": "The in button's click event handler",
             "itemtype": "method",
             "name": "onInClick",
@@ -3662,7 +3662,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 178,
+            "line": 181,
             "description": "The out button's click event handler",
             "itemtype": "method",
             "name": "onOutClick",
@@ -3681,7 +3681,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 189,
+            "line": 192,
             "description": "Set the field's value",
             "itemtype": "method",
             "name": "setValue",
@@ -3704,7 +3704,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 274,
+            "line": 277,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -3722,7 +3722,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 291,
+            "line": 294,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -3740,7 +3740,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 308,
+            "line": 311,
             "description": "Check whether the field's checkbox is checked",
             "itemtype": "method",
             "name": "isActive",
@@ -3754,7 +3754,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 318,
+            "line": 321,
             "description": "Disable the field",
             "itemtype": "method",
             "name": "disable",
@@ -3765,7 +3765,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 348,
+            "line": 351,
             "description": "Enable the field",
             "itemtype": "method",
             "name": "enable",
@@ -4878,7 +4878,7 @@
         },
         {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Text.js",
-            "line": 201,
+            "line": 204,
             "description": "Unlock the associated component",
             "itemtype": "method",
             "name": "unlock",
@@ -4896,7 +4896,7 @@
         },
         {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Text.js",
-            "line": 237,
+            "line": 243,
             "description": "Disable the panel",
             "itemtype": "method",
             "name": "disable",
@@ -4907,7 +4907,26 @@
         },
         {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Text.js",
-            "line": 249,
+            "line": 255,
+            "description": "The component dblclick event handler",
+            "itemtype": "method",
+            "name": "onComponentDblClick",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.panel.Text",
+            "module": "Editor",
+            "namespace": "editor.panel"
+        },
+        {
+            "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Text.js",
+            "line": 266,
             "description": "The component's contents click event handler",
             "itemtype": "method",
             "name": "onComponentContentsClick",
@@ -4926,26 +4945,7 @@
         },
         {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Text.js",
-            "line": 260,
-            "description": "The component's contents dblclick event handler",
-            "itemtype": "method",
-            "name": "onComponentContentsDblClick",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "evt",
-                    "description": "The event object",
-                    "type": "Event"
-                }
-            ],
-            "class": "editor.panel.Text",
-            "module": "Editor",
-            "namespace": "editor.panel"
-        },
-        {
-            "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Text.js",
-            "line": 271,
+            "line": 277,
             "description": "The component's contents key event handler",
             "itemtype": "method",
             "name": "onComponentContentsKey",
@@ -9063,7 +9063,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 249,
+            "line": 245,
             "description": "Setup the block's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -9075,7 +9075,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 270,
+            "line": 266,
             "description": "Page cuepointstart event handler",
             "itemtype": "method",
             "name": "onPageCuePointStart",
@@ -9094,7 +9094,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 281,
+            "line": 277,
             "description": "Pager click event handler",
             "itemtype": "method",
             "name": "onPagerClick",
@@ -9113,7 +9113,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 311,
+            "line": 307,
             "description": "Get the block's pages",
             "itemtype": "method",
             "name": "getPages",
@@ -9127,7 +9127,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 327,
+            "line": 323,
             "description": "Add a page",
             "itemtype": "method",
             "name": "addPage",
@@ -9160,7 +9160,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 365,
+            "line": 361,
             "description": "Remove a page",
             "itemtype": "method",
             "name": "removePage",
@@ -9188,7 +9188,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 385,
+            "line": 381,
             "description": "Remove all pages",
             "itemtype": "method",
             "name": "removePages",
@@ -9199,7 +9199,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 397,
+            "line": 393,
             "description": "Get a page by index",
             "itemtype": "method",
             "name": "getPage",
@@ -9220,7 +9220,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 410,
+            "line": 406,
             "description": "Get the currently active page",
             "itemtype": "method",
             "name": "getActivePage",
@@ -9234,7 +9234,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 420,
+            "line": 416,
             "description": "Get the index of the currently active page",
             "itemtype": "method",
             "name": "getActivePageIndex",
@@ -9248,7 +9248,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 430,
+            "line": 426,
             "description": "Get the page count",
             "itemtype": "method",
             "name": "getPageCount",
@@ -9262,7 +9262,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 440,
+            "line": 436,
             "description": "Set the active page",
             "itemtype": "method",
             "name": "setActivePage",
@@ -9287,7 +9287,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 470,
+            "line": 466,
             "description": "Update the pager",
             "itemtype": "method",
             "name": "updatePager",
@@ -9300,7 +9300,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 488,
+            "line": 484,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9323,7 +9323,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 522,
+            "line": 518,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -13181,15 +13181,15 @@
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:327"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:323"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:327"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:323"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:365"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:361"
         },
         {
             "message": "unknown tag: namepsace",

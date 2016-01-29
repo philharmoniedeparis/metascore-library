@@ -210,11 +210,7 @@ metaScore.namespace('player.component').Block = (function () {
                 }
             },
             'synched': {
-                'type': 'Boolean',
-                'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),
-                    'readonly': true
-                },
+                'editable': false,
                 'getter': function(skipDefault){
                     return this.data('synched') === "true";
                 },

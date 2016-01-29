@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-01-27 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-01-29 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "2c21c1";
+        return "56beeb";
     },
 
     /**
@@ -4721,11 +4721,7 @@ metaScore.namespace('player.component').Block = (function () {
                 }
             },
             'synched': {
-                'type': 'Boolean',
-                'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.synched', 'Synchronized pages ?'),
-                    'readonly': true
-                },
+                'editable': false,
                 'getter': function(skipDefault){
                     return this.data('synched') === "true";
                 },

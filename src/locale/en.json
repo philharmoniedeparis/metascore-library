@@ -109,7 +109,6 @@
 	"player.component.Block.border-width": "Border width",
 	"player.component.Block.border-color": "Border color",
 	"player.component.Block.border-radius": "Border radius",
-	"player.component.Block.synched": "Synchronized pages ?",
 	"player.component.Controller.locked": "Locked ?",
 	"player.component.Controller.x": "X",
 	"player.component.Controller.y": "Y",

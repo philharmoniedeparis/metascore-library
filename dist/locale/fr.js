@@ -109,7 +109,6 @@ var metaScoreLocale = {
 	"player.component.Block.border-width": "Largeur de bordure",
 	"player.component.Block.border-color": "Couleur de bordure",
 	"player.component.Block.border-radius": "Rayon de bordure",
-	"player.component.Block.synched": "Pages synchronisées ?",
 	"player.component.Controller.locked": "Verrouillé ?",
 	"player.component.Controller.x": "X",
 	"player.component.Controller.y": "Y",

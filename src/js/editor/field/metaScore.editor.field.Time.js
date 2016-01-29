@@ -160,6 +160,9 @@ metaScore.namespace('editor.field').Time = (function () {
 
             this.setValue(centiseconds_val + (seconds_val * 100) + (minutes_val * 6000) + (hours_val * 360000));
         }
+        else{
+            this.setValue(null);
+        }
 
         evt.stopPropagation();
     };

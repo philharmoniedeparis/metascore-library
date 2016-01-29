@@ -54,7 +54,7 @@ metaScore.namespace('editor.panel').Text = (function () {
         this.addClass('text');
 
         // fix event handlers scope
-        this.onComponentContentsDblClick = metaScore.Function.proxy(this.onComponentContentsDblClick, this);
+        this.onComponentDblClick = metaScore.Function.proxy(this.onComponentDblClick, this);
         this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
         this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
     }
@@ -173,9 +173,12 @@ metaScore.namespace('editor.panel').Text = (function () {
         var component = this.getComponent();
 
         if(component){
+            component
+                .addListener('dblclick', this.onComponentDblClick)
+                .removeClass('unlocked');
+                
             component.contents
                 .attr('contenteditable', null)
-                .addListener('dblclick', this.onComponentContentsDblClick)
                 .removeListener('click', this.onComponentContentsClick)
                 .removeListener('keydown', this.onComponentContentsKey)
                 .removeListener('keypress', this.onComponentContentsKey)
@@ -216,15 +219,18 @@ metaScore.namespace('editor.panel').Text = (function () {
                 component._resizable.disable();
             }
 
+            this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true);
+
             component.contents
                 .attr('contenteditable', 'true')
-                .removeListener('dblclick', this.onComponentContentsDblClick)
                 .addListener('click', this.onComponentContentsClick)
                 .addListener('keydown', this.onComponentContentsKey)
                 .addListener('keypress', this.onComponentContentsKey)
                 .addListener('keyup', this.onComponentContentsKey);
 
-            this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true);
+            component
+                .removeListener('dblclick', this.onComponentDblClick)
+                .addClass('unlocked');
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_COMPONENTUNLOCK, {'component': component}, false);
@@ -247,6 +253,17 @@ metaScore.namespace('editor.panel').Text = (function () {
     };
 
     /**
+     * The component dblclick event handler
+     * 
+     * @method onComponentDblClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    TextPanel.prototype.onComponentDblClick = function(evt){
+        this.updateFieldValue('locked', false);
+    };
+
+    /**
      * The component's contents click event handler
      * 
      * @method onComponentContentsClick
@@ -255,17 +272,6 @@ metaScore.namespace('editor.panel').Text = (function () {
      */
     TextPanel.prototype.onComponentContentsClick = function(evt){
         evt.stopPropagation();
-    };
-
-    /**
-     * The component's contents dblclick event handler
-     * 
-     * @method onComponentContentsDblClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    TextPanel.prototype.onComponentContentsDblClick = function(evt){
-        this.updateFieldValue('locked', false);
     };
 
     /**
