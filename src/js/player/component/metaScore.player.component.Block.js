@@ -397,9 +397,9 @@ metaScore.namespace('player.component').Block = (function () {
      * @param {Integer} index The page's index
      * @return {player.component.Page} The page
      */
-    Block.prototype.getPage = function(index){
-        var page = this.page_wrapper.child('.page:nth-child('+ index +')');
-
+    Block.prototype.getPage = function(index){        
+        var page = this.page_wrapper.child('.page:nth-child('+ (index+1) +')').get(0);
+        
         return page ? page._metaScore : null;
     };
 

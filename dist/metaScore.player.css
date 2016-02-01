@@ -204,6 +204,7 @@ body {
   height: 50px;
   min-width: 10px;
   min-height: 10px;
+  pointer-events: none;
 }
 .metaScore-component.element .contents {
   display: none;
@@ -223,6 +224,12 @@ body {
 .metaScore-component.element:not([data-r-index]),
 .metaScore-component.element[data-r-index="0"] {
   display: block;
+}
+.metaScore-component.element:not([data-r-index]):not([data-start-time]),
+.metaScore-component.element[data-r-index="0"]:not([data-start-time]),
+.metaScore-component.element:not([data-r-index]).active,
+.metaScore-component.element[data-r-index="0"].active {
+  pointer-events: auto;
 }
 .metaScore-component.element:not([data-r-index]):not([data-start-time]) .contents,
 .metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
@@ -370,6 +377,7 @@ body {
 .in-editor.editing .metaScore-component.element {
   outline-width: 1px;
   outline-style: dashed;
+  pointer-events: auto;
 }
 .in-editor.editing .metaScore-component.element.selected {
   display: block;

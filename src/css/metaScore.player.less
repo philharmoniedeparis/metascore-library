@@ -240,6 +240,7 @@ body{
         height: 50px;
         min-width: 10px;
         min-height: 10px;
+        pointer-events: none;
 
         .contents{
             display: none;
@@ -260,7 +261,9 @@ body{
             display: block;
         
             &:not([data-start-time]),
-            &.active{            
+            &.active{
+                pointer-events: auto;
+                
                 .contents{
                     display: block;
                 }
@@ -450,6 +453,7 @@ body{
             &.element{
                 outline-width: 1px;
                 outline-style: dashed;
+                pointer-events: auto;
 
                 &.selected{
                     display: block;

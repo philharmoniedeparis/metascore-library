@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-01-29 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-01 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "56beeb";
+        return "e0c30b";
     },
 
     /**
@@ -3555,7 +3555,9 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onCursorElementTime = function(evt){
-        this.getMedia().setTime(evt.detail.value);
+        if(!this.hasClass('editing')){
+            this.getMedia().setTime(evt.detail.value);
+        }
     };
 
     /**
@@ -4908,9 +4910,9 @@ metaScore.namespace('player.component').Block = (function () {
      * @param {Integer} index The page's index
      * @return {player.component.Page} The page
      */
-    Block.prototype.getPage = function(index){
-        var page = this.page_wrapper.child('.page:nth-child('+ index +')');
-
+    Block.prototype.getPage = function(index){        
+        var page = this.page_wrapper.child('.page:nth-child('+ (index+1) +')').get(0);
+        
         return page ? page._metaScore : null;
     };
 

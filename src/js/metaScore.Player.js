@@ -462,7 +462,9 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onCursorElementTime = function(evt){
-        this.getMedia().setTime(evt.detail.value);
+        if(!this.hasClass('editing')){
+            this.getMedia().setTime(evt.detail.value);
+        }
     };
 
     /**
