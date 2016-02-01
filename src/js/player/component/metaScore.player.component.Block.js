@@ -91,7 +91,8 @@ metaScore.namespace('player.component').Block = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Block.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -116,7 +117,8 @@ metaScore.namespace('player.component').Block = (function () {
             'height': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.height', 'Height')
+                    'label': metaScore.Locale.t('player.component.Block.height', 'Height'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);

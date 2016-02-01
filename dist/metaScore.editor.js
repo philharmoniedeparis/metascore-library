@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "8f7fb8";
+        return "2724e7";
     },
 
     /**
@@ -7565,9 +7565,10 @@ metaScore.namespace('editor.field').Number = (function () {
      * @param {Number} [configs.min=null] The minimum allowed value
      * @param {Number} [configs.max=null] The maximum allowed value
      * @param {Number} [configs.step=1] The spin up/down step amount
-     * @param {Boolean} [configs.spinButtons=true] Whether to show the in spin buttons
-     * @param {Integer} [configs.spinInterval=200] The speed of the spinner buttons
+     * @param {Boolean} [configs.spinButtons=true] Whether to show the spin buttons
+     * @param {Integer} [configs.spinInterval=200] The speed of the spin buttons
      * @param {String} [configs.spinDirection='horizontal'] The direction of the spin buttons
+     * @param {Boolean} [configs.flipSpinButtons=false] Whether to flip the spin buttons
      */
     function NumberField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7588,7 +7589,8 @@ metaScore.namespace('editor.field').Number = (function () {
         'step': 1,
         'spinButtons': true,
         'spinInterval': 200,
-        'spinDirection': 'horizontal'
+        'spinDirection': 'horizontal',
+        'flipSpinButtons': false
     };
 
     metaScore.editor.Field.extend(NumberField);
@@ -7621,6 +7623,10 @@ metaScore.namespace('editor.field').Number = (function () {
         if(this.configs.spinButtons){
             buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this.input_wrapper);
+                
+            if(this.configs.flipSpinButtons){
+                buttons.addClass('flip');
+            }
                 
             this.spindown_btn = new metaScore.Dom('<button/>', {'text': '-', 'data-action': 'spin-down'})
                 .addListener('mousedown', metaScore.Function.proxy(this.onSpinBtnMouseDown, this))

@@ -59,7 +59,8 @@ metaScore.namespace('player.component').Element = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Element.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -71,7 +72,8 @@ metaScore.namespace('player.component').Element = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Element.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -84,7 +86,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Number',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
-                    'min': 10
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
@@ -97,7 +99,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Number',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
-                    'min': 10
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);

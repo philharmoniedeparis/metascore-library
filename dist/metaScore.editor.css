@@ -122,6 +122,13 @@
   flex-direction: column-reverse;
   justify-content: center;
 }
+.metaScore-editor .field.numberfield .input-wrapper .buttons.flip {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
 .metaScore-editor .field.numberfield .input-wrapper .buttons button {
   padding: 0;
   overflow: hidden;

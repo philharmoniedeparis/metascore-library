@@ -38,7 +38,8 @@ metaScore.namespace('player.component').Controller = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Controller.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Controller.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -50,7 +51,8 @@ metaScore.namespace('player.component').Controller = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Controller.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Controller.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);

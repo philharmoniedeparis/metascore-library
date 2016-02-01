@@ -987,14 +987,14 @@
                         },
                         {
                             "name": "spinButtons",
-                            "description": "Whether to show the in spin buttons",
+                            "description": "Whether to show the spin buttons",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
                         },
                         {
                             "name": "spinInterval",
-                            "description": "The speed of the spinner buttons",
+                            "description": "The speed of the spin buttons",
                             "type": "Integer",
                             "optional": true,
                             "optdefault": "200"
@@ -1005,6 +1005,13 @@
                             "type": "String",
                             "optional": true,
                             "optdefault": "'horizontal'"
+                        },
+                        {
+                            "name": "flipSpinButtons",
+                            "description": "Whether to flip the spin buttons",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -3160,7 +3167,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 56,
+            "line": 58,
             "description": "Setup the field's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -3172,7 +3179,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 103,
+            "line": 109,
             "description": "The change event handler",
             "itemtype": "method",
             "name": "onChange",
@@ -3191,7 +3198,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 114,
+            "line": 120,
             "description": "The input event handler",
             "itemtype": "method",
             "name": "onInput",
@@ -3210,7 +3217,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 127,
+            "line": 133,
             "description": "The mousewheel event handler",
             "itemtype": "method",
             "name": "onMouseWheel",
@@ -3229,7 +3236,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 146,
+            "line": 152,
             "description": "The keydown event handler",
             "itemtype": "method",
             "name": "onKeyDown",
@@ -3248,7 +3255,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 167,
+            "line": 173,
             "description": "The spin button's mousedown event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseDown",
@@ -3267,7 +3274,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 191,
+            "line": 197,
             "description": "The spin button's mouseup event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseUp",
@@ -3286,7 +3293,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 202,
+            "line": 208,
             "description": "The spin button's mouseout event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseOut",
@@ -3305,7 +3312,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 211,
+            "line": 217,
             "description": "Decrement the value by one step",
             "itemtype": "method",
             "name": "spinDown",
@@ -3317,7 +3324,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 221,
+            "line": 227,
             "description": "Increment the value by one step",
             "itemtype": "method",
             "name": "spinUp",
@@ -3329,7 +3336,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 231,
+            "line": 237,
             "description": "Set the field's value",
             "itemtype": "method",
             "name": "setValue",
@@ -3352,7 +3359,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 265,
+            "line": 271,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -3370,7 +3377,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 282,
+            "line": 288,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -9063,7 +9070,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 245,
+            "line": 247,
             "description": "Setup the block's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -9075,7 +9082,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 266,
+            "line": 268,
             "description": "Page cuepointstart event handler",
             "itemtype": "method",
             "name": "onPageCuePointStart",
@@ -9094,7 +9101,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 277,
+            "line": 279,
             "description": "Pager click event handler",
             "itemtype": "method",
             "name": "onPagerClick",
@@ -9113,7 +9120,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 307,
+            "line": 309,
             "description": "Get the block's pages",
             "itemtype": "method",
             "name": "getPages",
@@ -9127,7 +9134,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 323,
+            "line": 325,
             "description": "Add a page",
             "itemtype": "method",
             "name": "addPage",
@@ -9160,7 +9167,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 361,
+            "line": 363,
             "description": "Remove a page",
             "itemtype": "method",
             "name": "removePage",
@@ -9188,7 +9195,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 381,
+            "line": 383,
             "description": "Remove all pages",
             "itemtype": "method",
             "name": "removePages",
@@ -9199,7 +9206,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 393,
+            "line": 395,
             "description": "Get a page by index",
             "itemtype": "method",
             "name": "getPage",
@@ -9220,7 +9227,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 406,
+            "line": 408,
             "description": "Get the currently active page",
             "itemtype": "method",
             "name": "getActivePage",
@@ -9234,7 +9241,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 416,
+            "line": 418,
             "description": "Get the index of the currently active page",
             "itemtype": "method",
             "name": "getActivePageIndex",
@@ -9248,7 +9255,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 426,
+            "line": 428,
             "description": "Get the page count",
             "itemtype": "method",
             "name": "getPageCount",
@@ -9262,7 +9269,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 436,
+            "line": 438,
             "description": "Set the active page",
             "itemtype": "method",
             "name": "setActivePage",
@@ -9287,7 +9294,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 466,
+            "line": 468,
             "description": "Update the pager",
             "itemtype": "method",
             "name": "updatePager",
@@ -9300,7 +9307,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 484,
+            "line": 486,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9323,7 +9330,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 518,
+            "line": 520,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9346,7 +9353,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 90,
+            "line": 92,
             "description": "Setup the controller's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -9358,7 +9365,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 117,
+            "line": 119,
             "description": "Get the value of the controller's name property",
             "itemtype": "method",
             "name": "getName",
@@ -9372,7 +9379,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 127,
+            "line": 129,
             "description": "Update the displayed time",
             "itemtype": "method",
             "name": "updateTime",
@@ -9390,7 +9397,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 144,
+            "line": 146,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9413,7 +9420,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 257,
+            "line": 259,
             "description": "Setup the element's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -9425,7 +9432,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 273,
+            "line": 275,
             "description": "Get the page component this element belongs to",
             "itemtype": "method",
             "name": "getPage",
@@ -9439,7 +9446,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 290,
+            "line": 292,
             "description": "The cuepoint start event handler",
             "itemtype": "method",
             "name": "onCuePointStart",
@@ -9458,7 +9465,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 301,
+            "line": 303,
             "description": "The cuepoint stop event handler",
             "itemtype": "method",
             "name": "onCuePointStop",
@@ -9477,7 +9484,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 312,
+            "line": 314,
             "description": "The cuepoint seekout event handler",
             "itemtype": "method",
             "name": "onCuePointSeekOut",
@@ -9496,7 +9503,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 321,
+            "line": 323,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9519,7 +9526,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 351,
+            "line": 353,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9638,7 +9645,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 218,
+            "line": 222,
             "description": "Set the media sources",
             "itemtype": "method",
             "name": "setSources",
@@ -9663,7 +9670,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 245,
+            "line": 249,
             "description": "Get the value of the media's name property",
             "itemtype": "method",
             "name": "getName",
@@ -9677,7 +9684,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 255,
+            "line": 259,
             "description": "The loadedmetadata event handler",
             "itemtype": "method",
             "name": "onLoadedMetadata",
@@ -9696,7 +9703,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 266,
+            "line": 270,
             "description": "The play event handler",
             "itemtype": "method",
             "name": "onPlay",
@@ -9715,7 +9722,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 283,
+            "line": 287,
             "description": "The pause event handler",
             "itemtype": "method",
             "name": "onPause",
@@ -9734,7 +9741,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 296,
+            "line": 300,
             "description": "The timeupdate event handler",
             "itemtype": "method",
             "name": "onTimeUpdate",
@@ -9753,7 +9760,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 309,
+            "line": 313,
             "description": "The seeking event handler",
             "itemtype": "method",
             "name": "onSeeking",
@@ -9772,7 +9779,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 320,
+            "line": 324,
             "description": "Check whether the media is playing",
             "itemtype": "method",
             "name": "isPlaying",
@@ -9786,7 +9793,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 330,
+            "line": 334,
             "description": "Reset the media time",
             "itemtype": "method",
             "name": "reset",
@@ -9797,7 +9804,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 342,
+            "line": 346,
             "description": "Play the media",
             "itemtype": "method",
             "name": "play",
@@ -9808,7 +9815,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 354,
+            "line": 358,
             "description": "Pause the media",
             "itemtype": "method",
             "name": "pause",
@@ -9819,7 +9826,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 366,
+            "line": 370,
             "description": "Trigger the timeupdate event",
             "itemtype": "method",
             "name": "triggerTimeUpdate",
@@ -9841,7 +9848,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 384,
+            "line": 388,
             "description": "Set the media time",
             "itemtype": "method",
             "name": "setTime",
@@ -9859,7 +9866,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 399,
+            "line": 403,
             "description": "Get the current media time",
             "itemtype": "method",
             "name": "getTime",
@@ -9873,7 +9880,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 409,
+            "line": 413,
             "description": "Get the media's duration",
             "itemtype": "method",
             "name": "getDuration",
@@ -9887,7 +9894,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 419,
+            "line": 423,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -9910,7 +9917,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 453,
+            "line": 457,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -13181,15 +13188,15 @@
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:323"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:325"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:323"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:325"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:361"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:363"
         },
         {
             "message": "unknown tag: namepsace",

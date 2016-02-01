@@ -102,7 +102,8 @@ metaScore.namespace('player.component').Media = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Media.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -114,7 +115,8 @@ metaScore.namespace('player.component').Media = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Media.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -126,7 +128,8 @@ metaScore.namespace('player.component').Media = (function () {
             'width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.width', 'Width')
+                    'label': metaScore.Locale.t('player.component.Media.width', 'Width'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
@@ -138,7 +141,8 @@ metaScore.namespace('player.component').Media = (function () {
             'height': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.height', 'Height')
+                    'label': metaScore.Locale.t('player.component.Media.height', 'Height'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);

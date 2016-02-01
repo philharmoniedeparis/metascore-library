@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "8f7fb8";
+        return "2724e7";
     },
 
     /**
@@ -4604,7 +4604,8 @@ metaScore.namespace('player.component').Block = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Block.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -4629,7 +4630,8 @@ metaScore.namespace('player.component').Block = (function () {
             'height': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.height', 'Height')
+                    'label': metaScore.Locale.t('player.component.Block.height', 'Height'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
@@ -5100,7 +5102,8 @@ metaScore.namespace('player.component').Controller = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Controller.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Controller.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -5112,7 +5115,8 @@ metaScore.namespace('player.component').Controller = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Controller.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Controller.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -5301,7 +5305,8 @@ metaScore.namespace('player.component').Element = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Element.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -5313,7 +5318,8 @@ metaScore.namespace('player.component').Element = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Element.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -5326,7 +5332,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Number',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.width', 'Width'),
-                    'min': 10
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
@@ -5339,7 +5345,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Number',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.height', 'Height'),
-                    'min': 10
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
@@ -5726,7 +5732,8 @@ metaScore.namespace('player.component').Media = (function () {
             'x': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.x', 'X')
+                    'label': metaScore.Locale.t('player.component.Media.x', 'X'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('left'), 10);
@@ -5738,7 +5745,8 @@ metaScore.namespace('player.component').Media = (function () {
             'y': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.y', 'Y')
+                    'label': metaScore.Locale.t('player.component.Media.y', 'Y'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('top'), 10);
@@ -5750,7 +5758,8 @@ metaScore.namespace('player.component').Media = (function () {
             'width': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.width', 'Width')
+                    'label': metaScore.Locale.t('player.component.Media.width', 'Width'),
+                    'spinDirection': 'vertical'
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('width'), 10);
@@ -5762,7 +5771,8 @@ metaScore.namespace('player.component').Media = (function () {
             'height': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.height', 'Height')
+                    'label': metaScore.Locale.t('player.component.Media.height', 'Height'),
+                    'flipSpinButtons': true
                 },
                 'getter': function(skipDefault){
                     return parseInt(this.css('height'), 10);
