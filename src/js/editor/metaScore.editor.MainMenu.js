@@ -61,23 +61,23 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         new metaScore.editor.Button()
             .attr({
-                'title': metaScore.Locale.t('editor.MainMenu.saveDraft', 'Save as draft')
+                'title': metaScore.Locale.t('editor.MainMenu.save', 'Save as draft')
             })
-            .data('action', 'save-draft')
+            .data('action', 'save')
             .appendTo(btn_group);
 
         sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
         new metaScore.editor.Button()
             .attr({
-                'title': metaScore.Locale.t('editor.MainMenu.saveCopy', 'Save as copy')
+                'title': metaScore.Locale.t('editor.MainMenu.clone', 'Save as copy')
             })
-            .data('action', 'save-copy')
+            .data('action', 'clone')
             .appendTo(sub_menu);
 
         new metaScore.editor.Button()
             .attr({
-                'title': metaScore.Locale.t('editor.MainMenu.Publish', 'Save & Publish')
+                'title': metaScore.Locale.t('editor.MainMenu.publish', 'Save & Publish')
             })
             .data('action', 'publish')
             .appendTo(sub_menu);

@@ -435,12 +435,12 @@ metaScore.Editor = (function(){
                 this.detailsOverlay.show();
                 break;
 
-            case 'save-draft':
+            case 'save':
                 this.saveGuide('update');
                 break;
 
-            case 'save-copy':
-                this.saveGuide('duplicate');
+            case 'clone':
+                this.saveGuide('clone');
                 break;
 
             case 'publish':
@@ -1365,6 +1365,8 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
     Editor.prototype.onPlayerLoadSuccess = function(evt){
+        var data;        
+        
         this.player = evt.detail.player
             .addClass('in-editor')
             .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
@@ -1378,6 +1380,8 @@ metaScore.Editor = (function(){
             .addListener('timeupdate', metaScore.Function.proxy(this.onPlayerTimeUpdate, this))
             .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
             .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
+            
+        data = this.player.getData();
 
         new metaScore.Dom(this.player_frame.get(0).contentWindow.document.body)
             .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
@@ -1389,11 +1393,14 @@ metaScore.Editor = (function(){
             .updateBlockSelector();
 
         this.mainmenu
+            .toggleButton('save', data.permissions.update)
+            .toggleButton('clone', data.permissions.clone)
+            .toggleButton('publish', data.permissions.update)
             .rindexfield.setValue(0, true);
 
         this.detailsOverlay
             .clearValues(true)
-            .setValues(this.player.getData(), true);
+            .setValues(data, true);
 
         this.loadmask.hide();
         delete this.loadmask;
@@ -1790,8 +1797,8 @@ metaScore.Editor = (function(){
         var hasPlayer = this.hasOwnProperty('player');
 
         this.mainmenu.toggleButton('edit', hasPlayer);
-        this.mainmenu.toggleButton('save-draft', hasPlayer);
-        this.mainmenu.toggleButton('save-copy', hasPlayer);
+        this.mainmenu.toggleButton('save', hasPlayer);
+        this.mainmenu.toggleButton('clone', hasPlayer);
         this.mainmenu.toggleButton('publish', hasPlayer);
         this.mainmenu.toggleButton('delete', hasPlayer);
         //this.mainmenu.toggleButton('download', hasPlayer);
@@ -2065,7 +2072,7 @@ metaScore.Editor = (function(){
      * Saves the loaded guide
      *
      * @method saveGuide
-     * @param {String} action The action to perform when saving ('update' or 'duplicate')
+     * @param {String} action The action to perform when saving ('update' or 'clone')
      * @param {Boolean} publish Whether to published the new revision
      * @chainable
      */

@@ -395,13 +395,13 @@
 .metaScore-editor .main-menu .button-group button[data-action="edit"] {
   background-image: url('img/editor/main-menu/edit.png');
 }
-.metaScore-editor .main-menu > button[data-action="save-draft"],
-.metaScore-editor .main-menu .button-group button[data-action="save-draft"] {
-  background-image: url('img/editor/main-menu/save-draft.png');
+.metaScore-editor .main-menu > button[data-action="save"],
+.metaScore-editor .main-menu .button-group button[data-action="save"] {
+  background-image: url('img/editor/main-menu/save.png');
 }
-.metaScore-editor .main-menu > button[data-action="save-copy"],
-.metaScore-editor .main-menu .button-group button[data-action="save-copy"] {
-  background-image: url('img/editor/main-menu/save-copy.png');
+.metaScore-editor .main-menu > button[data-action="clone"],
+.metaScore-editor .main-menu .button-group button[data-action="clone"] {
+  background-image: url('img/editor/main-menu/clone.png');
 }
 .metaScore-editor .main-menu > button[data-action="publish"],
 .metaScore-editor .main-menu .button-group button[data-action="publish"] {

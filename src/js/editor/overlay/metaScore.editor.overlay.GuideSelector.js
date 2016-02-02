@@ -87,6 +87,10 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
         }
         else{
             metaScore.Array.each(guides, function(index, guide){
+                if(!(guide.permissions.update || guide.permissions.clone)){
+                    return;
+                }
+                
                 row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
                     .appendTo(table);
 
@@ -134,6 +138,9 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     if('latest_revision' in guide){
                         revision_field.setValue(guide.latest_revision);
                     }
+                }
+                else{
+                    revision_field.disable();
                 }
 
                 button = new metaScore.editor.Button()
