@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-01 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-02 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "2724e7";
+        return "6c8cc3";
     },
 
     /**
@@ -4701,7 +4701,7 @@ metaScore.Editor = (function(){
 
                                         if(block.getProperty('synched')){
                                             metaScore.Array.each(block.getPages(), function(index, page){
-                                                if(page.getProperty('start-time') < new_duration){
+                                                if(page.getProperty('start-time') > new_duration){
                                                     blocks.push(block.getProperty('name'));
                                                     return false;
                                                 }

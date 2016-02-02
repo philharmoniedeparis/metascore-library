@@ -1608,7 +1608,7 @@ metaScore.Editor = (function(){
 
                                         if(block.getProperty('synched')){
                                             metaScore.Array.each(block.getPages(), function(index, page){
-                                                if(page.getProperty('start-time') < new_duration){
+                                                if(page.getProperty('start-time') > new_duration){
                                                     blocks.push(block.getProperty('name'));
                                                     return false;
                                                 }
