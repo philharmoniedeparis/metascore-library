@@ -3772,10 +3772,29 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 351,
+            "line": 349,
             "description": "Enable the field",
             "itemtype": "method",
             "name": "enable",
+            "chainable": 1,
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 382,
+            "description": "Toggle the field's readonly state",
+            "itemtype": "method",
+            "name": "readonly",
+            "params": [
+                {
+                    "name": "readonly",
+                    "description": "Whether the field should be readonly, the current state is toggled if not provided",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
             "chainable": 1,
             "class": "editor.field.TimeField",
             "module": "Editor",

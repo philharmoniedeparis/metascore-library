@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-02 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-03 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "bb4ef8";
+        return "149f48";
     },
 
     /**
@@ -8431,7 +8431,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @chainable
      */
     TimeField.prototype.disable = function(){
-        this.disabled = true;
+        TimeField.parent.prototype.disable.call(this);
 
         if(this.checkbox){
             this.checkbox.attr('disabled', 'disabled');
@@ -8449,8 +8449,6 @@ metaScore.namespace('editor.field').Time = (function () {
             this.out.attr('disabled', 'disabled');
         }
 
-        this.addClass('disabled');
-
         return this;
     };
 
@@ -8461,27 +8459,58 @@ metaScore.namespace('editor.field').Time = (function () {
      * @chainable
      */
     TimeField.prototype.enable = function(){
-        var active = this.isActive();
-
-        this.disabled = false;
+        var active = this.isActive(),
+            disabled_attr;
+        
+        TimeField.parent.prototype.enable.call(this);
 
         if(this.checkbox){
             this.checkbox.attr('disabled', null);
         }
+        
+        disabled_attr = active ? null : 'disabled';
 
-        this.hours.attr('disabled', active ? null : 'disabled');
-        this.minutes.attr('disabled', active ? null : 'disabled');
-        this.seconds.attr('disabled', active ? null : 'disabled');
-        this.centiseconds.attr('disabled', active ? null : 'disabled');
+        this.hours.attr('disabled', disabled_attr);
+        this.minutes.attr('disabled', disabled_attr);
+        this.seconds.attr('disabled', disabled_attr);
+        this.centiseconds.attr('disabled', disabled_attr);
 
         if(this.in){
-            this.in.attr('disabled', active ? null : 'disabled');
+            this.in.attr('disabled', disabled_attr);
         }
         if(this.out){
-            this.out.attr('disabled', active ? null : 'disabled');
+            this.out.attr('disabled', disabled_attr);
         }
 
-        this.removeClass('disabled');
+        return this;
+    };
+
+    /**
+     * Toggle the field's readonly state
+     *
+     * @method readonly
+     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @chainable
+     */
+    TimeField.prototype.readonly = function(readonly){
+        var readonly_attr;
+        
+        TimeField.parent.prototype.readonly.call(this, readonly);
+        
+        readonly_attr = this.is_readonly ? "readonly" : null;
+
+        if(this.checkbox){
+            this.checkbox.attr('readonly', readonly_attr);
+        }
+
+        this.hours.attr('readonly', readonly_attr);
+        this.minutes.attr('readonly', readonly_attr);
+        this.seconds.attr('readonly', readonly_attr);
+        this.centiseconds.attr('readonly', readonly_attr);
+        
+        if(this.in){
+            this.in.attr('readonly', readonly_attr);
+        }
 
         return this;
     };
