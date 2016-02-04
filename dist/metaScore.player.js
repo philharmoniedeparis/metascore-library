@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "4924ba";
+        return "83aaea";
     },
 
     /**
@@ -4305,7 +4305,7 @@ metaScore.namespace('player').CuePoint = (function () {
         this.start = metaScore.Function.proxy(this.start, this);
         this.stop = metaScore.Function.proxy(this.stop, this);
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
-        this.onMediaSeeking = metaScore.Function.proxy(this.onMediaSeeking, this);
+        this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
         this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
 
@@ -4356,15 +4356,15 @@ metaScore.namespace('player').CuePoint = (function () {
     /**
      * The media's seek event handler
      * 
-     * @method onMediaSeeking
+     * @method onMediaSeeked
      * @private
      * @param {Event} evt The event object
      */
-    CuePoint.prototype.onMediaSeeking = function(evt){
+    CuePoint.prototype.onMediaSeeked = function(evt){
         var media = this.getMedia(),
             cur_time = media.getTime();
 
-        media.removeListener('play', this.onMediaSeeking);
+        media.removeListener('play', this.onMediaSeeked);
 
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
             this.triggerEvent(EVT_SEEKOUT);
@@ -4402,7 +4402,7 @@ metaScore.namespace('player').CuePoint = (function () {
             this.stop();
         }
         else{            
-            this.configs.media.addListener('seeking', this.onMediaSeeking);
+            this.configs.media.addListener('seeked', this.onMediaSeeked);
             this.running = true;
         }
 
@@ -4424,7 +4424,7 @@ metaScore.namespace('player').CuePoint = (function () {
             this.triggerEvent(EVT_STOP);
 
             if(this.hasListener(EVT_SEEKOUT)){
-                this.configs.media.addListener('play', this.onMediaSeeking);
+                this.configs.media.addListener('play', this.onMediaSeeked);
             }
         }
 
@@ -4446,8 +4446,8 @@ metaScore.namespace('player').CuePoint = (function () {
 
         this.getMedia()
             .removeListener('timeupdate', this.onMediaTimeUpdate)
-            .removeListener('seeking', this.onMediaSeeking)
-            .removeListener('play', this.onMediaSeeking);
+            .removeListener('seeked', this.onMediaSeeked)
+            .removeListener('play', this.onMediaSeeked);
     };
 
     return CuePoint;
