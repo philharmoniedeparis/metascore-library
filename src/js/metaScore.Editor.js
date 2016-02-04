@@ -1396,6 +1396,7 @@ metaScore.Editor = (function(){
             .toggleButton('save', data.permissions.update)
             .toggleButton('clone', data.permissions.clone)
             .toggleButton('publish', data.permissions.update)
+            .toggleButton('delete', data.permissions.delete)
             .rindexfield.setValue(0, true);
 
         this.detailsOverlay

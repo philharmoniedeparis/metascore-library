@@ -98,7 +98,7 @@ metaScore.namespace('player').CuePoint = (function () {
                 this.previous_time = cur_time;
             }
 
-            if((Math.ceil(cur_time) < this.configs.inTime) || ((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime))){
+            if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
                 this.stop();
             }
 
@@ -118,7 +118,6 @@ metaScore.namespace('player').CuePoint = (function () {
             cur_time = media.getTime();
 
         media.removeListener('play', this.onMediaSeeking);
-
 
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
             this.triggerEvent(EVT_SEEKOUT);
@@ -155,11 +154,8 @@ metaScore.namespace('player').CuePoint = (function () {
         if(this.configs.outTime === null){
             this.stop();
         }
-        else{
-            if(this.hasListener(EVT_SEEKOUT)){
-                this.configs.media.addListener('seeking', this.onMediaSeeking);
-            }
-
+        else{            
+            this.configs.media.addListener('seeking', this.onMediaSeeking);
             this.running = true;
         }
 
@@ -173,6 +169,10 @@ metaScore.namespace('player').CuePoint = (function () {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
     CuePoint.prototype.stop = function(supressEvent){
+        if(!this.running){
+            return;
+        }
+        
         if(supressEvent !== true){
             this.triggerEvent(EVT_STOP);
 
