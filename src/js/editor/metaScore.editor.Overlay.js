@@ -83,7 +83,10 @@ metaScore.namespace('editor').Overlay = (function(){
             .appendTo(this);
 
         if(this.configs.draggable){
-            this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
+            this.draggable = new metaScore.Draggable({
+                'target': this,
+                'handle': this.configs.toolbar ? this.toolbar : this
+            });
         }
 
     };

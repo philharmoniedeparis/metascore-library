@@ -22,7 +22,7 @@ metaScore.Array = (function () {
      * @param {Array} haystack The array
      * @return {Integer} The index of the first match, -1 if none
      */
-    Array.inArray = function (needle, haystack) {
+    Array.inArray = function(needle, haystack){
         var len, i = 0;
 
         if(haystack) {
@@ -32,9 +32,9 @@ metaScore.Array = (function () {
 
             len = haystack.length;
 
-            for ( ; i < len; i++ ) {
+            for(; i < len; i++){
                 // Skip accessing in sparse arrays
-                if ( i in haystack && haystack[i] === needle ) {
+                if(i in haystack && haystack[i] === needle){
                     return i;
                 }
             }
@@ -51,7 +51,7 @@ metaScore.Array = (function () {
      * @param {Array} arr The original array
      * @return {Array} The copy
      */
-    Array.copy = function (arr) {
+    Array.copy = function(arr) {
         return [].concat(arr);
     };
 
@@ -64,7 +64,6 @@ metaScore.Array = (function () {
      * @return {Array} The shuffled copy of the array
      */
     Array.shuffle = function(arr) {
-
         var shuffled = Array.copy(arr);
 
         shuffled.sort(function(){
@@ -72,7 +71,6 @@ metaScore.Array = (function () {
         });
 
         return shuffled;
-
     };
 
     /**
@@ -84,14 +82,13 @@ metaScore.Array = (function () {
      * @return {Array} A copy of the array with no duplicates
      */
     Array.unique = function(arr) {
+        var unique = [],
+            length = arr.length;
 
-        var unique = [];
-        var length = arr.length;
-
-        for(var i=0; i<length; i++) {
-            for(var j=i+1; j<length; j++) {
+        for(var i=0; i<length; i++){
+            for(var j=i+1; j<length; j++){
                 // If this[i] is found later in the array
-                if (arr[i] === arr[j]){
+                if(arr[i] === arr[j]){
                     j = ++i;
                 }
             }
@@ -99,7 +96,6 @@ metaScore.Array = (function () {
         }
 
         return unique;
-
     };
 
     /**
@@ -110,12 +106,11 @@ metaScore.Array = (function () {
      * @param {Array} arr The array to iterate over
      * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
      * @param {Integer} callback.index The index of the current element being processed in the array
-     * @param {Array} callback.value The element that is currently being processed in the array
+     * @param {Mixed} callback.value The element that is currently being processed in the array
      * @param {Mixed} scope The value to use as this when executing the callback
      * @return {Array} The array
      */
     Array.each = function(arr, callback, scope) {
-
         var i = 0,
             l = arr.length,
             value,
@@ -130,7 +125,6 @@ metaScore.Array = (function () {
         }
 
         return arr;
-
     };
 
     /**

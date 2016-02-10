@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-04 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-10 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "83aaea";
+        return "92ff6a5";
     },
 
     /**
@@ -530,7 +530,7 @@ metaScore.Array = (function () {
      * @param {Array} haystack The array
      * @return {Integer} The index of the first match, -1 if none
      */
-    Array.inArray = function (needle, haystack) {
+    Array.inArray = function(needle, haystack){
         var len, i = 0;
 
         if(haystack) {
@@ -540,9 +540,9 @@ metaScore.Array = (function () {
 
             len = haystack.length;
 
-            for ( ; i < len; i++ ) {
+            for(; i < len; i++){
                 // Skip accessing in sparse arrays
-                if ( i in haystack && haystack[i] === needle ) {
+                if(i in haystack && haystack[i] === needle){
                     return i;
                 }
             }
@@ -559,7 +559,7 @@ metaScore.Array = (function () {
      * @param {Array} arr The original array
      * @return {Array} The copy
      */
-    Array.copy = function (arr) {
+    Array.copy = function(arr) {
         return [].concat(arr);
     };
 
@@ -572,7 +572,6 @@ metaScore.Array = (function () {
      * @return {Array} The shuffled copy of the array
      */
     Array.shuffle = function(arr) {
-
         var shuffled = Array.copy(arr);
 
         shuffled.sort(function(){
@@ -580,7 +579,6 @@ metaScore.Array = (function () {
         });
 
         return shuffled;
-
     };
 
     /**
@@ -592,14 +590,13 @@ metaScore.Array = (function () {
      * @return {Array} A copy of the array with no duplicates
      */
     Array.unique = function(arr) {
+        var unique = [],
+            length = arr.length;
 
-        var unique = [];
-        var length = arr.length;
-
-        for(var i=0; i<length; i++) {
-            for(var j=i+1; j<length; j++) {
+        for(var i=0; i<length; i++){
+            for(var j=i+1; j<length; j++){
                 // If this[i] is found later in the array
-                if (arr[i] === arr[j]){
+                if(arr[i] === arr[j]){
                     j = ++i;
                 }
             }
@@ -607,7 +604,6 @@ metaScore.Array = (function () {
         }
 
         return unique;
-
     };
 
     /**
@@ -618,12 +614,11 @@ metaScore.Array = (function () {
      * @param {Array} arr The array to iterate over
      * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
      * @param {Integer} callback.index The index of the current element being processed in the array
-     * @param {Array} callback.value The element that is currently being processed in the array
+     * @param {Mixed} callback.value The element that is currently being processed in the array
      * @param {Mixed} scope The value to use as this when executing the callback
      * @return {Array} The array
      */
     Array.each = function(arr, callback, scope) {
-
         var i = 0,
             l = arr.length,
             value,
@@ -638,7 +633,6 @@ metaScore.Array = (function () {
         }
 
         return arr;
-
     };
 
     /**
@@ -1281,11 +1275,37 @@ metaScore.Dom = (function () {
      * @return {String} The value of the element
      */
     Dom.val = function(element, value){
-        if(value !== undefined){
-            element.value = value;
-        }
+        var options, values;
+        
+        if(Dom.is(element, 'select[multiple]')){
+            if(value){
+                if(!metaScore.Var.is(value, 'array')){
+                    value = [value];
+                }
+                
+                options = Dom.selectElements('option', element);
+                
+                metaScore.Array.each(options, function(index, option){
+                    Dom.prop(option, 'selected', metaScore.Array.inArray(Dom.val(option), value) > -1);
+                });
+            }
+            
+            options = Dom.selectElements('option:checked', element);
+            values = [];
+            
+            metaScore.Array.each(options, function(index, option){
+                values.push(Dom.val(option));
+            });
+            
+            return values;
+        }        
+        else{
+            if(value !== undefined){
+                element.value = value;
+            }
 
-        return element.value;
+            return element.value;
+        }
     };
 
     /**
@@ -1326,6 +1346,40 @@ metaScore.Dom = (function () {
                         return element.getAttribute(name);
                     }
                     break;
+            }
+        }
+    };
+
+    /**
+     * Set or get a property on an element
+     * 
+     * @method prop
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} name The attribute's name, or a list of name/value pairs
+     * @param {Mixed} [value] The attribute's value
+     * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
+     */
+    Dom.prop = function(element, name, value){
+        if(metaScore.Var.is(name, 'object')){
+            metaScore.Object.each(name, function(key, value){
+                Dom.prop(element, key, value);
+            }, this);
+        }
+        else{
+            if(value === null){
+                try {
+                    element[name] = undefined;
+                    delete element[name];
+                }catch(e){
+                }
+            }
+            else{
+                if(value !== undefined){
+                    element[name] = value;
+                }
+                
+                return element[name];
             }
         }
     };
@@ -1869,7 +1923,7 @@ metaScore.Dom = (function () {
     /**
      * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
      * 
-     * @method val
+     * @method attr
      * @param {HTMLElement} element The element
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
@@ -1883,6 +1937,26 @@ metaScore.Dom = (function () {
         }
         else{
             return Dom.attr(this.get(0), name);
+        }
+    };
+
+    /**
+     * Set a property of all the elements managed by the Dom object, or get the value of a property of the first element
+     * 
+     * @method prop
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
+     */
+    Dom.prototype.prop = function(name, value) {
+        if(value !== undefined || metaScore.Var.is(name, 'object')){
+            this.each(function(index, element) {
+                Dom.prop(element, name, value);
+            }, this);
+            return this;
+        }
+        else{
+            return Dom.prop(this.get(0), name);
         }
     };
 
@@ -3111,6 +3185,7 @@ metaScore.Editor = (function(){
      * @param {String} [configs.player_url=''] The base URL of players
      * @param {String} [configs.api_url=''] The base URL of the RESTful API
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {Object} [configs.user_groups={}] The groups the user belongs to
      */
     function Editor(configs) {
         this.configs = this.getConfigs(configs);
@@ -3193,6 +3268,7 @@ metaScore.Editor = (function(){
             .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
 
         this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
+                'groups': this.configs.user_groups,
                 'submit_text': metaScore.Locale.t('editor.detailsOverlay.submit_text', 'Apply')
             })
             .addListener('show', metaScore.Function.proxy(this.onDetailsOverlayShow, this))
@@ -3221,7 +3297,8 @@ metaScore.Editor = (function(){
         'container': 'body',
         'player_url': '',
         'api_url': '',
-        'ajax': {}
+        'ajax': {},
+        'user_groups': {}
     };
 
     /**
@@ -3475,6 +3552,7 @@ metaScore.Editor = (function(){
             case 'new':
                 callback = metaScore.Function.proxy(function(){
                     new metaScore.editor.overlay.GuideDetails({
+                            'groups': this.configs.user_groups,
                             'autoShow': true
                         })
                         .addListener('show', metaScore.Function.proxy(this.onDetailsOverlayShow, this))
@@ -5190,6 +5268,11 @@ metaScore.Editor = (function(){
             if(key === 'thumbnail' || key === 'media'){
                 data.append('files['+ key +']', value.object);
             }
+            else if(metaScore.Var.is(value, 'array')){
+                metaScore.Array.each(value, function(index, val){
+                    data.append(key +'[]', val);
+                });
+            }
             else{
                 data.append(key, value);
             }
@@ -6115,7 +6198,10 @@ metaScore.namespace('editor').Overlay = (function(){
             .appendTo(this);
 
         if(this.configs.draggable){
-            this.draggable = new metaScore.Draggable({'target': this, 'handle': this.configs.toolbar ? this.toolbar : this});
+            this.draggable = new metaScore.Draggable({
+                'target': this,
+                'handle': this.configs.toolbar ? this.toolbar : this
+            });
         }
 
     };
@@ -7860,6 +7946,15 @@ metaScore.namespace('editor.field').Number = (function () {
 metaScore.namespace('editor.field').Select = (function () {
 
     /**
+     * Fired when the field's value changes
+     *
+     * @event valuechange
+     * @param {Object} field The field instance
+     * @param {Mixed} value The new value
+     */
+    var EVT_VALUECHANGE = 'valuechange';
+
+    /**
      * A select list field based on an HTML select element
      *
      * @class SelectField
@@ -7867,7 +7962,8 @@ metaScore.namespace('editor.field').Select = (function () {
      * @extends editor.Field
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options={}}] A list of select options as key/value pairs
+     * @param {Object} [configs.options={}] A list of select options as key/value pairs
+     * @param {Boolean} [configs.multiple=false] Whether multiple options can be selected at once
      */
     function SelectField(configs) {
         this.configs = this.getConfigs(configs);
@@ -7879,7 +7975,8 @@ metaScore.namespace('editor.field').Select = (function () {
     }
 
     SelectField.defaults = {
-        'options': {}
+        'options': {},
+        'multiple': false
     };
 
     metaScore.editor.Field.extend(SelectField);
@@ -7905,9 +8002,13 @@ metaScore.namespace('editor.field').Select = (function () {
             .addListener('change', metaScore.Function.proxy(this.onChange, this))
             .appendTo(this.input_wrapper);
 
-            metaScore.Object.each(this.configs.options, function(key, value){
-                this.addOption(key, value);
-            }, this);
+        metaScore.Object.each(this.configs.options, function(key, value){
+            this.addOption(key, value);
+        }, this);
+        
+        if(this.configs.multiple){
+            this.input.attr('multiple', 'multiple');
+        }
     };
 
     /**
@@ -7993,7 +8094,7 @@ metaScore.namespace('editor.field').Select = (function () {
      * @chainable
      */
     SelectField.prototype.readonly = function(readonly){
-        SelectField.parent.prototype.readonly.call(this, readonly);
+        SelectField.parent.prototype.readonly.apply(this, arguments);
 
         this.input.attr('disabled', this.is_readonly ? "disabled" : null);
 
@@ -10020,6 +10121,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Guide Info'] The overlay's title
+     * @param {Object} [configs.groups={}] The groups the user belongs to
      * @param {String} [configs.submit_text='Save'] The overlay's submit button label
      */
     function GuideDetails(configs) {
@@ -10037,6 +10139,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     GuideDetails.defaults = {
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
+        'groups': {},
         'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
     };
 
@@ -10122,6 +10225,18 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .data('name', 'css')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
             .appendTo(form);
+        
+        if(!metaScore.Var.isEmpty(this.configs.groups)){
+            this.fields['groups'] = new metaScore.editor.field.Select({
+                    'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
+                    'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The groups this guide is shared with<br/><em>Hold down the Ctrl/Cmd key to select multiple groups</em>'),
+                    'multiple': true,
+                    'options': this.configs.groups
+                })
+                .data('name', 'groups')
+                .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+                .appendTo(form);
+        }
 
         // Buttons
         new metaScore.editor.Button({'label': this.configs.submit_text})
@@ -10161,9 +10276,23 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @chainable
      */
     GuideDetails.prototype.setValues = function(values, supressEvent){
-        metaScore.Object.each(values, function(key, value){
-            if(key in this.fields){
-                this.fields[key].setValue(value, supressEvent);
+        metaScore.Object.each(values, function(name, value){
+            var field;
+            
+            if(name in this.fields){
+                field = this.fields[name];
+                
+                if(name === 'shared_with'){
+                    field.clear();
+                    
+                    if(values['available_groups']){
+                        metaScore.Object.each(values['available_groups'], function(gid, group_name){
+                            field.addOption(gid, group_name);
+                        });
+                    }
+                }
+                
+                field.setValue(value, supressEvent);
             }
         }, this);
 
@@ -10180,7 +10309,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @chainable
      */
     GuideDetails.prototype.clearValues = function(supressEvent){
-        metaScore.Object.each(this.fields, function(key, field){
+        metaScore.Object.each(this.fields, function(name, field){
             field.setValue(null, supressEvent);
         }, this);
 

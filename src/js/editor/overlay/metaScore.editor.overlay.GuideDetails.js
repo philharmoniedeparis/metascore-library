@@ -23,6 +23,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Guide Info'] The overlay's title
+     * @param {Object} [configs.groups={}] The groups the user belongs to
      * @param {String} [configs.submit_text='Save'] The overlay's submit button label
      */
     function GuideDetails(configs) {
@@ -40,6 +41,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     GuideDetails.defaults = {
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
+        'groups': {},
         'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
     };
 
@@ -125,6 +127,18 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .data('name', 'css')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
             .appendTo(form);
+        
+        if(!metaScore.Var.isEmpty(this.configs.groups)){
+            this.fields['groups'] = new metaScore.editor.field.Select({
+                    'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
+                    'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The groups this guide is shared with<br/><em>Hold down the Ctrl/Cmd key to select multiple groups</em>'),
+                    'multiple': true,
+                    'options': this.configs.groups
+                })
+                .data('name', 'groups')
+                .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+                .appendTo(form);
+        }
 
         // Buttons
         new metaScore.editor.Button({'label': this.configs.submit_text})
@@ -164,9 +178,23 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @chainable
      */
     GuideDetails.prototype.setValues = function(values, supressEvent){
-        metaScore.Object.each(values, function(key, value){
-            if(key in this.fields){
-                this.fields[key].setValue(value, supressEvent);
+        metaScore.Object.each(values, function(name, value){
+            var field;
+            
+            if(name in this.fields){
+                field = this.fields[name];
+                
+                if(name === 'shared_with'){
+                    field.clear();
+                    
+                    if(values['available_groups']){
+                        metaScore.Object.each(values['available_groups'], function(gid, group_name){
+                            field.addOption(gid, group_name);
+                        });
+                    }
+                }
+                
+                field.setValue(value, supressEvent);
             }
         }, this);
 
@@ -183,7 +211,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @chainable
      */
     GuideDetails.prototype.clearValues = function(supressEvent){
-        metaScore.Object.each(this.fields, function(key, field){
+        metaScore.Object.each(this.fields, function(name, field){
             field.setValue(null, supressEvent);
         }, this);
 

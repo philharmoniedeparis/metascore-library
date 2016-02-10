@@ -402,11 +402,37 @@ metaScore.Dom = (function () {
      * @return {String} The value of the element
      */
     Dom.val = function(element, value){
-        if(value !== undefined){
-            element.value = value;
-        }
+        var options, values;
+        
+        if(Dom.is(element, 'select[multiple]')){
+            if(value){
+                if(!metaScore.Var.is(value, 'array')){
+                    value = [value];
+                }
+                
+                options = Dom.selectElements('option', element);
+                
+                metaScore.Array.each(options, function(index, option){
+                    Dom.prop(option, 'selected', metaScore.Array.inArray(Dom.val(option), value) > -1);
+                });
+            }
+            
+            options = Dom.selectElements('option:checked', element);
+            values = [];
+            
+            metaScore.Array.each(options, function(index, option){
+                values.push(Dom.val(option));
+            });
+            
+            return values;
+        }        
+        else{
+            if(value !== undefined){
+                element.value = value;
+            }
 
-        return element.value;
+            return element.value;
+        }
     };
 
     /**
@@ -447,6 +473,40 @@ metaScore.Dom = (function () {
                         return element.getAttribute(name);
                     }
                     break;
+            }
+        }
+    };
+
+    /**
+     * Set or get a property on an element
+     * 
+     * @method prop
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {Mixed} name The attribute's name, or a list of name/value pairs
+     * @param {Mixed} [value] The attribute's value
+     * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
+     */
+    Dom.prop = function(element, name, value){
+        if(metaScore.Var.is(name, 'object')){
+            metaScore.Object.each(name, function(key, value){
+                Dom.prop(element, key, value);
+            }, this);
+        }
+        else{
+            if(value === null){
+                try {
+                    element[name] = undefined;
+                    delete element[name];
+                }catch(e){
+                }
+            }
+            else{
+                if(value !== undefined){
+                    element[name] = value;
+                }
+                
+                return element[name];
             }
         }
     };
@@ -990,7 +1050,7 @@ metaScore.Dom = (function () {
     /**
      * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
      * 
-     * @method val
+     * @method attr
      * @param {HTMLElement} element The element
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
@@ -1004,6 +1064,26 @@ metaScore.Dom = (function () {
         }
         else{
             return Dom.attr(this.get(0), name);
+        }
+    };
+
+    /**
+     * Set a property of all the elements managed by the Dom object, or get the value of a property of the first element
+     * 
+     * @method prop
+     * @param {HTMLElement} element The element
+     * @param {String} [value] The value to set
+     * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
+     */
+    Dom.prototype.prop = function(name, value) {
+        if(value !== undefined || metaScore.Var.is(name, 'object')){
+            this.each(function(index, element) {
+                Dom.prop(element, name, value);
+            }, this);
+            return this;
+        }
+        else{
+            return Dom.prop(this.get(0), name);
         }
     };
 

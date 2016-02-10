@@ -18,6 +18,7 @@ metaScore.Editor = (function(){
      * @param {String} [configs.player_url=''] The base URL of players
      * @param {String} [configs.api_url=''] The base URL of the RESTful API
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {Object} [configs.user_groups={}] The groups the user belongs to
      */
     function Editor(configs) {
         this.configs = this.getConfigs(configs);
@@ -100,6 +101,7 @@ metaScore.Editor = (function(){
             .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
 
         this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
+                'groups': this.configs.user_groups,
                 'submit_text': metaScore.Locale.t('editor.detailsOverlay.submit_text', 'Apply')
             })
             .addListener('show', metaScore.Function.proxy(this.onDetailsOverlayShow, this))
@@ -128,7 +130,8 @@ metaScore.Editor = (function(){
         'container': 'body',
         'player_url': '',
         'api_url': '',
-        'ajax': {}
+        'ajax': {},
+        'user_groups': {}
     };
 
     /**
@@ -382,6 +385,7 @@ metaScore.Editor = (function(){
             case 'new':
                 callback = metaScore.Function.proxy(function(){
                     new metaScore.editor.overlay.GuideDetails({
+                            'groups': this.configs.user_groups,
                             'autoShow': true
                         })
                         .addListener('show', metaScore.Function.proxy(this.onDetailsOverlayShow, this))
@@ -2096,6 +2100,11 @@ metaScore.Editor = (function(){
         metaScore.Object.each(details, function(key, value){
             if(key === 'thumbnail' || key === 'media'){
                 data.append('files['+ key +']', value.object);
+            }
+            else if(metaScore.Var.is(value, 'array')){
+                metaScore.Array.each(value, function(index, val){
+                    data.append(key +'[]', val);
+                });
             }
             else{
                 data.append(key, value);

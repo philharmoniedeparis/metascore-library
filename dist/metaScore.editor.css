@@ -953,6 +953,8 @@
   background: #eee;
 }
 .metaScore-editor .overlay.guide-selector .contents {
+  width: 50vw;
+  min-width: 600px;
   padding: 12px 16px;
 }
 .metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail {
@@ -1046,6 +1048,16 @@
 }
 .metaScore-editor .overlay.guide-details .contents {
   min-width: 500px;
+}
+.metaScore-editor .overlay.guide-details .contents .field.textfield input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.metaScore-editor .overlay.guide-details .contents .field.textareafield textarea {
+  box-sizing: border-box;
+}
+.metaScore-editor .overlay.guide-details .contents .field.selectfield select {
+  width: 100%;
 }
 .metaScore-editor .overlay.insert-image .size-wrapper {
   position: relative;

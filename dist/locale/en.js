@@ -82,6 +82,8 @@ var metaScoreLocale = {
 	"editor.overlay.GuideDetails.fields.media.label": "Media",
 	"editor.overlay.GuideDetails.fields.media.description": "Allowed file types: !types",
 	"editor.overlay.GuideDetails.fields.css.label": "CSS",
+	"editor.overlay.GuideDetails.fields.groups.label": "Groups",
+	"editor.overlay.GuideDetails.fields.groups.description": "The groups this guide is shared with<br/><em>Hold down the Ctrl/Cmd key to select multiple groups</em>",
 	"editor.overlay.GuideSelector.title": "Select a guide",
 	"editor.overlay.GuideSelector.emptyText": "No guides available",
 	"editor.overlay.GuideSelector.archivesGroup": "archives",

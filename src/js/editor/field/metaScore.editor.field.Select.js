@@ -5,6 +5,15 @@
 metaScore.namespace('editor.field').Select = (function () {
 
     /**
+     * Fired when the field's value changes
+     *
+     * @event valuechange
+     * @param {Object} field The field instance
+     * @param {Mixed} value The new value
+     */
+    var EVT_VALUECHANGE = 'valuechange';
+
+    /**
      * A select list field based on an HTML select element
      *
      * @class SelectField
@@ -12,7 +21,8 @@ metaScore.namespace('editor.field').Select = (function () {
      * @extends editor.Field
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options={}}] A list of select options as key/value pairs
+     * @param {Object} [configs.options={}] A list of select options as key/value pairs
+     * @param {Boolean} [configs.multiple=false] Whether multiple options can be selected at once
      */
     function SelectField(configs) {
         this.configs = this.getConfigs(configs);
@@ -24,7 +34,8 @@ metaScore.namespace('editor.field').Select = (function () {
     }
 
     SelectField.defaults = {
-        'options': {}
+        'options': {},
+        'multiple': false
     };
 
     metaScore.editor.Field.extend(SelectField);
@@ -50,9 +61,13 @@ metaScore.namespace('editor.field').Select = (function () {
             .addListener('change', metaScore.Function.proxy(this.onChange, this))
             .appendTo(this.input_wrapper);
 
-            metaScore.Object.each(this.configs.options, function(key, value){
-                this.addOption(key, value);
-            }, this);
+        metaScore.Object.each(this.configs.options, function(key, value){
+            this.addOption(key, value);
+        }, this);
+        
+        if(this.configs.multiple){
+            this.input.attr('multiple', 'multiple');
+        }
     };
 
     /**
@@ -138,7 +153,7 @@ metaScore.namespace('editor.field').Select = (function () {
      * @chainable
      */
     SelectField.prototype.readonly = function(readonly){
-        SelectField.parent.prototype.readonly.call(this, readonly);
+        SelectField.parent.prototype.readonly.apply(this, arguments);
 
         this.input.attr('disabled', this.is_readonly ? "disabled" : null);
 
