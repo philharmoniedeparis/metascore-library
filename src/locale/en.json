@@ -89,7 +89,7 @@
 	"editor.overlay.GuideSelector.archivesGroup": "archives",
 	"editor.overlay.GuideSelector.publishedGroup": "published",
 	"editor.overlay.GuideSelector.draftsGroup": "drafts",
-	"editor.overlay.GuideSelector.revisionText": "!date by !username (!id:!vid)",
+	"editor.overlay.GuideSelector.revisionText": "!date by !author (!id:!vid)",
 	"editor.overlay.GuideSelector.button": "Select",
 	"editor.overlay.LoadMask.text": "Loading...",
 	"player.onMediaError.Aborted.msg": "You aborted the media playback.",

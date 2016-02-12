@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-10 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-11 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -161,7 +161,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "92ff6a5";
+        return "bfe17d";
     },
 
     /**
@@ -10533,7 +10533,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
 
                         group = groups[group_id];
 
-                        text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !username (!id:!vid)', {'!date': revision.date, '!username': revision.username, '!id': guide.id, '!vid': vid});
+                        text = metaScore.Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
 
                         revision_field.addOption(vid, text, group);
                     });
@@ -10564,7 +10564,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                 new metaScore.Dom('<td/>', {'class': 'details'})
                     .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
                     .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
-                    .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author.name}))
+                    .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author}))
                     .append(revision_wrapper)
                     .appendTo(row);
             }, this);

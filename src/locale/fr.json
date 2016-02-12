@@ -89,7 +89,7 @@
 	"editor.overlay.GuideSelector.archivesGroup": "archives",
 	"editor.overlay.GuideSelector.publishedGroup": "publiée",
 	"editor.overlay.GuideSelector.draftsGroup": "brouillons",
-	"editor.overlay.GuideSelector.revisionText": "!date par !username (!id:!vid)",
+	"editor.overlay.GuideSelector.revisionText": "!date par !author (!id:!vid)",
 	"editor.overlay.GuideSelector.button": "Sélectionner",
 	"editor.overlay.LoadMask.text": "Chargement ...",
 	"player.onMediaError.Aborted.msg": "Vous avez interrompu la lecture du média.",
