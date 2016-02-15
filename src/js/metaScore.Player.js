@@ -210,7 +210,7 @@ metaScore.Player = (function(){
             case 'addEventListener':
                 switch(params.type){
                     case 'ready':
-                        player.addListener('loadsuccess', function(event){
+                        player.addListener('load', function(event){
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback
                             }), origin);
