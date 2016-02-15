@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-11 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-15 - Oussama Mubarak */
 /**
  * @module Player
  */
@@ -271,7 +271,7 @@ window.metaScoreAPI = (function(){
         }
 
         if(ids.length > 0){
-            iframes = document.querySelectorAll('iframe.metascore-embed#'+ ids.join(',iframe.metascore-embed#'));
+            iframes = document.querySelectorAll('iframe#'+ ids.join(',iframe#'));
 
             callback = function(api){
                 var links, handler;
