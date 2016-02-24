@@ -328,18 +328,6 @@
   filter: alpha(opacity=(20));
   opacity: 0.2;
 }
-.metaScore-editor .workspace .version {
-  position: absolute;
-  bottom: 5px;
-  right: 25px;
-  z-index: 999;
-  font-size: 0.75em;
-  opacity: 0.75;
-  -moz-user-select: initial;
-  -khtml-user-select: initial;
-  -webkit-user-select: initial;
-  user-select: initial;
-}
 .metaScore-editor .workspace .player-frame {
   width: 100%;
   height: 100%;
@@ -545,6 +533,7 @@
   position: fixed;
   right: 0;
   top: 42px;
+  left: auto !important;
   bottom: 0;
   width: 285px;
   min-width: 280px;
@@ -625,12 +614,19 @@
   background-image: url('img/editor/panel/next.png');
   margin-left: -1px;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu {
+  display: inline-block;
   position: relative;
+  width: 16px;
+  height: 16px;
   margin-left: 10px;
   padding-bottom: 2px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  vertical-align: middle;
+  cursor: pointer;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]::after {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu::after {
   content: "";
   position: absolute;
   top: 0;
@@ -639,19 +635,20 @@
   right: 0;
   background: url('img/editor/panel/menu.png') no-repeat center center;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu .dropdown-menu {
   display: none;
   position: absolute;
   right: 0;
   top: 100%;
   margin: 0px;
   padding: 0px;
-  padding-top: 2px;
-  list-style-type: none;
+  list-style: none;
   background: #fff;
   z-index: 999;
+  cursor: default;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu .dropdown-menu li {
+  display: block;
   min-width: 50px;
   margin-bottom: -1px;
   padding: 3px 4px;
@@ -659,26 +656,26 @@
   border: 1px solid #ccc;
   text-align: right;
   white-space: nowrap;
+  cursor: pointer;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li:hover {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu .dropdown-menu li:hover {
   background: #eee;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li:active {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu .dropdown-menu li:active {
   opacity: 0.75;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"] .dropdown-menu li.disabled {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu .dropdown-menu li.disabled {
   pointer-events: none;
   background: none;
   opacity: 0.5;
-  cursor: default;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:hover {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu:hover {
   opacity: 1;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:hover::after {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu:hover::after {
   opacity: 0.75;
 }
-.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons button[data-action="menu"]:hover .dropdown-menu {
+.metaScore-editor .sidebar-wrapper .panel .toolbar .buttons .menu:hover .dropdown-menu {
   display: block;
 }
 .metaScore-editor .sidebar-wrapper .panel .fields {
@@ -1146,6 +1143,40 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 99999;
+}
+.metaScore-editor .contextmenu {
+  position: absolute;
+  min-width: 150px;
+  margin: 0;
+  padding: 0.25em 0;
+  list-style: none;
+  background: #fff;
+  z-index: 999999;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
+}
+.metaScore-editor .contextmenu li {
+  padding: 0.25em 1em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.metaScore-editor .contextmenu li:hover {
+  color: #fff;
+  background: #0000fe;
+}
+.metaScore-editor .contextmenu li.disabled {
+  pointer-events: none;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: alpha(opacity=(50));
+  opacity: 0.5;
+}
+.metaScore-editor .contextmenu li.separator {
+  height: 1px;
+  margin: 0.5em 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
 }
 .metaScore-editor.editing .main-menu button[data-action="edit-toggle"] {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";

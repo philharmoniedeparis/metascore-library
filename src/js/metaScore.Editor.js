@@ -89,8 +89,7 @@ metaScore.Editor = (function(){
         this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
 
         this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
-        this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
-
+        
         this.player_frame = new metaScore.Dom('<iframe/>', {'src': 'about:blank', 'class': 'player-frame'}).appendTo(this.workspace)
             .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
             .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
@@ -99,6 +98,12 @@ metaScore.Editor = (function(){
             .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
             .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
             .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
+            
+        this.clipboard = new metaScore.Clipboard();
+        
+        this.contextmenu = new metaScore.ContextMenu({'target': this})
+            .addTask('about',  metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+            .appendTo(this);
 
         this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
                 'groups': this.configs.user_groups,
@@ -109,14 +114,13 @@ metaScore.Editor = (function(){
 
         this.detailsOverlay.getField('type').readonly(true);
 
-        new metaScore.Dom('body')
-            .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
-            .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
-
         metaScore.Dom.addListener(window, 'hashchange', metaScore.Function.proxy(this.onWindowHashChange, this));
         metaScore.Dom.addListener(window, 'beforeunload', metaScore.Function.proxy(this.onWindowBeforeUnload, this));
 
         this
+            .addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this))
+            .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+            .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
             .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
             .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this))
             .updateMainmenu()
@@ -164,7 +168,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onGuideCreateError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onGuideCreateError.ok', 'OK'),
@@ -210,7 +215,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
@@ -236,7 +242,8 @@ metaScore.Editor = (function(){
             'error': metaScore.Function.proxy(this.onGuideDeleteError, this)
         }, this.configs.ajax);
 
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'autoShow': true
         });
 
@@ -268,7 +275,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onGuideDeleteError.ok', 'OK'),
@@ -372,6 +380,19 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * Mousedown event callback
+     *
+     * @method onMousedown
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    Editor.prototype.onMousedown = function(evt){
+        if(this.player_contextmenu){
+            this.player_contextmenu.hide();
+        }
+    };
+
+    /**
      * Mainmenu click event callback
      *
      * @method onMainmenuClick
@@ -393,7 +414,8 @@ metaScore.Editor = (function(){
                 }, this);
 
                 if(this.hasOwnProperty('player')){
-                    new metaScore.editor.overlay.Alert({
+                    new metaScore.overlay.Alert({
+                            'parent': this,
                             'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
                                 'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
@@ -416,7 +438,8 @@ metaScore.Editor = (function(){
                 callback = metaScore.Function.proxy(this.openGuideSelector, this);
 
                 if(this.hasOwnProperty('player')){
-                    new metaScore.editor.overlay.Alert({
+                    new metaScore.overlay.Alert({
+                            'parent': this,
                             'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
                                 'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
@@ -452,7 +475,8 @@ metaScore.Editor = (function(){
                     this.saveGuide('update', true);
                 }, this);
 
-                new metaScore.editor.overlay.Alert({
+                new metaScore.overlay.Alert({
+                        'parent': this,
                         'text': metaScore.Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
@@ -471,7 +495,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                new metaScore.editor.overlay.Alert({
+                new metaScore.overlay.Alert({
+                        'parent': this,
                         'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide ?'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
@@ -487,7 +512,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'revert':
-                new metaScore.editor.overlay.Alert({
+                new metaScore.overlay.Alert({
+                        'parent': this,
                         'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version ?<br/><strong>Any unsaved data will be lost.</strong>'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
@@ -744,25 +770,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                player = this.getPlayer();
-                panel = this.panels.block;
                 block = this.panels.block.getComponent();
-
-                if(block){
-                    panel.unsetComponent();
-                    block.remove();
-
-                    this.history.add({
-                        'undo': function(){
-                            player.addBlock(block);
-                            panel.setComponent(block);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            block.remove();
-                        }
-                    });
-                }
+                this.deletePlayerBlock(block);
                 break;
         }
 
@@ -952,7 +961,7 @@ metaScore.Editor = (function(){
     Editor.prototype.onPagePanelToolbarClick = function(evt){
         var panel, block, page,
             start_time, end_time, configs,
-            previous_page, auto_page, index,
+            previous_page, index,
             action = metaScore.Dom.data(evt.target, 'action');
 
         switch(action){
@@ -1000,52 +1009,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                panel = this.panels.page;
-                block = this.panels.block.getComponent();
-                page = panel.getComponent();
-                index = block.getActivePageIndex();
-
-                if(page){
-                    panel.unsetComponent();
-                    block.removePage(page);
-                    index--;
-
-                    if(block.getPageCount() < 1){
-                        configs = {};
-
-                        if(block.getProperty('synched')){
-                            configs['start-time'] = 0;
-                            configs['end-time'] = this.getPlayer().getMedia().getDuration();
-                        }
-
-                        auto_page = block.addPage(configs);
-                        panel.setComponent(auto_page);
-                    }
-
-                    block.setActivePage(Math.max(0, index));
-
-                    this.history.add({
-                        'undo': function(){
-                            if(auto_page){
-                                block.removePage(auto_page, true);
-                            }
-
-                            block.addPage(page);
-                            panel.setComponent(page);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            block.removePage(page, true);
-
-                            if(auto_page){
-                                block.addPage(auto_page);
-                                panel.setComponent(auto_page);
-                            }
-
-                            block.setActivePage(index);
-                        }
-                    });
-                }
+                page = this.panels.page.getComponent();
+                this.deletePlayerPage(page);
                 break;
         }
 
@@ -1193,25 +1158,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                panel = this.panels.element;
-                page = this.panels.page.getComponent();
-                element = this.panels.element.getComponent();
-
-                if(element){
-                    panel.unsetComponent();
-                    element.remove();
-
-                    this.history.add({
-                        'undo': function(){
-                            page.addElement(element);
-                            panel.setComponent(element);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            element.remove();
-                        }
-                    });
-                }
+                element = this.panels.element.getComponent();   
+                this.deletePlayerElement(element);
                 break;
         }
     };
@@ -1292,6 +1240,17 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * Player mousedown event callback
+     *
+     * @method onPlayerMousedown
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    Editor.prototype.onPlayerMousedown = function(evt){
+        this.contextmenu.hide();
+    };
+
+    /**
      * Player blockadd event callback
      *
      * @method onPlayerBlockAdd
@@ -1334,11 +1293,15 @@ metaScore.Editor = (function(){
      * @param {UIEvent} evt The event object
      */
     Editor.prototype.onPlayerFrameLoadSuccess = function(evt){
-        this.player_frame.get(0).contentWindow.player
-            .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-            .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
-            .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
-            .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
+        var player = this.player_frame.get(0).contentWindow.player;
+    
+        if(player){
+            player
+                .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+                .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
+                .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
+                .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
+        }
     };
 
     /**
@@ -1352,7 +1315,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
@@ -1369,7 +1333,8 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
     Editor.prototype.onPlayerLoadSuccess = function(evt){
-        var data;        
+        var player_body = this.player_frame.get(0).contentWindow.document.body,
+            data;
         
         this.player = evt.detail.player
             .addClass('in-editor')
@@ -1377,6 +1342,7 @@ metaScore.Editor = (function(){
             .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
             .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
             .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
+            .addListener('mousedown', metaScore.Function.proxy(this.onPlayerMousedown, this))
             .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
             .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
             .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
@@ -1385,9 +1351,36 @@ metaScore.Editor = (function(){
             .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
             .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
             
+        this.player.contextmenu.disable();
+                
+        this.player_contextmenu = new metaScore.ContextMenu({'target': player_body})
+            .addTask('copy-block', metaScore.Locale.t('editor.contextmenu.copy-block', 'Copy block'), function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+            })
+            .addTask('paste-block', metaScore.Locale.t('editor.contextmenu.paste-block', 'Paste block'), metaScore.Function.proxy(function(context){
+                return this.clipboard.getDataType() === 'block';
+            }, this))
+            .addTask('delete-block', metaScore.Locale.t('editor.contextmenu.delete-block', 'Delete block'), metaScore.Function.proxy(function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+            }, this))
+            .addSeparator()
+            .addTask('copy-element', metaScore.Locale.t('editor.contextmenu.copy-element', 'Copy element'), function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+            })
+            .addTask('paste-element', metaScore.Locale.t('editor.contextmenu.paste-element', 'Paste element'), metaScore.Function.proxy(function(context){
+                return (this.clipboard.getDataType() === 'element') && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
+            }, this))
+            .addTask('delete-element', metaScore.Locale.t('editor.contextmenu.delete-element', 'Delete element'), metaScore.Function.proxy(function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+            }, this))
+            .addSeparator()
+            .addTask('about',  metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+            .addListener('taskclick', metaScore.Function.proxy(this.onContextMenuTaskClick, this))
+            .appendTo(this.workspace);
+            
         data = this.player.getData();
 
-        new metaScore.Dom(this.player_frame.get(0).contentWindow.document.body)
+        new metaScore.Dom(player_body)
             .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
             .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
 
@@ -1422,7 +1415,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
@@ -1566,6 +1560,68 @@ metaScore.Editor = (function(){
     Editor.prototype.onHistoryRedo = function(evt){
         this.updateMainmenu();
     };
+    
+    /**
+     * ContextMenu taskclick event callback
+     *
+     * @method onContextMenuTaskClick
+     * @private
+     * @param {CustomEvent} evt The event object. See {{#crossLink "ContextMenu/taskclick:event"}}ContextMenu.taskclick{{/crossLink}}
+     */
+    Editor.prototype.onContextMenuTaskClick = function(evt){
+        var dom, component;
+
+        switch(evt.detail.action){
+            case 'copy-block':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Block')){
+                    this.clipboard.setData('block', component.getProperties());
+                }
+                break;
+
+            case 'paste-block':
+                this.getPlayer().addBlock(this.clipboard.getData());
+                break;
+
+            case 'delete-block':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Block')){
+                    this.deletePlayerBlock(component);
+                }
+                break;
+
+            case 'copy-element':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Element')){
+                    this.clipboard.setData('element', component.getProperties());
+                }
+                break;
+
+            case 'paste-element':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.page');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Page')){
+                    component.addElement(this.clipboard.getData());
+                }
+                break;
+
+            case 'delete-element':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Element')){
+                    this.deletePlayerElement(component);
+                }
+                break;
+        }
+    };
 
     /**
      * GuideDetails show event callback
@@ -1631,7 +1687,8 @@ metaScore.Editor = (function(){
                             }
 
                             if(blocks.length > 0){
-                                new metaScore.editor.overlay.Alert({
+                                new metaScore.overlay.Alert({
+                                    'parent': this,
                                     'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media file (!new_duration centiseconds) is less than the current one (!old_duration centiseconds).<br/><strong>This will cause some pages of the following blocks to become out of reach: !blocks</strong><br/>Please modify the start time of those pages and try again.', {'!new_duration': new_duration, '!old_duration': old_duration, '!blocks': blocks.join(', ')}),
                                     'buttons': {
                                         'ok': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.ok', 'OK'),
@@ -1640,7 +1697,8 @@ metaScore.Editor = (function(){
                                 });
                             }
                             else{
-                                new metaScore.editor.overlay.Alert({
+                                new metaScore.overlay.Alert({
+                                    'parent': this,
                                     'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration centiseconds) differs from the current one (!old_duration centiseconds).<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': new_duration, '!old_duration': old_duration}),
                                     'buttons': {
                                         'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
@@ -1679,7 +1737,8 @@ metaScore.Editor = (function(){
             oldURL = evt.oldURL;
 
         if(this.getPlayer()){
-            new metaScore.editor.overlay.Alert({
+            new metaScore.overlay.Alert({
+                    'parent': this,
                     'text': metaScore.Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
                     'buttons': {
                         'confirm': metaScore.Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
@@ -1990,7 +2049,8 @@ metaScore.Editor = (function(){
             url += "?vid="+ vid;
         }
 
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'autoShow': true
         });
 
@@ -2007,11 +2067,140 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.removePlayer = function(){
         delete this.player;
+        
+        if(this.player_contextmenu){
+            this.player_contextmenu.remove();
+            delete this.player_contextmenu;
+        }
 
         this.player_frame.get(0).contentWindow.location.replace('about:blank');
         this.panels.block.unsetComponent();
         this.updateMainmenu();
 
+        return this;
+    };
+    
+    /**
+     * Remove a block from the player
+     *
+     * @method deletePlayerBlock
+     * @private
+     * @param {player.component.Block} block The block to delete
+     * @chainable 
+     */
+    Editor.prototype.deletePlayerBlock = function(block){
+        var panel = this.panels.block;
+ 
+        if(block){
+            if(panel.getComponent() === block){
+                panel.unsetComponent();
+            }
+            
+            block.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    this.getPlayer().addBlock(block);
+                    panel.setComponent(block);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    block.remove();
+                }
+            });
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Remove a page from the player
+     *
+     * @method deletePlayerPage
+     * @private
+     * @param {player.component.Page} page The page to delete
+     * @chainable 
+     */
+    Editor.prototype.deletePlayerPage = function(page){
+        var panel = this.panels.page,
+            block = page.getBlock(),
+            index = block.getActivePageIndex(),
+            configs, auto_page;
+
+        if(page){
+            panel.unsetComponent();
+            block.removePage(page);
+            index--;
+
+            if(block.getPageCount() < 1){
+                configs = {};
+
+                if(block.getProperty('synched')){
+                    configs['start-time'] = 0;
+                    configs['end-time'] = this.getPlayer().getMedia().getDuration();
+                }
+
+                auto_page = block.addPage(configs);
+                panel.setComponent(auto_page);
+            }
+
+            block.setActivePage(Math.max(0, index));
+
+            this.history.add({
+                'undo': function(){
+                    if(auto_page){
+                        block.removePage(auto_page, true);
+                    }
+
+                    block.addPage(page);
+                    panel.setComponent(page);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    block.removePage(page, true);
+
+                    if(auto_page){
+                        block.addPage(auto_page);
+                        panel.setComponent(auto_page);
+                    }
+
+                    block.setActivePage(index);
+                }
+            });
+        }
+    };
+ 
+    /**
+     * Remove an element from the player
+     *
+     * @method deletePlayerElement
+     * @private
+     * @param {player.component.Element} element The element to delete
+     * @chainable 
+     */
+    Editor.prototype.deletePlayerElement = function(element){        
+        var panel = this.panels.element,
+            page = element.getPage();
+ 
+        if(element){
+            if(panel.getComponent() === element){
+                panel.unsetComponent();
+            }
+            
+            element.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    page.addElement(element);
+                    panel.setComponent(element);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    element.remove();
+                }
+            });
+        }
+        
         return this;
     };
 
@@ -2063,7 +2252,8 @@ metaScore.Editor = (function(){
         }, this.configs.ajax);
 
         // add a loading mask
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'text': metaScore.Locale.t('editor.createGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
@@ -2135,7 +2325,8 @@ metaScore.Editor = (function(){
         }, this.configs.ajax);
 
         // add a loading mask
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'text': metaScore.Locale.t('editor.saveGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });

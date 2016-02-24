@@ -36,21 +36,21 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.new', 'New')
             })
             .data('action', 'new')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.open', 'Open')
             })
             .data('action', 'open')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.edit', 'Edit')
             })
@@ -59,7 +59,7 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         btn_group = new metaScore.Dom('<div/>', {'class': 'button-group'}).appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.save', 'Save as draft')
             })
@@ -68,21 +68,21 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.clone', 'Save as copy')
             })
             .data('action', 'clone')
             .appendTo(sub_menu);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.publish', 'Save & Publish')
             })
             .data('action', 'publish')
             .appendTo(sub_menu);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.delete', 'Delete')
             })
@@ -92,7 +92,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
             })
@@ -126,7 +126,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
             })
@@ -136,21 +136,21 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.revert', 'Revert')
             })
             .data('action', 'revert')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.undo', 'Undo')
             })
             .data('action', 'undo')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.redo', 'Redo')
             })
@@ -161,7 +161,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .css('flex', '20')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')
             })
@@ -169,7 +169,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .disable()
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
             })
@@ -177,7 +177,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .disable()
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.logout', 'Logout')
             })

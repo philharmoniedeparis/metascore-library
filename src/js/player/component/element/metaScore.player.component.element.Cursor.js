@@ -69,7 +69,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.cursor.css('width', undefined, skipDefault);
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.cursor.css('width', value +'px');

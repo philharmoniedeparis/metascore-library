@@ -45,8 +45,9 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
             metaScore.Object.each(this.configs.menuItems, function(action, label){
                 this.menu.addItem(action, label);
             }, this);
-
-            this.addButton('menu')
+            
+            new metaScore.Dom('<div/>', {'class': 'menu'})
+                .appendTo(this.buttons)
                 .append(this.menu);
         }
     }
@@ -95,10 +96,10 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
      * 
      * @method addButton
      * @param {String} action The button's associated action
-     * @return {editor.Button} The created button
+     * @return {Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
-        var button = new metaScore.editor.Button().data('action', action)
+        var button = new metaScore.Button().data('action', action)
             .appendTo(this.buttons);
 
         return button;

@@ -12,12 +12,11 @@ module.exports = function(grunt) {
                 sub('src/js/%s.core.js'),
                 sub('src/js/%s.Class.js'),
                 sub('src/js/%s.Evented.js'),
-                sub('src/js/helpers/%s.*.js'),
-                sub('src/js/%s.Locale.js'),
-                sub('src/js/locale/core/%s.*.js'),
+                sub('src/js/core/%s.Dom.js'),
+                sub('src/js/core/%s.*.js'),
+                sub('src/js/core/overlay/%s.*.js'),
             ],
             PLAYER_LIST = [
-                sub('src/js/locale/player/%s.*.js'),
                 sub('src/js/%s.Player.js'),
                 sub('src/js/player/%s.player.*.js'),
                 sub('src/js/player/component/%s.*.js'),
@@ -25,13 +24,11 @@ module.exports = function(grunt) {
                 sub('src/js/player/media/%s.*.js'),
             ],
             EDITOR_LIST = [
-                sub('src/js/locale/editor/%s.*.js'),
                 sub('src/js/%s.Editor.js'),
                 sub('src/js/editor/%s.editor.*.js'),
                 sub('src/js/editor/field/%s.*.js'),
                 sub('src/js/editor/panel/%s.*.js'),
                 sub('src/js/editor/overlay/%s.*.js'),
-                sub('src/js/editor/overlay/popup/%s.*.js')
             ],
             API_LIST = [
                 sub('src/js/%s.API.js')

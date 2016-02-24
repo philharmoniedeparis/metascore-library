@@ -18,7 +18,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      *
      * @class GuideDetails
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -39,13 +39,14 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     }
 
     GuideDetails.defaults = {
+        'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
         'groups': {},
         'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
     };
 
-    metaScore.editor.Overlay.extend(GuideDetails);
+    metaScore.Overlay.extend(GuideDetails);
 
     /**
      * Setup the overlay's UI
@@ -141,11 +142,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         }
 
         // Buttons
-        new metaScore.editor.Button({'label': this.configs.submit_text})
+        new metaScore.Button({'label': this.configs.submit_text})
             .addClass('apply')
             .appendTo(form);
 
-        new metaScore.editor.Button({'label': 'Cancel'})
+        new metaScore.Button({'label': 'Cancel'})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(form);

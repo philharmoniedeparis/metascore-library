@@ -16,67 +16,67 @@ metaScore.Player = (function(){
      */
     var EVT_LOAD = 'load';
 
-     /**
-        * Fired when the guide's loading failed
-        *
-        * @event loaderror
-        * @param {Object} player The player instance
-        */
-     var EVT_ERROR = 'error';
+    /**
+       * Fired when the guide's loading failed
+       *
+       * @event loaderror
+       * @param {Object} player The player instance
+       */
+    var EVT_ERROR = 'error';
 
-     /**
-        * Fired when the id is set
-        *
-        * @event idset
-        * @param {Object} player The player instance
-        * @param {String} id The guide's id
-        */
-     var EVT_IDSET = 'idset';
+    /**
+       * Fired when the id is set
+       *
+       * @event idset
+       * @param {Object} player The player instance
+       * @param {String} id The guide's id
+       */
+    var EVT_IDSET = 'idset';
 
-     /**
-        * Fired when the vid is set
-        *
-        * @event revisionset
-        * @param {Object} player The player instance
-        * @param {Integer} vid The guide's vid
-        */
-     var EVT_REVISIONSET = 'revisionset';
+    /**
+       * Fired when the vid is set
+       *
+       * @event revisionset
+       * @param {Object} player The player instance
+       * @param {Integer} vid The guide's vid
+       */
+    var EVT_REVISIONSET = 'revisionset';
 
-     /**
-        * Fired when the media is added
-        *
-        * @event mediaadd
-        * @param {Object} player The player instance
-        * @param {Object} media The media instance
-        */
-     var EVT_MEDIAADD = 'mediaadd';
+    /**
+       * Fired when the media is added
+       *
+       * @event mediaadd
+       * @param {Object} player The player instance
+       * @param {Object} media The media instance
+       */
+    var EVT_MEDIAADD = 'mediaadd';
 
-     /**
-        * Fired when the controller is added
-        *
-        * @event controlleradd
-        * @param {Object} player The player instance
-        * @param {Object} controller The controller instance
-        */
-     var EVT_CONTROLLERADD = 'controlleradd';
+    /**
+       * Fired when the controller is added
+       *
+       * @event controlleradd
+       * @param {Object} player The player instance
+       * @param {Object} controller The controller instance
+       */
+    var EVT_CONTROLLERADD = 'controlleradd';
 
-     /**
-        * Fired when a block is added
-        *
-        * @event blockadd
-        * @param {Object} player The player instance
-        * @param {Object} block The block instance
-        */
-     var EVT_BLOCKADD = 'blockadd';
+    /**
+       * Fired when a block is added
+       *
+       * @event blockadd
+       * @param {Object} player The player instance
+       * @param {Object} block The block instance
+       */
+    var EVT_BLOCKADD = 'blockadd';
 
-     /**
-        * Fired when the reading index is set
-        *
-        * @event rindex
-        * @param {Object} player The player instance
-        * @param {Object} value The reading index value
-        */
-     var EVT_RINDEX = 'rindex';
+    /**
+       * Fired when the reading index is set
+       *
+       * @event rindex
+       * @param {Object} player The player instance
+       * @param {Object} value The reading index value
+       */
+    var EVT_RINDEX = 'rindex';
 
     /**
      * Provides the main Player class
@@ -100,6 +100,10 @@ metaScore.Player = (function(){
         if(this.configs.api){
             metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
         }
+        
+        this.contextmenu = new metaScore.ContextMenu({'target': this})
+            .addTask('about',  metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+            .appendTo(this);
 
         this.appendTo(this.configs.container);
 
@@ -273,7 +277,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaLoadedMetadata = function(evt){
-        console.log('onMediaLoadedMetadata');
         this.getMedia().reset();
     };
 
@@ -285,7 +288,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaWaiting = function(evt){
-        console.log('onMediaWaiting');
         this.addClass('media-waiting');
     };
 
@@ -297,7 +299,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaSeeking = function(evt){
-        console.log('onMediaSeeking');
         this.addClass('media-waiting');
     };
 
@@ -309,7 +310,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaSeeked = function(evt){
-        console.log('onMediaSeeked');
         this.removeClass('media-waiting');
     };
 
@@ -321,7 +321,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPlaying = function(evt){
-        console.log('onMediaPlaying');
         this.removeClass('media-waiting');
         
         this.controller.addClass('playing');
@@ -335,7 +334,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPlay = function(evt){
-        console.log('onMediaPlay');
         this.removeClass('media-waiting');
         
         this.controller.addClass('playing');
@@ -349,7 +347,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaPause = function(evt){
-        console.log('onMediaPause');
         this.removeClass('media-waiting');
         
         this.controller.removeClass('playing');
@@ -363,7 +360,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaTimeUpdate = function(evt){
-        console.log('onMediaTimeUpdate');
         var currentTime = evt.detail.media.getTime();
 
         this.controller.updateTime(currentTime);
@@ -377,7 +373,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaSuspend = function(evt){
-        console.log('onMediaSuspend');
         this.removeClass('media-waiting');
     };
 
@@ -389,7 +384,6 @@ metaScore.Player = (function(){
      * @param {Event} evt The event object
      */
     Player.prototype.onMediaStalled = function(evt){
-        console.log('onMediaStalled');
         this.removeClass('media-waiting');
     };
 
@@ -428,7 +422,8 @@ metaScore.Player = (function(){
                 break;
         }
         
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': text,
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onMediaError.ok', 'OK'),

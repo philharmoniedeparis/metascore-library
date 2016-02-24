@@ -116,7 +116,7 @@ metaScore.namespace('player.component').Element = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.data('r-index');
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.data('r-index', value);
@@ -129,7 +129,7 @@ metaScore.namespace('player.component').Element = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.css('z-index', undefined, skipDefault);
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -175,7 +175,7 @@ metaScore.namespace('player.component').Element = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.contents.css('border-width', undefined, skipDefault);
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.contents.css('border-width', value +'px');

@@ -68,7 +68,7 @@ metaScore.namespace('player.component').Controller = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.css('z-index', undefined, skipDefault);
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.css('z-index', value);

@@ -1,14 +1,13 @@
 /**
- * @module Editor
+ * @module Core
  */
 
-metaScore.namespace('editor').Button = (function () {
+metaScore.Button = (function () {
 
     /**
      * A simple button based on an HTML button element
      *
      * @class Button
-     * @namespace editor
      * @extends Dom
      * @constructor
      * @param {Object} configs Custom configs to override defaults

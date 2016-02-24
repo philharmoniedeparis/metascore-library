@@ -18,7 +18,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
      *
      * @class BorderRadius
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -34,11 +34,12 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     }
 
     BorderRadius.defaults = {
+        'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
     };
 
-    metaScore.editor.Overlay.extend(BorderRadius);
+    metaScore.Overlay.extend(BorderRadius);
 
     /**
      * Setup the overlay's UI
@@ -101,12 +102,12 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
             .appendTo(this.preview);
 
         // Buttons
-        this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
+        this.buttons.apply = new metaScore.Button({'label': 'Apply'})
             .addClass('apply')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(contents);
 
-        this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+        this.buttons.cancel = new metaScore.Button({'label': 'Cancel'})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(contents);

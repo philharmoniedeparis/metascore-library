@@ -1,15 +1,15 @@
 /**
- * @module Editor
+ * @module Core
  */
 
-metaScore.namespace('editor.overlay').LoadMask = (function () {
+metaScore.namespace('overlay').LoadMask = (function () {
 
     /**
      * A loading mask
      *
      * @class LoadMask
-     * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @namespace overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.draggable=false] Whether the mask is draggable
@@ -29,10 +29,10 @@ metaScore.namespace('editor.overlay').LoadMask = (function () {
 
     LoadMask.defaults = {
         'draggable': false,
-        'text': metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
+        'text': metaScore.Locale.t('overlay.LoadMask.text', 'Loading...')
     };
 
-    metaScore.editor.Overlay.extend(LoadMask);
+    metaScore.Overlay.extend(LoadMask);
 
     return LoadMask;
 

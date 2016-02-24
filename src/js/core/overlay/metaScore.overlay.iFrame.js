@@ -1,16 +1,16 @@
 /**
- * @module Editor
+ * @module Core
  */
 
-metaScore.namespace('editor.overlay').iFrame = (function () {
+metaScore.namespace('overlay').iFrame = (function () {
 
 
     /**
      * An iframe overlay
      *
      * @class iFrame
-     * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @namespace overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -30,7 +30,7 @@ metaScore.namespace('editor.overlay').iFrame = (function () {
         'url': null
     };
 
-    metaScore.editor.Overlay.extend(iFrame);
+    metaScore.Overlay.extend(iFrame);
 
     /**
      * Setup the overlay's UI

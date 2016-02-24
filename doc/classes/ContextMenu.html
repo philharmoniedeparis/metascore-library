@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>editor.overlay.LoadMask - metaScore</title>
+    <title>ContextMenu - metaScore</title>
     <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -41,13 +41,15 @@
                                 <li><a href="../classes/Ajax.html">Ajax</a></li>
                                 <li><a href="../classes/API.html">API</a></li>
                                 <li><a href="../classes/Array.html">Array</a></li>
+                                <li><a href="../classes/Button.html">Button</a></li>
                                 <li><a href="../classes/Class.html">Class</a></li>
+                                <li><a href="../classes/Clipboard.html">Clipboard</a></li>
                                 <li><a href="../classes/Color.html">Color</a></li>
+                                <li><a href="../classes/ContextMenu.html">ContextMenu</a></li>
                                 <li><a href="../classes/CuePoint.html">CuePoint</a></li>
                                 <li><a href="../classes/Dom.html">Dom</a></li>
                                 <li><a href="../classes/Draggable.html">Draggable</a></li>
                                 <li><a href="../classes/Editor.html">Editor</a></li>
-                                <li><a href="../classes/editor.Button.html">editor.Button</a></li>
                                 <li><a href="../classes/editor.DropDownMenu.html">editor.DropDownMenu</a></li>
                                 <li><a href="../classes/editor.Field.html">editor.Field</a></li>
                                 <li><a href="../classes/editor.field.Boolean.html">editor.field.Boolean</a></li>
@@ -63,15 +65,10 @@
                                 <li><a href="../classes/editor.field.TimeField.html">editor.field.TimeField</a></li>
                                 <li><a href="../classes/editor.History.html">editor.History</a></li>
                                 <li><a href="../classes/editor.MainMenu.html">editor.MainMenu</a></li>
-                                <li><a href="../classes/editor.Overlay.html">editor.Overlay</a></li>
-                                <li><a href="../classes/editor.overlay.Alert.html">editor.overlay.Alert</a></li>
                                 <li><a href="../classes/editor.overlay.BorderRadius.html">editor.overlay.BorderRadius</a></li>
                                 <li><a href="../classes/editor.overlay.ColorSelector.html">editor.overlay.ColorSelector</a></li>
                                 <li><a href="../classes/editor.overlay.GuideDetails.html">editor.overlay.GuideDetails</a></li>
                                 <li><a href="../classes/editor.overlay.GuideSelector.html">editor.overlay.GuideSelector</a></li>
-                                <li><a href="../classes/editor.overlay.iFrame.html">editor.overlay.iFrame</a></li>
-                                <li><a href="../classes/editor.overlay.LoadMask.html">editor.overlay.LoadMask</a></li>
-                                <li><a href="../classes/editor.overlay.Toolbar.html">editor.overlay.Toolbar</a></li>
                                 <li><a href="../classes/editor.Panel.html">editor.Panel</a></li>
                                 <li><a href="../classes/editor.panel.Block.html">editor.panel.Block</a></li>
                                 <li><a href="../classes/editor.panel.Element.html">editor.panel.Element</a></li>
@@ -83,6 +80,11 @@
                                 <li><a href="../classes/Locale.html">Locale</a></li>
                                 <li><a href="../classes/metaScore.html">metaScore</a></li>
                                 <li><a href="../classes/Object.html">Object</a></li>
+                                <li><a href="../classes/Overlay.html">Overlay</a></li>
+                                <li><a href="../classes/overlay.Alert.html">overlay.Alert</a></li>
+                                <li><a href="../classes/overlay.iFrame.html">overlay.iFrame</a></li>
+                                <li><a href="../classes/overlay.LoadMask.html">overlay.LoadMask</a></li>
+                                <li><a href="../classes/overlay.Toolbar.html">overlay.Toolbar</a></li>
                                 <li><a href="../classes/Player.html">Player</a></li>
                                 <li><a href="../classes/player.Component.html">player.Component</a></li>
                                 <li><a href="../classes/player.component.Block.html">player.component.Block</a></li>
@@ -132,28 +134,28 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>editor.overlay.LoadMask Class</h1>
+<h1>ContextMenu Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/editor.Overlay.html" class="crosslink">editor.Overlay</a>
+            Extends <a href="../classes/Dom.html" class="crosslink">Dom</a>
         </div>
 
 
-            Module: <a href="../modules/Editor.html">Editor</a>
+            Module: <a href="../modules/Core.html">Core</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A loading mask</p>
+    <p>A class for creating context menus</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_editor.overlay.LoadMask" class="method item">
-            <h3 class="name"><code>editor.overlay.LoadMask</code></h3>
+        <div id="method_ContextMenu" class="method item">
+            <h3 class="name"><code>ContextMenu</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -198,23 +200,12 @@
         
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name optional">[draggable=false]</code>
-                                            <span class="type">Boolean</span>
+                                            <code class="param-name optional">[target=&#x27;body&#x27;]</code>
+                                            <span class="type">Mixed</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Whether the mask is draggable</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[text=&#x27;Loading...&#x27;]</code>
-                                            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The text to display</p>
+                                            <p>The HTMLElement, Dom instance, or CSS selector to which the context menu is attached</p>
         
                                         </div>
         
@@ -258,6 +249,14 @@
                                 <a href="#method_addDelegate">addDelegate</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_addSeparator">addSeparator</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_addTask">addTask</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_append">append</a>
 
@@ -298,12 +297,20 @@
                                 <a href="#method_data">data</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_disable">disable</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_each">each</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_empty">empty</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_enable">enable</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -331,18 +338,10 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_getContents">getContents</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_getToolbar">getToolbar</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_hasClass">hasClass</a>
 
                             </li>
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#method_hide">hide</a>
 
                             </li>
@@ -358,8 +357,20 @@
                                 <a href="#method_is">is</a>
 
                             </li>
-                            <li class="index-item method private inherited">
-                                <a href="#method_onCloseClick">onCloseClick</a>
+                            <li class="index-item method private">
+                                <a href="#method_onMousedown">onMousedown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onTargetContextmenu">onTargetContextmenu</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onTargetMousedown">onTargetMousedown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onTaskClick">onTaskClick</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -378,11 +389,7 @@
                                 <a href="#method_removeClass">removeClass</a>
 
                             </li>
-                            <li class="index-item method private inherited">
-                                <a href="#method_setupUI">setupUI</a>
-
-                            </li>
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#method_show">show</a>
 
                             </li>
@@ -433,12 +440,8 @@
                                 <a href="#event_childremove">childremove</a>
 
                             </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_hide">hide</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_show">show</a>
+                            <li class="index-item event">
+                                <a href="#event_taskclick">taskclick</a>
 
                             </li>
                     </ul>
@@ -683,6 +686,129 @@
 
                     </div>
 
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_addSeparator" class="method item">
+    <h3 class="name"><code>addSeparator</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add a separator</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_addTask" class="method item">
+    <h3 class="name"><code>addTask</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>action</code>
+                </li>
+                <li class="arg">
+                        <code>text</code>
+                </li>
+                <li class="arg">
+                        <code>toggler</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add a task</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">action</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The task&#39;s associated action</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">text</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The task&#39;s label</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">toggler</code>
+                        <span class="type">Mixed</span>
+
+
+                    <div class="param-description">
+                        <p>A boolean or a callback function used to determine if the task is active</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name">context</code>
+                                    <span class="type">HTMLElement</span>
+
+                                <div class="param-description">
+                                    <p>The element on which the contextmenu event was triggered</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
                 </li>
             </ul>
         </div>
@@ -1321,6 +1447,36 @@
 
 
 </div>
+<div id="method_disable" class="method item">
+    <h3 class="name"><code>disable</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Disable the menu</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_each" class="method item inherited">
     <h3 class="name"><code>each</code></h3>
 
@@ -1434,6 +1590,36 @@
 
     <div class="description">
         <p>Remove all children of each element managed by the Dom object</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_enable" class="method item">
+    <h3 class="name"><code>enable</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Enable the menu</p>
 
     </div>
 
@@ -1785,90 +1971,6 @@
 
 
 </div>
-<div id="method_getContents" class="method item inherited">
-    <h3 class="name"><code>getContents</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Overlay.html#method_getContents">editor.Overlay</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Get the overlay&#39;s contents</p>
-
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
-                    <p>The contents</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_getToolbar" class="method item inherited">
-    <h3 class="name"><code>getToolbar</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/editor.overlay.Toolbar.html" class="crosslink">editor.overlay.Toolbar</a></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Overlay.html#method_getToolbar">editor.Overlay</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Get the overlay&#39;s toolbar</p>
-
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"><a href="../classes/editor.overlay.Toolbar.html" class="crosslink">editor.overlay.Toolbar</a></span>:
-                    <p>The toolbar</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_hasClass" class="method item inherited">
     <h3 class="name"><code>hasClass</code></h3>
 
@@ -1934,7 +2036,7 @@
 
 
 </div>
-<div id="method_hide" class="method item inherited">
+<div id="method_hide" class="method item">
     <h3 class="name"><code>hide</code></h3>
 
         <span class="paren">()</span>
@@ -1959,7 +2061,7 @@
     </div>
 
     <div class="description">
-        <p>Hide the overlay</p>
+        <p>Hide the menu</p>
 
     </div>
 
@@ -2165,8 +2267,8 @@
 
 
 </div>
-<div id="method_onCloseClick" class="method item private inherited">
-    <h3 class="name"><code>onCloseClick</code></h3>
+<div id="method_onMousedown" class="method item private">
+    <h3 class="name"><code>onMousedown</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
@@ -2185,8 +2287,7 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Overlay.html#method_onCloseClick">editor.Overlay</a>:
+                <p>
         </p>
 
 
@@ -2194,7 +2295,166 @@
     </div>
 
     <div class="description">
-        <p>The close button&#39;s click handler</p>
+        <p>Mousedown event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onTargetContextmenu" class="method item private">
+    <h3 class="name"><code>onTargetContextmenu</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Target&#39;s contextmenu event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onTargetMousedown" class="method item private">
+    <h3 class="name"><code>onTargetMousedown</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Target&#39;s mousedown event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onTaskClick" class="method item private">
+    <h3 class="name"><code>onTaskClick</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Task&#39;s click event handler</p>
 
     </div>
 
@@ -2450,41 +2710,22 @@
 
 
 </div>
-<div id="method_setupUI" class="method item private inherited">
-    <h3 class="name"><code>setupUI</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Overlay.html#method_setupUI">editor.Overlay</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Setup the overlay&#39;s UI</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_show" class="method item inherited">
+<div id="method_show" class="method item">
     <h3 class="name"><code>show</code></h3>
 
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>el</code>
+                </li>
+                <li class="arg">
+                        <code>x</code>
+                </li>
+                <li class="arg">
+                        <code>y</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
 
 
@@ -2506,10 +2747,49 @@
     </div>
 
     <div class="description">
-        <p>Show the overlay</p>
+        <p>Show the menu</p>
 
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">el</code>
+                        <span class="type">HTMLElement</span>
+
+
+                    <div class="param-description">
+                        <p>The element on which the contextmenu event was triggered</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>The horizontal position at which the menu should be shown</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>The vertical position at which the menu should be shown</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
 
 
@@ -2951,8 +3231,8 @@
                     
                     
                     </div>
-                    <div id="event_hide" class="events item inherited">
-                        <h3 class="name"><code>hide</code></h3>
+                    <div id="event_taskclick" class="events item">
+                        <h3 class="name"><code>taskclick</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2960,15 +3240,14 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/editor.Overlay.html#event_hide">editor.Overlay</a>:
+                                    <p>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired when the overlay is hidden</p>
+                            <p>Fired when a task is clicked</p>
                     
                         </div>
                     
@@ -2977,53 +3256,23 @@
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">overlay</code>
+                                            <code class="param-name">action</code>
                                             <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
-                                            <p>The overlay instance</p>
+                                            <p>The task&#39;s action</p>
                     
                                         </div>
                     
                                     </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_show" class="events item inherited">
-                        <h3 class="name"><code>show</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/editor.Overlay.html#event_show">editor.Overlay</a>:
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired when the overlay is shown</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">overlay</code>
+                                            <code class="param-name">context</code>
                                             <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
-                                            <p>The overlay instance</p>
+                                            <p>The task&#39;s context</p>
                     
                                         </div>
                     

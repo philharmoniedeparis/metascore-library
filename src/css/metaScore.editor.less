@@ -369,20 +369,6 @@
             background-size: 10px 10px;
             .opacity(0.2);
         }
-
-        .version{
-            position: absolute;
-            bottom: 5px;
-            right: 25px;
-            z-index: 999;
-            font-size: 0.75em;
-            opacity: 0.75;
-
-            -moz-user-select: initial;
-            -khtml-user-select: initial;
-            -webkit-user-select: initial;
-            user-select: initial;
-        }
         
         .player-frame{
             width: 100%;
@@ -593,6 +579,7 @@
         position: fixed;
         right: 0;
         top: 42px;
+        left: auto !important;
         bottom: 0;
         width: 285px;
         min-width: 280px;
@@ -672,69 +659,78 @@
                             background-image: url('img/editor/panel/next.png');
                             margin-left: -1px;
                         }
-                        &[data-action="menu"]{
-                            position: relative;
-                            margin-left: 10px;
-                            padding-bottom: 2px;
+                    }
+                    
+                    .menu{
+                        display: inline-block;
+                        position: relative;
+                        width: 16px;
+                        height: 16px;
+                        margin-left: 10px;
+                        padding-bottom: 2px;
+                        background-repeat: no-repeat;
+                        background-position: center center;
+                        vertical-align: middle;
+                        cursor: pointer;
 
-                            &::after {
-                                content: "";
-                                position: absolute;
-                                top: 0;
-                                left: 0;
-                                bottom: 0;
-                                right: 0;
-                                background: url('img/editor/panel/menu.png') no-repeat center center;
-                            }
+                        &::after {
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            bottom: 0;
+                            right: 0;
+                            background: url('img/editor/panel/menu.png') no-repeat center center;
+                        }
 
-                            .dropdown-menu{
-                                display: none;
-                                position: absolute;
-                                right: 0;
-                                top: 100%;
-                                margin: 0px;
-                                padding: 0px;
-                                padding-top: 2px;
-                                list-style-type: none;
-                                background: #fff;
-                                z-index: 999;
+                        .dropdown-menu{
+                            display: none;
+                            position: absolute;
+                            right: 0;
+                            top: 100%;
+                            margin: 0px;
+                            padding: 0px;
+                            list-style: none;
+                            background: #fff;
+                            z-index: 999;
+                            cursor: default;
 
-                                li{
-                                    min-width: 50px;
-                                    margin-bottom: -1px;
-                                    padding: 3px 4px;
-                                    font-size: 0.8em;
-                                    border: 1px solid #ccc;
-                                    text-align: right;
-                                    white-space: nowrap;
+                            li{
+                                display: block;
+                                min-width: 50px;
+                                margin-bottom: -1px;
+                                padding: 3px 4px;
+                                font-size: 0.8em;
+                                border: 1px solid #ccc;
+                                text-align: right;
+                                white-space: nowrap;
+                                cursor: pointer;
 
-                                    &:hover{
-                                        background: #eee;
-                                    }
-
-                                    &:active{
-                                        opacity: 0.75;
-                                    }
-
-                                    &.disabled{
-                                        pointer-events: none;
-                                        background: none;
-                                        opacity: 0.5;
-                                        cursor: default;
-                                    }
+                                &:hover{
+                                    background: #eee;
                                 }
-                            }
 
-                            &:hover{
-                                opacity: 1;
-
-                                &::after {
+                                &:active{
                                     opacity: 0.75;
                                 }
 
-                                .dropdown-menu{
-                                    display: block;
+                                &.disabled{
+                                    pointer-events: none;
+                                    background: none;
+                                    opacity: 0.5;
                                 }
+                            }
+                        }
+
+                        &:hover{
+                            opacity: 1;
+
+                            &::after {
+                                opacity: 0.75;
+                            }
+
+                            .dropdown-menu{
+                                display: block;
                             }
                         }
                     }
@@ -1303,6 +1299,42 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
         z-index: 99999;
+    }
+    
+    .contextmenu{
+        position: absolute;
+        min-width: 150px;
+        margin: 0;
+        padding: 0.25em 0;
+        list-style: none;
+        background: #fff;
+        z-index: 999999;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        .box-shadow(1px 1px 0px 0px rgba(0, 0, 0, 0.25));
+          
+        li{
+            padding: 0.25em 1em;
+            white-space: nowrap;
+            cursor: pointer;
+          
+            &:hover{
+                color: #fff;
+                background: #0000fe;
+            }
+          
+            &.disabled{
+                pointer-events: none;
+                .opacity(0.5);
+            }
+          
+            &.separator{
+                height: 1px;
+                margin: 0.5em 0;
+                padding: 0;
+                background: rgba(0, 0, 0, 0.1);
+                pointer-events: none;
+            }
+        }
     }
 
     &.editing{

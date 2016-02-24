@@ -18,7 +18,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      *
      * @class ColorSelector
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
@@ -37,10 +37,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }
 
     ColorSelector.defaults = {
+        'parent': '.metaScore-editor',
         'draggable': false
     };
 
-    metaScore.editor.Overlay.extend(ColorSelector);
+    metaScore.Overlay.extend(ColorSelector);
 
     /**
      * Setup the overlay's UI
@@ -118,12 +119,12 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
             .append(this.controls.previous)
             .appendTo(this.controls);
 
-        this.controls.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+        this.controls.cancel = new metaScore.Button({'label': 'Cancel'})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(this.controls);
 
-        this.controls.apply = new metaScore.editor.Button({'label': 'Apply'})
+        this.controls.apply = new metaScore.Button({'label': 'Apply'})
             .addClass('apply')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(this.controls);

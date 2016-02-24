@@ -134,7 +134,7 @@ metaScore.namespace('player.component').Block = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.css('z-index', undefined, skipDefault);
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -180,7 +180,7 @@ metaScore.namespace('player.component').Block = (function () {
                 },
                 'getter': function(skipDefault){
                     var value = this.css('border-width', undefined, skipDefault);
-                    return value !== null ? parseInt(value, 10) : null;
+                    return isNaN(value) ? null : parseInt(value, 10);
                 },
                 'setter': function(value){
                     this.css('border-width', value +'px');

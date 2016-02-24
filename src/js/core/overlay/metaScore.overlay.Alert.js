@@ -1,8 +1,8 @@
 /**
- * @module Editor
+ * @module Core
  */
 
-metaScore.namespace('editor.overlay').Alert = (function () {
+metaScore.namespace('overlay').Alert = (function () {
 
     /**
      * Fired when a button is clicked
@@ -17,8 +17,8 @@ metaScore.namespace('editor.overlay').Alert = (function () {
      * An alert overlay to show a simple message with buttons
      *
      * @class Alert
-     * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @namespace overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
@@ -40,7 +40,7 @@ metaScore.namespace('editor.overlay').Alert = (function () {
         'buttons': {}
     };
 
-    metaScore.editor.Overlay.extend(Alert);
+    metaScore.Overlay.extend(Alert);
 
     /**
      * Setup the overlay's UI
@@ -93,7 +93,7 @@ metaScore.namespace('editor.overlay').Alert = (function () {
      * @return {Button} The button object
      */
     Alert.prototype.addButton = function(action, label){
-        var button = new metaScore.editor.Button()
+        var button = new metaScore.Button()
             .setLabel(label)
             .data('action', action)
             .appendTo(this.buttons);

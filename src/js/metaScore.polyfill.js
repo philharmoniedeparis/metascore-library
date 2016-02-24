@@ -10,7 +10,7 @@ if(Element && !Element.prototype.matches){
         Element.prototype.mozMatchesSelector ||
         Element.prototype.msMatchesSelector ||
         Element.prototype.oMatchesSelector ||
-        function (selector) {
+        function (selector){
             var element = this,
                 matches = (element.document || element.ownerDocument).querySelectorAll(selector),
                 i = 0;
@@ -25,14 +25,7 @@ if(Element && !Element.prototype.matches){
 
 // Element.closest
 if(Element && !Element.prototype.closest){
-    /**
-     * Description
-     *
-     * @method closest
-     * @param {} selector
-     * @return Literal
-     */
-    Element.prototype.closest = function closest(selector) {
+    Element.prototype.closest = function closest(selector){
         var node = this;
 
         while(node){
@@ -50,16 +43,8 @@ if(Element && !Element.prototype.closest){
 
 // CustomEvent constructor
 // https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
-if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
-    /**
-     * Description
-     *
-     * @method CustomEvent
-     * @param {} event
-     * @param {} params
-     * @return evt
-     */
-    window.CustomEvent = function(event, params) {
+if(!window.CustomEvent || typeof window.CustomEvent !== 'function'){
+    window.CustomEvent = function(event, params){
         var evt;
 
         params = params || {
@@ -83,23 +68,16 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
-(function() {
+(function(){
     var lastTime = 0,
         vendors = ['ms', 'moz', 'webkit', 'o'];
+        
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
         window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
     }
 
-    if (!window.requestAnimationFrame){
-        /**
-         * Description
-         *
-         * @method requestAnimationFrame
-         * @param {} callback
-         * @param {} element
-         * @return id
-         */
+    if(!window.requestAnimationFrame){
         window.requestAnimationFrame = function(callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
@@ -109,14 +87,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
         };
     }
 
-    if (!window.cancelAnimationFrame){
-        /**
-         * Description
-         *
-         * @method cancelAnimationFrame
-         * @param {} id
-         * @return
-         */
+    if(!window.cancelAnimationFrame){
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
         };

@@ -1,8 +1,8 @@
 /**
- * @module Editor
+ * @module Core
  */
 
-metaScore.namespace('editor').Overlay = (function(){
+metaScore.Overlay = (function(){
 
     /**
      * Fired when the overlay is shown
@@ -24,11 +24,10 @@ metaScore.namespace('editor').Overlay = (function(){
      * A generic overlay class
      *
      * @class Overlay
-     * @namespace editor
      * @extends Dom
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @param {String} [configs.parent='body'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
      * @param {Boolean} [configs.draggable=true] Whether the overlay is draggable
      * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
@@ -49,7 +48,7 @@ metaScore.namespace('editor').Overlay = (function(){
     }
 
     Overlay.defaults = {
-        'parent': '.metaScore-editor',
+        'parent': 'body',
         'modal': true,
         'draggable': true,
         'autoShow': false,
@@ -72,7 +71,7 @@ metaScore.namespace('editor').Overlay = (function(){
         }
 
         if(this.configs.toolbar){
-            this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
+            this.toolbar = new metaScore.overlay.Toolbar({'title': this.configs.title})
                 .appendTo(this);
 
             this.toolbar.addButton('close')
@@ -131,7 +130,7 @@ metaScore.namespace('editor').Overlay = (function(){
      * Get the overlay's toolbar
      *
      * @method getToolbar
-     * @return {editor.overlay.Toolbar} The toolbar
+     * @return {editor.Toolbar} The toolbar
      */
     Overlay.prototype.getToolbar = function(){
         return this.toolbar;

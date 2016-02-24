@@ -19,7 +19,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      *
      * @class GuideSelector
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -37,13 +37,14 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     }
 
     GuideSelector.defaults = {
+        'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
         'empty_text': metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
         'url': null
     };
 
-    metaScore.editor.Overlay.extend(GuideSelector);
+    metaScore.Overlay.extend(GuideSelector);
 
     /**
      * Show the overlay
@@ -52,7 +53,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @chainable
      */
     GuideSelector.prototype.show = function(){
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this.configs.parent,
             'autoShow': true
         });
 
@@ -143,7 +145,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     revision_field.disable();
                 }
 
-                button = new metaScore.editor.Button()
+                button = new metaScore.Button()
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                     .addListener('click', metaScore.Function.proxy(function(guide, revision_field, evt){
                         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);

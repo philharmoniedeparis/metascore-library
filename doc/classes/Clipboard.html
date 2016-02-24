@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class - metaScore</title>
+    <title>Clipboard - metaScore</title>
     <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -134,9 +134,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Class Class</h1>
+<h1>Clipboard Class</h1>
 <div class="box meta">
 
+        <div class="extends">
+            Extends <a href="../classes/Evented.html" class="crosslink">Evented</a>
+        </div>
 
 
             Module: <a href="../modules/Core.html">Core</a>
@@ -145,15 +148,14 @@
 
 
 <div class="box intro">
-    <p>The base class <br/>
-Implements a class extension mechanism and defines shared methods</p>
+    <p>A class to handle clipboard data</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Class" class="method item">
-            <h3 class="name"><code>Class</code></h3>
+        <div id="method_Clipboard" class="method item">
+            <h3 class="name"><code>Clipboard</code></h3>
         
                 <span class="paren">()</span>
         
@@ -197,13 +199,45 @@ Implements a class extension mechanism and defines shared methods</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
-                            <li class="index-item method">
-                                <a href="#method_extend">extend</a>
+                    <ul class="index-list methods extends">
+                            <li class="index-item method inherited">
+                                <a href="#method_addListener">addListener</a>
 
                             </li>
                             <li class="index-item method">
+                                <a href="#method_clearData">clearData</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_extend">extend</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_getConfigs">getConfigs</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getData">getData</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getData">getData</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_hasListener">hasListener</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_removeListener">removeListener</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_setData">setData</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_triggerEvent">triggerEvent</a>
 
                             </li>
                     </ul>
@@ -212,8 +246,8 @@ Implements a class extension mechanism and defines shared methods</p>
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
-                            <li class="index-item property">
+                    <ul class="index-list properties extends">
+                            <li class="index-item property inherited">
                                 <a href="#property_defaults">defaults</a>
 
                             </li>
@@ -226,7 +260,105 @@ Implements a class extension mechanism and defines shared methods</p>
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_extend" class="method item">
+<div id="method_addListener" class="method item inherited">
+    <h3 class="name"><code>addListener</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code>listener</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Evented.html#method_addListener">Evented</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add an event listener</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event type to listen to</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">listener</code>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
+
+
+                    <div class="param-description">
+                        <p>The callback function to associate to this listener</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_clearData" class="method item">
+    <h3 class="name"><code>clearData</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Clear the stored data</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_extend" class="method item inherited">
     <h3 class="name"><code>extend</code></h3>
 
         <div class="args">
@@ -245,7 +377,8 @@ Implements a class extension mechanism and defines shared methods</p>
 
 
     <div class="meta">
-                <p>
+                <p>Inherited from
+                <a href="../classes/Class.html#method_extend">Class</a>:
         </p>
 
 
@@ -278,7 +411,7 @@ Implements a class extension mechanism and defines shared methods</p>
 
 
 </div>
-<div id="method_getConfigs" class="method item">
+<div id="method_getConfigs" class="method item inherited">
     <h3 class="name"><code>getConfigs</code></h3>
 
         <div class="args">
@@ -300,7 +433,8 @@ Implements a class extension mechanism and defines shared methods</p>
 
 
     <div class="meta">
-                <p>
+                <p>Inherited from
+                <a href="../classes/Class.html#method_getConfigs">Class</a>:
         </p>
 
 
@@ -342,12 +476,390 @@ Implements a class extension mechanism and defines shared methods</p>
 
 
 </div>
+<div id="method_getData" class="method item">
+    <h3 class="name"><code>getData</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type">Mixed</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the stored data</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The data</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getData" class="method item">
+    <h3 class="name"><code>getData</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the stored data type</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The data type</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_hasListener" class="method item inherited">
+    <h3 class="name"><code>hasListener</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Evented.html#method_hasListener">Evented</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Check if a listener is attached to a given event type</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event type</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>Whether a listener is attached</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_removeListener" class="method item inherited">
+    <h3 class="name"><code>removeListener</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code>listener</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Evented.html#method_removeListener">Evented</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Remove an event listener</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event type to stop listen to</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">listener</code>
+                        <span class="type"><a href="../classes/Function.html" class="crosslink">Function</a></span>
+
+
+                    <div class="param-description">
+                        <p>The callback function associated to this listener</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_setData" class="method item">
+    <h3 class="name"><code>setData</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code>data</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the stored data</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The data type</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">data</code>
+                        <span class="type">Mixed</span>
+
+
+                    <div class="param-description">
+                        <p>The data</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_triggerEvent" class="method item inherited">
+    <h3 class="name"><code>triggerEvent</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code>data</code>
+                </li>
+                <li class="arg">
+                        <code>bubbling</code>
+                </li>
+                <li class="arg">
+                        <code>cancelable</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Evented.html#method_triggerEvent">Evented</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Trigger an event</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The event type</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">data</code>
+                        <span class="type">Mixed</span>
+
+
+                    <div class="param-description">
+                        <p>Data to attach to the event via the detail propoerty</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bubbling</code>
+                        <span class="type">Boolean</span>
+
+
+                    <div class="param-description">
+                        <p>Whether the event bubbles up through the DOM or not</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">cancelable</code>
+                        <span class="type">Boolean</span>
+
+
+                    <div class="param-description">
+                        <p>Whether the event is cancelable or not</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
             </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_defaults" class="property item">
+                    <div id="property_defaults" class="property item inherited">
                         <h3 class="name"><code>defaults</code></h3>
                         <span class="type">Object</span>
                     
@@ -356,7 +868,8 @@ Implements a class extension mechanism and defines shared methods</p>
                     
                     
                         <div class="meta">
-                                    <p>
+                                    <p>Inherited from
+                                    <a href="../classes/Class.html#property_defaults">Class</a>:
                             </p>
                     
                     

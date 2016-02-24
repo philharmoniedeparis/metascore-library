@@ -1,14 +1,14 @@
 /**
- * @module Editor
+ * @module Core
  */
 
-metaScore.namespace('editor.overlay').Toolbar = (function(){
+metaScore.namespace('overlay').Toolbar = (function(){
 
     /**
      * A title toolbar for overlay's
      *
      * @class Toolbar
-     * @namespace editor.overlay
+     * @namespace overlay
      * @extends Dom
      * @constructor
      * @param {Object} configs Custom configs to override defaults
@@ -52,10 +52,10 @@ metaScore.namespace('editor.overlay').Toolbar = (function(){
      * 
      * @method addButton
      * @param {String} action The action associated with the button
-     * @return {editor.Button} The created button
+     * @return {Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
-        var button = new metaScore.editor.Button().data('action', action)
+        var button = new metaScore.Button().data('action', action)
             .appendTo(this.buttons);
 
         return button;

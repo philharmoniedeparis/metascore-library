@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-15 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-02-24 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -15,7 +15,7 @@ if(Element && !Element.prototype.matches){
         Element.prototype.mozMatchesSelector ||
         Element.prototype.msMatchesSelector ||
         Element.prototype.oMatchesSelector ||
-        function (selector) {
+        function (selector){
             var element = this,
                 matches = (element.document || element.ownerDocument).querySelectorAll(selector),
                 i = 0;
@@ -30,14 +30,7 @@ if(Element && !Element.prototype.matches){
 
 // Element.closest
 if(Element && !Element.prototype.closest){
-    /**
-     * Description
-     *
-     * @method closest
-     * @param {} selector
-     * @return Literal
-     */
-    Element.prototype.closest = function closest(selector) {
+    Element.prototype.closest = function closest(selector){
         var node = this;
 
         while(node){
@@ -55,16 +48,8 @@ if(Element && !Element.prototype.closest){
 
 // CustomEvent constructor
 // https://github.com/krambuhl/custom-event-polyfill/blob/master/custom-event-polyfill.js
-if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
-    /**
-     * Description
-     *
-     * @method CustomEvent
-     * @param {} event
-     * @param {} params
-     * @return evt
-     */
-    window.CustomEvent = function(event, params) {
+if(!window.CustomEvent || typeof window.CustomEvent !== 'function'){
+    window.CustomEvent = function(event, params){
         var evt;
 
         params = params || {
@@ -88,23 +73,16 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
-(function() {
+(function(){
     var lastTime = 0,
         vendors = ['ms', 'moz', 'webkit', 'o'];
+        
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
         window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
     }
 
-    if (!window.requestAnimationFrame){
-        /**
-         * Description
-         *
-         * @method requestAnimationFrame
-         * @param {} callback
-         * @param {} element
-         * @return id
-         */
+    if(!window.requestAnimationFrame){
         window.requestAnimationFrame = function(callback, element) {
             var currTime = new Date().getTime();
             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
@@ -114,14 +92,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
         };
     }
 
-    if (!window.cancelAnimationFrame){
-        /**
-         * Description
-         *
-         * @method cancelAnimationFrame
-         * @param {} id
-         * @return
-         */
+    if(!window.cancelAnimationFrame){
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
         };
@@ -161,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "7bdec2";
+        return "93bab4";
     },
 
     /**
@@ -371,504 +342,6 @@ metaScore.Evented = (function(){
     };
 
     return Evented;
-
-})();
-/** 
- * @module Core
- */
-
-metaScore.Ajax = (function () {
-
-    /**
-     * A class to handle AJAX requests
-     *
-     * @class Ajax
-     * @constructor
-     */
-    function Ajax() {
-    }
-
-    /**
-     * Send an XMLHttp request
-     *
-     * @method send
-     * @static
-     * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request
-     * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
-     * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
-     * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
-     * @param {Object} [options.data={}] Data to be send along with the request
-     * @param {String} [options.dataType='json'] The type of data expected back from the server
-     * @param {Funtion} [options.complete] A function to be called when the request finishes
-     * @param {Funtion} [options.success] A function to be called if the request succeeds
-     * @param {Funtion} [options.error] A function to be called if the request fails
-     * @param {Object} [options.scope=this] The object to which the scope of the above functions should be set
-     * @return {XMLHttpRequest} The XHR request
-     */
-    Ajax.send = function(url, options) {
-
-        var key,
-            xhr = new XMLHttpRequest(),
-            defaults = {
-                'method': 'GET',
-                'headers': {},
-                'async': true,
-                'data': {},
-                'dataType': 'json', // xml, json, script, text or html
-                'complete': null,
-                'success': null,
-                'error': null,
-                'scope': this
-            };
-
-        options = metaScore.Object.extend({}, defaults, options);
-
-        xhr.open(options.method, url, options.async);
-
-        metaScore.Object.each(options.headers, function(key, value){
-            xhr.setRequestHeader(key, value);
-        });
-
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if(metaScore.Var.is(options.complete, 'function')){
-                    options.complete.call(options.scope, xhr);
-                }
-                if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
-                    if(metaScore.Var.is(options.success, 'function')){
-                        options.success.call(options.scope, xhr);
-                    }
-                }
-                else if(metaScore.Var.is(options.error, 'function')){
-                    options.error.call(options.scope, xhr);
-                }
-            }
-        };
-
-        xhr.send(options.data);
-
-        return xhr;
-
-    };
-
-    /**
-     * Send an XMLHttp GET request
-     * 
-     * @method get
-     * @static
-     * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
-     * @return {XMLHttpRequest} The XHR request
-     */
-    Ajax.get = function(url, options) {
-
-        metaScore.Object.extend(options, {'method': 'GET'});
-
-        return Ajax.send(url, options);
-
-    };
-
-    /**
-     * Send an XMLHttp POST request
-     * 
-     * @method post
-     * @static
-     * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
-     * @return {XMLHttpRequest} The XHR request
-     */
-    Ajax.post = function(url, options) {
-
-        metaScore.Object.extend(options, {'method': 'POST'});
-
-        return Ajax.send(url, options);
-
-    };
-
-    /**
-     * Send an XMLHttp PUT request
-     * 
-     * @method put
-     * @static
-     * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
-     * @return {XMLHttpRequest} The XHR request
-     */
-    Ajax.put = function(url, options) {
-
-        metaScore.Object.extend(options, {'method': 'PUT'});
-
-        return Ajax.send(url, options);
-
-    };
-
-    return Ajax;
-
-})();
-/**
- * @module Core
- */
-
-metaScore.Array = (function () {
-
-    /**
-     * A class for array helper functions
-     * 
-     * @class Array
-     * @constructor
-     */
-    function Array() {
-    }
-
-    /**
-     * Check if a value is in an array
-     * 
-     * @method inArray
-     * @static
-     * @param {Mixed} needle The value to search
-     * @param {Array} haystack The array
-     * @return {Integer} The index of the first match, -1 if none
-     */
-    Array.inArray = function(needle, haystack){
-        var len, i = 0;
-
-        if(haystack) {
-            if(haystack.indexOf){
-                return haystack.indexOf(needle);
-            }
-
-            len = haystack.length;
-
-            for(; i < len; i++){
-                // Skip accessing in sparse arrays
-                if(i in haystack && haystack[i] === needle){
-                    return i;
-                }
-            }
-        }
-
-        return -1;
-    };
-
-    /**
-     * Copy an array
-     * 
-     * @method copy
-     * @static
-     * @param {Array} arr The original array
-     * @return {Array} The copy
-     */
-    Array.copy = function(arr) {
-        return [].concat(arr);
-    };
-
-    /**
-     * Shuffle array elements
-     * 
-     * @method shuffle
-     * @static
-     * @param {Array} arr The array to shuffle
-     * @return {Array} The shuffled copy of the array
-     */
-    Array.shuffle = function(arr) {
-        var shuffled = Array.copy(arr);
-
-        shuffled.sort(function(){
-            return ((Math.random() * 3) | 0) - 1;
-        });
-
-        return shuffled;
-    };
-
-    /**
-     * Remove duplicate values from an array
-     * 
-     * @method unique
-     * @static
-     * @param {Array} arr The array to remove duplicates from
-     * @return {Array} A copy of the array with no duplicates
-     */
-    Array.unique = function(arr) {
-        var unique = [],
-            length = arr.length;
-
-        for(var i=0; i<length; i++){
-            for(var j=i+1; j<length; j++){
-                // If this[i] is found later in the array
-                if(arr[i] === arr[j]){
-                    j = ++i;
-                }
-            }
-            unique.push(arr[i]);
-        }
-
-        return unique;
-    };
-
-    /**
-     * Iterate over an array with a callback function
-     * 
-     * @method each
-     * @static
-     * @param {Array} arr The array to iterate over
-     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
-     * @param {Integer} callback.index The index of the current element being processed in the array
-     * @param {Mixed} callback.value The element that is currently being processed in the array
-     * @param {Mixed} scope The value to use as this when executing the callback
-     * @return {Array} The array
-     */
-    Array.each = function(arr, callback, scope) {
-        var i = 0,
-            l = arr.length,
-            value,
-            scope_provided = scope !== undefined;
-
-        for(; i < l; i++) {
-            value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
-
-            if (value === false) {
-                break;
-            }
-        }
-
-        return arr;
-    };
-
-    /**
-     * Remove a elements from an array by value
-     * 
-     * @method remove
-     * @static
-     * @param {Array} arr The array to remove the elements from
-     * @param {Mixed} value The value to search for
-     * @return {Array} The array
-     */
-    Array.remove = function(arr, value){
-        var index = Array.inArray(value, arr);
-
-        while(index > -1){
-            arr.splice(index, 1);
-            index = Array.inArray(value, arr);
-        }
-
-        return arr;
-    };
-
-    /**
-     * A natural sort function generator
-     * 
-     * @method naturalSort
-     * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
-     * @static
-     * @param {Boolean} [insensitive=false] Whether the sort should not be case-sensitive
-     * @return {Function} The sorting function
-     * 
-     * @example
-     *     var arr = ["c", "A2", "a1", "d", "b"];
-     *     arr.sort(metaScore.Array.naturalSort(true));
-     *     // ["a1", "A2", "b", "c", "d"]
-     * 
-     * @example
-     *     var arr = ["c", "A2", "a1", "d", "b"];
-     *     arr.sort(metaScore.Array.naturalSort(false));
-     *     // ["A2", "a1", "b", "c", "d"]
-     */
-    Array.naturalSort = function(insensitive){
-        return function(a, b){
-            var re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi,
-                sre = /(^[ ]*|[ ]*$)/g,
-                dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
-                hre = /^0x[0-9a-f]+$/i,
-                ore = /^0/,
-                i = function(s) { return insensitive && (''+s).toLowerCase() || ''+s },
-                // convert all to strings strip whitespace
-                x = i(a).replace(sre, '') || '',
-                y = i(b).replace(sre, '') || '',
-                // chunk/tokenize
-                xN = x.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
-                yN = y.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
-                // numeric, hex or date detection
-                xD = parseInt(x.match(hre)) || (xN.length !== 1 && x.match(dre) && Date.parse(x)),
-                yD = parseInt(y.match(hre)) || xD && y.match(dre) && Date.parse(y) || null,
-                oFxNcL, oFyNcL;
-            // first try and sort Hex codes or Dates
-            if (yD) {
-                if ( xD < yD ) { return -1; }
-                else if ( xD > yD ) { return 1; }
-            }
-            // natural sorting through split numeric strings and default strings
-            for(var cLoc=0, numS=Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
-                    // find floats not starting with '0', string or 0 if not defined (Clint Priest)
-                    oFxNcL = !(xN[cLoc] || '').match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0;
-                    oFyNcL = !(yN[cLoc] || '').match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0;
-                    // handle numeric vs string comparison - number < string - (Kyle Adams)
-                    if (isNaN(oFxNcL) !== isNaN(oFyNcL)) { return (isNaN(oFxNcL)) ? 1 : -1; }
-                    // rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
-                    else if (typeof oFxNcL !== typeof oFyNcL) {
-                            oFxNcL += '';
-                            oFyNcL += '';
-                    }
-                    if (oFxNcL < oFyNcL) { return -1; }
-                    if (oFxNcL > oFyNcL) { return 1; }
-            }
-            return 0;
-        };
-    };
-
-    /**
-     * A natural case-insentive sorting function to use with Array.sort
-     * 
-     * @method naturalSortInsensitive
-     * @static
-     * @param {String} a The first string to compare
-     * @param {String} b The second string to compare
-     * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-     */
-    Array.naturalSortInsensitive = Array.naturalSort(true);
-    
-
-    /**
-     * A natural case-sentive sorting function to use with Array.sort
-     * 
-     * @method naturalSortInsensitive
-     * @static
-     * @param {String} a The first string to compare
-     * @param {String} b The second string to compare
-     * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-     */
-    Array.naturalSortSensitive = Array.naturalSort(false);
-
-    return Array;
-
-})();
-/**
- * @module Core
- */
-
-metaScore.Color = (function () {
-
-    /**
-     * A class for color helper functions
-     * 
-     * @class Color
-     * @constructor
-     */
-    function Color() {
-    }
-
-    /**
-     * Convert an RGB value to HSV
-     * 
-     * @method rgb2hsv
-     * @static
-     * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
-     * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
-     */
-    Color.rgb2hsv = function (rgb){
-        var r = rgb.r, g = rgb.g, b = rgb.b,
-            max = Math.max(r, g, b),
-            min = Math.min(r, g, b),
-            d = max - min,
-            h, s, v;
-
-        s = max === 0 ? 0 : d / max;
-        v = max;
-
-        if(max === min) {
-            h = 0; // achromatic
-        }
-        else {
-            switch(max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);
-                    break;
-
-                case g:
-                    h = (b - r) / d + 2;
-                    break;
-
-                case b:
-                    h = (r - g) / d + 4;
-                    break;
-            }
-
-            h /= 6;
-        }
-
-        return {
-            'h': h,
-            's': s,
-            'v': v
-        };
-    };
-
-    /**
-     * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
-     * 
-     * @method parse
-     * @static
-     * @param {Mixed} color The CSS value to parse
-     * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
-     */
-    Color.parse = function(color){
-        var rgba, matches;
-
-        rgba = {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0,
-        };
-
-        if(metaScore.Var.is(color, 'object')){
-            rgba.r = 'r' in color ? color.r : 0;
-            rgba.g = 'g' in color ? color.g : 0;
-            rgba.b = 'b' in color ? color.b : 0;
-            rgba.a = 'a' in color ? color.a : 1;
-        }
-        else if(metaScore.Var.is(color, 'string')){
-            color = color.replace(/\s\s*/g,''); // Remove all spaces
-
-            // Checks for 6 digit hex and converts string to integer
-            if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
-                rgba.r = parseInt(matches[1], 16);
-                rgba.g = parseInt(matches[2], 16);
-                rgba.b = parseInt(matches[3], 16);
-                rgba.a = 1;
-            }
-
-            // Checks for 3 digit hex and converts string to integer
-            else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
-                rgba.r = parseInt(matches[1], 16) * 17;
-                rgba.g = parseInt(matches[2], 16) * 17;
-                rgba.b = parseInt(matches[3], 16) * 17;
-                rgba.a = 1;
-            }
-
-            // Checks for rgba and converts string to
-            // integer/float using unary + operator to save bytes
-            else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
-                rgba.r = +matches[1];
-                rgba.g = +matches[2];
-                rgba.b = +matches[3];
-                rgba.a = +matches[4];
-            }
-
-            // Checks for rgb and converts string to
-            // integer/float using unary + operator to save bytes
-            else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
-                rgba.r = +matches[1];
-                rgba.g = +matches[2];
-                rgba.b = +matches[3];
-                rgba.a = 1;
-            }
-        }
-
-        return rgba;
-    };
-
-    return Color;
 
 })();
 /**
@@ -2185,6 +1658,922 @@ metaScore.Dom = (function () {
     return Dom;
 
 })();
+/** 
+ * @module Core
+ */
+
+metaScore.Ajax = (function () {
+
+    /**
+     * A class to handle AJAX requests
+     *
+     * @class Ajax
+     * @constructor
+     */
+    function Ajax() {
+    }
+
+    /**
+     * Send an XMLHttp request
+     *
+     * @method send
+     * @static
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} options to set for the request
+     * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
+     * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
+     * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
+     * @param {Object} [options.data={}] Data to be send along with the request
+     * @param {String} [options.dataType='json'] The type of data expected back from the server
+     * @param {Funtion} [options.complete] A function to be called when the request finishes
+     * @param {Funtion} [options.success] A function to be called if the request succeeds
+     * @param {Funtion} [options.error] A function to be called if the request fails
+     * @param {Object} [options.scope=this] The object to which the scope of the above functions should be set
+     * @return {XMLHttpRequest} The XHR request
+     */
+    Ajax.send = function(url, options) {
+
+        var key,
+            xhr = new XMLHttpRequest(),
+            defaults = {
+                'method': 'GET',
+                'headers': {},
+                'async': true,
+                'data': {},
+                'dataType': 'json', // xml, json, script, text or html
+                'complete': null,
+                'success': null,
+                'error': null,
+                'scope': this
+            };
+
+        options = metaScore.Object.extend({}, defaults, options);
+
+        xhr.open(options.method, url, options.async);
+
+        metaScore.Object.each(options.headers, function(key, value){
+            xhr.setRequestHeader(key, value);
+        });
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if(metaScore.Var.is(options.complete, 'function')){
+                    options.complete.call(options.scope, xhr);
+                }
+                if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
+                    if(metaScore.Var.is(options.success, 'function')){
+                        options.success.call(options.scope, xhr);
+                    }
+                }
+                else if(metaScore.Var.is(options.error, 'function')){
+                    options.error.call(options.scope, xhr);
+                }
+            }
+        };
+
+        xhr.send(options.data);
+
+        return xhr;
+
+    };
+
+    /**
+     * Send an XMLHttp GET request
+     * 
+     * @method get
+     * @static
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @return {XMLHttpRequest} The XHR request
+     */
+    Ajax.get = function(url, options) {
+
+        metaScore.Object.extend(options, {'method': 'GET'});
+
+        return Ajax.send(url, options);
+
+    };
+
+    /**
+     * Send an XMLHttp POST request
+     * 
+     * @method post
+     * @static
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @return {XMLHttpRequest} The XHR request
+     */
+    Ajax.post = function(url, options) {
+
+        metaScore.Object.extend(options, {'method': 'POST'});
+
+        return Ajax.send(url, options);
+
+    };
+
+    /**
+     * Send an XMLHttp PUT request
+     * 
+     * @method put
+     * @static
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @return {XMLHttpRequest} The XHR request
+     */
+    Ajax.put = function(url, options) {
+
+        metaScore.Object.extend(options, {'method': 'PUT'});
+
+        return Ajax.send(url, options);
+
+    };
+
+    return Ajax;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.Array = (function () {
+
+    /**
+     * A class for array helper functions
+     * 
+     * @class Array
+     * @constructor
+     */
+    function Array() {
+    }
+
+    /**
+     * Check if a value is in an array
+     * 
+     * @method inArray
+     * @static
+     * @param {Mixed} needle The value to search
+     * @param {Array} haystack The array
+     * @return {Integer} The index of the first match, -1 if none
+     */
+    Array.inArray = function(needle, haystack){
+        var len, i = 0;
+
+        if(haystack) {
+            if(haystack.indexOf){
+                return haystack.indexOf(needle);
+            }
+
+            len = haystack.length;
+
+            for(; i < len; i++){
+                // Skip accessing in sparse arrays
+                if(i in haystack && haystack[i] === needle){
+                    return i;
+                }
+            }
+        }
+
+        return -1;
+    };
+
+    /**
+     * Copy an array
+     * 
+     * @method copy
+     * @static
+     * @param {Array} arr The original array
+     * @return {Array} The copy
+     */
+    Array.copy = function(arr) {
+        return [].concat(arr);
+    };
+
+    /**
+     * Shuffle array elements
+     * 
+     * @method shuffle
+     * @static
+     * @param {Array} arr The array to shuffle
+     * @return {Array} The shuffled copy of the array
+     */
+    Array.shuffle = function(arr) {
+        var shuffled = Array.copy(arr);
+
+        shuffled.sort(function(){
+            return ((Math.random() * 3) | 0) - 1;
+        });
+
+        return shuffled;
+    };
+
+    /**
+     * Remove duplicate values from an array
+     * 
+     * @method unique
+     * @static
+     * @param {Array} arr The array to remove duplicates from
+     * @return {Array} A copy of the array with no duplicates
+     */
+    Array.unique = function(arr) {
+        var unique = [],
+            length = arr.length;
+
+        for(var i=0; i<length; i++){
+            for(var j=i+1; j<length; j++){
+                // If this[i] is found later in the array
+                if(arr[i] === arr[j]){
+                    j = ++i;
+                }
+            }
+            unique.push(arr[i]);
+        }
+
+        return unique;
+    };
+
+    /**
+     * Iterate over an array with a callback function
+     * 
+     * @method each
+     * @static
+     * @param {Array} arr The array to iterate over
+     * @param {Function} callback The function that will be executed on every element. The iteration is stopped if the callback return false
+     * @param {Integer} callback.index The index of the current element being processed in the array
+     * @param {Mixed} callback.value The element that is currently being processed in the array
+     * @param {Mixed} scope The value to use as this when executing the callback
+     * @return {Array} The array
+     */
+    Array.each = function(arr, callback, scope) {
+        var i = 0,
+            l = arr.length,
+            value,
+            scope_provided = scope !== undefined;
+
+        for(; i < l; i++) {
+            value = callback.call(scope_provided ? scope : arr[i], i, arr[i]);
+
+            if (value === false) {
+                break;
+            }
+        }
+
+        return arr;
+    };
+
+    /**
+     * Remove a elements from an array by value
+     * 
+     * @method remove
+     * @static
+     * @param {Array} arr The array to remove the elements from
+     * @param {Mixed} value The value to search for
+     * @return {Array} The array
+     */
+    Array.remove = function(arr, value){
+        var index = Array.inArray(value, arr);
+
+        while(index > -1){
+            arr.splice(index, 1);
+            index = Array.inArray(value, arr);
+        }
+
+        return arr;
+    };
+
+    /**
+     * A natural sort function generator
+     * 
+     * @method naturalSort
+     * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
+     * @static
+     * @param {Boolean} [insensitive=false] Whether the sort should not be case-sensitive
+     * @return {Function} The sorting function
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(true));
+     *     // ["a1", "A2", "b", "c", "d"]
+     * 
+     * @example
+     *     var arr = ["c", "A2", "a1", "d", "b"];
+     *     arr.sort(metaScore.Array.naturalSort(false));
+     *     // ["A2", "a1", "b", "c", "d"]
+     */
+    Array.naturalSort = function(insensitive){
+        return function(a, b){
+            var re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi,
+                sre = /(^[ ]*|[ ]*$)/g,
+                dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
+                hre = /^0x[0-9a-f]+$/i,
+                ore = /^0/,
+                i = function(s) { return insensitive && (''+s).toLowerCase() || ''+s },
+                // convert all to strings strip whitespace
+                x = i(a).replace(sre, '') || '',
+                y = i(b).replace(sre, '') || '',
+                // chunk/tokenize
+                xN = x.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
+                yN = y.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
+                // numeric, hex or date detection
+                xD = parseInt(x.match(hre)) || (xN.length !== 1 && x.match(dre) && Date.parse(x)),
+                yD = parseInt(y.match(hre)) || xD && y.match(dre) && Date.parse(y) || null,
+                oFxNcL, oFyNcL;
+            // first try and sort Hex codes or Dates
+            if (yD) {
+                if ( xD < yD ) { return -1; }
+                else if ( xD > yD ) { return 1; }
+            }
+            // natural sorting through split numeric strings and default strings
+            for(var cLoc=0, numS=Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
+                    // find floats not starting with '0', string or 0 if not defined (Clint Priest)
+                    oFxNcL = !(xN[cLoc] || '').match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0;
+                    oFyNcL = !(yN[cLoc] || '').match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0;
+                    // handle numeric vs string comparison - number < string - (Kyle Adams)
+                    if (isNaN(oFxNcL) !== isNaN(oFyNcL)) { return (isNaN(oFxNcL)) ? 1 : -1; }
+                    // rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
+                    else if (typeof oFxNcL !== typeof oFyNcL) {
+                            oFxNcL += '';
+                            oFyNcL += '';
+                    }
+                    if (oFxNcL < oFyNcL) { return -1; }
+                    if (oFxNcL > oFyNcL) { return 1; }
+            }
+            return 0;
+        };
+    };
+
+    /**
+     * A natural case-insentive sorting function to use with Array.sort
+     * 
+     * @method naturalSortInsensitive
+     * @static
+     * @param {String} a The first string to compare
+     * @param {String} b The second string to compare
+     * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     */
+    Array.naturalSortInsensitive = Array.naturalSort(true);
+    
+
+    /**
+     * A natural case-sentive sorting function to use with Array.sort
+     * 
+     * @method naturalSortInsensitive
+     * @static
+     * @param {String} a The first string to compare
+     * @param {String} b The second string to compare
+     * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     */
+    Array.naturalSortSensitive = Array.naturalSort(false);
+
+    return Array;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.Button = (function () {
+
+    /**
+     * A simple button based on an HTML button element
+     *
+     * @class Button
+     * @extends Dom
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.label=null] A text to add as a label
+     */
+    function Button(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call the super constructor.
+        metaScore.Dom.call(this, '<button/>');
+
+        this.disabled = false;
+
+        if(this.configs.label){
+            this.setLabel(this.configs.label);
+        }
+
+        this.addListener('click', metaScore.Function.proxy(this.onClick, this));
+    }
+
+    Button.defaults = {
+        'label': null
+    };
+
+    metaScore.Dom.extend(Button);
+
+    /**
+     * The click event handler
+     *
+     * @method onClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    Button.prototype.onClick = function(evt){
+        if(this.disabled){
+            evt.stopPropagation();
+        }
+    };
+
+    /**
+     * Set the button's text
+     *
+     * @method setLabel
+     * @param {String} text The text to use as the label
+     * @chainable
+     */
+    Button.prototype.setLabel = function(text){
+        if(this.label === undefined){
+            this.label = new metaScore.Dom('<span/>', {'class': 'label'})
+                .appendTo(this);
+        }
+
+        this.label.text(text);
+
+        return this;
+    };
+
+    /**
+     * Disable the button
+     *
+     * @method disable
+     * @chainable
+     */
+    Button.prototype.disable = function(){
+        this.disabled = true;
+
+        this.addClass('disabled');
+
+        return this;
+    };
+
+    /**
+     * Enable the button
+     *
+     * @method enable
+     * @chainable
+     */
+    Button.prototype.enable = function(){
+        this.disabled = false;
+
+        this.removeClass('disabled');
+
+        return this;
+    };
+
+    return Button;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.Clipboard = (function(){
+
+    /**
+     * A class to handle clipboard data
+     *
+     * @class Clipboard
+     * @extends Evented
+     * @constructor
+     */
+    function Clipboard() {
+        // call parent constructor
+        Clipboard.parent.call(this);
+
+        this.data = null;
+    }
+
+    metaScore.Evented.extend(Clipboard);
+
+    /**
+    * Set the stored data
+    *
+    * @method setData
+    * @param {String} type The data type
+    * @param {Mixed} data The data
+    * @chainable
+    */
+    Clipboard.prototype.setData = function(type, data){
+        this.data = {
+          'type': type,
+          'data': data
+        };
+
+        return this;
+    };
+
+    /**
+    * Get the stored data
+    *
+    * @method getData
+    * @return {Mixed} The data
+    */
+    Clipboard.prototype.getData = function(){
+        return this.data ? this.data.data : null;
+    };
+
+    /**
+    * Get the stored data type
+    *
+    * @method getData
+    * @return {String} The data type
+    */
+    Clipboard.prototype.getDataType = function(){
+        return this.data ? this.data.type : null;
+    };
+
+    /**
+    * Clear the stored data
+    *
+    * @method clearData
+    * @chainable
+    */
+    Clipboard.prototype.clearData = function(){  
+        this.data = null;
+
+        return this;
+    };
+
+    return Clipboard;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.Color = (function () {
+
+    /**
+     * A class for color helper functions
+     * 
+     * @class Color
+     * @constructor
+     */
+    function Color() {
+    }
+
+    /**
+     * Convert an RGB value to HSV
+     * 
+     * @method rgb2hsv
+     * @static
+     * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
+     * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
+     */
+    Color.rgb2hsv = function (rgb){
+        var r = rgb.r, g = rgb.g, b = rgb.b,
+            max = Math.max(r, g, b),
+            min = Math.min(r, g, b),
+            d = max - min,
+            h, s, v;
+
+        s = max === 0 ? 0 : d / max;
+        v = max;
+
+        if(max === min) {
+            h = 0; // achromatic
+        }
+        else {
+            switch(max) {
+                case r:
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                    break;
+
+                case g:
+                    h = (b - r) / d + 2;
+                    break;
+
+                case b:
+                    h = (r - g) / d + 4;
+                    break;
+            }
+
+            h /= 6;
+        }
+
+        return {
+            'h': h,
+            's': s,
+            'v': v
+        };
+    };
+
+    /**
+     * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
+     * 
+     * @method parse
+     * @static
+     * @param {Mixed} color The CSS value to parse
+     * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
+     */
+    Color.parse = function(color){
+        var rgba, matches;
+
+        rgba = {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0,
+        };
+
+        if(metaScore.Var.is(color, 'object')){
+            rgba.r = 'r' in color ? color.r : 0;
+            rgba.g = 'g' in color ? color.g : 0;
+            rgba.b = 'b' in color ? color.b : 0;
+            rgba.a = 'a' in color ? color.a : 1;
+        }
+        else if(metaScore.Var.is(color, 'string')){
+            color = color.replace(/\s\s*/g,''); // Remove all spaces
+
+            // Checks for 6 digit hex and converts string to integer
+            if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
+                rgba.r = parseInt(matches[1], 16);
+                rgba.g = parseInt(matches[2], 16);
+                rgba.b = parseInt(matches[3], 16);
+                rgba.a = 1;
+            }
+
+            // Checks for 3 digit hex and converts string to integer
+            else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
+                rgba.r = parseInt(matches[1], 16) * 17;
+                rgba.g = parseInt(matches[2], 16) * 17;
+                rgba.b = parseInt(matches[3], 16) * 17;
+                rgba.a = 1;
+            }
+
+            // Checks for rgba and converts string to
+            // integer/float using unary + operator to save bytes
+            else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
+                rgba.r = +matches[1];
+                rgba.g = +matches[2];
+                rgba.b = +matches[3];
+                rgba.a = +matches[4];
+            }
+
+            // Checks for rgb and converts string to
+            // integer/float using unary + operator to save bytes
+            else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
+                rgba.r = +matches[1];
+                rgba.g = +matches[2];
+                rgba.b = +matches[3];
+                rgba.a = 1;
+            }
+        }
+
+        return rgba;
+    };
+
+    return Color;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.ContextMenu = (function(){
+
+    /**
+     * Fired when a task is clicked
+     *
+     * @event taskclick
+     * @param {Object} action The task's action
+     * @param {Object} context The task's context
+     */
+    var EVT_TASKCLICK = 'taskclick';
+
+    /**
+     * A class for creating context menus
+     *
+     * @class ContextMenu
+     * @extends Dom
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Mixed} [configs.target='body'] The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
+     */
+    function ContextMenu(configs) {
+        this.configs = this.getConfigs(configs);
+        
+        if(!(this.configs.target instanceof metaScore.Dom)){
+            this.configs.target = new metaScore.Dom(this.configs.target);
+        }
+
+        // call parent constructor
+        ContextMenu.parent.call(this, '<ul/>', {'class': 'contextmenu'});
+        
+        this.tasks = {};
+        this.context = null;
+
+        // fix event handlers scope
+        this.onTargetContextmenu = metaScore.Function.proxy(this.onTargetContextmenu, this);
+        this.onTargetMousedown = metaScore.Function.proxy(this.onTargetMousedown, this);
+        this.onTaskClick = metaScore.Function.proxy(this.onTaskClick, this);
+        
+        this.addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this));
+        
+        this.hide();
+        this.enable();
+    }
+
+    metaScore.Dom.extend(ContextMenu);
+
+    ContextMenu.defaults = {
+        'target': 'body'
+    };
+
+    /**
+     * Mousedown event handler
+     *
+     * @method onMousedown
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onMousedown = function(evt){    
+        evt.stopPropagation();
+    };
+
+    /**
+     * Target's contextmenu event handler
+     *
+     * @method onTargetContextmenu
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onTargetContextmenu = function(evt){
+        var x, y;
+        
+        if(evt.ctrlKey){
+            return;
+        }
+        
+        if(evt.pageX || evt.pageY){
+            x = evt.pageX;
+            y = evt.pageY;
+        }
+        else if(evt.clientX || evt.clientY){
+            x = evt.clientX + document.body.scrollLeft;
+            y = evt.clientY + document.body.scrollTop;
+        }
+        else{
+            x = 0;
+            y = 0;
+        }
+        
+        this.show(evt.target, x, y);
+        
+        evt.preventDefault();
+    };
+
+    /**
+     * Target's mousedown event handler
+     *
+     * @method onTargetMousedown
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onTargetMousedown = function(evt){    
+        this.hide();
+    };
+
+    /**
+     * Task's click event handler
+     *
+     * @method onTaskClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onTaskClick = function(evt){
+        var action = new metaScore.Dom(evt.target).data('action');
+            
+        if(action in this.tasks){
+            this.triggerEvent(EVT_TASKCLICK, {'action': action, 'context': this.context}, true, false);
+        }
+        
+        this.hide();
+    };
+
+    /**
+     * Add a task
+     *
+     * @method addTask
+     * @param {String} action The task's associated action
+     * @param {String} text The task's label
+     * @param {Mixed} toggler A boolean or a callback function used to determine if the task is active
+     * @param {HTMLElement} toggler.context The element on which the contextmenu event was triggered
+     * @chainable
+     */
+    ContextMenu.prototype.addTask = function(action, text, toggler){
+        var el = new metaScore.Dom('<li/>', {'data-action': action, 'text': text})
+            .addListener('click', this.onTaskClick)
+            .appendTo(this);
+            
+        this.tasks[action] = {
+            'toggler': toggler,
+            'el': el
+        };
+            
+        return this;
+    };
+
+    /**
+     * Add a separator
+     *
+     * @method addSeparator
+     * @chainable
+     */
+    ContextMenu.prototype.addSeparator = function(){
+        new metaScore.Dom('<li/>', {'class': 'separator'})
+            .appendTo(this);
+            
+        return this;
+    };
+
+    /**
+     * Show the menu
+     *
+     * @method show
+     * @param {HTMLElement} el The element on which the contextmenu event was triggered
+     * @param {Number} x The horizontal position at which the menu should be shown
+     * @param {Number} y The vertical position at which the menu should be shown
+     * @chainable
+     */
+    ContextMenu.prototype.show = function(el, x, y){
+        this.context = el;
+    
+        metaScore.Object.each(this.tasks, function(key, task){
+            var active = metaScore.Var.is(task.toggler, 'function') ? task.toggler(this.context) === true : task.toggler !== false;
+            
+            if(active){
+                task.el.removeClass('disabled');
+            }
+            else{
+                task.el.addClass('disabled');
+            }
+        }, this);
+    
+        this.configs.target.addListener('mousedown', this.onTargetMousedown);
+        
+        this
+            .css('left', x +'px')
+            .css('top', y +'px');
+
+        // call parent function
+        ContextMenu.parent.prototype.show.call(this);
+        
+        return this;
+    };
+
+    /**
+     * Hide the menu
+     *
+     * @method hide
+     * @chainable
+     */
+    ContextMenu.prototype.hide = function(){
+        this.configs.target.removeListener('mousedown', this.onTargetMousedown);
+        
+        this.context = null;
+
+        // call parent function
+        ContextMenu.parent.prototype.hide.call(this);
+        
+        return this;
+    };
+
+    /**
+     * Enable the menu
+     * 
+     * @method enable
+     * @chainable
+     */
+    ContextMenu.prototype.enable = function(){
+        this.enabled = true;
+        
+        this.configs.target.addListener('contextmenu', this.onTargetContextmenu);
+
+        return this;
+    };
+
+    /**
+     * Disable the menu
+     * 
+     * @method disable
+     * @chainable
+     */
+    ContextMenu.prototype.disable = function(){        
+        this.configs.target.removeListener('contextmenu', this.onTargetContextmenu);
+        
+        this.hide();
+
+        this.enabled = false;
+
+        return this;
+    };
+
+    return ContextMenu;
+
+})();
 /**
  * @module Core
  */
@@ -2560,6 +2949,168 @@ metaScore.Object = (function () {
     };
 
     return Object;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.Overlay = (function(){
+
+    /**
+     * Fired when the overlay is shown
+     *
+     * @event show
+     * @param {Object} overlay The overlay instance
+     */
+    var EVT_SHOW = 'show';
+
+    /**
+     * Fired when the overlay is hidden
+     *
+     * @event hide
+     * @param {Object} overlay The overlay instance
+     */
+    var EVT_HIDE = 'hide';
+
+    /**
+     * A generic overlay class
+     *
+     * @class Overlay
+     * @extends Dom
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.parent='body'] The parent element in which the overlay will be appended
+     * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
+     * @param {Boolean} [configs.draggable=true] Whether the overlay is draggable
+     * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
+     * @param {Boolean} [configs.toolbar=false] Whether to add a toolbar with title and close button
+     * @param {String} [configs.title=''] The overlay's title
+     */
+    function Overlay(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
+
+        this.setupUI();
+
+        if(this.configs.autoShow){
+            this.show();
+        }
+    }
+
+    Overlay.defaults = {
+        'parent': 'body',
+        'modal': true,
+        'draggable': true,
+        'autoShow': false,
+        'toolbar': false,
+        'title': ''
+    };
+
+    metaScore.Dom.extend(Overlay);
+
+    /**
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    Overlay.prototype.setupUI = function(){
+
+        if(this.configs.modal){
+            this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
+        }
+
+        if(this.configs.toolbar){
+            this.toolbar = new metaScore.overlay.Toolbar({'title': this.configs.title})
+                .appendTo(this);
+
+            this.toolbar.addButton('close')
+                .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
+        }
+
+        this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+            .appendTo(this);
+
+        if(this.configs.draggable){
+            this.draggable = new metaScore.Draggable({
+                'target': this,
+                'handle': this.configs.toolbar ? this.toolbar : this
+            });
+        }
+
+    };
+
+    /**
+     * Show the overlay
+     *
+     * @method show
+     * @chainable
+     */
+    Overlay.prototype.show = function(){
+        if(this.configs.modal){
+            this.mask.appendTo(this.configs.parent);
+        }
+
+        this.appendTo(this.configs.parent);
+
+        this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
+
+        return this;
+    };
+
+    /**
+     * Hide the overlay
+     *
+     * @method hide
+     * @chainable
+     */
+    Overlay.prototype.hide = function(){
+        if(this.configs.modal){
+            this.mask.remove();
+        }
+
+        this.remove();
+
+        this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
+
+        return this;
+    };
+
+    /**
+     * Get the overlay's toolbar
+     *
+     * @method getToolbar
+     * @return {editor.Toolbar} The toolbar
+     */
+    Overlay.prototype.getToolbar = function(){
+        return this.toolbar;
+    };
+
+    /**
+     * Get the overlay's contents
+     *
+     * @method getContents
+     * @return {Dom} The contents
+     */
+    Overlay.prototype.getContents = function(){
+        return this.contents;
+    };
+
+    /**
+     * The close button's click handler
+     *
+     * @method onCloseClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    Overlay.prototype.onCloseClick = function(evt){
+        this.hide();
+    };
+
+    return Overlay;
 
 })();
 /**
@@ -3166,6 +3717,296 @@ metaScore.Var = (function () {
 
 })();
 /**
+ * @module Core
+ */
+
+metaScore.namespace('overlay').Alert = (function () {
+
+    /**
+     * Fired when a button is clicked
+     *
+     * @event buttonclick
+     * @param {Object} alert The alert instance
+     * @param {String} action The buttons's action
+     */
+    var EVT_BUTTONCLICK = 'buttonclick';
+
+    /**
+     * An alert overlay to show a simple message with buttons
+     *
+     * @class Alert
+     * @namespace overlay
+     * @extends Overlay
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
+     * @param {String} [configs.text=''] The message's text
+     * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
+     */
+    function Alert(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        Alert.parent.call(this, this.configs);
+
+        this.addClass('alert');
+    }
+
+    Alert.defaults = {
+        'draggable': false,
+        'text': '',
+        'buttons': {}
+    };
+
+    metaScore.Overlay.extend(Alert);
+
+    /**
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    Alert.prototype.setupUI = function(){
+        // call parent method
+        Alert.parent.prototype.setupUI.call(this);
+
+        this.text = new metaScore.Dom('<div/>', {'class': 'text'})
+            .appendTo(this.contents);
+
+        if(this.configs.text){
+            this.setText(this.configs.text);
+        }
+
+        this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .addDelegate('button', 'click', metaScore.Function.proxy(this.onButtonClick, this))
+            .appendTo(this.contents);
+
+        if(this.configs.buttons){
+            metaScore.Object.each(this.configs.buttons, function(action, label){
+                this.addButton(action, label);
+            }, this);
+        }
+
+    };
+
+    /**
+     * Set the message's text
+     * 
+     * @method setText
+     * @param {String} str The message's text
+     * @chainable
+     */
+    Alert.prototype.setText = function(str){
+        this.text.text(str);
+
+        return this;
+    };
+
+    /**
+     * Add a button
+     * 
+     * @method addButton
+     * @param {String} action The button's associated action
+     * @param {String} label The button's text label
+     * @return {Button} The button object
+     */
+    Alert.prototype.addButton = function(action, label){
+        var button = new metaScore.Button()
+            .setLabel(label)
+            .data('action', action)
+            .appendTo(this.buttons);
+
+        return button;
+    };
+
+    /**
+     * The button click event handler
+     * 
+     * @method onButtonClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    Alert.prototype.onButtonClick = function(evt){
+        var action = new metaScore.Dom(evt.target).data('action');
+
+        this.hide();
+
+        this.triggerEvent(EVT_BUTTONCLICK, {'alert': this, 'action': action}, false);
+
+        evt.stopPropagation();
+    };
+
+    return Alert;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.namespace('overlay').LoadMask = (function () {
+
+    /**
+     * A loading mask
+     *
+     * @class LoadMask
+     * @namespace overlay
+     * @extends Overlay
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.draggable=false] Whether the mask is draggable
+     * @param {String} [configs.text='Loading...'] The text to display
+     */
+    function LoadMask(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        LoadMask.parent.call(this, this.configs);
+
+        this.addClass('loadmask');
+
+        this.text = new metaScore.Dom('<div/>', {'class': 'text', 'text': this.configs.text})
+            .appendTo(this.contents);
+    }
+
+    LoadMask.defaults = {
+        'draggable': false,
+        'text': metaScore.Locale.t('overlay.LoadMask.text', 'Loading...')
+    };
+
+    metaScore.Overlay.extend(LoadMask);
+
+    return LoadMask;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.namespace('overlay').Toolbar = (function(){
+
+    /**
+     * A title toolbar for overlay's
+     *
+     * @class Toolbar
+     * @namespace overlay
+     * @extends Dom
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.title=null] The text to display as a title
+     */
+    function Toolbar(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        Toolbar.parent.call(this, '<div/>', {'class': 'toolbar clearfix'});
+
+        this.title = new metaScore.Dom('<div/>', {'class': 'title'})
+            .appendTo(this);
+
+        this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .appendTo(this);
+
+        if(this.configs.title){
+            this.title.text(this.configs.title);
+        }
+    }
+
+    Toolbar.defaults = {
+        'title': null
+    };
+
+    metaScore.Dom.extend(Toolbar);
+
+    /**
+     * Get the title's Dom
+     * 
+     * @method getTitle
+     * @return {Dom} The Dom object
+     */
+    Toolbar.prototype.getTitle = function(){
+        return this.title;
+    };
+
+    /**
+     * Add a button
+     * 
+     * @method addButton
+     * @param {String} action The action associated with the button
+     * @return {Button} The created button
+     */
+    Toolbar.prototype.addButton = function(action){
+        var button = new metaScore.Button().data('action', action)
+            .appendTo(this.buttons);
+
+        return button;
+    };
+
+    /**
+     * Get a button by associated action
+     * 
+     * @method getButton
+     * @param {String} action The action associated with the button
+     * @return {Dom} The button
+     */
+    Toolbar.prototype.getButton = function(action){
+        return this.buttons.children('[data-action="'+ action +'"]');
+    };
+
+    return Toolbar;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.namespace('overlay').iFrame = (function () {
+
+
+    /**
+     * An iframe overlay
+     *
+     * @class iFrame
+     * @namespace overlay
+     * @extends Overlay
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
+     * @param {String} [configs.url=null] The iframe's url
+     */
+    function iFrame(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call parent constructor
+        iFrame.parent.call(this, this.configs);
+
+        this.addClass('iframe');
+    }
+
+    iFrame.defaults = {
+        'toolbar': true,
+        'url': null
+    };
+
+    metaScore.Overlay.extend(iFrame);
+
+    /**
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    iFrame.prototype.setupUI = function(){
+        // call parent method
+        iFrame.parent.prototype.setupUI.call(this);
+
+        this.frame = new metaScore.Dom('<iframe/>', {'src': this.configs.url})
+            .appendTo(this.contents);
+    };
+
+    return iFrame;
+
+})();
+/**
  * The Editor module defines classes used in editor
  *
  * @module Editor
@@ -3256,8 +4097,7 @@ metaScore.Editor = (function(){
         this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
 
         this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
-        this.version = new metaScore.Dom('<div/>', {'class': 'version', 'text': 'metaScore v.'+ metaScore.getVersion() +' r.'+ metaScore.getRevision()}).appendTo(this.workspace);
-
+        
         this.player_frame = new metaScore.Dom('<iframe/>', {'src': 'about:blank', 'class': 'player-frame'}).appendTo(this.workspace)
             .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
             .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
@@ -3266,6 +4106,12 @@ metaScore.Editor = (function(){
             .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
             .addListener('undo', metaScore.Function.proxy(this.onHistoryUndo, this))
             .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
+            
+        this.clipboard = new metaScore.Clipboard();
+        
+        this.contextmenu = new metaScore.ContextMenu({'target': this})
+            .addTask('about',  metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+            .appendTo(this);
 
         this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
                 'groups': this.configs.user_groups,
@@ -3276,14 +4122,13 @@ metaScore.Editor = (function(){
 
         this.detailsOverlay.getField('type').readonly(true);
 
-        new metaScore.Dom('body')
-            .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
-            .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
-
         metaScore.Dom.addListener(window, 'hashchange', metaScore.Function.proxy(this.onWindowHashChange, this));
         metaScore.Dom.addListener(window, 'beforeunload', metaScore.Function.proxy(this.onWindowBeforeUnload, this));
 
         this
+            .addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this))
+            .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+            .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
             .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
             .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this))
             .updateMainmenu()
@@ -3331,7 +4176,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onGuideCreateError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onGuideCreateError.ok', 'OK'),
@@ -3377,7 +4223,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
@@ -3403,7 +4250,8 @@ metaScore.Editor = (function(){
             'error': metaScore.Function.proxy(this.onGuideDeleteError, this)
         }, this.configs.ajax);
 
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'autoShow': true
         });
 
@@ -3435,7 +4283,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onGuideDeleteError.ok', 'OK'),
@@ -3539,6 +4388,19 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * Mousedown event callback
+     *
+     * @method onMousedown
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    Editor.prototype.onMousedown = function(evt){
+        if(this.player_contextmenu){
+            this.player_contextmenu.hide();
+        }
+    };
+
+    /**
      * Mainmenu click event callback
      *
      * @method onMainmenuClick
@@ -3560,7 +4422,8 @@ metaScore.Editor = (function(){
                 }, this);
 
                 if(this.hasOwnProperty('player')){
-                    new metaScore.editor.overlay.Alert({
+                    new metaScore.overlay.Alert({
+                            'parent': this,
                             'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
                                 'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
@@ -3583,7 +4446,8 @@ metaScore.Editor = (function(){
                 callback = metaScore.Function.proxy(this.openGuideSelector, this);
 
                 if(this.hasOwnProperty('player')){
-                    new metaScore.editor.overlay.Alert({
+                    new metaScore.overlay.Alert({
+                            'parent': this,
                             'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
                                 'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
@@ -3619,7 +4483,8 @@ metaScore.Editor = (function(){
                     this.saveGuide('update', true);
                 }, this);
 
-                new metaScore.editor.overlay.Alert({
+                new metaScore.overlay.Alert({
+                        'parent': this,
                         'text': metaScore.Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
@@ -3638,7 +4503,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                new metaScore.editor.overlay.Alert({
+                new metaScore.overlay.Alert({
+                        'parent': this,
                         'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide ?'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
@@ -3654,7 +4520,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'revert':
-                new metaScore.editor.overlay.Alert({
+                new metaScore.overlay.Alert({
+                        'parent': this,
                         'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version ?<br/><strong>Any unsaved data will be lost.</strong>'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
@@ -3911,25 +4778,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                player = this.getPlayer();
-                panel = this.panels.block;
                 block = this.panels.block.getComponent();
-
-                if(block){
-                    panel.unsetComponent();
-                    block.remove();
-
-                    this.history.add({
-                        'undo': function(){
-                            player.addBlock(block);
-                            panel.setComponent(block);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            block.remove();
-                        }
-                    });
-                }
+                this.deletePlayerBlock(block);
                 break;
         }
 
@@ -4119,7 +4969,7 @@ metaScore.Editor = (function(){
     Editor.prototype.onPagePanelToolbarClick = function(evt){
         var panel, block, page,
             start_time, end_time, configs,
-            previous_page, auto_page, index,
+            previous_page, index,
             action = metaScore.Dom.data(evt.target, 'action');
 
         switch(action){
@@ -4167,52 +5017,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                panel = this.panels.page;
-                block = this.panels.block.getComponent();
-                page = panel.getComponent();
-                index = block.getActivePageIndex();
-
-                if(page){
-                    panel.unsetComponent();
-                    block.removePage(page);
-                    index--;
-
-                    if(block.getPageCount() < 1){
-                        configs = {};
-
-                        if(block.getProperty('synched')){
-                            configs['start-time'] = 0;
-                            configs['end-time'] = this.getPlayer().getMedia().getDuration();
-                        }
-
-                        auto_page = block.addPage(configs);
-                        panel.setComponent(auto_page);
-                    }
-
-                    block.setActivePage(Math.max(0, index));
-
-                    this.history.add({
-                        'undo': function(){
-                            if(auto_page){
-                                block.removePage(auto_page, true);
-                            }
-
-                            block.addPage(page);
-                            panel.setComponent(page);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            block.removePage(page, true);
-
-                            if(auto_page){
-                                block.addPage(auto_page);
-                                panel.setComponent(auto_page);
-                            }
-
-                            block.setActivePage(index);
-                        }
-                    });
-                }
+                page = this.panels.page.getComponent();
+                this.deletePlayerPage(page);
                 break;
         }
 
@@ -4360,25 +5166,8 @@ metaScore.Editor = (function(){
                 break;
 
             case 'delete':
-                panel = this.panels.element;
-                page = this.panels.page.getComponent();
-                element = this.panels.element.getComponent();
-
-                if(element){
-                    panel.unsetComponent();
-                    element.remove();
-
-                    this.history.add({
-                        'undo': function(){
-                            page.addElement(element);
-                            panel.setComponent(element);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            element.remove();
-                        }
-                    });
-                }
+                element = this.panels.element.getComponent();   
+                this.deletePlayerElement(element);
                 break;
         }
     };
@@ -4459,6 +5248,17 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * Player mousedown event callback
+     *
+     * @method onPlayerMousedown
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    Editor.prototype.onPlayerMousedown = function(evt){
+        this.contextmenu.hide();
+    };
+
+    /**
      * Player blockadd event callback
      *
      * @method onPlayerBlockAdd
@@ -4501,11 +5301,15 @@ metaScore.Editor = (function(){
      * @param {UIEvent} evt The event object
      */
     Editor.prototype.onPlayerFrameLoadSuccess = function(evt){
-        this.player_frame.get(0).contentWindow.player
-            .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
-            .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
-            .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
-            .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
+        var player = this.player_frame.get(0).contentWindow.player;
+    
+        if(player){
+            player
+                .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
+                .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
+                .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
+                .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
+        }
     };
 
     /**
@@ -4519,7 +5323,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
@@ -4536,7 +5341,8 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
     Editor.prototype.onPlayerLoadSuccess = function(evt){
-        var data;        
+        var player_body = this.player_frame.get(0).contentWindow.document.body,
+            data;
         
         this.player = evt.detail.player
             .addClass('in-editor')
@@ -4544,6 +5350,7 @@ metaScore.Editor = (function(){
             .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
             .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
             .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
+            .addListener('mousedown', metaScore.Function.proxy(this.onPlayerMousedown, this))
             .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
             .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
             .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
@@ -4552,9 +5359,36 @@ metaScore.Editor = (function(){
             .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
             .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
             
+        this.player.contextmenu.disable();
+                
+        this.player_contextmenu = new metaScore.ContextMenu({'target': player_body})
+            .addTask('copy-block', metaScore.Locale.t('editor.contextmenu.copy-block', 'Copy block'), function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+            })
+            .addTask('paste-block', metaScore.Locale.t('editor.contextmenu.paste-block', 'Paste block'), metaScore.Function.proxy(function(context){
+                return this.clipboard.getDataType() === 'block';
+            }, this))
+            .addTask('delete-block', metaScore.Locale.t('editor.contextmenu.delete-block', 'Delete block'), metaScore.Function.proxy(function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+            }, this))
+            .addSeparator()
+            .addTask('copy-element', metaScore.Locale.t('editor.contextmenu.copy-element', 'Copy element'), function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+            })
+            .addTask('paste-element', metaScore.Locale.t('editor.contextmenu.paste-element', 'Paste element'), metaScore.Function.proxy(function(context){
+                return (this.clipboard.getDataType() === 'element') && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
+            }, this))
+            .addTask('delete-element', metaScore.Locale.t('editor.contextmenu.delete-element', 'Delete element'), metaScore.Function.proxy(function(context){
+                return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+            }, this))
+            .addSeparator()
+            .addTask('about',  metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+            .addListener('taskclick', metaScore.Function.proxy(this.onContextMenuTaskClick, this))
+            .appendTo(this.workspace);
+            
         data = this.player.getData();
 
-        new metaScore.Dom(this.player_frame.get(0).contentWindow.document.body)
+        new metaScore.Dom(player_body)
             .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
             .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this));
 
@@ -4589,7 +5423,8 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        new metaScore.editor.overlay.Alert({
+        new metaScore.overlay.Alert({
+            'parent': this,
             'text': metaScore.Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': metaScore.Locale.t('editor.onPlayerLoadError.ok', 'OK'),
@@ -4733,6 +5568,68 @@ metaScore.Editor = (function(){
     Editor.prototype.onHistoryRedo = function(evt){
         this.updateMainmenu();
     };
+    
+    /**
+     * ContextMenu taskclick event callback
+     *
+     * @method onContextMenuTaskClick
+     * @private
+     * @param {CustomEvent} evt The event object. See {{#crossLink "ContextMenu/taskclick:event"}}ContextMenu.taskclick{{/crossLink}}
+     */
+    Editor.prototype.onContextMenuTaskClick = function(evt){
+        var dom, component;
+
+        switch(evt.detail.action){
+            case 'copy-block':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Block')){
+                    this.clipboard.setData('block', component.getProperties());
+                }
+                break;
+
+            case 'paste-block':
+                this.getPlayer().addBlock(this.clipboard.getData());
+                break;
+
+            case 'delete-block':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Block')){
+                    this.deletePlayerBlock(component);
+                }
+                break;
+
+            case 'copy-element':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Element')){
+                    this.clipboard.setData('element', component.getProperties());
+                }
+                break;
+
+            case 'paste-element':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.page');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Page')){
+                    component.addElement(this.clipboard.getData());
+                }
+                break;
+
+            case 'delete-element':
+                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
+                component = dom._metaScore;
+
+                if(component.instanceOf('Element')){
+                    this.deletePlayerElement(component);
+                }
+                break;
+        }
+    };
 
     /**
      * GuideDetails show event callback
@@ -4798,7 +5695,8 @@ metaScore.Editor = (function(){
                             }
 
                             if(blocks.length > 0){
-                                new metaScore.editor.overlay.Alert({
+                                new metaScore.overlay.Alert({
+                                    'parent': this,
                                     'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media file (!new_duration centiseconds) is less than the current one (!old_duration centiseconds).<br/><strong>This will cause some pages of the following blocks to become out of reach: !blocks</strong><br/>Please modify the start time of those pages and try again.', {'!new_duration': new_duration, '!old_duration': old_duration, '!blocks': blocks.join(', ')}),
                                     'buttons': {
                                         'ok': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.ok', 'OK'),
@@ -4807,7 +5705,8 @@ metaScore.Editor = (function(){
                                 });
                             }
                             else{
-                                new metaScore.editor.overlay.Alert({
+                                new metaScore.overlay.Alert({
+                                    'parent': this,
                                     'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration centiseconds) differs from the current one (!old_duration centiseconds).<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': new_duration, '!old_duration': old_duration}),
                                     'buttons': {
                                         'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
@@ -4846,7 +5745,8 @@ metaScore.Editor = (function(){
             oldURL = evt.oldURL;
 
         if(this.getPlayer()){
-            new metaScore.editor.overlay.Alert({
+            new metaScore.overlay.Alert({
+                    'parent': this,
                     'text': metaScore.Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
                     'buttons': {
                         'confirm': metaScore.Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
@@ -5157,7 +6057,8 @@ metaScore.Editor = (function(){
             url += "?vid="+ vid;
         }
 
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'autoShow': true
         });
 
@@ -5174,11 +6075,140 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.removePlayer = function(){
         delete this.player;
+        
+        if(this.player_contextmenu){
+            this.player_contextmenu.remove();
+            delete this.player_contextmenu;
+        }
 
         this.player_frame.get(0).contentWindow.location.replace('about:blank');
         this.panels.block.unsetComponent();
         this.updateMainmenu();
 
+        return this;
+    };
+    
+    /**
+     * Remove a block from the player
+     *
+     * @method deletePlayerBlock
+     * @private
+     * @param {player.component.Block} block The block to delete
+     * @chainable 
+     */
+    Editor.prototype.deletePlayerBlock = function(block){
+        var panel = this.panels.block;
+ 
+        if(block){
+            if(panel.getComponent() === block){
+                panel.unsetComponent();
+            }
+            
+            block.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    this.getPlayer().addBlock(block);
+                    panel.setComponent(block);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    block.remove();
+                }
+            });
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Remove a page from the player
+     *
+     * @method deletePlayerPage
+     * @private
+     * @param {player.component.Page} page The page to delete
+     * @chainable 
+     */
+    Editor.prototype.deletePlayerPage = function(page){
+        var panel = this.panels.page,
+            block = page.getBlock(),
+            index = block.getActivePageIndex(),
+            configs, auto_page;
+
+        if(page){
+            panel.unsetComponent();
+            block.removePage(page);
+            index--;
+
+            if(block.getPageCount() < 1){
+                configs = {};
+
+                if(block.getProperty('synched')){
+                    configs['start-time'] = 0;
+                    configs['end-time'] = this.getPlayer().getMedia().getDuration();
+                }
+
+                auto_page = block.addPage(configs);
+                panel.setComponent(auto_page);
+            }
+
+            block.setActivePage(Math.max(0, index));
+
+            this.history.add({
+                'undo': function(){
+                    if(auto_page){
+                        block.removePage(auto_page, true);
+                    }
+
+                    block.addPage(page);
+                    panel.setComponent(page);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    block.removePage(page, true);
+
+                    if(auto_page){
+                        block.addPage(auto_page);
+                        panel.setComponent(auto_page);
+                    }
+
+                    block.setActivePage(index);
+                }
+            });
+        }
+    };
+ 
+    /**
+     * Remove an element from the player
+     *
+     * @method deletePlayerElement
+     * @private
+     * @param {player.component.Element} element The element to delete
+     * @chainable 
+     */
+    Editor.prototype.deletePlayerElement = function(element){        
+        var panel = this.panels.element,
+            page = element.getPage();
+ 
+        if(element){
+            if(panel.getComponent() === element){
+                panel.unsetComponent();
+            }
+            
+            element.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    page.addElement(element);
+                    panel.setComponent(element);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    element.remove();
+                }
+            });
+        }
+        
         return this;
     };
 
@@ -5230,7 +6260,8 @@ metaScore.Editor = (function(){
         }, this.configs.ajax);
 
         // add a loading mask
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'text': metaScore.Locale.t('editor.createGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
@@ -5302,7 +6333,8 @@ metaScore.Editor = (function(){
         }, this.configs.ajax);
 
         // add a loading mask
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this,
             'text': metaScore.Locale.t('editor.saveGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
@@ -5330,105 +6362,6 @@ metaScore.Editor = (function(){
     };
 
     return Editor;
-
-})();
-/**
- * @module Editor
- */
-
-metaScore.namespace('editor').Button = (function () {
-
-    /**
-     * A simple button based on an HTML button element
-     *
-     * @class Button
-     * @namespace editor
-     * @extends Dom
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.label=null] A text to add as a label
-     */
-    function Button(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call the super constructor.
-        metaScore.Dom.call(this, '<button/>');
-
-        this.disabled = false;
-
-        if(this.configs.label){
-            this.setLabel(this.configs.label);
-        }
-
-        this.addListener('click', metaScore.Function.proxy(this.onClick, this));
-    }
-
-    Button.defaults = {
-        'label': null
-    };
-
-    metaScore.Dom.extend(Button);
-
-    /**
-     * The click event handler
-     *
-     * @method onClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    Button.prototype.onClick = function(evt){
-        if(this.disabled){
-            evt.stopPropagation();
-        }
-    };
-
-    /**
-     * Set the button's text
-     *
-     * @method setLabel
-     * @param {String} text The text to use as the label
-     * @chainable
-     */
-    Button.prototype.setLabel = function(text){
-        if(this.label === undefined){
-            this.label = new metaScore.Dom('<span/>', {'class': 'label'})
-                .appendTo(this);
-        }
-
-        this.label.text(text);
-
-        return this;
-    };
-
-    /**
-     * Disable the button
-     *
-     * @method disable
-     * @chainable
-     */
-    Button.prototype.disable = function(){
-        this.disabled = true;
-
-        this.addClass('disabled');
-
-        return this;
-    };
-
-    /**
-     * Enable the button
-     *
-     * @method enable
-     * @chainable
-     */
-    Button.prototype.enable = function(){
-        this.disabled = false;
-
-        this.removeClass('disabled');
-
-        return this;
-    };
-
-    return Button;
 
 })();
 /**
@@ -5946,21 +6879,21 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.new', 'New')
             })
             .data('action', 'new')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.open', 'Open')
             })
             .data('action', 'open')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.edit', 'Edit')
             })
@@ -5969,7 +6902,7 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         btn_group = new metaScore.Dom('<div/>', {'class': 'button-group'}).appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.save', 'Save as draft')
             })
@@ -5978,21 +6911,21 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.clone', 'Save as copy')
             })
             .data('action', 'clone')
             .appendTo(sub_menu);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.publish', 'Save & Publish')
             })
             .data('action', 'publish')
             .appendTo(sub_menu);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.delete', 'Delete')
             })
@@ -6002,7 +6935,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
             })
@@ -6036,7 +6969,7 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
             })
@@ -6046,21 +6979,21 @@ metaScore.namespace('editor').MainMenu = (function(){
         new metaScore.Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.revert', 'Revert')
             })
             .data('action', 'revert')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.undo', 'Undo')
             })
             .data('action', 'undo')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.redo', 'Redo')
             })
@@ -6071,7 +7004,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .css('flex', '20')
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.settings', 'Settings')
             })
@@ -6079,7 +7012,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .disable()
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
             })
@@ -6087,7 +7020,7 @@ metaScore.namespace('editor').MainMenu = (function(){
             .disable()
             .appendTo(this);
 
-        new metaScore.editor.Button()
+        new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.logout', 'Logout')
             })
@@ -6111,169 +7044,6 @@ metaScore.namespace('editor').MainMenu = (function(){
     };
 
     return MainMenu;
-
-})();
-/**
- * @module Editor
- */
-
-metaScore.namespace('editor').Overlay = (function(){
-
-    /**
-     * Fired when the overlay is shown
-     *
-     * @event show
-     * @param {Object} overlay The overlay instance
-     */
-    var EVT_SHOW = 'show';
-
-    /**
-     * Fired when the overlay is hidden
-     *
-     * @event hide
-     * @param {Object} overlay The overlay instance
-     */
-    var EVT_HIDE = 'hide';
-
-    /**
-     * A generic overlay class
-     *
-     * @class Overlay
-     * @namespace editor
-     * @extends Dom
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-     * @param {Boolean} [configs.draggable=true] Whether the overlay is draggable
-     * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
-     * @param {Boolean} [configs.toolbar=false] Whether to add a toolbar with title and close button
-     * @param {String} [configs.title=''] The overlay's title
-     */
-    function Overlay(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        Overlay.parent.call(this, '<div/>', {'class': 'overlay clearfix'});
-
-        this.setupUI();
-
-        if(this.configs.autoShow){
-            this.show();
-        }
-    }
-
-    Overlay.defaults = {
-        'parent': '.metaScore-editor',
-        'modal': true,
-        'draggable': true,
-        'autoShow': false,
-        'toolbar': false,
-        'title': ''
-    };
-
-    metaScore.Dom.extend(Overlay);
-
-    /**
-     * Setup the overlay's UI
-     *
-     * @method setupUI
-     * @private
-     */
-    Overlay.prototype.setupUI = function(){
-
-        if(this.configs.modal){
-            this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
-        }
-
-        if(this.configs.toolbar){
-            this.toolbar = new metaScore.editor.overlay.Toolbar({'title': this.configs.title})
-                .appendTo(this);
-
-            this.toolbar.addButton('close')
-                .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
-        }
-
-        this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-            .appendTo(this);
-
-        if(this.configs.draggable){
-            this.draggable = new metaScore.Draggable({
-                'target': this,
-                'handle': this.configs.toolbar ? this.toolbar : this
-            });
-        }
-
-    };
-
-    /**
-     * Show the overlay
-     *
-     * @method show
-     * @chainable
-     */
-    Overlay.prototype.show = function(){
-        if(this.configs.modal){
-            this.mask.appendTo(this.configs.parent);
-        }
-
-        this.appendTo(this.configs.parent);
-
-        this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
-
-        return this;
-    };
-
-    /**
-     * Hide the overlay
-     *
-     * @method hide
-     * @chainable
-     */
-    Overlay.prototype.hide = function(){
-        if(this.configs.modal){
-            this.mask.remove();
-        }
-
-        this.remove();
-
-        this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
-
-        return this;
-    };
-
-    /**
-     * Get the overlay's toolbar
-     *
-     * @method getToolbar
-     * @return {editor.overlay.Toolbar} The toolbar
-     */
-    Overlay.prototype.getToolbar = function(){
-        return this.toolbar;
-    };
-
-    /**
-     * Get the overlay's contents
-     *
-     * @method getContents
-     * @return {Dom} The contents
-     */
-    Overlay.prototype.getContents = function(){
-        return this.contents;
-    };
-
-    /**
-     * The close button's click handler
-     *
-     * @method onCloseClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    Overlay.prototype.onCloseClick = function(evt){
-        this.hide();
-    };
-
-    return Overlay;
 
 })();
 /** 
@@ -9165,8 +9935,9 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
             metaScore.Object.each(this.configs.menuItems, function(action, label){
                 this.menu.addItem(action, label);
             }, this);
-
-            this.addButton('menu')
+            
+            new metaScore.Dom('<div/>', {'class': 'menu'})
+                .appendTo(this.buttons)
                 .append(this.menu);
         }
     }
@@ -9215,10 +9986,10 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
      * 
      * @method addButton
      * @param {String} action The button's associated action
-     * @return {editor.Button} The created button
+     * @return {Button} The created button
      */
     Toolbar.prototype.addButton = function(action){
-        var button = new metaScore.editor.Button().data('action', action)
+        var button = new metaScore.Button().data('action', action)
             .appendTo(this.buttons);
 
         return button;
@@ -9260,129 +10031,6 @@ metaScore.namespace('editor.panel').Toolbar = (function(){
  * @module Editor
  */
 
-metaScore.namespace('editor.overlay').Alert = (function () {
-
-    /**
-     * Fired when a button is clicked
-     *
-     * @event buttonclick
-     * @param {Object} alert The alert instance
-     * @param {String} action The buttons's action
-     */
-    var EVT_BUTTONCLICK = 'buttonclick';
-
-    /**
-     * An alert overlay to show a simple message with buttons
-     *
-     * @class Alert
-     * @namespace editor.overlay
-     * @extends editor.Overlay
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
-     * @param {String} [configs.text=''] The message's text
-     * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
-     */
-    function Alert(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        Alert.parent.call(this, this.configs);
-
-        this.addClass('alert');
-    }
-
-    Alert.defaults = {
-        'draggable': false,
-        'text': '',
-        'buttons': {}
-    };
-
-    metaScore.editor.Overlay.extend(Alert);
-
-    /**
-     * Setup the overlay's UI
-     *
-     * @method setupUI
-     * @private
-     */
-    Alert.prototype.setupUI = function(){
-        // call parent method
-        Alert.parent.prototype.setupUI.call(this);
-
-        this.text = new metaScore.Dom('<div/>', {'class': 'text'})
-            .appendTo(this.contents);
-
-        if(this.configs.text){
-            this.setText(this.configs.text);
-        }
-
-        this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-            .addDelegate('button', 'click', metaScore.Function.proxy(this.onButtonClick, this))
-            .appendTo(this.contents);
-
-        if(this.configs.buttons){
-            metaScore.Object.each(this.configs.buttons, function(action, label){
-                this.addButton(action, label);
-            }, this);
-        }
-
-    };
-
-    /**
-     * Set the message's text
-     * 
-     * @method setText
-     * @param {String} str The message's text
-     * @chainable
-     */
-    Alert.prototype.setText = function(str){
-        this.text.text(str);
-
-        return this;
-    };
-
-    /**
-     * Add a button
-     * 
-     * @method addButton
-     * @param {String} action The button's associated action
-     * @param {String} label The button's text label
-     * @return {Button} The button object
-     */
-    Alert.prototype.addButton = function(action, label){
-        var button = new metaScore.editor.Button()
-            .setLabel(label)
-            .data('action', action)
-            .appendTo(this.buttons);
-
-        return button;
-    };
-
-    /**
-     * The button click event handler
-     * 
-     * @method onButtonClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    Alert.prototype.onButtonClick = function(evt){
-        var action = new metaScore.Dom(evt.target).data('action');
-
-        this.hide();
-
-        this.triggerEvent(EVT_BUTTONCLICK, {'alert': this, 'action': action}, false);
-
-        evt.stopPropagation();
-    };
-
-    return Alert;
-
-})();
-/**
- * @module Editor
- */
-
 metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
     /**
@@ -9399,7 +10047,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
      *
      * @class BorderRadius
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -9415,11 +10063,12 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
     }
 
     BorderRadius.defaults = {
+        'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
     };
 
-    metaScore.editor.Overlay.extend(BorderRadius);
+    metaScore.Overlay.extend(BorderRadius);
 
     /**
      * Setup the overlay's UI
@@ -9482,12 +10131,12 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
             .appendTo(this.preview);
 
         // Buttons
-        this.buttons.apply = new metaScore.editor.Button({'label': 'Apply'})
+        this.buttons.apply = new metaScore.Button({'label': 'Apply'})
             .addClass('apply')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(contents);
 
-        this.buttons.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+        this.buttons.cancel = new metaScore.Button({'label': 'Cancel'})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(contents);
@@ -9636,7 +10285,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      *
      * @class ColorSelector
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
@@ -9655,10 +10304,11 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }
 
     ColorSelector.defaults = {
+        'parent': '.metaScore-editor',
         'draggable': false
     };
 
-    metaScore.editor.Overlay.extend(ColorSelector);
+    metaScore.Overlay.extend(ColorSelector);
 
     /**
      * Setup the overlay's UI
@@ -9736,12 +10386,12 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
             .append(this.controls.previous)
             .appendTo(this.controls);
 
-        this.controls.cancel = new metaScore.editor.Button({'label': 'Cancel'})
+        this.controls.cancel = new metaScore.Button({'label': 'Cancel'})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(this.controls);
 
-        this.controls.apply = new metaScore.editor.Button({'label': 'Apply'})
+        this.controls.apply = new metaScore.Button({'label': 'Apply'})
             .addClass('apply')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(this.controls);
@@ -10116,7 +10766,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      *
      * @class GuideDetails
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -10137,13 +10787,14 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
     }
 
     GuideDetails.defaults = {
+        'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
         'groups': {},
         'submit_text': metaScore.Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
     };
 
-    metaScore.editor.Overlay.extend(GuideDetails);
+    metaScore.Overlay.extend(GuideDetails);
 
     /**
      * Setup the overlay's UI
@@ -10239,11 +10890,11 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         }
 
         // Buttons
-        new metaScore.editor.Button({'label': this.configs.submit_text})
+        new metaScore.Button({'label': this.configs.submit_text})
             .addClass('apply')
             .appendTo(form);
 
-        new metaScore.editor.Button({'label': 'Cancel'})
+        new metaScore.Button({'label': 'Cancel'})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(form);
@@ -10422,7 +11073,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      *
      * @class GuideSelector
      * @namespace editor.overlay
-     * @extends editor.Overlay
+     * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
@@ -10440,13 +11091,14 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     }
 
     GuideSelector.defaults = {
+        'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
         'empty_text': metaScore.Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
         'url': null
     };
 
-    metaScore.editor.Overlay.extend(GuideSelector);
+    metaScore.Overlay.extend(GuideSelector);
 
     /**
      * Show the overlay
@@ -10455,7 +11107,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @chainable
      */
     GuideSelector.prototype.show = function(){
-        this.loadmask = new metaScore.editor.overlay.LoadMask({
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this.configs.parent,
             'autoShow': true
         });
 
@@ -10546,7 +11199,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     revision_field.disable();
                 }
 
-                button = new metaScore.editor.Button()
+                button = new metaScore.Button()
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                     .addListener('click', metaScore.Function.proxy(function(guide, revision_field, evt){
                         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
@@ -10591,173 +11244,6 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     };
 
     return GuideSelector;
-
-})();
-/**
- * @module Editor
- */
-
-metaScore.namespace('editor.overlay').LoadMask = (function () {
-
-    /**
-     * A loading mask
-     *
-     * @class LoadMask
-     * @namespace editor.overlay
-     * @extends editor.Overlay
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.draggable=false] Whether the mask is draggable
-     * @param {String} [configs.text='Loading...'] The text to display
-     */
-    function LoadMask(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        LoadMask.parent.call(this, this.configs);
-
-        this.addClass('loadmask');
-
-        this.text = new metaScore.Dom('<div/>', {'class': 'text', 'text': this.configs.text})
-            .appendTo(this.contents);
-    }
-
-    LoadMask.defaults = {
-        'draggable': false,
-        'text': metaScore.Locale.t('editor.overlay.LoadMask.text', 'Loading...')
-    };
-
-    metaScore.editor.Overlay.extend(LoadMask);
-
-    return LoadMask;
-
-})();
-/**
- * @module Editor
- */
-
-metaScore.namespace('editor.overlay').Toolbar = (function(){
-
-    /**
-     * A title toolbar for overlay's
-     *
-     * @class Toolbar
-     * @namespace editor.overlay
-     * @extends Dom
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.title=null] The text to display as a title
-     */
-    function Toolbar(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        Toolbar.parent.call(this, '<div/>', {'class': 'toolbar clearfix'});
-
-        this.title = new metaScore.Dom('<div/>', {'class': 'title'})
-            .appendTo(this);
-
-        this.buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
-            .appendTo(this);
-
-        if(this.configs.title){
-            this.title.text(this.configs.title);
-        }
-    }
-
-    Toolbar.defaults = {
-        'title': null
-    };
-
-    metaScore.Dom.extend(Toolbar);
-
-    /**
-     * Get the title's Dom
-     * 
-     * @method getTitle
-     * @return {Dom} The Dom object
-     */
-    Toolbar.prototype.getTitle = function(){
-        return this.title;
-    };
-
-    /**
-     * Add a button
-     * 
-     * @method addButton
-     * @param {String} action The action associated with the button
-     * @return {editor.Button} The created button
-     */
-    Toolbar.prototype.addButton = function(action){
-        var button = new metaScore.editor.Button().data('action', action)
-            .appendTo(this.buttons);
-
-        return button;
-    };
-
-    /**
-     * Get a button by associated action
-     * 
-     * @method getButton
-     * @param {String} action The action associated with the button
-     * @return {Dom} The button
-     */
-    Toolbar.prototype.getButton = function(action){
-        return this.buttons.children('[data-action="'+ action +'"]');
-    };
-
-    return Toolbar;
-
-})();
-/**
- * @module Editor
- */
-
-metaScore.namespace('editor.overlay').iFrame = (function () {
-
-
-    /**
-     * An iframe overlay
-     *
-     * @class iFrame
-     * @namespace editor.overlay
-     * @extends editor.Overlay
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.url=null] The iframe's url
-     */
-    function iFrame(configs) {
-        this.configs = this.getConfigs(configs);
-
-        // call parent constructor
-        iFrame.parent.call(this, this.configs);
-
-        this.addClass('iframe');
-    }
-
-    iFrame.defaults = {
-        'toolbar': true,
-        'url': null
-    };
-
-    metaScore.editor.Overlay.extend(iFrame);
-
-    /**
-     * Setup the overlay's UI
-     *
-     * @method setupUI
-     * @private
-     */
-    iFrame.prototype.setupUI = function(){
-        // call parent method
-        iFrame.parent.prototype.setupUI.call(this);
-
-        this.frame = new metaScore.Dom('<iframe/>', {'src': this.configs.url})
-            .appendTo(this.contents);
-    };
-
-    return iFrame;
 
 })();
     // attach the metaScore object to the global scope
