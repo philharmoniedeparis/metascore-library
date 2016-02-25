@@ -92,6 +92,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideDetails.fields.css.label": "CSS",
 	"editor.overlay.GuideDetails.fields.groups.label": "Groupes",
 	"editor.overlay.GuideDetails.fields.groups.description": "Les groupes avec lesquelles ce guide est partagé<br/><em>Maintenez la touche Ctrl/Cmd enfoncée pour sélectionner plusieurs groups</em>",
+	"editor.overlay.GuideDetails.info": "Le guide doit être enregistré pour que les modifications appliquées deviennent permanentes",
 	"editor.overlay.GuideSelector.title": "Sélectionnez un guide",
 	"editor.overlay.GuideSelector.emptyText": "Pas de guides disponibles",
 	"editor.overlay.GuideSelector.archivesGroup": "archives",

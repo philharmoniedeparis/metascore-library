@@ -338,15 +338,7 @@
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_deletePlayerBlock">deletePlayerBlock</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_deletePlayerElement">deletePlayerElement</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_deletePlayerPage">deletePlayerPage</a>
+                                <a href="#method_deletePlayerComponent">deletePlayerComponent</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -407,6 +399,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_is">is</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_isDirty">isDirty</a>
 
                             </li>
                             <li class="index-item method">
@@ -690,11 +686,11 @@
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_removePlayer">removePlayer</a>
+                                <a href="#method_saveGuide">saveGuide</a>
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_saveGuide">saveGuide</a>
+                                <a href="#method_setDirty">setDirty</a>
 
                             </li>
                             <li class="index-item method">
@@ -719,6 +715,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_triggerEvent">triggerEvent</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_unloadPlayer">unloadPlayer</a>
 
                             </li>
                             <li class="index-item method private">
@@ -1720,13 +1720,13 @@
 
 
 </div>
-<div id="method_deletePlayerBlock" class="method item private">
-    <h3 class="name"><code>deletePlayerBlock</code></h3>
+<div id="method_deletePlayerComponent" class="method item private">
+    <h3 class="name"><code>deletePlayerComponent</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>block</code>
+                        <code>component</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -1749,7 +1749,7 @@
     </div>
 
     <div class="description">
-        <p>Remove a block from the player</p>
+        <p>Remove a component from the player</p>
 
     </div>
 
@@ -1758,120 +1758,12 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">block</code>
-                        <span class="type"><a href="../classes/player.component.Block.html" class="crosslink">player.component.Block</a></span>
+                        <code class="param-name">component</code>
+                        <span class="type"><a href="../classes/player.Component.html" class="crosslink">player.Component</a></span>
 
 
                     <div class="param-description">
-                        <p>The block to delete</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_deletePlayerElement" class="method item private">
-    <h3 class="name"><code>deletePlayerElement</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>element</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Remove an element from the player</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">element</code>
-                        <span class="type">player.component.Element</span>
-
-
-                    <div class="param-description">
-                        <p>The element to delete</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_deletePlayerPage" class="method item private">
-    <h3 class="name"><code>deletePlayerPage</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>page</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Remove a page from the player</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">page</code>
-                        <span class="type">player.component.Page</span>
-
-
-                    <div class="param-description">
-                        <p>The page to delete</p>
+                        <p>The component</p>
 
                     </div>
 
@@ -2742,6 +2634,47 @@
             <div class="returns-description">
                         <span class="type">Boolean</span>:
                     <p>Whether an element matches the CSS selector</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_isDirty" class="method item">
+    <h3 class="name"><code>isDirty</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Check whether the guide is dirty</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>Whether the guide is dirty</p>
 
             </div>
         </div>
@@ -6413,36 +6346,6 @@
 
 
 </div>
-<div id="method_removePlayer" class="method item">
-    <h3 class="name"><code>removePlayer</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Removes the player</p>
-
-    </div>
-
-
-
-
-</div>
 <div id="method_saveGuide" class="method item">
     <h3 class="name"><code>saveGuide</code></h3>
 
@@ -6500,6 +6403,59 @@
 
                     <div class="param-description">
                         <p>Whether to published the new revision</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_setDirty" class="method item">
+    <h3 class="name"><code>setDirty</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>dirty</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set whether the guide is dirty</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">dirty</code>
+                        <span class="type">Boolean</span>
+
+
+                    <div class="param-description">
+                        <p>Whether the guide is dirty</p>
 
                     </div>
 
@@ -6881,6 +6837,36 @@
 
             </div>
         </div>
+
+
+</div>
+<div id="method_unloadPlayer" class="method item">
+    <h3 class="name"><code>unloadPlayer</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Unload the player</p>
+
+    </div>
+
+
 
 
 </div>

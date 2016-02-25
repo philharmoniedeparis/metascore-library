@@ -151,6 +151,9 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(form);
 
+        // Information
+        new metaScore.Dom('<div/>', {'class': 'info', 'text': metaScore.Locale.t('editor.overlay.GuideDetails.info', 'The guide needs to be saved in order for applied changes to become permanent')})
+            .appendTo(form);
     };
 
     /**

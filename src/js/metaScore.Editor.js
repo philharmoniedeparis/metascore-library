@@ -52,7 +52,7 @@ metaScore.Editor = (function(){
         this.sidebar_resizer.getHandle('left')
             .addListener('dblclick', metaScore.Function.proxy(this.onSidebarResizeDblclick, this));
 
-        this.sidebar =    new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
+        this.sidebar = new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
 
         this.panels = {};
 
@@ -123,8 +123,9 @@ metaScore.Editor = (function(){
             .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
             .addDelegate('.timefield', 'valuein', metaScore.Function.proxy(this.onTimeFieldIn, this))
             .addDelegate('.timefield', 'valueout', metaScore.Function.proxy(this.onTimeFieldOut, this))
-            .updateMainmenu()
+            .setDirty(false)
             .setEditing(false)
+            .updateMainmenu()
             .loadPlayerFromHash();
     }
 
@@ -258,7 +259,7 @@ metaScore.Editor = (function(){
      * @param {XMLHttpRequest} xhr The XHR request
      */
     Editor.prototype.onGuideDeleteSuccess = function(xhr){
-        this.removePlayer();
+        this.unloadPlayer();
 
         this.loadmask.hide();
         delete this.loadmask;
@@ -413,7 +414,7 @@ metaScore.Editor = (function(){
                         .addListener('submit', metaScore.Function.proxy(this.onDetailsOverlaySubmit, this, ['create']));
                 }, this);
 
-                if(this.hasOwnProperty('player')){
+                if(this.isDirty()){
                     new metaScore.overlay.Alert({
                             'parent': this,
                             'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
@@ -437,7 +438,7 @@ metaScore.Editor = (function(){
             case 'open':
                 callback = metaScore.Function.proxy(this.openGuideSelector, this);
 
-                if(this.hasOwnProperty('player')){
+                if(this.isDirty()){
                     new metaScore.overlay.Alert({
                             'parent': this,
                             'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
@@ -771,7 +772,7 @@ metaScore.Editor = (function(){
 
             case 'delete':
                 block = this.panels.block.getComponent();
-                this.deletePlayerBlock(block);
+                this.deletePlayerComponent(block);
                 break;
         }
 
@@ -1010,7 +1011,7 @@ metaScore.Editor = (function(){
 
             case 'delete':
                 page = this.panels.page.getComponent();
-                this.deletePlayerPage(page);
+                this.deletePlayerComponent(page);
                 break;
         }
 
@@ -1159,7 +1160,7 @@ metaScore.Editor = (function(){
 
             case 'delete':
                 element = this.panels.element.getComponent();   
-                this.deletePlayerElement(element);
+                this.deletePlayerComponent(element);
                 break;
         }
     };
@@ -1536,7 +1537,7 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "History/add:event"}}History.add{{/crossLink}}
      */
     Editor.prototype.onHistoryAdd = function(evt){
-        this.updateMainmenu();
+        this.setDirty(true).updateMainmenu();
     };
 
     /**
@@ -1576,9 +1577,7 @@ metaScore.Editor = (function(){
                 dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
                 component = dom._metaScore;
 
-                if(component.instanceOf('Block')){
-                    this.clipboard.setData('block', component.getProperties());
-                }
+                this.clipboard.setData('block', component.getProperties());
                 break;
 
             case 'paste-block':
@@ -1589,36 +1588,28 @@ metaScore.Editor = (function(){
                 dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
                 component = dom._metaScore;
 
-                if(component.instanceOf('Block')){
-                    this.deletePlayerBlock(component);
-                }
+                this.deletePlayerComponent(component);
                 break;
-
+                
             case 'copy-element':
                 dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
                 component = dom._metaScore;
 
-                if(component.instanceOf('Element')){
-                    this.clipboard.setData('element', component.getProperties());
-                }
+                this.clipboard.setData('element', component.getProperties());
                 break;
 
             case 'paste-element':
                 dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.page');
                 component = dom._metaScore;
 
-                if(component.instanceOf('Page')){
-                    component.addElement(this.clipboard.getData());
-                }
+                component.addElement(this.clipboard.getData());
                 break;
 
             case 'delete-element':
                 dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
                 component = dom._metaScore;
 
-                if(component.instanceOf('Element')){
-                    this.deletePlayerElement(component);
-                }
+                this.deletePlayerComponent(component);
                 break;
         }
     };
@@ -1661,6 +1652,8 @@ metaScore.Editor = (function(){
                 callback = metaScore.Function.proxy(function(){
                     player.updateData(data);
                     overlay.setValues(metaScore.Object.extend({}, player.getData(), data), true).hide();
+                    
+                    this.setDirty(true).updateMainmenu();
                 }, this);
 
                 if('media' in data){
@@ -1736,7 +1729,7 @@ metaScore.Editor = (function(){
         var callback = metaScore.Function.proxy(this.loadPlayerFromHash, this),
             oldURL = evt.oldURL;
 
-        if(this.getPlayer()){
+        if(this.isDirty()){
             new metaScore.overlay.Alert({
                     'parent': this,
                     'text': metaScore.Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
@@ -1770,7 +1763,7 @@ metaScore.Editor = (function(){
      * @param {Event} evt The event object
      */
     Editor.prototype.onWindowBeforeUnload = function(evt){
-        if(this.hasOwnProperty('player')){
+        if(this.isDirty()){
             evt.returnValue = metaScore.Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
         }
     };
@@ -1858,7 +1851,7 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.updateMainmenu = function(){
-        var hasPlayer = this.hasOwnProperty('player');
+        var hasPlayer = this.getPlayer() ? true : false;
 
         this.mainmenu.toggleButton('edit', hasPlayer);
         this.mainmenu.toggleButton('save', hasPlayer);
@@ -1869,7 +1862,7 @@ metaScore.Editor = (function(){
 
         this.mainmenu.toggleButton('undo', this.history.hasUndo());
         this.mainmenu.toggleButton('redo', this.history.hasRedo());
-        this.mainmenu.toggleButton('revert', hasPlayer);
+        this.mainmenu.toggleButton('revert', this.isDirty());
 
         return this;
     };
@@ -2025,6 +2018,29 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * Set whether the guide is dirty
+     *
+     * @method setDirty
+     * @param {Boolean} dirty Whether the guide is dirty
+     * @chainable
+     */
+    Editor.prototype.setDirty = function(dirty){
+        this.dirty = dirty;
+        
+        return this;
+    };
+
+    /**
+     * Check whether the guide is dirty
+     *
+     * @method isDirty
+     * @return {Boolean} Whether the guide is dirty
+     */
+    Editor.prototype.isDirty = function(){
+        return this.dirty;
+    };
+
+    /**
      * Get the player instance if any
      *
      * @method getPlayer
@@ -2053,6 +2069,8 @@ metaScore.Editor = (function(){
             'parent': this,
             'autoShow': true
         });
+        
+        this.unloadPlayer();
 
         this.player_frame.get(0).contentWindow.location.replace(url);
 
@@ -2060,145 +2078,129 @@ metaScore.Editor = (function(){
     };
 
     /**
-     * Removes the player
+     * Unload the player
      *
-     * @method removePlayer
+     * @method unloadPlayer
      * @chainable
      */
-    Editor.prototype.removePlayer = function(){
+    Editor.prototype.unloadPlayer = function(){
         delete this.player;
         
         if(this.player_contextmenu){
             this.player_contextmenu.remove();
             delete this.player_contextmenu;
         }
-
+        
         this.player_frame.get(0).contentWindow.location.replace('about:blank');
         this.panels.block.unsetComponent();
-        this.updateMainmenu();
+        this.history.clear();
+        this.setDirty(false).updateMainmenu();
 
         return this;
     };
     
     /**
-     * Remove a block from the player
+     * Remove a component from the player
      *
-     * @method deletePlayerBlock
+     * @method deletePlayerComponent
      * @private
-     * @param {player.component.Block} block The block to delete
+     * @param {player.Component} component The component
      * @chainable 
      */
-    Editor.prototype.deletePlayerBlock = function(block){
-        var panel = this.panels.block;
- 
-        if(block){
-            if(panel.getComponent() === block){
-                panel.unsetComponent();
-            }
+    Editor.prototype.deletePlayerComponent = function(component){
+        var panel, block, page,
+            index, configs, auto_page;
             
-            block.remove();
- 
-            this.history.add({
-                'undo': function(){
-                    this.getPlayer().addBlock(block);
-                    panel.setComponent(block);
-                },
-                'redo': function(){
-                    panel.unsetComponent();
-                    block.remove();
-                }
-            });
-        }
+        console.log(component);
         
-        return this;
-    };
-    
-    /**
-     * Remove a page from the player
-     *
-     * @method deletePlayerPage
-     * @private
-     * @param {player.component.Page} page The page to delete
-     * @chainable 
-     */
-    Editor.prototype.deletePlayerPage = function(page){
-        var panel = this.panels.page,
-            block = page.getBlock(),
-            index = block.getActivePageIndex(),
-            configs, auto_page;
-
-        if(page){
-            panel.unsetComponent();
-            block.removePage(page);
-            index--;
-
-            if(block.getPageCount() < 1){
-                configs = {};
-
-                if(block.getProperty('synched')){
-                    configs['start-time'] = 0;
-                    configs['end-time'] = this.getPlayer().getMedia().getDuration();
-                }
-
-                auto_page = block.addPage(configs);
-                panel.setComponent(auto_page);
-            }
-
-            block.setActivePage(Math.max(0, index));
-
-            this.history.add({
-                'undo': function(){
-                    if(auto_page){
-                        block.removePage(auto_page, true);
-                    }
-
-                    block.addPage(page);
-                    panel.setComponent(page);
-                },
-                'redo': function(){
+        if(component){
+            if(component.instanceOf('Block')){
+                console.log('block');
+                panel = this.panels.block;
+                
+                if(panel.getComponent() === component){
                     panel.unsetComponent();
-                    block.removePage(page, true);
-
-                    if(auto_page){
-                        block.addPage(auto_page);
-                        panel.setComponent(auto_page);
-                    }
-
-                    block.setActivePage(index);
                 }
-            });
-        }
-    };
- 
-    /**
-     * Remove an element from the player
-     *
-     * @method deletePlayerElement
-     * @private
-     * @param {player.component.Element} element The element to delete
-     * @chainable 
-     */
-    Editor.prototype.deletePlayerElement = function(element){        
-        var panel = this.panels.element,
-            page = element.getPage();
- 
-        if(element){
-            if(panel.getComponent() === element){
+                
+                component.remove();
+     
+                this.history.add({
+                    'undo': function(){
+                        this.getPlayer().addBlock(component);
+                        panel.setComponent(component);
+                    },
+                    'redo': function(){
+                        panel.unsetComponent();
+                        component.remove();
+                    }
+                });
+            }
+            else if(component.instanceOf('Page')){
+                panel = this.panels.page;
+                block = component.getBlock();
+                index = block.getActivePageIndex();
+
                 panel.unsetComponent();
-            }
-            
-            element.remove();
- 
-            this.history.add({
-                'undo': function(){
-                    page.addElement(element);
-                    panel.setComponent(element);
-                },
-                'redo': function(){
-                    panel.unsetComponent();
-                    element.remove();
+                block.removePage(component);
+                index--;
+
+                if(block.getPageCount() < 1){
+                    configs = {};
+
+                    if(block.getProperty('synched')){
+                        configs['start-time'] = 0;
+                        configs['end-time'] = this.getPlayer().getMedia().getDuration();
+                    }
+
+                    auto_page = block.addPage(configs);
+                    panel.setComponent(auto_page);
                 }
-            });
+
+                block.setActivePage(Math.max(0, index));
+
+                this.history.add({
+                    'undo': function(){
+                        if(auto_page){
+                            block.removePage(auto_page, true);
+                        }
+
+                        block.addPage(component);
+                        panel.setComponent(component);
+                    },
+                    'redo': function(){
+                        panel.unsetComponent();
+                        block.removePage(component, true);
+
+                        if(auto_page){
+                            block.addPage(auto_page);
+                            panel.setComponent(auto_page);
+                        }
+
+                        block.setActivePage(index);
+                    }
+                });
+            }
+            else if(component.instanceOf('Element')){
+                panel = this.panels.element;
+                page = component.getPage();
+            
+                if(panel.getComponent() === component){
+                    panel.unsetComponent();
+                }
+                
+                component.remove();
+     
+                this.history.add({
+                    'undo': function(){
+                        page.addElement(component);
+                        panel.setComponent(component);
+                    },
+                    'redo': function(){
+                        panel.unsetComponent();
+                        component.remove();
+                    }
+                });
+            }
         }
         
         return this;
