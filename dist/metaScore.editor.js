@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "15a73a";
+        return "2b1d2c";
     },
 
     /**
@@ -4097,10 +4097,6 @@ metaScore.Editor = (function(){
         this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
 
         this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
-        
-        this.player_frame = new metaScore.Dom('<iframe/>', {'src': 'about:blank', 'class': 'player-frame'}).appendTo(this.workspace)
-            .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
-            .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
 
         this.history = new metaScore.editor.History()
             .addListener('add', metaScore.Function.proxy(this.onHistoryAdd, this))
@@ -6079,8 +6075,10 @@ metaScore.Editor = (function(){
         });
         
         this.unloadPlayer();
-
-        this.player_frame.get(0).contentWindow.location.replace(url);
+        
+        this.player_frame = new metaScore.Dom('<iframe/>', {'src': url, 'class': 'player-frame'}).appendTo(this.workspace)
+            .addListener('load', metaScore.Function.proxy(this.onPlayerFrameLoadSuccess, this))
+            .addListener('error', metaScore.Function.proxy(this.onPlayerFrameLoadError, this));
 
         return this;
     };
@@ -6099,7 +6097,11 @@ metaScore.Editor = (function(){
             delete this.player_contextmenu;
         }
         
-        this.player_frame.get(0).contentWindow.location.replace('about:blank');
+        if(this.player_frame){
+            this.player_frame.remove();                
+            delete this.player_frame;
+        }
+        
         this.panels.block.unsetComponent();
         this.history.clear();
         this.setDirty(false).updateMainmenu();
@@ -6118,12 +6120,9 @@ metaScore.Editor = (function(){
     Editor.prototype.deletePlayerComponent = function(component){
         var panel, block, page,
             index, configs, auto_page;
-            
-        console.log(component);
         
         if(component){
             if(component.instanceOf('Block')){
-                console.log('block');
                 panel = this.panels.block;
                 
                 if(panel.getComponent() === component){
