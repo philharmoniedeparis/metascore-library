@@ -896,7 +896,9 @@ metaScore.Player = (function(){
         if(index !== 0){
             this.rindex_css
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time])', 'pointer-events: auto;')
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active', 'pointer-events: auto;')
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
                 .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 

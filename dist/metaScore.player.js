@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-02-25 - Oussama Mubarak */
+/*! metaScore - v0.0.2 - 2016-03-02 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "2b1d2c";
+        return "6e903a";
     },
 
     /**
@@ -4904,7 +4904,9 @@ metaScore.Player = (function(){
         if(index !== 0){
             this.rindex_css
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time])', 'pointer-events: auto;')
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active', 'pointer-events: auto;')
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
                 .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 
