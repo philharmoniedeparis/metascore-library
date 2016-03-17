@@ -3874,7 +3874,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 310,
+            "line": 312,
             "description": "Add an event listener on an element",
             "itemtype": "method",
             "name": "addListener",
@@ -3918,7 +3918,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 332,
+            "line": 334,
             "description": "Remove an event listener from an element",
             "itemtype": "method",
             "name": "removeListener",
@@ -3962,7 +3962,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 354,
+            "line": 356,
             "description": "Trigger an event from an element",
             "itemtype": "method",
             "name": "triggerEvent",
@@ -4008,7 +4008,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 378,
+            "line": 380,
             "description": "Set or get the innerHTML of an element",
             "itemtype": "method",
             "name": "text",
@@ -4035,7 +4035,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 395,
+            "line": 397,
             "description": "Set or get the value of an element",
             "itemtype": "method",
             "name": "val",
@@ -4062,7 +4062,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 438,
+            "line": 440,
             "description": "Set or get an attribute on an element",
             "itemtype": "method",
             "name": "attr",
@@ -4094,7 +4094,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 480,
+            "line": 482,
             "description": "Set or get a property on an element",
             "itemtype": "method",
             "name": "prop",
@@ -4126,7 +4126,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 514,
+            "line": 516,
             "description": "Set or get a CSS style property of an element",
             "itemtype": "method",
             "name": "css",
@@ -4164,7 +4164,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 539,
+            "line": 541,
             "description": "Set or get a custom data attribute of an element",
             "itemtype": "method",
             "name": "data",
@@ -4195,7 +4195,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 564,
+            "line": 566,
             "description": "Append children to an element",
             "itemtype": "method",
             "name": "append",
@@ -4217,7 +4217,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 582,
+            "line": 584,
             "description": "Insert siblings before an element",
             "itemtype": "method",
             "name": "before",
@@ -4239,7 +4239,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 600,
+            "line": 602,
             "description": "Insert siblings after an element",
             "itemtype": "method",
             "name": "after",
@@ -4261,7 +4261,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 617,
+            "line": 619,
             "description": "Remove all element children",
             "itemtype": "method",
             "name": "empty",
@@ -4278,7 +4278,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 630,
+            "line": 632,
             "description": "Remove an element from the DOM",
             "itemtype": "method",
             "name": "remove",
@@ -4295,7 +4295,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 643,
+            "line": 645,
             "description": "Check if an element matches a CSS selector",
             "itemtype": "method",
             "name": "is",
@@ -4321,7 +4321,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 664,
+            "line": 666,
             "description": "Get the closest ancestor of an element which matches a given CSS selector",
             "itemtype": "method",
             "name": "closest",
@@ -4347,7 +4347,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 691,
+            "line": 693,
             "description": "Add an element to the set of elements managed by the Dom object",
             "itemtype": "method",
             "name": "add",
@@ -4365,7 +4365,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 709,
+            "line": 711,
             "description": "Get the number of elements managed by the Dom object",
             "itemtype": "method",
             "name": "count",
@@ -4378,7 +4378,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 719,
+            "line": 721,
             "description": "Get an element by index from the set of elements managed by the Dom object",
             "itemtype": "method",
             "name": "get",
@@ -4398,7 +4398,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 730,
+            "line": 732,
             "description": "Return a new Dom object with the elements filtered by a CSS selector",
             "itemtype": "method",
             "name": "filter",
@@ -4418,7 +4418,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 749,
+            "line": 751,
             "description": "Get the index of the first element that matched the given CSS selector",
             "itemtype": "method",
             "name": "index",
@@ -4438,7 +4438,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 769,
+            "line": 771,
             "description": "Find all descendents that match a given CSS selector",
             "itemtype": "method",
             "name": "find",
@@ -4458,7 +4458,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 786,
+            "line": 788,
             "description": "Get all children, optionally filtered by a given CSS selector",
             "itemtype": "method",
             "name": "children",
@@ -4479,7 +4479,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 807,
+            "line": 809,
             "description": "Get the first child , optionally filtered by a given CSS selector",
             "itemtype": "method",
             "name": "child",
@@ -4500,7 +4500,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 818,
+            "line": 820,
             "description": "Get all parents, optionally filtered by a given CSS selector",
             "itemtype": "method",
             "name": "parents",
@@ -4521,7 +4521,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 839,
+            "line": 841,
             "description": "Interate over all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "each",
@@ -4554,7 +4554,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 854,
+            "line": 856,
             "description": "Check if an element in the set of elements managed by the Dom object has a given CSS class",
             "itemtype": "method",
             "name": "hasClass",
@@ -4574,7 +4574,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 872,
+            "line": 874,
             "description": "Add a CSS class to all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "addClass",
@@ -4591,7 +4591,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 887,
+            "line": 889,
             "description": "Remove a CSS class from all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "removeClass",
@@ -4608,7 +4608,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 902,
+            "line": 904,
             "description": "Toggle a CSS class for all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "toggleClass",
@@ -4631,7 +4631,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 918,
+            "line": 920,
             "description": "Add an event listener on all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "addListener",
@@ -4667,7 +4667,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 937,
+            "line": 939,
             "description": "Add an event listener for descendents all the elements managed by the Dom object that match a given selector",
             "itemtype": "method",
             "name": "addDelegate",
@@ -4718,7 +4718,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 974,
+            "line": 976,
             "description": "Remove an event listener from all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "removeListener",
@@ -4753,7 +4753,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 993,
+            "line": 995,
             "description": "Trigger an event from all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "triggerEvent",
@@ -4793,7 +4793,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1013,
+            "line": 1015,
             "description": "Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element",
             "itemtype": "method",
             "name": "text",
@@ -4814,7 +4814,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1031,
+            "line": 1033,
             "description": "Set the value of all the elements managed by the Dom object, or get the value of the first element",
             "itemtype": "method",
             "name": "val",
@@ -4835,7 +4835,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1050,
+            "line": 1052,
             "description": "Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element",
             "itemtype": "method",
             "name": "attr",
@@ -4861,7 +4861,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1070,
+            "line": 1072,
             "description": "Set a property of all the elements managed by the Dom object, or get the value of a property of the first element",
             "itemtype": "method",
             "name": "prop",
@@ -4887,7 +4887,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1090,
+            "line": 1092,
             "description": "Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element",
             "itemtype": "method",
             "name": "css",
@@ -4919,7 +4919,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1111,
+            "line": 1113,
             "description": "Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element",
             "itemtype": "method",
             "name": "data",
@@ -4944,7 +4944,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1131,
+            "line": 1133,
             "description": "Append children to the first element managed by the Dom object",
             "itemtype": "method",
             "name": "append",
@@ -4961,7 +4961,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1148,
+            "line": 1150,
             "description": "Append each of the elements managed by the Dom object into a given element",
             "itemtype": "method",
             "name": "appendTo",
@@ -4978,7 +4978,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1169,
+            "line": 1171,
             "description": "Append each of the elements managed by the Dom object into a given element at a given position",
             "itemtype": "method",
             "name": "insertAt",
@@ -5000,7 +5000,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1196,
+            "line": 1198,
             "description": "Remove all children of each element managed by the Dom object",
             "itemtype": "method",
             "name": "empty",
@@ -5010,7 +5010,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1210,
+            "line": 1212,
             "description": "Make all the elements managed by the Dom object visible",
             "itemtype": "method",
             "name": "show",
@@ -5020,7 +5020,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1222,
+            "line": 1224,
             "description": "Make all the elements managed by the Dom object invisible",
             "itemtype": "method",
             "name": "hide",
@@ -5030,7 +5030,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1234,
+            "line": 1236,
             "description": "Set focus on the first element managed by the Dom object",
             "itemtype": "method",
             "name": "focus",
@@ -5040,7 +5040,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1246,
+            "line": 1248,
             "description": "Remove focus from the first element managed by the Dom object",
             "itemtype": "method",
             "name": "blur",
@@ -5050,7 +5050,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1258,
+            "line": 1260,
             "description": "Remove all the elements managed by the Dom object from the DOM",
             "itemtype": "method",
             "name": "remove",
@@ -5060,7 +5060,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1276,
+            "line": 1278,
             "description": "Check if an element from the elements managed by the Dom object matches a CSS selector",
             "itemtype": "method",
             "name": "is",
@@ -5080,7 +5080,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1294,
+            "line": 1296,
             "description": "Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector",
             "itemtype": "method",
             "name": "closest",

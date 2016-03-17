@@ -300,10 +300,12 @@ metaScore.Dom = (function () {
                 element.classList.toggle(classNames[i]);
             }
         }
+        // avoid using classList.toggle with a second argument due to a bug in IE 11
+        else if(force){
+            Dom.addClass(element, className);
+        }
         else{
-            for(; i<l; i++){
-                element.classList.toggle(classNames[i], force);
-            }
+            Dom.removeClass(element, className);
         }
     };
 
