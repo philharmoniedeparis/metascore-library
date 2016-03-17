@@ -68,8 +68,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                     'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                 },
                 'getter': function(skipDefault){
-                    var value = this.cursor.css('width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.cursor.css('width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.cursor.css('width', value +'px');

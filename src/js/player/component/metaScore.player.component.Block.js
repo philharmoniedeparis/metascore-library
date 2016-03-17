@@ -133,8 +133,8 @@ metaScore.namespace('player.component').Block = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -179,8 +179,8 @@ metaScore.namespace('player.component').Block = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('border-width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('border-width', value +'px');

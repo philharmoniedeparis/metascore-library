@@ -67,8 +67,8 @@ metaScore.namespace('player.component').Controller = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);

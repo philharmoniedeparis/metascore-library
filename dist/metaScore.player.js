@@ -1,4 +1,4 @@
-/*! metaScore - v0.0.2 - 2016-03-02 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-03-17 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -121,7 +121,7 @@ var metaScore = {
      * @return {String} The version identifier
      */
     getVersion: function(){
-        return "0.0.2";
+        return "0.9.1";
     },
 
     /**
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "6e903a";
+        return "13c727";
     },
 
     /**
@@ -5558,8 +5558,8 @@ metaScore.namespace('player.component').Block = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -5604,8 +5604,8 @@ metaScore.namespace('player.component').Block = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('border-width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('border-width', value +'px');
@@ -6043,8 +6043,8 @@ metaScore.namespace('player.component').Controller = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -6273,8 +6273,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.data('r-index');
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.data('r-index'), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.data('r-index', value);
@@ -6286,8 +6286,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -6332,8 +6332,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.contents.css('border-width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.contents.css('border-width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.contents.css('border-width', value +'px');
@@ -6699,8 +6699,8 @@ metaScore.namespace('player.component').Media = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -6726,8 +6726,8 @@ metaScore.namespace('player.component').Media = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('border-width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('border-width', value +'px');
@@ -7337,8 +7337,8 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                     'label': metaScore.Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                 },
                 'getter': function(skipDefault){
-                    var value = this.cursor.css('width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.cursor.css('width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.cursor.css('width', value +'px');

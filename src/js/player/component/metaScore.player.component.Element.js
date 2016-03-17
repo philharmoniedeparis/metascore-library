@@ -115,8 +115,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.data('r-index');
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.data('r-index'), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.data('r-index', value);
@@ -128,8 +128,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
-                    var value = this.css('z-index', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.css('z-index', value);
@@ -174,8 +174,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'min': 0
                 },
                 'getter': function(skipDefault){
-                    var value = this.contents.css('border-width', undefined, skipDefault);
-                    return isNaN(value) ? null : parseInt(value, 10);
+                    var value = parseInt(this.contents.css('border-width', undefined, skipDefault), 10);
+                    return isNaN(value) ? null : value;
                 },
                 'setter': function(value){
                     this.contents.css('border-width', value +'px');
