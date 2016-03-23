@@ -691,6 +691,28 @@ metaScore.Dom = (function () {
     };
 
     /**
+     * Get the top and left offset of an element
+     * 
+     * @method offset
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {Object} The top and left offset
+     */
+    Dom.offset = function(element){
+        var left = 0,
+            top = 0;
+            
+        if(element.offsetParent){
+            do{
+                left += element.offsetLeft;
+                top += element.offsetTop;
+            }while (element = element.offsetParent);
+        }
+
+        return {'left': left, 'top': top};
+    };
+
+    /**
      * Add an element to the set of elements managed by the Dom object
      * 
      * @method add
@@ -1255,6 +1277,16 @@ metaScore.Dom = (function () {
         this.get(0).blur();
 
         return this;
+    };
+
+    /**
+     * Get the top and left offset of the first element managed by the Dom object
+     * 
+     * @method offset
+     * @return {Object} offset The top and left offset
+     */
+    Dom.prototype.offset = function(){
+        return Dom.offset(this.get(0));
     };
 
     /**

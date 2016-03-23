@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-03-17 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-03-22 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "8a17a1";
+        return "88703e";
     },
 
     /**
@@ -1037,6 +1037,28 @@ metaScore.Dom = (function () {
     };
 
     /**
+     * Get the top and left offset of an element
+     * 
+     * @method offset
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {Object} The top and left offset
+     */
+    Dom.offset = function(element){
+        var left = 0,
+            top = 0;
+            
+        if(element.offsetParent){
+            do{
+                left += element.offsetLeft;
+                top += element.offsetTop;
+            }while (element = element.offsetParent);
+        }
+
+        return {'left': left, 'top': top};
+    };
+
+    /**
      * Add an element to the set of elements managed by the Dom object
      * 
      * @method add
@@ -1601,6 +1623,16 @@ metaScore.Dom = (function () {
         this.get(0).blur();
 
         return this;
+    };
+
+    /**
+     * Get the top and left offset of the first element managed by the Dom object
+     * 
+     * @method offset
+     * @return {Object} offset The top and left offset
+     */
+    Dom.prototype.offset = function(){
+        return Dom.offset(this.get(0));
     };
 
     /**
@@ -2353,16 +2385,15 @@ metaScore.ContextMenu = (function(){
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Mixed} [configs.target='body'] The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
+     * @param {Mixed} [configs.items={}] The list of items and subitems
      */
     function ContextMenu(configs) {
-        this.configs = this.getConfigs(configs);
+        var list;
         
-        if(!(this.configs.target instanceof metaScore.Dom)){
-            this.configs.target = new metaScore.Dom(this.configs.target);
-        }
+        this.configs = this.getConfigs(configs);
 
         // call parent constructor
-        ContextMenu.parent.call(this, '<ul/>', {'class': 'contextmenu'});
+        ContextMenu.parent.call(this, '<div/>', {'class': 'contextmenu'});
         
         this.tasks = {};
         this.context = null;
@@ -2372,16 +2403,30 @@ metaScore.ContextMenu = (function(){
         this.onTargetMousedown = metaScore.Function.proxy(this.onTargetMousedown, this);
         this.onTaskClick = metaScore.Function.proxy(this.onTaskClick, this);
         
-        this.addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this));
+        list = new metaScore.Dom('<ul/>')
+            .appendTo(this);
         
-        this.hide();
-        this.enable();
+        metaScore.Object.each(this.configs.items, function(key, task){
+            this.addTask(key, task, list);
+        }, this);
+        
+        if(this.configs.target){
+            this.setTarget(this.configs.target);
+        }
+        
+        this
+            .addListener('contextmenu', metaScore.Function.proxy(this.onContextmenu, this))
+            .addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this))
+            .addDelegate('li', 'mouseover', metaScore.Function.proxy(this.onItemMouseover, this))
+            .hide()
+            .enable();
     }
 
     metaScore.Dom.extend(ContextMenu);
 
     ContextMenu.defaults = {
-        'target': 'body'
+        'target': 'body',
+        'items': {}
     };
 
     /**
@@ -2391,8 +2436,50 @@ metaScore.ContextMenu = (function(){
      * @private
      * @param {Event} evt The event object
      */
-    ContextMenu.prototype.onMousedown = function(evt){    
+    ContextMenu.prototype.onContextmenu = function(evt){        
+        if(!evt.shiftKey){
+            evt.preventDefault();
+        }
+        
         evt.stopPropagation();
+        
+    };
+
+    /**
+     * Mousedown event handler
+     *
+     * @method onMousedown
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onMousedown = function(evt){
+        evt.stopPropagation();
+    };
+
+    /**
+     * Task mouseover event handler
+     *
+     * @method onItemMouseover
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onItemMouseover = function(evt){
+        var item = new metaScore.Dom(evt.target),
+            container, conteiner_width, conteiner_offset,
+            subitems, subitems_width, subitems_offset;
+            
+        if(!item.hasClass('has-subitems')){
+            return;
+        }
+        
+        container = this.parents();
+        conteiner_width = container.get(0).offsetWidth;
+        conteiner_offset = container.offset();
+        subitems = item.child('ul').removeClass('left');
+        subitems_width = subitems.get(0).offsetWidth;
+        subitems_offset = subitems.offset();
+            
+        subitems.toggleClass('left', subitems_offset.left - conteiner_offset.left + subitems_width > conteiner_width);
     };
 
     /**
@@ -2405,7 +2492,7 @@ metaScore.ContextMenu = (function(){
     ContextMenu.prototype.onTargetContextmenu = function(evt){
         var x, y;
         
-        if(evt.ctrlKey){
+        if(evt.shiftKey){
             return;
         }
         
@@ -2414,8 +2501,8 @@ metaScore.ContextMenu = (function(){
             y = evt.pageY;
         }
         else if(evt.clientX || evt.clientY){
-            x = evt.clientX + document.body.scrollLeft;
-            y = evt.clientY + document.body.scrollTop;
+            x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
         else{
             x = 0;
@@ -2449,10 +2536,35 @@ metaScore.ContextMenu = (function(){
         var action = new metaScore.Dom(evt.target).data('action');
             
         if(action in this.tasks){
+            if(this.tasks[action].callback){
+                this.tasks[action].callback(this.context);
+            }
+            
             this.triggerEvent(EVT_TASKCLICK, {'action': action, 'context': this.context}, true, false);
         }
         
         this.hide();
+        
+        evt.stopPropagation();
+    };
+
+    /**
+     * Sets the target element
+     *
+     * @method setTarget
+     * @param {Mixed} target The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
+     * @chainable
+     */
+    ContextMenu.prototype.setTarget = function(target){        
+        this.disable();
+        
+        this.target = target;
+        
+        if(!(this.target instanceof metaScore.Dom)){
+            this.target = new metaScore.Dom(this.target);
+        }
+        
+        return this;
     };
 
     /**
@@ -2460,19 +2572,42 @@ metaScore.ContextMenu = (function(){
      *
      * @method addTask
      * @param {String} action The task's associated action
-     * @param {String} text The task's label
-     * @param {Mixed} toggler A boolean or a callback function used to determine if the task is active
-     * @param {HTMLElement} toggler.context The element on which the contextmenu event was triggered
+     * @param {Object} configs The task's configs
+     * @param {String} [configs.text] The task's text
+     * @param {Mixed} [configs.toggler=true] A boolean or a callback function used to determine if the task is active
+     * @param {Mixed} [parent] The parent element to append the task to
      * @chainable
      */
-    ContextMenu.prototype.addTask = function(action, text, toggler){
-        var el = new metaScore.Dom('<li/>', {'data-action': action, 'text': text})
-            .addListener('click', this.onTaskClick)
-            .appendTo(this);
+    ContextMenu.prototype.addTask = function(action, configs, parent){
+        var task, subtasks;
             
+        task = new metaScore.Dom('<li/>', {'data-action': action})
+            .addListener('click', this.onTaskClick)
+            .appendTo(parent);
+            
+        if('text' in configs){
+            task.text(configs.text);
+        }
+            
+        if('class' in configs){
+            task.addClass(configs.class);
+        }
+        
+        if('items' in configs){
+            task.addClass('has-subitems');
+            
+            subtasks = new metaScore.Dom('<ul/>')
+                .appendTo(task);
+            
+            metaScore.Object.each(configs.items, function(subkey, subtask){
+                this.addTask(subkey, subtask, subtasks);
+            }, this);
+        }
+        
         this.tasks[action] = {
-            'toggler': toggler,
-            'el': el
+            'toggler': 'toggler' in configs ? configs.toggler : true,
+            'callback': 'callback' in configs ? configs.callback : null,
+            'el': task
         };
             
         return this;
@@ -2501,6 +2636,9 @@ metaScore.ContextMenu = (function(){
      * @chainable
      */
     ContextMenu.prototype.show = function(el, x, y){
+        var window, window_width, window_height,
+            menu_el, menu_width, menu_height;
+        
         this.context = el;
     
         metaScore.Object.each(this.tasks, function(key, task){
@@ -2514,14 +2652,29 @@ metaScore.ContextMenu = (function(){
             }
         }, this);
     
-        this.configs.target.addListener('mousedown', this.onTargetMousedown);
+        this.target.addListener('mousedown', this.onTargetMousedown);
+
+        // call parent function
+        ContextMenu.parent.prototype.show.call(this);
+        
+        menu_el = this.get(0);
+        window = metaScore.Dom.getElementWindow(this.context);
+        window_width = window.innerWidth;
+        window_height = window.innerHeight;
+        menu_width = menu_el.offsetWidth;
+        menu_height = menu_el.offsetHeight;
+        
+        if((menu_width + x) > window_width){
+            x = window_width - menu_width;
+        }
+
+        if((menu_height + y) > window_height){
+            y = window_height - menu_height;
+        }
         
         this
             .css('left', x +'px')
             .css('top', y +'px');
-
-        // call parent function
-        ContextMenu.parent.prototype.show.call(this);
         
         return this;
     };
@@ -2533,7 +2686,9 @@ metaScore.ContextMenu = (function(){
      * @chainable
      */
     ContextMenu.prototype.hide = function(){
-        this.configs.target.removeListener('mousedown', this.onTargetMousedown);
+        if(this.target){
+            this.target.removeListener('mousedown', this.onTargetMousedown);
+        }
         
         this.context = null;
 
@@ -2549,10 +2704,12 @@ metaScore.ContextMenu = (function(){
      * @method enable
      * @chainable
      */
-    ContextMenu.prototype.enable = function(){
-        this.enabled = true;
-        
-        this.configs.target.addListener('contextmenu', this.onTargetContextmenu);
+    ContextMenu.prototype.enable = function(){        
+        if(this.target){
+            this.enabled = true;
+            
+            this.target.addListener('contextmenu', this.onTargetContextmenu);
+        }
 
         return this;
     };
@@ -2563,8 +2720,10 @@ metaScore.ContextMenu = (function(){
      * @method disable
      * @chainable
      */
-    ContextMenu.prototype.disable = function(){        
-        this.configs.target.removeListener('contextmenu', this.onTargetContextmenu);
+    ContextMenu.prototype.disable = function(){
+        if(this.target){
+            this.target.removeListener('contextmenu', this.onTargetContextmenu);
+        }
         
         this.hide();
 
@@ -4111,8 +4270,14 @@ metaScore.Player = (function(){
             metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
         }
         
-        this.contextmenu = new metaScore.ContextMenu({'target': this})
-            .addTask('about',  metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+        this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
+                'about': {
+                    'text': metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                },
+                'logo': {
+                    'class': 'logo'
+                }
+            }})
             .appendTo(this);
 
         this.appendTo(this.configs.container);

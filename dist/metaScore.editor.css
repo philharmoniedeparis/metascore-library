@@ -33,6 +33,8 @@
   height: 100%;
   margin: 0;
   padding: 0;
+}
+.metaScore-editor * {
   font: normal 12px / normal Verdana, Geneva, sans-serif;
 }
 .metaScore-editor .clearfix::after {
@@ -372,12 +374,15 @@
 .metaScore-editor .main-menu > .separator {
   flex: 1;
 }
-.metaScore-editor .main-menu .logo-philharmonie {
+.metaScore-editor .main-menu::before {
+  content: '';
   width: 102px;
   height: 40px;
   flex: 0 0 auto;
+  margin-right: 1em;
   vertical-align: middle;
-  background: transparent url('img/editor/logo-philharmonie.png') left center no-repeat;
+  background: transparent url('img/logo-philharmonie.png') left center no-repeat;
+  background-size: contain;
 }
 .metaScore-editor .main-menu > button,
 .metaScore-editor .main-menu .button-group button {
@@ -1150,37 +1155,73 @@
 }
 .metaScore-editor .contextmenu {
   position: absolute;
+  z-index: 999999;
+}
+.metaScore-editor .contextmenu ul {
   min-width: 150px;
   margin: 0;
   padding: 0.25em 0;
   list-style: none;
   background: #fff;
-  z-index: 999999;
   border: 1px solid rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
   box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
 }
-.metaScore-editor .contextmenu li {
+.metaScore-editor .contextmenu ul li {
+  position: relative;
   padding: 0.25em 1em;
   white-space: nowrap;
   cursor: pointer;
+  color: #000;
 }
-.metaScore-editor .contextmenu li:hover {
+.metaScore-editor .contextmenu ul li:hover {
   color: #fff;
   background: #0000fe;
 }
-.metaScore-editor .contextmenu li.disabled {
-  pointer-events: none;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  filter: alpha(opacity=(50));
-  opacity: 0.5;
+.metaScore-editor .contextmenu ul li.disabled {
+  display: none;
 }
-.metaScore-editor .contextmenu li.separator {
+.metaScore-editor .contextmenu ul li.separator {
   height: 1px;
   margin: 0.5em 0;
   padding: 0;
   background: rgba(0, 0, 0, 0.1);
   pointer-events: none;
+}
+.metaScore-editor .contextmenu ul li.has-subitems::after {
+  position: absolute;
+  top: 50%;
+  right: 1em;
+  width: 0;
+  height: 0;
+  margin-top: -0.1em;
+  content: '';
+  border-color: transparent transparent transparent #2F2F2F;
+  border-style: solid;
+  border-width: 0.4em 0 0.4em 0.4em;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+.metaScore-editor .contextmenu ul li.has-subitems ul {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 99%;
+  z-index: 1;
+}
+.metaScore-editor .contextmenu ul li.has-subitems:hover::after {
+  border-color: transparent transparent transparent #FFF;
+}
+.metaScore-editor .contextmenu ul li.has-subitems:hover > ul {
+  display: block;
+}
+.metaScore-editor .contextmenu ul li.has-subitems:hover > ul.left {
+  left: auto;
+  right: 99%;
 }
 .metaScore-editor.editing .main-menu button[data-action="edit-toggle"] {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";

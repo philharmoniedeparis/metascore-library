@@ -22,7 +22,7 @@ metaScore.namespace('editor.panel').Page = (function () {
     }
 
     PagePanel.defaults = {
-        toolbarConfigs: {
+        'toolbarConfigs': {
             'title': metaScore.Locale.t('editor.panel.Page.title', 'Page'),
             'menuItems': {
                 'new': metaScore.Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),

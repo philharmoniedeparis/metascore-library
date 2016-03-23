@@ -22,7 +22,7 @@ metaScore.namespace('editor.panel').Element = (function () {
     }
 
     ElementPanel.defaults = {
-        toolbarConfigs: {
+        'toolbarConfigs': {
             'title': metaScore.Locale.t('editor.panel.Element.title', 'Element'),
             'menuItems': {
                 'Cursor': metaScore.Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),

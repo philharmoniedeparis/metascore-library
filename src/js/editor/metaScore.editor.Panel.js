@@ -55,6 +55,7 @@ metaScore.namespace('editor').Panel = (function(){
         Panel.parent.call(this, '<div/>', {'class': 'panel'});
 
         // fix event handlers scope
+        this.onComponentPropChange = metaScore.Function.proxy(this.onComponentPropChange, this);
         this.onComponentDragStart = metaScore.Function.proxy(this.onComponentDragStart, this);
         this.onComponentDrag = metaScore.Function.proxy(this.onComponentDrag, this);
         this.onComponentDragEnd = metaScore.Function.proxy(this.onComponentDragEnd, this);
@@ -258,6 +259,7 @@ metaScore.namespace('editor').Panel = (function(){
 
             component
                 .addClass('selected')
+                .addListener('propchange', this.onComponentPropChange)
                 .addListener('dragstart', this.onComponentDragStart)
                 .addListener('drag', this.onComponentDrag)
                 .addListener('dragend', this.onComponentDragEnd)
@@ -296,6 +298,7 @@ metaScore.namespace('editor').Panel = (function(){
 
             component
                 .removeClass('selected')
+                .removeListener('propchange', this.onComponentPropChange)
                 .removeListener('dragstart', this.onComponentDragStart)
                 .removeListener('drag', this.onComponentDrag)
                 .removeListener('dragend', this.onComponentDragEnd)
@@ -397,6 +400,21 @@ metaScore.namespace('editor').Panel = (function(){
                 evt.stopPropagation();
                 break;
         }
+    };
+
+    /**
+     * The component's propchange event handler
+     *
+     * @method onComponentPropChange
+     * @private
+     * @param {Event} evt The event object
+     */
+    Panel.prototype.onComponentPropChange = function(evt){           
+        if(evt.detail.component !== this.getComponent()){
+            return;
+        }
+        
+        this.updateFieldValue(evt.detail.property, evt.detail.value, true);
     };
 
     /**

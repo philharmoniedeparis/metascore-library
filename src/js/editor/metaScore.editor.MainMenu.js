@@ -30,12 +30,6 @@ metaScore.namespace('editor').MainMenu = (function(){
     MainMenu.prototype.setupUI = function(){
         var btn_group, sub_menu;
 
-        new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
-            .appendTo(this);
-
-        new metaScore.Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
         new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.new', 'New')

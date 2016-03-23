@@ -319,11 +319,11 @@
                             <li class="index-item method">
                                 <a href="#method_closest">closest</a>
 
-                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_closest">closest</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_count">count</a>
@@ -425,17 +425,26 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#method_offset">offset</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_offset">offset</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_parents">parents</a>
 
                             </li>
                             <li class="index-item method">
                                 <a href="#method_prop">prop</a>
 
-                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_prop">prop</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_remove">remove</a>
@@ -449,11 +458,11 @@
                             <li class="index-item method">
                                 <a href="#method_removeClass">removeClass</a>
 
-                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_removeClass">removeClass</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_removeListener">removeListener</a>
@@ -491,11 +500,11 @@
                             <li class="index-item method">
                                 <a href="#method_toggleClass">toggleClass</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_toggleClass">toggleClass</a>
 
-                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_triggerEvent">triggerEvent</a>
@@ -509,11 +518,11 @@
                             <li class="index-item method">
                                 <a href="#method_val">val</a>
 
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_val">val</a>
 
-                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -1869,6 +1878,70 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
+                        <code>selector</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Element</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">selector</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS selector</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Element</span>:
+                    <p>The matched element</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_closest" class="method item">
+    <h3 class="name"><code>closest</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
                         <code>element</code>
                 </li>
                 <li class="arg">
@@ -1916,70 +1989,6 @@
                     </div>
 
                 </li>
-                <li class="param">
-                        <code class="param-name">selector</code>
-                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-
-
-                    <div class="param-description">
-                        <p>The CSS selector</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Element</span>:
-                    <p>The matched element</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_closest" class="method item">
-    <h3 class="name"><code>closest</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>selector</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Element</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
                 <li class="param">
                         <code class="param-name">selector</code>
                         <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
@@ -3507,6 +3516,112 @@
 
 
 </div>
+<div id="method_offset" class="method item">
+    <h3 class="name"><code>offset</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the top and left offset of the first element managed by the Dom object</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Object</span>:
+                    <p>offset The top and left offset</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_offset" class="method item">
+    <h3 class="name"><code>offset</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>element</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the top and left offset of an element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
+
+
+                    <div class="param-description">
+                        <p>The element</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Object</span>:
+                    <p>The top and left offset</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_parents" class="method item">
     <h3 class="name"><code>parents</code></h3>
 
@@ -3566,6 +3681,85 @@
             <div class="returns-description">
                         <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
                     <p>A Dom object of all matched parents</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_prop" class="method item">
+    <h3 class="name"><code>prop</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>element</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[value]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Mixed</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set a property of all the elements managed by the Dom object, or get the value of a property of the first element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">element</code>
+                        <span class="type">HTMLElement</span>
+
+
+                    <div class="param-description">
+                        <p>The element</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[value]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>The value to set</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the value of the first element if used as a getter</p>
 
             </div>
         </div>
@@ -3666,85 +3860,6 @@
 
 
 </div>
-<div id="method_prop" class="method item">
-    <h3 class="name"><code>prop</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>element</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[value]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Mixed</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set a property of all the elements managed by the Dom object, or get the value of a property of the first element</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">element</code>
-                        <span class="type">HTMLElement</span>
-
-
-                    <div class="param-description">
-                        <p>The element</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[value]</code>
-                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>The value to set</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Mixed</span>:
-                    <p>The Dom object if used as a setter, the value of the first element if used as a getter</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_remove" class="method item">
     <h3 class="name"><code>remove</code></h3>
 
@@ -3834,6 +3949,59 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
+                        <code>className</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Remove a CSS class from all the elements managed by the Dom object</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">className</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS class</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_removeClass" class="method item">
+    <h3 class="name"><code>removeClass</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
                         <code>element</code>
                 </li>
                 <li class="arg">
@@ -3878,59 +4046,6 @@
                     </div>
 
                 </li>
-                <li class="param">
-                        <code class="param-name">className</code>
-                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-
-
-                    <div class="param-description">
-                        <p>The CSS class</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_removeClass" class="method item">
-    <h3 class="name"><code>removeClass</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>className</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Remove a CSS class from all the elements managed by the Dom object</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
                 <li class="param">
                         <code class="param-name">className</code>
                         <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
@@ -4503,74 +4618,6 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>className</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[force]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Toggle a CSS class for all the elements managed by the Dom object</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">className</code>
-                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-
-
-                    <div class="param-description">
-                        <p>The CSS class</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[force]</code>
-                        <span class="type">Boolean</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Whether to add or remove the class. The class is toggled if not specified</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_toggleClass" class="method item">
-    <h3 class="name"><code>toggleClass</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
                         <code>element</code>
                 </li>
                 <li class="arg">
@@ -4618,6 +4665,74 @@
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name">className</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The CSS class</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[force]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to add or remove the class. The class is toggled if not specified</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_toggleClass" class="method item">
+    <h3 class="name"><code>toggleClass</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>className</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[force]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Toggle a CSS class for all the elements managed by the Dom object</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
                 <li class="param">
                         <code class="param-name">className</code>
                         <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
@@ -4886,71 +5001,6 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code class="optional">[value]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Mixed</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set the value of all the elements managed by the Dom object, or get the value of the first element</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name optional">[value]</code>
-                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>The value to set</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Mixed</span>:
-                    <p>The Dom object if used as a setter, the value of the first element if used as a getter</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_val" class="method item">
-    <h3 class="name"><code>val</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
                         <code>element</code>
                 </li>
                 <li class="arg">
@@ -5019,6 +5069,71 @@
             <div class="returns-description">
                         <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
                     <p>The value of the element</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_val" class="method item">
+    <h3 class="name"><code>val</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[value]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Mixed</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the value of all the elements managed by the Dom object, or get the value of the first element</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[value]</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>The value to set</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Mixed</span>:
+                    <p>The Dom object if used as a setter, the value of the first element if used as a getter</p>
 
             </div>
         </div>

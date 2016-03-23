@@ -101,8 +101,14 @@ metaScore.Player = (function(){
             metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
         }
         
-        this.contextmenu = new metaScore.ContextMenu({'target': this})
-            .addTask('about',  metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+        this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
+                'about': {
+                    'text': metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                },
+                'logo': {
+                    'class': 'logo'
+                }
+            }})
             .appendTo(this);
 
         this.appendTo(this.configs.container);

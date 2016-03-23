@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-03-17 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-03-22 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "8a17a1";
+        return "88703e";
     },
 
     /**
@@ -1037,6 +1037,28 @@ metaScore.Dom = (function () {
     };
 
     /**
+     * Get the top and left offset of an element
+     * 
+     * @method offset
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {Object} The top and left offset
+     */
+    Dom.offset = function(element){
+        var left = 0,
+            top = 0;
+            
+        if(element.offsetParent){
+            do{
+                left += element.offsetLeft;
+                top += element.offsetTop;
+            }while (element = element.offsetParent);
+        }
+
+        return {'left': left, 'top': top};
+    };
+
+    /**
      * Add an element to the set of elements managed by the Dom object
      * 
      * @method add
@@ -1601,6 +1623,16 @@ metaScore.Dom = (function () {
         this.get(0).blur();
 
         return this;
+    };
+
+    /**
+     * Get the top and left offset of the first element managed by the Dom object
+     * 
+     * @method offset
+     * @return {Object} offset The top and left offset
+     */
+    Dom.prototype.offset = function(){
+        return Dom.offset(this.get(0));
     };
 
     /**
@@ -2353,16 +2385,15 @@ metaScore.ContextMenu = (function(){
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Mixed} [configs.target='body'] The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
+     * @param {Mixed} [configs.items={}] The list of items and subitems
      */
     function ContextMenu(configs) {
-        this.configs = this.getConfigs(configs);
+        var list;
         
-        if(!(this.configs.target instanceof metaScore.Dom)){
-            this.configs.target = new metaScore.Dom(this.configs.target);
-        }
+        this.configs = this.getConfigs(configs);
 
         // call parent constructor
-        ContextMenu.parent.call(this, '<ul/>', {'class': 'contextmenu'});
+        ContextMenu.parent.call(this, '<div/>', {'class': 'contextmenu'});
         
         this.tasks = {};
         this.context = null;
@@ -2372,16 +2403,30 @@ metaScore.ContextMenu = (function(){
         this.onTargetMousedown = metaScore.Function.proxy(this.onTargetMousedown, this);
         this.onTaskClick = metaScore.Function.proxy(this.onTaskClick, this);
         
-        this.addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this));
+        list = new metaScore.Dom('<ul/>')
+            .appendTo(this);
         
-        this.hide();
-        this.enable();
+        metaScore.Object.each(this.configs.items, function(key, task){
+            this.addTask(key, task, list);
+        }, this);
+        
+        if(this.configs.target){
+            this.setTarget(this.configs.target);
+        }
+        
+        this
+            .addListener('contextmenu', metaScore.Function.proxy(this.onContextmenu, this))
+            .addListener('mousedown', metaScore.Function.proxy(this.onMousedown, this))
+            .addDelegate('li', 'mouseover', metaScore.Function.proxy(this.onItemMouseover, this))
+            .hide()
+            .enable();
     }
 
     metaScore.Dom.extend(ContextMenu);
 
     ContextMenu.defaults = {
-        'target': 'body'
+        'target': 'body',
+        'items': {}
     };
 
     /**
@@ -2391,8 +2436,50 @@ metaScore.ContextMenu = (function(){
      * @private
      * @param {Event} evt The event object
      */
-    ContextMenu.prototype.onMousedown = function(evt){    
+    ContextMenu.prototype.onContextmenu = function(evt){        
+        if(!evt.shiftKey){
+            evt.preventDefault();
+        }
+        
         evt.stopPropagation();
+        
+    };
+
+    /**
+     * Mousedown event handler
+     *
+     * @method onMousedown
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onMousedown = function(evt){
+        evt.stopPropagation();
+    };
+
+    /**
+     * Task mouseover event handler
+     *
+     * @method onItemMouseover
+     * @private
+     * @param {Event} evt The event object
+     */
+    ContextMenu.prototype.onItemMouseover = function(evt){
+        var item = new metaScore.Dom(evt.target),
+            container, conteiner_width, conteiner_offset,
+            subitems, subitems_width, subitems_offset;
+            
+        if(!item.hasClass('has-subitems')){
+            return;
+        }
+        
+        container = this.parents();
+        conteiner_width = container.get(0).offsetWidth;
+        conteiner_offset = container.offset();
+        subitems = item.child('ul').removeClass('left');
+        subitems_width = subitems.get(0).offsetWidth;
+        subitems_offset = subitems.offset();
+            
+        subitems.toggleClass('left', subitems_offset.left - conteiner_offset.left + subitems_width > conteiner_width);
     };
 
     /**
@@ -2405,7 +2492,7 @@ metaScore.ContextMenu = (function(){
     ContextMenu.prototype.onTargetContextmenu = function(evt){
         var x, y;
         
-        if(evt.ctrlKey){
+        if(evt.shiftKey){
             return;
         }
         
@@ -2414,8 +2501,8 @@ metaScore.ContextMenu = (function(){
             y = evt.pageY;
         }
         else if(evt.clientX || evt.clientY){
-            x = evt.clientX + document.body.scrollLeft;
-            y = evt.clientY + document.body.scrollTop;
+            x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
         else{
             x = 0;
@@ -2449,10 +2536,35 @@ metaScore.ContextMenu = (function(){
         var action = new metaScore.Dom(evt.target).data('action');
             
         if(action in this.tasks){
+            if(this.tasks[action].callback){
+                this.tasks[action].callback(this.context);
+            }
+            
             this.triggerEvent(EVT_TASKCLICK, {'action': action, 'context': this.context}, true, false);
         }
         
         this.hide();
+        
+        evt.stopPropagation();
+    };
+
+    /**
+     * Sets the target element
+     *
+     * @method setTarget
+     * @param {Mixed} target The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
+     * @chainable
+     */
+    ContextMenu.prototype.setTarget = function(target){        
+        this.disable();
+        
+        this.target = target;
+        
+        if(!(this.target instanceof metaScore.Dom)){
+            this.target = new metaScore.Dom(this.target);
+        }
+        
+        return this;
     };
 
     /**
@@ -2460,19 +2572,42 @@ metaScore.ContextMenu = (function(){
      *
      * @method addTask
      * @param {String} action The task's associated action
-     * @param {String} text The task's label
-     * @param {Mixed} toggler A boolean or a callback function used to determine if the task is active
-     * @param {HTMLElement} toggler.context The element on which the contextmenu event was triggered
+     * @param {Object} configs The task's configs
+     * @param {String} [configs.text] The task's text
+     * @param {Mixed} [configs.toggler=true] A boolean or a callback function used to determine if the task is active
+     * @param {Mixed} [parent] The parent element to append the task to
      * @chainable
      */
-    ContextMenu.prototype.addTask = function(action, text, toggler){
-        var el = new metaScore.Dom('<li/>', {'data-action': action, 'text': text})
-            .addListener('click', this.onTaskClick)
-            .appendTo(this);
+    ContextMenu.prototype.addTask = function(action, configs, parent){
+        var task, subtasks;
             
+        task = new metaScore.Dom('<li/>', {'data-action': action})
+            .addListener('click', this.onTaskClick)
+            .appendTo(parent);
+            
+        if('text' in configs){
+            task.text(configs.text);
+        }
+            
+        if('class' in configs){
+            task.addClass(configs.class);
+        }
+        
+        if('items' in configs){
+            task.addClass('has-subitems');
+            
+            subtasks = new metaScore.Dom('<ul/>')
+                .appendTo(task);
+            
+            metaScore.Object.each(configs.items, function(subkey, subtask){
+                this.addTask(subkey, subtask, subtasks);
+            }, this);
+        }
+        
         this.tasks[action] = {
-            'toggler': toggler,
-            'el': el
+            'toggler': 'toggler' in configs ? configs.toggler : true,
+            'callback': 'callback' in configs ? configs.callback : null,
+            'el': task
         };
             
         return this;
@@ -2501,6 +2636,9 @@ metaScore.ContextMenu = (function(){
      * @chainable
      */
     ContextMenu.prototype.show = function(el, x, y){
+        var window, window_width, window_height,
+            menu_el, menu_width, menu_height;
+        
         this.context = el;
     
         metaScore.Object.each(this.tasks, function(key, task){
@@ -2514,14 +2652,29 @@ metaScore.ContextMenu = (function(){
             }
         }, this);
     
-        this.configs.target.addListener('mousedown', this.onTargetMousedown);
+        this.target.addListener('mousedown', this.onTargetMousedown);
+
+        // call parent function
+        ContextMenu.parent.prototype.show.call(this);
+        
+        menu_el = this.get(0);
+        window = metaScore.Dom.getElementWindow(this.context);
+        window_width = window.innerWidth;
+        window_height = window.innerHeight;
+        menu_width = menu_el.offsetWidth;
+        menu_height = menu_el.offsetHeight;
+        
+        if((menu_width + x) > window_width){
+            x = window_width - menu_width;
+        }
+
+        if((menu_height + y) > window_height){
+            y = window_height - menu_height;
+        }
         
         this
             .css('left', x +'px')
             .css('top', y +'px');
-
-        // call parent function
-        ContextMenu.parent.prototype.show.call(this);
         
         return this;
     };
@@ -2533,7 +2686,9 @@ metaScore.ContextMenu = (function(){
      * @chainable
      */
     ContextMenu.prototype.hide = function(){
-        this.configs.target.removeListener('mousedown', this.onTargetMousedown);
+        if(this.target){
+            this.target.removeListener('mousedown', this.onTargetMousedown);
+        }
         
         this.context = null;
 
@@ -2549,10 +2704,12 @@ metaScore.ContextMenu = (function(){
      * @method enable
      * @chainable
      */
-    ContextMenu.prototype.enable = function(){
-        this.enabled = true;
-        
-        this.configs.target.addListener('contextmenu', this.onTargetContextmenu);
+    ContextMenu.prototype.enable = function(){        
+        if(this.target){
+            this.enabled = true;
+            
+            this.target.addListener('contextmenu', this.onTargetContextmenu);
+        }
 
         return this;
     };
@@ -2563,8 +2720,10 @@ metaScore.ContextMenu = (function(){
      * @method disable
      * @chainable
      */
-    ContextMenu.prototype.disable = function(){        
-        this.configs.target.removeListener('contextmenu', this.onTargetContextmenu);
+    ContextMenu.prototype.disable = function(){
+        if(this.target){
+            this.target.removeListener('contextmenu', this.onTargetContextmenu);
+        }
         
         this.hide();
 
@@ -4057,12 +4216,11 @@ metaScore.Editor = (function(){
             .addListener('resize', metaScore.Function.proxy(this.onSidebarResize, this))
             .addListener('resizeend', metaScore.Function.proxy(this.onSidebarResizeEnd, this));
 
-        this.sidebar_resizer = new metaScore.Resizable({target: this.sidebar_wrapper, directions: ['left']});
+        this.sidebar = new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
 
+        this.sidebar_resizer = new metaScore.Resizable({target: this.sidebar_wrapper, directions: ['left']});
         this.sidebar_resizer.getHandle('left')
             .addListener('dblclick', metaScore.Function.proxy(this.onSidebarResizeDblclick, this));
-
-        this.sidebar = new metaScore.Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
 
         this.panels = {};
 
@@ -4107,9 +4265,195 @@ metaScore.Editor = (function(){
             
         this.clipboard = new metaScore.Clipboard();
         
-        this.contextmenu = new metaScore.ContextMenu({'target': this})
-            .addTask('about',  metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
+        this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
+                'about': {
+                    'text': metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                }
+            }})
             .appendTo(this);
+                
+        this.player_contextmenu = new metaScore.ContextMenu({'target': null, 'items': {
+                'add-element': {
+                    'text': metaScore.Locale.t('editor.contextmenu.add-element', 'Add an element'),
+                    'items': {
+                        'add-element-cursor': {
+                            'text': metaScore.Locale.t('editor.contextmenu.add-element-cursor', 'Cursor'),
+                            'callback': metaScore.Function.proxy(function(context){
+                                this.addPlayerComponent('element', {'type': 'Cursor'}, metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            }, this)
+                        },
+                        'add-element-image': {
+                            'text': metaScore.Locale.t('editor.contextmenu.add-element-image', 'Image'),
+                            'callback': metaScore.Function.proxy(function(context){
+                                this.addPlayerComponent('element', {'type': 'Image'}, metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            }, this)
+                        },
+                        'add-element-text': {
+                            'text': metaScore.Locale.t('editor.contextmenu.add-element-text', 'Text'),
+                            'callback': metaScore.Function.proxy(function(context){
+                                this.addPlayerComponent('element', {'type': 'Text'}, metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            }, this)
+                        }
+                    },
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false;
+                    }
+                },
+                'copy-element': {
+                    'text': metaScore.Locale.t('editor.contextmenu.copy-element', 'Copy element'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        this.clipboard.setData('element', metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore.getProperties());
+                    }, this),
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+                    }
+                },
+                'paste-element': {
+                    'text': metaScore.Locale.t('editor.contextmenu.paste-element', 'Paste element'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        var component = this.clipboard.getData();
+                        component.x += 5;
+                        component.y += 5;
+                        this.addPlayerComponent('element', component, metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
+                    }, this),
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.clipboard.getDataType() === 'element') && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    }, this)
+                },
+                'delete-element': {
+                    'text': metaScore.Locale.t('editor.contextmenu.delete-element', 'Delete element'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore);
+                    }, this),
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+                    }
+                },
+                'lock-element': {
+                    'text': metaScore.Locale.t('editor.contextmenu.lock-element', 'Lock element'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', true);
+                    }, this),
+                    'toggler': function(context){
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.element');
+                        return dom && !dom._metaScore.getProperty('locked');
+                    }
+                },
+                'unlock-element': {
+                    'text': metaScore.Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', false);
+                    }, this),
+                    'toggler': function(context){
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.element');
+                        return dom && dom._metaScore.getProperty('locked');
+                    }
+                },
+                'element-separator': {
+                    'class': 'separator',
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false;
+                    }
+                },
+                'add-page': {
+                    'text': metaScore.Locale.t('editor.contextmenu.add-page', 'Add a page'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        this.addPlayerComponent('page', {}, metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore);
+                    }, this),
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+                    }
+                },
+                'delete-page': {
+                    'text': metaScore.Locale.t('editor.contextmenu.delete-page', 'Delete page'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
+                    }, this),
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false;
+                    }
+                },
+                'page-separator': {
+                    'class': 'separator',
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false;
+                    }
+                },
+                'add-block': {
+                    'text': metaScore.Locale.t('editor.contextmenu.add-block', 'Add a block'),
+                    'items': {
+                        'add-block-synched': {
+                            'text': metaScore.Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
+                            'callback': metaScore.Function.proxy(function(context){
+                                this.addPlayerComponent('block', {'synched': true}, this.getPlayer());
+                            }, this)
+                        },
+                        'add-block-non-synched': {
+                            'text': metaScore.Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
+                            'callback': metaScore.Function.proxy(function(context){
+                                this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
+                            }, this)
+                        }
+                    }
+                },
+                'copy-block': {
+                    'text': metaScore.Locale.t('editor.contextmenu.copy-block', 'Copy block'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        this.clipboard.setData('block', metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.getProperties());
+                    }, this),
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+                    }
+                },
+                'paste-block': {
+                    'text': metaScore.Locale.t('editor.contextmenu.paste-block', 'Paste block'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        var component = this.clipboard.getData();
+                        component.x += 5;
+                        component.y += 5;
+                        this.getPlayer().addBlock(component);
+                    }, this),
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return this.clipboard.getDataType() === 'block';
+                    }, this)
+                },
+                'delete-block': {
+                    'text': metaScore.Locale.t('editor.contextmenu.delete-block', 'Delete block'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore);
+                    }, this),
+                    'toggler': function(context){
+                        return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+                    }
+                },
+                'lock-block': {
+                    'text': metaScore.Locale.t('editor.contextmenu.lock-block', 'Lock block'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.setProperty('locked', true);
+                    }, this),
+                    'toggler': function(context){
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
+                        return dom && !dom._metaScore.getProperty('locked');
+                    }
+                },
+                'unlock-block': {
+                    'text': metaScore.Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
+                    'callback': metaScore.Function.proxy(function(context){
+                        metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.setProperty('locked', false);
+                    }, this),
+                    'toggler': function(context){
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
+                        return dom && dom._metaScore.getProperty('locked');
+                    }
+                },
+                'block-separator': {
+                    'class': 'separator'
+                },
+                'about': {
+                    'text': metaScore.Locale.t('editor.contextmenu.about', 'About metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                }
+            }})
+            .appendTo(this.workspace);
 
         this.detailsOverlay = new metaScore.editor.overlay.GuideDetails({
                 'groups': this.configs.user_groups,
@@ -4740,40 +5084,13 @@ metaScore.Editor = (function(){
      * @param {MouseEvent} evt The event object
      */
     Editor.prototype.onBlockPanelToolbarClick = function(evt){
-        var player, panel, block, page_configs,
+        var block,
             action = metaScore.Dom.data(evt.target, 'action');
 
         switch(action){
             case 'synched':
             case 'non-synched':
-                player = this.getPlayer();
-                panel = this.panels.block;
-                block = player.addBlock({
-                    'name':    metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled'),
-                    'synched': action === 'synched'
-                });
-
-                page_configs = {};
-
-                if(action === 'synched'){
-                    page_configs['start-time'] = 0;
-                    page_configs['end-time'] = this.getPlayer().getMedia().getDuration();
-                }
-
-                block.addPage(page_configs);
-
-                panel.setComponent(block);
-
-                this.history.add({
-                    'undo': function(){
-                        panel.unsetComponent();
-                        block.remove();
-                    },
-                    'redo': function(){
-                        player.addBlock(block);
-                        panel.setComponent(block);
-                    }
-                });
+                this.addPlayerComponent('block', {'synched': action === 'synched'}, this.getPlayer());
                 break;
 
             case 'delete':
@@ -4966,53 +5283,13 @@ metaScore.Editor = (function(){
      * @param {MouseEvent} evt The event object
      */
     Editor.prototype.onPagePanelToolbarClick = function(evt){
-        var panel, block, page,
-            start_time, end_time, configs,
-            previous_page, index,
+        var block, page,
             action = metaScore.Dom.data(evt.target, 'action');
 
         switch(action){
             case 'new':
-                panel = this.panels.page;
                 block = this.panels.block.getComponent();
-                configs = {};
-
-                if(block.getProperty('synched')){
-                    index = block.getActivePageIndex();
-                    previous_page = block.getPage(index);
-
-                    start_time = this.getPlayer().media.getTime();
-                    end_time = previous_page.getProperty('end-time');
-
-                    configs['start-time'] = start_time;
-                    configs['end-time'] = end_time;
-
-                    previous_page.setProperty('end-time', start_time);
-                }
-
-                page = block.addPage(configs, index+1);
-                panel.setComponent(page);
-
-                this.history.add({
-                    'undo': function(){
-                        panel.unsetComponent();
-                        block.removePage(page);
-
-                        if(block.getProperty('synched')){
-                            previous_page.setProperty('end-time', end_time);
-                        }
-
-                        block.setActivePage(index);
-                    },
-                    'redo': function(){
-                        if(block.getProperty('synched')){
-                            previous_page.setProperty('end-time', start_time);
-                        }
-
-                        block.addPage(page, index+1);
-                        panel.setComponent(page);
-                    }
-                });
+                this.addPlayerComponent('page', {}, block);
                 break;
 
             case 'delete':
@@ -5139,29 +5416,15 @@ metaScore.Editor = (function(){
      * @param {MouseEvent} evt The event object
      */
     Editor.prototype.onElementPanelToolbarClick = function(evt){
-        var panel, page, element,
+        var page, element,
             action = metaScore.Dom.data(evt.target, 'action');
 
         switch(action){
             case 'Cursor':
             case 'Image':
             case 'Text':
-                panel = this.panels.element;
                 page = this.panels.page.getComponent();
-                element = page.addElement({'type': action, 'name':    metaScore.Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')});
-
-                panel.setComponent(element);
-
-                this.history.add({
-                    'undo': function(){
-                        panel.unsetComponent();
-                        element.remove();
-                    },
-                    'redo': function(){
-                        page.addElement(element);
-                        panel.setComponent(element);
-                    }
-                });
+                this.addPlayerComponent('element', {'type': action}, page);
                 break;
 
             case 'delete':
@@ -5358,32 +5621,12 @@ metaScore.Editor = (function(){
             .addListener('rindex', metaScore.Function.proxy(this.onPlayerReadingIndex, this))
             .addListener('childremove', metaScore.Function.proxy(this.onPlayerChildRemove, this));
             
-        this.player.contextmenu.disable();
-                
-        this.player_contextmenu = new metaScore.ContextMenu({'target': player_body})
-            .addTask('copy-block', metaScore.Locale.t('editor.contextmenu.copy-block', 'Copy block'), function(context){
-                return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
-            })
-            .addTask('paste-block', metaScore.Locale.t('editor.contextmenu.paste-block', 'Paste block'), metaScore.Function.proxy(function(context){
-                return this.clipboard.getDataType() === 'block';
-            }, this))
-            .addTask('delete-block', metaScore.Locale.t('editor.contextmenu.delete-block', 'Delete block'), metaScore.Function.proxy(function(context){
-                return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
-            }, this))
-            .addSeparator()
-            .addTask('copy-element', metaScore.Locale.t('editor.contextmenu.copy-element', 'Copy element'), function(context){
-                return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
-            })
-            .addTask('paste-element', metaScore.Locale.t('editor.contextmenu.paste-element', 'Paste element'), metaScore.Function.proxy(function(context){
-                return (this.clipboard.getDataType() === 'element') && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
-            }, this))
-            .addTask('delete-element', metaScore.Locale.t('editor.contextmenu.delete-element', 'Delete element'), metaScore.Function.proxy(function(context){
-                return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
-            }, this))
-            .addSeparator()
-            .addTask('about',  metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()}), false)
-            .addListener('taskclick', metaScore.Function.proxy(this.onContextMenuTaskClick, this))
-            .appendTo(this.workspace);
+        this.player.contextmenu
+            .disable();
+        
+        this.player_contextmenu
+            .setTarget(player_body)
+            .enable();
             
         data = this.player.getData();
 
@@ -5566,58 +5809,6 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onHistoryRedo = function(evt){
         this.updateMainmenu();
-    };
-    
-    /**
-     * ContextMenu taskclick event callback
-     *
-     * @method onContextMenuTaskClick
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "ContextMenu/taskclick:event"}}ContextMenu.taskclick{{/crossLink}}
-     */
-    Editor.prototype.onContextMenuTaskClick = function(evt){
-        var dom, component;
-
-        switch(evt.detail.action){
-            case 'copy-block':
-                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
-                component = dom._metaScore;
-
-                this.clipboard.setData('block', component.getProperties());
-                break;
-
-            case 'paste-block':
-                this.getPlayer().addBlock(this.clipboard.getData());
-                break;
-
-            case 'delete-block':
-                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.block');
-                component = dom._metaScore;
-
-                this.deletePlayerComponent(component);
-                break;
-                
-            case 'copy-element':
-                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
-                component = dom._metaScore;
-
-                this.clipboard.setData('element', component.getProperties());
-                break;
-
-            case 'paste-element':
-                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.page');
-                component = dom._metaScore;
-
-                component.addElement(this.clipboard.getData());
-                break;
-
-            case 'delete-element':
-                dom = metaScore.Dom.closest(evt.detail.context, '.metaScore-component.element');
-                component = dom._metaScore;
-
-                this.deletePlayerComponent(component);
-                break;
-        }
     };
 
     /**
@@ -6094,10 +6285,7 @@ metaScore.Editor = (function(){
     Editor.prototype.unloadPlayer = function(){
         delete this.player;
         
-        if(this.player_contextmenu){
-            this.player_contextmenu.remove();
-            delete this.player_contextmenu;
-        }
+        this.player_contextmenu.disable();
         
         if(this.player_frame){
             this.player_frame.remove();                
@@ -6108,6 +6296,112 @@ metaScore.Editor = (function(){
         this.history.clear();
         this.setDirty(false).updateMainmenu();
 
+        return this;
+    };
+    
+    /**
+     * Add a component to the player
+     *
+     * @method addPlayerComponent
+     * @private
+     * @param {String} type The component's type
+     * @param {Object} configs Configs to pass to the component
+     * @param {Mixed} parent The component's parent
+     * @chainable 
+     */
+    Editor.prototype.addPlayerComponent = function(type, configs, parent){
+        var panel, component,
+            page_configs,
+            index, previous_page, start_time, end_time;
+        
+        switch(type){
+            case 'element':
+                panel = this.panels.element;
+                component = parent.addElement(metaScore.Object.extend({'name': metaScore.Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
+
+                panel.setComponent(component);
+
+                this.history.add({
+                    'undo': function(){
+                        panel.unsetComponent();
+                        component.remove();
+                    },
+                    'redo': function(){
+                        parent.addElement(component);
+                        panel.setComponent(component);
+                    }
+                });
+                break;
+                
+            case 'page':
+                panel = this.panels.page;
+                
+                if(parent.getProperty('synched')){
+                    index = parent.getActivePageIndex();
+                    previous_page = parent.getPage(index);
+
+                    start_time = this.getPlayer().media.getTime();
+                    end_time = previous_page.getProperty('end-time');
+
+                    configs['start-time'] = start_time;
+                    configs['end-time'] = end_time;
+
+                    previous_page.setProperty('end-time', start_time);
+                }
+
+                component = parent.addPage(configs, index+1);
+                panel.setComponent(component);
+
+                this.history.add({
+                    'undo': function(){
+                        panel.unsetComponent();
+                        parent.removePage(component);
+
+                        if(parent.getProperty('synched')){
+                            previous_page.setProperty('end-time', end_time);
+                        }
+
+                        parent.setActivePage(index);
+                    },
+                    'redo': function(){
+                        if(parent.getProperty('synched')){
+                            previous_page.setProperty('end-time', start_time);
+                        }
+
+                        parent.addPage(component, index+1);
+                        panel.setComponent(component);
+                    }
+                });
+                break;
+                
+            case 'block':
+                panel = this.panels.block;
+                component = parent.addBlock(metaScore.Object.extend({'name': metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
+
+                page_configs = {};
+
+                if(component.getProperty('synched')){
+                    page_configs['start-time'] = 0;
+                    page_configs['end-time'] = parent.getMedia().getDuration();
+                }
+
+                component.addPage(page_configs);
+
+                panel.setComponent(component);
+
+                this.history.add({
+                    'undo': function(){
+                        panel.unsetComponent();
+                        component.remove();
+                    },
+                    'redo': function(){
+                        parent.addBlock(component);
+                        panel.setComponent(component);
+                    }
+                });
+                break;
+        }
+        
         return this;
     };
     
@@ -6876,12 +7170,6 @@ metaScore.namespace('editor').MainMenu = (function(){
     MainMenu.prototype.setupUI = function(){
         var btn_group, sub_menu;
 
-        new metaScore.Dom('<div/>', {'class': 'logo-philharmonie'})
-            .appendTo(this);
-
-        new metaScore.Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
         new metaScore.Button()
             .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.new', 'New')
@@ -7106,6 +7394,7 @@ metaScore.namespace('editor').Panel = (function(){
         Panel.parent.call(this, '<div/>', {'class': 'panel'});
 
         // fix event handlers scope
+        this.onComponentPropChange = metaScore.Function.proxy(this.onComponentPropChange, this);
         this.onComponentDragStart = metaScore.Function.proxy(this.onComponentDragStart, this);
         this.onComponentDrag = metaScore.Function.proxy(this.onComponentDrag, this);
         this.onComponentDragEnd = metaScore.Function.proxy(this.onComponentDragEnd, this);
@@ -7309,6 +7598,7 @@ metaScore.namespace('editor').Panel = (function(){
 
             component
                 .addClass('selected')
+                .addListener('propchange', this.onComponentPropChange)
                 .addListener('dragstart', this.onComponentDragStart)
                 .addListener('drag', this.onComponentDrag)
                 .addListener('dragend', this.onComponentDragEnd)
@@ -7347,6 +7637,7 @@ metaScore.namespace('editor').Panel = (function(){
 
             component
                 .removeClass('selected')
+                .removeListener('propchange', this.onComponentPropChange)
                 .removeListener('dragstart', this.onComponentDragStart)
                 .removeListener('drag', this.onComponentDrag)
                 .removeListener('dragend', this.onComponentDragEnd)
@@ -7448,6 +7739,21 @@ metaScore.namespace('editor').Panel = (function(){
                 evt.stopPropagation();
                 break;
         }
+    };
+
+    /**
+     * The component's propchange event handler
+     *
+     * @method onComponentPropChange
+     * @private
+     * @param {Event} evt The event object
+     */
+    Panel.prototype.onComponentPropChange = function(evt){           
+        if(evt.detail.component !== this.getComponent()){
+            return;
+        }
+        
+        this.updateFieldValue(evt.detail.property, evt.detail.value, true);
     };
 
     /**
@@ -9456,7 +9762,7 @@ metaScore.namespace('editor.panel').Element = (function () {
     }
 
     ElementPanel.defaults = {
-        toolbarConfigs: {
+        'toolbarConfigs': {
             'title': metaScore.Locale.t('editor.panel.Element.title', 'Element'),
             'menuItems': {
                 'Cursor': metaScore.Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
@@ -9587,7 +9893,7 @@ metaScore.namespace('editor.panel').Page = (function () {
     }
 
     PagePanel.defaults = {
-        toolbarConfigs: {
+        'toolbarConfigs': {
             'title': metaScore.Locale.t('editor.panel.Page.title', 'Page'),
             'menuItems': {
                 'new': metaScore.Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
