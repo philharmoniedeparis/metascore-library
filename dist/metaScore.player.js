@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-03-22 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-03-23 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "88703e";
+        return "c7ed06";
     },
 
     /**
@@ -4272,7 +4272,7 @@ metaScore.Player = (function(){
         
         this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
                 'about': {
-                    'text': metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                    'text': metaScore.Locale.t('player.contextmenu.about', 'About metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
                 },
                 'logo': {
                     'class': 'logo'

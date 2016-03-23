@@ -113,7 +113,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideSelector.draftsGroup": "drafts",
 	"editor.overlay.GuideSelector.revisionText": "!date by !author (!id:!vid)",
 	"editor.overlay.GuideSelector.button": "Select",
-	"player.contextmenu.about": "metaScore v.!version r.!revision",
+	"player.contextmenu.about": "About metaScore v.!version r.!revision",
 	"player.onMediaError.Aborted.msg": "You aborted the media playback.",
 	"player.onMediaError.Network.msg": "A network error caused the media download to fail.",
 	"player.onMediaError.Decode.msg": "The media playback was aborted due to a format problem.",
