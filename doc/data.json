@@ -3521,7 +3521,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 187,
+            "line": 186,
             "description": "Sets the target element",
             "itemtype": "method",
             "name": "setTarget",
@@ -3538,7 +3538,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 206,
+            "line": 205,
             "description": "Add a task",
             "itemtype": "method",
             "name": "addTask",
@@ -3581,7 +3581,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 252,
+            "line": 255,
             "description": "Add a separator",
             "itemtype": "method",
             "name": "addSeparator",
@@ -3591,7 +3591,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 265,
+            "line": 268,
             "description": "Show the menu",
             "itemtype": "method",
             "name": "show",
@@ -3618,7 +3618,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 318,
+            "line": 321,
             "description": "Hide the menu",
             "itemtype": "method",
             "name": "hide",
@@ -3628,7 +3628,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 337,
+            "line": 340,
             "description": "Enable the menu",
             "itemtype": "method",
             "name": "enable",
@@ -3638,7 +3638,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 353,
+            "line": 356,
             "description": "Disable the menu",
             "itemtype": "method",
             "name": "disable",

@@ -174,12 +174,11 @@ metaScore.ContextMenu = (function(){
         if(action in this.tasks){
             if(this.tasks[action].callback){
                 this.tasks[action].callback(this.context);
+                this.hide();
             }
             
             this.triggerEvent(EVT_TASKCLICK, {'action': action, 'context': this.context}, true, false);
         }
-        
-        this.hide();
         
         evt.stopPropagation();
     };
@@ -223,6 +222,10 @@ metaScore.ContextMenu = (function(){
             
         if('text' in configs){
             task.text(configs.text);
+        }
+            
+        if(!('callback' in configs)){
+            task.addClass('no-callback');
         }
             
         if('class' in configs){

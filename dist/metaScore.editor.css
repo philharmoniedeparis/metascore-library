@@ -1161,7 +1161,7 @@
   min-width: 150px;
   margin: 0;
   padding: 0.25em 0;
-  list-style: none;
+  list-style: none !important;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
@@ -1177,6 +1177,9 @@
 .metaScore-editor .contextmenu ul li:hover {
   color: #fff;
   background: #0000fe;
+}
+.metaScore-editor .contextmenu ul li.no-callback {
+  cursor: default;
 }
 .metaScore-editor .contextmenu ul li.disabled {
   display: none;
