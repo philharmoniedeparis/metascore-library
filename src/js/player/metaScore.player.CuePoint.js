@@ -60,7 +60,7 @@ metaScore.namespace('player').CuePoint = (function () {
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
         this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
-        this.configs.media.addListener('timeupdate', this.onMediaTimeUpdate);
+        this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
 
         this.max_error = 0;
     }
@@ -82,7 +82,7 @@ metaScore.namespace('player').CuePoint = (function () {
      * @param {Event} evt The event object
      */
     CuePoint.prototype.onMediaTimeUpdate = function(evt){
-        var cur_time = this.configs.media.getTime();
+        var cur_time = this.getMedia().getTime();
 
         if(!this.running){
             if((Math.floor(cur_time) >= this.configs.inTime) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
@@ -118,6 +118,12 @@ metaScore.namespace('player').CuePoint = (function () {
             cur_time = media.getTime();
 
         media.removeListener('play', this.onMediaSeeked);
+        
+        if('previous_time' in this){
+            // reset the max_error and the previous_time to prevent an abnormaly large max_error
+            this.max_error = 0;
+            this.previous_time = cur_time;
+        }
 
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
             this.triggerEvent(EVT_SEEKOUT);
@@ -155,7 +161,7 @@ metaScore.namespace('player').CuePoint = (function () {
             this.stop();
         }
         else{            
-            this.configs.media.addListener('seeked', this.onMediaSeeked);
+            this.getMedia().addListener('seeked', this.onMediaSeeked);
             this.running = true;
         }
 
@@ -177,7 +183,7 @@ metaScore.namespace('player').CuePoint = (function () {
             this.triggerEvent(EVT_STOP);
 
             if(this.hasListener(EVT_SEEKOUT)){
-                this.configs.media.addListener('play', this.onMediaSeeked);
+                this.getMedia().addListener('play', this.onMediaSeeked);
             }
         }
 

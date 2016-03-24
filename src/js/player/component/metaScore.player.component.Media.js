@@ -37,12 +37,20 @@ metaScore.namespace('player.component').Media = (function () {
     var EVT_PAUSE = 'pause';
 
     /**
-     * Fired when the media is seeking
+     * Fired when a seek operation begins
      *
      * @event seeking
      * @param {Object} media The media instance
      */
     var EVT_SEEKING = 'seeking';
+
+    /**
+     * Fired when a seek operation completes
+     *
+     * @event seeked
+     * @param {Object} media The media instance
+     */
+    var EVT_SEEKED = 'seeked';
 
     /**
      * Fired when the media's time changed
@@ -74,6 +82,7 @@ metaScore.namespace('player.component').Media = (function () {
             .addListener('pause', metaScore.Function.proxy(this.onPause, this))
             .addListener('timeupdate', metaScore.Function.proxy(this.onTimeUpdate, this))
             .addListener('seeking', metaScore.Function.proxy(this.onSeeking, this))
+            .addListener('seeked', metaScore.Function.proxy(this.onSeeked, this))
             .appendTo(this);
 
         this.dom = this.el.get(0);
@@ -319,6 +328,17 @@ metaScore.namespace('player.component').Media = (function () {
      */
     Media.prototype.onSeeking = function(evt){
         this.triggerEvent(EVT_SEEKING, {'media': this});
+    };
+
+    /**
+     * The seeked event handler
+     *
+     * @method onSeeked
+     * @private
+     * @param {Event} evt The event object
+     */
+    Media.prototype.onSeeked = function(evt){
+        this.triggerEvent(EVT_SEEKED, {'media': this});
     };
 
     /**

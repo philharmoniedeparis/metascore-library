@@ -10163,7 +10163,7 @@
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
             "line": 39,
-            "description": "Fired when the media is seeking",
+            "description": "Fired when a seek operation begins",
             "itemtype": "event",
             "name": "seeking",
             "params": [
@@ -10179,6 +10179,22 @@
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
             "line": 47,
+            "description": "Fired when a seek operation completes",
+            "itemtype": "event",
+            "name": "seeked",
+            "params": [
+                {
+                    "name": "media",
+                    "description": "The media instance",
+                    "type": "Object"
+                }
+            ],
+            "class": "player.component.Controller",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
+            "line": 55,
             "description": "Fired when the media's time changed",
             "itemtype": "event",
             "name": "timeupdate",
@@ -10194,7 +10210,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 222,
+            "line": 231,
             "description": "Set the media sources",
             "itemtype": "method",
             "name": "setSources",
@@ -10219,7 +10235,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 249,
+            "line": 258,
             "description": "Get the value of the media's name property",
             "itemtype": "method",
             "name": "getName",
@@ -10233,7 +10249,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 259,
+            "line": 268,
             "description": "The loadedmetadata event handler",
             "itemtype": "method",
             "name": "onLoadedMetadata",
@@ -10252,7 +10268,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 270,
+            "line": 279,
             "description": "The play event handler",
             "itemtype": "method",
             "name": "onPlay",
@@ -10271,7 +10287,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 287,
+            "line": 296,
             "description": "The pause event handler",
             "itemtype": "method",
             "name": "onPause",
@@ -10290,7 +10306,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 300,
+            "line": 309,
             "description": "The timeupdate event handler",
             "itemtype": "method",
             "name": "onTimeUpdate",
@@ -10309,7 +10325,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 313,
+            "line": 322,
             "description": "The seeking event handler",
             "itemtype": "method",
             "name": "onSeeking",
@@ -10328,7 +10344,26 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 324,
+            "line": 333,
+            "description": "The seeked event handler",
+            "itemtype": "method",
+            "name": "onSeeked",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "player.component.Controller",
+            "module": "Player",
+            "namespace": "player.component"
+        },
+        {
+            "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
+            "line": 344,
             "description": "Check whether the media is playing",
             "itemtype": "method",
             "name": "isPlaying",
@@ -10342,7 +10377,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 334,
+            "line": 354,
             "description": "Reset the media time",
             "itemtype": "method",
             "name": "reset",
@@ -10353,7 +10388,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 346,
+            "line": 366,
             "description": "Play the media",
             "itemtype": "method",
             "name": "play",
@@ -10364,7 +10399,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 358,
+            "line": 378,
             "description": "Pause the media",
             "itemtype": "method",
             "name": "pause",
@@ -10375,7 +10410,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 370,
+            "line": 390,
             "description": "Trigger the timeupdate event",
             "itemtype": "method",
             "name": "triggerTimeUpdate",
@@ -10397,7 +10432,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 388,
+            "line": 408,
             "description": "Set the media time",
             "itemtype": "method",
             "name": "setTime",
@@ -10415,7 +10450,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 403,
+            "line": 423,
             "description": "Get the current media time",
             "itemtype": "method",
             "name": "getTime",
@@ -10429,7 +10464,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 413,
+            "line": 433,
             "description": "Get the media's duration",
             "itemtype": "method",
             "name": "getDuration",
@@ -10443,7 +10478,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 423,
+            "line": 443,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10466,7 +10501,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 457,
+            "line": 477,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10944,7 +10979,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 127,
+            "line": 133,
             "description": "Get the media component on which this cuepoint is attached",
             "itemtype": "method",
             "name": "getMedia",
@@ -10957,7 +10992,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 137,
+            "line": 143,
             "description": "Start executing the cuepoint",
             "itemtype": "method",
             "name": "start",
@@ -10975,7 +11010,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 164,
+            "line": 170,
             "description": "Stop executing the cuepoint",
             "itemtype": "method",
             "name": "stop",
@@ -10993,7 +11028,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 192,
+            "line": 198,
             "description": "Destroy the cuepoint",
             "itemtype": "method",
             "name": "destroy",
