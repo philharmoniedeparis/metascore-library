@@ -1,6 +1,6 @@
 {
 	"overlay.LoadMask.text": "Chargement ...",
-	"editor.contextmenu.about": "À propos de metaScore v.!version r.!revision",
+	"editor.contextmenu.about": "metaScore v.!version r.!revision",
 	"editor.contextmenu.add-element": "Ajouter un élément",
 	"editor.contextmenu.add-element-cursor": "Curseur",
 	"editor.contextmenu.add-element-image": "Image",
@@ -113,7 +113,7 @@
 	"editor.overlay.GuideSelector.draftsGroup": "brouillons",
 	"editor.overlay.GuideSelector.revisionText": "!date par !author (!id:!vid)",
 	"editor.overlay.GuideSelector.button": "Sélectionner",
-	"player.contextmenu.about": "À propos de metaScore v.!version r.!revision",
+	"player.contextmenu.about": "metaScore v.!version r.!revision",
 	"player.onMediaError.Aborted.msg": "Vous avez interrompu la lecture du média.",
 	"player.onMediaError.Network.msg": "Une erreur réseau a entraîné l'échec du téléchargement du média.",
 	"player.onMediaError.Decode.msg": "La lecture du média a été abandonnée en raison d'un problème de format.",

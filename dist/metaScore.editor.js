@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-03-23 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-03-24 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "97a336";
+        return "c52e2a";
     },
 
     /**
@@ -4329,7 +4329,8 @@ metaScore.Editor = (function(){
                         this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore);
                     }, this),
                     'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.element');
+                        return dom && !dom._metaScore.getProperty('locked');
                     }
                 },
                 'lock-element': {
@@ -4426,7 +4427,8 @@ metaScore.Editor = (function(){
                         this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore);
                     }, this),
                     'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
+                        return dom && !dom._metaScore.getProperty('locked');
                     }
                 },
                 'lock-block': {
@@ -4453,7 +4455,7 @@ metaScore.Editor = (function(){
                     'class': 'separator'
                 },
                 'about': {
-                    'text': metaScore.Locale.t('editor.contextmenu.about', 'About metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                    'text': metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
                 }
             }})
             .appendTo(this.workspace);

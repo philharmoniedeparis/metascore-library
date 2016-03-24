@@ -103,7 +103,7 @@ metaScore.Player = (function(){
         
         this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
                 'about': {
-                    'text': metaScore.Locale.t('player.contextmenu.about', 'About metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                    'text': metaScore.Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
                 },
                 'logo': {
                     'class': 'logo'
