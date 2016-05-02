@@ -323,7 +323,9 @@ body{
                 }
             }
             &[data-type="Image"]{
-
+                .contents{
+                    background-size: contain;
+                }
             }
             &[data-type="Text"]{
                 .contents{
@@ -377,7 +379,7 @@ body{
                 &.separator{
                     height: 1px;
                     margin: 0.5em 0;
-                    padding: 0;
+                    padding: 0 !important;
                     background: rgba(0, 0, 0, 0.1);
                     pointer-events: none;
                 }

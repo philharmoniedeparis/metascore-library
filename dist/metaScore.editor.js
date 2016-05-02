@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-03-24 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-04-19 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "e5c2fc";
+        return "559dea";
     },
 
     /**
@@ -6199,7 +6199,7 @@ metaScore.Editor = (function(){
             });
 
             // create the optgroup
-            optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-rindex', rindex);
+            optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
 
             // create the options
             metaScore.Array.each(options, function(index, option){

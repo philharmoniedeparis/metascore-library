@@ -280,6 +280,9 @@ body {
   bottom: 0;
   left: initial !important;
 }
+.metaScore-player .metaScore-component.element[data-type="Image"] .contents {
+  background-size: contain;
+}
 .metaScore-player .metaScore-component.element[data-type="Text"] .contents {
   overflow: auto;
 }
@@ -324,7 +327,7 @@ body {
 .metaScore-player .contextmenu ul li.separator {
   height: 1px;
   margin: 0.5em 0;
-  padding: 0;
+  padding: 0 !important;
   background: rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }

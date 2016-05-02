@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-03-24 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-04-19 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "e5c2fc";
+        return "559dea";
     },
 
     /**
@@ -5080,10 +5080,10 @@ metaScore.Player = (function(){
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
                 .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 
-            this.data('rindex', index);
+            this.data('r-index', index);
         }
         else{
-            this.data('rindex', null);
+            this.data('r-index', null);
         }
 
         if(supressEvent !== true){

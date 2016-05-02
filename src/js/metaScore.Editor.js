@@ -2027,7 +2027,7 @@ metaScore.Editor = (function(){
             });
 
             // create the optgroup
-            optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-rindex', rindex);
+            optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
 
             // create the options
             metaScore.Array.each(options, function(index, option){
