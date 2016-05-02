@@ -226,6 +226,9 @@ body {
 }
 .metaScore-player .metaScore-component.element:not([data-r-index]),
 .metaScore-player .metaScore-component.element[data-r-index="0"] {
+  /**
+                 * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
+                 */
   display: block;
 }
 .metaScore-player .metaScore-component.element:not([data-r-index]):not([data-start-time]),
@@ -242,6 +245,7 @@ body {
 }
 .metaScore-player .metaScore-component.element[data-type="Cursor"] {
   z-index: 9999;
+  pointer-events: auto;
 }
 .metaScore-player .metaScore-component.element[data-type="Cursor"] .cursor {
   position: absolute;
@@ -492,6 +496,11 @@ body {
 }
 .metaScore-player.in-editor.editing .metaScore-component.element[data-type="Text"].unlocked .contents {
   display: block;
+}
+.metaScore-player.in-editor.editing.show-contents .metaScore-component.element[data-r-index="0"] {
+  /**
+                     * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
+                     */
 }
 .metaScore-player.in-editor.editing.show-contents .metaScore-component.element[data-r-index="0"] .contents {
   display: block;

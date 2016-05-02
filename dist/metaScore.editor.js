@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "e6320c";
+        return "16bab3";
     },
 
     /**
@@ -4893,7 +4893,7 @@ metaScore.Editor = (function(){
                 break;
 
             case 'edit-toggle':
-                this.setEditing(!metaScore.editing);
+                this.setEditing(!this.editing);
                 break;
 
             case 'settings':
@@ -5689,7 +5689,7 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onPlayerClick = function(evt){
 
-        if(metaScore.editing !== true){
+        if(this.editing !== true){
             return;
         }
 
@@ -5708,7 +5708,7 @@ metaScore.Editor = (function(){
     Editor.prototype.onComponentClick = function(evt, dom){
         var component;
 
-        if(metaScore.editing !== true){
+        if(this.editing !== true){
             return;
         }
 
@@ -5754,7 +5754,7 @@ metaScore.Editor = (function(){
     Editor.prototype.onBlockPageActivate = function(evt){
         var page, basis;
 
-        if(metaScore.editing !== true){
+        if(this.editing !== true){
             return;
         }
 
@@ -5981,25 +5981,25 @@ metaScore.Editor = (function(){
     Editor.prototype.setEditing = function(editing, sticky){
         var player = this.getPlayer();
 
-        metaScore.editing = editing !== false;
+        this.editing = editing !== false;
 
         if(sticky !== false){
-            this.persistentEditing = metaScore.editing;
+            this.persistentEditing = this.editing;
         }
 
         metaScore.Object.each(this.panels, function(key, panel){
-            if(metaScore.editing){
+            if(this.editing){
                 panel.enable();
             }
             else{
                 panel.disable();
             }
-        });
+        }, this);
 
-        this.toggleClass('editing', metaScore.editing);
+        this.toggleClass('editing', this.editing);
 
         if(player){
-            player.toggleClass('editing', metaScore.editing);
+            player.toggleClass('editing', this.editing);
         }
 
         this.toggleSidebarResizer();
@@ -6345,7 +6345,7 @@ metaScore.Editor = (function(){
                     index = parent.getActivePageIndex();
                     previous_page = parent.getPage(index);
 
-                    start_time = this.getPlayer().media.getTime();
+                    start_time = this.getPlayer().getMedia().getTime();
                     end_time = previous_page.getProperty('end-time');
 
                     configs['start-time'] = start_time;

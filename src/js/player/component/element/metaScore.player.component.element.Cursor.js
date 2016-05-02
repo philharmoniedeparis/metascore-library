@@ -106,9 +106,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
             .appendTo(this.contents);
 
-        this
-            .addListener('click', metaScore.Function.proxy(this.onClick, this))
-            .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
+        this.addListener('click', metaScore.Function.proxy(this.onClick, this));
     };
 
     /**
@@ -123,10 +121,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
             inTime, outTime,
             direction, acceleration,
             rect;
-
-        if(metaScore.editing && evt.type !== 'dblclick'){
-            return;
-        }
 
         inTime = this.getProperty('start-time');
         outTime = this.getProperty('end-time');

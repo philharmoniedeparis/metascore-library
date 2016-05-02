@@ -9413,7 +9413,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 114,
+            "line": 112,
             "description": "The click event handler",
             "itemtype": "method",
             "name": "onClick",
@@ -9432,7 +9432,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 164,
+            "line": 158,
             "description": "The cuepoint update event handler",
             "itemtype": "method",
             "name": "onCuePointUpdate",

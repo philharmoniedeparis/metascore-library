@@ -462,8 +462,8 @@ metaScore.Player = (function(){
      * @private
      * @param {CustomEvent} evt The event object
      */
-    Player.prototype.onCursorElementTime = function(evt){
-        if(!this.hasClass('editing')){
+    Player.prototype.onCursorElementTime = function(evt){            
+        if(!this.hasClass('editing') || evt.detail.element.hasClass('selected')){
             this.getMedia().setTime(evt.detail.value);
         }
     };
@@ -902,10 +902,8 @@ metaScore.Player = (function(){
         if(index !== 0){
             this.rindex_css
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time])', 'pointer-events: auto;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active', 'pointer-events: auto;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]), .metaScore-component.element[data-r-index="'+ index +'"].active', 'pointer-events: auto;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
                 .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 
             this.data('r-index', index);

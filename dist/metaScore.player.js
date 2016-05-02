@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "e6320c";
+        return "16bab3";
     },
 
     /**
@@ -4634,8 +4634,8 @@ metaScore.Player = (function(){
      * @private
      * @param {CustomEvent} evt The event object
      */
-    Player.prototype.onCursorElementTime = function(evt){
-        if(!this.hasClass('editing')){
+    Player.prototype.onCursorElementTime = function(evt){            
+        if(!this.hasClass('editing') || evt.detail.element.hasClass('selected')){
             this.getMedia().setTime(evt.detail.value);
         }
     };
@@ -5074,10 +5074,8 @@ metaScore.Player = (function(){
         if(index !== 0){
             this.rindex_css
                 .addRule('.metaScore-component.element[data-r-index="'+ index +'"]', 'display: block;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time])', 'pointer-events: auto;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents', 'display: block;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active', 'pointer-events: auto;')
-                .addRule('.metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]), .metaScore-component.element[data-r-index="'+ index +'"].active', 'pointer-events: auto;')
+                .addRule('.metaScore-component.element[data-r-index="'+ index +'"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="'+ index +'"].active .contents', 'display: block;')
                 .addRule('.in-editor.editing.show-contents .metaScore-component.element[data-r-index="'+ index +'"] .contents', 'display: block;');
 
             this.data('r-index', index);
@@ -7543,9 +7541,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         this.cursor = new metaScore.Dom('<div/>', {'class': 'cursor'})
             .appendTo(this.contents);
 
-        this
-            .addListener('click', metaScore.Function.proxy(this.onClick, this))
-            .addListener('dblclick', metaScore.Function.proxy(this.onClick, this));
+        this.addListener('click', metaScore.Function.proxy(this.onClick, this));
     };
 
     /**
@@ -7560,10 +7556,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
             inTime, outTime,
             direction, acceleration,
             rect;
-
-        if(metaScore.editing && evt.type !== 'dblclick'){
-            return;
-        }
 
         inTime = this.getProperty('start-time');
         outTime = this.getProperty('end-time');

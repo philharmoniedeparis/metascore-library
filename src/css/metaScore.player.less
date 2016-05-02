@@ -257,6 +257,9 @@ body{
 
             &:not([data-r-index]),
             &[data-r-index="0"]{
+                /**
+                 * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
+                 */
                 display: block;
             
                 &:not([data-start-time]),
@@ -271,6 +274,7 @@ body{
 
             &[data-type="Cursor"]{
                 z-index: 9999;
+                pointer-events: auto;
 
                 .cursor{
                     position: absolute;
@@ -593,6 +597,9 @@ body{
         
             &.show-contents{
                 .metaScore-component.element[data-r-index="0"]{
+                    /**
+                     * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
+                     */
                     .contents{
                         display: block;
                     }
