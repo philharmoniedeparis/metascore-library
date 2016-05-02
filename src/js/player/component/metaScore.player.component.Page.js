@@ -225,15 +225,6 @@ metaScore.namespace('player.component').Page = (function () {
         this.triggerEvent(EVT_CUEPOINTSTOP);
     };
 
-    /**
-     * The cuepoint seekout event handler
-     * 
-     * @method onCuePointSeekOut
-     * @private
-     * @param {Event} evt The event object
-     */
-    Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointStop;
-
     return Page;
 
 })();

@@ -217,10 +217,6 @@ metaScore.namespace('player').Component = (function () {
             if(this.onCuePointStop){
                 this.cuepoint.addListener('stop', metaScore.Function.proxy(this.onCuePointStop, this));
             }
-            
-            if(this.onCuePointSeekOut){
-                this.cuepoint.addListener('seekout', metaScore.Function.proxy(this.onCuePointSeekOut, this));
-            }
         }
 
         return this.cuepoint;

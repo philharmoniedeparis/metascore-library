@@ -10034,25 +10034,6 @@
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
             "line": 314,
-            "description": "The cuepoint seekout event handler",
-            "itemtype": "method",
-            "name": "onCuePointSeekOut",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "evt",
-                    "description": "The event object",
-                    "type": "Event"
-                }
-            ],
-            "class": "player.component.Controller",
-            "module": "Player",
-            "namespace": "player.component"
-        },
-        {
-            "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 323,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10075,7 +10056,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 353,
+            "line": 344,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10661,25 +10642,6 @@
             "namespace": "player.component"
         },
         {
-            "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 228,
-            "description": "The cuepoint seekout event handler",
-            "itemtype": "method",
-            "name": "onCuePointSeekOut",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "evt",
-                    "description": "The event object",
-                    "type": "Event"
-                }
-            ],
-            "class": "player.component.Controller",
-            "module": "Player",
-            "namespace": "player.component"
-        },
-        {
             "file": "src\\js\\player\\metaScore.player.Component.js",
             "line": 7,
             "description": "Fired when a property changed",
@@ -10943,7 +10905,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 77,
+            "line": 79,
             "description": "The media's timeupdate event handler",
             "itemtype": "method",
             "name": "onMediaTimeUpdate",
@@ -10961,7 +10923,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 109,
+            "line": 111,
             "description": "The media's seek event handler",
             "itemtype": "method",
             "name": "onMediaSeeked",
@@ -11010,7 +10972,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 170,
+            "line": 169,
             "description": "Stop executing the cuepoint",
             "itemtype": "method",
             "name": "stop",
@@ -11028,7 +10990,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 198,
+            "line": 193,
             "description": "Destroy the cuepoint",
             "itemtype": "method",
             "name": "destroy",

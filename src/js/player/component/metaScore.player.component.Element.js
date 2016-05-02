@@ -312,15 +312,6 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * The cuepoint seekout event handler
-     *
-     * @method onCuePointSeekOut
-     * @private
-     * @param {Event} evt The event object
-     */
-    Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointStop;
-
-    /**
      * Set/Unset the draggable behaviour
      *
      * @method setDraggable

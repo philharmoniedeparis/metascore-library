@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-04-19 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-05-02 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "559dea";
+        return "e6320c";
     },
 
     /**
@@ -5315,10 +5315,6 @@ metaScore.namespace('player').Component = (function () {
             if(this.onCuePointStop){
                 this.cuepoint.addListener('stop', metaScore.Function.proxy(this.onCuePointStop, this));
             }
-            
-            if(this.onCuePointSeekOut){
-                this.cuepoint.addListener('seekout', metaScore.Function.proxy(this.onCuePointSeekOut, this));
-            }
         }
 
         return this.cuepoint;
@@ -5389,7 +5385,9 @@ metaScore.namespace('player').CuePoint = (function () {
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
         this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
 
-        this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
+        this.getMedia()
+            .addListener('timeupdate', this.onMediaTimeUpdate)
+            .addListener('seeked', this.onMediaSeeked);
 
         this.max_error = 0;
     }
@@ -5443,10 +5441,7 @@ metaScore.namespace('player').CuePoint = (function () {
      * @param {Event} evt The event object
      */
     CuePoint.prototype.onMediaSeeked = function(evt){
-        var media = this.getMedia(),
-            cur_time = media.getTime();
-
-        media.removeListener('play', this.onMediaSeeked);
+        var cur_time = this.getMedia().getTime();
         
         if('previous_time' in this){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
@@ -5456,6 +5451,7 @@ metaScore.namespace('player').CuePoint = (function () {
 
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
             this.triggerEvent(EVT_SEEKOUT);
+            this.stop();
         }
     };
 
@@ -5490,7 +5486,6 @@ metaScore.namespace('player').CuePoint = (function () {
             this.stop();
         }
         else{            
-            this.getMedia().addListener('seeked', this.onMediaSeeked);
             this.running = true;
         }
 
@@ -5510,10 +5505,6 @@ metaScore.namespace('player').CuePoint = (function () {
         
         if(supressEvent !== true){
             this.triggerEvent(EVT_STOP);
-
-            if(this.hasListener(EVT_SEEKOUT)){
-                this.getMedia().addListener('play', this.onMediaSeeked);
-            }
         }
 
         if(this.configs.considerError){
@@ -5534,8 +5525,7 @@ metaScore.namespace('player').CuePoint = (function () {
 
         this.getMedia()
             .removeListener('timeupdate', this.onMediaTimeUpdate)
-            .removeListener('seeked', this.onMediaSeeked)
-            .removeListener('play', this.onMediaSeeked);
+            .removeListener('seeked', this.onMediaSeeked);
     };
 
     return CuePoint;
@@ -6646,15 +6636,6 @@ metaScore.namespace('player.component').Element = (function () {
     };
 
     /**
-     * The cuepoint seekout event handler
-     *
-     * @method onCuePointSeekOut
-     * @private
-     * @param {Event} evt The event object
-     */
-    Element.prototype.onCuePointSeekOut = Element.prototype.onCuePointStop;
-
-    /**
      * Set/Unset the draggable behaviour
      *
      * @method setDraggable
@@ -7450,15 +7431,6 @@ metaScore.namespace('player.component').Page = (function () {
     Page.prototype.onCuePointStop = function(evt){
         this.triggerEvent(EVT_CUEPOINTSTOP);
     };
-
-    /**
-     * The cuepoint seekout event handler
-     * 
-     * @method onCuePointSeekOut
-     * @private
-     * @param {Event} evt The event object
-     */
-    Page.prototype.onCuePointSeekOut = Page.prototype.onCuePointStop;
 
     return Page;
 
