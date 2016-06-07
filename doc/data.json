@@ -7742,7 +7742,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 159,
+            "line": 167,
             "description": "Get a field by name",
             "itemtype": "method",
             "name": "getField",
@@ -7763,7 +7763,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 176,
+            "line": 184,
             "description": "Set the field values",
             "itemtype": "method",
             "name": "setValues",
@@ -7786,7 +7786,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 210,
+            "line": 218,
             "description": "Clears all field values",
             "itemtype": "method",
             "name": "clearValues",
@@ -7804,7 +7804,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 225,
+            "line": 233,
             "description": "Get all changed field values",
             "itemtype": "method",
             "name": "getValues",
@@ -7818,7 +7818,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 235,
+            "line": 243,
             "description": "The fields change event handler",
             "itemtype": "method",
             "name": "onFieldValueChange",
@@ -7837,7 +7837,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 266,
+            "line": 274,
             "description": "The form submit event handler",
             "itemtype": "method",
             "name": "onFormSubmit",
@@ -7856,7 +7856,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 280,
+            "line": 288,
             "description": "The close button click event handler",
             "itemtype": "method",
             "name": "onCloseClick",
@@ -7875,7 +7875,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 298,
+            "line": 306,
             "description": "The cancel button click event handler",
             "itemtype": "method",
             "name": "onCancelClick",
@@ -7950,7 +7950,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 182,
+            "line": 187,
             "description": "The load error event handler",
             "itemtype": "method",
             "name": "onLoadError",
@@ -8742,7 +8742,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.MainMenu.js",
-            "line": 183,
+            "line": 190,
             "description": "Toogle a button's enabled state",
             "itemtype": "method",
             "name": "toggleButton",

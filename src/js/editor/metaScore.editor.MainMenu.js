@@ -173,6 +173,13 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         new metaScore.Button()
             .attr({
+                'title': metaScore.Locale.t('editor.MainMenu.account', 'My Account')
+            })
+            .data('action', 'account')
+            .appendTo(this);
+
+        new metaScore.Button()
+            .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.logout', 'Logout')
             })
             .data('action', 'logout')

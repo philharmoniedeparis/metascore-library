@@ -128,6 +128,14 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .data('name', 'css')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
             .appendTo(form);
+
+        this.fields['tags'] = new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.tags.label', 'Tags'),
+                'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.tags.description', 'Comma separated list of tags'),
+            })
+            .data('name', 'tags')
+            .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+            .appendTo(form);
         
         if(!metaScore.Var.isEmpty(this.configs.groups)){
             this.fields['groups'] = new metaScore.editor.field.Select({

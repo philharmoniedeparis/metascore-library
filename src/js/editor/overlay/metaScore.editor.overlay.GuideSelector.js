@@ -77,7 +77,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
         var contents = this.getContents(),
             data = JSON.parse(xhr.response),
             guides = data.items,
-            table, row,
+            table, row, rowCount = 0,
             revision_wrapper, revision_field, last_vid,
             groups, button;
 
@@ -93,14 +93,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     return;
                 }
                 
-                row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id})
+                row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id +' '+ (rowCount%2 === 0 ? 'even' : 'odd')})
                     .appendTo(table);
 
                 new metaScore.Dom('<td/>', {'class': 'thumbnail'})
                     .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
                     .appendTo(row);
 
-                revision_field = new metaScore.editor.field.Select()
+                revision_field = new metaScore.editor.field.Select({
+                        'label': metaScore.Locale.t('editor.overlay.GuideSelector.revisionLabel', 'Version')
+                    })
                     .addClass('revisions');
 
                 if('revisions' in guide){
@@ -163,9 +165,12 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                 new metaScore.Dom('<td/>', {'class': 'details'})
                     .append(new metaScore.Dom('<h1/>', {'class': 'title', 'text': guide.title}))
                     .append(new metaScore.Dom('<p/>', {'class': 'description', 'text': guide.description}))
-                    .append(new metaScore.Dom('<h2/>', {'class': 'author', 'text': guide.author}))
+                    .append(new metaScore.Dom('<p/>', {'class': 'tags', 'text': metaScore.Locale.t('editor.overlay.GuideSelector.tagsText', 'tags: <em>!tags</em>', {'!tags': guide.tags})}))
+                    .append(new metaScore.Dom('<p/>', {'class': 'author', 'text': metaScore.Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
                     .append(revision_wrapper)
                     .appendTo(row);
+                    
+                rowCount++;
             }, this);
         }
 
