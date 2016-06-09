@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "58df82";
+        return "ecf9e6";
     },
 
     /**
@@ -4939,6 +4939,21 @@ metaScore.Editor = (function(){
                 break;
 
             case 'settings':
+                break;
+
+            case 'help':
+                break;
+        
+            case 'account':
+                if(this.configs.account_url){
+                    window.location.href = this.configs.account_url;
+                }
+                break;
+                
+            case 'logout':
+                if(this.configs.logout_url){
+                    window.location.href = this.configs.logout_url;
+                }
                 break;
         }
     };

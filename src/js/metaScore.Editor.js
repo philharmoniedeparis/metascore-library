@@ -756,6 +756,21 @@ metaScore.Editor = (function(){
 
             case 'settings':
                 break;
+
+            case 'help':
+                break;
+        
+            case 'account':
+                if(this.configs.account_url){
+                    window.location.href = this.configs.account_url;
+                }
+                break;
+                
+            case 'logout':
+                if(this.configs.logout_url){
+                    window.location.href = this.configs.logout_url;
+                }
+                break;
         }
     };
 

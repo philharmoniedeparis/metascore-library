@@ -11570,7 +11570,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 762,
+            "line": 777,
             "description": "Mainmenu time field valuechange event callback",
             "itemtype": "method",
             "name": "onMainmenuTimeFieldChange",
@@ -11588,7 +11588,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 776,
+            "line": 791,
             "description": "Mainmenu reading index field valuechange event callback",
             "itemtype": "method",
             "name": "onMainmenuRindexFieldChange",
@@ -11606,7 +11606,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 790,
+            "line": 805,
             "description": "Time field valuein event callback",
             "itemtype": "method",
             "name": "onTimeFieldIn",
@@ -11624,7 +11624,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 804,
+            "line": 819,
             "description": "Time field valueout event callback",
             "itemtype": "method",
             "name": "onTimeFieldOut",
@@ -11642,7 +11642,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 818,
+            "line": 833,
             "description": "Sidebar resizestart event callback",
             "itemtype": "method",
             "name": "onSidebarResizeStart",
@@ -11660,7 +11660,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 829,
+            "line": 844,
             "description": "Sidebar resize event callback",
             "itemtype": "method",
             "name": "onSidebarResize",
@@ -11678,7 +11678,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 842,
+            "line": 857,
             "description": "Sidebar resizeend event callback",
             "itemtype": "method",
             "name": "onSidebarResizeEnd",
@@ -11696,7 +11696,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 853,
+            "line": 868,
             "description": "Sidebar resize handle dblclick event callback",
             "itemtype": "method",
             "name": "onSidebarResizeDblclick",
@@ -11714,7 +11714,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 866,
+            "line": 881,
             "description": "Block panel componentbeforeset event callback",
             "itemtype": "method",
             "name": "onBlockBeforeSet",
@@ -11732,7 +11732,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 880,
+            "line": 895,
             "description": "Block panel componentset event callback",
             "itemtype": "method",
             "name": "onBlockSet",
@@ -11750,7 +11750,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 907,
+            "line": 922,
             "description": "Block panel componentunset event callback",
             "itemtype": "method",
             "name": "onBlockUnset",
@@ -11768,7 +11768,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 919,
+            "line": 934,
             "description": "Block panel valuechange event callback",
             "itemtype": "method",
             "name": "onBlockPanelValueChange",
@@ -11786,7 +11786,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 942,
+            "line": 957,
             "description": "Block panel toolbar click event callback",
             "itemtype": "method",
             "name": "onBlockPanelToolbarClick",
@@ -11804,7 +11804,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 968,
+            "line": 983,
             "description": "Block panel toolbar selector valuechange event callback",
             "itemtype": "method",
             "name": "onBlockPanelSelectorChange",
@@ -11822,7 +11822,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 991,
+            "line": 1006,
             "description": "Page panel componentbeforeset event callback",
             "itemtype": "method",
             "name": "onPageBeforeSet",
@@ -11840,7 +11840,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1006,
+            "line": 1021,
             "description": "Page panel componentset event callback",
             "itemtype": "method",
             "name": "onPageSet",
@@ -11858,7 +11858,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1058,
+            "line": 1073,
             "description": "Page panel componentunset event callback",
             "itemtype": "method",
             "name": "onPageUnset",
@@ -11876,7 +11876,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1074,
+            "line": 1089,
             "description": "Page panel valuechange event callback",
             "itemtype": "method",
             "name": "onPagePanelValueChange",
@@ -11894,7 +11894,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1141,
+            "line": 1156,
             "description": "Page panel toolbar click event callback",
             "itemtype": "method",
             "name": "onPagePanelToolbarClick",
@@ -11912,7 +11912,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1167,
+            "line": 1182,
             "description": "Page panel toolbar selector valuechange event callback",
             "itemtype": "method",
             "name": "onPagePanelSelectorChange",
@@ -11930,7 +11930,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1188,
+            "line": 1203,
             "description": "Element panel componentbeforeset event callback",
             "itemtype": "method",
             "name": "onElementBeforeSet",
@@ -11948,7 +11948,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1202,
+            "line": 1217,
             "description": "Element panel componentset event callback",
             "itemtype": "method",
             "name": "onElementSet",
@@ -11966,7 +11966,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1225,
+            "line": 1240,
             "description": "Element panel componentunset event callback",
             "itemtype": "method",
             "name": "onElementUnset",
@@ -11984,7 +11984,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1238,
+            "line": 1253,
             "description": "Element panel valuechange event callback",
             "itemtype": "method",
             "name": "onElementPanelValueChange",
@@ -12002,7 +12002,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1274,
+            "line": 1289,
             "description": "Element panel toolbar click event callback",
             "itemtype": "method",
             "name": "onElementPanelToolbarClick",
@@ -12020,7 +12020,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1300,
+            "line": 1315,
             "description": "Element panel toolbar selector valuechange event callback",
             "itemtype": "method",
             "name": "onPagePanelSelectorChange",
@@ -12038,7 +12038,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1323,
+            "line": 1338,
             "description": "Player idset event callback",
             "itemtype": "method",
             "name": "onPlayerIdSet",
@@ -12056,7 +12056,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1336,
+            "line": 1351,
             "description": "Player revisionset event callback",
             "itemtype": "method",
             "name": "onPlayerRevisionSet",
@@ -12074,7 +12074,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1349,
+            "line": 1364,
             "description": "Media timeupdate event callback",
             "itemtype": "method",
             "name": "onPlayerTimeUpdate",
@@ -12092,7 +12092,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1362,
+            "line": 1377,
             "description": "Player rindex event callback",
             "itemtype": "method",
             "name": "onPlayerReadingIndex",
@@ -12110,7 +12110,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1375,
+            "line": 1390,
             "description": "Player mousedown event callback",
             "itemtype": "method",
             "name": "onPlayerMousedown",
@@ -12128,7 +12128,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1386,
+            "line": 1401,
             "description": "Player blockadd event callback",
             "itemtype": "method",
             "name": "onPlayerBlockAdd",
@@ -12146,7 +12146,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1397,
+            "line": 1412,
             "description": "Player childremove event callback",
             "itemtype": "method",
             "name": "onPlayerChildRemove",
@@ -12164,7 +12164,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1421,
+            "line": 1436,
             "description": "Player frame load event callback",
             "itemtype": "method",
             "name": "onPlayerFrameLoadSuccess",
@@ -12182,7 +12182,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1440,
+            "line": 1455,
             "description": "Player frame error event callback",
             "itemtype": "method",
             "name": "onPlayerFrameLoadError",
@@ -12200,7 +12200,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1461,
+            "line": 1476,
             "description": "Player load event callback",
             "itemtype": "method",
             "name": "onPlayerLoadSuccess",
@@ -12218,7 +12218,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1521,
+            "line": 1536,
             "description": "Player error event callback",
             "itemtype": "method",
             "name": "onPlayerLoadError",
@@ -12236,7 +12236,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1542,
+            "line": 1557,
             "description": "Player click event callback",
             "itemtype": "method",
             "name": "onPlayerClick",
@@ -12254,7 +12254,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1559,
+            "line": 1574,
             "description": "Component beforedrag event callback",
             "itemtype": "method",
             "name": "onComponentBeforeDrag",
@@ -12272,7 +12272,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1572,
+            "line": 1587,
             "description": "Component click event callback",
             "itemtype": "method",
             "name": "onComponentClick",
@@ -12290,7 +12290,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1601,
+            "line": 1616,
             "description": "Block pageadd event callback",
             "itemtype": "method",
             "name": "onBlockPageAdd",
@@ -12308,7 +12308,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1618,
+            "line": 1633,
             "description": "Block pageactivate event callback",
             "itemtype": "method",
             "name": "onBlockPageActivate",
@@ -12326,7 +12326,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1640,
+            "line": 1655,
             "description": "Page elementadd event callback",
             "itemtype": "method",
             "name": "onPageElementAdd",
@@ -12344,7 +12344,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1657,
+            "line": 1672,
             "description": "History add event callback",
             "itemtype": "method",
             "name": "onHistoryAdd",
@@ -12362,7 +12362,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1668,
+            "line": 1683,
             "description": "History undo event callback",
             "itemtype": "method",
             "name": "onHistoryUndo",
@@ -12380,7 +12380,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1679,
+            "line": 1694,
             "description": "History redo event callback",
             "itemtype": "method",
             "name": "onHistoryRedo",
@@ -12398,7 +12398,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1690,
+            "line": 1705,
             "description": "GuideDetails show event callback",
             "itemtype": "method",
             "name": "onDetailsOverlayShow",
@@ -12416,7 +12416,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1705,
+            "line": 1720,
             "description": "GuideDetails submit event callback",
             "itemtype": "method",
             "name": "onDetailsOverlaySubmit",
@@ -12434,7 +12434,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1794,
+            "line": 1809,
             "description": "Window hashchange event callback",
             "itemtype": "method",
             "name": "onWindowHashChange",
@@ -12452,7 +12452,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1831,
+            "line": 1846,
             "description": "Window beforeunload event callback",
             "itemtype": "method",
             "name": "onWindowBeforeUnload",
@@ -12470,7 +12470,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1844,
+            "line": 1859,
             "description": "Updates the editing state",
             "itemtype": "method",
             "name": "setEditing",
@@ -12492,7 +12492,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1882,
+            "line": 1897,
             "description": "Toggles the activation of the sidebar resizer",
             "itemtype": "method",
             "name": "toggleSidebarResizer",
@@ -12504,7 +12504,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1900,
+            "line": 1915,
             "description": "Loads a player from the location hash",
             "itemtype": "method",
             "name": "loadPlayerFromHash",
@@ -12516,7 +12516,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1919,
+            "line": 1934,
             "description": "Updates the states of the mainmenu buttons",
             "itemtype": "method",
             "name": "updateMainmenu",
@@ -12528,7 +12528,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1943,
+            "line": 1958,
             "description": "Updates the selector of the block panel",
             "itemtype": "method",
             "name": "updateBlockSelector",
@@ -12540,7 +12540,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1985,
+            "line": 2000,
             "description": "Updates the selector of the page panel",
             "itemtype": "method",
             "name": "updatePageSelector",
@@ -12552,7 +12552,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2011,
+            "line": 2026,
             "description": "Updates the selector of the element panel",
             "itemtype": "method",
             "name": "updateElementSelector",
@@ -12564,7 +12564,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2093,
+            "line": 2108,
             "description": "Set whether the guide is dirty",
             "itemtype": "method",
             "name": "setDirty",
@@ -12581,7 +12581,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2106,
+            "line": 2121,
             "description": "Check whether the guide is dirty",
             "itemtype": "method",
             "name": "isDirty",
@@ -12594,7 +12594,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2116,
+            "line": 2131,
             "description": "Get the player instance if any",
             "itemtype": "method",
             "name": "getPlayer",
@@ -12607,7 +12607,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2126,
+            "line": 2141,
             "description": "Loads a player by guide id and vid",
             "itemtype": "method",
             "name": "loadPlayer",
@@ -12629,7 +12629,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2155,
+            "line": 2170,
             "description": "Unload the player",
             "itemtype": "method",
             "name": "unloadPlayer",
@@ -12639,7 +12639,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2178,
+            "line": 2193,
             "description": "Add a component to the player",
             "itemtype": "method",
             "name": "addPlayerComponent",
@@ -12668,7 +12668,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2284,
+            "line": 2299,
             "description": "Remove a component from the player",
             "itemtype": "method",
             "name": "deletePlayerComponent",
@@ -12687,7 +12687,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2388,
+            "line": 2403,
             "description": "Opens the guide selector",
             "itemtype": "method",
             "name": "openGuideSelector",
@@ -12697,7 +12697,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2404,
+            "line": 2419,
             "description": "Creates a new guide",
             "itemtype": "method",
             "name": "createGuide",
@@ -12721,7 +12721,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2447,
+            "line": 2462,
             "description": "Saves the loaded guide",
             "itemtype": "method",
             "name": "saveGuide",
@@ -12743,7 +12743,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2520,
+            "line": 2535,
             "description": "Get a media file's duration in centiseconds",
             "itemtype": "method",
             "name": "getMediaFileDuration",
