@@ -385,9 +385,6 @@ body {
   right: 0;
   overflow: auto;
 }
-.metaScore-player.in-editor .draggable .drag-handle {
-  cursor: move;
-}
 .metaScore-player.in-editor .resizable .resize-handle {
   position: absolute;
   display: none;
@@ -447,6 +444,9 @@ body {
 }
 .metaScore-player.in-editor .metaScore-component.element[data-type="Text"] {
   outline-color: #00c176;
+}
+.metaScore-player.in-editor.editing .draggable .drag-handle {
+  cursor: move;
 }
 .metaScore-player.in-editor.editing .resizable .resize-handle {
   display: block;

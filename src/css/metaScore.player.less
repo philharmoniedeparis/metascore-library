@@ -450,12 +450,6 @@ body{
         right: 0;
         overflow: auto;
 
-        .draggable{
-            .drag-handle{
-                cursor: move;
-            }
-        }
-
         .resizable{
             .resize-handle{
                 position: absolute;
@@ -529,6 +523,12 @@ body{
         }
 
         &.editing{
+            .draggable{
+                .drag-handle{
+                    cursor: move;
+                }
+            }
+            
             .resizable{
                 .resize-handle{
                     display: block;

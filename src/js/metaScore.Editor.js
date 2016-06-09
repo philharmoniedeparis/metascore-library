@@ -126,18 +126,18 @@ metaScore.Editor = (function(){
                             }, this)
                         }
                     },
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    }, this)
                 },
                 'copy-element': {
                     'text': metaScore.Locale.t('editor.contextmenu.copy-element', 'Copy element'),
                     'callback': metaScore.Function.proxy(function(context){
                         this.clipboard.setData('element', metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore.getProperties());
                     }, this),
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.element') ? true : false);
+                    }, this)
                 },
                 'paste-element': {
                     'text': metaScore.Locale.t('editor.contextmenu.paste-element', 'Paste element'),
@@ -148,7 +148,7 @@ metaScore.Editor = (function(){
                         this.addPlayerComponent('element', component, metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
-                        return (this.clipboard.getDataType() === 'element') && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
                     }, this)
                 },
                 'delete-element': {
@@ -156,60 +156,72 @@ metaScore.Editor = (function(){
                     'callback': metaScore.Function.proxy(function(context){
                         this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore);
                     }, this),
-                    'toggler': function(context){
+                    'toggler': metaScore.Function.proxy(function(context){
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        
                         var dom = metaScore.Dom.closest(context, '.metaScore-component.element');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }
+                    }, this)
                 },
                 'lock-element': {
                     'text': metaScore.Locale.t('editor.contextmenu.lock-element', 'Lock element'),
                     'callback': metaScore.Function.proxy(function(context){
                         metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', true);
                     }, this),
-                    'toggler': function(context){
+                    'toggler': metaScore.Function.proxy(function(context){
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        
                         var dom = metaScore.Dom.closest(context, '.metaScore-component.element');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }
+                    }, this)
                 },
                 'unlock-element': {
                     'text': metaScore.Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
                     'callback': metaScore.Function.proxy(function(context){
                         metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', false);
                     }, this),
-                    'toggler': function(context){
+                    'toggler': metaScore.Function.proxy(function(context){
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        
                         var dom = metaScore.Dom.closest(context, '.metaScore-component.element');
                         return dom && dom._metaScore.getProperty('locked');
-                    }
+                    }, this)
                 },
                 'element-separator': {
                     'class': 'separator',
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false);
+                    }, this)
                 },
                 'add-page': {
                     'text': metaScore.Locale.t('editor.contextmenu.add-page', 'Add a page'),
                     'callback': metaScore.Function.proxy(function(context){
                         this.addPlayerComponent('page', {}, metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore);
                     }, this),
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false);
+                    }, this)
                 },
                 'delete-page': {
                     'text': metaScore.Locale.t('editor.contextmenu.delete-page', 'Delete page'),
                     'callback': metaScore.Function.proxy(function(context){
                         this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
                     }, this),
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    }, this)
                 },
                 'page-separator': {
                     'class': 'separator',
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false);
+                    }, this)
                 },
                 'add-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.add-block', 'Add a block'),
@@ -226,16 +238,19 @@ metaScore.Editor = (function(){
                                 this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
                             }, this)
                         }
-                    }
+                    },
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true);
+                    }, this)
                 },
                 'copy-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.copy-block', 'Copy block'),
                     'callback': metaScore.Function.proxy(function(context){
                         this.clipboard.setData('block', metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.getProperties());
                     }, this),
-                    'toggler': function(context){
-                        return metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false;
-                    }
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false);
+                    }, this)
                 },
                 'paste-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.paste-block', 'Paste block'),
@@ -246,7 +261,7 @@ metaScore.Editor = (function(){
                         this.getPlayer().addBlock(component);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
-                        return this.clipboard.getDataType() === 'block';
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block');
                     }, this)
                 },
                 'delete-block': {
@@ -254,33 +269,48 @@ metaScore.Editor = (function(){
                     'callback': metaScore.Function.proxy(function(context){
                         this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore);
                     }, this),
-                    'toggler': function(context){
+                    'toggler': metaScore.Function.proxy(function(context){
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        
                         var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }
+                    }, this)
                 },
                 'lock-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.lock-block', 'Lock block'),
                     'callback': metaScore.Function.proxy(function(context){
                         metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.setProperty('locked', true);
                     }, this),
-                    'toggler': function(context){
+                    'toggler': metaScore.Function.proxy(function(context){
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        
                         var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }
+                    }, this)
                 },
                 'unlock-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
                     'callback': metaScore.Function.proxy(function(context){
                         metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.setProperty('locked', false);
                     }, this),
-                    'toggler': function(context){
+                    'toggler': metaScore.Function.proxy(function(context){
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        
                         var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
                         return dom && dom._metaScore.getProperty('locked');
-                    }
+                    }, this)
                 },
                 'block-separator': {
-                    'class': 'separator'
+                    'class': 'separator',
+                    'toggler': metaScore.Function.proxy(function(context){
+                        return (this.editing === true);
+                    }, this)
                 },
                 'about': {
                     'text': metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
@@ -1441,6 +1471,7 @@ metaScore.Editor = (function(){
         
         this.player = evt.detail.player
             .addClass('in-editor')
+            .addDelegate('.metaScore-component', 'beforedrag', metaScore.Function.proxy(this.onComponentBeforeDrag, this))
             .addDelegate('.metaScore-component', 'click', metaScore.Function.proxy(this.onComponentClick, this))
             .addDelegate('.metaScore-component.block', 'pageadd', metaScore.Function.proxy(this.onBlockPageAdd, this))
             .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
@@ -1516,7 +1547,6 @@ metaScore.Editor = (function(){
      * @param {MouseEvent} evt The event object
      */
     Editor.prototype.onPlayerClick = function(evt){
-
         if(this.editing !== true){
             return;
         }
@@ -1524,6 +1554,19 @@ metaScore.Editor = (function(){
         this.panels.block.unsetComponent();
 
         evt.stopPropagation();
+    };
+
+    /**
+     * Component beforedrag event callback
+     *
+     * @method onComponentBeforeDrag
+     * @private
+     * @param {Event} evt The event object
+     */
+    Editor.prototype.onComponentBeforeDrag = function(evt){
+        if(this.editing !== true){
+            evt.preventDefault();
+        }
     };
 
     /**

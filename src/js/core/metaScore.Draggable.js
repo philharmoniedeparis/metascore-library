@@ -5,6 +5,14 @@
 metaScore.Draggable = (function () {
 
     /**
+     * Fired before the dragging starts
+     * The dragging can be canceled by invoking preventDefault on the event
+     *
+     * @event beforedrag
+     */
+    var EVT_BEFOREDRAG = 'beforedrag';
+
+    /**
      * Fired when the dragging started
      *
      * @event dragstart
@@ -71,6 +79,10 @@ metaScore.Draggable = (function () {
      */
     Draggable.prototype.onMouseDown = function(evt){
         if(!this.enabled){
+            return;
+        }
+        
+        if(!this.configs.target.triggerEvent(EVT_BEFOREDRAG, null, true, true)){
             return;
         }
 
