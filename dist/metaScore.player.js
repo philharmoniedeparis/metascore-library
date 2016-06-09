@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-05-31 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-06-09 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "9bd30c";
+        return "0650fd";
     },
 
     /**
@@ -7588,6 +7588,19 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         }
 
         this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
+    };
+
+    /**
+     * The cuepoint start event handler
+     *
+     * @method onCuePointStart
+     * @private
+     * @param {Event} evt The event object
+     */
+    Cursor.prototype.onCuePointStart = function(evt){
+        Cursor.parent.prototype.onCuePointStart.call(this, evt);
+        
+        this.onCuePointUpdate(evt);
     };
 
     /**

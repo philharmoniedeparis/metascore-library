@@ -9433,6 +9433,25 @@
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
             "line": 158,
+            "description": "The cuepoint start event handler",
+            "itemtype": "method",
+            "name": "onCuePointStart",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "player.component.element.Cursor",
+            "module": "Player",
+            "namespace": "player.component.element"
+        },
+        {
+            "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
+            "line": 171,
             "description": "The cuepoint update event handler",
             "itemtype": "method",
             "name": "onCuePointUpdate",
