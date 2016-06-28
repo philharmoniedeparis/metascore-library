@@ -43,6 +43,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "editor.overlay.ColorSelector",
         "editor.overlay.GuideDetails",
         "editor.overlay.GuideSelector",
+        "editor.overlay.Share",
         "editor.panel.Block",
         "editor.panel.Element",
         "editor.panel.Page",

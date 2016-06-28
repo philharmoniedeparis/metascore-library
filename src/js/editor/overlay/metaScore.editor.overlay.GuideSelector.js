@@ -22,6 +22,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Select a guide'] The overlay's title
      * @param {String} [configs.empty_text='No guides available'] A text to show when no guides are available

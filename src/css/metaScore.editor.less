@@ -96,6 +96,40 @@
             cursor: move;
         }
     }
+    
+    .collapsible{        
+        [data-role="collapsible-toggle"],
+        [data-role="collapsible-label"]{
+            display: none;
+        }
+        
+        [data-role="collapsible-toggle"] ~ [data-role="collapsible-label"]{
+            display: block;
+            cursor: pointer;
+        }
+        
+        [data-role="collapsible-toggle"]:not(:checked) ~ [data-role="collapsible-label"] {
+            font-weight: bold;
+            
+            &::before{
+                content: '+\00a0';
+            }
+        }
+        
+        [data-role="collapsible-toggle"]:checked ~ [data-role="collapsible-label"] {
+            &::before{
+                content: '-\00a0';
+            }
+        }
+        
+        [data-role="collapsible-toggle"]:not(:checked) ~ [data-role="collapsible"] {
+            display: none;
+        }
+        
+        [data-role="collapsible-toggle"]:checked ~ [data-role="collapsible"] {
+            display: block;
+        }
+    }
 
     .field{    
         &.booleanfield{
@@ -461,6 +495,9 @@
             &[data-action="delete"]{
                 margin-right: 50px;
                 background-image: url('img/editor/main-menu/delete.png');
+            }
+            &[data-action="share"]{
+                background-image: url('img/editor/main-menu/share.png');
             }
             &[data-action="download"]{
                 margin-right: 50px;
@@ -1160,7 +1197,8 @@
 
         &.guide-details,
         &.insert-link,
-        &.insert-image{
+        &.insert-image,
+        &.share{
             .contents{
                 min-width: 300px;
                 padding: 12px 16px;
@@ -1274,6 +1312,56 @@
                         width:16px;
                         height:16px;
                         background: url('img/editor/overlay/insert-image/reset.png') no-repeat center center;
+                    }
+                }
+            }
+        }
+        
+        &.share{
+            .contents{
+                min-width: 500px;
+                
+                .field[data-name="link"],
+                .field[data-name="embed"]{
+                    input{
+                        width: 100%;
+                        .box-sizing(border-box);
+                    }
+                }
+                
+                .options{
+                    margin-top: 0.5em;
+                    padding: 1em;
+                    background: rgba(0, 0, 0, 0.05);
+                    
+                    .field.textfield{
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        align-items: baseline;
+                        
+                        label{
+                            margin-right: 0.5em;
+                        }
+                        
+                        input{
+                            width: 6em;
+                        }
+                    }
+                    
+                    .field.booleanfield{
+                        display: flex;
+                        flex-direction: row-reverse;
+                        justify-content: flex-end;
+                        align-items: baseline;
+                        
+                        .input-wrapper{
+                            margin-right: 0.5em;
+                            
+                            checkbox{
+                                margin: 0;
+                            }
+                        }
                     }
                 }
             }

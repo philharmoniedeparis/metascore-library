@@ -21,6 +21,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Border Radius'] The overlay's title
      */

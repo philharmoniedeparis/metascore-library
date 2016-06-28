@@ -21,6 +21,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Guide Info'] The overlay's title
      * @param {Object} [configs.groups={}] The groups the user belongs to

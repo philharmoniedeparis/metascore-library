@@ -705,6 +705,13 @@ metaScore.Editor = (function(){
                     });
                 break;
 
+            case 'share':
+                new metaScore.editor.overlay.Share({
+                    'url': this.configs.player_url + this.getPlayer().getId(),
+                    'autoShow': true
+                });
+                break;
+
             case 'download':
                 break;
 
@@ -1939,13 +1946,15 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.updateMainmenu = function(){
-        var hasPlayer = this.getPlayer() ? true : false;
+        var player = this.getPlayer(),
+            hasPlayer = player ? true : false;
 
         this.mainmenu.toggleButton('edit', hasPlayer);
         this.mainmenu.toggleButton('save', hasPlayer);
         this.mainmenu.toggleButton('clone', hasPlayer);
         this.mainmenu.toggleButton('publish', hasPlayer);
         this.mainmenu.toggleButton('delete', hasPlayer);
+        this.mainmenu.toggleButton('share', hasPlayer && player.getData('published'));
         //this.mainmenu.toggleButton('download', hasPlayer);
 
         this.mainmenu.toggleButton('undo', this.history.hasUndo());

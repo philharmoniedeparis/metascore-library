@@ -88,6 +88,13 @@ metaScore.namespace('editor').MainMenu = (function(){
 
         new metaScore.Button()
             .attr({
+                'title': metaScore.Locale.t('editor.MainMenu.share', 'Share')
+            })
+            .data('action', 'share')
+            .appendTo(this);
+
+        new metaScore.Button()
+            .attr({
                 'title': metaScore.Locale.t('editor.MainMenu.download', 'Download')
             })
             .data('action', 'download')

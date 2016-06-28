@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-06-09 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-06-29 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "ecf9e6";
+        return "009120";
     },
 
     /**
@@ -4837,9 +4837,14 @@ metaScore.Player = (function(){
      * Get the loaded JSON data
      *
      * @method getData
-     * @return {Object} The JSON data
+     * @param {String} [key] An optional data key
+     * @return {Object} The value corresponding to the key, or the entire JSON data
      */
-    Player.prototype.getData = function(){
+    Player.prototype.getData = function(key){
+        if(key){
+            return this.json[key];
+        }
+        
         return this.json;
     };
 

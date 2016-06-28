@@ -653,9 +653,14 @@ metaScore.Player = (function(){
      * Get the loaded JSON data
      *
      * @method getData
-     * @return {Object} The JSON data
+     * @param {String} [key] An optional data key
+     * @return {Object} The value corresponding to the key, or the entire JSON data
      */
-    Player.prototype.getData = function(){
+    Player.prototype.getData = function(key){
+        if(key){
+            return this.json[key];
+        }
+        
         return this.json;
     };
 
