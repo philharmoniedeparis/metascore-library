@@ -1029,7 +1029,7 @@
             "module": "Core",
             "namespace": "",
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 16,
+            "line": 24,
             "description": "A class for creating context menus",
             "extends": "Dom",
             "is_constructor": 1,
@@ -3486,6 +3486,22 @@
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
             "line": 7,
+            "description": "Fired before the menu is shows",
+            "itemtype": "event",
+            "name": "beforeshow",
+            "params": [
+                {
+                    "name": "original_event",
+                    "description": "The original contextmenu event",
+                    "type": "Object"
+                }
+            ],
+            "class": "ContextMenu",
+            "module": "Core"
+        },
+        {
+            "file": "src\\js\\core\\metaScore.ContextMenu.js",
+            "line": 15,
             "description": "Fired when a task is clicked",
             "itemtype": "event",
             "name": "taskclick",
@@ -3506,7 +3522,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 68,
+            "line": 76,
             "description": "Mousedown event handler",
             "itemtype": "method",
             "name": "onMousedown",
@@ -3524,7 +3540,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 84,
+            "line": 92,
             "description": "Mousedown event handler",
             "itemtype": "method",
             "name": "onMousedown",
@@ -3542,7 +3558,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 95,
+            "line": 103,
             "description": "Task mouseover event handler",
             "itemtype": "method",
             "name": "onItemMouseover",
@@ -3560,7 +3576,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 121,
+            "line": 129,
             "description": "Target's contextmenu event handler",
             "itemtype": "method",
             "name": "onTargetContextmenu",
@@ -3578,7 +3594,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 153,
+            "line": 165,
             "description": "Target's mousedown event handler",
             "itemtype": "method",
             "name": "onTargetMousedown",
@@ -3596,7 +3612,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 164,
+            "line": 176,
             "description": "Task's click event handler",
             "itemtype": "method",
             "name": "onTaskClick",
@@ -3614,7 +3630,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 186,
+            "line": 198,
             "description": "Sets the target element",
             "itemtype": "method",
             "name": "setTarget",
@@ -3631,7 +3647,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 205,
+            "line": 217,
             "description": "Add a task",
             "itemtype": "method",
             "name": "addTask",
@@ -3674,7 +3690,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 255,
+            "line": 267,
             "description": "Add a separator",
             "itemtype": "method",
             "name": "addSeparator",
@@ -3684,7 +3700,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 268,
+            "line": 280,
             "description": "Show the menu",
             "itemtype": "method",
             "name": "show",
@@ -3711,7 +3727,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 321,
+            "line": 333,
             "description": "Hide the menu",
             "itemtype": "method",
             "name": "hide",
@@ -3721,7 +3737,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 340,
+            "line": 352,
             "description": "Enable the menu",
             "itemtype": "method",
             "name": "enable",
@@ -3731,7 +3747,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.ContextMenu.js",
-            "line": 356,
+            "line": 368,
             "description": "Disable the menu",
             "itemtype": "method",
             "name": "disable",

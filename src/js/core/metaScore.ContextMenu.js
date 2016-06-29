@@ -5,6 +5,14 @@
 metaScore.ContextMenu = (function(){
 
     /**
+     * Fired before the menu is shows
+     *
+     * @event beforeshow
+     * @param {Object} original_event The original contextmenu event
+     */
+    var EVT_BEFORESHOW = 'beforeshow';
+
+    /**
      * Fired when a task is clicked
      *
      * @event taskclick
@@ -127,6 +135,10 @@ metaScore.ContextMenu = (function(){
      */
     ContextMenu.prototype.onTargetContextmenu = function(evt){
         var x, y;
+        
+        if(this.triggerEvent(EVT_BEFORESHOW, {'original_event': evt}) === false){
+            return;
+        }
         
         if(evt.shiftKey){
             return;
