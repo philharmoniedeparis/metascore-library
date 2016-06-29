@@ -127,7 +127,7 @@
 	"editor.overlay.Share.fields.width.label": "Largeur",
 	"editor.overlay.Share.fields.height.label": "Hauteur",
 	"editor.overlay.Share.fields.keyboard.label": "Activer les raccourcis clavier",
-	"editor.overlay.Share.fields.api.label": "Activer le contrôle du lecteur via l'API JavaScript",
+	"editor.overlay.Share.fields.api.label": "Activer le contrôle du lecteur via <a href=\"!url\" target=\"_blank\">l'API JavaScript</a>",
 	"player.contextmenu.about": "metaScore v.!version r.!revision",
 	"player.onMediaError.Aborted.msg": "Vous avez interrompu la lecture du média.",
 	"player.onMediaError.Network.msg": "Une erreur réseau a entraîné l'échec du téléchargement du média.",

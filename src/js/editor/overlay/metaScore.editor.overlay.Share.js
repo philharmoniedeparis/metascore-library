@@ -15,7 +15,8 @@ metaScore.namespace('editor.overlay').Share = (function () {
      * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Guide Info'] The overlay's title
-     * @param {Object} [configs.url=''] The player's url
+     * @param {String} [configs.url=''] The player's url
+     * @param {String} [configs.api_help_url=''] The player's api help url
      */
     function Share(configs) {
         this.configs = this.getConfigs(configs);
@@ -33,7 +34,8 @@ metaScore.namespace('editor.overlay').Share = (function () {
         'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.Share.title', 'Share'),
-        'url': ''
+        'url': '',
+        'api_help_url': ''
     };
 
     metaScore.Overlay.extend(Share);
@@ -120,7 +122,7 @@ metaScore.namespace('editor.overlay').Share = (function () {
             .appendTo(options);
 
         this.fields['api'] = new metaScore.editor.field.Boolean({
-                'label': metaScore.Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the JavaScript API')
+                'label': metaScore.Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url})
             })
             .data('name', 'api')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))

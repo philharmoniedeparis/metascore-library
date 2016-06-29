@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "236db8";
+        return "b213ea";
     },
 
     /**
@@ -4213,8 +4213,12 @@ metaScore.Editor = (function(){
      * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
      * @param {String} [configs.player_url=''] The base URL of players
      * @param {String} [configs.api_url=''] The base URL of the RESTful API
-     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {String} [configs.help_url=''] The base URL of the RESTful API
+     * @param {String} [configs.player_api_help_url=''] The URL of the player API help page
+     * @param {String} [configs.account_url=''] The URL of the user account page
+     * @param {String} [configs.logout_url=''] The URL of the user logout page
      * @param {Object} [configs.user_groups={}] The groups the user belongs to
+     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
     function Editor(configs) {
         this.configs = this.getConfigs(configs);
@@ -4544,8 +4548,12 @@ metaScore.Editor = (function(){
         'container': 'body',
         'player_url': '',
         'api_url': '',
-        'ajax': {},
-        'user_groups': {}
+        'help_url': '',
+        'player_api_help_url': '',
+        'account_url': '',
+        'logout_url': '',
+        'user_groups': {},
+        'ajax': {}
     };
 
     /**
@@ -4904,6 +4912,7 @@ metaScore.Editor = (function(){
             case 'share':
                 new metaScore.editor.overlay.Share({
                     'url': this.configs.player_url + this.getPlayer().getId(),
+                    'api_help_url': this.configs.player_api_help_url,
                     'autoShow': true
                 });
                 break;
@@ -11702,7 +11711,8 @@ metaScore.namespace('editor.overlay').Share = (function () {
      * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.title='Guide Info'] The overlay's title
-     * @param {Object} [configs.url=''] The player's url
+     * @param {String} [configs.url=''] The player's url
+     * @param {String} [configs.api_help_url=''] The player's api help url
      */
     function Share(configs) {
         this.configs = this.getConfigs(configs);
@@ -11720,7 +11730,8 @@ metaScore.namespace('editor.overlay').Share = (function () {
         'parent': '.metaScore-editor',
         'toolbar': true,
         'title': metaScore.Locale.t('editor.overlay.Share.title', 'Share'),
-        'url': ''
+        'url': '',
+        'api_help_url': ''
     };
 
     metaScore.Overlay.extend(Share);
@@ -11807,7 +11818,7 @@ metaScore.namespace('editor.overlay').Share = (function () {
             .appendTo(options);
 
         this.fields['api'] = new metaScore.editor.field.Boolean({
-                'label': metaScore.Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the JavaScript API')
+                'label': metaScore.Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url})
             })
             .data('name', 'api')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))

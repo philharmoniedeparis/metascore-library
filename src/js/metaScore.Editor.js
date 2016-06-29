@@ -17,8 +17,12 @@ metaScore.Editor = (function(){
      * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
      * @param {String} [configs.player_url=''] The base URL of players
      * @param {String} [configs.api_url=''] The base URL of the RESTful API
-     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {String} [configs.help_url=''] The base URL of the RESTful API
+     * @param {String} [configs.player_api_help_url=''] The URL of the player API help page
+     * @param {String} [configs.account_url=''] The URL of the user account page
+     * @param {String} [configs.logout_url=''] The URL of the user logout page
      * @param {Object} [configs.user_groups={}] The groups the user belongs to
+     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
     function Editor(configs) {
         this.configs = this.getConfigs(configs);
@@ -348,8 +352,12 @@ metaScore.Editor = (function(){
         'container': 'body',
         'player_url': '',
         'api_url': '',
-        'ajax': {},
-        'user_groups': {}
+        'help_url': '',
+        'player_api_help_url': '',
+        'account_url': '',
+        'logout_url': '',
+        'user_groups': {},
+        'ajax': {}
     };
 
     /**
@@ -708,6 +716,7 @@ metaScore.Editor = (function(){
             case 'share':
                 new metaScore.editor.overlay.Share({
                     'url': this.configs.player_url + this.getPlayer().getId(),
+                    'api_help_url': this.configs.player_api_help_url,
                     'autoShow': true
                 });
                 break;

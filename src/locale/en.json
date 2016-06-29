@@ -127,7 +127,7 @@
 	"editor.overlay.Share.fields.width.label": "Width",
 	"editor.overlay.Share.fields.height.label": "Height",
 	"editor.overlay.Share.fields.keyboard.label": "Enable keyboard shortcuts",
-	"editor.overlay.Share.fields.api.label": "Enable controlling the player through the JavaScript API",
+	"editor.overlay.Share.fields.api.label": "Enable controlling the player through the <a href=\"!url\" target=\"_blank\">JavaScript API</a>",
 	"player.contextmenu.about": "metaScore v.!version r.!revision",
 	"player.onMediaError.Aborted.msg": "You aborted the media playback.",
 	"player.onMediaError.Network.msg": "A network error caused the media download to fail.",
