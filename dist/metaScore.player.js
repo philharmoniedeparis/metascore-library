@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-06-29 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-06-30 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "b213ea";
+        return "a99cd5";
     },
 
     /**
@@ -3170,7 +3170,6 @@ metaScore.Overlay = (function(){
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.parent='body'] The parent element in which the overlay will be appended
      * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-     * @param {Boolean} [configs.draggable=true] Whether the overlay is draggable
      * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
      * @param {Boolean} [configs.toolbar=false] Whether to add a toolbar with title and close button
      * @param {String} [configs.title=''] The overlay's title
@@ -3191,7 +3190,6 @@ metaScore.Overlay = (function(){
     Overlay.defaults = {
         'parent': 'body',
         'modal': true,
-        'draggable': true,
         'autoShow': false,
         'toolbar': false,
         'title': ''
@@ -3207,27 +3205,21 @@ metaScore.Overlay = (function(){
      */
     Overlay.prototype.setupUI = function(){
 
-        if(this.configs.modal){
-            this.mask = new metaScore.Dom('<div/>', {'class': 'overlay-mask'});
-        }
+        this.toggleClass('modal', this.configs.modal);
+        
+        this.inner = new metaScore.Dom('<div/>', {'class': 'inner'})
+            .appendTo(this);
 
         if(this.configs.toolbar){
             this.toolbar = new metaScore.overlay.Toolbar({'title': this.configs.title})
-                .appendTo(this);
+                .appendTo(this.inner);
 
             this.toolbar.addButton('close')
                 .addListener('click', metaScore.Function.proxy(this.onCloseClick, this));
         }
 
         this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
-            .appendTo(this);
-
-        if(this.configs.draggable){
-            this.draggable = new metaScore.Draggable({
-                'target': this,
-                'handle': this.configs.toolbar ? this.toolbar : this
-            });
-        }
+            .appendTo(this.inner);
 
     };
 
@@ -3238,10 +3230,6 @@ metaScore.Overlay = (function(){
      * @chainable
      */
     Overlay.prototype.show = function(){
-        if(this.configs.modal){
-            this.mask.appendTo(this.configs.parent);
-        }
-
         this.appendTo(this.configs.parent);
 
         this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
@@ -3256,10 +3244,6 @@ metaScore.Overlay = (function(){
      * @chainable
      */
     Overlay.prototype.hide = function(){
-        if(this.configs.modal){
-            this.mask.remove();
-        }
-
         this.remove();
 
         this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
@@ -3927,7 +3911,6 @@ metaScore.namespace('overlay').Alert = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
      * @param {String} [configs.text=''] The message's text
      * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
      */
@@ -3941,7 +3924,6 @@ metaScore.namespace('overlay').Alert = (function () {
     }
 
     Alert.defaults = {
-        'draggable': false,
         'text': '',
         'buttons': {}
     };
@@ -4041,7 +4023,6 @@ metaScore.namespace('overlay').LoadMask = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.draggable=false] Whether the mask is draggable
      * @param {String} [configs.text='Loading...'] The text to display
      */
     function LoadMask(configs) {
@@ -4057,7 +4038,6 @@ metaScore.namespace('overlay').LoadMask = (function () {
     }
 
     LoadMask.defaults = {
-        'draggable': false,
         'text': metaScore.Locale.t('overlay.LoadMask.text', 'Loading...')
     };
 

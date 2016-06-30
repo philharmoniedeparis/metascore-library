@@ -21,7 +21,6 @@ metaScore.namespace('overlay').Alert = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
      * @param {String} [configs.text=''] The message's text
      * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
      */
@@ -35,7 +34,6 @@ metaScore.namespace('overlay').Alert = (function () {
     }
 
     Alert.defaults = {
-        'draggable': false,
         'text': '',
         'buttons': {}
     };

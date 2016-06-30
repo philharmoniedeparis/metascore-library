@@ -12,7 +12,6 @@ metaScore.namespace('overlay').LoadMask = (function () {
      * @extends Overlay
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.draggable=false] Whether the mask is draggable
      * @param {String} [configs.text='Loading...'] The text to display
      */
     function LoadMask(configs) {
@@ -28,7 +27,6 @@ metaScore.namespace('overlay').LoadMask = (function () {
     }
 
     LoadMask.defaults = {
-        'draggable': false,
         'text': metaScore.Locale.t('overlay.LoadMask.text', 'Loading...')
     };
 

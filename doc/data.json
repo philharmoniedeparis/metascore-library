@@ -791,13 +791,6 @@
                     "type": "Object",
                     "props": [
                         {
-                            "name": "draggable",
-                            "description": "Whether the overlay is draggable",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
                             "name": "text",
                             "description": "The message's text",
                             "type": "String",
@@ -836,13 +829,6 @@
                     "description": "Custom configs to override defaults",
                     "type": "Object",
                     "props": [
-                        {
-                            "name": "draggable",
-                            "description": "Whether the mask is draggable",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
                         {
                             "name": "text",
                             "description": "The text to display",
@@ -1203,13 +1189,6 @@
                         {
                             "name": "modal",
                             "description": "Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "true"
-                        },
-                        {
-                            "name": "draggable",
-                            "description": "Whether the overlay is draggable",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
@@ -1843,13 +1822,6 @@
                             "type": "String",
                             "optional": true,
                             "optdefault": "'.metaScore-editor'"
-                        },
-                        {
-                            "name": "draggable",
-                            "description": "Whether the overlay is draggable",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
                         }
                     ]
                 }
@@ -2818,7 +2790,7 @@
         },
         {
             "file": "src\\js\\core\\overlay\\metaScore.overlay.Alert.js",
-            "line": 45,
+            "line": 43,
             "description": "Setup the overlay's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -2830,7 +2802,7 @@
         },
         {
             "file": "src\\js\\core\\overlay\\metaScore.overlay.Alert.js",
-            "line": 74,
+            "line": 72,
             "description": "Set the message's text",
             "itemtype": "method",
             "name": "setText",
@@ -2848,7 +2820,7 @@
         },
         {
             "file": "src\\js\\core\\overlay\\metaScore.overlay.Alert.js",
-            "line": 87,
+            "line": 85,
             "description": "Add a button",
             "itemtype": "method",
             "name": "addButton",
@@ -2874,7 +2846,7 @@
         },
         {
             "file": "src\\js\\core\\overlay\\metaScore.overlay.Alert.js",
-            "line": 104,
+            "line": 102,
             "description": "The button click event handler",
             "itemtype": "method",
             "name": "onButtonClick",
@@ -5680,7 +5652,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Overlay.js",
-            "line": 61,
+            "line": 59,
             "description": "Setup the overlay's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -5691,7 +5663,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Overlay.js",
-            "line": 93,
+            "line": 85,
             "description": "Show the overlay",
             "itemtype": "method",
             "name": "show",
@@ -5701,7 +5673,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Overlay.js",
-            "line": 111,
+            "line": 99,
             "description": "Hide the overlay",
             "itemtype": "method",
             "name": "hide",
@@ -5711,7 +5683,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Overlay.js",
-            "line": 129,
+            "line": 113,
             "description": "Get the overlay's toolbar",
             "itemtype": "method",
             "name": "getToolbar",
@@ -5724,7 +5696,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Overlay.js",
-            "line": 139,
+            "line": 123,
             "description": "Get the overlay's contents",
             "itemtype": "method",
             "name": "getContents",
@@ -5737,7 +5709,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Overlay.js",
-            "line": 149,
+            "line": 133,
             "description": "The close button's click handler",
             "itemtype": "method",
             "name": "onCloseClick",
@@ -7536,7 +7508,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 47,
+            "line": 45,
             "description": "Setup the overlay's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -7548,7 +7520,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 137,
+            "line": 135,
             "description": "Set the current value",
             "itemtype": "method",
             "name": "setValue",
@@ -7566,7 +7538,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 154,
+            "line": 152,
             "description": "Update the selected value",
             "itemtype": "method",
             "name": "updateValue",
@@ -7601,7 +7573,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 214,
+            "line": 212,
             "description": "Fill the gradient's canvas",
             "itemtype": "method",
             "name": "fillGradient",
@@ -7614,7 +7586,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 253,
+            "line": 251,
             "description": "Fill the previous color indicator canvas",
             "itemtype": "method",
             "name": "fillPrevious",
@@ -7627,7 +7599,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 270,
+            "line": 268,
             "description": "Fill the current color indicator canvas",
             "itemtype": "method",
             "name": "fillCurrent",
@@ -7640,7 +7612,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 287,
+            "line": 285,
             "description": "Fill the alpha indicator canvas",
             "itemtype": "method",
             "name": "fillAlpha",
@@ -7653,7 +7625,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 311,
+            "line": 309,
             "description": "The controls input event handler",
             "itemtype": "method",
             "name": "onControlInput",
@@ -7672,7 +7644,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 329,
+            "line": 327,
             "description": "The gradient mousedown event handler",
             "itemtype": "method",
             "name": "onGradientMousedown",
@@ -7691,7 +7663,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 342,
+            "line": 340,
             "description": "The gradient mouseup event handler",
             "itemtype": "method",
             "name": "onGradientMouseup",
@@ -7710,7 +7682,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 355,
+            "line": 353,
             "description": "The gradient click event handler",
             "itemtype": "method",
             "name": "onGradientClick",
@@ -7729,7 +7701,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 389,
+            "line": 387,
             "description": "The gradient mousemove event handler",
             "itemtype": "method",
             "name": "onGradientMousemove",
@@ -7748,7 +7720,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 398,
+            "line": 396,
             "description": "The alpha mousedown event handler",
             "itemtype": "method",
             "name": "onAlphaMousedown",
@@ -7767,7 +7739,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 411,
+            "line": 409,
             "description": "The alpha mouseup event handler",
             "itemtype": "method",
             "name": "onAlphaMouseup",
@@ -7786,7 +7758,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 424,
+            "line": 422,
             "description": "The alpha click event handler",
             "itemtype": "method",
             "name": "onAlphaClick",
@@ -7805,7 +7777,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 447,
+            "line": 445,
             "description": "The alpha mousemove event handler",
             "itemtype": "method",
             "name": "onAlphaClick",
@@ -7824,7 +7796,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 456,
+            "line": 454,
             "description": "The apply button click event handler",
             "itemtype": "method",
             "name": "onApplyClick",
@@ -7843,7 +7815,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.ColorSelector.js",
-            "line": 469,
+            "line": 467,
             "description": "The cancel button click event handler",
             "itemtype": "method",
             "name": "onCancelClick",
@@ -8103,7 +8075,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 188,
+            "line": 184,
             "description": "The load error event handler",
             "itemtype": "method",
             "name": "onLoadError",

@@ -178,10 +178,6 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
         this.loadmask.hide();
         delete this.loadmask;
 
-        if(this.configs.modal){
-            this.mask.appendTo(this.configs.parent);
-        }
-
         this.appendTo(this.configs.parent);
     };
 

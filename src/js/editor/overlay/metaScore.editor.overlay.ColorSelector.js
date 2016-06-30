@@ -22,7 +22,6 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.draggable=false] Whether the overlay is draggable
      */
     function ColorSelector(configs) {
         this.configs = this.getConfigs(configs);
@@ -38,8 +37,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
     }
 
     ColorSelector.defaults = {
-        'parent': '.metaScore-editor',
-        'draggable': false
+        'parent': '.metaScore-editor'
     };
 
     metaScore.Overlay.extend(ColorSelector);
