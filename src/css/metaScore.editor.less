@@ -101,6 +101,20 @@
             .opacity(0.25);
             cursor: default;
         }
+        
+        &.submit{
+            background: #ccc;
+            
+            &:hover{
+                background: #0000fe;
+                color: #fff;
+                .opacity(1);
+            }
+        }
+        
+        &.cancel{
+            background: #eee;
+        }
 
         span{
             pointer-events: none;
@@ -464,8 +478,8 @@
         align-content: space-between;
         align-items: center;
         z-index: 9999;
-        .gradient(#DADADA, #DADADA, #C8C8C8);
-        border-bottom: 2px solid #B2B2B2;
+        .gradient(#dadada, #dadada, #c8c8c8);
+        border-bottom: 2px solid #b2b2b2;
         
         > .separator{
             flex: 1;
@@ -569,8 +583,8 @@
                 margin: 0;
                 padding: 5px 0;
                 list-style: none;
-                background: #C8C8C8;
-                border: 1px solid #B2B2B2;
+                background: #c8c8c8;
+                border: 1px solid #b2b2b2;
                 border-top: 0;
                 .box-shadow(0px 1px 1px 0px rgba(0,0,0,0.25));
                 
@@ -861,7 +875,7 @@
                                 background-position: center center;
                                 
                                 &.pressed{
-                                    background-color: darken(#EAEAEA, 25%);
+                                    background-color: darken(#eaeaea, 25%);
                                 }
                             }
                         }
@@ -937,128 +951,125 @@
         .inner{
             background: #fff;
             position: relative;
-        }
 
-        .toolbar{
-            padding: 10px 16px;
-            border-bottom: 2px solid #B2B2B2;
-            .gradient(#DADADA, #DADADA, #C8C8C8);
+            .toolbar{
+                padding: 10px 16px;
+                border-bottom: 2px solid #b2b2b2;
+                .gradient(#dadada, #dadada, #c8c8c8);
 
-            .title{
-                float: left;
-                font-weight: bold;
-                color: #5D5D5D;
-            }
+                .title{
+                    float: left;
+                    font-weight: bold;
+                    color: #5d5d5d;
+                }
 
-            .buttons{
-                margin-left: 16px;
-                float: right;
+                .buttons{
+                    margin-left: 16px;
+                    float: right;
 
-                button{
-                    width: 16px;
-                    height: 16px;
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    vertical-align: middle;
+                    button{
+                        width: 16px;
+                        height: 16px;
+                        background-repeat: no-repeat;
+                        background-position: center center;
+                        vertical-align: middle;
 
-                    &[data-action="close"]{
-                        background-image: url('img/editor/overlay/close.png');
+                        &[data-action="close"]{
+                            background-image: url('img/editor/overlay/close.png');
+                        }
                     }
                 }
             }
-        }
-        
-        .contents{
-            max-width: 75vw;
-            max-height: 75vh;
-            overflow: auto;
+            
+            .contents{
+                max-width: 75vw;
+                max-height: 75vh;
+                overflow: auto;
+            }
         }
 
         &.color-selector{
-            padding: 10px;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
-            .border-radius(10px);
+            .inner{
+                padding: 10px;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                .box-shadow(0 0 5px 0 rgba(0,0,0,0.5));
+                .border-radius(10px);
 
-            canvas{
-                display: block;
-            }
-
-            .gradient{
-                position: relative;
-                float: left;
-                cursor: crosshair;
-
-                .position{
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 8px;
-                    height: 8px;
-                    margin: -6px 0 0 -6px;
-                    border: 2px solid #000;
-                    .border-radius(50%);
-                    pointer-events: none;
-                }
-            }
-            .alpha{
-                position: relative;
-                float: left;
-                background: url('img/editor/transparency-grid.png') repeat left top;
-
-                .position{
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 10px;
-                    height: 2px;
-                    margin-top: -1px;
-                    background: #000;
-                    pointer-events: none;
-                }
-            }
-            .controls{
-                width: 80px;
-                float: left;
-                margin-left: 10px;
-                pointer-events: none;
-
-                input[type=number]{
-                    width: 3em;
-                    margin: 0.25em 0.5em;
-                    border: 2px inset;
-                    pointer-events: auto;
+                canvas{
+                    display: block;
                 }
 
-                button{
-                    width: 100%;
-                    padding: 0.5em;
-                    background: #ccc;
-                    pointer-events: auto;
+                .gradient{
+                    position: relative;
+                    float: left;
+                    cursor: crosshair;
 
-                    &.cancel{
-                        background: #eee;
+                    .position{
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 8px;
+                        height: 8px;
+                        margin: -6px 0 0 -6px;
+                        border: 2px solid #000;
+                        .border-radius(50%);
+                        pointer-events: none;
                     }
                 }
-
-                .canvas-wrapper{
-                    height: 40px;
-                    border: 1px solid #ccc;
+                .alpha{
+                    position: relative;
+                    float: left;
                     background: url('img/editor/transparency-grid.png') repeat left top;
 
-                    &.current{
-                        margin-top: 5px;
-                    }
-
-                    &.previous{
-                        height: 10px;
-                        margin-bottom: 5px;
+                    .position{
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 10px;
+                        height: 2px;
                         margin-top: -1px;
+                        background: #000;
+                        pointer-events: none;
+                    }
+                }
+                .controls{
+                    width: 80px;
+                    float: left;
+                    margin-left: 10px;
+                    pointer-events: none;
+
+                    input[type=number]{
+                        width: 3em;
+                        margin: 0.25em 0.5em;
+                        border: 2px inset;
+                        pointer-events: auto;
                     }
 
-                    canvas{
+                    button{
                         width: 100%;
-                        height: 100%;
+                        padding: 0.5em;
+                        pointer-events: auto;
+                    }
+
+                    .canvas-wrapper{
+                        height: 40px;
+                        border: 1px solid #ccc;
+                        background: url('img/editor/transparency-grid.png') repeat left top;
+
+                        &.current{
+                            margin-top: 5px;
+                        }
+
+                        &.previous{
+                            height: 10px;
+                            margin-bottom: 5px;
+                            margin-top: -1px;
+                        }
+
+                        canvas{
+                            width: 100%;
+                            height: 100%;
+                        }
                     }
                 }
             }
@@ -1118,10 +1129,6 @@
                     padding: 0.5em;
                     background: #ccc;
                     pointer-events: auto;
-
-                    &.cancel{
-                        background: #eee;
-                    }
                 }
             }
         }
@@ -1141,7 +1148,7 @@
                             width: 155px;
                             height: 123px;
                             vertical-align: middle;
-                            background: #DADADA url('img/editor/default-thumbnail.png') no-repeat center center;
+                            background: #dadada url('img/editor/default-thumbnail.png') no-repeat center center;
                         }
                     }
 
@@ -1167,7 +1174,7 @@
                             margin: 0;
                             font-size: 11px;
                             font-weight: normal;
-                            color: #B2B2B2;
+                            color: #b2b2b2;
                             
                             em{
                                 font-size: 11px;
@@ -1198,7 +1205,7 @@
                                         optgroup{
                                             &.archives{
                                                 option{
-                                                    color: #B2B2B2;
+                                                    color: #b2b2b2;
                                                 }
                                             }
                                         }
@@ -1209,16 +1216,16 @@
                             button[data-action="select"]{
                                 flex: 0 0 auto;
                                 height: 2em;
-                                background: #B2B2B2;
+                                padding: 0 1em;
                             }
                         }
                     }
 
                     &.odd{
-                        background: #EEE;
+                        background: #eee;
                     }
                     &:hover{
-                        background: #DDD;
+                        background: #ddd;
                     }
                 }
             }
@@ -1251,7 +1258,6 @@
                     min-width: 60px;
                     margin-right: 0.5em;
                     padding: 0.5em;
-                    background: #ccc;
                     pointer-events: auto;
 
                     &.cancel{
@@ -1288,7 +1294,7 @@
                 
                 .info{
                     margin: 1em 0;
-                    color: #CC0000;
+                    color: #cc0000;
                 }
             }
         }
@@ -1439,7 +1445,7 @@
         &.loadmask{
             .contents{
                 padding: 12px 16px 12px 45px;
-                background: #FFFFFF url('img/editor/loader.gif') no-repeat 16px center;
+                background: #ffffff url('img/editor/loader.gif') no-repeat 16px center;
             }
         }
     }
@@ -1494,7 +1500,7 @@
                         height: 0;
                         margin-top: -0.1em;
                         content: '';
-                        border-color: transparent transparent transparent #2F2F2F;
+                        border-color: transparent transparent transparent #2f2f2f;
                         border-style: solid;
                         border-width: 0.4em 0 0.4em 0.4em;
                         .transform(translateY(-50%));
@@ -1511,7 +1517,7 @@
                     
                     &:hover{
                         &::after {
-                            border-color: transparent transparent transparent #FFF;
+                            border-color: transparent transparent transparent #fff;
                         }
                         
                         > ul{

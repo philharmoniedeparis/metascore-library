@@ -149,6 +149,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                 }
 
                 button = new metaScore.Button()
+                    .addClass('submit')
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                     .addListener('click', metaScore.Function.proxy(function(guide, revision_field, evt){
                         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);

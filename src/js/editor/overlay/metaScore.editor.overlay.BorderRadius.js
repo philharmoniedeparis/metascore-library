@@ -104,7 +104,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
         // Buttons
         this.buttons.apply = new metaScore.Button({'label': 'Apply'})
-            .addClass('apply')
+            .addClass('submit')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(contents);
 

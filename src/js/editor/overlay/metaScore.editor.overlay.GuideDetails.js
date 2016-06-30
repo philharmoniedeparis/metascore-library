@@ -152,7 +152,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
         // Buttons
         new metaScore.Button({'label': this.configs.submit_text})
-            .addClass('apply')
+            .addClass('submit')
             .appendTo(form);
 
         new metaScore.Button({'label': 'Cancel'})

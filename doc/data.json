@@ -8075,7 +8075,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 184,
+            "line": 185,
             "description": "The load error event handler",
             "itemtype": "method",
             "name": "onLoadError",

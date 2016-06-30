@@ -124,7 +124,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
             .appendTo(this.controls);
 
         this.controls.apply = new metaScore.Button({'label': 'Apply'})
-            .addClass('apply')
+            .addClass('submit')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(this.controls);
 

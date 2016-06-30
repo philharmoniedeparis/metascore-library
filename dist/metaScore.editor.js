@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "a99cd5";
+        return "964d5f";
     },
 
     /**
@@ -10541,7 +10541,7 @@ metaScore.namespace('editor.overlay').BorderRadius = (function () {
 
         // Buttons
         this.buttons.apply = new metaScore.Button({'label': 'Apply'})
-            .addClass('apply')
+            .addClass('submit')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(contents);
 
@@ -10800,7 +10800,7 @@ metaScore.namespace('editor.overlay').ColorSelector = (function () {
             .appendTo(this.controls);
 
         this.controls.apply = new metaScore.Button({'label': 'Apply'})
-            .addClass('apply')
+            .addClass('submit')
             .addListener('click', metaScore.Function.proxy(this.onApplyClick, this))
             .appendTo(this.controls);
 
@@ -11308,7 +11308,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
         // Buttons
         new metaScore.Button({'label': this.configs.submit_text})
-            .addClass('apply')
+            .addClass('submit')
             .appendTo(form);
 
         new metaScore.Button({'label': 'Cancel'})
@@ -11623,6 +11623,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                 }
 
                 button = new metaScore.Button()
+                    .addClass('submit')
                     .setLabel(metaScore.Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                     .addListener('click', metaScore.Function.proxy(function(guide, revision_field, evt){
                         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
