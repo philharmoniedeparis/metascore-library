@@ -413,7 +413,7 @@ metaScore.namespace('editor').Panel = (function(){
             return;
         }
         
-        this.updateFieldValue(evt.detail.property, evt.detail.value, true);
+        this.updateFieldValue(evt.detail.property, evt.detail.value, true, true);
     };
 
     /**
@@ -561,30 +561,15 @@ metaScore.namespace('editor').Panel = (function(){
      * @method updateFieldValue
      * @param {String} name The field's name
      * @param {Mixed} value The new value
+     * @param {Boolean} sanitize Whether to sanitize the panel
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
-    Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+    Panel.prototype.updateFieldValue = function(name, value, sanitize, supressEvent){
         this.getField(name).setValue(value, supressEvent);
-
-        switch(name){
-            case 'locked':
-                this.toggleClass('locked', value);
-                this.updateDraggable(!value);
-                this.updateResizable(!value);
-                break;
-
-            case 'name':
-                this.getToolbar().getSelector().updateOption(this.getComponent().getId(), value);
-                break;
-
-            case 'start-time':
-                this.getField('end-time').setMin(value);
-                break;
-
-            case 'end-time':
-                this.getField('start-time').setMax(value);
-                break;
+        
+        if(sanitize !== false){
+            this.sanitize();
         }
 
         return this;
@@ -601,13 +586,48 @@ metaScore.namespace('editor').Panel = (function(){
     Panel.prototype.updateFieldValues = function(values, supressEvent){
         if(metaScore.Var.is(values, 'array')){
             metaScore.Array.each(values, function(index, field){
-                this.updateFieldValue(field, this.getValue(field), supressEvent);
+                this.updateFieldValue(field, this.getValue(field), false, supressEvent);
             }, this);
         }
         else{
             metaScore.Object.each(values, function(field, value){
-                this.updateFieldValue(field, value, supressEvent);
+                this.updateFieldValue(field, value, false, supressEvent);
             }, this);
+        }
+        
+        this.sanitize();
+
+        return this;
+    };
+
+    /**
+     * Update panel and field options
+     *
+     * @method sanitize
+     * @chainable
+     */
+    Panel.prototype.sanitize = function(){
+        var field, value;
+        
+        if(field = this.getField('locked')){
+            value = field.getValue();
+            
+            this
+                .toggleClass('locked', value)
+                .updateDraggable(!value)
+                .updateResizable(!value);
+        }
+        
+        if(field = this.getField('name')){
+            this.getToolbar().getSelector().updateOption(this.getComponent().getId(), field.getValue());
+        }
+        
+        if(field = this.getField('start-time')){
+            this.getField('end-time').setMin(field.getValue());
+        }
+        
+        if(field = this.getField('end-time')){
+            this.getField('start-time').setMax(field.getValue());
         }
 
         return this;

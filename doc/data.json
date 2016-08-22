@@ -9515,6 +9515,11 @@
                     "type": "Mixed"
                 },
                 {
+                    "name": "sanitize",
+                    "description": "Whether to sanitize the panel",
+                    "type": "Boolean"
+                },
+                {
                     "name": "supressEvent",
                     "description": "Whether to prevent the custom event from firing",
                     "type": "Boolean"
@@ -9527,7 +9532,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 593,
+            "line": 578,
             "description": "Update fields' values",
             "itemtype": "method",
             "name": "updateFieldValues",
@@ -9550,7 +9555,18 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 616,
+            "line": 603,
+            "description": "Update panel and field options",
+            "itemtype": "method",
+            "name": "sanitize",
+            "chainable": 1,
+            "class": "editor.Panel",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Panel.js",
+            "line": 636,
             "description": "Update a component's properties",
             "itemtype": "method",
             "name": "updateProperties",
@@ -9573,7 +9589,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 636,
+            "line": 656,
             "description": "Toggle the enabled state of some fields",
             "itemtype": "method",
             "name": "toggleFields",
@@ -9596,7 +9612,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 661,
+            "line": 681,
             "description": "Get the associated component's property value",
             "itemtype": "method",
             "name": "getValue",
@@ -9617,7 +9633,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 672,
+            "line": 692,
             "description": "Get the associated component's properties values",
             "itemtype": "method",
             "name": "getValues",
