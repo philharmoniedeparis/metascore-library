@@ -179,6 +179,10 @@ metaScore.namespace('editor.field').Number = (function () {
      */
     NumberField.prototype.onSpinBtnMouseDown = function(evt){
         var fn;
+        
+        if(this.disabled){
+            return;
+        }
 
         switch(metaScore.Dom.data(evt.target, 'action')){
             case 'spin-down':

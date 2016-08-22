@@ -161,7 +161,48 @@
         }
     }
 
-    .field{    
+    .field{
+        .input-wrapper{
+            position: relative;
+            
+            .buttons{
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                display: none;
+                background-color: rgb(238, 238, 238);
+
+                button{
+                    display: inline-block;
+                    width: 25px;
+                    height: 100%;
+                    padding: 0;
+                    overflow: hidden;
+                    text-indent: 999px;
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    
+                    &:hover{
+                        background-color: rgb(204, 204, 204);
+                        .opacity(1);
+                    }
+                    
+                    &[data-action="clear"]{
+                        background-image: url('img/editor/field/clear.png');
+                    }
+                }
+            }
+        }
+            
+        &:hover{
+            .input-wrapper{
+                .buttons{
+                    display: block;
+                }
+            }
+        }
+                
         &.booleanfield{
             &.readonly{
                 .input-wrapper{
@@ -171,20 +212,13 @@
         }
         
         &.numberfield{
-            .input-wrapper{
-                position: relative;
-                
+            .input-wrapper{                
                 input{
                     padding-right: 2em;
                 }
                 
                 .buttons{
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    bottom: 0;
                     width: 2em;
-                    display: none;
                     flex-direction: column-reverse;
                     justify-content: center;
                     
@@ -193,12 +227,8 @@
                     }
                     
                     button{
-                        padding: 0;
-                        overflow: hidden;
-                        text-indent: 999px;
-                        background-color: rgb(238, 238, 238);
-                        background-repeat: no-repeat;
-                        background-position: center center;
+                        width: auto;
+                        margin: 0;
                         background-size: 40%;
                         
                         &[data-action="spin-down"]{
@@ -268,23 +298,13 @@
                 }
 
                 .buttons{
-                    float: right;
-                    height: 100%;
-
                     button{
-                        display: inline-block;
-                        width: 15px;
-                        height: 100%;
-                        margin-left: 5px;
-                        overflow: hidden;
-                        text-indent: 999px;
-
                         &[data-action="in"]{
-                            background: transparent url('img/editor/field/time/in.png') no-repeat center center;
+                            background-image: url('img/editor/field/time/in.png');
                         }
 
                         &[data-action="out"]{
-                            background: transparent url('img/editor/field/time/out.png') no-repeat center center;
+                            background-image: url('img/editor/field/time/out.png');
                         }
                     }
                 }
@@ -301,7 +321,7 @@
                     .buttons{
                         button{
                             &[data-action="in"]{
-                                .opacity(0.75);
+                                .opacity(0.25);
                                 pointer-events: none;
                             }
                         }
@@ -346,19 +366,6 @@
                     padding-right: 17px !important;
                     .box-sizing(border-box);
                 }
-
-                button[data-action="clear"]{
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    width: 17px;
-                    min-width: 0;
-                    height: 100%;
-                    margin: 0;
-                    background: url('img/editor/field/clear.png') no-repeat center center;
-                    overflow: hidden;
-                    text-indent: 999px;
-                }
             }
         }
         
@@ -380,6 +387,14 @@
                         direction: ltr;
                     }
                 }
+
+                .buttons{
+                    button{
+                        &[data-action="resize"]{
+                            background-image: url('img/editor/field/image/resize.png');
+                        }
+                    }
+                }
             }
         }
         
@@ -393,6 +408,10 @@
         &.disabled{
             .opacity(0.25);
             cursor: default;
+            
+            .buttons{
+                pointer-events: none;
+            }
         }
     }
 
@@ -898,6 +917,16 @@
                     z-index: 999;
                     animation: pulsate 0.5s ease-out 2 alternate;
                     pointer-events: none;
+                }
+            }
+            
+            &.locked{
+                .imagefield{
+                    button[data-action="resize"]{
+                        .opacity(0.25);
+                        cursor: default;
+                        pointer-events: none;
+                    }
                 }
             }
 

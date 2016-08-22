@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-06-30 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-08-22 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "964d5f";
+        return "21046d";
     },
 
     /**
@@ -7513,6 +7513,7 @@ metaScore.namespace('editor').Panel = (function(){
 
         this
             .addDelegate('.fields .field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+            .addDelegate('.fields .imagefield', 'resize', metaScore.Function.proxy(this.onImageFieldResize, this))
             .unsetComponent();
     }
 
@@ -7685,8 +7686,6 @@ metaScore.namespace('editor').Panel = (function(){
             this
                 .setupFields(this.component.configs.properties)
                 .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
-                .updateDraggable(true)
-                .updateResizable(true)
                 .addClass('has-component');
 
             this.getToolbar().getSelector().setValue(component.getId(), true);
@@ -7964,26 +7963,34 @@ metaScore.namespace('editor').Panel = (function(){
 
         component.setProperty(name, value);
 
-        switch(name){
-            case 'locked':
-                this.updateDraggable(!value);
-                this.updateResizable(!value);
-                break;
-
-            case 'name':
-                this.getToolbar().getSelector().updateOption(component.getId(), value);
-                break;
-
-            case 'start-time':
-                this.getField('end-time').setMin(value);
-                break;
-
-            case 'end-time':
-                this.getField('start-time').setMax(value);
-                break;
-        }
-
         this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
+    };
+
+    /**
+     * The imagefields' resize event handler
+     *
+     * @method onImageFieldResize
+     * @private
+     * @param {Event} evt The event object
+     */
+    Panel.prototype.onImageFieldResize = function(evt){
+        var panel = this,
+            component, old_values, img;
+        
+        if(evt.detail.value){
+            component = this.getComponent();
+            
+            if(!component.getProperty('locked')){
+                old_values = this.getValues(['width', 'height']);
+                
+                img = new metaScore.Dom('<img/>')
+                    .addListener('load', function(evt){
+                        panel.updateProperties(component, {'width': evt.target.width, 'height': evt.target.height});
+                        panel.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': panel.getValues(['width', 'height'])}, false);
+                    })
+                    .attr('src', evt.detail.value);
+            }
+        }
     };
 
     /**
@@ -7997,6 +8004,26 @@ metaScore.namespace('editor').Panel = (function(){
      */
     Panel.prototype.updateFieldValue = function(name, value, supressEvent){
         this.getField(name).setValue(value, supressEvent);
+
+        switch(name){
+            case 'locked':
+                this.toggleClass('locked', value);
+                this.updateDraggable(!value);
+                this.updateResizable(!value);
+                break;
+
+            case 'name':
+                this.getToolbar().getSelector().updateOption(this.getComponent().getId(), value);
+                break;
+
+            case 'start-time':
+                this.getField('end-time').setMin(value);
+                break;
+
+            case 'end-time':
+                this.getField('start-time').setMax(value);
+                break;
+        }
 
         return this;
     };
@@ -8265,18 +8292,23 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
      * @private
      */
     BorderRadiusrField.prototype.setupUI = function(){
+        var buttons;
+        
         BorderRadiusrField.parent.prototype.setupUI.call(this);
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', metaScore.Function.proxy(this.onClick, this));
-
-        this.overlay = new metaScore.editor.overlay.BorderRadius()
-            .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
+            
+        buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .appendTo(this.input_wrapper);
 
         this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
-            .appendTo(this.input_wrapper);
+            .appendTo(buttons);
+
+        this.overlay = new metaScore.editor.overlay.BorderRadius()
+            .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
     };
 
     /**
@@ -8497,15 +8529,20 @@ metaScore.namespace('editor.field').Color = (function () {
      * @private
      */
     ColorField.prototype.setupUI = function(){
+        var buttons;
+        
         ColorField.parent.prototype.setupUI.call(this);
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', metaScore.Function.proxy(this.onClick, this));
+            
+        buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .appendTo(this.input_wrapper);
 
         this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
-            .appendTo(this.input_wrapper);
+            .appendTo(buttons);
 
         this.overlay = new metaScore.editor.overlay.ColorSelector()
             .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
@@ -8708,6 +8745,15 @@ metaScore.namespace('editor.field').Image = (function () {
     var EVT_FILEBROWSER = 'filebrowser';
 
     /**
+     * Fired when the resize button is clicked
+     *
+     * @event resize
+     * @param {Object} field The field instance
+     * @param {Mixed} value The field value
+     */
+    var EVT_RESIZE = 'resize';
+
+    /**
      * An image field wich depends on an external file browser to function
      *
      * @class ImageField
@@ -8716,6 +8762,7 @@ metaScore.namespace('editor.field').Image = (function () {
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.placeholder="Browse..."] A placeholder text
+     * @param {Boolean} [configs.resizeButton=false] Whether to show the resize button
      */
     function ImageField(configs) {
         this.configs = this.getConfigs(configs);
@@ -8742,16 +8789,27 @@ metaScore.namespace('editor.field').Image = (function () {
      * @private
      */
     ImageField.prototype.setupUI = function(){
+        var buttons;
+        
         ImageField.parent.prototype.setupUI.call(this);
 
         this.input
             .attr('readonly', 'readonly')
             .attr('placeholder', this.configs.placeholder)
             .addListener('click', metaScore.Function.proxy(this.onClick, this));
-
-        this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
-            .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
+            
+        buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
+            
+        if(this.configs.resizeButton){
+            this.resize = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': metaScore.Locale.t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
+                .addListener('click', metaScore.Function.proxy(this.onResizeClick, this))
+                .appendTo(buttons);
+        }
+
+        this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
+            .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
+            .appendTo(buttons);
     };
 
     /**
@@ -8783,6 +8841,17 @@ metaScore.namespace('editor.field').Image = (function () {
         }
 
         this.triggerEvent(EVT_FILEBROWSER, {'callback': this.onFileSelect}, true, false);
+    };
+
+    /**
+     * The resize button click event handler
+     * 
+     * @method onResizeClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    ImageField.prototype.onResizeClick = function(evt){
+        this.triggerEvent(EVT_RESIZE, {'field': this, 'value': this.value}, true, false);
     };
 
     /**
@@ -8991,6 +9060,10 @@ metaScore.namespace('editor.field').Number = (function () {
      */
     NumberField.prototype.onSpinBtnMouseDown = function(evt){
         var fn;
+        
+        if(this.disabled){
+            return;
+        }
 
         switch(metaScore.Dom.data(evt.target, 'action')){
             case 'spin-down':
@@ -9501,13 +9574,13 @@ metaScore.namespace('editor.field').Time = (function () {
                 .appendTo(this.input_wrapper);
 
             if(this.configs.inButton){
-                this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in'})
+                this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': metaScore.Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
                     .addListener('click', metaScore.Function.proxy(this.onInClick, this))
                     .appendTo(buttons);
             }
 
             if(this.configs.outButton){
-                this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out'})
+                this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': metaScore.Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
                     .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
                     .appendTo(buttons);
             }

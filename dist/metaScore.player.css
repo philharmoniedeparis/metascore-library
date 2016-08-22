@@ -113,6 +113,7 @@ body {
   color: #424242;
   background-repeat: no-repeat;
   background-position: left top;
+  background-size: contain;
   background-color: #eeeeee;
   border: 1px solid #cccccc;
   font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
@@ -219,6 +220,7 @@ body {
   overflow: hidden;
   background-repeat: no-repeat;
   background-position: left top;
+  background-size: contain;
   border: 0 solid #000000;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -283,9 +285,6 @@ body {
   right: initial !important;
   bottom: 0;
   left: initial !important;
-}
-.metaScore-player .metaScore-component.element[data-type="Image"] .contents {
-  background-size: contain;
 }
 .metaScore-player .metaScore-component.element[data-type="Text"] .contents {
   overflow: auto;

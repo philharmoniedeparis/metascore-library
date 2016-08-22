@@ -130,6 +130,7 @@ body{
             color: rgb(66, 66, 66);
             background-repeat: no-repeat;
             background-position: left top;
+            background-size: contain;
             background-color: rgb(238, 238, 238);
             border: 1px solid rgb(204, 204, 204);
             font: normal 11px/normal Verdana, Arial, Helvetica, sans-serif;
@@ -251,6 +252,7 @@ body{
                 overflow: hidden;
                 background-repeat: no-repeat;
                 background-position: left top;
+                background-size: contain;
                 border: 0 solid rgb(0, 0, 0);
                 .box-sizing(border-box);
             }
@@ -324,11 +326,6 @@ body{
                         bottom: 0;
                         left: initial !important;
                     }
-                }
-            }
-            &[data-type="Image"]{
-                .contents{
-                    background-size: contain;
                 }
             }
             &[data-type="Text"]{

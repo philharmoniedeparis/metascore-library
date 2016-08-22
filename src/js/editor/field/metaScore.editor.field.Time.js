@@ -115,13 +115,13 @@ metaScore.namespace('editor.field').Time = (function () {
                 .appendTo(this.input_wrapper);
 
             if(this.configs.inButton){
-                this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in'})
+                this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': metaScore.Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
                     .addListener('click', metaScore.Function.proxy(this.onInClick, this))
                     .appendTo(buttons);
             }
 
             if(this.configs.outButton){
-                this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out'})
+                this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': metaScore.Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
                     .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
                     .appendTo(buttons);
             }

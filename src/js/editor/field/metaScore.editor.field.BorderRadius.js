@@ -31,18 +31,23 @@ metaScore.namespace('editor.field').BorderRadius = (function () {
      * @private
      */
     BorderRadiusrField.prototype.setupUI = function(){
+        var buttons;
+        
         BorderRadiusrField.parent.prototype.setupUI.call(this);
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', metaScore.Function.proxy(this.onClick, this));
-
-        this.overlay = new metaScore.editor.overlay.BorderRadius()
-            .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
+            
+        buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .appendTo(this.input_wrapper);
 
         this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
-            .appendTo(this.input_wrapper);
+            .appendTo(buttons);
+
+        this.overlay = new metaScore.editor.overlay.BorderRadius()
+            .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));
     };
 
     /**

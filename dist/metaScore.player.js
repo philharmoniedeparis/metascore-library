@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-06-30 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-08-22 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "964d5f";
+        return "21046d";
     },
 
     /**
@@ -5754,7 +5754,8 @@ metaScore.namespace('player.component').Block = (function () {
             'background-image': {
                 'type':'Image',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
+                    'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image'),
+                    'resizeButton': true
                 },
                 'getter': function(skipDefault){
                     var value = this.css('background-image', undefined, skipDefault);
@@ -6482,7 +6483,8 @@ metaScore.namespace('player.component').Element = (function () {
             'background-image': {
                 'type': 'Image',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image')
+                    'label': metaScore.Locale.t('player.component.Element.background-image', 'Background image'),
+                    'resizeButton': true
                 },
                 'getter': function(skipDefault){
                     var value = this.contents.css('background-image', undefined, skipDefault);

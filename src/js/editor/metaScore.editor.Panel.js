@@ -75,6 +75,7 @@ metaScore.namespace('editor').Panel = (function(){
 
         this
             .addDelegate('.fields .field', 'valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
+            .addDelegate('.fields .imagefield', 'resize', metaScore.Function.proxy(this.onImageFieldResize, this))
             .unsetComponent();
     }
 
@@ -247,8 +248,6 @@ metaScore.namespace('editor').Panel = (function(){
             this
                 .setupFields(this.component.configs.properties)
                 .updateFieldValues(this.getValues(Object.keys(this.getField())), true)
-                .updateDraggable(true)
-                .updateResizable(true)
                 .addClass('has-component');
 
             this.getToolbar().getSelector().setValue(component.getId(), true);
@@ -526,26 +525,34 @@ metaScore.namespace('editor').Panel = (function(){
 
         component.setProperty(name, value);
 
-        switch(name){
-            case 'locked':
-                this.updateDraggable(!value);
-                this.updateResizable(!value);
-                break;
-
-            case 'name':
-                this.getToolbar().getSelector().updateOption(component.getId(), value);
-                break;
-
-            case 'start-time':
-                this.getField('end-time').setMin(value);
-                break;
-
-            case 'end-time':
-                this.getField('start-time').setMax(value);
-                break;
-        }
-
         this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
+    };
+
+    /**
+     * The imagefields' resize event handler
+     *
+     * @method onImageFieldResize
+     * @private
+     * @param {Event} evt The event object
+     */
+    Panel.prototype.onImageFieldResize = function(evt){
+        var panel = this,
+            component, old_values, img;
+        
+        if(evt.detail.value){
+            component = this.getComponent();
+            
+            if(!component.getProperty('locked')){
+                old_values = this.getValues(['width', 'height']);
+                
+                img = new metaScore.Dom('<img/>')
+                    .addListener('load', function(evt){
+                        panel.updateProperties(component, {'width': evt.target.width, 'height': evt.target.height});
+                        panel.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': panel.getValues(['width', 'height'])}, false);
+                    })
+                    .attr('src', evt.detail.value);
+            }
+        }
     };
 
     /**
@@ -559,6 +566,26 @@ metaScore.namespace('editor').Panel = (function(){
      */
     Panel.prototype.updateFieldValue = function(name, value, supressEvent){
         this.getField(name).setValue(value, supressEvent);
+
+        switch(name){
+            case 'locked':
+                this.toggleClass('locked', value);
+                this.updateDraggable(!value);
+                this.updateResizable(!value);
+                break;
+
+            case 'name':
+                this.getToolbar().getSelector().updateOption(this.getComponent().getId(), value);
+                break;
+
+            case 'start-time':
+                this.getField('end-time').setMin(value);
+                break;
+
+            case 'end-time':
+                this.getField('start-time').setMax(value);
+                break;
+        }
 
         return this;
     };

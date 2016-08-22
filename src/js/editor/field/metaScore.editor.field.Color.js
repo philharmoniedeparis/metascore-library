@@ -50,15 +50,20 @@ metaScore.namespace('editor.field').Color = (function () {
      * @private
      */
     ColorField.prototype.setupUI = function(){
+        var buttons;
+        
         ColorField.parent.prototype.setupUI.call(this);
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', metaScore.Function.proxy(this.onClick, this));
+            
+        buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .appendTo(this.input_wrapper);
 
         this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
-            .appendTo(this.input_wrapper);
+            .appendTo(buttons);
 
         this.overlay = new metaScore.editor.overlay.ColorSelector()
             .addListener('submit', metaScore.Function.proxy(this.onOverlaySubmit, this));

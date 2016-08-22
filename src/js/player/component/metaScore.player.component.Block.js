@@ -156,7 +156,8 @@ metaScore.namespace('player.component').Block = (function () {
             'background-image': {
                 'type':'Image',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image')
+                    'label': metaScore.Locale.t('player.component.Block.background-image', 'Background image'),
+                    'resizeButton': true
                 },
                 'getter': function(skipDefault){
                     var value = this.css('background-image', undefined, skipDefault);
