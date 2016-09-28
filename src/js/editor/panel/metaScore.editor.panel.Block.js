@@ -34,6 +34,25 @@ metaScore.namespace('editor.panel').Block = (function () {
 
     metaScore.editor.Panel.extend(BlockPanel);
 
+    /**
+     * Get the currently associated component's label
+     *
+     * @method getSelectorLabel
+     * @return {String} The component's label for use in the selector
+     */
+    BlockPanel.prototype.getSelectorLabel = function(component){
+        if(component.instanceOf('Block')){
+            if(component.getProperty('synched')){
+                return metaScore.Locale.t('editor.panel.Block.selector.labelSynched', '!name (synched)', {'!name': component.getName()});
+            }
+            else{
+                return metaScore.Locale.t('editor.panel.Block.selector.labelNotSynched', '!name (not synched)', {'!name': component.getName()});
+            }
+        }
+        
+        return BlockPanel.parent.prototype.getSelectorLabel.call(this, component);
+    };
+
     return BlockPanel;
 
 })();

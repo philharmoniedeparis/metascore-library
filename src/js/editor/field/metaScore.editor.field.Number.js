@@ -249,26 +249,19 @@ metaScore.namespace('editor.field').Number = (function () {
     NumberField.prototype.setValue = function(value, supressEvent){
         value = parseFloat(value);
         
-        if(!isNaN(value)){
-            this.value = value;
-        }
-        else if(isNaN(this.value)){
-            this.value = 0;
-        }
-
-        if(this.configs.min !== null){
-            this.value = Math.max(this.value, this.configs.min);
-        }
-        if(this.configs.max !== null){
-            this.value = Math.min(this.value, this.configs.max);
+        if(isNaN(value)){
+            value = 0;
         }
         
-        this.input.val(this.value);
-    
-        if(supressEvent !== true){
-            this.triggerEvent('change');
+        if(this.min !== null){
+            value = Math.max(value, this.min);
         }
-
+        if(this.max !== null){
+            value = Math.min(value, this.max);
+        }
+        
+        NumberField.parent.prototype.setValue.call(this, value, supressEvent);
+        
         return this;
     };
 
@@ -280,11 +273,7 @@ metaScore.namespace('editor.field').Number = (function () {
      * @chainable
      */
     NumberField.prototype.setMin = function(value){
-        this.configs.min = value;
-
-        if(this.getValue() < value){
-            this.setValue(value);
-        }
+        this.min = value;
 
         return this;
     };
@@ -297,11 +286,24 @@ metaScore.namespace('editor.field').Number = (function () {
      * @chainable
      */
     NumberField.prototype.setMax = function(value){
-        this.configs.max = value;
+        this.max = value;
 
-        if(this.getValue() > value){
-            this.setValue(value);
-        }
+        return this;
+    };
+
+    /**
+     * Reset the field's configs
+     *
+     * @method reset
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    NumberField.prototype.reset = function(supressEvent){
+        this
+            .setMin(this.configs.min)
+            .setMax(this.configs.max);
+        
+        NumberField.parent.prototype.reset.call(this, supressEvent);
 
         return this;
     };

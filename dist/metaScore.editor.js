@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-08-23 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-09-28 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "b81f64";
+        return "ba55eb";
     },
 
     /**
@@ -6157,7 +6157,8 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.updateBlockSelector = function(){
-        var toolbar = this.panels.block.getToolbar(),
+        var panel = this.panels.block,
+            toolbar = panel.getToolbar(),
             selector = toolbar.getSelector(),
             block, label;
 
@@ -6167,25 +6168,12 @@ metaScore.Editor = (function(){
 
         this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, dom){
             if(dom._metaScore){
-                block = dom._metaScore;
-
-                if(block.instanceOf('Block')){
-                    if(block.getProperty('synched')){
-                        label = metaScore.Locale.t('editor.blockSelectorOptionLabelSynched', '!name (synched)', {'!name': block.getName()});
-                    }
-                    else{
-                        label = metaScore.Locale.t('editor.blockSelectorOptionLabelNotSynched', '!name (not synched)', {'!name': block.getName()});
-                    }
-                }
-                else{
-                    label = block.getName();
-                }
-
-                selector.addOption(block.getId(), label);
+                block = dom._metaScore;                
+                selector.addOption(block.getId(), panel.getSelectorLabel(block));
             }
         }, this);
 
-        block = this.panels.block.getComponent();
+        block = panel.getComponent();
         selector.setValue(block ? block.getId() : null, true);
 
         return this;
@@ -6225,46 +6213,26 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.updateElementSelector = function(){
-        var block = this.panels.block.getComponent(),
+        var panel = this.panels.element,
+            block = this.panels.block.getComponent(),
             page = this.panels.page.getComponent(),
-            toolbar = this.panels.element.getToolbar(),
+            toolbar = panel.getToolbar(),
             selector = toolbar.getSelector(),
-            synched = block.getProperty('synched'),
-            element, out_of_range,
-            page_start_time, page_end_time,
-            element_start_time, element_end_time,
-            rindex, optgroups = {};
+            element, rindex, optgroups = {};
 
         // clear the selector
         selector.clear();
 
         // fill the list of optgroups
         if(page.instanceOf('Page')){
-            if(synched){
-                page_start_time = page.getProperty('start-time');
-                page_end_time = page.getProperty('end-time');
-            }
-
             metaScore.Array.each(page.getElements(), function(index, element){
-                out_of_range = false;
-
-                if(synched){
-                    element_start_time = element.getProperty('start-time');
-                    element_end_time = element.getProperty('end-time');
-
-                    out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
-                }
-
                 rindex = element.getProperty('r-index') || 0;
 
                 if(!(rindex in optgroups)){
                     optgroups[rindex] = [];
                 }
 
-                optgroups[rindex].push({
-                    'element': element,
-                    'out_of_range': out_of_range
-                });
+                optgroups[rindex].push(element);
             }, this);
         }
 
@@ -6275,24 +6243,19 @@ metaScore.Editor = (function(){
 
             // sort options by element names
             options.sort(function(a, b){
-                return metaScore.Array.naturalSortInsensitive(a.element.getName(), b.element.getName());
+                return metaScore.Array.naturalSortInsensitive(a.getName(), b.getName());
             });
 
             // create the optgroup
             optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
 
             // create the options
-            metaScore.Array.each(options, function(index, option){
-                var element = option.element,
-                    out_of_range = option.out_of_range;
-
-                selector
-                    .addOption(element.getId(), (out_of_range ? '*' : '') + element.getName(), optgroup)
-                    .toggleClass('out-of-range', out_of_range);
+            metaScore.Array.each(options, function(index, element){
+                selector.addOption(element.getId(), panel.getSelectorLabel(element), optgroup);
             }, this);
         }, this);
 
-        element = this.panels.element.getComponent();
+        element = panel.getComponent();
 
         selector.setValue(element ? element.getId() : null, true);
 
@@ -6502,93 +6465,91 @@ metaScore.Editor = (function(){
         var panel, block, page,
             index, configs, auto_page;
         
-        if(component){
-            if(component.instanceOf('Block')){
-                panel = this.panels.block;
-                
-                if(panel.getComponent() === component){
-                    panel.unsetComponent();
-                }
-                
-                component.remove();
-     
-                this.history.add({
-                    'undo': function(){
-                        this.getPlayer().addBlock(component);
-                        panel.setComponent(component);
-                    },
-                    'redo': function(){
-                        panel.unsetComponent();
-                        component.remove();
-                    }
-                });
-            }
-            else if(component.instanceOf('Page')){
-                panel = this.panels.page;
-                block = component.getBlock();
-                index = block.getActivePageIndex();
-
-                panel.unsetComponent();
-                block.removePage(component);
-                index--;
-
-                if(block.getPageCount() < 1){
-                    configs = {};
-
-                    if(block.getProperty('synched')){
-                        configs['start-time'] = 0;
-                        configs['end-time'] = this.getPlayer().getMedia().getDuration();
-                    }
-
-                    auto_page = block.addPage(configs);
-                    panel.setComponent(auto_page);
-                }
-
-                block.setActivePage(Math.max(0, index));
-
-                this.history.add({
-                    'undo': function(){
-                        if(auto_page){
-                            block.removePage(auto_page, true);
-                        }
-
-                        block.addPage(component);
-                        panel.setComponent(component);
-                    },
-                    'redo': function(){
-                        panel.unsetComponent();
-                        block.removePage(component, true);
-
-                        if(auto_page){
-                            block.addPage(auto_page);
-                            panel.setComponent(auto_page);
-                        }
-
-                        block.setActivePage(index);
-                    }
-                });
-            }
-            else if(component.instanceOf('Element')){
-                panel = this.panels.element;
-                page = component.getPage();
+        if(component.instanceOf('Block')){
+            panel = this.panels.block;
             
-                if(panel.getComponent() === component){
-                    panel.unsetComponent();
-                }
-                
-                component.remove();
-     
-                this.history.add({
-                    'undo': function(){
-                        page.addElement(component);
-                        panel.setComponent(component);
-                    },
-                    'redo': function(){
-                        panel.unsetComponent();
-                        component.remove();
-                    }
-                });
+            if(panel.getComponent() === component){
+                panel.unsetComponent();
             }
+            
+            component.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    this.getPlayer().addBlock(component);
+                    panel.setComponent(component);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    component.remove();
+                }
+            });
+        }
+        else if(component.instanceOf('Page')){
+            panel = this.panels.page;
+            block = component.getBlock();
+            index = block.getActivePageIndex();
+
+            panel.unsetComponent();
+            block.removePage(component);
+            index--;
+
+            if(block.getPageCount() < 1){
+                configs = {};
+
+                if(block.getProperty('synched')){
+                    configs['start-time'] = 0;
+                    configs['end-time'] = this.getPlayer().getMedia().getDuration();
+                }
+
+                auto_page = block.addPage(configs);
+                panel.setComponent(auto_page);
+            }
+
+            block.setActivePage(Math.max(0, index));
+
+            this.history.add({
+                'undo': function(){
+                    if(auto_page){
+                        block.removePage(auto_page, true);
+                    }
+
+                    block.addPage(component);
+                    panel.setComponent(component);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    block.removePage(component, true);
+
+                    if(auto_page){
+                        block.addPage(auto_page);
+                        panel.setComponent(auto_page);
+                    }
+
+                    block.setActivePage(index);
+                }
+            });
+        }
+        else if(component.instanceOf('Element')){
+            panel = this.panels.element;
+            page = component.getPage();
+        
+            if(panel.getComponent() === component){
+                panel.unsetComponent();
+            }
+            
+            component.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    page.addElement(component);
+                    panel.setComponent(component);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    component.remove();
+                }
+            });
         }
         
         return this;
@@ -6815,6 +6776,14 @@ metaScore.namespace('editor').Field = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
+     * Fired when the field is reset
+     *
+     * @event reset
+     * @param {Object} field The field instance
+     */
+    var EVT_RESET = 'reset';
+
+    /**
      * A generic field based on an HTML input element
      *
      * @class Field
@@ -6839,10 +6808,6 @@ metaScore.namespace('editor').Field = (function () {
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
 
-        if(this.configs.value !== null){
-            this.setValue(this.configs.value);
-        }
-
         if(this.input){
             if(this.configs.name){
                 this.input.attr('name', this.configs.name);
@@ -6854,18 +6819,11 @@ metaScore.namespace('editor').Field = (function () {
             }
         }
 
-        if(this.configs.disabled){
-            this.disable();
-        }
-        else{
-            this.enable();
-        }
-
         if(this.configs.description){
             this.setDescription(this.configs.description);
         }
-
-        this.readonly(this.configs.readonly);
+        
+        this.reset(true);
     }
 
     Field.defaults = {
@@ -7010,6 +6968,32 @@ metaScore.namespace('editor').Field = (function () {
 
         if(this.input){
             this.input.attr('readonly', this.is_readonly ? "readonly" : null);
+        }
+
+        return this;
+    };
+    
+    /**
+     * Reset the field's configs
+     *
+     * @method reset
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    Field.prototype.reset = function(supressEvent){
+        this.setValue(this.configs.value);
+
+        if(this.configs.disabled){
+            this.disable();
+        }
+        else{
+            this.enable();
+        }
+
+        this.readonly(this.configs.readonly);
+
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_RESET, {'field': this}, true, false);
         }
 
         return this;
@@ -7592,6 +7576,20 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
+     * Reset all fields
+     *
+     * @method resetFields
+     * @chainable
+     */
+    Panel.prototype.resetFields = function(supressEvent){
+        metaScore.Object.each(this.fields, function(key, field){
+            field.reset(supressEvent);
+        }, this);
+        
+        return this;
+    };
+
+    /**
      * Show a field by name
      *
      * @method showField
@@ -7661,6 +7659,16 @@ metaScore.namespace('editor').Panel = (function(){
      */
     Panel.prototype.getComponent = function(){
         return this.component;
+    };
+
+    /**
+     * Get the currently associated component's label
+     *
+     * @method getSelectorLabel
+     * @return {String} The component's label for use in the selector
+     */
+    Panel.prototype.getSelectorLabel = function(component){
+        return component.getName();
     };
 
     /**
@@ -7744,6 +7752,8 @@ metaScore.namespace('editor').Panel = (function(){
                 .removeListener('resizeend', this.onComponentResizeEnd);
 
             delete this.component;
+                
+            this.resetFields(true);
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_COMPONENTUNSET, {'component': component}, false);
@@ -7851,7 +7861,7 @@ metaScore.namespace('editor').Panel = (function(){
             return;
         }
         
-        this.updateFieldValue(evt.detail.property, evt.detail.value, true, true);
+        this.updateFieldValue(evt.detail.property, evt.detail.value, true);
     };
 
     /**
@@ -7862,9 +7872,7 @@ metaScore.namespace('editor').Panel = (function(){
      * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDragStart = function(evt){
-        var fields = ['x', 'y'];
-
-        this._beforeDragValues = this.getValues(fields);
+        this._beforeDragValues = this.getValues(['x', 'y']);
     };
 
     /**
@@ -7875,9 +7883,7 @@ metaScore.namespace('editor').Panel = (function(){
      * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDrag = function(evt){
-        var fields = ['x', 'y'];
-
-        this.updateFieldValues(fields, true);
+        this.updateFieldValues(['x', 'y'], true);
     };
 
     /**
@@ -7999,15 +8005,35 @@ metaScore.namespace('editor').Panel = (function(){
      * @method updateFieldValue
      * @param {String} name The field's name
      * @param {Mixed} value The new value
-     * @param {Boolean} sanitize Whether to sanitize the panel
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
+     *
+     * @todo add the synched/non synched strings to blocks (see Editor.updateBlockSelector)
      */
-    Panel.prototype.updateFieldValue = function(name, value, sanitize, supressEvent){
-        this.getField(name).setValue(value, supressEvent);
+    Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+        var component;
         
-        if(sanitize !== false){
-            this.sanitize();
+        this.getField(name).setValue(value, supressEvent);
+
+        switch(name){
+            case 'locked':
+                this.toggleClass('locked', value);
+                this.updateDraggable(!value);
+                this.updateResizable(!value);
+                break;
+
+            case 'name':
+                component = this.getComponent();
+                this.getToolbar().getSelector().updateOption(component.getId(), this.getSelectorLabel(component));
+                break;
+
+            case 'start-time':
+                this.getField('end-time').setMin(value);
+                break;
+
+            case 'end-time':
+                this.getField('start-time').setMax(value);
+                break;
         }
 
         return this;
@@ -8024,48 +8050,13 @@ metaScore.namespace('editor').Panel = (function(){
     Panel.prototype.updateFieldValues = function(values, supressEvent){
         if(metaScore.Var.is(values, 'array')){
             metaScore.Array.each(values, function(index, field){
-                this.updateFieldValue(field, this.getValue(field), false, supressEvent);
+                this.updateFieldValue(field, this.getValue(field), supressEvent);
             }, this);
         }
         else{
             metaScore.Object.each(values, function(field, value){
-                this.updateFieldValue(field, value, false, supressEvent);
+                this.updateFieldValue(field, value, supressEvent);
             }, this);
-        }
-        
-        this.sanitize();
-
-        return this;
-    };
-
-    /**
-     * Update panel and field options
-     *
-     * @method sanitize
-     * @chainable
-     */
-    Panel.prototype.sanitize = function(){
-        var field, value;
-        
-        if(field = this.getField('locked')){
-            value = field.getValue();
-            
-            this
-                .toggleClass('locked', value)
-                .updateDraggable(!value)
-                .updateResizable(!value);
-        }
-        
-        if(field = this.getField('name')){
-            this.getToolbar().getSelector().updateOption(this.getComponent().getId(), field.getValue());
-        }
-        
-        if(field = this.getField('start-time')){
-            this.getField('end-time').setMin(field.getValue());
-        }
-        
-        if(field = this.getField('end-time')){
-            this.getField('start-time').setMax(field.getValue());
         }
 
         return this;
@@ -8560,7 +8551,7 @@ metaScore.namespace('editor.field').Color = (function () {
         buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
-        this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
+        new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
             .appendTo(buttons);
 
@@ -8827,7 +8818,7 @@ metaScore.namespace('editor.field').Image = (function () {
                 .appendTo(buttons);
         }
 
-        this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
+        new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
             .appendTo(buttons);
     };
@@ -9150,26 +9141,19 @@ metaScore.namespace('editor.field').Number = (function () {
     NumberField.prototype.setValue = function(value, supressEvent){
         value = parseFloat(value);
         
-        if(!isNaN(value)){
-            this.value = value;
-        }
-        else if(isNaN(this.value)){
-            this.value = 0;
-        }
-
-        if(this.configs.min !== null){
-            this.value = Math.max(this.value, this.configs.min);
-        }
-        if(this.configs.max !== null){
-            this.value = Math.min(this.value, this.configs.max);
+        if(isNaN(value)){
+            value = 0;
         }
         
-        this.input.val(this.value);
-    
-        if(supressEvent !== true){
-            this.triggerEvent('change');
+        if(this.min !== null){
+            value = Math.max(value, this.min);
         }
-
+        if(this.max !== null){
+            value = Math.min(value, this.max);
+        }
+        
+        NumberField.parent.prototype.setValue.call(this, value, supressEvent);
+        
         return this;
     };
 
@@ -9181,11 +9165,7 @@ metaScore.namespace('editor.field').Number = (function () {
      * @chainable
      */
     NumberField.prototype.setMin = function(value){
-        this.configs.min = value;
-
-        if(this.getValue() < value){
-            this.setValue(value);
-        }
+        this.min = value;
 
         return this;
     };
@@ -9198,11 +9178,24 @@ metaScore.namespace('editor.field').Number = (function () {
      * @chainable
      */
     NumberField.prototype.setMax = function(value){
-        this.configs.max = value;
+        this.max = value;
 
-        if(this.getValue() > value){
-            this.setValue(value);
-        }
+        return this;
+    };
+
+    /**
+     * Reset the field's configs
+     *
+     * @method reset
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    NumberField.prototype.reset = function(supressEvent){
+        this
+            .setMin(this.configs.min)
+            .setMax(this.configs.max);
+        
+        NumberField.parent.prototype.reset.call(this, supressEvent);
 
         return this;
     };
@@ -9709,12 +9702,12 @@ metaScore.namespace('editor.field').Time = (function () {
         }
         else{
             this.value = Math.floor(centiseconds);
-
-            if(this.configs.min !== null){
-                this.value = Math.max(this.value, this.configs.min);
+            
+            if(this.min !== null){
+                this.value = Math.max(this.value, this.min);
             }
-            if(this.configs.max !== null){
-                this.value = Math.min(this.value, this.configs.max);
+            if(this.max !== null){
+                this.value = Math.min(this.value, this.max);
             }
 
             centiseconds_val = parseInt((this.value) % 100, 10) || 0;
@@ -9761,11 +9754,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @chainable
      */
     TimeField.prototype.setMin = function(value){
-        this.configs.min = value;
-
-        if(this.getValue() < value){
-            this.setValue(value);
-        }
+        this.min = value;
 
         return this;
     };
@@ -9778,11 +9767,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @chainable
      */
     TimeField.prototype.setMax = function(value){
-        this.configs.max = value;
-
-        if(this.getValue() > value){
-            this.setValue(value);
-        }
+        this.max = value;
 
         return this;
     };
@@ -9888,6 +9873,23 @@ metaScore.namespace('editor.field').Time = (function () {
         return this;
     };
 
+    /**
+     * Reset the field's configs
+     *
+     * @method reset
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    TimeField.prototype.reset = function(supressEvent){
+        this
+            .setMin(this.configs.min)
+            .setMax(this.configs.max);
+        
+        TimeField.parent.prototype.reset.call(this, supressEvent);
+
+        return this;
+    };
+
     return TimeField;
 
 })();
@@ -9926,6 +9928,25 @@ metaScore.namespace('editor.panel').Block = (function () {
     };
 
     metaScore.editor.Panel.extend(BlockPanel);
+
+    /**
+     * Get the currently associated component's label
+     *
+     * @method getSelectorLabel
+     * @return {String} The component's label for use in the selector
+     */
+    BlockPanel.prototype.getSelectorLabel = function(component){
+        if(component.instanceOf('Block')){
+            if(component.getProperty('synched')){
+                return metaScore.Locale.t('editor.panel.Block.selector.labelSynched', '!name (synched)', {'!name': component.getName()});
+            }
+            else{
+                return metaScore.Locale.t('editor.panel.Block.selector.labelNotSynched', '!name (not synched)', {'!name': component.getName()});
+            }
+        }
+        
+        return BlockPanel.parent.prototype.getSelectorLabel.call(this, component);
+    };
 
     return BlockPanel;
 
@@ -9966,6 +9987,32 @@ metaScore.namespace('editor.panel').Element = (function () {
     };
 
     metaScore.editor.Panel.extend(ElementPanel);
+
+    /**
+     * Get the currently associated component's label
+     *
+     * @method getSelectorLabel
+     * @return {String} The component's label for use in the selector
+     */
+    ElementPanel.prototype.getSelectorLabel = function(component){
+        var page = component.getPage(),
+            block = page.getBlock(),
+            page_start_time, page_end_time,
+            element_start_time, element_end_time,
+            out_of_range = false;
+        
+        if(block.getProperty('synched')){
+            page_start_time = page.getProperty('start-time');
+            page_end_time = page.getProperty('end-time');
+            
+            element_start_time = component.getProperty('start-time');
+            element_end_time = component.getProperty('end-time');
+
+            out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
+        }
+        
+        return (out_of_range ? '*' : '') + component.getName();
+    };
 
     /**
      * The fields' valuechange event handler

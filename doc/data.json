@@ -2229,7 +2229,7 @@
             "module": "Editor",
             "namespace": "editor",
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 16,
+            "line": 24,
             "description": "A generic field based on an HTML input element",
             "extends": "Dom",
             "is_constructor": 1,
@@ -6948,7 +6948,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 275,
+            "line": 268,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -6966,7 +6966,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 292,
+            "line": 281,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -6975,6 +6975,24 @@
                     "name": "value",
                     "description": "The maximum allowed value",
                     "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.NumberField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
+            "line": 294,
+            "description": "Reset the field's configs",
+            "itemtype": "method",
+            "name": "reset",
+            "params": [
+                {
+                    "name": "supressEvent",
+                    "description": "Whether to prevent the custom event from firing",
+                    "type": "Boolean"
                 }
             ],
             "chainable": 1,
@@ -7339,7 +7357,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 294,
+            "line": 290,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -7357,7 +7375,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 311,
+            "line": 303,
             "description": "Check whether the field's checkbox is checked",
             "itemtype": "method",
             "name": "isActive",
@@ -7371,7 +7389,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 321,
+            "line": 313,
             "description": "Disable the field",
             "itemtype": "method",
             "name": "disable",
@@ -7382,7 +7400,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 349,
+            "line": 341,
             "description": "Enable the field",
             "itemtype": "method",
             "name": "enable",
@@ -7393,7 +7411,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 382,
+            "line": 374,
             "description": "Toggle the field's readonly state",
             "itemtype": "method",
             "name": "readonly",
@@ -7403,6 +7421,24 @@
                     "description": "Whether the field should be readonly, the current state is toggled if not provided",
                     "type": "Boolean",
                     "optional": true
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 404,
+            "description": "Reset the field's configs",
+            "itemtype": "method",
+            "name": "reset",
+            "params": [
+                {
+                    "name": "supressEvent",
+                    "description": "Whether to prevent the custom event from firing",
+                    "type": "Boolean"
                 }
             ],
             "chainable": 1,
@@ -8208,8 +8244,36 @@
             "namespace": "editor.overlay"
         },
         {
+            "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Block.js",
+            "line": 37,
+            "description": "Get the currently associated component's label",
+            "itemtype": "method",
+            "name": "getSelectorLabel",
+            "return": {
+                "description": "The component's label for use in the selector",
+                "type": "String"
+            },
+            "class": "editor.panel.Block",
+            "module": "Editor",
+            "namespace": "editor.panel"
+        },
+        {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Element.js",
             "line": 38,
+            "description": "Get the currently associated component's label",
+            "itemtype": "method",
+            "name": "getSelectorLabel",
+            "return": {
+                "description": "The component's label for use in the selector",
+                "type": "String"
+            },
+            "class": "editor.panel.Element",
+            "module": "Editor",
+            "namespace": "editor.panel"
+        },
+        {
+            "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Element.js",
+            "line": 64,
             "description": "The fields' valuechange event handler",
             "itemtype": "method",
             "name": "onFieldValueChange",
@@ -8228,7 +8292,7 @@
         },
         {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Element.js",
-            "line": 56,
+            "line": 82,
             "description": "The beforeimageset event handler",
             "itemtype": "method",
             "name": "onBeforeImageSet",
@@ -8252,7 +8316,7 @@
         },
         {
             "file": "src\\js\\editor\\panel\\metaScore.editor.panel.Element.js",
-            "line": 102,
+            "line": 128,
             "description": "Get an image's metadata (name, width, and height)",
             "itemtype": "method",
             "name": "getImageMetadata",
@@ -8682,7 +8746,23 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 80,
+            "line": 16,
+            "description": "Fired when the field is reset",
+            "itemtype": "event",
+            "name": "reset",
+            "params": [
+                {
+                    "name": "field",
+                    "description": "The field instance",
+                    "type": "Object"
+                }
+            ],
+            "class": "editor.Field",
+            "module": "Editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Field.js",
+            "line": 77,
             "description": "Setup the field's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -8694,7 +8774,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 102,
+            "line": 99,
             "description": "Set the description text",
             "itemtype": "method",
             "name": "setDescription",
@@ -8712,7 +8792,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 120,
+            "line": 117,
             "description": "The change event handler",
             "itemtype": "method",
             "name": "onChange",
@@ -8731,7 +8811,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 133,
+            "line": 130,
             "description": "Set the field's value",
             "itemtype": "method",
             "name": "setValue",
@@ -8754,7 +8834,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 152,
+            "line": 149,
             "description": "Get the field's current value",
             "itemtype": "method",
             "name": "getValue",
@@ -8768,7 +8848,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 162,
+            "line": 159,
             "description": "Disable the field",
             "itemtype": "method",
             "name": "disable",
@@ -8779,7 +8859,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 180,
+            "line": 177,
             "description": "Enable the field",
             "itemtype": "method",
             "name": "enable",
@@ -8790,7 +8870,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Field.js",
-            "line": 198,
+            "line": 195,
             "description": "Toggle the field's readonly state",
             "itemtype": "method",
             "name": "readonly",
@@ -8800,6 +8880,24 @@
                     "description": "Whether the field should be readonly, the current state is toggled if not provided",
                     "type": "Boolean",
                     "optional": true
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.Field",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Field.js",
+            "line": 214,
+            "description": "Reset the field's configs",
+            "itemtype": "method",
+            "name": "reset",
+            "params": [
+                {
+                    "name": "supressEvent",
+                    "description": "Whether to prevent the custom event from firing",
+                    "type": "Boolean"
                 }
             ],
             "chainable": 1,
@@ -9146,6 +9244,17 @@
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
             "line": 156,
+            "description": "Reset all fields",
+            "itemtype": "method",
+            "name": "resetFields",
+            "chainable": 1,
+            "class": "editor.Panel",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Panel.js",
+            "line": 170,
             "description": "Show a field by name",
             "itemtype": "method",
             "name": "showField",
@@ -9163,7 +9272,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 169,
+            "line": 183,
             "description": "Hide a field by name",
             "itemtype": "method",
             "name": "hideField",
@@ -9181,7 +9290,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 182,
+            "line": 196,
             "description": "Toggle the panel's collapsed state",
             "itemtype": "method",
             "name": "toggleState",
@@ -9192,7 +9301,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 194,
+            "line": 208,
             "description": "Disable the panel",
             "itemtype": "method",
             "name": "disable",
@@ -9203,7 +9312,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 206,
+            "line": 220,
             "description": "Enable the panel",
             "itemtype": "method",
             "name": "enable",
@@ -9214,7 +9323,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 218,
+            "line": 232,
             "description": "Get the currently associated component",
             "itemtype": "method",
             "name": "getComponent",
@@ -9228,7 +9337,21 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 228,
+            "line": 242,
+            "description": "Get the currently associated component's label",
+            "itemtype": "method",
+            "name": "getSelectorLabel",
+            "return": {
+                "description": "The component's label for use in the selector",
+                "type": "String"
+            },
+            "class": "editor.Panel",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Panel.js",
+            "line": 252,
             "description": "Set the associated component",
             "itemtype": "method",
             "name": "setComponent",
@@ -9251,7 +9374,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 277,
+            "line": 301,
             "description": "Unset the associated component",
             "itemtype": "method",
             "name": "unsetComponent",
@@ -9269,7 +9392,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 318,
+            "line": 344,
             "description": "Set or unset the draggability of the associated component",
             "itemtype": "method",
             "name": "updateDraggable",
@@ -9289,7 +9412,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 336,
+            "line": 362,
             "description": "Set or unset the resizability of the associated component",
             "itemtype": "method",
             "name": "updateResizable",
@@ -9309,7 +9432,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 354,
+            "line": 380,
             "description": "The toolbar buttons' click event handler",
             "itemtype": "method",
             "name": "onToolbarButtonClick",
@@ -9328,7 +9451,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 404,
+            "line": 430,
             "description": "The component's propchange event handler",
             "itemtype": "method",
             "name": "onComponentPropChange",
@@ -9347,7 +9470,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 419,
+            "line": 445,
             "description": "The component's dragstart event handler",
             "itemtype": "method",
             "name": "onComponentDragStart",
@@ -9366,7 +9489,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 432,
+            "line": 456,
             "description": "The component's drag event handler",
             "itemtype": "method",
             "name": "onComponentDrag",
@@ -9385,7 +9508,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 445,
+            "line": 467,
             "description": "The component's dragend event handler",
             "itemtype": "method",
             "name": "onComponentDragEnd",
@@ -9404,7 +9527,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 463,
+            "line": 485,
             "description": "The component's resizestart event handler",
             "itemtype": "method",
             "name": "onComponentResizeStart",
@@ -9423,7 +9546,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 476,
+            "line": 498,
             "description": "The component's resize event handler",
             "itemtype": "method",
             "name": "onComponentResize",
@@ -9442,7 +9565,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 489,
+            "line": 511,
             "description": "The component's resizeend event handler",
             "itemtype": "method",
             "name": "onComponentResizeEnd",
@@ -9461,7 +9584,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 507,
+            "line": 529,
             "description": "The fields' valuechange event handler",
             "itemtype": "method",
             "name": "onFieldValueChange",
@@ -9480,7 +9603,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 531,
+            "line": 553,
             "description": "The imagefields' resize event handler",
             "itemtype": "method",
             "name": "onImageFieldResize",
@@ -9499,7 +9622,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 558,
+            "line": 580,
             "description": "Update a field's value",
             "itemtype": "method",
             "name": "updateFieldValue",
@@ -9515,24 +9638,22 @@
                     "type": "Mixed"
                 },
                 {
-                    "name": "sanitize",
-                    "description": "Whether to sanitize the panel",
-                    "type": "Boolean"
-                },
-                {
                     "name": "supressEvent",
                     "description": "Whether to prevent the custom event from firing",
                     "type": "Boolean"
                 }
             ],
             "chainable": 1,
+            "todo": [
+                "add the synched/non synched strings to blocks (see Editor.updateBlockSelector)"
+            ],
             "class": "editor.Panel",
             "module": "Editor",
             "namespace": "editor"
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 578,
+            "line": 620,
             "description": "Update fields' values",
             "itemtype": "method",
             "name": "updateFieldValues",
@@ -9555,18 +9676,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 603,
-            "description": "Update panel and field options",
-            "itemtype": "method",
-            "name": "sanitize",
-            "chainable": 1,
-            "class": "editor.Panel",
-            "module": "Editor",
-            "namespace": "editor"
-        },
-        {
-            "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 636,
+            "line": 643,
             "description": "Update a component's properties",
             "itemtype": "method",
             "name": "updateProperties",
@@ -9589,7 +9699,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 656,
+            "line": 663,
             "description": "Toggle the enabled state of some fields",
             "itemtype": "method",
             "name": "toggleFields",
@@ -9612,7 +9722,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 681,
+            "line": 688,
             "description": "Get the associated component's property value",
             "itemtype": "method",
             "name": "getValue",
@@ -9633,7 +9743,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.Panel.js",
-            "line": 692,
+            "line": 699,
             "description": "Get the associated component's properties values",
             "itemtype": "method",
             "name": "getValues",
@@ -12806,7 +12916,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2018,
+            "line": 2006,
             "description": "Updates the selector of the page panel",
             "itemtype": "method",
             "name": "updatePageSelector",
@@ -12818,7 +12928,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2044,
+            "line": 2032,
             "description": "Updates the selector of the element panel",
             "itemtype": "method",
             "name": "updateElementSelector",
@@ -12830,7 +12940,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2126,
+            "line": 2089,
             "description": "Set whether the guide is dirty",
             "itemtype": "method",
             "name": "setDirty",
@@ -12847,7 +12957,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2139,
+            "line": 2102,
             "description": "Check whether the guide is dirty",
             "itemtype": "method",
             "name": "isDirty",
@@ -12860,7 +12970,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2149,
+            "line": 2112,
             "description": "Get the player instance if any",
             "itemtype": "method",
             "name": "getPlayer",
@@ -12873,7 +12983,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2159,
+            "line": 2122,
             "description": "Loads a player by guide id and vid",
             "itemtype": "method",
             "name": "loadPlayer",
@@ -12895,7 +13005,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2188,
+            "line": 2151,
             "description": "Unload the player",
             "itemtype": "method",
             "name": "unloadPlayer",
@@ -12905,7 +13015,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2211,
+            "line": 2174,
             "description": "Add a component to the player",
             "itemtype": "method",
             "name": "addPlayerComponent",
@@ -12934,7 +13044,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2317,
+            "line": 2280,
             "description": "Remove a component from the player",
             "itemtype": "method",
             "name": "deletePlayerComponent",
@@ -12953,7 +13063,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2421,
+            "line": 2382,
             "description": "Opens the guide selector",
             "itemtype": "method",
             "name": "openGuideSelector",
@@ -12963,7 +13073,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2437,
+            "line": 2398,
             "description": "Creates a new guide",
             "itemtype": "method",
             "name": "createGuide",
@@ -12987,7 +13097,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2480,
+            "line": 2441,
             "description": "Saves the loaded guide",
             "itemtype": "method",
             "name": "saveGuide",
@@ -13009,7 +13119,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2553,
+            "line": 2514,
             "description": "Get a media file's duration in centiseconds",
             "itemtype": "method",
             "name": "getMediaFileDuration",

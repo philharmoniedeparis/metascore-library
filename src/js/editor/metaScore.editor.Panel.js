@@ -154,6 +154,20 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
+     * Reset all fields
+     *
+     * @method resetFields
+     * @chainable
+     */
+    Panel.prototype.resetFields = function(supressEvent){
+        metaScore.Object.each(this.fields, function(key, field){
+            field.reset(supressEvent);
+        }, this);
+        
+        return this;
+    };
+
+    /**
      * Show a field by name
      *
      * @method showField
@@ -223,6 +237,16 @@ metaScore.namespace('editor').Panel = (function(){
      */
     Panel.prototype.getComponent = function(){
         return this.component;
+    };
+
+    /**
+     * Get the currently associated component's label
+     *
+     * @method getSelectorLabel
+     * @return {String} The component's label for use in the selector
+     */
+    Panel.prototype.getSelectorLabel = function(component){
+        return component.getName();
     };
 
     /**
@@ -306,6 +330,8 @@ metaScore.namespace('editor').Panel = (function(){
                 .removeListener('resizeend', this.onComponentResizeEnd);
 
             delete this.component;
+                
+            this.resetFields(true);
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_COMPONENTUNSET, {'component': component}, false);
@@ -413,7 +439,7 @@ metaScore.namespace('editor').Panel = (function(){
             return;
         }
         
-        this.updateFieldValue(evt.detail.property, evt.detail.value, true, true);
+        this.updateFieldValue(evt.detail.property, evt.detail.value, true);
     };
 
     /**
@@ -424,9 +450,7 @@ metaScore.namespace('editor').Panel = (function(){
      * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDragStart = function(evt){
-        var fields = ['x', 'y'];
-
-        this._beforeDragValues = this.getValues(fields);
+        this._beforeDragValues = this.getValues(['x', 'y']);
     };
 
     /**
@@ -437,9 +461,7 @@ metaScore.namespace('editor').Panel = (function(){
      * @param {Event} evt The event object
      */
     Panel.prototype.onComponentDrag = function(evt){
-        var fields = ['x', 'y'];
-
-        this.updateFieldValues(fields, true);
+        this.updateFieldValues(['x', 'y'], true);
     };
 
     /**
@@ -561,15 +583,35 @@ metaScore.namespace('editor').Panel = (function(){
      * @method updateFieldValue
      * @param {String} name The field's name
      * @param {Mixed} value The new value
-     * @param {Boolean} sanitize Whether to sanitize the panel
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
+     *
+     * @todo add the synched/non synched strings to blocks (see Editor.updateBlockSelector)
      */
-    Panel.prototype.updateFieldValue = function(name, value, sanitize, supressEvent){
-        this.getField(name).setValue(value, supressEvent);
+    Panel.prototype.updateFieldValue = function(name, value, supressEvent){
+        var component;
         
-        if(sanitize !== false){
-            this.sanitize();
+        this.getField(name).setValue(value, supressEvent);
+
+        switch(name){
+            case 'locked':
+                this.toggleClass('locked', value);
+                this.updateDraggable(!value);
+                this.updateResizable(!value);
+                break;
+
+            case 'name':
+                component = this.getComponent();
+                this.getToolbar().getSelector().updateOption(component.getId(), this.getSelectorLabel(component));
+                break;
+
+            case 'start-time':
+                this.getField('end-time').setMin(value);
+                break;
+
+            case 'end-time':
+                this.getField('start-time').setMax(value);
+                break;
         }
 
         return this;
@@ -586,48 +628,13 @@ metaScore.namespace('editor').Panel = (function(){
     Panel.prototype.updateFieldValues = function(values, supressEvent){
         if(metaScore.Var.is(values, 'array')){
             metaScore.Array.each(values, function(index, field){
-                this.updateFieldValue(field, this.getValue(field), false, supressEvent);
+                this.updateFieldValue(field, this.getValue(field), supressEvent);
             }, this);
         }
         else{
             metaScore.Object.each(values, function(field, value){
-                this.updateFieldValue(field, value, false, supressEvent);
+                this.updateFieldValue(field, value, supressEvent);
             }, this);
-        }
-        
-        this.sanitize();
-
-        return this;
-    };
-
-    /**
-     * Update panel and field options
-     *
-     * @method sanitize
-     * @chainable
-     */
-    Panel.prototype.sanitize = function(){
-        var field, value;
-        
-        if(field = this.getField('locked')){
-            value = field.getValue();
-            
-            this
-                .toggleClass('locked', value)
-                .updateDraggable(!value)
-                .updateResizable(!value);
-        }
-        
-        if(field = this.getField('name')){
-            this.getToolbar().getSelector().updateOption(this.getComponent().getId(), field.getValue());
-        }
-        
-        if(field = this.getField('start-time')){
-            this.getField('end-time').setMin(field.getValue());
-        }
-        
-        if(field = this.getField('end-time')){
-            this.getField('start-time').setMax(field.getValue());
         }
 
         return this;

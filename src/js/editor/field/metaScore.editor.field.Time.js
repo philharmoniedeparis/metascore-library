@@ -230,12 +230,12 @@ metaScore.namespace('editor.field').Time = (function () {
         }
         else{
             this.value = Math.floor(centiseconds);
-
-            if(this.configs.min !== null){
-                this.value = Math.max(this.value, this.configs.min);
+            
+            if(this.min !== null){
+                this.value = Math.max(this.value, this.min);
             }
-            if(this.configs.max !== null){
-                this.value = Math.min(this.value, this.configs.max);
+            if(this.max !== null){
+                this.value = Math.min(this.value, this.max);
             }
 
             centiseconds_val = parseInt((this.value) % 100, 10) || 0;
@@ -282,11 +282,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @chainable
      */
     TimeField.prototype.setMin = function(value){
-        this.configs.min = value;
-
-        if(this.getValue() < value){
-            this.setValue(value);
-        }
+        this.min = value;
 
         return this;
     };
@@ -299,11 +295,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @chainable
      */
     TimeField.prototype.setMax = function(value){
-        this.configs.max = value;
-
-        if(this.getValue() > value){
-            this.setValue(value);
-        }
+        this.max = value;
 
         return this;
     };
@@ -405,6 +397,23 @@ metaScore.namespace('editor.field').Time = (function () {
         if(this.in){
             this.in.attr('readonly', readonly_attr);
         }
+
+        return this;
+    };
+
+    /**
+     * Reset the field's configs
+     *
+     * @method reset
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    TimeField.prototype.reset = function(supressEvent){
+        this
+            .setMin(this.configs.min)
+            .setMax(this.configs.max);
+        
+        TimeField.parent.prototype.reset.call(this, supressEvent);
 
         return this;
     };

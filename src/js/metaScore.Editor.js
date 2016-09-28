@@ -1981,7 +1981,8 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.updateBlockSelector = function(){
-        var toolbar = this.panels.block.getToolbar(),
+        var panel = this.panels.block,
+            toolbar = panel.getToolbar(),
             selector = toolbar.getSelector(),
             block, label;
 
@@ -1991,25 +1992,12 @@ metaScore.Editor = (function(){
 
         this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, dom){
             if(dom._metaScore){
-                block = dom._metaScore;
-
-                if(block.instanceOf('Block')){
-                    if(block.getProperty('synched')){
-                        label = metaScore.Locale.t('editor.blockSelectorOptionLabelSynched', '!name (synched)', {'!name': block.getName()});
-                    }
-                    else{
-                        label = metaScore.Locale.t('editor.blockSelectorOptionLabelNotSynched', '!name (not synched)', {'!name': block.getName()});
-                    }
-                }
-                else{
-                    label = block.getName();
-                }
-
-                selector.addOption(block.getId(), label);
+                block = dom._metaScore;                
+                selector.addOption(block.getId(), panel.getSelectorLabel(block));
             }
         }, this);
 
-        block = this.panels.block.getComponent();
+        block = panel.getComponent();
         selector.setValue(block ? block.getId() : null, true);
 
         return this;
@@ -2049,46 +2037,26 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.updateElementSelector = function(){
-        var block = this.panels.block.getComponent(),
+        var panel = this.panels.element,
+            block = this.panels.block.getComponent(),
             page = this.panels.page.getComponent(),
-            toolbar = this.panels.element.getToolbar(),
+            toolbar = panel.getToolbar(),
             selector = toolbar.getSelector(),
-            synched = block.getProperty('synched'),
-            element, out_of_range,
-            page_start_time, page_end_time,
-            element_start_time, element_end_time,
-            rindex, optgroups = {};
+            element, rindex, optgroups = {};
 
         // clear the selector
         selector.clear();
 
         // fill the list of optgroups
         if(page.instanceOf('Page')){
-            if(synched){
-                page_start_time = page.getProperty('start-time');
-                page_end_time = page.getProperty('end-time');
-            }
-
             metaScore.Array.each(page.getElements(), function(index, element){
-                out_of_range = false;
-
-                if(synched){
-                    element_start_time = element.getProperty('start-time');
-                    element_end_time = element.getProperty('end-time');
-
-                    out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
-                }
-
                 rindex = element.getProperty('r-index') || 0;
 
                 if(!(rindex in optgroups)){
                     optgroups[rindex] = [];
                 }
 
-                optgroups[rindex].push({
-                    'element': element,
-                    'out_of_range': out_of_range
-                });
+                optgroups[rindex].push(element);
             }, this);
         }
 
@@ -2099,24 +2067,19 @@ metaScore.Editor = (function(){
 
             // sort options by element names
             options.sort(function(a, b){
-                return metaScore.Array.naturalSortInsensitive(a.element.getName(), b.element.getName());
+                return metaScore.Array.naturalSortInsensitive(a.getName(), b.getName());
             });
 
             // create the optgroup
             optgroup = selector.addGroup(metaScore.Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
 
             // create the options
-            metaScore.Array.each(options, function(index, option){
-                var element = option.element,
-                    out_of_range = option.out_of_range;
-
-                selector
-                    .addOption(element.getId(), (out_of_range ? '*' : '') + element.getName(), optgroup)
-                    .toggleClass('out-of-range', out_of_range);
+            metaScore.Array.each(options, function(index, element){
+                selector.addOption(element.getId(), panel.getSelectorLabel(element), optgroup);
             }, this);
         }, this);
 
-        element = this.panels.element.getComponent();
+        element = panel.getComponent();
 
         selector.setValue(element ? element.getId() : null, true);
 
@@ -2326,93 +2289,91 @@ metaScore.Editor = (function(){
         var panel, block, page,
             index, configs, auto_page;
         
-        if(component){
-            if(component.instanceOf('Block')){
-                panel = this.panels.block;
-                
-                if(panel.getComponent() === component){
-                    panel.unsetComponent();
-                }
-                
-                component.remove();
-     
-                this.history.add({
-                    'undo': function(){
-                        this.getPlayer().addBlock(component);
-                        panel.setComponent(component);
-                    },
-                    'redo': function(){
-                        panel.unsetComponent();
-                        component.remove();
-                    }
-                });
-            }
-            else if(component.instanceOf('Page')){
-                panel = this.panels.page;
-                block = component.getBlock();
-                index = block.getActivePageIndex();
-
-                panel.unsetComponent();
-                block.removePage(component);
-                index--;
-
-                if(block.getPageCount() < 1){
-                    configs = {};
-
-                    if(block.getProperty('synched')){
-                        configs['start-time'] = 0;
-                        configs['end-time'] = this.getPlayer().getMedia().getDuration();
-                    }
-
-                    auto_page = block.addPage(configs);
-                    panel.setComponent(auto_page);
-                }
-
-                block.setActivePage(Math.max(0, index));
-
-                this.history.add({
-                    'undo': function(){
-                        if(auto_page){
-                            block.removePage(auto_page, true);
-                        }
-
-                        block.addPage(component);
-                        panel.setComponent(component);
-                    },
-                    'redo': function(){
-                        panel.unsetComponent();
-                        block.removePage(component, true);
-
-                        if(auto_page){
-                            block.addPage(auto_page);
-                            panel.setComponent(auto_page);
-                        }
-
-                        block.setActivePage(index);
-                    }
-                });
-            }
-            else if(component.instanceOf('Element')){
-                panel = this.panels.element;
-                page = component.getPage();
+        if(component.instanceOf('Block')){
+            panel = this.panels.block;
             
-                if(panel.getComponent() === component){
-                    panel.unsetComponent();
-                }
-                
-                component.remove();
-     
-                this.history.add({
-                    'undo': function(){
-                        page.addElement(component);
-                        panel.setComponent(component);
-                    },
-                    'redo': function(){
-                        panel.unsetComponent();
-                        component.remove();
-                    }
-                });
+            if(panel.getComponent() === component){
+                panel.unsetComponent();
             }
+            
+            component.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    this.getPlayer().addBlock(component);
+                    panel.setComponent(component);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    component.remove();
+                }
+            });
+        }
+        else if(component.instanceOf('Page')){
+            panel = this.panels.page;
+            block = component.getBlock();
+            index = block.getActivePageIndex();
+
+            panel.unsetComponent();
+            block.removePage(component);
+            index--;
+
+            if(block.getPageCount() < 1){
+                configs = {};
+
+                if(block.getProperty('synched')){
+                    configs['start-time'] = 0;
+                    configs['end-time'] = this.getPlayer().getMedia().getDuration();
+                }
+
+                auto_page = block.addPage(configs);
+                panel.setComponent(auto_page);
+            }
+
+            block.setActivePage(Math.max(0, index));
+
+            this.history.add({
+                'undo': function(){
+                    if(auto_page){
+                        block.removePage(auto_page, true);
+                    }
+
+                    block.addPage(component);
+                    panel.setComponent(component);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    block.removePage(component, true);
+
+                    if(auto_page){
+                        block.addPage(auto_page);
+                        panel.setComponent(auto_page);
+                    }
+
+                    block.setActivePage(index);
+                }
+            });
+        }
+        else if(component.instanceOf('Element')){
+            panel = this.panels.element;
+            page = component.getPage();
+        
+            if(panel.getComponent() === component){
+                panel.unsetComponent();
+            }
+            
+            component.remove();
+ 
+            this.history.add({
+                'undo': function(){
+                    page.addElement(component);
+                    panel.setComponent(component);
+                },
+                'redo': function(){
+                    panel.unsetComponent();
+                    component.remove();
+                }
+            });
         }
         
         return this;

@@ -14,6 +14,14 @@ metaScore.namespace('editor').Field = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
+     * Fired when the field is reset
+     *
+     * @event reset
+     * @param {Object} field The field instance
+     */
+    var EVT_RESET = 'reset';
+
+    /**
      * A generic field based on an HTML input element
      *
      * @class Field
@@ -38,10 +46,6 @@ metaScore.namespace('editor').Field = (function () {
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
 
-        if(this.configs.value !== null){
-            this.setValue(this.configs.value);
-        }
-
         if(this.input){
             if(this.configs.name){
                 this.input.attr('name', this.configs.name);
@@ -53,18 +57,11 @@ metaScore.namespace('editor').Field = (function () {
             }
         }
 
-        if(this.configs.disabled){
-            this.disable();
-        }
-        else{
-            this.enable();
-        }
-
         if(this.configs.description){
             this.setDescription(this.configs.description);
         }
-
-        this.readonly(this.configs.readonly);
+        
+        this.reset(true);
     }
 
     Field.defaults = {
@@ -209,6 +206,32 @@ metaScore.namespace('editor').Field = (function () {
 
         if(this.input){
             this.input.attr('readonly', this.is_readonly ? "readonly" : null);
+        }
+
+        return this;
+    };
+    
+    /**
+     * Reset the field's configs
+     *
+     * @method reset
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    Field.prototype.reset = function(supressEvent){
+        this.setValue(this.configs.value);
+
+        if(this.configs.disabled){
+            this.disable();
+        }
+        else{
+            this.enable();
+        }
+
+        this.readonly(this.configs.readonly);
+
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_RESET, {'field': this}, true, false);
         }
 
         return this;

@@ -36,6 +36,32 @@ metaScore.namespace('editor.panel').Element = (function () {
     metaScore.editor.Panel.extend(ElementPanel);
 
     /**
+     * Get the currently associated component's label
+     *
+     * @method getSelectorLabel
+     * @return {String} The component's label for use in the selector
+     */
+    ElementPanel.prototype.getSelectorLabel = function(component){
+        var page = component.getPage(),
+            block = page.getBlock(),
+            page_start_time, page_end_time,
+            element_start_time, element_end_time,
+            out_of_range = false;
+        
+        if(block.getProperty('synched')){
+            page_start_time = page.getProperty('start-time');
+            page_end_time = page.getProperty('end-time');
+            
+            element_start_time = component.getProperty('start-time');
+            element_end_time = component.getProperty('end-time');
+
+            out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
+        }
+        
+        return (out_of_range ? '*' : '') + component.getName();
+    };
+
+    /**
      * The fields' valuechange event handler
      *
      * @method onFieldValueChange

@@ -354,6 +354,10 @@
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_getSelectorLabel">getSelectorLabel</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_getToolbar">getToolbar</a>
 
                             </li>
@@ -466,7 +470,7 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_sanitize">sanitize</a>
+                                <a href="#method_resetFields">resetFields</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -2138,6 +2142,48 @@
 
 
 </div>
+<div id="method_getSelectorLabel" class="method item inherited">
+    <h3 class="name"><code>getSelectorLabel</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/editor.Panel.html#method_getSelectorLabel">editor.Panel</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the currently associated component&#39;s label</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The component&#39;s label for use in the selector</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_getToolbar" class="method item inherited">
     <h3 class="name"><code>getToolbar</code></h3>
 
@@ -3686,8 +3732,8 @@
 
 
 </div>
-<div id="method_sanitize" class="method item inherited">
-    <h3 class="name"><code>sanitize</code></h3>
+<div id="method_resetFields" class="method item inherited">
+    <h3 class="name"><code>resetFields</code></h3>
 
         <span class="paren">()</span>
 
@@ -3701,7 +3747,7 @@
 
     <div class="meta">
                 <p>Inherited from
-                <a href="../classes/editor.Panel.html#method_sanitize">editor.Panel</a>:
+                <a href="../classes/editor.Panel.html#method_resetFields">editor.Panel</a>:
         </p>
 
 
@@ -3709,7 +3755,7 @@
     </div>
 
     <div class="description">
-        <p>Update panel and field options</p>
+        <p>Reset all fields</p>
 
     </div>
 
@@ -4447,9 +4493,6 @@
                         <code>value</code>
                 </li>
                 <li class="arg">
-                        <code>sanitize</code>
-                </li>
-                <li class="arg">
                         <code>supressEvent</code>
                 </li>
             </ul><span class="paren">)</span>
@@ -4499,17 +4542,6 @@
 
                     <div class="param-description">
                         <p>The new value</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">sanitize</code>
-                        <span class="type">Boolean</span>
-
-
-                    <div class="param-description">
-                        <p>Whether to sanitize the panel</p>
 
                     </div>
 

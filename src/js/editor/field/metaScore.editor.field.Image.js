@@ -75,7 +75,7 @@ metaScore.namespace('editor.field').Image = (function () {
                 .appendTo(buttons);
         }
 
-        this.clear = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
+        new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
             .appendTo(buttons);
     };
