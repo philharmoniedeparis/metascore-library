@@ -10020,7 +10020,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 364,
+            "line": 374,
             "description": "Remove a page",
             "itemtype": "method",
             "name": "removePage",
@@ -10048,7 +10048,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 384,
+            "line": 404,
             "description": "Remove all pages",
             "itemtype": "method",
             "name": "removePages",
@@ -10059,7 +10059,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 396,
+            "line": 416,
             "description": "Get a page by index",
             "itemtype": "method",
             "name": "getPage",
@@ -10080,7 +10080,28 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 409,
+            "line": 429,
+            "description": "Get the index of a page",
+            "itemtype": "method",
+            "name": "getPageIndex",
+            "params": [
+                {
+                    "name": "page",
+                    "description": "The page",
+                    "type": "player.component.Page"
+                }
+            ],
+            "return": {
+                "description": "The page's index",
+                "type": "Integer"
+            },
+            "class": "player.component.Block",
+            "module": "Player",
+            "namespace": "player.component"
+        },
+        {
+            "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
+            "line": 440,
             "description": "Get the currently active page",
             "itemtype": "method",
             "name": "getActivePage",
@@ -10094,7 +10115,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 419,
+            "line": 450,
             "description": "Get the index of the currently active page",
             "itemtype": "method",
             "name": "getActivePageIndex",
@@ -10108,7 +10129,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 429,
+            "line": 460,
             "description": "Get the page count",
             "itemtype": "method",
             "name": "getPageCount",
@@ -10122,7 +10143,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 439,
+            "line": 470,
             "description": "Set the active page",
             "itemtype": "method",
             "name": "setActivePage",
@@ -10147,7 +10168,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 469,
+            "line": 500,
             "description": "Update the pager",
             "itemtype": "method",
             "name": "updatePager",
@@ -10160,7 +10181,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 487,
+            "line": 518,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10183,7 +10204,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 521,
+            "line": 552,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -12926,7 +12947,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2257,
+            "line": 2246,
             "description": "Remove a component from the player",
             "itemtype": "method",
             "name": "deletePlayerComponent",
@@ -12945,7 +12966,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2359,
+            "line": 2347,
             "description": "Opens the guide selector",
             "itemtype": "method",
             "name": "openGuideSelector",
@@ -12955,7 +12976,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2375,
+            "line": 2363,
             "description": "Creates a new guide",
             "itemtype": "method",
             "name": "createGuide",
@@ -12979,7 +13000,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2418,
+            "line": 2406,
             "description": "Saves the loaded guide",
             "itemtype": "method",
             "name": "saveGuide",
@@ -13001,7 +13022,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2491,
+            "line": 2479,
             "description": "Get a media file's duration in centiseconds",
             "itemtype": "method",
             "name": "getMediaFileDuration",
@@ -14088,7 +14109,7 @@
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:364"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:374"
         },
         {
             "message": "unknown tag: namepsace",

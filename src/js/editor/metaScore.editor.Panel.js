@@ -317,12 +317,12 @@ metaScore.namespace('editor').Panel = (function(){
         var component = this.getComponent(),
             toolbar = this.getToolbar();
 
-        this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
-
         this.removeClass('has-component');
         toolbar.toggleMenuItem('delete', false);
 
         if(component){
+            this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
+        
             this
                 .updateDraggable(false)
                 .updateResizable(false);

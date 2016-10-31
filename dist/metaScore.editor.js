@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "259366";
+        return "ee404c";
     },
 
     /**
@@ -6370,8 +6370,6 @@ metaScore.Editor = (function(){
 
                     configs['start-time'] = start_time;
                     configs['end-time'] = end_time;
-
-                    previous_page.setProperty('end-time', start_time);
                 }
 
                 component = parent.addPage(configs, index+1);
@@ -6381,18 +6379,9 @@ metaScore.Editor = (function(){
                     'undo': function(){
                         panel.unsetComponent();
                         parent.removePage(component);
-
-                        if(parent.getProperty('synched')){
-                            previous_page.setProperty('end-time', end_time);
-                        }
-
                         parent.setActivePage(index);
                     },
                     'redo': function(){
-                        if(parent.getProperty('synched')){
-                            previous_page.setProperty('end-time', start_time);
-                        }
-
                         parent.addPage(component, index+1);
                         panel.setComponent(component);
                     }
@@ -6469,7 +6458,6 @@ metaScore.Editor = (function(){
 
             panel.unsetComponent();
             block.removePage(component);
-            index--;
 
             if(block.getPageCount() < 1){
                 configs = {};
@@ -6483,7 +6471,7 @@ metaScore.Editor = (function(){
                 panel.setComponent(auto_page);
             }
 
-            block.setActivePage(Math.max(0, index));
+            block.setActivePage(Math.max(0, index-1));
 
             this.history.add({
                 'undo': function(){
@@ -6491,7 +6479,7 @@ metaScore.Editor = (function(){
                         block.removePage(auto_page, true);
                     }
 
-                    block.addPage(component);
+                    block.addPage(component, index);
                     panel.setComponent(component);
                 },
                 'redo': function(){
@@ -6503,7 +6491,7 @@ metaScore.Editor = (function(){
                         panel.setComponent(auto_page);
                     }
 
-                    block.setActivePage(index);
+                    block.setActivePage(index-1);
                 }
             });
         }
@@ -7716,12 +7704,12 @@ metaScore.namespace('editor').Panel = (function(){
         var component = this.getComponent(),
             toolbar = this.getToolbar();
 
-        this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
-
         this.removeClass('has-component');
         toolbar.toggleMenuItem('delete', false);
 
         if(component){
+            this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
+        
             this
                 .updateDraggable(false)
                 .updateResizable(false);

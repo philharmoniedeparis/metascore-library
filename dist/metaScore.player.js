@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "259366";
+        return "ee404c";
     },
 
     /**
@@ -5931,7 +5931,7 @@ metaScore.namespace('player.component').Block = (function () {
      * @return {player.component.Page} The added page
      */
     Block.prototype.addPage = function(configs, index, supressEvent){
-        var page;
+        var page, page_index, sibling;
 
         if(configs instanceof metaScore.player.component.Page){
             page = configs;
@@ -5948,6 +5948,16 @@ metaScore.namespace('player.component').Block = (function () {
                 'container': this.page_wrapper,
                 'index': index
             }));
+        }
+        
+        page_index = this.getPageIndex(page);
+        if(page_index > 0){
+            sibling = this.getPage(page_index - 1);
+            sibling.setProperty('end-time', page.getProperty('start-time'));
+        }
+        else if(this.getPageCount() > page_index + 1){
+            sibling = this.getPage(page_index + 1);
+            sibling.setProperty('start-time', page.getProperty('end-time'));
         }
 
         this.setActivePage(page);
@@ -5968,7 +5978,17 @@ metaScore.namespace('player.component').Block = (function () {
      * @return {player.component.Page} The removed page
      */
     Block.prototype.removePage = function(page, supressEvent){
-        var index;
+        var page_index, sibling;
+        
+        page_index = this.getPageIndex(page);
+        if(page_index > 0){
+            sibling = this.getPage(page_index - 1);
+            sibling.setProperty('end-time', page.getProperty('end-time'));
+        }
+        else if(this.getPageCount() > page_index + 1){
+            sibling = this.getPage(page_index + 1);
+            sibling.setProperty('start-time', page.getProperty('start-time'));
+        }
 
         page.remove();
 
@@ -6002,6 +6022,17 @@ metaScore.namespace('player.component').Block = (function () {
         var page = this.page_wrapper.child('.page:nth-child('+ (index+1) +')').get(0);
         
         return page ? page._metaScore : null;
+    };
+
+    /**
+     * Get the index of a page
+     *
+     * @method getPageIndex
+     * @param {player.component.Page} page The page
+     * @return {Integer} The page's index
+     */
+    Block.prototype.getPageIndex = function(page){        
+        return this.getPages().indexOf(page);
     };
 
     /**
