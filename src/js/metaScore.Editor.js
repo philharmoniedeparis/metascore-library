@@ -2128,10 +2128,10 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.loadPlayer = function(id, vid){
-        var url = this.configs.player_url + id;
+        var url = this.configs.player_url + id +"?keyboard=1";
 
         if(vid){
-            url += "?vid="+ vid;
+            url += "&vid="+ vid;
         }
 
         this.loadmask = new metaScore.overlay.LoadMask({
