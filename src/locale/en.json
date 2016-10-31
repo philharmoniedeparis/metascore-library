@@ -93,8 +93,6 @@
 	"editor.panel.Page.title": "Page",
 	"editor.panel.Page.menuItems.new": "Add a page",
 	"editor.panel.Page.menuItems.delete": "Delete the active page",
-	"editor.panel.Text.title": "Text",
-	"editor.panel.Text.locked": "Locked ?",
 	"editor.overlay.BorderRadius.title": "Border Radius",
 	"editor.overlay.GuideDetails.title": "Guide info",
 	"editor.overlay.GuideDetails.submitText": "Save",
@@ -188,5 +186,6 @@
 	"player.component.element.Cursor.direction.top": "Bottom > Top",
 	"player.component.element.Cursor.acceleration": "Acceleration",
 	"player.component.element.Cursor.cursor-width": "Cursor width",
-	"player.component.element.Cursor.cursor-color": "Cursor color"
+	"player.component.element.Cursor.cursor-color": "Cursor color",
+	"player.component.element.Text.locked": "Text locked ?"
 }

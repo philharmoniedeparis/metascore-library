@@ -47,7 +47,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "editor.panel.Block",
         "editor.panel.Element",
         "editor.panel.Page",
-        "editor.panel.Text",
         "editor.panel.Toolbar",
         "metaScore",
         "overlay.Alert",

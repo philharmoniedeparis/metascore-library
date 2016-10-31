@@ -93,8 +93,6 @@ var metaScoreLocale = {
 	"editor.panel.Page.title": "Page",
 	"editor.panel.Page.menuItems.new": "Ajouter une page",
 	"editor.panel.Page.menuItems.delete": "Supprimer la page active",
-	"editor.panel.Text.title": "Texte",
-	"editor.panel.Text.locked": "Verrouillé ?",
 	"editor.overlay.BorderRadius.title": "Rayon de bordure",
 	"editor.overlay.GuideDetails.title": "Infos du guide",
 	"editor.overlay.GuideDetails.submitText": "Sauvegarder",
@@ -188,5 +186,6 @@ var metaScoreLocale = {
 	"player.component.element.Cursor.direction.top": "Bas > Haut",
 	"player.component.element.Cursor.acceleration": "Accélération",
 	"player.component.element.Cursor.cursor-width": "Largeur du curseur",
-	"player.component.element.Cursor.cursor-color": "Couleur du curseur"
+	"player.component.element.Cursor.cursor-color": "Couleur du curseur",
+	"player.component.element.Text.locked": "Texte verrouillé ?"
 };

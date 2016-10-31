@@ -447,7 +447,7 @@ body {
 .metaScore-player.in-editor.editing .draggable .drag-handle {
   cursor: move;
 }
-.metaScore-player.in-editor.editing .resizable .resize-handle {
+.metaScore-player.in-editor.editing .resizable > .resize-handle {
   display: block;
 }
 .metaScore-player.in-editor.editing .metaScore-component.media.selected,

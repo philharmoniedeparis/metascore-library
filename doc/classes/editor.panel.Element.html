@@ -74,7 +74,6 @@
                                 <li><a href="../classes/editor.panel.Block.html">editor.panel.Block</a></li>
                                 <li><a href="../classes/editor.panel.Element.html">editor.panel.Element</a></li>
                                 <li><a href="../classes/editor.panel.Page.html">editor.panel.Page</a></li>
-                                <li><a href="../classes/editor.panel.Text.html">editor.panel.Text</a></li>
                                 <li><a href="../classes/editor.panel.Toolbar.html">editor.panel.Toolbar</a></li>
                                 <li><a href="../classes/Evented.html">Evented</a></li>
                                 <li><a href="../classes/Function.html">Function</a></li>
@@ -386,12 +385,28 @@
                                 <a href="#method_is">is</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_lockText">lockText</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_offset">offset</a>
 
                             </li>
                             <li class="index-item method private">
                                 <a href="#method_onBeforeImageSet">onBeforeImageSet</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onComponentContentsClick">onComponentContentsClick</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onComponentContentsKey">onComponentContentsKey</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onComponentDblClick">onComponentDblClick</a>
 
                             </li>
                             <li class="index-item method private inherited">
@@ -420,6 +435,14 @@
                             </li>
                             <li class="index-item method private inherited">
                                 <a href="#method_onComponentResizeStart">onComponentResizeStart</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onComponentSet">onComponentSet</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onComponentUnset">onComponentUnset</a>
 
                             </li>
                             <li class="index-item method private inherited">
@@ -490,6 +513,10 @@
                                 <a href="#method_triggerEvent">triggerEvent</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_unlockText">unlockText</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_unsetComponent">unsetComponent</a>
 
@@ -554,11 +581,23 @@
 
                             </li>
                             <li class="index-item event inherited">
+                                <a href="#event_componentbeforeunset">componentbeforeunset</a>
+
+                            </li>
+                            <li class="index-item event inherited">
                                 <a href="#event_componentset">componentset</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_componentunset">componentunset</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_textlock">textlock</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_textunlock">textunlock</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -2741,6 +2780,59 @@
 
 
 </div>
+<div id="method_lockText" class="method item">
+    <h3 class="name"><code>lockText</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>supressEvent</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Lock the component&#39;s text</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">supressEvent</code>
+                        <span class="type">Boolean</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to prevent the custom event from firing</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_offset" class="method item inherited">
     <h3 class="name"><code>offset</code></h3>
 
@@ -2840,6 +2932,165 @@
 
                     <div class="param-description">
                         <p>The new image url</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onComponentContentsClick" class="method item private">
+    <h3 class="name"><code>onComponentContentsClick</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The component&#39;s contents click event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onComponentContentsKey" class="method item private">
+    <h3 class="name"><code>onComponentContentsKey</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The component&#39;s contents key event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onComponentDblClick" class="method item private">
+    <h3 class="name"><code>onComponentDblClick</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The component dblclick event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
 
                     </div>
 
@@ -3204,6 +3455,112 @@
 
     <div class="description">
         <p>The component&#39;s resizestart event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onComponentSet" class="method item private">
+    <h3 class="name"><code>onComponentSet</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The componentset event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onComponentUnset" class="method item private">
+    <h3 class="name"><code>onComponentUnset</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The componentunset event handler</p>
 
     </div>
 
@@ -4206,6 +4563,59 @@
 
 
 </div>
+<div id="method_unlockText" class="method item">
+    <h3 class="name"><code>unlockText</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>supressEvent</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Unlock the component&#39;s text</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">supressEvent</code>
+                        <span class="type">Boolean</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to prevent the custom event from firing</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_unsetComponent" class="method item inherited">
     <h3 class="name"><code>unsetComponent</code></h3>
 
@@ -4821,6 +5231,47 @@
                     
                     
                     </div>
+                    <div id="event_componentbeforeunset" class="events item inherited">
+                        <h3 class="name"><code>componentbeforeunset</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/editor.Panel.html#event_componentbeforeunset">editor.Panel</a>:
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired before a component is unset</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">component</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The component instance</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_componentset" class="events item inherited">
                         <h3 class="name"><code>componentset</code></h3>
                         <span class="type"></span>
@@ -4880,6 +5331,86 @@
                     
                         <div class="description">
                             <p>Fired when a component is unset</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">component</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The component instance</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_textlock" class="events item">
+                        <h3 class="name"><code>textlock</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when a component&#39;s text is locked</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">component</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The component instance</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_textunlock" class="events item">
+                        <h3 class="name"><code>textunlock</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when a component&#39;s text is unlocked</p>
                     
                         </div>
                     

@@ -82,14 +82,11 @@ metaScore.Editor = (function(){
         this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar)
             .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
             .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
-            .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
             .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this));
 
         this.panels.element.getToolbar()
             .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
             .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
-
-        this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
 
         this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
 
@@ -1241,27 +1238,7 @@ metaScore.Editor = (function(){
         var element = evt.detail.component,
             player = this.getPlayer();
 
-        if(element.getProperty('type') === 'Text'){
-            this.panels.text.setComponent(element);
-        }
-        else{
-            this.panels.text.unsetComponent();
-        }
-
         player.setReadingIndex(element.getProperty('r-index') || 0);
-
-        evt.stopPropagation();
-    };
-
-    /**
-     * Element panel componentunset event callback
-     *
-     * @method onElementUnset
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
-     */
-    Editor.prototype.onElementUnset = function(evt){
-        this.panels.text.unsetComponent();
 
         evt.stopPropagation();
     };

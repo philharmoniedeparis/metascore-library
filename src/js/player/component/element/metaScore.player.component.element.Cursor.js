@@ -31,7 +31,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     metaScore.player.component.Element.extend(Cursor);
 
     Cursor.defaults = {
-        'properties': metaScore.Object.extend({}, metaScore.player.component.Element.defaults.properties, {
+        'properties': metaScore.Object.extend({}, Cursor.parent.defaults.properties, {
             'direction': {
                 'type': 'Select',
                 'configs': {

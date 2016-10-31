@@ -21,6 +21,14 @@ metaScore.namespace('editor').Panel = (function(){
     var EVT_COMPONENTSET = 'componentset';
 
     /**
+     * Fired before a component is unset
+     *
+     * @event componentbeforeunset
+     * @param {Object} component The component instance
+     */
+    var EVT_COMPONENTBEFOREUNSET = 'componentbeforeunset';
+
+    /**
      * Fired when a component is unset
      *
      * @event componentunset
@@ -308,6 +316,8 @@ metaScore.namespace('editor').Panel = (function(){
     Panel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent(),
             toolbar = this.getToolbar();
+
+        this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
 
         this.removeClass('has-component');
         toolbar.toggleMenuItem('delete', false);

@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "0e0ad1";
+        return "259366";
     },
 
     /**
@@ -4258,14 +4258,11 @@ metaScore.Editor = (function(){
         this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar)
             .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
             .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
-            .addListener('componentunset', metaScore.Function.proxy(this.onElementUnset, this))
             .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this));
 
         this.panels.element.getToolbar()
             .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
             .addDelegate('.buttons [data-action]', 'click', metaScore.Function.proxy(this.onElementPanelToolbarClick, this));
-
-        this.panels.text = new metaScore.editor.panel.Text().appendTo(this.sidebar);
 
         this.grid = new metaScore.Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
 
@@ -5417,27 +5414,7 @@ metaScore.Editor = (function(){
         var element = evt.detail.component,
             player = this.getPlayer();
 
-        if(element.getProperty('type') === 'Text'){
-            this.panels.text.setComponent(element);
-        }
-        else{
-            this.panels.text.unsetComponent();
-        }
-
         player.setReadingIndex(element.getProperty('r-index') || 0);
-
-        evt.stopPropagation();
-    };
-
-    /**
-     * Element panel componentunset event callback
-     *
-     * @method onElementUnset
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
-     */
-    Editor.prototype.onElementUnset = function(evt){
-        this.panels.text.unsetComponent();
 
         evt.stopPropagation();
     };
@@ -7443,6 +7420,14 @@ metaScore.namespace('editor').Panel = (function(){
     var EVT_COMPONENTSET = 'componentset';
 
     /**
+     * Fired before a component is unset
+     *
+     * @event componentbeforeunset
+     * @param {Object} component The component instance
+     */
+    var EVT_COMPONENTBEFOREUNSET = 'componentbeforeunset';
+
+    /**
      * Fired when a component is unset
      *
      * @event componentunset
@@ -7730,6 +7715,8 @@ metaScore.namespace('editor').Panel = (function(){
     Panel.prototype.unsetComponent = function(supressEvent){
         var component = this.getComponent(),
             toolbar = this.getToolbar();
+
+        this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
 
         this.removeClass('has-component');
         toolbar.toggleMenuItem('delete', false);
@@ -9958,6 +9945,22 @@ metaScore.namespace('editor.panel').Block = (function () {
 metaScore.namespace('editor.panel').Element = (function () {
 
     /**
+     * Fired when a component's text is locked
+     *
+     * @event textlock
+     * @param {Object} component The component instance
+     */
+    var EVT_TEXTLOCK = 'textlock';
+
+    /**
+     * Fired when a component's text is unlocked
+     *
+     * @event textunlock
+     * @param {Object} component The component instance
+     */
+    var EVT_TEXTUNLOCK = 'textunlock';
+
+    /**
      * A panel for {{#crossLink "player.component.Element"}}{{/crossLink}} components
      * 
      * @class Element
@@ -9967,11 +9970,20 @@ metaScore.namespace('editor.panel').Element = (function () {
      * @param {Object} configs Custom configs to override defaults
      * @param {Object} [configs.toolbarConfigs={'title':'Element', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
-    function ElementPanel(configs) {
+    function ElementPanel(configs) {        
         // call parent constructor
         ElementPanel.parent.call(this, configs);
+        
+        // fix event handlers scope
+        this.onComponentDblClick = metaScore.Function.proxy(this.onComponentDblClick, this);
+        this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
+        this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
 
         this.addClass('element');
+        
+        this
+            .addListener('componentset', metaScore.Function.proxy(this.onComponentSet, this))
+            .addListener('componentbeforeunset', metaScore.Function.proxy(this.onComponentBeforeUnset, this));
     }
 
     ElementPanel.defaults = {
@@ -10023,13 +10035,59 @@ metaScore.namespace('editor.panel').Element = (function () {
      */
     ElementPanel.prototype.onFieldValueChange = function(evt){
         var component = this.getComponent(),
-            name = evt.detail.field.data('name');
+            name = evt.detail.field.data('name'),
+            type;
 
-        if(component && component.getProperty('type') === 'Image' && evt.detail.field.data('name') === 'background-image'){
-            this.onBeforeImageSet(name, evt.detail.value);
+        if(component){
+            type = component.getProperty('type');
+            
+            switch(type){
+                case 'Image':
+                    if(evt.detail.field.data('name') === 'background-image'){
+                        this.onBeforeImageSet(name, evt.detail.value);
+                    }
+                    break;
+                    
+                case 'Text':
+                    if(evt.detail.field.data('name') === 'text-locked'){
+                        if(evt.detail.value === true){
+                            this.lockText();
+                        }
+                        else{
+                            this.unlockText();
+                        }
+                    }
+                    break;
+            }
         }
 
         ElementPanel.parent.prototype.onFieldValueChange.call(this, evt);
+    };
+
+    /**
+     * The componentset event handler
+     * 
+     * @method onComponentSet
+     * @private
+     * @param {Event} evt The event object
+     */
+    ElementPanel.prototype.onComponentSet = function(evt){
+        if(evt.detail.component.getProperty('type') === 'Text'){
+            this.updateFieldValue('text-locked', true);
+        }
+    };
+
+    /**
+     * The componentunset event handler
+     * 
+     * @method onComponentUnset
+     * @private
+     * @param {Event} evt The event object
+     */
+    ElementPanel.prototype.onComponentBeforeUnset = function(evt){
+        if(evt.detail.component.getProperty('type') === 'Text'){
+            this.updateFieldValue('text-locked', true);
+        }
     };
 
     /**
@@ -10105,6 +10163,113 @@ metaScore.namespace('editor.panel').Element = (function () {
             .attr('src', url);
     };
 
+    /**
+     * Lock the component's text
+     * 
+     * @method lockText
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    ElementPanel.prototype.lockText = function(supressEvent){
+        var component = this.getComponent();
+
+        if(component){
+            component
+                .addListener('dblclick', this.onComponentDblClick)
+                .removeClass('text-unlocked');
+                
+            component.contents
+                .attr('contenteditable', null)
+                .removeListener('click', this.onComponentContentsClick)
+                .removeListener('keydown', this.onComponentContentsKey)
+                .removeListener('keypress', this.onComponentContentsKey)
+                .removeListener('keyup', this.onComponentContentsKey);
+
+            if(component._draggable){
+                component._draggable.enable();
+            }
+            if(component._resizable){
+                component._resizable.enable();
+            }
+
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_TEXTLOCK, {'component': component}, false);
+            }
+        }
+
+        return this;
+    };
+
+    /**
+     * Unlock the component's text
+     * 
+     * @method unlockText
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    ElementPanel.prototype.unlockText = function(supressEvent){
+        var component = this.getComponent();
+
+        if(component){
+            if(component._draggable){
+                component._draggable.disable();
+            }
+            if(component._resizable){
+                component._resizable.disable();
+            }
+
+            component.contents
+                .attr('contenteditable', 'true')
+                .addListener('click', this.onComponentContentsClick)
+                .addListener('keydown', this.onComponentContentsKey)
+                .addListener('keypress', this.onComponentContentsKey)
+                .addListener('keyup', this.onComponentContentsKey);
+
+            component
+                .removeListener('dblclick', this.onComponentDblClick)
+                .addClass('text-unlocked');
+
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_TEXTUNLOCK, {'component': component}, false);
+            }
+        }
+
+        return this;
+    };
+
+    /**
+     * The component dblclick event handler
+     * 
+     * @method onComponentDblClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    ElementPanel.prototype.onComponentDblClick = function(evt){
+        this.updateFieldValue('text-locked', false);
+    };
+
+    /**
+     * The component's contents click event handler
+     * 
+     * @method onComponentContentsClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    ElementPanel.prototype.onComponentContentsClick = function(evt){
+        evt.stopPropagation();
+    };
+
+    /**
+     * The component's contents key event handler
+     * 
+     * @method onComponentContentsKey
+     * @private
+     * @param {Event} evt The event object
+     */
+    ElementPanel.prototype.onComponentContentsKey = function(evt){
+        evt.stopPropagation();
+    };
+
     return ElementPanel;
 
 })();
@@ -10144,296 +10309,6 @@ metaScore.namespace('editor.panel').Page = (function () {
     metaScore.editor.Panel.extend(PagePanel);
 
     return PagePanel;
-
-})();
-/**
- * @module Editor
- */
-
-metaScore.namespace('editor.panel').Text = (function () {
-
-    /**
-     * Fired when the component is set
-     *
-     * @event componentset
-     * @param {Object} component The component instance
-     */
-    var EVT_COMPONENTSET = 'componentset';
-
-    /**
-     * Fired when the component is unset
-     *
-     * @event componentunset
-     * @param {Object} component The component instance
-     */
-    var EVT_COMPONENTUNSET = 'componentunset';
-
-    /**
-     * Fired when the component is locked
-     *
-     * @event componentlock
-     * @param {Object} component The component instance
-     */
-    var EVT_COMPONENTLOCK = 'componentlock';
-
-    /**
-     * Fired when the component is unlocked
-     *
-     * @event componentunlock
-     * @param {Object} component The component instance
-     */
-    var EVT_COMPONENTUNLOCK = 'componentunlock';
-
-    /**
-     * A panel for {{#crossLink "player.component.element.Text"}}{{/crossLink}} components
-     * 
-     * @class Text
-     * @namespace editor.panel
-     * @extends editor.Panel
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={'title':'Text', 'buttons': [], 'selector': false]}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
-     * @param {Object} [configs.properties={'locked': ...}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
-     */
-    function TextPanel(configs) {
-        // call parent constructor
-        TextPanel.parent.call(this, configs);
-
-        this.addClass('text');
-
-        // fix event handlers scope
-        this.onComponentDblClick = metaScore.Function.proxy(this.onComponentDblClick, this);
-        this.onComponentContentsClick = metaScore.Function.proxy(this.onComponentContentsClick, this);
-        this.onComponentContentsKey = metaScore.Function.proxy(this.onComponentContentsKey, this);
-    }
-
-    TextPanel.defaults = {
-        'toolbarConfigs': {
-            'title': metaScore.Locale.t('editor.panel.Text.title', 'Text'),
-            'buttons': [],
-            'selector': false
-        },
-        'properties': {
-            'locked': {
-                'type': 'Boolean',
-                'configs': {
-                    'label': metaScore.Locale.t('editor.panel.Text.locked', 'Locked ?')
-                },
-                'setter': function(value){
-                    if(value){
-                        this.lock();
-                    }
-                    else{
-                        this.unlock();
-                    }
-                }
-            }
-        }
-    };
-
-    metaScore.editor.Panel.extend(TextPanel);
-
-    /**
-     * The fields' valuechange event handler
-     *
-     * @method onFieldValueChange
-     * @private
-     * @param {Event} evt The event object
-     */
-    TextPanel.prototype.onFieldValueChange = function(evt){
-        var component = this.getComponent(),
-            name, value;
-
-        if(!component){
-            return;
-        }
-
-        name = evt.detail.field.data('name');
-        value = evt.detail.value;
-
-        if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
-            this.configs.properties[name].setter.call(this, value);
-        }
-    };
-
-    /**
-     * Set the associated component
-     *
-     * @method setComponent
-     * @param {player.Component} component The component
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
-     */
-    TextPanel.prototype.setComponent = function(component, supressEvent){
-        if(component !== this.getComponent()){
-            if(!component){
-                return this.unsetComponent();
-            }
-
-            this.unsetComponent(true);
-
-            this.component = component;
-
-            this
-                .setupFields(this.configs.properties)
-                .updateFieldValue('locked', true)
-                .addClass('has-component');
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_COMPONENTSET, {'component': component}, false);
-            }
-        }
-
-        return this;
-    };
-
-    /**
-     * Unset the associated component
-     *
-     * @method unsetComponent
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
-     */
-    TextPanel.prototype.unsetComponent = function(supressEvent){
-        var component = this.getComponent();
-
-        this.lock().removeClass('has-component');
-
-        if(component){
-            this.component = null;
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_COMPONENTUNSET, {'component': component}, false);
-            }
-        }
-
-        return this;
-    };
-
-    /**
-     * Lock the associated component
-     * 
-     * @method lock
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
-     */
-    TextPanel.prototype.lock = function(supressEvent){
-        var component = this.getComponent();
-
-        if(component){
-            component
-                .addListener('dblclick', this.onComponentDblClick)
-                .removeClass('unlocked');
-                
-            component.contents
-                .attr('contenteditable', null)
-                .removeListener('click', this.onComponentContentsClick)
-                .removeListener('keydown', this.onComponentContentsKey)
-                .removeListener('keypress', this.onComponentContentsKey)
-                .removeListener('keyup', this.onComponentContentsKey);
-
-            this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), false);
-
-            if(component._draggable){
-                component._draggable.enable();
-            }
-            if(component._resizable){
-                component._resizable.enable();
-            }
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_COMPONENTLOCK, {'component': component}, false);
-            }
-        }
-
-        return this;
-    };
-
-    /**
-     * Unlock the associated component
-     * 
-     * @method unlock
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
-     */
-    TextPanel.prototype.unlock = function(supressEvent){
-        var component = this.getComponent();
-
-        if(component){
-            if(component._draggable){
-                component._draggable.disable();
-            }
-            if(component._resizable){
-                component._resizable.disable();
-            }
-
-            this.toggleFields(metaScore.Array.remove(Object.keys(this.getField()), 'locked'), true);
-
-            component.contents
-                .attr('contenteditable', 'true')
-                .addListener('click', this.onComponentContentsClick)
-                .addListener('keydown', this.onComponentContentsKey)
-                .addListener('keypress', this.onComponentContentsKey)
-                .addListener('keyup', this.onComponentContentsKey);
-
-            component
-                .removeListener('dblclick', this.onComponentDblClick)
-                .addClass('unlocked');
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_COMPONENTUNLOCK, {'component': component}, false);
-            }
-        }
-
-        return this;
-    };
-
-    /**
-     * Disable the panel
-     *
-     * @method disable
-     * @chainable
-     */
-    TextPanel.prototype.disable = function(){
-        this.lock();
-
-        return TextPanel.parent.prototype.disable.call(this);
-    };
-
-    /**
-     * The component dblclick event handler
-     * 
-     * @method onComponentDblClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    TextPanel.prototype.onComponentDblClick = function(evt){
-        this.updateFieldValue('locked', false);
-    };
-
-    /**
-     * The component's contents click event handler
-     * 
-     * @method onComponentContentsClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    TextPanel.prototype.onComponentContentsClick = function(evt){
-        evt.stopPropagation();
-    };
-
-    /**
-     * The component's contents key event handler
-     * 
-     * @method onComponentContentsKey
-     * @private
-     * @param {Event} evt The event object
-     */
-    TextPanel.prototype.onComponentContentsKey = function(evt){
-        evt.stopPropagation();
-    };
-
-    return TextPanel;
 
 })();
 /**
