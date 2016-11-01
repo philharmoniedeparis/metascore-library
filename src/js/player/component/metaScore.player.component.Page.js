@@ -151,9 +151,10 @@ metaScore.namespace('player.component').Page = (function () {
      * @return {player.component.Element} The element
      */
     Page.prototype.addElement = function(configs, supressEvent){
-        var element;
+        var element,
+            existing = configs instanceof metaScore.player.component.Element;
 
-        if(configs instanceof metaScore.player.component.Element){
+        if(existing){
             element = configs;
             element.appendTo(this);
         }
@@ -164,7 +165,7 @@ metaScore.namespace('player.component').Page = (function () {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element});
+            this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element, 'new': !existing});
         }
 
         return element;

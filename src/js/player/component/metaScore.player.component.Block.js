@@ -333,9 +333,10 @@ metaScore.namespace('player.component').Block = (function () {
      * @return {player.component.Page} The added page
      */
     Block.prototype.addPage = function(configs, index, supressEvent){
-        var page, page_index, sibling;
+        var page, page_index, sibling,
+            existing = configs instanceof metaScore.player.component.Page;
 
-        if(configs instanceof metaScore.player.component.Page){
+        if(existing){
             page = configs;
 
             if(metaScore.Var.is(index, 'number')){
@@ -365,7 +366,7 @@ metaScore.namespace('player.component').Block = (function () {
         this.setActivePage(page);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page});
+            this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page, 'new': !existing});
         }
 
         return page;

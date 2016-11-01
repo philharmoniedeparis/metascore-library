@@ -265,6 +265,17 @@
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[autoSetOnActivation=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether to set the value to the current time when activated</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
                         </li>
                     </ul>
@@ -421,15 +432,19 @@
 
                             </li>
                             <li class="index-item method private">
+                                <a href="#method_onCheckboxChange">onCheckboxChange</a>
+
+                            </li>
+                            <li class="index-item method private">
                                 <a href="#method_onInClick">onInClick</a>
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_onInput">onInput</a>
+                                <a href="#method_onOutClick">onOutClick</a>
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_onOutClick">onOutClick</a>
+                                <a href="#method_onTimeInput">onTimeInput</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -2428,6 +2443,59 @@
 
 
 </div>
+<div id="method_onCheckboxChange" class="method item private">
+    <h3 class="name"><code>onCheckboxChange</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The change event handler for the checkbox</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_onInClick" class="method item private">
     <h3 class="name"><code>onInClick</code></h3>
 
@@ -2481,59 +2549,6 @@
 
 
 </div>
-<div id="method_onInput" class="method item private">
-    <h3 class="name"><code>onInput</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The input event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_onOutClick" class="method item private">
     <h3 class="name"><code>onOutClick</code></h3>
 
@@ -2563,6 +2578,59 @@
 
     <div class="description">
         <p>The out button&#39;s click event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onTimeInput" class="method item private">
+    <h3 class="name"><code>onTimeInput</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The input event handler for all sub-fields</p>
 
     </div>
 

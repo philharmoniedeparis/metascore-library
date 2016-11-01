@@ -798,7 +798,7 @@ metaScore.Editor = (function(){
         var field = evt.target._metaScore,
             time = field.getValue();
 
-        this.getPlayer().media.setTime(time);
+        this.getPlayer().getMedia().setTime(time);
     };
 
     /**
@@ -824,7 +824,7 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onTimeFieldIn = function(evt){
         var field = evt.target._metaScore,
-            time = this.getPlayer().media.getTime();
+            time = this.getPlayer().getMedia().getTime();
 
         field.setValue(time);
     };
@@ -840,7 +840,7 @@ metaScore.Editor = (function(){
         var field = evt.target._metaScore,
             time = field.getValue();
 
-        this.getPlayer().media.setTime(time);
+        this.getPlayer().getMedia().setTime(time);
     };
 
     /**
@@ -1653,7 +1653,16 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
      */
     Editor.prototype.onPageElementAdd = function(evt){
-        var page = evt.detail.page;
+        var page = evt.detail.page,
+            time;
+        
+        if((evt.detail.new) && (evt.detail.element.data('type') === 'Cursor')){
+            time = this.getPlayer().getMedia().getTime();
+            
+            evt.detail.element
+                .setProperty('start-time', time)
+                .setProperty('end-time', time);
+        }
 
         if(page === this.panels.page.getComponent()){
             this.updateElementSelector();

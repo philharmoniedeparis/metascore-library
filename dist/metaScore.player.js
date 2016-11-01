@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "6adb0d";
+        return "1d5e4a";
     },
 
     /**
@@ -5924,9 +5924,10 @@ metaScore.namespace('player.component').Block = (function () {
      * @return {player.component.Page} The added page
      */
     Block.prototype.addPage = function(configs, index, supressEvent){
-        var page, page_index, sibling;
+        var page, page_index, sibling,
+            existing = configs instanceof metaScore.player.component.Page;
 
-        if(configs instanceof metaScore.player.component.Page){
+        if(existing){
             page = configs;
 
             if(metaScore.Var.is(index, 'number')){
@@ -5956,7 +5957,7 @@ metaScore.namespace('player.component').Block = (function () {
         this.setActivePage(page);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page});
+            this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page, 'new': !existing});
         }
 
         return page;
@@ -6584,7 +6585,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
                     'checkbox': true,
                     'inButton': true,
-                    'outButton': true
+                    'outButton': true,
+                    'autoSetOnActivation': true
                 },
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
@@ -6600,7 +6602,8 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
                     'checkbox': true,
                     'inButton': true,
-                    'outButton': true
+                    'outButton': true,
+                    'autoSetOnActivation': true
                 },
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));
@@ -7391,9 +7394,10 @@ metaScore.namespace('player.component').Page = (function () {
      * @return {player.component.Element} The element
      */
     Page.prototype.addElement = function(configs, supressEvent){
-        var element;
+        var element,
+            existing = configs instanceof metaScore.player.component.Element;
 
-        if(configs instanceof metaScore.player.component.Element){
+        if(existing){
             element = configs;
             element.appendTo(this);
         }
@@ -7404,7 +7408,7 @@ metaScore.namespace('player.component').Page = (function () {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element});
+            this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element, 'new': !existing});
         }
 
         return element;

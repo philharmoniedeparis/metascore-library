@@ -41,6 +41,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Boolean} [configs.checkbox=false] Whether to show the enable/disable checkbox
      * @param {Boolean} [configs.inButton=false] Whether to show the in button
      * @param {Boolean} [configs.outButton=false] Whether to show the out button
+     * @param {Boolean} [configs.autoSetOnActivation=false] Whether to set the value to the current time when activated
      */
     function TimeField(configs) {
         this.configs = this.getConfigs(configs);
@@ -57,7 +58,8 @@ metaScore.namespace('editor.field').Time = (function () {
         'max': null,
         'checkbox': false,
         'inButton': false,
-        'outButton': false
+        'outButton': false,
+        'autoSetOnActivation': false
     };
 
     metaScore.editor.Field.extend(TimeField);
@@ -81,33 +83,33 @@ metaScore.namespace('editor.field').Time = (function () {
 
         if(this.configs.checkbox){
             this.checkbox = new metaScore.Dom('<input/>', {'type': 'checkbox'})
-                .addListener('change', metaScore.Function.proxy(this.onInput, this))
+                .addListener('change', metaScore.Function.proxy(this.onCheckboxChange, this))
                 .appendTo(this.input_wrapper);
          }
 
         this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
-            .addListener('input', metaScore.Function.proxy(this.onInput, this))
+            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
             .appendTo(this.input_wrapper);
 
         new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
             .appendTo(this.input_wrapper);
 
         this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'})
-            .addListener('input', metaScore.Function.proxy(this.onInput, this))
+            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
             .appendTo(this.input_wrapper);
 
         new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
             .appendTo(this.input_wrapper);
 
         this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'})
-            .addListener('input', metaScore.Function.proxy(this.onInput, this))
+            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
             .appendTo(this.input_wrapper);
 
         new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'})
             .appendTo(this.input_wrapper);
 
         this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'})
-            .addListener('input', metaScore.Function.proxy(this.onInput, this))
+            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
             .appendTo(this.input_wrapper);
 
         if(this.configs.inButton || this.configs.outButton){
@@ -142,13 +144,28 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * The input event handler
+     * The change event handler for the checkbox
      * 
-     * @method onInput
+     * @method onCheckboxChange
      * @private
      * @param {Event} evt The event object
      */
-    TimeField.prototype.onInput = function(evt){
+    TimeField.prototype.onCheckboxChange = function(evt){
+        this.onTimeInput(evt);
+        
+        if(this.in && this.configs.autoSetOnActivation && this.isActive()){
+            this.in.triggerEvent('click');
+        }
+    };
+
+    /**
+     * The input event handler for all sub-fields
+     * 
+     * @method onTimeInput
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onTimeInput = function(evt){
         var active = this.isActive(),
             centiseconds_val, seconds_val, minutes_val, hours_val;
 
