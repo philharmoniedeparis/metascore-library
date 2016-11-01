@@ -14,6 +14,13 @@ metaScore.namespace('editor.field').Time = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
+     * Fired when the field's checkbox changes
+     *
+     * @event checkboxchange
+     */
+    var EVT_CHECKBOXCHANGE = 'checkboxchange';
+
+    /**
      * Fired when the in button is clicked
      *
      * @event valuein
@@ -41,7 +48,6 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Boolean} [configs.checkbox=false] Whether to show the enable/disable checkbox
      * @param {Boolean} [configs.inButton=false] Whether to show the in button
      * @param {Boolean} [configs.outButton=false] Whether to show the out button
-     * @param {Boolean} [configs.autoSetOnActivation=false] Whether to set the value to the current time when activated
      */
     function TimeField(configs) {
         this.configs = this.getConfigs(configs);
@@ -58,8 +64,7 @@ metaScore.namespace('editor.field').Time = (function () {
         'max': null,
         'checkbox': false,
         'inButton': false,
-        'outButton': false,
-        'autoSetOnActivation': false
+        'outButton': false
     };
 
     metaScore.editor.Field.extend(TimeField);
@@ -144,24 +149,22 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * The change event handler for the checkbox
+     * The checkbox change event handler
      * 
      * @method onCheckboxChange
      * @private
      * @param {Event} evt The event object
      */
-    TimeField.prototype.onCheckboxChange = function(evt){
+    TimeField.prototype.onCheckboxChange = function(evt){        
         this.onTimeInput(evt);
         
-        if(this.in && this.configs.autoSetOnActivation && this.isActive()){
-            this.in.triggerEvent('click');
-        }
+        this.triggerEvent(EVT_CHECKBOXCHANGE, {'field': this, 'active': this.isActive()}, true, false);
     };
 
     /**
-     * The input event handler for all sub-fields
+     * The sub-field's input event handler
      * 
-     * @method onTimeInput
+     * @method onInput
      * @private
      * @param {Event} evt The event object
      */

@@ -228,8 +228,7 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
                     'checkbox': true,
                     'inButton': true,
-                    'outButton': true,
-                    'autoSetOnActivation': true
+                    'outButton': true
                 },
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
@@ -245,8 +244,7 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
                     'checkbox': true,
                     'inButton': true,
-                    'outButton': true,
-                    'autoSetOnActivation': true
+                    'outButton': true
                 },
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));

@@ -60,12 +60,6 @@ metaScore.namespace('player').CuePoint = (function () {
         this.stop = metaScore.Function.proxy(this.stop, this);
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
         this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
-
-        if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
-            
-            this.onMediaTimeUpdate();
-        }
     }
 
     metaScore.Evented.extend(CuePoint);
@@ -100,12 +94,12 @@ metaScore.namespace('player').CuePoint = (function () {
 
                 this.previous_time = cur_time;
             }
+            
+            this.triggerEvent(EVT_UPDATE);
 
             if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
                 this.stop();
             }
-
-            this.triggerEvent(EVT_UPDATE);
         }
     };
 
@@ -142,6 +136,22 @@ metaScore.namespace('player').CuePoint = (function () {
     };
 
     /**
+     * Init the cuepoint
+     * 
+     * @method init
+     * @chainable
+     */
+    CuePoint.prototype.init = function(){
+        if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
+            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
+            
+            this.onMediaTimeUpdate();
+        }
+        
+        return this;
+    };
+
+    /**
      * Start executing the cuepoint
      * 
      * @method start
@@ -159,6 +169,8 @@ metaScore.namespace('player').CuePoint = (function () {
         
         this.running = true;
         this.getMedia().addListener('seeked', this.onMediaSeeked);
+
+        this.triggerEvent(EVT_UPDATE);
     };
 
     /**

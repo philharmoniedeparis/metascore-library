@@ -156,19 +156,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
     };
 
     /**
-     * The cuepoint start event handler
-     *
-     * @method onCuePointStart
-     * @private
-     * @param {Event} evt The event object
-     */
-    Cursor.prototype.onCuePointStart = function(evt){
-        Cursor.parent.prototype.onCuePointStart.call(this, evt);
-        
-        this.onCuePointUpdate(evt);
-    };
-
-    /**
      * The cuepoint update event handler
      *
      * @method onCuePointUpdate

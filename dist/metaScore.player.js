@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "1d5e4a";
+        return "4c723d";
     },
 
     /**
@@ -5061,7 +5061,8 @@ metaScore.Player = (function(){
                 delete player.cuepoint;
 
                 player.setReadingIndex(0);
-            });
+            })
+            .init();
 
             media.setTime(inTime).play();
         }
@@ -5322,6 +5323,8 @@ metaScore.namespace('player').Component = (function () {
             if(this.onCuePointStop){
                 this.cuepoint.addListener('stop', metaScore.Function.proxy(this.onCuePointStop, this));
             }
+            
+            this.cuepoint.init();
         }
 
         return this.cuepoint;
@@ -5392,12 +5395,6 @@ metaScore.namespace('player').CuePoint = (function () {
         this.stop = metaScore.Function.proxy(this.stop, this);
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
         this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
-
-        if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
-            
-            this.onMediaTimeUpdate();
-        }
     }
 
     metaScore.Evented.extend(CuePoint);
@@ -5432,12 +5429,12 @@ metaScore.namespace('player').CuePoint = (function () {
 
                 this.previous_time = cur_time;
             }
+            
+            this.triggerEvent(EVT_UPDATE);
 
             if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
                 this.stop();
             }
-
-            this.triggerEvent(EVT_UPDATE);
         }
     };
 
@@ -5474,6 +5471,22 @@ metaScore.namespace('player').CuePoint = (function () {
     };
 
     /**
+     * Init the cuepoint
+     * 
+     * @method init
+     * @chainable
+     */
+    CuePoint.prototype.init = function(){
+        if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
+            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
+            
+            this.onMediaTimeUpdate();
+        }
+        
+        return this;
+    };
+
+    /**
      * Start executing the cuepoint
      * 
      * @method start
@@ -5491,6 +5504,8 @@ metaScore.namespace('player').CuePoint = (function () {
         
         this.running = true;
         this.getMedia().addListener('seeked', this.onMediaSeeked);
+
+        this.triggerEvent(EVT_UPDATE);
     };
 
     /**
@@ -6585,8 +6600,7 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
                     'checkbox': true,
                     'inButton': true,
-                    'outButton': true,
-                    'autoSetOnActivation': true
+                    'outButton': true
                 },
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('start-time'));
@@ -6602,8 +6616,7 @@ metaScore.namespace('player.component').Element = (function () {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
                     'checkbox': true,
                     'inButton': true,
-                    'outButton': true,
-                    'autoSetOnActivation': true
+                    'outButton': true
                 },
                 'getter': function(skipDefault){
                     var value = parseFloat(this.data('end-time'));
@@ -7627,19 +7640,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         }
 
         this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
-    };
-
-    /**
-     * The cuepoint start event handler
-     *
-     * @method onCuePointStart
-     * @private
-     * @param {Event} evt The event object
-     */
-    Cursor.prototype.onCuePointStart = function(evt){
-        Cursor.parent.prototype.onCuePointStart.call(this, evt);
-        
-        this.onCuePointUpdate(evt);
     };
 
     /**

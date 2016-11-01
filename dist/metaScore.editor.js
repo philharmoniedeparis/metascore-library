@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "1d5e4a";
+        return "4c723d";
     },
 
     /**
@@ -4258,7 +4258,9 @@ metaScore.Editor = (function(){
         this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar)
             .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
             .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
-            .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this));
+            .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
+            .addDelegate('.timefield[data-name="start-time"]', 'checkboxchange', metaScore.Function.proxy(this.onElementPanelStartTimeFieldToggled, this))
+            .addDelegate('.timefield[data-name="end-time"]', 'checkboxchange', metaScore.Function.proxy(this.onElementPanelEndTimeFieldToggled, this));
 
         this.panels.element.getToolbar()
             .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
@@ -5458,6 +5460,37 @@ metaScore.Editor = (function(){
     /**
      * Element panel toolbar click event callback
      *
+     * @method onElementPanelStartTimeFieldToggled
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    Editor.prototype.onElementPanelStartTimeFieldToggled = function(evt){
+        if(evt.detail.active){
+            this.panels.element.getComponent().setProperty('start-time', this.getPlayer().getMedia().getTime());
+        }
+    };
+
+    /**
+     * Element panel toolbar click event callback
+     *
+     * @method onElementPanelEndTimeFieldToggled
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    Editor.prototype.onElementPanelEndTimeFieldToggled = function(evt){
+        var element, page;
+        
+        if(evt.detail.active){
+            element = this.panels.element.getComponent();
+            page = element.getPage();
+            
+            element.setProperty('end-time', page.getProperty('end-time'));
+        }
+    };
+
+    /**
+     * Element panel toolbar click event callback
+     *
      * @method onElementPanelToolbarClick
      * @private
      * @param {MouseEvent} evt The event object
@@ -5837,7 +5870,7 @@ metaScore.Editor = (function(){
             
             evt.detail.element
                 .setProperty('start-time', time)
-                .setProperty('end-time', time);
+                .setProperty('end-time', page.getProperty('end-time'));
         }
 
         if(page === this.panels.page.getComponent()){
@@ -9470,6 +9503,13 @@ metaScore.namespace('editor.field').Time = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
+     * Fired when the field's checkbox changes
+     *
+     * @event checkboxchange
+     */
+    var EVT_CHECKBOXCHANGE = 'checkboxchange';
+
+    /**
      * Fired when the in button is clicked
      *
      * @event valuein
@@ -9497,7 +9537,6 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Boolean} [configs.checkbox=false] Whether to show the enable/disable checkbox
      * @param {Boolean} [configs.inButton=false] Whether to show the in button
      * @param {Boolean} [configs.outButton=false] Whether to show the out button
-     * @param {Boolean} [configs.autoSetOnActivation=false] Whether to set the value to the current time when activated
      */
     function TimeField(configs) {
         this.configs = this.getConfigs(configs);
@@ -9514,8 +9553,7 @@ metaScore.namespace('editor.field').Time = (function () {
         'max': null,
         'checkbox': false,
         'inButton': false,
-        'outButton': false,
-        'autoSetOnActivation': false
+        'outButton': false
     };
 
     metaScore.editor.Field.extend(TimeField);
@@ -9600,24 +9638,22 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * The change event handler for the checkbox
+     * The checkbox change event handler
      * 
      * @method onCheckboxChange
      * @private
      * @param {Event} evt The event object
      */
-    TimeField.prototype.onCheckboxChange = function(evt){
+    TimeField.prototype.onCheckboxChange = function(evt){        
         this.onTimeInput(evt);
         
-        if(this.in && this.configs.autoSetOnActivation && this.isActive()){
-            this.in.triggerEvent('click');
-        }
+        this.triggerEvent(EVT_CHECKBOXCHANGE, {'field': this, 'active': this.isActive()}, true, false);
     };
 
     /**
-     * The input event handler for all sub-fields
+     * The sub-field's input event handler
      * 
-     * @method onTimeInput
+     * @method onInput
      * @private
      * @param {Event} evt The event object
      */

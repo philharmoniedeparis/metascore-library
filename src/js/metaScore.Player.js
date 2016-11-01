@@ -885,7 +885,8 @@ metaScore.Player = (function(){
                 delete player.cuepoint;
 
                 player.setReadingIndex(0);
-            });
+            })
+            .init();
 
             media.setTime(inTime).play();
         }
