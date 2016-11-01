@@ -233,14 +233,14 @@ body {
                  */
   display: block;
 }
-.metaScore-player .metaScore-component.element:not([data-r-index]):not([data-start-time]),
-.metaScore-player .metaScore-component.element[data-r-index="0"]:not([data-start-time]),
+.metaScore-player .metaScore-component.element:not([data-r-index]):not([data-start-time]):not([data-end-time]),
+.metaScore-player .metaScore-component.element[data-r-index="0"]:not([data-start-time]):not([data-end-time]),
 .metaScore-player .metaScore-component.element:not([data-r-index]).active,
 .metaScore-player .metaScore-component.element[data-r-index="0"].active {
   pointer-events: auto;
 }
-.metaScore-player .metaScore-component.element:not([data-r-index]):not([data-start-time]) .contents,
-.metaScore-player .metaScore-component.element[data-r-index="0"]:not([data-start-time]) .contents,
+.metaScore-player .metaScore-component.element:not([data-r-index]):not([data-start-time]):not([data-end-time]) .contents,
+.metaScore-player .metaScore-component.element[data-r-index="0"]:not([data-start-time]):not([data-end-time]) .contents,
 .metaScore-player .metaScore-component.element:not([data-r-index]).active .contents,
 .metaScore-player .metaScore-component.element[data-r-index="0"].active .contents {
   display: block;

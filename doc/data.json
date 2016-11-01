@@ -2459,21 +2459,22 @@
                         {
                             "name": "inTime",
                             "description": "The time at which the cuepoint starts",
-                            "type": "Number"
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "outTime",
+                            "description": "The time at which the cuepoint stops",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "considerError",
+                            "description": "Whether to estimate and use the error margin in timed events",
+                            "type": "Boolean",
+                            "optional": true
                         }
                     ]
-                },
-                {
-                    "name": "onfigs.outTime",
-                    "description": "The time at which the cuepoint stops",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "onfigs.considerError",
-                    "description": "Whether to estimate and use the error margin in timed events",
-                    "type": "Boolean",
-                    "optional": true
                 }
             ]
         },
@@ -11230,7 +11231,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 79,
+            "line": 80,
             "description": "The media's timeupdate event handler",
             "itemtype": "method",
             "name": "onMediaTimeUpdate",
@@ -11248,7 +11249,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 111,
+            "line": 112,
             "description": "The media's seek event handler",
             "itemtype": "method",
             "name": "onMediaSeeked",
@@ -11266,7 +11267,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 133,
+            "line": 134,
             "description": "Get the media component on which this cuepoint is attached",
             "itemtype": "method",
             "name": "getMedia",
@@ -11279,7 +11280,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 143,
+            "line": 144,
             "description": "Start executing the cuepoint",
             "itemtype": "method",
             "name": "start",
@@ -11297,7 +11298,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 169,
+            "line": 164,
             "description": "Stop executing the cuepoint",
             "itemtype": "method",
             "name": "stop",
@@ -11315,7 +11316,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 193,
+            "line": 189,
             "description": "Destroy the cuepoint",
             "itemtype": "method",
             "name": "destroy",

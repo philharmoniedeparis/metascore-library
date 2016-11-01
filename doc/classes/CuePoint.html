@@ -162,12 +162,6 @@
                         <li class="arg">
                                 <code>configs</code>
                         </li>
-                        <li class="arg">
-                                <code class="optional">[onfigs.outTime]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[onfigs.considerError]</code>
-                        </li>
                     </ul><span class="paren">)</span>
                 </div>
         
@@ -216,8 +210,9 @@
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name">inTime</code>
+                                            <code class="param-name optional">[inTime]</code>
                                             <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
                                             <p>The time at which the cuepoint starts</p>
@@ -225,31 +220,29 @@
                                         </div>
         
                                     </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[outTime]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>The time at which the cuepoint stops</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[considerError]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether to estimate and use the error margin in timed events</p>
+        
+                                        </div>
+        
+                                    </li>
                                 </ul>
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[onfigs.outTime]</code>
-                                <span class="type">Number</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>The time at which the cuepoint stops</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[onfigs.considerError]</code>
-                                <span class="type">Boolean</span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Whether to estimate and use the error margin in timed events</p>
-        
-                            </div>
-        
                         </li>
                     </ul>
                 </div>
