@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-11-01 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-11-07 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "4c723d";
+        return "3ec315";
     },
 
     /**
@@ -7519,6 +7519,38 @@ metaScore.namespace('player.component.element').Cursor = (function () {
 
     Cursor.defaults = {
         'properties': metaScore.Object.extend({}, Cursor.parent.defaults.properties, {
+            'start-time': {
+                'type': 'Time',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
+                    'checkbox': false,
+                    'inButton': true,
+                    'outButton': true
+                },
+                'getter': function(skipDefault){
+                    var value = parseFloat(this.data('start-time'));
+                    return isNaN(value) ? null : value;
+                },
+                'setter': function(value){
+                    this.data('start-time', isNaN(value) ? null : value);
+                }
+            },
+            'end-time': {
+                'type': 'Time',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
+                    'checkbox': false,
+                    'inButton': true,
+                    'outButton': true
+                },
+                'getter': function(skipDefault){
+                    var value = parseFloat(this.data('end-time'));
+                    return isNaN(value) ? null : value;
+                },
+                'setter': function(value){
+                    this.data('end-time', isNaN(value) ? null : value);
+                }
+            },
             'direction': {
                 'type': 'Select',
                 'configs': {

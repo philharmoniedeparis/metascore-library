@@ -32,6 +32,38 @@ metaScore.namespace('player.component.element').Cursor = (function () {
 
     Cursor.defaults = {
         'properties': metaScore.Object.extend({}, Cursor.parent.defaults.properties, {
+            'start-time': {
+                'type': 'Time',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
+                    'checkbox': false,
+                    'inButton': true,
+                    'outButton': true
+                },
+                'getter': function(skipDefault){
+                    var value = parseFloat(this.data('start-time'));
+                    return isNaN(value) ? null : value;
+                },
+                'setter': function(value){
+                    this.data('start-time', isNaN(value) ? null : value);
+                }
+            },
+            'end-time': {
+                'type': 'Time',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
+                    'checkbox': false,
+                    'inButton': true,
+                    'outButton': true
+                },
+                'getter': function(skipDefault){
+                    var value = parseFloat(this.data('end-time'));
+                    return isNaN(value) ? null : value;
+                },
+                'setter': function(value){
+                    this.data('end-time', isNaN(value) ? null : value);
+                }
+            },
             'direction': {
                 'type': 'Select',
                 'configs': {

@@ -1302,13 +1302,14 @@ metaScore.Editor = (function(){
      * @param {MouseEvent} evt The event object
      */
     Editor.prototype.onElementPanelEndTimeFieldToggled = function(evt){
-        var element, page;
+        var element, page, block;
         
         if(evt.detail.active){
             element = this.panels.element.getComponent();
             page = element.getPage();
+            block = page.getBlock();
             
-            element.setProperty('end-time', page.getProperty('end-time'));
+            element.setProperty('end-time', block.getProperty('synched') ? page.getProperty('end-time') : this.getPlayer().getMedia().getDuration());
         }
     };
 
@@ -1687,14 +1688,15 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onPageElementAdd = function(evt){
         var page = evt.detail.page,
-            time;
+            block, media;
         
         if((evt.detail.new) && (evt.detail.element.data('type') === 'Cursor')){
-            time = this.getPlayer().getMedia().getTime();
+            block = page.getBlock();
+            media = this.getPlayer().getMedia();
             
             evt.detail.element
-                .setProperty('start-time', time)
-                .setProperty('end-time', page.getProperty('end-time'));
+                .setProperty('start-time', media.getTime())
+                .setProperty('end-time', block.getProperty('synched') ? page.getProperty('end-time') : media.getDuration());
         }
 
         if(page === this.panels.page.getComponent()){
