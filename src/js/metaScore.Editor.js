@@ -825,7 +825,7 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
      */
     Editor.prototype.onTimeFieldIn = function(evt){
-        var field = evt.target._metaScore,
+        var field = evt.detail.field,
             time = this.getPlayer().getMedia().getTime();
 
         field.setValue(time);
@@ -839,8 +839,7 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valueout:event"}}Time.valueout{{/crossLink}}
      */
     Editor.prototype.onTimeFieldOut = function(evt){
-        var field = evt.target._metaScore,
-            time = field.getValue();
+        var time = evt.detail.value;
 
         this.getPlayer().getMedia().setTime(time);
     };
@@ -1288,9 +1287,10 @@ metaScore.Editor = (function(){
      * @private
      * @param {MouseEvent} evt The event object
      */
-    Editor.prototype.onElementPanelStartTimeFieldToggled = function(evt){
-        if(evt.detail.active){
-            this.panels.element.getComponent().setProperty('start-time', this.getPlayer().getMedia().getTime());
+    Editor.prototype.onElementPanelStartTimeFieldToggled = function(evt){        
+        if(evt.detail.active){            
+            this.panels.element.getComponent().setProperty('start-time', this.getPlayer().getMedia().getTime());            
+            this.panels.element.getField('end-time').toggle(true);
         }
     };
 

@@ -7317,7 +7317,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 297,
+            "line": 293,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -7335,7 +7335,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 310,
+            "line": 306,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -7353,7 +7353,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 323,
+            "line": 319,
             "description": "Check whether the field's checkbox is checked",
             "itemtype": "method",
             "name": "isActive",
@@ -7367,7 +7367,25 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 333,
+            "line": 329,
+            "description": "Activate or deactivate the field by toggling its checkbox if available",
+            "itemtype": "method",
+            "name": "toggle",
+            "params": [
+                {
+                    "name": "state",
+                    "description": "True to activate or false to deactivate the field",
+                    "type": "Boolean"
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 344,
             "description": "Disable the field",
             "itemtype": "method",
             "name": "disable",
@@ -7378,7 +7396,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 361,
+            "line": 372,
             "description": "Enable the field",
             "itemtype": "method",
             "name": "enable",
@@ -7389,7 +7407,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 394,
+            "line": 405,
             "description": "Toggle the field's readonly state",
             "itemtype": "method",
             "name": "readonly",
@@ -7408,7 +7426,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 424,
+            "line": 435,
             "description": "Reset the field's configs",
             "itemtype": "method",
             "name": "reset",
@@ -11959,7 +11977,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 848,
+            "line": 847,
             "description": "Sidebar resizestart event callback",
             "itemtype": "method",
             "name": "onSidebarResizeStart",
@@ -11977,7 +11995,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 859,
+            "line": 858,
             "description": "Sidebar resize event callback",
             "itemtype": "method",
             "name": "onSidebarResize",
@@ -11995,7 +12013,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 872,
+            "line": 871,
             "description": "Sidebar resizeend event callback",
             "itemtype": "method",
             "name": "onSidebarResizeEnd",
@@ -12013,7 +12031,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 883,
+            "line": 882,
             "description": "Sidebar resize handle dblclick event callback",
             "itemtype": "method",
             "name": "onSidebarResizeDblclick",
@@ -12031,7 +12049,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 896,
+            "line": 895,
             "description": "Block panel componentbeforeset event callback",
             "itemtype": "method",
             "name": "onBlockBeforeSet",
@@ -12049,7 +12067,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 910,
+            "line": 909,
             "description": "Block panel componentset event callback",
             "itemtype": "method",
             "name": "onBlockSet",
@@ -12067,7 +12085,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 937,
+            "line": 936,
             "description": "Block panel componentunset event callback",
             "itemtype": "method",
             "name": "onBlockUnset",
@@ -12085,7 +12103,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 949,
+            "line": 948,
             "description": "Block panel valuechange event callback",
             "itemtype": "method",
             "name": "onBlockPanelValueChange",
@@ -12103,7 +12121,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 972,
+            "line": 971,
             "description": "Block panel toolbar click event callback",
             "itemtype": "method",
             "name": "onBlockPanelToolbarClick",
@@ -12121,7 +12139,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 998,
+            "line": 997,
             "description": "Block panel toolbar selector valuechange event callback",
             "itemtype": "method",
             "name": "onBlockPanelSelectorChange",
@@ -12139,7 +12157,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1021,
+            "line": 1020,
             "description": "Page panel componentbeforeset event callback",
             "itemtype": "method",
             "name": "onPageBeforeSet",
@@ -12157,7 +12175,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1036,
+            "line": 1035,
             "description": "Page panel componentset event callback",
             "itemtype": "method",
             "name": "onPageSet",
@@ -12175,7 +12193,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1088,
+            "line": 1087,
             "description": "Page panel componentunset event callback",
             "itemtype": "method",
             "name": "onPageUnset",
@@ -12193,7 +12211,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1104,
+            "line": 1103,
             "description": "Page panel valuechange event callback",
             "itemtype": "method",
             "name": "onPagePanelValueChange",
@@ -12211,7 +12229,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1171,
+            "line": 1170,
             "description": "Page panel toolbar click event callback",
             "itemtype": "method",
             "name": "onPagePanelToolbarClick",
@@ -12229,7 +12247,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1197,
+            "line": 1196,
             "description": "Page panel toolbar selector valuechange event callback",
             "itemtype": "method",
             "name": "onPagePanelSelectorChange",
@@ -12247,7 +12265,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1218,
+            "line": 1217,
             "description": "Element panel componentbeforeset event callback",
             "itemtype": "method",
             "name": "onElementBeforeSet",
@@ -12265,7 +12283,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1232,
+            "line": 1231,
             "description": "Element panel componentset event callback",
             "itemtype": "method",
             "name": "onElementSet",
@@ -12283,7 +12301,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1248,
+            "line": 1247,
             "description": "Element panel valuechange event callback",
             "itemtype": "method",
             "name": "onElementPanelValueChange",
@@ -12301,7 +12319,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1284,
+            "line": 1283,
             "description": "Element panel toolbar click event callback",
             "itemtype": "method",
             "name": "onElementPanelStartTimeFieldToggled",

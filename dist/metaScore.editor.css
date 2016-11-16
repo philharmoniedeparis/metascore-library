@@ -901,15 +901,18 @@
   border-radius: 10px;
   background-clip: padding-box;
 }
-.metaScore-editor .overlay.color-selector .inner canvas {
+.metaScore-editor .overlay.color-selector .inner .contents {
+  overflow: hidden;
+}
+.metaScore-editor .overlay.color-selector .inner .contents canvas {
   display: block;
 }
-.metaScore-editor .overlay.color-selector .inner .gradient {
+.metaScore-editor .overlay.color-selector .inner .contents .gradient {
   position: relative;
   float: left;
   cursor: crosshair;
 }
-.metaScore-editor .overlay.color-selector .inner .gradient .position {
+.metaScore-editor .overlay.color-selector .inner .contents .gradient .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -922,12 +925,12 @@
   background-clip: padding-box;
   pointer-events: none;
 }
-.metaScore-editor .overlay.color-selector .inner .alpha {
+.metaScore-editor .overlay.color-selector .inner .contents .alpha {
   position: relative;
   float: left;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .overlay.color-selector .inner .alpha .position {
+.metaScore-editor .overlay.color-selector .inner .contents .alpha .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -937,37 +940,37 @@
   background: #000;
   pointer-events: none;
 }
-.metaScore-editor .overlay.color-selector .inner .controls {
+.metaScore-editor .overlay.color-selector .inner .contents .controls {
   width: 80px;
   float: left;
   margin-left: 10px;
   pointer-events: none;
 }
-.metaScore-editor .overlay.color-selector .inner .controls input[type=number] {
+.metaScore-editor .overlay.color-selector .inner .contents .controls input[type=number] {
   width: 3em;
   margin: 0.25em 0.5em;
   border: 2px inset;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.color-selector .inner .controls button {
+.metaScore-editor .overlay.color-selector .inner .contents .controls button {
   width: 100%;
   padding: 0.5em;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.color-selector .inner .controls .canvas-wrapper {
+.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper {
   height: 40px;
   border: 1px solid #ccc;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .overlay.color-selector .inner .controls .canvas-wrapper.current {
+.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper.current {
   margin-top: 5px;
 }
-.metaScore-editor .overlay.color-selector .inner .controls .canvas-wrapper.previous {
+.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper.previous {
   height: 10px;
   margin-bottom: 5px;
   margin-top: -1px;
 }
-.metaScore-editor .overlay.color-selector .inner .controls .canvas-wrapper canvas {
+.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper canvas {
   width: 100%;
   height: 100%;
 }

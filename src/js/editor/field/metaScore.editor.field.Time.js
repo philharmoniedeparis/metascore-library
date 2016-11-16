@@ -195,7 +195,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Event} evt The event object
      */
     TimeField.prototype.onInClick = function(evt){
-        this.triggerEvent(EVT_VALUEIN);
+        this.triggerEvent(EVT_VALUEIN, {'field': this});
     };
 
     /**
@@ -206,7 +206,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Event} evt The event object
      */
     TimeField.prototype.onOutClick = function(evt){
-        this.triggerEvent(EVT_VALUEOUT);
+        this.triggerEvent(EVT_VALUEOUT, {'field': this, 'value': this.getValue()});
     };
 
     /**
@@ -244,9 +244,7 @@ metaScore.namespace('editor.field').Time = (function () {
                 }
             }
 
-            if(this.checkbox){
-                this.checkbox.attr('checked', null);
-            }
+            this.toggle(false);
         }
         else{
             this.value = Math.floor(centiseconds);
@@ -282,9 +280,7 @@ metaScore.namespace('editor.field').Time = (function () {
             this.minutes.val(minutes_val);
             this.hours.val(hours_val);
 
-            if(this.checkbox){
-                this.checkbox.attr('checked', 'checked');
-            }
+            this.toggle(true);
         }
 
         if(supressEvent !== true){
@@ -328,6 +324,21 @@ metaScore.namespace('editor.field').Time = (function () {
      */
     TimeField.prototype.isActive = function(){
         return !this.checkbox || this.checkbox.is(":checked");
+    };
+
+    /**
+     * Activate or deactivate the field by toggling its checkbox if available
+     * 
+     * @method toggle
+     * @param {Boolean} state True to activate or false to deactivate the field
+     * @chainable
+     */
+    TimeField.prototype.toggle = function(state){
+        if(this.checkbox && (state !== this.checkbox.is(":checked"))){
+            this.checkbox.get(0).click();
+        }
+        
+        return this;
     };
 
     /**

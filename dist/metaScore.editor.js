@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-11-07 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-11-16 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "3ec315";
+        return "f1ea9e";
     },
 
     /**
@@ -5001,7 +5001,7 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
      */
     Editor.prototype.onTimeFieldIn = function(evt){
-        var field = evt.target._metaScore,
+        var field = evt.detail.field,
             time = this.getPlayer().getMedia().getTime();
 
         field.setValue(time);
@@ -5015,8 +5015,7 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valueout:event"}}Time.valueout{{/crossLink}}
      */
     Editor.prototype.onTimeFieldOut = function(evt){
-        var field = evt.target._metaScore,
-            time = field.getValue();
+        var time = evt.detail.value;
 
         this.getPlayer().getMedia().setTime(time);
     };
@@ -5464,9 +5463,10 @@ metaScore.Editor = (function(){
      * @private
      * @param {MouseEvent} evt The event object
      */
-    Editor.prototype.onElementPanelStartTimeFieldToggled = function(evt){
-        if(evt.detail.active){
-            this.panels.element.getComponent().setProperty('start-time', this.getPlayer().getMedia().getTime());
+    Editor.prototype.onElementPanelStartTimeFieldToggled = function(evt){        
+        if(evt.detail.active){            
+            this.panels.element.getComponent().setProperty('start-time', this.getPlayer().getMedia().getTime());            
+            this.panels.element.getField('end-time').toggle(true);
         }
     };
 
@@ -9686,7 +9686,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Event} evt The event object
      */
     TimeField.prototype.onInClick = function(evt){
-        this.triggerEvent(EVT_VALUEIN);
+        this.triggerEvent(EVT_VALUEIN, {'field': this});
     };
 
     /**
@@ -9697,7 +9697,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Event} evt The event object
      */
     TimeField.prototype.onOutClick = function(evt){
-        this.triggerEvent(EVT_VALUEOUT);
+        this.triggerEvent(EVT_VALUEOUT, {'field': this, 'value': this.getValue()});
     };
 
     /**
@@ -9735,9 +9735,7 @@ metaScore.namespace('editor.field').Time = (function () {
                 }
             }
 
-            if(this.checkbox){
-                this.checkbox.attr('checked', null);
-            }
+            this.toggle(false);
         }
         else{
             this.value = Math.floor(centiseconds);
@@ -9773,9 +9771,7 @@ metaScore.namespace('editor.field').Time = (function () {
             this.minutes.val(minutes_val);
             this.hours.val(hours_val);
 
-            if(this.checkbox){
-                this.checkbox.attr('checked', 'checked');
-            }
+            this.toggle(true);
         }
 
         if(supressEvent !== true){
@@ -9819,6 +9815,21 @@ metaScore.namespace('editor.field').Time = (function () {
      */
     TimeField.prototype.isActive = function(){
         return !this.checkbox || this.checkbox.is(":checked");
+    };
+
+    /**
+     * Activate or deactivate the field by toggling its checkbox if available
+     * 
+     * @method toggle
+     * @param {Boolean} state True to activate or false to deactivate the field
+     * @chainable
+     */
+    TimeField.prototype.toggle = function(state){
+        if(this.checkbox && (state !== this.checkbox.is(":checked"))){
+            this.checkbox.get(0).click();
+        }
+        
+        return this;
     };
 
     /**
