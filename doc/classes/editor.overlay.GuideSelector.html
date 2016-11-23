@@ -63,6 +63,7 @@
                                 <li><a href="../classes/editor.field.TextareaField.html">editor.field.TextareaField</a></li>
                                 <li><a href="../classes/editor.field.TextField.html">editor.field.TextField</a></li>
                                 <li><a href="../classes/editor.field.TimeField.html">editor.field.TimeField</a></li>
+                                <li><a href="../classes/editor.Fieldset.html">editor.Fieldset</a></li>
                                 <li><a href="../classes/editor.History.html">editor.History</a></li>
                                 <li><a href="../classes/editor.MainMenu.html">editor.MainMenu</a></li>
                                 <li><a href="../classes/editor.overlay.BorderRadius.html">editor.overlay.BorderRadius</a></li>
@@ -393,12 +394,24 @@
                                 <a href="#method_is">is</a>
 
                             </li>
+                            <li class="index-item method private">
+                                <a href="#method_load">load</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_offset">offset</a>
 
                             </li>
                             <li class="index-item method private inherited">
                                 <a href="#method_onCloseClick">onCloseClick</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onFilterFormSubmit">onFilterFormSubmit</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onFiltersResetClick">onFiltersResetClick</a>
 
                             </li>
                             <li class="index-item method private">
@@ -423,6 +436,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_removeClass">removeClass</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_setupResults">setupResults</a>
 
                             </li>
                             <li class="index-item method private inherited">
@@ -2216,6 +2233,60 @@
 
 
 </div>
+<div id="method_load" class="method item private">
+    <h3 class="name"><code>load</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>data</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Load guides</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">data</code>
+                        <span class="type">FormData</span>
+
+
+                    <div class="param-description">
+                        <p>The data to send with the request</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_offset" class="method item inherited">
     <h3 class="name"><code>offset</code></h3>
 
@@ -2288,6 +2359,112 @@
 
     <div class="description">
         <p>The close button&#39;s click handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onFilterFormSubmit" class="method item private">
+    <h3 class="name"><code>onFilterFormSubmit</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The filter form submit event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onFiltersResetClick" class="method item private">
+    <h3 class="name"><code>onFiltersResetClick</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The filters reset button click event handler</p>
 
     </div>
 
@@ -2649,7 +2826,38 @@
 
 
 </div>
-<div id="method_setupUI" class="method item private inherited">
+<div id="method_setupResults" class="method item private">
+    <h3 class="name"><code>setupResults</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Setup the results</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_setupUI" class="method item private">
     <h3 class="name"><code>setupUI</code></h3>
 
         <span class="paren">()</span>
@@ -2663,8 +2871,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Overlay.html#method_setupUI">Overlay</a>:
+            <p>Inherited from
+            <a href="../classes/Overlay.html#method_setupUI">
+                Overlay
+            </a>
         </p>
 
 

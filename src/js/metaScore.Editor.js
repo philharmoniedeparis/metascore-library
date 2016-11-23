@@ -454,7 +454,7 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onGuideDeleteConfirm = function(){
         var id = this.getPlayer().getId(),
-            component,    options;
+            component, options;
 
         options = metaScore.Object.extend({}, {
             'dataType': 'json',

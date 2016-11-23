@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-11-16 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-11-23 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "f1ea9e";
+        return "80392d";
     },
 
     /**
@@ -1739,9 +1739,22 @@ metaScore.Ajax = (function () {
                 'success': null,
                 'error': null,
                 'scope': this
-            };
+            },
+            params;
 
         options = metaScore.Object.extend({}, defaults, options);
+        
+        if(options.method === 'GET' && options.data){
+            params = [];
+            
+            metaScore.Object.each(options.data, function(key, value){
+                params.push(key +'='+ encodeURIComponent(value));
+            });
+            
+            url += '?'+ params.join('&');
+            
+            options.data = null;
+        }
 
         xhr.open(options.method, url, options.async);
 
@@ -4630,7 +4643,7 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onGuideDeleteConfirm = function(){
         var id = this.getPlayer().getId(),
-            component,    options;
+            component, options;
 
         options = metaScore.Object.extend({}, {
             'dataType': 'json',
@@ -7015,6 +7028,109 @@ metaScore.namespace('editor').Field = (function () {
  * @module Editor
  */
 
+metaScore.namespace('editor').Fieldset = (function () {
+
+    /**
+     * A collapsible fieldset
+     *
+     * @todo replace with the HTML5 details tag when support reaches IE
+     *
+     * @class Fieldset
+     * @namespace editor
+     * @extends Dom
+     * @constructor
+     * @param {Object} configs Custom configs to override defaults
+     * @param {String} [configs.legend_text=null] The text to use for the fieldset's legend
+     * @param {Boolean} [configs.collapsible=false] Whether or not the fieldset can be collapsed
+     * @param {Boolean} [configs.collapsed=false] Whether or not the fieldset is collapsed by default
+     */
+    function Fieldset(configs) {
+        this.configs = this.getConfigs(configs);
+
+        // call the super constructor.
+        metaScore.Dom.call(this, '<fieldset/>');
+
+        this.setupUI();
+        
+    }
+
+    Fieldset.defaults = {
+        'legend_text': null,
+        'collapsible': false,
+        'collapsed': false
+    };
+
+    metaScore.Dom.extend(Fieldset);
+
+    /**
+     * Setup the fieldset's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    Fieldset.prototype.setupUI = function(){
+        var uid = 'fieldset-'+ metaScore.String.uuid(5);
+        
+        this.attr('id', uid);
+
+        this.legend = new metaScore.Dom('<legend/>', {'text': this.configs.legend_text})
+            .appendTo(this);
+
+        this.contents = new metaScore.Dom('<div/>', {'class': 'contents'})
+            .appendTo(this);
+            
+        if(this.configs.collapsible){
+            this.addClass('collapsible');
+            
+            if(this.configs.collapsed){
+                this.toggle(true);
+            }
+            
+            this.legend.addListener('click', this.onLegendClick.bind(this));
+        }
+    };
+
+    /**
+     * The legend's click handler
+     *
+     * @method onLegendClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    Fieldset.prototype.onLegendClick = function(evt){
+        this.toggle();
+    };
+
+    /**
+     * Toggle the fieldset's collapsed state
+     *
+     * @method toggle
+     * @param {Boolean} [collapse] Whether to collapse or expand the fieldset. The state is toggled if not specified
+     * @chainable
+     */
+    Fieldset.prototype.toggle = function(collapse){
+        this.toggleClass('collapsed', collapse);
+        
+        return this;
+    };
+
+    /**
+     * Get the fieldset's contents
+     *
+     * @method getContents
+     * @return {Dom} The contents
+     */
+    Fieldset.prototype.getContents = function(){        
+        return this.contents;
+    };
+
+    return Fieldset;
+
+})();
+/**
+ * @module Editor
+ */
+
 metaScore.namespace('editor').History = (function(){
 
     /**
@@ -8734,6 +8850,11 @@ metaScore.namespace('editor.field').File = (function () {
             if('url' in value){
                 info.attr('href', value.url);
             }
+            
+            this.input.attr('required', null);
+        }
+        else if(this.configs.required){
+            this.input.attr('required', '');
         }
 
         return this;
@@ -11351,7 +11472,8 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         this.fields['media'] = new metaScore.editor.field.File({
                 'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
                 'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
-                'accept': '.mp4,.m4v,.m4a,.mp3'
+                'accept': '.mp4,.m4v,.m4a,.mp3',
+                'required': true
             })
             .data('name', 'media')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
@@ -11389,7 +11511,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .addClass('submit')
             .appendTo(form);
 
-        new metaScore.Button({'label': 'Cancel'})
+        new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideDetails.buttons.cancel.label', 'Cancel')})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(form);
@@ -11600,21 +11722,89 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     metaScore.Overlay.extend(GuideSelector);
 
     /**
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    GuideSelector.prototype.setupUI = function(){
+        var contents, fieldset;
+        
+        GuideSelector.parent.prototype.setupUI.call(this);
+        
+        contents = this.getContents();
+
+        this.filters_form = new metaScore.Dom('<form>', {'class': 'filters', 'method': 'GET'})
+            .addListener('submit', metaScore.Function.proxy(this.onFilterFormSubmit, this))
+            .appendTo(contents);
+            
+        fieldset = new metaScore.editor.Fieldset({
+                'legend_text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.fieldset.legend', 'Search'),
+                'collapsible': true,
+                'collapsed': true
+            })
+            .appendTo(this.filters_form)
+            .getContents();
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.keyword.label', 'Keyword')
+            })
+            .data('name', 'filters[keyword]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag')
+            })
+            .data('name', 'filters[tag]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.author.label', 'Author')
+            })
+            .data('name', 'filters[author]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group')
+            })
+            .data('name', 'filters[group]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.label', 'Status'),
+                'options': {
+                    '': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.all.lable', 'All'),
+                    '1': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published'),
+                    '0': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
+                },
+                'value': ''
+            })
+            .data('name', 'filters[status]')
+            .appendTo(fieldset);
+            
+        new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.submit.label', 'Submit')})
+            .addClass('submit')
+            .appendTo(fieldset);
+
+        new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.reset.label', 'Reset')})
+            .addClass('reset')
+            .addListener('click', metaScore.Function.proxy(this.onFiltersResetClick, this))
+            .appendTo(fieldset);
+            
+        this.results = new metaScore.Dom('<table/>', {'class': 'results'})
+            .appendTo(contents);
+    };
+
+    /**
      * Show the overlay
      * 
      * @method show
      * @chainable
      */
     GuideSelector.prototype.show = function(){
-        this.loadmask = new metaScore.overlay.LoadMask({
-            'parent': this.configs.parent,
-            'autoShow': true
-        });
-
-        metaScore.Ajax.get(this.configs.url, {
-            'success': metaScore.Function.proxy(this.onLoadSuccess, this),
-            'error': metaScore.Function.proxy(this.onLoadError, this)
-        });
+        GuideSelector.parent.prototype.show.call(this);
+        
+        this.load();
 
         return this;
     };
@@ -11627,18 +11817,77 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
      */
     GuideSelector.prototype.onLoadSuccess = function(xhr){
-        var contents = this.getContents(),
-            data = JSON.parse(xhr.response),
-            guides = data.items,
-            table, row, rowCount = 0,
+        var data = JSON.parse(xhr.response);
+
+        this.loadmask.hide();
+        delete this.loadmask;
+
+        this.setupResults(data.items);
+    };
+
+    /**
+     * The load error event handler
+     * 
+     * @method onLoadError
+     * @private
+     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
+     */
+    GuideSelector.prototype.onLoadError = function(xhr){
+    };
+
+    /**
+     * The filter form submit event handler
+     * 
+     * @method onFilterFormSubmit
+     * @private
+     * @param {Event} evt The event object
+     */
+    GuideSelector.prototype.onFilterFormSubmit = function(evt){
+        var fields, data = {};
+        
+        fields = this.filters_form.find('.field');
+        
+        fields.each(function(index, field){
+            data[field._metaScore.data('name')] = field._metaScore.getValue();
+        });
+        
+        this.load(data);
+    
+        evt.preventDefault();
+        evt.stopPropagation();
+    };
+
+    /**
+     * The filters reset button click event handler
+     * 
+     * @method onFiltersResetClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    GuideSelector.prototype.onFiltersResetClick = function(evt){
+        var fields = this.filters_form.find('.field');
+        
+        fields.each(function(index, field){
+            field._metaScore.reset();
+        });
+    };
+
+    /**
+     * Setup the results
+     * 
+     * @method setupResults
+     * @private
+     * @chainable
+     */
+    GuideSelector.prototype.setupResults = function(guides){
+        var row,
             revision_wrapper, revision_field, last_vid,
             groups, button;
-
-        table = new metaScore.Dom('<table/>', {'class': 'guides'})
-            .appendTo(contents);
-
+            
+        this.results.empty();
+        
         if(metaScore.Var.isEmpty(guides)){
-            contents.text(this.configs.empty_text);
+            this.results.text(this.configs.empty_text);
         }
         else{
             metaScore.Array.each(guides, function(index, guide){
@@ -11646,8 +11895,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     return;
                 }
                 
-                row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id +' '+ (rowCount%2 === 0 ? 'even' : 'odd')})
-                    .appendTo(table);
+                row = new metaScore.Dom('<tr/>', {'class': 'guide-'+ guide.id})
+                    .appendTo(this.results);
 
                 new metaScore.Dom('<td/>', {'class': 'thumbnail'})
                     .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
@@ -11723,25 +11972,32 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     .append(new metaScore.Dom('<p/>', {'class': 'author', 'text': metaScore.Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
                     .append(revision_wrapper)
                     .appendTo(row);
-                    
-                rowCount++;
             }, this);
         }
-
-        this.loadmask.hide();
-        delete this.loadmask;
-
-        this.appendTo(this.configs.parent);
+            
+        return this;
     };
 
     /**
-     * The load error event handler
+     * Load guides
      * 
-     * @method onLoadError
+     * @method load
+     * @param {FormData} data The data to send with the request
      * @private
-     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
+     * @chainable
      */
-    GuideSelector.prototype.onLoadError = function(xhr){
+    GuideSelector.prototype.load = function(data){
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this.getContents(),
+            'autoShow': true
+        });
+
+        metaScore.Ajax.get(this.configs.url, {
+            'data': data,
+            'dataType': 'json',
+            'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+            'error': metaScore.Function.proxy(this.onLoadError, this)
+        });
     };
 
     return GuideSelector;

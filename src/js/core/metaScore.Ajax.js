@@ -45,9 +45,22 @@ metaScore.Ajax = (function () {
                 'success': null,
                 'error': null,
                 'scope': this
-            };
+            },
+            params;
 
         options = metaScore.Object.extend({}, defaults, options);
+        
+        if(options.method === 'GET' && options.data){
+            params = [];
+            
+            metaScore.Object.each(options.data, function(key, value){
+                params.push(key +'='+ encodeURIComponent(value));
+            });
+            
+            url += '?'+ params.join('&');
+            
+            options.data = null;
+        }
 
         xhr.open(options.method, url, options.async);
 

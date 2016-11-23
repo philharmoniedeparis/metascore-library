@@ -61,6 +61,7 @@ module.exports = function(grunt) {
         jshint: {
             all: ['Gruntfile.js'].concat('src/js/*'),
             options: {
+                reporterOutput: '',
                 jshintrc: '.jshintrc'
             }
         },

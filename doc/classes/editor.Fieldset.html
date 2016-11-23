@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>editor.field.ColorField - metaScore</title>
+    <title>editor.Fieldset - metaScore</title>
     <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -135,11 +135,11 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>editor.field.ColorField Class</h1>
+<h1>editor.Fieldset Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/editor.Field.html" class="crosslink">editor.Field</a>
+            Extends <a href="../classes/Dom.html" class="crosslink">Dom</a>
         </div>
 
 
@@ -149,14 +149,14 @@
 
 
 <div class="box intro">
-    <p>A color selection field</p>
+    <p>A collapsible fieldset</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_editor.field.ColorField" class="method item">
-            <h3 class="name"><code>editor.field.ColorField</code></h3>
+        <div id="method_editor.Fieldset" class="method item">
+            <h3 class="name"><code>editor.Fieldset</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -201,12 +201,34 @@
         
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name optional">[value={r:255, g:255, b:255, a:1}}]</code>
-                                            <span class="type">Mixed</span>
+                                            <code class="param-name optional">[legend_text=null]</code>
+                                            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>The default value (see <a href="../classes/Color.html#method_parse" class="crosslink">Color.parse</a> for valid values)</p>
+                                            <p>The text to use for the fieldset&#39;s legend</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[collapsible=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether or not the fieldset can be collapsed</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[collapsed=false]</code>
+                                            <span class="type">Boolean</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Whether or not the fieldset is collapsed by default</p>
         
                                         </div>
         
@@ -291,19 +313,11 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_disable">disable</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_each">each</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_empty">empty</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_enable">enable</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -330,8 +344,8 @@
                                 <a href="#method_getConfigs">getConfigs</a>
 
                             </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_getValue">getValue</a>
+                            <li class="index-item method">
+                                <a href="#method_getContents">getContents</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -358,20 +372,8 @@
                                 <a href="#method_offset">offset</a>
 
                             </li>
-                            <li class="index-item method private inherited">
-                                <a href="#method_onChange">onChange</a>
-
-                            </li>
                             <li class="index-item method private">
-                                <a href="#method_onClearClick">onClearClick</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onClick">onClick</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onOverlaySubmit">onOverlaySubmit</a>
+                                <a href="#method_onLegendClick">onLegendClick</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -383,10 +385,6 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_readonly">readonly</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_remove">remove</a>
 
                             </li>
@@ -394,20 +392,8 @@
                                 <a href="#method_removeClass">removeClass</a>
 
                             </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_reset">reset</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_setDescription">setDescription</a>
-
-                            </li>
-                            <li class="index-item method private inherited">
+                            <li class="index-item method private">
                                 <a href="#method_setupUI">setupUI</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_setValue">setValue</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -416,6 +402,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_text">text</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_toggle">toggle</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -459,14 +449,6 @@
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_childremove">childremove</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_reset">reset</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_valuechange">valuechange</a>
 
                             </li>
                     </ul>
@@ -1349,37 +1331,6 @@
 
 
 </div>
-<div id="method_disable" class="method item inherited">
-    <h3 class="name"><code>disable</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_disable">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Disable the field</p>
-
-    </div>
-
-
-
-
-</div>
 <div id="method_each" class="method item inherited">
     <h3 class="name"><code>each</code></h3>
 
@@ -1493,37 +1444,6 @@
 
     <div class="description">
         <p>Remove all children of each element managed by the Dom object</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_enable" class="method item inherited">
-    <h3 class="name"><code>enable</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_enable">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Enable the field</p>
 
     </div>
 
@@ -1875,13 +1795,13 @@
 
 
 </div>
-<div id="method_getValue" class="method item inherited">
-    <h3 class="name"><code>getValue</code></h3>
+<div id="method_getContents" class="method item">
+    <h3 class="name"><code>getContents</code></h3>
 
         <span class="paren">()</span>
 
         <span class="returns-inline">
-            <span class="type">Mixed</span>
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
         </span>
 
 
@@ -1891,8 +1811,7 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_getValue">editor.Field</a>:
+                <p>
         </p>
 
 
@@ -1900,7 +1819,7 @@
     </div>
 
     <div class="description">
-        <p>Get the field&#39;s current value</p>
+        <p>Get the fieldset&#39;s contents</p>
 
     </div>
 
@@ -1909,8 +1828,8 @@
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Mixed</span>:
-                    <p>The value</p>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>The contents</p>
 
             </div>
         </div>
@@ -2253,62 +2172,8 @@
 
 
 </div>
-<div id="method_onChange" class="method item private inherited">
-    <h3 class="name"><code>onChange</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_onChange">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The change event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onClearClick" class="method item private">
-    <h3 class="name"><code>onClearClick</code></h3>
+<div id="method_onLegendClick" class="method item private">
+    <h3 class="name"><code>onLegendClick</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
@@ -2335,113 +2200,7 @@
     </div>
 
     <div class="description">
-        <p>The clear button click event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onClick" class="method item private">
-    <h3 class="name"><code>onClick</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The click event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onOverlaySubmit" class="method item private">
-    <h3 class="name"><code>onOverlaySubmit</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The overlay&#39;s submit event handler</p>
+        <p>The legend&#39;s click handler</p>
 
     </div>
 
@@ -2612,61 +2371,6 @@
 
 
 </div>
-<div id="method_readonly" class="method item inherited">
-    <h3 class="name"><code>readonly</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code class="optional">[readonly]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_readonly">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Toggle the field&#39;s readonly state</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name optional">[readonly]</code>
-                        <span class="type">Boolean</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Whether the field should be readonly, the current state is toggled if not provided</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_remove" class="method item inherited">
     <h3 class="name"><code>remove</code></h3>
 
@@ -2752,114 +2456,6 @@
 
 
 </div>
-<div id="method_reset" class="method item inherited">
-    <h3 class="name"><code>reset</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>supressEvent</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_reset">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Reset the field&#39;s configs</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">supressEvent</code>
-                        <span class="type">Boolean</span>
-
-
-                    <div class="param-description">
-                        <p>Whether to prevent the custom event from firing</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_setDescription" class="method item inherited">
-    <h3 class="name"><code>setDescription</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>description</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_setDescription">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set the description text</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">description</code>
-                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-
-
-                    <div class="param-description">
-                        <p>The description text</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_setupUI" class="method item private">
     <h3 class="name"><code>setupUI</code></h3>
 
@@ -2874,10 +2470,7 @@
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/editor.Field.html#method_setupUI">
-                editor.Field
-            </a>
+                <p>
         </p>
 
 
@@ -2885,80 +2478,10 @@
     </div>
 
     <div class="description">
-        <p>Setup the field&#39;s UI</p>
+        <p>Setup the fieldset&#39;s UI</p>
 
     </div>
 
-
-
-
-</div>
-<div id="method_setValue" class="method item">
-    <h3 class="name"><code>setValue</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>value</code>
-                </li>
-                <li class="arg">
-                        <code>supressEvent</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-            <p>Inherited from
-            <a href="../classes/editor.Field.html#method_setValue">
-                editor.Field
-            </a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set the field&#39;S value</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Mixed</span>
-
-
-                    <div class="param-description">
-                        <p>The new color&#39;s value (see <a href="../classes/Color.html#method_parse" class="crosslink">Color.parse</a> for valid values)</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">supressEvent</code>
-                        <span class="type">Boolean</span>
-
-
-                    <div class="param-description">
-                        <p>Whether to prevent the custom event from firing</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
@@ -3057,6 +2580,60 @@
 
             </div>
         </div>
+
+
+</div>
+<div id="method_toggle" class="method item">
+    <h3 class="name"><code>toggle</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[collapse]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Toggle the fieldset&#39;s collapsed state</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[collapse]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to collapse or expand the fieldset. The state is toggled if not specified</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -3422,101 +2999,6 @@
                     
                                         <div class="param-description">
                                             <p>The removed child</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_reset" class="events item inherited">
-                        <h3 class="name"><code>reset</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/editor.Field.html#event_reset">editor.Field</a>:
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired when the field is reset</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">field</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The field instance</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_valuechange" class="events item">
-                        <h3 class="name"><code>valuechange</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/editor.Field.html#event_valuechange">
-                                    editor.Field
-                                </a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired when the field&#39;s value changes</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">field</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The field instance</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Mixed</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The new value</p>
                     
                                         </div>
                     

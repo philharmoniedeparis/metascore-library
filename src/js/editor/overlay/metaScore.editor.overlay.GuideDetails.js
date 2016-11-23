@@ -117,7 +117,8 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         this.fields['media'] = new metaScore.editor.field.File({
                 'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
                 'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
-                'accept': '.mp4,.m4v,.m4a,.mp3'
+                'accept': '.mp4,.m4v,.m4a,.mp3',
+                'required': true
             })
             .data('name', 'media')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
@@ -155,7 +156,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .addClass('submit')
             .appendTo(form);
 
-        new metaScore.Button({'label': 'Cancel'})
+        new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideDetails.buttons.cancel.label', 'Cancel')})
             .addClass('cancel')
             .addListener('click', metaScore.Function.proxy(this.onCancelClick, this))
             .appendTo(form);

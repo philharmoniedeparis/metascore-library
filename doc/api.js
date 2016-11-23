@@ -25,6 +25,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Var",
         "editor.DropDownMenu",
         "editor.Field",
+        "editor.Fieldset",
         "editor.History",
         "editor.MainMenu",
         "editor.Panel",

@@ -437,6 +437,17 @@
                 "editor": 1
             }
         },
+        "src\\js\\editor\\metaScore.editor.Fieldset.js": {
+            "name": "src\\js\\editor\\metaScore.editor.Fieldset.js",
+            "modules": {},
+            "classes": {
+                "editor.Fieldset": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "editor": 1
+            }
+        },
         "src\\js\\editor\\metaScore.editor.History.js": {
             "name": "src\\js\\editor\\metaScore.editor.History.js",
             "modules": {},
@@ -712,6 +723,7 @@
                 "editor.panel.Toolbar": 1,
                 "editor.DropDownMenu": 1,
                 "editor.Field": 1,
+                "editor.Fieldset": 1,
                 "editor.History": 1,
                 "editor.MainMenu": 1,
                 "editor.Panel": 1,
@@ -2227,6 +2239,55 @@
                 }
             ]
         },
+        "editor.Fieldset": {
+            "name": "editor.Fieldset",
+            "shortname": "editor.Fieldset",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Editor",
+            "namespace": "editor",
+            "file": "src\\js\\editor\\metaScore.editor.Fieldset.js",
+            "line": 7,
+            "description": "A collapsible fieldset",
+            "todo": [
+                "replace with the HTML5 details tag when support reaches IE"
+            ],
+            "extends": "Dom",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "configs",
+                    "description": "Custom configs to override defaults",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "legend_text",
+                            "description": "The text to use for the fieldset's legend",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "collapsible",
+                            "description": "Whether or not the fieldset can be collapsed",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "collapsed",
+                            "description": "Whether or not the fieldset is collapsed by default",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ]
+        },
         "editor.History": {
             "name": "editor.History",
             "shortname": "editor.History",
@@ -2978,7 +3039,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Ajax.js",
-            "line": 80,
+            "line": 93,
             "description": "Send an XMLHttp GET request",
             "itemtype": "method",
             "name": "get",
@@ -3004,7 +3065,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Ajax.js",
-            "line": 97,
+            "line": 110,
             "description": "Send an XMLHttp POST request",
             "itemtype": "method",
             "name": "post",
@@ -3030,7 +3091,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Ajax.js",
-            "line": 114,
+            "line": 127,
             "description": "Send an XMLHttp PUT request",
             "itemtype": "method",
             "name": "put",
@@ -6513,7 +6574,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.File.js",
-            "line": 90,
+            "line": 95,
             "description": "Helper function to get a selected file from the HTML input field",
             "itemtype": "method",
             "name": "getFile",
@@ -7946,7 +8007,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 168,
+            "line": 169,
             "description": "Get a field by name",
             "itemtype": "method",
             "name": "getField",
@@ -7967,7 +8028,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 185,
+            "line": 186,
             "description": "Set the field values",
             "itemtype": "method",
             "name": "setValues",
@@ -7990,7 +8051,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 219,
+            "line": 220,
             "description": "Clears all field values",
             "itemtype": "method",
             "name": "clearValues",
@@ -8008,7 +8069,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 234,
+            "line": 235,
             "description": "Get all changed field values",
             "itemtype": "method",
             "name": "getValues",
@@ -8022,7 +8083,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 244,
+            "line": 245,
             "description": "The fields change event handler",
             "itemtype": "method",
             "name": "onFieldValueChange",
@@ -8041,7 +8102,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 275,
+            "line": 276,
             "description": "The form submit event handler",
             "itemtype": "method",
             "name": "onFormSubmit",
@@ -8060,7 +8121,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 289,
+            "line": 290,
             "description": "The close button click event handler",
             "itemtype": "method",
             "name": "onCloseClick",
@@ -8079,7 +8140,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 307,
+            "line": 308,
             "description": "The cancel button click event handler",
             "itemtype": "method",
             "name": "onCancelClick",
@@ -8125,6 +8186,18 @@
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
             "line": 50,
+            "description": "Setup the overlay's UI",
+            "itemtype": "method",
+            "name": "setupUI",
+            "access": "private",
+            "tagname": "",
+            "class": "editor.overlay.GuideSelector",
+            "module": "Editor",
+            "namespace": "editor.overlay"
+        },
+        {
+            "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
+            "line": 124,
             "description": "Show the overlay",
             "itemtype": "method",
             "name": "show",
@@ -8135,7 +8208,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 70,
+            "line": 138,
             "description": "The onload success event handler",
             "itemtype": "method",
             "name": "onLoadSuccess",
@@ -8154,7 +8227,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 185,
+            "line": 154,
             "description": "The load error event handler",
             "itemtype": "method",
             "name": "onLoadError",
@@ -8167,6 +8240,77 @@
                     "type": "XMLHttpRequest"
                 }
             ],
+            "class": "editor.overlay.GuideSelector",
+            "module": "Editor",
+            "namespace": "editor.overlay"
+        },
+        {
+            "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
+            "line": 164,
+            "description": "The filter form submit event handler",
+            "itemtype": "method",
+            "name": "onFilterFormSubmit",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.overlay.GuideSelector",
+            "module": "Editor",
+            "namespace": "editor.overlay"
+        },
+        {
+            "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
+            "line": 186,
+            "description": "The filters reset button click event handler",
+            "itemtype": "method",
+            "name": "onFiltersResetClick",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.overlay.GuideSelector",
+            "module": "Editor",
+            "namespace": "editor.overlay"
+        },
+        {
+            "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
+            "line": 201,
+            "description": "Setup the results",
+            "itemtype": "method",
+            "name": "setupResults",
+            "access": "private",
+            "tagname": "",
+            "chainable": 1,
+            "class": "editor.overlay.GuideSelector",
+            "module": "Editor",
+            "namespace": "editor.overlay"
+        },
+        {
+            "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
+            "line": 307,
+            "description": "Load guides",
+            "itemtype": "method",
+            "name": "load",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "The data to send with the request",
+                    "type": "FormData"
+                }
+            ],
+            "access": "private",
+            "tagname": "",
+            "chainable": 1,
             "class": "editor.overlay.GuideSelector",
             "module": "Editor",
             "namespace": "editor.overlay"
@@ -8833,6 +8977,70 @@
             ],
             "chainable": 1,
             "class": "editor.Field",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Fieldset.js",
+            "line": 39,
+            "description": "Setup the fieldset's UI",
+            "itemtype": "method",
+            "name": "setupUI",
+            "access": "private",
+            "tagname": "",
+            "class": "editor.Fieldset",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Fieldset.js",
+            "line": 67,
+            "description": "The legend's click handler",
+            "itemtype": "method",
+            "name": "onLegendClick",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.Fieldset",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Fieldset.js",
+            "line": 78,
+            "description": "Toggle the fieldset's collapsed state",
+            "itemtype": "method",
+            "name": "toggle",
+            "params": [
+                {
+                    "name": "collapse",
+                    "description": "Whether to collapse or expand the fieldset. The state is toggled if not specified",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.Fieldset",
+            "module": "Editor",
+            "namespace": "editor"
+        },
+        {
+            "file": "src\\js\\editor\\metaScore.editor.Fieldset.js",
+            "line": 91,
+            "description": "Get the fieldset's contents",
+            "itemtype": "method",
+            "name": "getContents",
+            "return": {
+                "description": "The contents",
+                "type": "Dom"
+            },
+            "class": "editor.Fieldset",
             "module": "Editor",
             "namespace": "editor"
         },

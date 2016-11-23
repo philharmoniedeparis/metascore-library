@@ -48,21 +48,89 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     metaScore.Overlay.extend(GuideSelector);
 
     /**
+     * Setup the overlay's UI
+     *
+     * @method setupUI
+     * @private
+     */
+    GuideSelector.prototype.setupUI = function(){
+        var contents, fieldset;
+        
+        GuideSelector.parent.prototype.setupUI.call(this);
+        
+        contents = this.getContents();
+
+        this.filters_form = new metaScore.Dom('<form>', {'class': 'filters', 'method': 'GET'})
+            .addListener('submit', metaScore.Function.proxy(this.onFilterFormSubmit, this))
+            .appendTo(contents);
+            
+        fieldset = new metaScore.editor.Fieldset({
+                'legend_text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.fieldset.legend', 'Search'),
+                'collapsible': true,
+                'collapsed': true
+            })
+            .appendTo(this.filters_form)
+            .getContents();
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.keyword.label', 'Keyword')
+            })
+            .data('name', 'filters[keyword]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag')
+            })
+            .data('name', 'filters[tag]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.author.label', 'Author')
+            })
+            .data('name', 'filters[author]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group')
+            })
+            .data('name', 'filters[group]')
+            .appendTo(fieldset);
+            
+        new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.label', 'Status'),
+                'options': {
+                    '': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.all.lable', 'All'),
+                    '1': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published'),
+                    '0': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
+                },
+                'value': ''
+            })
+            .data('name', 'filters[status]')
+            .appendTo(fieldset);
+            
+        new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.submit.label', 'Submit')})
+            .addClass('submit')
+            .appendTo(fieldset);
+
+        new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.reset.label', 'Reset')})
+            .addClass('reset')
+            .addListener('click', metaScore.Function.proxy(this.onFiltersResetClick, this))
+            .appendTo(fieldset);
+            
+        this.results = new metaScore.Dom('<table/>', {'class': 'results'})
+            .appendTo(contents);
+    };
+
+    /**
      * Show the overlay
      * 
      * @method show
      * @chainable
      */
     GuideSelector.prototype.show = function(){
-        this.loadmask = new metaScore.overlay.LoadMask({
-            'parent': this.configs.parent,
-            'autoShow': true
-        });
-
-        metaScore.Ajax.get(this.configs.url, {
-            'success': metaScore.Function.proxy(this.onLoadSuccess, this),
-            'error': metaScore.Function.proxy(this.onLoadError, this)
-        });
+        GuideSelector.parent.prototype.show.call(this);
+        
+        this.load();
 
         return this;
     };
@@ -75,18 +143,77 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
      */
     GuideSelector.prototype.onLoadSuccess = function(xhr){
-        var contents = this.getContents(),
-            data = JSON.parse(xhr.response),
-            guides = data.items,
-            table, row, rowCount = 0,
+        var data = JSON.parse(xhr.response);
+
+        this.loadmask.hide();
+        delete this.loadmask;
+
+        this.setupResults(data.items);
+    };
+
+    /**
+     * The load error event handler
+     * 
+     * @method onLoadError
+     * @private
+     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
+     */
+    GuideSelector.prototype.onLoadError = function(xhr){
+    };
+
+    /**
+     * The filter form submit event handler
+     * 
+     * @method onFilterFormSubmit
+     * @private
+     * @param {Event} evt The event object
+     */
+    GuideSelector.prototype.onFilterFormSubmit = function(evt){
+        var fields, data = {};
+        
+        fields = this.filters_form.find('.field');
+        
+        fields.each(function(index, field){
+            data[field._metaScore.data('name')] = field._metaScore.getValue();
+        });
+        
+        this.load(data);
+    
+        evt.preventDefault();
+        evt.stopPropagation();
+    };
+
+    /**
+     * The filters reset button click event handler
+     * 
+     * @method onFiltersResetClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    GuideSelector.prototype.onFiltersResetClick = function(evt){
+        var fields = this.filters_form.find('.field');
+        
+        fields.each(function(index, field){
+            field._metaScore.reset();
+        });
+    };
+
+    /**
+     * Setup the results
+     * 
+     * @method setupResults
+     * @private
+     * @chainable
+     */
+    GuideSelector.prototype.setupResults = function(guides){
+        var row,
             revision_wrapper, revision_field, last_vid,
             groups, button;
-
-        table = new metaScore.Dom('<table/>', {'class': 'guides'})
-            .appendTo(contents);
-
+            
+        this.results.empty();
+        
         if(metaScore.Var.isEmpty(guides)){
-            contents.text(this.configs.empty_text);
+            this.results.text(this.configs.empty_text);
         }
         else{
             metaScore.Array.each(guides, function(index, guide){
@@ -94,8 +221,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     return;
                 }
                 
-                row = new metaScore.Dom('<tr/>', {'class': 'guide guide-'+ guide.id +' '+ (rowCount%2 === 0 ? 'even' : 'odd')})
-                    .appendTo(table);
+                row = new metaScore.Dom('<tr/>', {'class': 'guide-'+ guide.id})
+                    .appendTo(this.results);
 
                 new metaScore.Dom('<td/>', {'class': 'thumbnail'})
                     .append(new metaScore.Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
@@ -171,25 +298,32 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                     .append(new metaScore.Dom('<p/>', {'class': 'author', 'text': metaScore.Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
                     .append(revision_wrapper)
                     .appendTo(row);
-                    
-                rowCount++;
             }, this);
         }
-
-        this.loadmask.hide();
-        delete this.loadmask;
-
-        this.appendTo(this.configs.parent);
+            
+        return this;
     };
 
     /**
-     * The load error event handler
+     * Load guides
      * 
-     * @method onLoadError
+     * @method load
+     * @param {FormData} data The data to send with the request
      * @private
-     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
+     * @chainable
      */
-    GuideSelector.prototype.onLoadError = function(xhr){
+    GuideSelector.prototype.load = function(data){
+        this.loadmask = new metaScore.overlay.LoadMask({
+            'parent': this.getContents(),
+            'autoShow': true
+        });
+
+        metaScore.Ajax.get(this.configs.url, {
+            'data': data,
+            'dataType': 'json',
+            'success': metaScore.Function.proxy(this.onLoadSuccess, this),
+            'error': metaScore.Function.proxy(this.onLoadError, this)
+        });
     };
 
     return GuideSelector;

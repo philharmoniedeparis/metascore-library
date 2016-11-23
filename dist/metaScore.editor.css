@@ -90,6 +90,37 @@
   filter: alpha(opacity=(50));
   opacity: 0.5;
 }
+.metaScore-editor fieldset {
+  margin: 0;
+  padding: 1em;
+  border: none;
+  background: #eee;
+}
+.metaScore-editor fieldset legend {
+  display: inline-block;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.metaScore-editor fieldset > .contents {
+  padding: 0.5em 0;
+}
+.metaScore-editor fieldset.collapsible legend {
+  cursor: pointer;
+}
+.metaScore-editor fieldset.collapsible legend::before {
+  content: '';
+  margin-right: 0.25em;
+  padding-left: 8px;
+  background: transparent url('img/editor/fieldset/expanded.png') left center no-repeat;
+}
+.metaScore-editor fieldset.collapsible.collapsed legend::before {
+  background-image: url('img/editor/fieldset/collapsed.png');
+}
+.metaScore-editor fieldset.collapsible.collapsed > .contents {
+  display: none;
+}
 .metaScore-editor button {
   border: none;
   outline: none;
@@ -853,11 +884,11 @@
   background: rgba(0, 0, 0, 0.5);
   pointer-events: auto;
 }
-.metaScore-editor .overlay .inner {
+.metaScore-editor .overlay > .inner {
   background: #fff;
   position: relative;
 }
-.metaScore-editor .overlay .inner .toolbar {
+.metaScore-editor .overlay > .inner > .toolbar {
   padding: 10px 16px;
   border-bottom: 2px solid #b2b2b2;
   background-color: #dadada;
@@ -868,31 +899,30 @@
   background-image: -o-linear-gradient(top, #dadada 0%, #c8c8c8 100%);
   background-image: linear-gradient(top, #dadada 0%, #c8c8c8 100%);
 }
-.metaScore-editor .overlay .inner .toolbar .title {
+.metaScore-editor .overlay > .inner > .toolbar .title {
   float: left;
   font-weight: bold;
   color: #5d5d5d;
 }
-.metaScore-editor .overlay .inner .toolbar .buttons {
+.metaScore-editor .overlay > .inner > .toolbar .buttons {
   margin-left: 16px;
   float: right;
 }
-.metaScore-editor .overlay .inner .toolbar .buttons button {
+.metaScore-editor .overlay > .inner > .toolbar .buttons button {
   width: 16px;
   height: 16px;
   background-repeat: no-repeat;
   background-position: center center;
   vertical-align: middle;
 }
-.metaScore-editor .overlay .inner .toolbar .buttons button[data-action="close"] {
+.metaScore-editor .overlay > .inner > .toolbar .buttons button[data-action="close"] {
   background-image: url('img/editor/overlay/close.png');
 }
-.metaScore-editor .overlay .inner .contents {
-  max-width: 75vw;
+.metaScore-editor .overlay > .inner > .contents {
   max-height: 75vh;
   overflow: auto;
 }
-.metaScore-editor .overlay.color-selector .inner {
+.metaScore-editor .overlay.color-selector > .inner {
   padding: 10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
@@ -901,18 +931,18 @@
   border-radius: 10px;
   background-clip: padding-box;
 }
-.metaScore-editor .overlay.color-selector .inner .contents {
+.metaScore-editor .overlay.color-selector > .inner > .contents {
   overflow: hidden;
 }
-.metaScore-editor .overlay.color-selector .inner .contents canvas {
+.metaScore-editor .overlay.color-selector > .inner > .contents canvas {
   display: block;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .gradient {
+.metaScore-editor .overlay.color-selector > .inner > .contents .gradient {
   position: relative;
   float: left;
   cursor: crosshair;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .gradient .position {
+.metaScore-editor .overlay.color-selector > .inner > .contents .gradient .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -925,12 +955,12 @@
   background-clip: padding-box;
   pointer-events: none;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .alpha {
+.metaScore-editor .overlay.color-selector > .inner > .contents .alpha {
   position: relative;
   float: left;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .alpha .position {
+.metaScore-editor .overlay.color-selector > .inner > .contents .alpha .position {
   position: absolute;
   left: 0;
   top: 0;
@@ -940,44 +970,44 @@
   background: #000;
   pointer-events: none;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls {
   width: 80px;
   float: left;
   margin-left: 10px;
   pointer-events: none;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls input[type=number] {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls input[type=number] {
   width: 3em;
   margin: 0.25em 0.5em;
   border: 2px inset;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls button {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls button {
   width: 100%;
   padding: 0.5em;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls .canvas-wrapper {
   height: 40px;
   border: 1px solid #ccc;
   background: url('img/editor/transparency-grid.png') repeat left top;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper.current {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls .canvas-wrapper.current {
   margin-top: 5px;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper.previous {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls .canvas-wrapper.previous {
   height: 10px;
   margin-bottom: 5px;
   margin-top: -1px;
 }
-.metaScore-editor .overlay.color-selector .inner .contents .controls .canvas-wrapper canvas {
+.metaScore-editor .overlay.color-selector > .inner > .contents .controls .canvas-wrapper canvas {
   width: 100%;
   height: 100%;
 }
-.metaScore-editor .overlay.border-radius .contents {
+.metaScore-editor .overlay.border-radius > .inner > .contents {
   padding: 12px 16px;
 }
-.metaScore-editor .overlay.border-radius .contents .preview {
+.metaScore-editor .overlay.border-radius > .inner > .contents .preview {
   position: relative;
   width: 200px;
   height: 200px;
@@ -985,175 +1015,217 @@
   background: #eeeeee;
   border: 2px solid #0000fe;
 }
-.metaScore-editor .overlay.border-radius .contents .field {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field {
   position: absolute;
   top: 0;
   left: 0;
 }
-.metaScore-editor .overlay.border-radius .contents .field input {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field input {
   width: 1.5em;
 }
-.metaScore-editor .overlay.border-radius .contents .field.tlw,
-.metaScore-editor .overlay.border-radius .contents .field.trw {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.tlw,
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.trw {
   top: -30px;
 }
-.metaScore-editor .overlay.border-radius .contents .field.tlh,
-.metaScore-editor .overlay.border-radius .contents .field.blh {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.tlh,
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.blh {
   left: -60px;
 }
-.metaScore-editor .overlay.border-radius .contents .field.trw,
-.metaScore-editor .overlay.border-radius .contents .field.brw {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.trw,
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.brw {
   left: 158px;
 }
-.metaScore-editor .overlay.border-radius .contents .field.trh,
-.metaScore-editor .overlay.border-radius .contents .field.brh {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.trh,
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.brh {
   left: 210px;
 }
-.metaScore-editor .overlay.border-radius .contents .field.brw,
-.metaScore-editor .overlay.border-radius .contents .field.blw {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.brw,
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.blw {
   top: 210px;
 }
-.metaScore-editor .overlay.border-radius .contents .field.brh,
-.metaScore-editor .overlay.border-radius .contents .field.blh {
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.brh,
+.metaScore-editor .overlay.border-radius > .inner > .contents .field.blh {
   top: 178px;
 }
-.metaScore-editor .overlay.border-radius .contents > button {
+.metaScore-editor .overlay.border-radius > .inner > .contents > button {
   min-width: 60px;
   margin-right: 0.5em;
   padding: 0.5em;
   background: #ccc;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.guide-selector .contents {
+.metaScore-editor .overlay.guide-selector > .inner > .contents {
+  position: relative;
   width: 50vw;
   min-width: 600px;
+  min-height: 200px;
+  padding: 1em;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail {
+.metaScore-editor .overlay.guide-selector > .inner > .contents .overlay.loadmask.modal {
+  background: rgba(0, 0, 0, 0.25);
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters {
+  margin-bottom: 1em;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters .field {
+  margin: 0.5em 0;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters .field.textfield {
+  display: inline-block;
+  width: 50%;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters .field.textfield .input-wrapper input {
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters .field.textfield:nth-child(odd) .input-wrapper {
+  padding-right: 1em;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters button {
+  min-width: 60px;
+  margin-top: 1em;
+  margin-right: 0.5em;
+  padding: 0.5em;
+  pointer-events: auto;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters button.reset {
+  background: #eee;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results {
+  width: 100%;
+}
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.thumbnail {
   padding: 1em;
   vertical-align: middle;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.thumbnail img {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.thumbnail img {
   display: inline-block;
   width: 155px;
   height: 123px;
   vertical-align: middle;
   background: #dadada url('img/editor/default-thumbnail.png') no-repeat center center;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details {
   padding: 1em 1em 1em 0;
   vertical-align: middle;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .title {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .title {
   margin: 0;
   font-weight: bold;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .description {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .description {
   margin: 0;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .tags {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .tags {
   margin: 0.1em;
   font-size: 11px;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .author {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .author {
   margin: 0;
   font-size: 11px;
   font-weight: normal;
   color: #b2b2b2;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .author em {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .author em {
   font-size: 11px;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper {
   margin-top: 10px;
   display: flex;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper .revisions {
   display: flex;
   flex: 1;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions label {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper .revisions label {
   flex: 0 0 auto;
   padding-right: 0.5em;
   line-height: 2em;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions .input-wrapper {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper .revisions .input-wrapper {
   flex: 1;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions .input-wrapper select {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper .revisions .input-wrapper select {
   width: 100%;
   height: 2em;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper .revisions .input-wrapper select optgroup.archives option {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper .revisions .input-wrapper select optgroup.archives option {
   color: #b2b2b2;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide td.details .revision-wrapper button[data-action="select"] {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details .revision-wrapper button[data-action="select"] {
   flex: 0 0 auto;
   height: 2em;
   padding: 0 1em;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide.odd {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr:nth-child(odd) {
   background: #eee;
 }
-.metaScore-editor .overlay.guide-selector .contents tr.guide:hover {
+.metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr:hover {
   background: #ddd;
 }
-.metaScore-editor .overlay.guide-details .contents,
-.metaScore-editor .overlay.insert-link .contents,
-.metaScore-editor .overlay.insert-image .contents,
-.metaScore-editor .overlay.share .contents {
+.metaScore-editor .overlay.guide-details > .inner > .contents,
+.metaScore-editor .overlay.insert-link > .inner > .contents,
+.metaScore-editor .overlay.insert-image > .inner > .contents,
+.metaScore-editor .overlay.share > .inner > .contents {
   min-width: 300px;
   padding: 12px 16px;
 }
-.metaScore-editor .overlay.guide-details .contents .field,
-.metaScore-editor .overlay.insert-link .contents .field,
-.metaScore-editor .overlay.insert-image .contents .field,
-.metaScore-editor .overlay.share .contents .field {
+.metaScore-editor .overlay.guide-details > .inner > .contents .field,
+.metaScore-editor .overlay.insert-link > .inner > .contents .field,
+.metaScore-editor .overlay.insert-image > .inner > .contents .field,
+.metaScore-editor .overlay.share > .inner > .contents .field {
   display: block;
   margin-bottom: 1em;
 }
-.metaScore-editor .overlay.guide-details .contents .field label,
-.metaScore-editor .overlay.insert-link .contents .field label,
-.metaScore-editor .overlay.insert-image .contents .field label,
-.metaScore-editor .overlay.share .contents .field label {
+.metaScore-editor .overlay.guide-details > .inner > .contents .field label,
+.metaScore-editor .overlay.insert-link > .inner > .contents .field label,
+.metaScore-editor .overlay.insert-image > .inner > .contents .field label,
+.metaScore-editor .overlay.share > .inner > .contents .field label {
   display: block;
   font-weight: bold;
 }
-.metaScore-editor .overlay.guide-details .contents .field textarea,
-.metaScore-editor .overlay.insert-link .contents .field textarea,
-.metaScore-editor .overlay.insert-image .contents .field textarea,
-.metaScore-editor .overlay.share .contents .field textarea {
+.metaScore-editor .overlay.guide-details > .inner > .contents .field textarea,
+.metaScore-editor .overlay.insert-link > .inner > .contents .field textarea,
+.metaScore-editor .overlay.insert-image > .inner > .contents .field textarea,
+.metaScore-editor .overlay.share > .inner > .contents .field textarea {
   width: 100%;
   min-height: 5em;
 }
-.metaScore-editor .overlay.guide-details .contents button,
-.metaScore-editor .overlay.insert-link .contents button,
-.metaScore-editor .overlay.insert-image .contents button,
-.metaScore-editor .overlay.share .contents button {
+.metaScore-editor .overlay.guide-details > .inner > .contents button,
+.metaScore-editor .overlay.insert-link > .inner > .contents button,
+.metaScore-editor .overlay.insert-image > .inner > .contents button,
+.metaScore-editor .overlay.share > .inner > .contents button {
   min-width: 60px;
   margin-right: 0.5em;
   padding: 0.5em;
   pointer-events: auto;
 }
-.metaScore-editor .overlay.guide-details .contents button.cancel,
-.metaScore-editor .overlay.insert-link .contents button.cancel,
-.metaScore-editor .overlay.insert-image .contents button.cancel,
-.metaScore-editor .overlay.share .contents button.cancel {
+.metaScore-editor .overlay.guide-details > .inner > .contents button.cancel,
+.metaScore-editor .overlay.insert-link > .inner > .contents button.cancel,
+.metaScore-editor .overlay.insert-image > .inner > .contents button.cancel,
+.metaScore-editor .overlay.share > .inner > .contents button.cancel {
   background: #eee;
 }
-.metaScore-editor .overlay.guide-details .contents {
+.metaScore-editor .overlay.guide-details > .inner > .contents {
   min-width: 500px;
 }
-.metaScore-editor .overlay.guide-details .contents .field.textfield input {
+.metaScore-editor .overlay.guide-details > .inner > .contents .field.textfield input {
   width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.metaScore-editor .overlay.guide-details .contents .field.textareafield textarea {
+.metaScore-editor .overlay.guide-details > .inner > .contents .field.textareafield textarea {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.metaScore-editor .overlay.guide-details .contents .field.selectfield select {
+.metaScore-editor .overlay.guide-details > .inner > .contents .field.selectfield select {
   width: 100%;
 }
-.metaScore-editor .overlay.guide-details .contents .info {
+.metaScore-editor .overlay.guide-details > .inner > .contents .info {
   margin: 1em 0;
   color: #cc0000;
 }
@@ -1200,46 +1272,46 @@
   height: 16px;
   background: url('img/editor/overlay/insert-image/reset.png') no-repeat center center;
 }
-.metaScore-editor .overlay.share .contents {
+.metaScore-editor .overlay.share > .inner > .contents {
   min-width: 500px;
 }
-.metaScore-editor .overlay.share .contents .field[data-name="link"] input,
-.metaScore-editor .overlay.share .contents .field[data-name="embed"] input {
+.metaScore-editor .overlay.share > .inner > .contents .field[data-name="link"] input,
+.metaScore-editor .overlay.share > .inner > .contents .field[data-name="embed"] input {
   width: 100%;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.metaScore-editor .overlay.share .contents .options {
+.metaScore-editor .overlay.share > .inner > .contents .options {
   margin-top: 0.5em;
   padding: 1em;
   background: rgba(0, 0, 0, 0.05);
 }
-.metaScore-editor .overlay.share .contents .options .field.textfield {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.textfield {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
 }
-.metaScore-editor .overlay.share .contents .options .field.textfield label {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.textfield label {
   margin-right: 0.5em;
 }
-.metaScore-editor .overlay.share .contents .options .field.textfield input {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.textfield input {
   width: 6em;
 }
-.metaScore-editor .overlay.share .contents .options .field.booleanfield {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.booleanfield {
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-end;
   align-items: center;
 }
-.metaScore-editor .overlay.share .contents .options .field.booleanfield .input-wrapper {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.booleanfield .input-wrapper {
   margin-right: 0.5em;
 }
-.metaScore-editor .overlay.share .contents .options .field.booleanfield .input-wrapper checkbox {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.booleanfield .input-wrapper checkbox {
   margin: 0;
 }
-.metaScore-editor .overlay.iframe .contents iframe {
+.metaScore-editor .overlay.iframe > .inner > .contents iframe {
   min-width: 800px;
   min-height: 500px;
   border: none;
@@ -1251,27 +1323,27 @@
   border-radius: 10px;
   background-clip: padding-box;
 }
-.metaScore-editor .overlay.alert .contents {
+.metaScore-editor .overlay.alert > .inner > .contents {
   padding: 12px 16px;
   text-align: center;
 }
-.metaScore-editor .overlay.alert .contents .buttons {
+.metaScore-editor .overlay.alert > .inner > .contents .buttons {
   margin-top: 1em;
   text-align: center;
 }
-.metaScore-editor .overlay.alert .contents .buttons button {
+.metaScore-editor .overlay.alert > .inner > .contents .buttons button {
   min-width: 60px;
   margin: 0 0.5em;
   padding: 0.5em;
   background: #ccc;
 }
-.metaScore-editor .overlay.alert .contents .buttons button[data-action="cancel"] {
+.metaScore-editor .overlay.alert > .inner > .contents .buttons button[data-action="cancel"] {
   opacity: 0.75;
 }
-.metaScore-editor .overlay.alert .contents .buttons button[data-action="cancel"]:hover {
+.metaScore-editor .overlay.alert > .inner > .contents .buttons button[data-action="cancel"]:hover {
   opacity: 0.4;
 }
-.metaScore-editor .overlay.loadmask .contents {
+.metaScore-editor .overlay.loadmask > .inner > .contents {
   padding: 12px 16px 12px 45px;
   background: #ffffff url('img/editor/loader.gif') no-repeat 16px center;
 }

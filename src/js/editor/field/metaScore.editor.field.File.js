@@ -82,6 +82,11 @@ metaScore.namespace('editor.field').File = (function () {
             if('url' in value){
                 info.attr('href', value.url);
             }
+            
+            this.input.attr('required', null);
+        }
+        else if(this.configs.required){
+            this.input.attr('required', '');
         }
 
         return this;
