@@ -1609,10 +1609,10 @@
                     "props": [
                         {
                             "name": "options",
-                            "description": "A list of select options as key/value pairs",
+                            "description": "A list of select options as objects with 'value' and 'text' keys",
                             "type": "Object",
                             "optional": true,
-                            "optdefault": "{}"
+                            "optdefault": "[]"
                         },
                         {
                             "name": "multiple",
@@ -8007,7 +8007,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 169,
+            "line": 181,
             "description": "Get a field by name",
             "itemtype": "method",
             "name": "getField",
@@ -8028,7 +8028,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 186,
+            "line": 198,
             "description": "Set the field values",
             "itemtype": "method",
             "name": "setValues",
@@ -8051,7 +8051,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 220,
+            "line": 232,
             "description": "Clears all field values",
             "itemtype": "method",
             "name": "clearValues",
@@ -8069,7 +8069,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 235,
+            "line": 247,
             "description": "Get all changed field values",
             "itemtype": "method",
             "name": "getValues",
@@ -8083,7 +8083,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 245,
+            "line": 257,
             "description": "The fields change event handler",
             "itemtype": "method",
             "name": "onFieldValueChange",
@@ -8102,7 +8102,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 276,
+            "line": 288,
             "description": "The form submit event handler",
             "itemtype": "method",
             "name": "onFormSubmit",
@@ -8121,7 +8121,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 290,
+            "line": 302,
             "description": "The close button click event handler",
             "itemtype": "method",
             "name": "onCloseClick",
@@ -8140,7 +8140,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideDetails.js",
-            "line": 308,
+            "line": 320,
             "description": "The cancel button click event handler",
             "itemtype": "method",
             "name": "onCancelClick",
@@ -8197,7 +8197,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 124,
+            "line": 138,
             "description": "Show the overlay",
             "itemtype": "method",
             "name": "show",
@@ -8208,7 +8208,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 138,
+            "line": 152,
             "description": "The onload success event handler",
             "itemtype": "method",
             "name": "onLoadSuccess",
@@ -8227,7 +8227,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 154,
+            "line": 192,
             "description": "The load error event handler",
             "itemtype": "method",
             "name": "onLoadError",
@@ -8246,7 +8246,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 164,
+            "line": 202,
             "description": "The filter form submit event handler",
             "itemtype": "method",
             "name": "onFilterFormSubmit",
@@ -8265,7 +8265,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 186,
+            "line": 222,
             "description": "The filters reset button click event handler",
             "itemtype": "method",
             "name": "onFiltersResetClick",
@@ -8284,7 +8284,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 201,
+            "line": 235,
             "description": "Setup the results",
             "itemtype": "method",
             "name": "setupResults",
@@ -8297,7 +8297,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 307,
+            "line": 341,
             "description": "Load guides",
             "itemtype": "method",
             "name": "load",
@@ -9941,7 +9941,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 126,
+            "line": 138,
             "description": "Setup the cursor's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -9953,7 +9953,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 144,
+            "line": 156,
             "description": "The click event handler",
             "itemtype": "method",
             "name": "onClick",
@@ -9972,7 +9972,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 190,
+            "line": 202,
             "description": "The cuepoint update event handler",
             "itemtype": "method",
             "name": "onCuePointUpdate",

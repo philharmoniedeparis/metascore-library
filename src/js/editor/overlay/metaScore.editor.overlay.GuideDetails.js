@@ -72,11 +72,20 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
         // Fields
         this.fields['type'] = new metaScore.editor.field.Select({
                 'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
-                'options': {
-                    '': '',
-                    'audio': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio'),
-                    'video': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
-                },
+                'options': [
+                    {
+                        'value': '',
+                        'text': ''
+                    },
+                    {
+                        'value': 'audio',
+                        'text': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio')
+                    },
+                    {
+                        'value': 'video',
+                        'text': metaScore.Locale.t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
+                    }
+                ],
                 'required': true
             })
             .data('name', 'type')
@@ -143,12 +152,15 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             this.fields['groups'] = new metaScore.editor.field.Select({
                     'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
                     'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The groups this guide is shared with<br/><em>Hold down the Ctrl/Cmd key to select multiple groups</em>'),
-                    'multiple': true,
-                    'options': this.configs.groups
+                    'multiple': true
                 })
                 .data('name', 'groups')
                 .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
                 .appendTo(form);
+                
+            metaScore.Array.each(this.configs.groups, function(index, group){
+                this.fields['groups'].addOption(group.id, group.title);
+            }, this);
         }
 
         // Buttons

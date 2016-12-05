@@ -1232,7 +1232,7 @@
                             
                             &.textfield{
                                 display: inline-block;
-                                width: 50%;
+                                width: 100%;
                                 
                                 .input-wrapper{
                                     input{
@@ -1240,8 +1240,20 @@
                                         .box-sizing(border-box);
                                     }
                                 }
+                            }
+                            
+                            &.selectfield{
+                                display: inline-block;
+                                width: 50%;
                                 
-                                &:nth-child(odd){
+                                .input-wrapper{
+                                    select{
+                                        width: 100%;
+                                        .box-sizing(border-box);
+                                    }
+                                }
+                                
+                                &:nth-child(even){
                                     .input-wrapper{
                                         padding-right: 1em;
                                     }

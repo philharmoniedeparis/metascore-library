@@ -71,38 +71,52 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             })
             .appendTo(this.filters_form)
             .getContents();
-            
-        new metaScore.editor.field.Text({
-                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.keyword.label', 'Keyword')
+        
+        this.filter_fields = {};
+        
+        this.filter_fields['fulltext'] = new metaScore.editor.field.Text({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.fulltext.label', 'Full-text search')
             })
-            .data('name', 'filters[keyword]')
+            .data('name', 'filters[fulltext]')
             .appendTo(fieldset);
             
-        new metaScore.editor.field.Text({
-                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag')
+        this.filter_fields['tag'] = new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag'),
+                'value': ''
             })
             .data('name', 'filters[tag]')
             .appendTo(fieldset);
             
-        new metaScore.editor.field.Text({
-                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.author.label', 'Author')
+        this.filter_fields['author'] = new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.author.label', 'Author'),
+                'value': ''
             })
             .data('name', 'filters[author]')
             .appendTo(fieldset);
             
-        new metaScore.editor.field.Text({
-                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group')
+        this.filter_fields['group'] = new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group'),
+                'value': ''
             })
             .data('name', 'filters[group]')
             .appendTo(fieldset);
             
-        new metaScore.editor.field.Select({
+        this.filter_fields['status'] = new metaScore.editor.field.Select({
                 'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.label', 'Status'),
-                'options': {
-                    '': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.all.lable', 'All'),
-                    '1': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published'),
-                    '0': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
-                },
+                'options': [
+                    {
+                        'value': '',
+                        'text': ''
+                    },
+                    {
+                        'value': '1',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published')
+                    },
+                    {
+                        'value': '0',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
+                    }
+                ],
                 'value': ''
             })
             .data('name', 'filters[status]')
@@ -145,10 +159,34 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     GuideSelector.prototype.onLoadSuccess = function(xhr){
         var data = JSON.parse(xhr.response);
 
+        if('tags' in data){
+            this.filter_fields['tag'].clear().addOption('', '');
+            
+            metaScore.Object.each(data['tags'], function(key, value){
+                this.filter_fields['tag'].addOption(key, value);
+            }, this);
+        }
+
+        if('authors' in data){
+            this.filter_fields['author'].clear().addOption('', '');
+            
+            metaScore.Object.each(data['authors'], function(key, value){
+                this.filter_fields['author'].addOption(key, value);
+            }, this);
+        }
+
+        if('groups' in data){
+            this.filter_fields['group'].clear().addOption('', '');
+            
+            metaScore.Object.each(data['groups'], function(key, value){
+                this.filter_fields['group'].addOption(key, value);
+            }, this);
+        }
+        
+        this.setupResults(data['items']);
+
         this.loadmask.hide();
         delete this.loadmask;
-
-        this.setupResults(data.items);
     };
 
     /**
@@ -169,12 +207,10 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @param {Event} evt The event object
      */
     GuideSelector.prototype.onFilterFormSubmit = function(evt){
-        var fields, data = {};
+        var data = {};
         
-        fields = this.filters_form.find('.field');
-        
-        fields.each(function(index, field){
-            data[field._metaScore.data('name')] = field._metaScore.getValue();
+        metaScore.Object.each(this.filter_fields, function(key, field){
+            data[field.data('name')] = field.getValue();
         });
         
         this.load(data);
@@ -191,10 +227,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @param {Event} evt The event object
      */
     GuideSelector.prototype.onFiltersResetClick = function(evt){
-        var fields = this.filters_form.find('.field');
-        
-        fields.each(function(index, field){
-            field._metaScore.reset();
+        metaScore.Object.each(this.filter_fields, function(key, field){
+            field.reset();
         });
     };
 

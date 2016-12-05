@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-11-23 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-12-05 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "80392d";
+        return "5a3d15";
     },
 
     /**
@@ -7568,12 +7568,24 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'type': 'Select',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Cursor.direction', 'Direction'),
-                    'options': {
-                        'right': metaScore.Locale.t('player.component.element.Cursor.direction.right', 'Left > Right'),
-                        'left': metaScore.Locale.t('player.component.element.Cursor.direction.left', 'Right > Left'),
-                        'bottom': metaScore.Locale.t('player.component.element.Cursor.direction.bottom', 'Top > Bottom'),
-                        'top': metaScore.Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
-                    }
+                    'options': [
+                        {
+                            'value': 'right',
+                            'text': metaScore.Locale.t('player.component.element.Cursor.direction.right', 'Left > Right')
+                        },
+                        {
+                            'value': 'left',
+                            'text': metaScore.Locale.t('player.component.element.Cursor.direction.left', 'Right > Left')
+                        },
+                        {
+                            'value': 'bottom',
+                            'text': metaScore.Locale.t('player.component.element.Cursor.direction.bottom', 'Top > Bottom')
+                        },
+                        {
+                            'value': 'top',
+                            'text': metaScore.Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top')
+                        }
+                    ]
                 },
                 'getter': function(skipDefault){
                     return this.data('direction');

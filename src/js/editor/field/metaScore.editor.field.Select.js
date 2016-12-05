@@ -21,7 +21,7 @@ metaScore.namespace('editor.field').Select = (function () {
      * @extends editor.Field
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options={}] A list of select options as key/value pairs
+     * @param {Object} [configs.options=[]] A list of select options as objects with 'value' and 'text' keys
      * @param {Boolean} [configs.multiple=false] Whether multiple options can be selected at once
      */
     function SelectField(configs) {
@@ -34,7 +34,7 @@ metaScore.namespace('editor.field').Select = (function () {
     }
 
     SelectField.defaults = {
-        'options': {},
+        'options': [],
         'multiple': false
     };
 
@@ -61,8 +61,8 @@ metaScore.namespace('editor.field').Select = (function () {
             .addListener('change', metaScore.Function.proxy(this.onChange, this))
             .appendTo(this.input_wrapper);
 
-        metaScore.Object.each(this.configs.options, function(key, value){
-            this.addOption(key, value);
+        metaScore.Array.each(this.configs.options, function(index, option){
+            this.addOption(option.value, option.text);
         }, this);
         
         if(this.configs.multiple){
