@@ -202,12 +202,13 @@ module.exports = function(grunt) {
                 builtInParser: null,
                 customParser:    {
                     getRegexpList: function(){
-                        return [/metaScore\.Locale\.t\('(.+?)', ?'(.*?)'/gm];
+                        // see http://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
+                        return [/metaScore\.Locale\.t\((["'])((?:(?=(\\?))\3.)*?)\1, ?(["'])((?:(?=(\\?))\6.)*?)\4/gm];
                     },
                     parseMatch: function(match){
                         return {
-                            'key': match[1],
-                            'text': match[2]
+                            'key': match[2],
+                            'text': match[5]
                         };
                     }
                 },

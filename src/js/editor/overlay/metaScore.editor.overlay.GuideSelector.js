@@ -88,7 +88,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             .appendTo(fieldset);
             
         this.filter_fields['author'] = new metaScore.editor.field.Select({
-                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.author.label', 'Author'),
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.author.label', "Guide's author"),
                 'value': ''
             })
             .data('name', 'filters[author]')

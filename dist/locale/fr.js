@@ -118,7 +118,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideSelector.filters.fieldset.legend": "Filtrer",
 	"editor.overlay.GuideSelector.filters.fulltext.label": "Recherche plein texte",
 	"editor.overlay.GuideSelector.filters.tag.label": "Étiquette",
-	"editor.overlay.GuideSelector.filters.author.label": "Auteur",
+	"editor.overlay.GuideSelector.filters.author.label": "Auteur du guide",
 	"editor.overlay.GuideSelector.filters.group.label": "Groupe",
 	"editor.overlay.GuideSelector.filters.status.label": "Statut",
 	"editor.overlay.GuideSelector.filters.status.published.lable": "Publié",

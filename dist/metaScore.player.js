@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "5a3d15";
+        return "6d03b4";
     },
 
     /**
