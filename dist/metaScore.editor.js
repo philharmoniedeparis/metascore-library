@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "150ebc";
+        return "5076c0";
     },
 
     /**
@@ -7715,20 +7715,6 @@ metaScore.namespace('editor').Panel = (function(){
     };
 
     /**
-     * Reset all fields
-     *
-     * @method resetFields
-     * @chainable
-     */
-    Panel.prototype.resetFields = function(supressEvent){
-        metaScore.Object.each(this.fields, function(key, field){
-            field.reset(supressEvent);
-        }, this);
-        
-        return this;
-    };
-
-    /**
      * Show a field by name
      *
      * @method showField
@@ -7893,8 +7879,6 @@ metaScore.namespace('editor').Panel = (function(){
                 .removeListener('resizeend', this.onComponentResizeEnd);
 
             delete this.component;
-                
-            this.resetFields(true);
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_COMPONENTUNSET, {'component': component}, false);
