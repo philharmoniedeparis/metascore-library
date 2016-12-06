@@ -99,6 +99,12 @@ metaScore.Editor = (function(){
             
         this.clipboard = new metaScore.Clipboard();
         
+        // prevent the custom contextmenu from overriding the native one in inputs
+        this.addDelegate('input', 'contextmenu', function(evt){
+            evt.stopImmediatePropagation();
+            evt.stopPropagation();
+        });
+        
         this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
                 'about': {
                     'text': metaScore.Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})

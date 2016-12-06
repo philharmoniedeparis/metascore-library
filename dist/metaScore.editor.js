@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "a39dba";
+        return "150ebc";
     },
 
     /**
@@ -4287,6 +4287,12 @@ metaScore.Editor = (function(){
             .addListener('redo', metaScore.Function.proxy(this.onHistoryRedo, this));
             
         this.clipboard = new metaScore.Clipboard();
+        
+        // prevent the custom contextmenu from overriding the native one in inputs
+        this.addDelegate('input', 'contextmenu', function(evt){
+            evt.stopImmediatePropagation();
+            evt.stopPropagation();
+        });
         
         this.contextmenu = new metaScore.ContextMenu({'target': this, 'items': {
                 'about': {
