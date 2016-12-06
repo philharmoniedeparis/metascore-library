@@ -8197,7 +8197,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 138,
+            "line": 139,
             "description": "Show the overlay",
             "itemtype": "method",
             "name": "show",
@@ -8208,7 +8208,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 152,
+            "line": 153,
             "description": "The onload success event handler",
             "itemtype": "method",
             "name": "onLoadSuccess",
@@ -8227,7 +8227,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 192,
+            "line": 193,
             "description": "The load error event handler",
             "itemtype": "method",
             "name": "onLoadError",
@@ -8246,7 +8246,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 202,
+            "line": 203,
             "description": "The filter form submit event handler",
             "itemtype": "method",
             "name": "onFilterFormSubmit",
@@ -8265,7 +8265,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 222,
+            "line": 223,
             "description": "The filters reset button click event handler",
             "itemtype": "method",
             "name": "onFiltersResetClick",
@@ -8284,7 +8284,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 235,
+            "line": 236,
             "description": "Setup the results",
             "itemtype": "method",
             "name": "setupResults",
@@ -8297,7 +8297,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 341,
+            "line": 342,
             "description": "Load guides",
             "itemtype": "method",
             "name": "load",

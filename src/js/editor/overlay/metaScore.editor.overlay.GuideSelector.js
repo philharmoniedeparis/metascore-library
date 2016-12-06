@@ -75,7 +75,8 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
         this.filter_fields = {};
         
         this.filter_fields['fulltext'] = new metaScore.editor.field.Text({
-                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.fulltext.label', 'Full-text search')
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.fulltext.label', 'Full-text search'),
+                'description': metaScore.Locale.t('editor.overlay.GuideSelector.filters.fulltext.description', "Search in the guide's title, credits, description and blocks")
             })
             .data('name', 'filters[fulltext]')
             .appendTo(fieldset);

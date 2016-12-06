@@ -117,6 +117,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideSelector.emptyText": "Pas de guides disponibles",
 	"editor.overlay.GuideSelector.filters.fieldset.legend": "Filtrer",
 	"editor.overlay.GuideSelector.filters.fulltext.label": "Recherche plein texte",
+	"editor.overlay.GuideSelector.filters.fulltext.description": "Recherche dans le titre, les crédits, la description et les blocs du guide",
 	"editor.overlay.GuideSelector.filters.tag.label": "Étiquette",
 	"editor.overlay.GuideSelector.filters.author.label": "Auteur du guide",
 	"editor.overlay.GuideSelector.filters.group.label": "Groupe",
