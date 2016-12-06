@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-12-05 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-12-06 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "6d03b4";
+        return "45b1c5";
     },
 
     /**
@@ -7385,7 +7385,9 @@ metaScore.namespace('editor').MainMenu = (function(){
             .data('action', 'edit')
             .appendTo(this);
 
-        btn_group = new metaScore.Dom('<div/>', {'class': 'button-group'}).appendTo(this);
+        btn_group = new metaScore.Dom('<div/>', {'class': 'button-group save'}).appendTo(this);
+
+        sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
         new metaScore.Button()
             .attr({
@@ -7393,8 +7395,6 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .data('action', 'save')
             .appendTo(btn_group);
-
-        sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
         new metaScore.Button()
             .attr({

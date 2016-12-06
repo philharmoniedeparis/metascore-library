@@ -51,7 +51,9 @@ metaScore.namespace('editor').MainMenu = (function(){
             .data('action', 'edit')
             .appendTo(this);
 
-        btn_group = new metaScore.Dom('<div/>', {'class': 'button-group'}).appendTo(this);
+        btn_group = new metaScore.Dom('<div/>', {'class': 'button-group save'}).appendTo(this);
+
+        sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
         new metaScore.Button()
             .attr({
@@ -59,8 +61,6 @@ metaScore.namespace('editor').MainMenu = (function(){
             })
             .data('action', 'save')
             .appendTo(btn_group);
-
-        sub_menu = new metaScore.Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
 
         new metaScore.Button()
             .attr({

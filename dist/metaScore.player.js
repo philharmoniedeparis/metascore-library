@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2016-12-05 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2016-12-06 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "6d03b4";
+        return "45b1c5";
     },
 
     /**

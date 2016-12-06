@@ -470,7 +470,7 @@
 .metaScore-editor .main-menu > button,
 .metaScore-editor .main-menu .button-group button {
   width: 1.75em;
-  height: 1.5em;
+  height: 1.6em;
   flex: 0 0 auto;
   margin: 0 10px;
   vertical-align: middle;
@@ -552,7 +552,7 @@
 .metaScore-editor .main-menu .button-group {
   position: relative;
 }
-.metaScore-editor .main-menu .button-group::after {
+.metaScore-editor .main-menu .button-group::before {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -570,7 +570,7 @@
   list-style: none;
   background: #c8c8c8;
   border: 1px solid #b2b2b2;
-  border-top: 0;
+  border-top-width: 0;
   -webkit-box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
   box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.25);
 }
@@ -585,6 +585,15 @@
 }
 .metaScore-editor .main-menu .button-group:hover .sub-menu {
   display: block;
+}
+.metaScore-editor .main-menu .button-group.save::before {
+  z-index: -2;
+}
+.metaScore-editor .main-menu .button-group.save .sub-menu {
+  top: -0.75em;
+  padding-top: 3em;
+  border-top-width: 1px;
+  z-index: -1;
 }
 .metaScore-editor .main-menu .time {
   flex: 0 0 auto;
