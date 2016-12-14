@@ -1127,6 +1127,7 @@
   background: #dadada url('img/editor/default-thumbnail.png') no-repeat center center;
 }
 .metaScore-editor .overlay.guide-selector > .inner > .contents table.results tr td.details {
+  width: 100%;
   padding: 1em 1em 1em 0;
   vertical-align: middle;
 }
