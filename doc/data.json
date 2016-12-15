@@ -13218,7 +13218,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2296,
+            "line": 2298,
             "description": "Remove a component from the player",
             "itemtype": "method",
             "name": "deletePlayerComponent",
@@ -13237,7 +13237,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2397,
+            "line": 2401,
             "description": "Opens the guide selector",
             "itemtype": "method",
             "name": "openGuideSelector",
@@ -13247,7 +13247,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2413,
+            "line": 2417,
             "description": "Creates a new guide",
             "itemtype": "method",
             "name": "createGuide",
@@ -13271,7 +13271,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2456,
+            "line": 2460,
             "description": "Saves the loaded guide",
             "itemtype": "method",
             "name": "saveGuide",
@@ -13293,7 +13293,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2529,
+            "line": 2533,
             "description": "Get a media file's duration in centiseconds",
             "itemtype": "method",
             "name": "getMediaFileDuration",

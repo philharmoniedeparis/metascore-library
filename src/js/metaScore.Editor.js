@@ -2290,6 +2290,8 @@ metaScore.Editor = (function(){
                 break;
         }
         
+        this.player_frame.focus();
+        
         return this;
     };
     
@@ -2390,6 +2392,8 @@ metaScore.Editor = (function(){
                 }
             });
         }
+        
+        this.player_frame.focus();
         
         return this;
     };
