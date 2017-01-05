@@ -1104,6 +1104,9 @@
 .metaScore-editor .overlay.guide-selector > .inner > .contents form.filters .field.selectfield:nth-child(even) .input-wrapper {
   padding-right: 1em;
 }
+.metaScore-editor .overlay.guide-selector > .inner > .contents form.filters .field.selectfield[data-name^="sort_"] {
+  width: auto;
+}
 .metaScore-editor .overlay.guide-selector > .inner > .contents form.filters button {
   min-width: 60px;
   margin-top: 1em;

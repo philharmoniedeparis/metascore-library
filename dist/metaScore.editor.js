@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-01-04 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-01-05 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "152f41";
+        return "4b9faf";
     },
 
     /**
@@ -11734,13 +11734,13 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @private
      */
     GuideSelector.prototype.setupUI = function(){
-        var contents, fieldset;
+        var contents, fieldset, buttons;
         
         GuideSelector.parent.prototype.setupUI.call(this);
         
         contents = this.getContents();
 
-        this.filters_form = new metaScore.Dom('<form>', {'class': 'filters', 'method': 'GET'})
+        this.filters_form = new metaScore.Dom('<form/>', {'class': 'filters', 'method': 'GET'})
             .addListener('submit', metaScore.Function.proxy(this.onFilterFormSubmit, this))
             .appendTo(contents);
             
@@ -11803,14 +11803,55 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
             .data('name', 'filters[status]')
             .appendTo(fieldset);
             
+        this.filter_fields['sort_by'] = new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_by.label', 'Sort by'),
+                'options': [
+                    {
+                        'value': 'title',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_by.title.lable', 'Title')
+                    },
+                    {
+                        'value': 'created',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_by.created.lable', 'Creation date')
+                    },
+                    {
+                        'value': 'changed',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
+                    }
+                ],
+                'value': 'title'
+            })
+            .data('name', 'sort_by')
+            .appendTo(fieldset);
+            
+        this.filter_fields['sort_order'] = new metaScore.editor.field.Select({
+                'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_order.label', 'Order'),
+                'options': [
+                    {
+                        'value': 'ASC',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_order.asc.lable', 'Asc')
+                    },
+                    {
+                        'value': 'DESC',
+                        'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_order.desc.lable', 'Desc')
+                    }
+                ],
+                'value': 'ASC'
+            })
+            .data('name', 'sort_order')
+            .appendTo(fieldset);
+            
+        buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
+            .appendTo(fieldset);
+            
         new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.submit.label', 'Submit')})
             .addClass('submit')
-            .appendTo(fieldset);
+            .appendTo(buttons);
 
         new metaScore.Button({'label': metaScore.Locale.t('editor.overlay.GuideSelector.filters.reset.label', 'Reset')})
             .addClass('reset')
             .addListener('click', metaScore.Function.proxy(this.onFiltersResetClick, this))
-            .appendTo(fieldset);
+            .appendTo(buttons);
             
         this.results = new metaScore.Dom('<table/>', {'class': 'results'})
             .appendTo(contents);
@@ -11839,28 +11880,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      */
     GuideSelector.prototype.onLoadSuccess = function(xhr){
         var data = JSON.parse(xhr.response);
-
-        if('tags' in data){
-            this.filter_fields['tag'].clear().addOption('', '');
-            
-            metaScore.Object.each(data['tags'], function(key, value){
-                this.filter_fields['tag'].addOption(key, value);
-            }, this);
-        }
-
-        if('authors' in data){
-            this.filter_fields['author'].clear().addOption('', '');
-            
-            metaScore.Object.each(data['authors'], function(key, value){
-                this.filter_fields['author'].addOption(key, value);
-            }, this);
-        }
-
-        if('groups' in data){
-            this.filter_fields['group'].clear().addOption('', '');
-            
-            metaScore.Object.each(data['groups'], function(key, value){
-                this.filter_fields['group'].addOption(key, value);
+        
+        if('filters' in data){
+            metaScore.Object.each(data['filters'], function(field, values){
+                if(field in this.filter_fields){
+                    this.filter_fields[field].clear().addOption('', '');
+                
+                    metaScore.Object.each(values, function(key, value){
+                        this.filter_fields[field].addOption(key, value);
+                    }, this);
+                }
             }, this);
         }
         
