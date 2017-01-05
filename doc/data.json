@@ -9930,7 +9930,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 138,
+            "line": 141,
             "description": "Setup the cursor's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -9942,7 +9942,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 156,
+            "line": 159,
             "description": "The click event handler",
             "itemtype": "method",
             "name": "onClick",
@@ -9961,7 +9961,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 202,
+            "line": 205,
             "description": "The cuepoint update event handler",
             "itemtype": "method",
             "name": "onCuePointUpdate",

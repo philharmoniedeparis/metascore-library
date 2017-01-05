@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "4b9faf";
+        return "bdb6b6";
     },
 
     /**
@@ -7597,10 +7597,13 @@ metaScore.namespace('player.component.element').Cursor = (function () {
             'acceleration': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
+                    'label': metaScore.Locale.t('player.component.element.Cursor.acceleration', 'Acceleration'),
+                    'step': 0.01,
+                    'min': 0.01
                 },
                 'getter': function(skipDefault){
-                    return this.data('accel');
+                    var value = parseFloat(this.data('accel'));
+                    return isNaN(value) ? 1 : value;
                 },
                 'setter': function(value){
                     this.data('accel', value);
