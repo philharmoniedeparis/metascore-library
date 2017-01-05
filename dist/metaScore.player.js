@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "a3ffaa";
+        return "c385a5";
     },
 
     /**
@@ -5683,7 +5683,7 @@ metaScore.namespace('player.component').Block = (function () {
                 }
             },
             'locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
                 },
@@ -6227,7 +6227,7 @@ metaScore.namespace('player.component').Controller = (function () {
     Controller.defaults = {
         'properties': {
             'locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked ?')
                 },
@@ -6430,7 +6430,7 @@ metaScore.namespace('player.component').Element = (function () {
                 }
             },
             'locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
                 },
@@ -6858,7 +6858,7 @@ metaScore.namespace('player.component').Media = (function () {
         'useFrameAnimation': true,
         'properties': {
             'locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
                 },
@@ -7843,7 +7843,7 @@ metaScore.namespace('player.component.element').Text = (function () {
     Text.defaults = {
         'properties': metaScore.Object.extend({}, Text.parent.defaults.properties, {
             'text-locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Text.locked', 'Text locked ?')
                 }

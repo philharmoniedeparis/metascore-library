@@ -195,17 +195,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js": {
-            "name": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "modules": {},
-            "classes": {
-                "editor.field.Boolean": 1
-            },
-            "fors": {},
-            "namespaces": {
-                "editor.field": 1
-            }
-        },
         "src\\js\\editor\\field\\metaScore.editor.field.BorderRadius.js": {
             "name": "src\\js\\editor\\field\\metaScore.editor.field.BorderRadius.js",
             "modules": {},
@@ -222,6 +211,17 @@
             "modules": {},
             "classes": {
                 "editor.field.ButtonsField": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "editor.field": 1
+            }
+        },
+        "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js": {
+            "name": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "modules": {},
+            "classes": {
+                "editor.field.Checkbox": 1
             },
             "fors": {},
             "namespaces": {
@@ -701,9 +701,9 @@
             "name": "Editor",
             "submodules": {},
             "classes": {
-                "editor.field.Boolean": 1,
                 "editor.field.BorderRadius": 1,
                 "editor.field.ButtonsField": 1,
+                "editor.field.Checkbox": 1,
                 "editor.field.ColorField": 1,
                 "editor.field.FileField": 1,
                 "editor.field.ImageField": 1,
@@ -1301,52 +1301,6 @@
             "description": "A class for variable helper functions",
             "is_constructor": 1
         },
-        "editor.field.Boolean": {
-            "name": "editor.field.Boolean",
-            "shortname": "editor.field.Boolean",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "Editor",
-            "namespace": "editor.field",
-            "file": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "line": 16,
-            "description": "A boolean field based on an HTML input[type=checkbox] element",
-            "extends": "editor.Field",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "configs",
-                    "description": "Custom configs to override defaults",
-                    "type": "Object",
-                    "props": [
-                        {
-                            "name": "checked",
-                            "description": "Whether the field is checked by default",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
-                            "name": "checked_value",
-                            "description": "The value when checked",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "true"
-                        },
-                        {
-                            "name": "unchecked_value",
-                            "description": "The value when unchecked",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        }
-                    ]
-                }
-            ]
-        },
         "editor.field.BorderRadius": {
             "name": "editor.field.BorderRadius",
             "shortname": "editor.field.BorderRadius",
@@ -1397,6 +1351,52 @@
                             "type": "Object",
                             "optional": true,
                             "optdefault": "{}}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "editor.field.Checkbox": {
+            "name": "editor.field.Checkbox",
+            "shortname": "editor.field.Checkbox",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Editor",
+            "namespace": "editor.field",
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "line": 16,
+            "description": "A checkbox field based on an HTML input[type=checkbox] element",
+            "extends": "editor.Field",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "configs",
+                    "description": "Custom configs to override defaults",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "checked",
+                            "description": "Whether the field is checked by default",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "checked_value",
+                            "description": "The value when checked",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "unchecked_value",
+                            "description": "The value when unchecked",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -6134,100 +6134,6 @@
             "module": "Core"
         },
         {
-            "file": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "line": 7,
-            "description": "Fired when the field's value changes",
-            "itemtype": "event",
-            "name": "valuechange",
-            "params": [
-                {
-                    "name": "field",
-                    "description": "The field instance",
-                    "type": "Object"
-                },
-                {
-                    "name": "value",
-                    "description": "The new value",
-                    "type": "Mixed"
-                }
-            ],
-            "class": "editor.field.Boolean",
-            "module": "Editor"
-        },
-        {
-            "file": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "line": 47,
-            "description": "Setup the field's UI",
-            "itemtype": "method",
-            "name": "setupUI",
-            "access": "private",
-            "tagname": "",
-            "class": "editor.field.Boolean",
-            "module": "Editor",
-            "namespace": "editor.field"
-        },
-        {
-            "file": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "line": 70,
-            "description": "The click event handler",
-            "itemtype": "method",
-            "name": "onClick",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "evt",
-                    "description": "The event object",
-                    "type": "Event"
-                }
-            ],
-            "class": "editor.field.Boolean",
-            "module": "Editor",
-            "namespace": "editor.field"
-        },
-        {
-            "file": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "line": 83,
-            "description": "The change event handler",
-            "itemtype": "method",
-            "name": "onChange",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "evt",
-                    "description": "The event object",
-                    "type": "Event"
-                }
-            ],
-            "class": "editor.field.Boolean",
-            "module": "Editor",
-            "namespace": "editor.field"
-        },
-        {
-            "file": "src\\js\\editor\\field\\metaScore.editor.field.Boolean.js",
-            "line": 108,
-            "description": "Set the field's value",
-            "itemtype": "method",
-            "name": "setValue",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The new value",
-                    "type": "Mixed"
-                },
-                {
-                    "name": "supressEvent",
-                    "description": "Whether to prevent the custom event from firing",
-                    "type": "Boolean"
-                }
-            ],
-            "chainable": 1,
-            "class": "editor.field.Boolean",
-            "module": "Editor",
-            "namespace": "editor.field"
-        },
-        {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.BorderRadius.js",
             "line": 27,
             "description": "Setup the field's UI",
@@ -6395,6 +6301,100 @@
                 "type": "Dom"
             },
             "class": "editor.field.ButtonsField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "line": 7,
+            "description": "Fired when the field's value changes",
+            "itemtype": "event",
+            "name": "valuechange",
+            "params": [
+                {
+                    "name": "field",
+                    "description": "The field instance",
+                    "type": "Object"
+                },
+                {
+                    "name": "value",
+                    "description": "The new value",
+                    "type": "Mixed"
+                }
+            ],
+            "class": "editor.field.Checkbox",
+            "module": "Editor"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "line": 47,
+            "description": "Setup the field's UI",
+            "itemtype": "method",
+            "name": "setupUI",
+            "access": "private",
+            "tagname": "",
+            "class": "editor.field.Checkbox",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "line": 70,
+            "description": "The click event handler",
+            "itemtype": "method",
+            "name": "onClick",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.field.Checkbox",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "line": 83,
+            "description": "The change event handler",
+            "itemtype": "method",
+            "name": "onChange",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.field.Checkbox",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkbox.js",
+            "line": 108,
+            "description": "Set the field's value",
+            "itemtype": "method",
+            "name": "setValue",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The new value",
+                    "type": "Mixed"
+                },
+                {
+                    "name": "supressEvent",
+                    "description": "Whether to prevent the custom event from firing",
+                    "type": "Boolean"
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.Checkbox",
             "module": "Editor",
             "namespace": "editor.field"
         },

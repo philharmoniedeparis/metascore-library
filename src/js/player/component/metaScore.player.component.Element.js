@@ -45,7 +45,7 @@ metaScore.namespace('player.component').Element = (function () {
                 }
             },
             'locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
                 },

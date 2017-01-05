@@ -2,7 +2,7 @@
  * @module Editor
  */
 
-metaScore.namespace('editor.field').Boolean = (function () {
+metaScore.namespace('editor.field').Checkbox = (function () {
 
     /**
      * Fired when the field's value changes
@@ -14,9 +14,9 @@ metaScore.namespace('editor.field').Boolean = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * A boolean field based on an HTML input[type=checkbox] element
+     * A checkbox field based on an HTML input[type=checkbox] element
      *
-     * @class Boolean
+     * @class Checkbox
      * @namespace editor.field
      * @extends editor.Field
      * @constructor
@@ -25,24 +25,24 @@ metaScore.namespace('editor.field').Boolean = (function () {
      * @param {Boolean} [configs.checked_value=true] The value when checked
      * @param {Boolean} [configs.unchecked_value=false] The value when unchecked
      */
-    function BooleanField(configs) {
+    function CheckboxField(configs) {
         this.configs = this.getConfigs(configs);
 
         // call parent constructor
-        BooleanField.parent.call(this, this.configs);
+        CheckboxField.parent.call(this, this.configs);
 
-        this.addClass('booleanfield');
+        this.addClass('checkboxfield');
 
         this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
     }
 
-    BooleanField.defaults = {
+    CheckboxField.defaults = {
         'checked': false,
         'checked_value': true,
         'unchecked_value': false
     };
 
-    metaScore.editor.Field.extend(BooleanField);
+    metaScore.editor.Field.extend(CheckboxField);
 
     /**
      * Setup the field's UI
@@ -50,7 +50,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
      * @method setupUI
      * @private
      */
-    BooleanField.prototype.setupUI = function(){
+    CheckboxField.prototype.setupUI = function(){
         var uid = 'field-'+ metaScore.String.uuid(5);
 
         if(this.configs.label){
@@ -74,7 +74,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
      * @private
      * @param {Event} evt The event object
      */
-    BooleanField.prototype.onClick = function(evt){
+    CheckboxField.prototype.onClick = function(evt){
         if(this.is_readonly){
             evt.preventDefault();
         }
@@ -87,7 +87,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
      * @private
      * @param {Event} evt The event object
      */
-    BooleanField.prototype.onChange = function(evt){
+    CheckboxField.prototype.onChange = function(evt){
         if(this.is_readonly){
             evt.preventDefault();
             return;
@@ -113,7 +113,7 @@ metaScore.namespace('editor.field').Boolean = (function () {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
-    BooleanField.prototype.setValue = function(value, supressEvent){
+    CheckboxField.prototype.setValue = function(value, supressEvent){
         this.input.get(0).checked = value === this.configs.checked_value;
 
         if(supressEvent !== true){
@@ -123,6 +123,6 @@ metaScore.namespace('editor.field').Boolean = (function () {
         return this;
     };
 
-    return BooleanField;
+    return CheckboxField;
 
 })();

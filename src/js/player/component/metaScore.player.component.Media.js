@@ -97,7 +97,7 @@ metaScore.namespace('player.component').Media = (function () {
         'useFrameAnimation': true,
         'properties': {
             'locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
                 },

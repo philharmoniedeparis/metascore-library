@@ -114,14 +114,14 @@ metaScore.namespace('editor.overlay').Share = (function () {
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
             .appendTo(options);
 
-        this.fields['keyboard'] = new metaScore.editor.field.Boolean({
+        this.fields['keyboard'] = new metaScore.editor.field.Checkbox({
                 'label': metaScore.Locale.t('editor.overlay.Share.fields.keyboard.label', 'Enable keyboard shortcuts')
             })
             .data('name', 'keyboard')
             .addListener('valuechange', metaScore.Function.proxy(this.onFieldValueChange, this))
             .appendTo(options);
 
-        this.fields['api'] = new metaScore.editor.field.Boolean({
+        this.fields['api'] = new metaScore.editor.field.Checkbox({
                 'label': metaScore.Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url})
             })
             .data('name', 'api')

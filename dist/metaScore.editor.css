@@ -222,7 +222,7 @@
 .metaScore-editor .field:hover .input-wrapper .buttons {
   display: block;
 }
-.metaScore-editor .field.booleanfield.readonly .input-wrapper {
+.metaScore-editor .field.checkboxfield.readonly .input-wrapper {
   pointer-events: none;
 }
 .metaScore-editor .field.numberfield .input-wrapper input {
@@ -1324,16 +1324,16 @@
 .metaScore-editor .overlay.share > .inner > .contents .options .field.textfield input {
   width: 6em;
 }
-.metaScore-editor .overlay.share > .inner > .contents .options .field.booleanfield {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.checkboxfield {
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-end;
   align-items: center;
 }
-.metaScore-editor .overlay.share > .inner > .contents .options .field.booleanfield .input-wrapper {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.checkboxfield .input-wrapper {
   margin-right: 0.5em;
 }
-.metaScore-editor .overlay.share > .inner > .contents .options .field.booleanfield .input-wrapper checkbox {
+.metaScore-editor .overlay.share > .inner > .contents .options .field.checkboxfield .input-wrapper checkbox {
   margin: 0;
 }
 .metaScore-editor .overlay.iframe > .inner > .contents iframe {

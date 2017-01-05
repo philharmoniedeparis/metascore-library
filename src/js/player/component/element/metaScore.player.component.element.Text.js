@@ -47,7 +47,7 @@ metaScore.namespace('player.component.element').Text = (function () {
     Text.defaults = {
         'properties': metaScore.Object.extend({}, Text.parent.defaults.properties, {
             'text-locked': {
-                'type': 'Boolean',
+                'type': 'Checkbox',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.element.Text.locked', 'Text locked ?')
                 }
