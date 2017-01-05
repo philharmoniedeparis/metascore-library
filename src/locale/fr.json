@@ -41,7 +41,7 @@
 	"editor.onMainmenuClick.revert.no": "Non",
 	"editor.onPlayerLoadError.msg": "Une erreur est survenue. Veuillez ré-essayer.",
 	"editor.onPlayerLoadError.ok": "OK",
-	"editor.onDetailsOverlaySubmit.update.shorter.msg": "La durée du média sélectionné (!new_duration centiseconds) est inférieur à celui en cours (!old_duration centiseconds).<br/><strong>Cela rendra des pages des blocs suivants hors de portée&nbsp;: !pages</strong><br/>Veuillez modifier le temps de début de ces pages et ré-essayer.",
+	"editor.onDetailsOverlaySubmit.update.shorter.msg": "La durée du média sélectionné (!new_duration centiseconds) est inférieur à celui en cours (!old_duration centiseconds).<br/><strong>Cela rendra des pages des blocs suivants hors de portée&nbsp;: !blocks</strong><br/>Veuillez modifier le temps de début de ces pages et ré-essayer.",
 	"editor.onDetailsOverlaySubmit.update.shorter.ok": "OK",
 	"editor.onDetailsOverlaySubmit.update.diffferent.msg": "La durée du média sélectionné (!new_duration centiseconds) diffère de celui en cours (!old_duration centiseconds).<br/><strong>Cela peut causer la désynchronisation de pages et d'éléments.</strong><br/>Etes-vous sûr que vous voulez utiliser le nouveau fichier&nbsp;?",
 	"editor.onDetailsOverlaySubmit.update.diffferent.yes": "Oui",

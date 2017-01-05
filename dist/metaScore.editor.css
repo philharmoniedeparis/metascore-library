@@ -92,19 +92,21 @@
 }
 .metaScore-editor fieldset {
   margin: 0;
-  padding: 1em;
+  padding: 0;
   border: none;
   background: #eee;
 }
 .metaScore-editor fieldset legend {
-  display: inline-block;
+  display: block;
   width: 100%;
+  padding: 1em;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  background: inherit;
 }
 .metaScore-editor fieldset > .contents {
-  padding: 0.5em 0;
+  padding: 1em;
 }
 .metaScore-editor fieldset.collapsible legend {
   cursor: pointer;
