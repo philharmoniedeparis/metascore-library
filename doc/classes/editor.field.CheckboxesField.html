@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>editor.field.BorderRadius - metaScore</title>
+    <title>editor.field.CheckboxesField - metaScore</title>
     <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -136,7 +136,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>editor.field.BorderRadius Class</h1>
+<h1>editor.field.CheckboxesField Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -150,14 +150,14 @@
 
 
 <div class="box intro">
-    <p>A complex field for defining CSS border radius values</p>
+    <p>A select list field based on an HTML select element</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_editor.field.BorderRadius" class="method item">
-            <h3 class="name"><code>editor.field.BorderRadius</code></h3>
+        <div id="method_editor.field.CheckboxesField" class="method item">
+            <h3 class="name"><code>editor.field.CheckboxesField</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -200,6 +200,19 @@
         
                             </div>
         
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[options=[]]</code>
+                                            <span class="type">Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A list of select options as objects with &#39;value&#39; and &#39;text&#39; keys</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
                         </li>
                     </ul>
                 </div>
@@ -228,6 +241,10 @@
                     <ul class="index-list methods extends">
                             <li class="index-item method private inherited">
                                 <a href="#method_add">add</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_addCheckbox">addCheckbox</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -260,6 +277,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_children">children</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_clear">clear</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -351,15 +372,7 @@
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_onClearClick">onClearClick</a>
-
-                            </li>
-                            <li class="index-item method private">
                                 <a href="#method_onClick">onClick</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onOverlaySubmit">onOverlaySubmit</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -376,6 +389,10 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_remove">remove</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_removeCheckbox">removeCheckbox</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -515,6 +532,84 @@
             </ul>
         </div>
 
+
+
+</div>
+<div id="method_addCheckbox" class="method item">
+    <h3 class="name"><code>addCheckbox</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>value</code>
+                </li>
+                <li class="arg">
+                        <code>text</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Add a checkbox to the list of checkboxes</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The option&#39;s value</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">text</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The option&#39;s label</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>The created Dom object</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -1057,6 +1152,36 @@
 
 
 </div>
+<div id="method_clear" class="method item">
+    <h3 class="name"><code>clear</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Remove all groups and options</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_closest" class="method item inherited">
     <h3 class="name"><code>closest</code></h3>
 
@@ -1337,7 +1462,7 @@
 
 
 </div>
-<div id="method_disable" class="method item inherited">
+<div id="method_disable" class="method item">
     <h3 class="name"><code>disable</code></h3>
 
         <span class="paren">()</span>
@@ -1351,8 +1476,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_disable">editor.Field</a>:
+            <p>Inherited from
+            <a href="../classes/editor.Field.html#method_disable">
+                editor.Field
+            </a>
         </p>
 
 
@@ -1488,7 +1615,7 @@
 
 
 </div>
-<div id="method_enable" class="method item inherited">
+<div id="method_enable" class="method item">
     <h3 class="name"><code>enable</code></h3>
 
         <span class="paren">()</span>
@@ -1502,8 +1629,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_enable">editor.Field</a>:
+            <p>Inherited from
+            <a href="../classes/editor.Field.html#method_enable">
+                editor.Field
+            </a>
         </p>
 
 
@@ -2241,7 +2370,7 @@
 
 
 </div>
-<div id="method_onChange" class="method item private inherited">
+<div id="method_onChange" class="method item private">
     <h3 class="name"><code>onChange</code></h3>
 
         <div class="args">
@@ -2261,8 +2390,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_onChange">editor.Field</a>:
+            <p>Inherited from
+            <a href="../classes/editor.Field.html#method_onChange">
+                editor.Field
+            </a>
         </p>
 
 
@@ -2271,59 +2402,6 @@
 
     <div class="description">
         <p>The change event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onClearClick" class="method item private">
-    <h3 class="name"><code>onClearClick</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The clear button&#39;s click event handler</p>
 
     </div>
 
@@ -2377,59 +2455,6 @@
 
     <div class="description">
         <p>The click event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onOverlaySubmit" class="method item private">
-    <h3 class="name"><code>onOverlaySubmit</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The overlay&#39;s submit event handler</p>
 
     </div>
 
@@ -2600,7 +2625,7 @@
 
 
 </div>
-<div id="method_readonly" class="method item inherited">
+<div id="method_readonly" class="method item">
     <h3 class="name"><code>readonly</code></h3>
 
         <div class="args">
@@ -2620,8 +2645,10 @@
 
 
     <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_readonly">editor.Field</a>:
+            <p>Inherited from
+            <a href="../classes/editor.Field.html#method_readonly">
+                editor.Field
+            </a>
         </p>
 
 
@@ -2629,7 +2656,7 @@
     </div>
 
     <div class="description">
-        <p>Toggle the field&#39;s readonly state</p>
+        <p>Toggle the readonly attribute of the field</p>
 
     </div>
 
@@ -2683,6 +2710,70 @@
     </div>
 
 
+
+
+</div>
+<div id="method_removeCheckbox" class="method item">
+    <h3 class="name"><code>removeCheckbox</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>value</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Remove a checkbox by value</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The value of the option to remove</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>:
+                    <p>The checkbox&#39;s Dom object</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -2925,7 +3016,7 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type">Mixed</span>
+                        <span class="type">Array</span>
 
 
                     <div class="param-description">
@@ -3460,7 +3551,7 @@
                     
                     
                     </div>
-                    <div id="event_valuechange" class="events item inherited">
+                    <div id="event_valuechange" class="events item">
                         <h3 class="name"><code>valuechange</code></h3>
                         <span class="type"></span>
                     
@@ -3469,8 +3560,10 @@
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/editor.Field.html#event_valuechange">editor.Field</a>:
+                                <p>Inherited from
+                                <a href="../classes/editor.Field.html#event_valuechange">
+                                    editor.Field
+                                </a>
                             </p>
                     
                     

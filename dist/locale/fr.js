@@ -110,7 +110,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideDetails.fields.tags.label": "Étiquettes",
 	"editor.overlay.GuideDetails.fields.tags.description": "Liste d'étiquettes séparées par des virgules",
 	"editor.overlay.GuideDetails.fields.groups.label": "Groupes",
-	"editor.overlay.GuideDetails.fields.groups.description": "Les groupes avec lesquelles ce guide est partagé<br/><em>Maintenez la touche Ctrl/Cmd enfoncée pour sélectionner plusieurs groups</em>",
+	"editor.overlay.GuideDetails.fields.groups.description": "Les groupes cochés sont ceux au sein desquels ce guide sera partagé",
 	"editor.overlay.GuideDetails.buttons.cancel.label": "Annuler",
 	"editor.overlay.GuideDetails.info": "Le guide doit être enregistré pour que les modifications appliquées deviennent permanentes",
 	"editor.overlay.GuideSelector.title": "Sélectionnez un guide",

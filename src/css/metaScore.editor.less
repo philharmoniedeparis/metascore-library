@@ -254,6 +254,25 @@
                 }
             }
         }
+                
+        &.checkboxesfield{
+            .checkbox-wrapper{
+                input{
+                    margin: 0 0.5em 0 0;
+                    vertical-align: middle;
+                }
+                
+                label{
+                    display: inline-block;
+                }
+            }
+            
+            &.readonly{
+                .input-wrapper{
+                    pointer-events: none;
+                }
+            }
+        }
         
         &.numberfield{
             .input-wrapper{
@@ -1435,7 +1454,7 @@
                 > .contents{
                     min-width: 500px;
                     
-                    .field{
+                    .field{                        
                         &.textfield{
                             input{
                                 width: 100%;
@@ -1449,9 +1468,12 @@
                             }
                         }
                         
-                        &.selectfield{
-                            select{
-                                width: 100%;
+                        &.checkboxesfield{
+                            .checkbox-wrapper{
+                                label{
+                                    display: inline-block;
+                                    font-weight: normal;
+                                }
                             }
                         }
                     }

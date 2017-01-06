@@ -32,6 +32,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "editor.field.BorderRadius",
         "editor.field.ButtonsField",
         "editor.field.Checkbox",
+        "editor.field.CheckboxesField",
         "editor.field.ColorField",
         "editor.field.FileField",
         "editor.field.ImageField",

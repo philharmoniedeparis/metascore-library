@@ -228,6 +228,17 @@
                 "editor.field": 1
             }
         },
+        "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js": {
+            "name": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "modules": {},
+            "classes": {
+                "editor.field.CheckboxesField": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "editor.field": 1
+            }
+        },
         "src\\js\\editor\\field\\metaScore.editor.field.Color.js": {
             "name": "src\\js\\editor\\field\\metaScore.editor.field.Color.js",
             "modules": {},
@@ -704,6 +715,7 @@
                 "editor.field.BorderRadius": 1,
                 "editor.field.ButtonsField": 1,
                 "editor.field.Checkbox": 1,
+                "editor.field.CheckboxesField": 1,
                 "editor.field.ColorField": 1,
                 "editor.field.FileField": 1,
                 "editor.field.ImageField": 1,
@@ -1397,6 +1409,38 @@
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
+                        }
+                    ]
+                }
+            ]
+        },
+        "editor.field.CheckboxesField": {
+            "name": "editor.field.CheckboxesField",
+            "shortname": "editor.field.CheckboxesField",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Editor",
+            "namespace": "editor.field",
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 16,
+            "description": "A select list field based on an HTML select element",
+            "extends": "editor.Field",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "configs",
+                    "description": "Custom configs to override defaults",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "options",
+                            "description": "A list of select options as objects with 'value' and 'text' keys",
+                            "type": "Object",
+                            "optional": true,
+                            "optdefault": "[]"
                         }
                     ]
                 }
@@ -6395,6 +6439,199 @@
             ],
             "chainable": 1,
             "class": "editor.field.Checkbox",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 7,
+            "description": "Fired when the field's value changes",
+            "itemtype": "event",
+            "name": "valuechange",
+            "params": [
+                {
+                    "name": "field",
+                    "description": "The field instance",
+                    "type": "Object"
+                },
+                {
+                    "name": "value",
+                    "description": "The new value",
+                    "type": "Mixed"
+                }
+            ],
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 41,
+            "description": "Setup the field's UI",
+            "itemtype": "method",
+            "name": "setupUI",
+            "access": "private",
+            "tagname": "",
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 64,
+            "description": "The click event handler",
+            "itemtype": "method",
+            "name": "onClick",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 77,
+            "description": "The change event handler",
+            "itemtype": "method",
+            "name": "onChange",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 103,
+            "description": "Set the field's value",
+            "itemtype": "method",
+            "name": "setValue",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The new value",
+                    "type": "Array"
+                },
+                {
+                    "name": "supressEvent",
+                    "description": "Whether to prevent the custom event from firing",
+                    "type": "Boolean"
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 127,
+            "description": "Add a checkbox to the list of checkboxes",
+            "itemtype": "method",
+            "name": "addCheckbox",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The option's value",
+                    "type": "String"
+                },
+                {
+                    "name": "text",
+                    "description": "The option's label",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The created Dom object",
+                "type": "Dom"
+            },
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 158,
+            "description": "Remove a checkbox by value",
+            "itemtype": "method",
+            "name": "removeCheckbox",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The value of the option to remove",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The checkbox's Dom object",
+                "type": "Dom"
+            },
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 173,
+            "description": "Remove all groups and options",
+            "itemtype": "method",
+            "name": "clear",
+            "chainable": 1,
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 185,
+            "description": "Disable the field",
+            "itemtype": "method",
+            "name": "disable",
+            "chainable": 1,
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 201,
+            "description": "Enable the field",
+            "itemtype": "method",
+            "name": "enable",
+            "chainable": 1,
+            "class": "editor.field.CheckboxesField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Checkboxes.js",
+            "line": 217,
+            "description": "Toggle the readonly attribute of the field",
+            "itemtype": "method",
+            "name": "readonly",
+            "params": [
+                {
+                    "name": "readonly",
+                    "description": "Whether the field should be readonly, the current state is toggled if not provided",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.CheckboxesField",
             "module": "Editor",
             "namespace": "editor.field"
         },

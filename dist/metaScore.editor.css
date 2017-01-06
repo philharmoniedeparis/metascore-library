@@ -225,6 +225,16 @@
 .metaScore-editor .field.checkboxfield.readonly .input-wrapper {
   pointer-events: none;
 }
+.metaScore-editor .field.checkboxesfield .checkbox-wrapper input {
+  margin: 0 0.5em 0 0;
+  vertical-align: middle;
+}
+.metaScore-editor .field.checkboxesfield .checkbox-wrapper label {
+  display: inline-block;
+}
+.metaScore-editor .field.checkboxesfield.readonly .input-wrapper {
+  pointer-events: none;
+}
 .metaScore-editor .field.numberfield .input-wrapper input {
   padding-right: 2em;
 }
@@ -1247,8 +1257,9 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.metaScore-editor .overlay.guide-details > .inner > .contents .field.selectfield select {
-  width: 100%;
+.metaScore-editor .overlay.guide-details > .inner > .contents .field.checkboxesfield .checkbox-wrapper label {
+  display: inline-block;
+  font-weight: normal;
 }
 .metaScore-editor .overlay.guide-details > .inner > .contents .info {
   margin: 1em 0;

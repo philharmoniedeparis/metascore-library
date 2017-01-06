@@ -149,9 +149,9 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
             .appendTo(form);
         
         if(!metaScore.Var.isEmpty(this.configs.groups)){
-            this.fields['groups'] = new metaScore.editor.field.Select({
+            this.fields['groups'] = new metaScore.editor.field.Checkboxes({
                     'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
-                    'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The groups this guide is shared with<br/><em>Hold down the Ctrl/Cmd key to select multiple groups</em>'),
+                    'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The checked groups are those in which this guide is shared'),
                     'multiple': true
                 })
                 .data('name', 'groups')
@@ -159,7 +159,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
                 .appendTo(form);
                 
             metaScore.Array.each(this.configs.groups, function(index, group){
-                this.fields['groups'].addOption(group.id, group.title);
+                this.fields['groups'].addCheckbox(group.id, group.title);
             }, this);
         }
 

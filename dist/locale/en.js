@@ -110,7 +110,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideDetails.fields.tags.label": "Tags",
 	"editor.overlay.GuideDetails.fields.tags.description": "Comma separated list of tags",
 	"editor.overlay.GuideDetails.fields.groups.label": "Groups",
-	"editor.overlay.GuideDetails.fields.groups.description": "The groups this guide is shared with<br/><em>Hold down the Ctrl/Cmd key to select multiple groups</em>",
+	"editor.overlay.GuideDetails.fields.groups.description": "The checked groups are those in which this guide will be shared",
 	"editor.overlay.GuideDetails.buttons.cancel.label": "Cancel",
 	"editor.overlay.GuideDetails.info": "The guide needs to be saved in order for applied changes to become permanent",
 	"editor.overlay.GuideSelector.title": "Select a guide",
