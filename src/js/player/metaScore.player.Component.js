@@ -226,6 +226,16 @@ metaScore.namespace('player').Component = (function () {
         return this.cuepoint;
     };
 
+    /**
+     * Get the cuepoint of the component
+     * 
+     * @method getCuePoint
+     * @return {player.CuePoint} The cuepoint
+     */
+    Component.prototype.getCuePoint = function(){
+        return this.cuepoint;
+    };
+
     return Component;
 
 })();

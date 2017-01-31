@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "8dfcec";
+        return "def267";
     },
 
     /**
@@ -4713,7 +4713,8 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onComponenetPropChange = function(evt){
-        var component = evt.detail.component;
+        var component = evt.detail.component,
+            cuepoint;
 
         switch(evt.detail.property){
             case 'start-time':
@@ -4721,6 +4722,14 @@ metaScore.Player = (function(){
                 component.setCuePoint({
                     'media': this.getMedia()
                 });
+                break;
+                
+            case 'direction':
+            case 'acceleration':
+                cuepoint = component.getCuePoint();
+                if(cuepoint){
+                    cuepoint.update();
+                }
                 break;
         }
     };
@@ -5366,6 +5375,16 @@ metaScore.namespace('player').Component = (function () {
         return this.cuepoint;
     };
 
+    /**
+     * Get the cuepoint of the component
+     * 
+     * @method getCuePoint
+     * @return {player.CuePoint} The cuepoint
+     */
+    Component.prototype.getCuePoint = function(){
+        return this.cuepoint;
+    };
+
     return Component;
 
 })();
@@ -5450,28 +5469,7 @@ metaScore.namespace('player').CuePoint = (function () {
      * @param {Event} evt The event object
      */
     CuePoint.prototype.onMediaTimeUpdate = function(evt){
-        var cur_time = this.getMedia().getTime();
-
-        if(!this.running){
-            if(((this.configs.inTime === null) || (Math.floor(cur_time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
-                this.start();
-            }
-        }
-        else{
-            if(this.configs.considerError){
-                if('previous_time' in this){
-                    this.max_error = Math.max(this.max_error, Math.abs(cur_time - this.previous_time));
-                }
-
-                this.previous_time = cur_time;
-            }
-            
-            this.triggerEvent(EVT_UPDATE);
-
-            if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
-                this.stop();
-            }
-        }
+        this.update();
     };
 
     /**
@@ -5542,6 +5540,40 @@ metaScore.namespace('player').CuePoint = (function () {
         this.getMedia().addListener('seeked', this.onMediaSeeked);
 
         this.triggerEvent(EVT_UPDATE);
+    };
+
+    /**
+     * Update the cuepoint
+     * 
+     * @method update
+     * @private
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     */
+    CuePoint.prototype.update = function(supressEvent){
+        var cur_time = this.getMedia().getTime();
+
+        if(!this.running){
+            if(((this.configs.inTime === null) || (Math.floor(cur_time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
+                this.start();
+            }
+        }
+        else{
+            if(this.configs.considerError){
+                if('previous_time' in this){
+                    this.max_error = Math.max(this.max_error, Math.abs(cur_time - this.previous_time));
+                }
+
+                this.previous_time = cur_time;
+            }
+
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_UPDATE);
+            }
+
+            if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
+                this.stop();
+            }
+        }
     };
 
     /**

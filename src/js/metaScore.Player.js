@@ -503,7 +503,8 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onComponenetPropChange = function(evt){
-        var component = evt.detail.component;
+        var component = evt.detail.component,
+            cuepoint;
 
         switch(evt.detail.property){
             case 'start-time':
@@ -511,6 +512,14 @@ metaScore.Player = (function(){
                 component.setCuePoint({
                     'media': this.getMedia()
                 });
+                break;
+                
+            case 'direction':
+            case 'acceleration':
+                cuepoint = component.getCuePoint();
+                if(cuepoint){
+                    cuepoint.update();
+                }
                 break;
         }
     };
