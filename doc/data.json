@@ -11567,7 +11567,9 @@
                 {
                     "name": "skipDefaults",
                     "description": "Whether to skip properties that have the default value",
-                    "type": "Boolean"
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "true"
                 }
             ],
             "return": {
@@ -11580,7 +11582,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.Component.js",
-            "line": 151,
+            "line": 153,
             "description": "Set the value of a given property",
             "itemtype": "method",
             "name": "setProperty",
@@ -11610,7 +11612,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.Component.js",
-            "line": 172,
+            "line": 174,
             "description": "Set property values",
             "itemtype": "method",
             "name": "setProperties",
@@ -11635,7 +11637,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.Component.js",
-            "line": 188,
+            "line": 190,
             "description": "Set a cuepoint on the component",
             "itemtype": "method",
             "name": "setCuePoint",

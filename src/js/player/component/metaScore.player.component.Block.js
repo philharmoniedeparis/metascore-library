@@ -382,8 +382,10 @@ metaScore.namespace('player.component').Block = (function () {
      */
     Block.prototype.removePage = function(page, supressEvent){
         var page_index, sibling;
-        
+
         page_index = this.getPageIndex(page);
+        page.remove();
+        
         if(page_index > 0){
             sibling = this.getPage(page_index - 1);
             sibling.setProperty('end-time', page.getProperty('end-time'));
@@ -392,8 +394,6 @@ metaScore.namespace('player.component').Block = (function () {
             sibling = this.getPage(page_index + 1);
             sibling.setProperty('start-time', page.getProperty('start-time'));
         }
-
-        page.remove();
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});

@@ -128,12 +128,14 @@ metaScore.namespace('player').Component = (function () {
      * Get the values of all properties
      * 
      * @method getProperties
-     * @param {Boolean} skipDefaults Whether to skip properties that have the default value
+     * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
      * @return {Object} The values of the properties as name/value pairs
      */
     Component.prototype.getProperties = function(skipDefaults){
         var values = {},
             value;
+            
+        skipDefaults = skipDefaults === undefined ? true : skipDefaults;
 
         metaScore.Object.each(this.configs.properties, function(name, prop){
             if('getter' in prop){

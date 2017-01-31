@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-01-06 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-01-31 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "5719a2";
+        return "cb5ca5";
     },
 
     /**
@@ -5247,12 +5247,14 @@ metaScore.namespace('player').Component = (function () {
      * Get the values of all properties
      * 
      * @method getProperties
-     * @param {Boolean} skipDefaults Whether to skip properties that have the default value
+     * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
      * @return {Object} The values of the properties as name/value pairs
      */
     Component.prototype.getProperties = function(skipDefaults){
         var values = {},
             value;
+            
+        skipDefaults = skipDefaults === undefined ? true : skipDefaults;
 
         metaScore.Object.each(this.configs.properties, function(name, prop){
             if('getter' in prop){
@@ -6001,8 +6003,10 @@ metaScore.namespace('player.component').Block = (function () {
      */
     Block.prototype.removePage = function(page, supressEvent){
         var page_index, sibling;
-        
+
         page_index = this.getPageIndex(page);
+        page.remove();
+        
         if(page_index > 0){
             sibling = this.getPage(page_index - 1);
             sibling.setProperty('end-time', page.getProperty('end-time'));
@@ -6011,8 +6015,6 @@ metaScore.namespace('player.component').Block = (function () {
             sibling = this.getPage(page_index + 1);
             sibling.setProperty('start-time', page.getProperty('start-time'));
         }
-
-        page.remove();
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});
