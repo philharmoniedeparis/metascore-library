@@ -1813,15 +1813,15 @@ metaScore.Editor = (function(){
                         if(new_duration !== old_duration){
                             formatted_old_duration = Math.floor(old_duration);
                             formatted_old_duration = (parseInt((formatted_old_duration / 360000), 10) || 0) + ":"+
-                                                     (parseInt((formatted_old_duration / 6000) % 60, 10) || 0) + ":"+
-                                                     (parseInt((formatted_old_duration / 100) % 60, 10) || 0) + ":"+
-                                                     (parseInt((formatted_old_duration) % 100, 10) || 0);
+                                                     metaScore.String.pad(parseInt((formatted_old_duration / 6000) % 60, 10) || 0, 2, "0", "left") + ":"+
+                                                     metaScore.String.pad(parseInt((formatted_old_duration / 100) % 60, 10) || 0, 2, "0", "left") + ":"+
+                                                     metaScore.String.pad(parseInt((formatted_old_duration) % 100, 10) || 0, 2, "0", "left");
                                                      
                             formatted_new_duration = Math.floor(new_duration);
                             formatted_new_duration = (parseInt((formatted_new_duration / 360000), 10) || 0) + ":"+
-                                                     (parseInt((formatted_new_duration / 6000) % 60, 10) || 0) + ":"+
-                                                     (parseInt((formatted_new_duration / 100) % 60, 10) || 0) + ":"+
-                                                     (parseInt((formatted_new_duration) % 100, 10) || 0);
+                                                     metaScore.String.pad(parseInt((formatted_new_duration / 6000) % 60, 10) || 0, 2, "0", "left") + ":"+
+                                                     metaScore.String.pad(parseInt((formatted_new_duration / 100) % 60, 10) || 0, 2, "0", "left") + ":"+
+                                                     metaScore.String.pad(parseInt((formatted_new_duration) % 100, 10) || 0, 2, "0", "left");
                             
                             if(new_duration < old_duration){
                                 player.getComponents('.block').each(function(index, block_dom){
@@ -1853,7 +1853,7 @@ metaScore.Editor = (function(){
                             else{
                                 new metaScore.overlay.Alert({
                                     'parent': this,
-                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration) differs from the current one (!old_duration).<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration}),
+                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration) differs from the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration}),
                                     'buttons': {
                                         'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
                                         'cancel': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
