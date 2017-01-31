@@ -141,6 +141,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src\\js\\core\\metaScore.Number.js": {
+            "name": "src\\js\\core\\metaScore.Number.js",
+            "modules": {},
+            "classes": {
+                "Number": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src\\js\\core\\metaScore.Object.js": {
             "name": "src\\js\\core\\metaScore.Object.js",
             "modules": {},
@@ -688,6 +697,7 @@
                 "Draggable": 1,
                 "Function": 1,
                 "Locale": 1,
+                "Number": 1,
                 "Object": 1,
                 "Overlay": 1,
                 "Resizable": 1,
@@ -1153,6 +1163,21 @@
             "file": "src\\js\\core\\metaScore.Locale.js",
             "line": 7,
             "description": "The i18n handling class",
+            "is_constructor": 1
+        },
+        "Number": {
+            "name": "Number",
+            "shortname": "Number",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Core",
+            "namespace": "",
+            "file": "src\\js\\core\\metaScore.Number.js",
+            "line": 7,
+            "description": "A class for number helper functions",
             "is_constructor": 1
         },
         "Object": {
@@ -5588,6 +5613,26 @@
             "module": "Core"
         },
         {
+            "file": "src\\js\\core\\metaScore.Number.js",
+            "line": 16,
+            "description": "Get the number of decimal places",
+            "itemtype": "method",
+            "name": "getDecimalPlaces",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The number to check against",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "The number of decimal places",
+                "type": "Number"
+            },
+            "class": "Number",
+            "module": "Core"
+        },
+        {
             "file": "src\\js\\core\\metaScore.Object.js",
             "line": 16,
             "description": "Merge the contents of two or more objects together into the first object",
@@ -7104,7 +7149,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 152,
+            "line": 158,
             "description": "The keydown event handler",
             "itemtype": "method",
             "name": "onKeyDown",
@@ -7123,7 +7168,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 173,
+            "line": 179,
             "description": "The spin button's mousedown event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseDown",
@@ -7142,7 +7187,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 201,
+            "line": 207,
             "description": "The spin button's mouseup event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseUp",
@@ -7161,7 +7206,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 212,
+            "line": 218,
             "description": "The spin button's mouseout event handler",
             "itemtype": "method",
             "name": "onSpinBtnMouseOut",
@@ -7180,7 +7225,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 221,
+            "line": 227,
             "description": "Decrement the value by one step",
             "itemtype": "method",
             "name": "spinDown",
@@ -7192,7 +7237,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 231,
+            "line": 245,
             "description": "Increment the value by one step",
             "itemtype": "method",
             "name": "spinUp",
@@ -7204,7 +7249,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 241,
+            "line": 263,
             "description": "Set the field's value",
             "itemtype": "method",
             "name": "setValue",
@@ -7227,7 +7272,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 268,
+            "line": 290,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -7245,7 +7290,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 281,
+            "line": 303,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -7263,7 +7308,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Number.js",
-            "line": 294,
+            "line": 316,
             "description": "Reset the field's configs",
             "itemtype": "method",
             "name": "reset",

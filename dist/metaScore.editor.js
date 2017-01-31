@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "def267";
+        return "d088cf";
     },
 
     /**
@@ -3061,6 +3061,45 @@ metaScore.Locale = (function(){
     };
 
     return Locale;
+
+})();
+/**
+ * @module Core
+ */
+
+metaScore.Number = (function () {
+
+    /**
+     * A class for number helper functions
+     * 
+     * @class Number
+     * @constructor
+     */
+    function Number() {
+    }
+
+    /**
+     * Get the number of decimal places
+     * 
+     * @method getDecimalPlaces
+     * @param {Number} value The number to check against
+     * @return {Number} The number of decimal places
+     */
+    Number.getDecimalPlaces = function(value){
+        var match = (''+value).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+        
+        if (!match) {
+            return 0;
+        }
+        
+        return Math.max(
+            0,
+           (match[1] ? match[1].length : 0) // Number of digits right of decimal point
+           -(match[2] ? +match[2] : 0) // Adjust for scientific notation
+       );
+    };
+
+    return Number;
 
 })();
 /**
@@ -9449,12 +9488,18 @@ metaScore.namespace('editor.field').Number = (function () {
      * @param {Event} evt The event object
      */
     NumberField.prototype.onMouseWheel = function(evt){
-        var delta;
+        var delta, decimals, value;
         
         if(this.input.is(':focus')){
             delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
             
-            this.setValue(this.getValue() + (this.configs.step * delta));
+            value = this.getValue() + (this.configs.step * delta);
+            
+            // work around the well-known floating point issue
+            decimals = metaScore.Number.getDecimalPlaces(this.configs.step); 
+            value = parseFloat(value.toFixed(decimals));
+            
+            this.setValue(value);
         
             evt.preventDefault();
         }
@@ -9536,7 +9581,15 @@ metaScore.namespace('editor.field').Number = (function () {
      * @private
      */
     NumberField.prototype.spinDown = function(){
-        this.setValue(this.getValue() - this.configs.step);
+        var decimals, value;
+        
+        value = this.getValue() - this.configs.step; 
+        
+        // work around the well-known floating point issue       
+        decimals = metaScore.Number.getDecimalPlaces(this.configs.step);
+        value = parseFloat(value.toFixed(decimals));
+        
+        this.setValue(value);
     };
 
     /**
@@ -9546,7 +9599,15 @@ metaScore.namespace('editor.field').Number = (function () {
      * @private
      */
     NumberField.prototype.spinUp = function(){
-        this.setValue(this.getValue() + this.configs.step);
+        var decimals, value;
+        
+        value = this.getValue() + this.configs.step;
+        
+        // work around the well-known floating point issue
+        decimals = metaScore.Number.getDecimalPlaces(this.configs.step);
+        value = parseFloat(value.toFixed(decimals));
+        
+        this.setValue(value);
     };
 
     /**

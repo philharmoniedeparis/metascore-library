@@ -16,6 +16,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Evented",
         "Function",
         "Locale",
+        "Number",
         "Object",
         "Overlay",
         "Player",

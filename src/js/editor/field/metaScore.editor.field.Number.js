@@ -138,12 +138,18 @@ metaScore.namespace('editor.field').Number = (function () {
      * @param {Event} evt The event object
      */
     NumberField.prototype.onMouseWheel = function(evt){
-        var delta;
+        var delta, decimals, value;
         
         if(this.input.is(':focus')){
             delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
             
-            this.setValue(this.getValue() + (this.configs.step * delta));
+            value = this.getValue() + (this.configs.step * delta);
+            
+            // work around the well-known floating point issue
+            decimals = metaScore.Number.getDecimalPlaces(this.configs.step); 
+            value = parseFloat(value.toFixed(decimals));
+            
+            this.setValue(value);
         
             evt.preventDefault();
         }
@@ -225,7 +231,15 @@ metaScore.namespace('editor.field').Number = (function () {
      * @private
      */
     NumberField.prototype.spinDown = function(){
-        this.setValue(this.getValue() - this.configs.step);
+        var decimals, value;
+        
+        value = this.getValue() - this.configs.step; 
+        
+        // work around the well-known floating point issue       
+        decimals = metaScore.Number.getDecimalPlaces(this.configs.step);
+        value = parseFloat(value.toFixed(decimals));
+        
+        this.setValue(value);
     };
 
     /**
@@ -235,7 +249,15 @@ metaScore.namespace('editor.field').Number = (function () {
      * @private
      */
     NumberField.prototype.spinUp = function(){
-        this.setValue(this.getValue() + this.configs.step);
+        var decimals, value;
+        
+        value = this.getValue() + this.configs.step;
+        
+        // work around the well-known floating point issue
+        decimals = metaScore.Number.getDecimalPlaces(this.configs.step);
+        value = parseFloat(value.toFixed(decimals));
+        
+        this.setValue(value);
     };
 
     /**
