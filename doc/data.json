@@ -6008,6 +6008,37 @@
             "module": "Core"
         },
         {
+            "file": "src\\js\\core\\metaScore.String.js",
+            "line": 136,
+            "description": "Replace all occurences of a sub-string in a string",
+            "itemtype": "method",
+            "name": "replaceAll",
+            "params": [
+                {
+                    "name": "str",
+                    "description": "The string being searched and replaced on",
+                    "type": "String"
+                },
+                {
+                    "name": "search",
+                    "description": "The value being searched for",
+                    "type": "String"
+                },
+                {
+                    "name": "replacement",
+                    "description": "The value that replaces found search values",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The replaced string",
+                "type": "String"
+            },
+            "exqmple": "var str = \"abc test test abc test test test abc test test abc\";\n   var replaced = metaScore.String.replaceAll(str, \"abc\", \"xyz\");\n   // \"xyz test test xyz test test test xyz test test xyz\"",
+            "class": "String",
+            "module": "Core"
+        },
+        {
             "file": "src\\js\\core\\metaScore.StyleSheet.js",
             "line": 26,
             "description": "Add a CSS rule to the style sheet",
@@ -13223,7 +13254,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1852,
+            "line": 1882,
             "description": "Window hashchange event callback",
             "itemtype": "method",
             "name": "onWindowHashChange",
@@ -13241,7 +13272,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1889,
+            "line": 1919,
             "description": "Window beforeunload event callback",
             "itemtype": "method",
             "name": "onWindowBeforeUnload",
@@ -13259,7 +13290,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1902,
+            "line": 1932,
             "description": "Updates the editing state",
             "itemtype": "method",
             "name": "setEditing",
@@ -13281,7 +13312,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1940,
+            "line": 1970,
             "description": "Toggles the activation of the sidebar resizer",
             "itemtype": "method",
             "name": "toggleSidebarResizer",
@@ -13293,7 +13324,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1958,
+            "line": 1988,
             "description": "Loads a player from the location hash",
             "itemtype": "method",
             "name": "loadPlayerFromHash",
@@ -13305,7 +13336,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 1977,
+            "line": 2007,
             "description": "Updates the states of the mainmenu buttons",
             "itemtype": "method",
             "name": "updateMainmenu",
@@ -13317,7 +13348,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2003,
+            "line": 2033,
             "description": "Updates the selector of the block panel",
             "itemtype": "method",
             "name": "updateBlockSelector",
@@ -13329,7 +13360,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2033,
+            "line": 2063,
             "description": "Updates the selector of the page panel",
             "itemtype": "method",
             "name": "updatePageSelector",
@@ -13341,7 +13372,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2059,
+            "line": 2089,
             "description": "Updates the selector of the element panel",
             "itemtype": "method",
             "name": "updateElementSelector",
@@ -13353,7 +13384,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2116,
+            "line": 2146,
             "description": "Set whether the guide is dirty",
             "itemtype": "method",
             "name": "setDirty",
@@ -13370,7 +13401,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2129,
+            "line": 2159,
             "description": "Check whether the guide is dirty",
             "itemtype": "method",
             "name": "isDirty",
@@ -13383,7 +13414,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2139,
+            "line": 2169,
             "description": "Get the player instance if any",
             "itemtype": "method",
             "name": "getPlayer",
@@ -13396,7 +13427,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2149,
+            "line": 2179,
             "description": "Loads a player by guide id and vid",
             "itemtype": "method",
             "name": "loadPlayer",
@@ -13418,7 +13449,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2178,
+            "line": 2208,
             "description": "Unload the player",
             "itemtype": "method",
             "name": "unloadPlayer",
@@ -13428,7 +13459,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2201,
+            "line": 2231,
             "description": "Add a component to the player",
             "itemtype": "method",
             "name": "addPlayerComponent",
@@ -13457,7 +13488,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2298,
+            "line": 2328,
             "description": "Remove a component from the player",
             "itemtype": "method",
             "name": "deletePlayerComponent",
@@ -13476,7 +13507,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2401,
+            "line": 2431,
             "description": "Opens the guide selector",
             "itemtype": "method",
             "name": "openGuideSelector",
@@ -13486,7 +13517,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2417,
+            "line": 2447,
             "description": "Creates a new guide",
             "itemtype": "method",
             "name": "createGuide",
@@ -13510,7 +13541,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2460,
+            "line": 2490,
             "description": "Saves the loaded guide",
             "itemtype": "method",
             "name": "saveGuide",
@@ -13532,7 +13563,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2533,
+            "line": 2563,
             "description": "Get a media file's duration in centiseconds",
             "itemtype": "method",
             "name": "getMediaFileDuration",
@@ -14608,6 +14639,10 @@
         {
             "message": "unknown tag: exqmple",
             "line": " src\\js\\core\\metaScore.String.js:80"
+        },
+        {
+            "message": "unknown tag: exqmple",
+            "line": " src\\js\\core\\metaScore.String.js:136"
         },
         {
             "message": "replacing incorrect tag: params with param",

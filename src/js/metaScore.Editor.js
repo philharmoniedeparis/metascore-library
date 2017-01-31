@@ -1045,7 +1045,7 @@ metaScore.Editor = (function(){
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
-    Editor.prototype.onPageSet = function(evt){
+    Editor.prototype.onPageSet = function(evt){        
         var page = evt.detail.component,
             block = this.panels.block.getComponent(),
             index, previous_page, next_page,
@@ -1780,7 +1780,24 @@ metaScore.Editor = (function(){
             case 'update':
                 player = this.getPlayer();
 
-                callback = metaScore.Function.proxy(function(){
+                callback = metaScore.Function.proxy(function(new_duration){
+                    if(new_duration){
+                        player.getComponents('.block').each(function(index, block_dom){
+                            var block, page;
+                            
+                            if(block_dom._metaScore){
+                                block = block_dom._metaScore;
+
+                                if(block.getProperty('synched')){
+                                    page = block.getPage(block.getPageCount()-1);
+                                    if(page){
+                                        page.setProperty('end-time', new_duration);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    
                     player.updateData(data);
                     overlay.setValues(metaScore.Object.extend({}, player.getData(), data), true).hide();
                     
@@ -1790,9 +1807,22 @@ metaScore.Editor = (function(){
                 if('media' in data){
                     this.getMediaFileDuration(data['media'].url, metaScore.Function.proxy(function(new_duration){
                         var old_duration = player.getMedia().getDuration(),
+                            formatted_old_duration, formatted_new_duration,
                             blocks = [], block, page;
 
                         if(new_duration !== old_duration){
+                            formatted_old_duration = Math.floor(old_duration);
+                            formatted_old_duration = (parseInt((formatted_old_duration / 360000), 10) || 0) + ":"+
+                                                     (parseInt((formatted_old_duration / 6000) % 60, 10) || 0) + ":"+
+                                                     (parseInt((formatted_old_duration / 100) % 60, 10) || 0) + ":"+
+                                                     (parseInt((formatted_old_duration) % 100, 10) || 0);
+                                                     
+                            formatted_new_duration = Math.floor(new_duration);
+                            formatted_new_duration = (parseInt((formatted_new_duration / 360000), 10) || 0) + ":"+
+                                                     (parseInt((formatted_new_duration / 6000) % 60, 10) || 0) + ":"+
+                                                     (parseInt((formatted_new_duration / 100) % 60, 10) || 0) + ":"+
+                                                     (parseInt((formatted_new_duration) % 100, 10) || 0);
+                            
                             if(new_duration < old_duration){
                                 player.getComponents('.block').each(function(index, block_dom){
                                     if(block_dom._metaScore){
@@ -1813,7 +1843,7 @@ metaScore.Editor = (function(){
                             if(blocks.length > 0){
                                 new metaScore.overlay.Alert({
                                     'parent': this,
-                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media file (!new_duration centiseconds) is less than the current one (!old_duration centiseconds).<br/><strong>This will cause some pages of the following blocks to become out of reach: !blocks</strong><br/>Please modify the start time of those pages and try again.', {'!new_duration': new_duration, '!old_duration': old_duration, '!blocks': blocks.join(', ')}),
+                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
                                     'buttons': {
                                         'ok': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.ok', 'OK'),
                                     },
@@ -1823,7 +1853,7 @@ metaScore.Editor = (function(){
                             else{
                                 new metaScore.overlay.Alert({
                                     'parent': this,
-                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration centiseconds) differs from the current one (!old_duration centiseconds).<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': new_duration, '!old_duration': old_duration}),
+                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration) differs from the current one (!old_duration).<br/><strong>This can cause pages and elements to become desynchronized.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration}),
                                     'buttons': {
                                         'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
                                         'cancel': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
@@ -1832,7 +1862,7 @@ metaScore.Editor = (function(){
                                 })
                                 .addListener('buttonclick', function(evt){
                                     if(evt.detail.action === 'confirm'){
-                                        callback();
+                                        callback(new_duration);
                                     }
                                 });
                             }
@@ -2045,7 +2075,7 @@ metaScore.Editor = (function(){
 
         selector.clear();
 
-        if(block.instanceOf('Block')){
+        if(block && block.instanceOf('Block')){
             metaScore.Array.each(block.getPages(), function(index, page){
                 selector.addOption(page.getId(), index+1);
             });

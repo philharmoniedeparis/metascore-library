@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "cb5ca5";
+        return "8031dd";
     },
 
     /**
@@ -3054,7 +3054,7 @@ metaScore.Locale = (function(){
      */
     Locale.formatString = function(str, args) {
         metaScore.Object.each(args, function(key, value){
-            str = str.replace(key, args[key]);
+            str = metaScore.String.replaceAll(str, key, args[key]);
         }, this);
 
         return str;
@@ -3678,6 +3678,27 @@ metaScore.String = (function () {
             }
         }
         return str;
+    };
+
+    /**
+     * Replace all occurences of a sub-string in a string
+     * 
+     * @method replaceAll
+     * @param {String} str The string being searched and replaced on
+     * @param {String} search The value being searched for
+     * @param {String} replacement The value that replaces found search values
+     * @return {String} The replaced string
+     *
+     * @exqmple
+     *    var str = "abc test test abc test test test abc test test abc";
+     *    var replaced = metaScore.String.replaceAll(str, "abc", "xyz");
+     *    // "xyz test test xyz test test test xyz test test xyz"
+     */
+    String.replaceAll = function(str, search, replacement) {
+        var escaped_search = search.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        var regex = new RegExp(escaped_search, 'g');
+        
+        return str.replace(regex, replacement);
     };
 
     return String;

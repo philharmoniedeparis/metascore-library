@@ -42,7 +42,7 @@ metaScore.Locale = (function(){
      */
     Locale.formatString = function(str, args) {
         metaScore.Object.each(args, function(key, value){
-            str = str.replace(key, args[key]);
+            str = metaScore.String.replaceAll(str, key, args[key]);
         }, this);
 
         return str;
