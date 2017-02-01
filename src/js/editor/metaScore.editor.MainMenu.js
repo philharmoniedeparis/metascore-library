@@ -175,7 +175,6 @@ metaScore.namespace('editor').MainMenu = (function(){
                 'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
             })
             .data('action', 'help')
-            .disable()
             .appendTo(this);
 
         new metaScore.Button()

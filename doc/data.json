@@ -9532,7 +9532,7 @@
         },
         {
             "file": "src\\js\\editor\\metaScore.editor.MainMenu.js",
-            "line": 197,
+            "line": 196,
             "description": "Toogle a button's enabled state",
             "itemtype": "method",
             "name": "toggleButton",
@@ -12226,7 +12226,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 368,
+            "line": 371,
             "description": "Guide creation success callback",
             "itemtype": "method",
             "name": "onGuideCreateSuccess",
@@ -12249,7 +12249,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 387,
+            "line": 390,
             "description": "Guide creation error callback",
             "itemtype": "method",
             "name": "onGuideCreateError",
@@ -12267,7 +12267,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 408,
+            "line": 411,
             "description": "Guide saving success callback",
             "itemtype": "method",
             "name": "onGuideSaveSuccess",
@@ -12285,7 +12285,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 434,
+            "line": 437,
             "description": "Guide saving error callback",
             "itemtype": "method",
             "name": "onGuideSaveError",
@@ -12303,7 +12303,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 455,
+            "line": 458,
             "description": "Guide deletion confirm callback",
             "itemtype": "method",
             "name": "onGuideDeleteConfirm",
@@ -12314,7 +12314,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 480,
+            "line": 483,
             "description": "Guide deletion success callback",
             "itemtype": "method",
             "name": "onGuideDeleteSuccess",
@@ -12332,7 +12332,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 494,
+            "line": 497,
             "description": "Guide deletion error callback",
             "itemtype": "method",
             "name": "onGuideDeleteError",
@@ -12350,7 +12350,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 515,
+            "line": 518,
             "description": "Guide revert confirm callback",
             "itemtype": "method",
             "name": "onGuideRevertConfirm",
@@ -12361,7 +12361,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 527,
+            "line": 530,
             "description": "GuideSelector submit callback",
             "itemtype": "method",
             "name": "onGuideSelectorSubmit",
@@ -12377,7 +12377,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 537,
+            "line": 540,
             "description": "Keydown event callback",
             "itemtype": "method",
             "name": "onKeydown",
@@ -12395,7 +12395,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 581,
+            "line": 584,
             "description": "Keyup event callback",
             "itemtype": "method",
             "name": "onKeyup",
@@ -12413,7 +12413,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 609,
+            "line": 612,
             "description": "Mousedown event callback",
             "itemtype": "method",
             "name": "onMousedown",
@@ -12431,7 +12431,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 622,
+            "line": 625,
             "description": "Mainmenu click event callback",
             "itemtype": "method",
             "name": "onMainmenuClick",

@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-01-31 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-02-01 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "d088cf";
+        return "7f249c";
     },
 
     /**
@@ -4291,6 +4291,9 @@ metaScore.Editor = (function(){
         this.workspace = new metaScore.Dom('<div/>', {'class': 'workspace'}).appendTo(this);
 
         this.mainmenu = new metaScore.editor.MainMenu().appendTo(this)
+            .toggleButton('help', this.configs.help_url ? true : false)
+            .toggleButton('account', this.configs.account_url ? true : false)
+            .toggleButton('logout', this.configs.logout_url ? true : false)
             .addDelegate('button[data-action]:not(.disabled)', 'click', metaScore.Function.proxy(this.onMainmenuClick, this))
             .addDelegate('.time', 'valuechange', metaScore.Function.proxy(this.onMainmenuTimeFieldChange, this))
             .addDelegate('.r-index', 'valuechange', metaScore.Function.proxy(this.onMainmenuRindexFieldChange, this));
@@ -5028,18 +5031,15 @@ metaScore.Editor = (function(){
                 break;
 
             case 'help':
+                window.open(this.configs.help_url, '_blank');
                 break;
         
             case 'account':
-                if(this.configs.account_url){
-                    window.location.href = this.configs.account_url;
-                }
+                window.location.href = this.configs.account_url;
                 break;
                 
             case 'logout':
-                if(this.configs.logout_url){
-                    window.location.href = this.configs.logout_url;
-                }
+                window.location.href = this.configs.logout_url;
                 break;
         }
     };
@@ -7609,7 +7609,6 @@ metaScore.namespace('editor').MainMenu = (function(){
                 'title': metaScore.Locale.t('editor.MainMenu.help', 'Help')
             })
             .data('action', 'help')
-            .disable()
             .appendTo(this);
 
         new metaScore.Button()
