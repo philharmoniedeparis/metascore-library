@@ -284,7 +284,7 @@
   float: left;
 }
 .metaScore-editor .field.timefield .input-wrapper input[type="number"] {
-  width: 1em !important;
+  width: 1.1em !important;
   height: 100%;
   border: none;
   background: none;
@@ -612,28 +612,25 @@
   margin: 0 10px;
   white-space: nowrap;
   vertical-align: middle;
-  font-size: 1.3em;
-  padding-left: 2em;
+  padding-left: 1.75em;
   background: transparent url('img/editor/main-menu/time.png') no-repeat left center;
   background-size: contain;
 }
 .metaScore-editor .main-menu .time input,
 .metaScore-editor .main-menu .time .separator {
   color: #505050;
-  vertical-align: top;
 }
 .metaScore-editor .main-menu .r-index {
   flex: 0 0 auto;
   margin: 0 10px;
   white-space: nowrap;
   vertical-align: middle;
-  font-size: 1.3em;
   padding-left: 2em;
   background: transparent url('img/editor/main-menu/r-index.png') no-repeat left center;
   background-size: contain;
 }
 .metaScore-editor .main-menu .r-index .input-wrapper input {
-  width: 3em;
+  width: 2em;
   height: 100%;
   padding-right: 1em;
   color: #505050;

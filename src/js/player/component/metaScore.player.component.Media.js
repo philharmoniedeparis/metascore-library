@@ -427,7 +427,7 @@ metaScore.namespace('player.component').Media = (function () {
      * @return {Number} The time in centiseconds
      */
     Media.prototype.getTime = function() {
-        return parseFloat(this.dom.currentTime) * 100;
+        return Math.round(parseFloat(this.dom.currentTime) * 100);
     };
 
     /**
