@@ -23,7 +23,7 @@ metaScore.Ajax = (function () {
      * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
      * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
      * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
-     * @param {Object} [options.data={}] Data to be send along with the request
+     * @param {Object} [options.data] Data to be send along with the request
      * @param {String} [options.dataType='json'] The type of data expected back from the server
      * @param {Funtion} [options.complete] A function to be called when the request finishes
      * @param {Funtion} [options.success] A function to be called if the request succeeds
@@ -39,7 +39,7 @@ metaScore.Ajax = (function () {
                 'method': 'GET',
                 'headers': {},
                 'async': true,
-                'data': {},
+                'data': null,
                 'dataType': 'json', // xml, json, script, text or html
                 'complete': null,
                 'success': null,

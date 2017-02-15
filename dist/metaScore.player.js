@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-02-02 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-02-15 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "ec5163";
+        return "1f2ad7";
     },
 
     /**
@@ -1717,7 +1717,7 @@ metaScore.Ajax = (function () {
      * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
      * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
      * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
-     * @param {Object} [options.data={}] Data to be send along with the request
+     * @param {Object} [options.data] Data to be send along with the request
      * @param {String} [options.dataType='json'] The type of data expected back from the server
      * @param {Funtion} [options.complete] A function to be called when the request finishes
      * @param {Funtion} [options.success] A function to be called if the request succeeds
@@ -1733,7 +1733,7 @@ metaScore.Ajax = (function () {
                 'method': 'GET',
                 'headers': {},
                 'async': true,
-                'data': {},
+                'data': null,
                 'dataType': 'json', // xml, json, script, text or html
                 'complete': null,
                 'success': null,
@@ -4937,20 +4937,23 @@ metaScore.Player = (function(){
      *
      * @method updateData
      * @param {Object} data The data key, value pairs to update
+     * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
      */
-    Player.prototype.updateData = function(data){
+    Player.prototype.updateData = function(data, skipInternalUpdates){
         metaScore.Object.extend(this.json, data);
 
-        if('css' in data){
-            this.updateCSS(data.css);
-        }
+        if(skipInternalUpdates !== true){
+            if('css' in data){
+                this.updateCSS(data.css);
+            }
 
-        if('media' in data){
-            this.getMedia().setSources([data.media]);
-        }
+            if('media' in data){
+                this.getMedia().setSources([data.media]);
+            }
 
-        if('vid' in data){
-            this.setRevision(data.vid);
+            if('vid' in data){
+                this.setRevision(data.vid);
+            }
         }
     };
 
@@ -7292,7 +7295,7 @@ metaScore.namespace('player.component').Media = (function () {
      * @return {Number} The duration in centiseconds
      */
     Media.prototype.getDuration = function() {
-        return parseFloat(this.dom.duration) * 100;
+        return Math.round(parseFloat(this.dom.duration) * 100);
     };
 
     /**
@@ -7767,7 +7770,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         outTime = this.getProperty('end-time');
         direction = this.getProperty('direction');
         acceleration = this.getProperty('acceleration');
-        rect = evt.target.getBoundingClientRect();
+        rect = this.get(0).getBoundingClientRect();
 
         switch(direction){
             case 'left':

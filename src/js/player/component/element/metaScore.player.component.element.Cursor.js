@@ -173,7 +173,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
         outTime = this.getProperty('end-time');
         direction = this.getProperty('direction');
         acceleration = this.getProperty('acceleration');
-        rect = evt.target.getBoundingClientRect();
+        rect = this.get(0).getBoundingClientRect();
 
         switch(direction){
             case 'left':

@@ -688,20 +688,23 @@ metaScore.Player = (function(){
      *
      * @method updateData
      * @param {Object} data The data key, value pairs to update
+     * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
      */
-    Player.prototype.updateData = function(data){
+    Player.prototype.updateData = function(data, skipInternalUpdates){
         metaScore.Object.extend(this.json, data);
 
-        if('css' in data){
-            this.updateCSS(data.css);
-        }
+        if(skipInternalUpdates !== true){
+            if('css' in data){
+                this.updateCSS(data.css);
+            }
 
-        if('media' in data){
-            this.getMedia().setSources([data.media]);
-        }
+            if('media' in data){
+                this.getMedia().setSources([data.media]);
+            }
 
-        if('vid' in data){
-            this.setRevision(data.vid);
+            if('vid' in data){
+                this.setRevision(data.vid);
+            }
         }
     };
 

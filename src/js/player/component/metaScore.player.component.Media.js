@@ -437,7 +437,7 @@ metaScore.namespace('player.component').Media = (function () {
      * @return {Number} The duration in centiseconds
      */
     Media.prototype.getDuration = function() {
-        return parseFloat(this.dom.duration) * 100;
+        return Math.round(parseFloat(this.dom.duration) * 100);
     };
 
     /**

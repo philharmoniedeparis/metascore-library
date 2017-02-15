@@ -417,20 +417,23 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onGuideSaveSuccess = function(xhr){
         var player = this.getPlayer(),
-            json = JSON.parse(xhr.response);
+            data = JSON.parse(xhr.response);
 
         this.loadmask.hide();
         delete this.loadmask;
 
-        if(json.id !== player.getId()){
-            this.loadPlayer(json.id, json.vid);
+        if(data.id !== player.getId()){
+            this.loadPlayer(data.id, data.vid);
         }
         else{
             this.detailsOverlay
                 .clearValues(true)
-                .setValues(json, true);
+                .setValues(data, true);
 
-            player.setRevision(json.vid);
+            player.updateData(data, true);
+            player.setRevision(data.vid);
+        
+            this.updateMainmenu();
         }
     };
 
@@ -1811,17 +1814,21 @@ metaScore.Editor = (function(){
                             blocks = [], block, page;
 
                         if(new_duration !== old_duration){
-                            formatted_old_duration = Math.floor(old_duration);
-                            formatted_old_duration = (parseInt((formatted_old_duration / 360000), 10) || 0) + ":"+
-                                                     metaScore.String.pad(parseInt((formatted_old_duration / 6000) % 60, 10) || 0, 2, "0", "left") + ":"+
-                                                     metaScore.String.pad(parseInt((formatted_old_duration / 100) % 60, 10) || 0, 2, "0", "left") + ":"+
-                                                     metaScore.String.pad(parseInt((formatted_old_duration) % 100, 10) || 0, 2, "0", "left");
+                            formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
+                            formatted_old_duration += ":";
+                            formatted_old_duration += metaScore.String.pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
+                            formatted_old_duration += ":";
+                            formatted_old_duration += metaScore.String.pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
+                            formatted_old_duration += ".";
+                            formatted_old_duration += metaScore.String.pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
                                                      
-                            formatted_new_duration = Math.floor(new_duration);
-                            formatted_new_duration = (parseInt((formatted_new_duration / 360000), 10) || 0) + ":"+
-                                                     metaScore.String.pad(parseInt((formatted_new_duration / 6000) % 60, 10) || 0, 2, "0", "left") + ":"+
-                                                     metaScore.String.pad(parseInt((formatted_new_duration / 100) % 60, 10) || 0, 2, "0", "left") + ":"+
-                                                     metaScore.String.pad(parseInt((formatted_new_duration) % 100, 10) || 0, 2, "0", "left");
+                            formatted_new_duration = (parseInt((new_duration / 360000), 10) || 0);
+                            formatted_new_duration += ":";
+                            formatted_new_duration += metaScore.String.pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
+                            formatted_new_duration += ":";
+                            formatted_new_duration += metaScore.String.pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
+                            formatted_new_duration += ".";
+                            formatted_new_duration += metaScore.String.pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
                             
                             if(new_duration < old_duration){
                                 player.getComponents('.block').each(function(index, block_dom){
@@ -2571,7 +2578,7 @@ metaScore.Editor = (function(){
     Editor.prototype.getMediaFileDuration = function(url, callback){
         var media = new metaScore.Dom('<audio/>', {'src': url})
             .addListener('loadedmetadata', function(evt){
-                var duration = parseFloat(media.get(0).duration) * 100;
+                var duration = Math.round(parseFloat(media.get(0).duration) * 100);
 
                 callback(duration);
             });
