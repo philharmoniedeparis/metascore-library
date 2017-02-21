@@ -55,8 +55,7 @@ metaScore.namespace('player.component').Page = (function () {
                     return this.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.css('background-color', metaScore.Color.toCSS(value));
                 }
             },
             'background-image': {

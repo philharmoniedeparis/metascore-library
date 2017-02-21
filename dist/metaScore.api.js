@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-02-15 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-02-21 - Oussama Mubarak */
 /**
  * @module Player
  */

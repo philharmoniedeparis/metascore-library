@@ -534,8 +534,10 @@ metaScore.Dom = (function () {
         }
 
         style = inline === true ? element.style : window.getComputedStyle(element);
+        
+        value = style.getPropertyValue(name);
 
-        return style.getPropertyValue(name);
+        return value !== "" ? value : null;
     };
 
     /**

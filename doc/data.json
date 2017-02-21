@@ -4435,7 +4435,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 541,
+            "line": 543,
             "description": "Set or get a custom data attribute of an element",
             "itemtype": "method",
             "name": "data",
@@ -4466,7 +4466,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 566,
+            "line": 568,
             "description": "Append children to an element",
             "itemtype": "method",
             "name": "append",
@@ -4488,7 +4488,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 584,
+            "line": 586,
             "description": "Insert siblings before an element",
             "itemtype": "method",
             "name": "before",
@@ -4510,7 +4510,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 602,
+            "line": 604,
             "description": "Insert siblings after an element",
             "itemtype": "method",
             "name": "after",
@@ -4532,7 +4532,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 619,
+            "line": 621,
             "description": "Remove all element children",
             "itemtype": "method",
             "name": "empty",
@@ -4549,7 +4549,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 632,
+            "line": 634,
             "description": "Remove an element from the DOM",
             "itemtype": "method",
             "name": "remove",
@@ -4566,7 +4566,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 645,
+            "line": 647,
             "description": "Check if an element matches a CSS selector",
             "itemtype": "method",
             "name": "is",
@@ -4592,7 +4592,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 666,
+            "line": 668,
             "description": "Get the closest ancestor of an element which matches a given CSS selector",
             "itemtype": "method",
             "name": "closest",
@@ -4618,7 +4618,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 693,
+            "line": 695,
             "description": "Get the top and left offset of an element",
             "itemtype": "method",
             "name": "offset",
@@ -4639,7 +4639,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 715,
+            "line": 717,
             "description": "Add an element to the set of elements managed by the Dom object",
             "itemtype": "method",
             "name": "add",
@@ -4657,7 +4657,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 733,
+            "line": 735,
             "description": "Get the number of elements managed by the Dom object",
             "itemtype": "method",
             "name": "count",
@@ -4670,7 +4670,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 743,
+            "line": 745,
             "description": "Get an element by index from the set of elements managed by the Dom object",
             "itemtype": "method",
             "name": "get",
@@ -4690,7 +4690,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 754,
+            "line": 756,
             "description": "Return a new Dom object with the elements filtered by a CSS selector",
             "itemtype": "method",
             "name": "filter",
@@ -4710,7 +4710,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 773,
+            "line": 775,
             "description": "Get the index of the first element that matched the given CSS selector",
             "itemtype": "method",
             "name": "index",
@@ -4730,7 +4730,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 793,
+            "line": 795,
             "description": "Find all descendents that match a given CSS selector",
             "itemtype": "method",
             "name": "find",
@@ -4750,7 +4750,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 810,
+            "line": 812,
             "description": "Get all children, optionally filtered by a given CSS selector",
             "itemtype": "method",
             "name": "children",
@@ -4771,7 +4771,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 831,
+            "line": 833,
             "description": "Get the first child , optionally filtered by a given CSS selector",
             "itemtype": "method",
             "name": "child",
@@ -4792,7 +4792,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 842,
+            "line": 844,
             "description": "Get all parents, optionally filtered by a given CSS selector",
             "itemtype": "method",
             "name": "parents",
@@ -4813,7 +4813,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 863,
+            "line": 865,
             "description": "Interate over all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "each",
@@ -4846,7 +4846,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 878,
+            "line": 880,
             "description": "Check if an element in the set of elements managed by the Dom object has a given CSS class",
             "itemtype": "method",
             "name": "hasClass",
@@ -4866,7 +4866,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 896,
+            "line": 898,
             "description": "Add a CSS class to all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "addClass",
@@ -4883,7 +4883,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 911,
+            "line": 913,
             "description": "Remove a CSS class from all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "removeClass",
@@ -4900,7 +4900,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 926,
+            "line": 928,
             "description": "Toggle a CSS class for all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "toggleClass",
@@ -4923,7 +4923,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 942,
+            "line": 944,
             "description": "Add an event listener on all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "addListener",
@@ -4959,7 +4959,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 961,
+            "line": 963,
             "description": "Add an event listener for descendents all the elements managed by the Dom object that match a given selector",
             "itemtype": "method",
             "name": "addDelegate",
@@ -5010,7 +5010,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 998,
+            "line": 1000,
             "description": "Remove an event listener from all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "removeListener",
@@ -5045,7 +5045,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1017,
+            "line": 1019,
             "description": "Trigger an event from all the elements managed by the Dom object",
             "itemtype": "method",
             "name": "triggerEvent",
@@ -5085,7 +5085,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1037,
+            "line": 1039,
             "description": "Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element",
             "itemtype": "method",
             "name": "text",
@@ -5106,7 +5106,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1055,
+            "line": 1057,
             "description": "Set the value of all the elements managed by the Dom object, or get the value of the first element",
             "itemtype": "method",
             "name": "val",
@@ -5127,7 +5127,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1074,
+            "line": 1076,
             "description": "Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element",
             "itemtype": "method",
             "name": "attr",
@@ -5153,7 +5153,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1094,
+            "line": 1096,
             "description": "Set a property of all the elements managed by the Dom object, or get the value of a property of the first element",
             "itemtype": "method",
             "name": "prop",
@@ -5179,7 +5179,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1114,
+            "line": 1116,
             "description": "Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element",
             "itemtype": "method",
             "name": "css",
@@ -5211,7 +5211,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1135,
+            "line": 1137,
             "description": "Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element",
             "itemtype": "method",
             "name": "data",
@@ -5236,7 +5236,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1155,
+            "line": 1157,
             "description": "Append children to the first element managed by the Dom object",
             "itemtype": "method",
             "name": "append",
@@ -5253,7 +5253,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1172,
+            "line": 1174,
             "description": "Append each of the elements managed by the Dom object into a given element",
             "itemtype": "method",
             "name": "appendTo",
@@ -5270,7 +5270,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1193,
+            "line": 1195,
             "description": "Append each of the elements managed by the Dom object into a given element at a given position",
             "itemtype": "method",
             "name": "insertAt",
@@ -5292,7 +5292,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1220,
+            "line": 1222,
             "description": "Remove all children of each element managed by the Dom object",
             "itemtype": "method",
             "name": "empty",
@@ -5302,7 +5302,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1234,
+            "line": 1236,
             "description": "Make all the elements managed by the Dom object visible",
             "itemtype": "method",
             "name": "show",
@@ -5312,7 +5312,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1246,
+            "line": 1248,
             "description": "Make all the elements managed by the Dom object invisible",
             "itemtype": "method",
             "name": "hide",
@@ -5322,7 +5322,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1258,
+            "line": 1260,
             "description": "Set focus on the first element managed by the Dom object",
             "itemtype": "method",
             "name": "focus",
@@ -5332,7 +5332,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1270,
+            "line": 1272,
             "description": "Remove focus from the first element managed by the Dom object",
             "itemtype": "method",
             "name": "blur",
@@ -5342,7 +5342,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1282,
+            "line": 1284,
             "description": "Get the top and left offset of the first element managed by the Dom object",
             "itemtype": "method",
             "name": "offset",
@@ -5355,7 +5355,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1292,
+            "line": 1294,
             "description": "Remove all the elements managed by the Dom object from the DOM",
             "itemtype": "method",
             "name": "remove",
@@ -5365,7 +5365,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1310,
+            "line": 1312,
             "description": "Check if an element from the elements managed by the Dom object matches a CSS selector",
             "itemtype": "method",
             "name": "is",
@@ -5385,7 +5385,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Dom.js",
-            "line": 1328,
+            "line": 1330,
             "description": "Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector",
             "itemtype": "method",
             "name": "closest",
@@ -10242,7 +10242,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 141,
+            "line": 140,
             "description": "Setup the cursor's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -10254,7 +10254,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 159,
+            "line": 158,
             "description": "The click event handler",
             "itemtype": "method",
             "name": "onClick",
@@ -10273,7 +10273,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Cursor.js",
-            "line": 205,
+            "line": 204,
             "description": "The cuepoint update event handler",
             "itemtype": "method",
             "name": "onCuePointUpdate",
@@ -10460,7 +10460,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 248,
+            "line": 246,
             "description": "Setup the block's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -10472,7 +10472,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 269,
+            "line": 267,
             "description": "Page cuepointstart event handler",
             "itemtype": "method",
             "name": "onPageCuePointStart",
@@ -10491,7 +10491,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 280,
+            "line": 278,
             "description": "Pager click event handler",
             "itemtype": "method",
             "name": "onPagerClick",
@@ -10510,7 +10510,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 310,
+            "line": 308,
             "description": "Get the block's pages",
             "itemtype": "method",
             "name": "getPages",
@@ -10524,7 +10524,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 326,
+            "line": 324,
             "description": "Add a page",
             "itemtype": "method",
             "name": "addPage",
@@ -10557,7 +10557,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 375,
+            "line": 373,
             "description": "Remove a page",
             "itemtype": "method",
             "name": "removePage",
@@ -10585,7 +10585,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 405,
+            "line": 403,
             "description": "Remove all pages",
             "itemtype": "method",
             "name": "removePages",
@@ -10596,7 +10596,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 417,
+            "line": 415,
             "description": "Get a page by index",
             "itemtype": "method",
             "name": "getPage",
@@ -10617,7 +10617,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 430,
+            "line": 428,
             "description": "Get the index of a page",
             "itemtype": "method",
             "name": "getPageIndex",
@@ -10638,7 +10638,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 441,
+            "line": 439,
             "description": "Get the currently active page",
             "itemtype": "method",
             "name": "getActivePage",
@@ -10652,7 +10652,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 451,
+            "line": 449,
             "description": "Get the index of the currently active page",
             "itemtype": "method",
             "name": "getActivePageIndex",
@@ -10666,7 +10666,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 461,
+            "line": 459,
             "description": "Get the page count",
             "itemtype": "method",
             "name": "getPageCount",
@@ -10680,7 +10680,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 471,
+            "line": 469,
             "description": "Set the active page",
             "itemtype": "method",
             "name": "setActivePage",
@@ -10705,7 +10705,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 501,
+            "line": 499,
             "description": "Update the pager",
             "itemtype": "method",
             "name": "updatePager",
@@ -10718,7 +10718,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 519,
+            "line": 517,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10741,7 +10741,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 553,
+            "line": 551,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10831,7 +10831,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 260,
+            "line": 258,
             "description": "Setup the element's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -10843,7 +10843,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 276,
+            "line": 274,
             "description": "Get the page component this element belongs to",
             "itemtype": "method",
             "name": "getPage",
@@ -10857,7 +10857,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 293,
+            "line": 291,
             "description": "The cuepoint start event handler",
             "itemtype": "method",
             "name": "onCuePointStart",
@@ -10876,7 +10876,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 304,
+            "line": 302,
             "description": "The cuepoint stop event handler",
             "itemtype": "method",
             "name": "onCuePointStop",
@@ -10895,7 +10895,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 315,
+            "line": 313,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10918,7 +10918,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Element.js",
-            "line": 345,
+            "line": 343,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -11053,7 +11053,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 231,
+            "line": 229,
             "description": "Set the media sources",
             "itemtype": "method",
             "name": "setSources",
@@ -11078,7 +11078,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 258,
+            "line": 256,
             "description": "Get the value of the media's name property",
             "itemtype": "method",
             "name": "getName",
@@ -11092,7 +11092,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 268,
+            "line": 266,
             "description": "The loadedmetadata event handler",
             "itemtype": "method",
             "name": "onLoadedMetadata",
@@ -11111,7 +11111,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 279,
+            "line": 277,
             "description": "The play event handler",
             "itemtype": "method",
             "name": "onPlay",
@@ -11130,7 +11130,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 296,
+            "line": 294,
             "description": "The pause event handler",
             "itemtype": "method",
             "name": "onPause",
@@ -11149,7 +11149,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 309,
+            "line": 307,
             "description": "The timeupdate event handler",
             "itemtype": "method",
             "name": "onTimeUpdate",
@@ -11168,7 +11168,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 322,
+            "line": 320,
             "description": "The seeking event handler",
             "itemtype": "method",
             "name": "onSeeking",
@@ -11187,7 +11187,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 333,
+            "line": 331,
             "description": "The seeked event handler",
             "itemtype": "method",
             "name": "onSeeked",
@@ -11206,7 +11206,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 344,
+            "line": 342,
             "description": "Check whether the media is playing",
             "itemtype": "method",
             "name": "isPlaying",
@@ -11220,7 +11220,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 354,
+            "line": 352,
             "description": "Reset the media time",
             "itemtype": "method",
             "name": "reset",
@@ -11231,7 +11231,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 366,
+            "line": 364,
             "description": "Play the media",
             "itemtype": "method",
             "name": "play",
@@ -11242,7 +11242,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 378,
+            "line": 376,
             "description": "Pause the media",
             "itemtype": "method",
             "name": "pause",
@@ -11253,7 +11253,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 390,
+            "line": 388,
             "description": "Trigger the timeupdate event",
             "itemtype": "method",
             "name": "triggerTimeUpdate",
@@ -11275,7 +11275,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 408,
+            "line": 406,
             "description": "Set the media time",
             "itemtype": "method",
             "name": "setTime",
@@ -11293,7 +11293,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 423,
+            "line": 421,
             "description": "Get the current media time",
             "itemtype": "method",
             "name": "getTime",
@@ -11307,7 +11307,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 433,
+            "line": 431,
             "description": "Get the media's duration",
             "itemtype": "method",
             "name": "getDuration",
@@ -11321,7 +11321,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 443,
+            "line": 441,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -11344,7 +11344,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 477,
+            "line": 475,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -11406,7 +11406,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 133,
+            "line": 132,
             "description": "Setup the page's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -11418,7 +11418,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 146,
+            "line": 145,
             "description": "Add an new element component to this page",
             "itemtype": "method",
             "name": "addElement",
@@ -11439,7 +11439,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 174,
+            "line": 173,
             "description": "Get the block component this page belongs to",
             "itemtype": "method",
             "name": "getBlock",
@@ -11453,7 +11453,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 191,
+            "line": 190,
             "description": "Get the element components that belong to this page",
             "itemtype": "method",
             "name": "getElements",
@@ -11467,7 +11467,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 207,
+            "line": 206,
             "description": "The cuepoint start event handler",
             "itemtype": "method",
             "name": "onCuePointStart",
@@ -11486,7 +11486,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Page.js",
-            "line": 218,
+            "line": 217,
             "description": "The cuepoint stop event handler",
             "itemtype": "method",
             "name": "onCuePointStop",
@@ -14729,15 +14729,15 @@
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:326"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:324"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:326"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:324"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:375"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:373"
         },
         {
             "message": "unknown tag: namepsace",

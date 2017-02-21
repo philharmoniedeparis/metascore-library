@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-02-15 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-02-21 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "1f2ad7";
+        return "a3e226";
     },
 
     /**
@@ -880,8 +880,10 @@ metaScore.Dom = (function () {
         }
 
         style = inline === true ? element.style : window.getComputedStyle(element);
+        
+        value = style.getPropertyValue(name);
 
-        return style.getPropertyValue(name);
+        return value !== "" ? value : null;
     };
 
     /**
@@ -2316,60 +2318,71 @@ metaScore.Color = (function () {
      * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
      */
     Color.parse = function(color){
-        var rgba, matches;
-
-        rgba = {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0,
-        };
+        var rgba = null, matches;
 
         if(metaScore.Var.is(color, 'object')){
-            rgba.r = 'r' in color ? color.r : 0;
-            rgba.g = 'g' in color ? color.g : 0;
-            rgba.b = 'b' in color ? color.b : 0;
-            rgba.a = 'a' in color ? color.a : 1;
+            rgba = {
+                "r": 'r' in color ? color.r : 0,
+                "g": 'g' in color ? color.g : 0,
+                "b": 'b' in color ? color.b : 0,
+                "a": 'a' in color ? color.a : 1
+            };
         }
         else if(metaScore.Var.is(color, 'string')){
             color = color.replace(/\s\s*/g,''); // Remove all spaces
 
             // Checks for 6 digit hex and converts string to integer
             if (matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
-                rgba.r = parseInt(matches[1], 16);
-                rgba.g = parseInt(matches[2], 16);
-                rgba.b = parseInt(matches[3], 16);
-                rgba.a = 1;
+                rgba = {
+                    "r": parseInt(matches[1], 16),
+                    "g": parseInt(matches[2], 16),
+                    "b": parseInt(matches[3], 16),
+                    "a": 1
+                };
             }
 
             // Checks for 3 digit hex and converts string to integer
             else if (matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
-                rgba.r = parseInt(matches[1], 16) * 17;
-                rgba.g = parseInt(matches[2], 16) * 17;
-                rgba.b = parseInt(matches[3], 16) * 17;
-                rgba.a = 1;
+                rgba = {
+                    "r": parseInt(matches[1], 16) * 17,
+                    "g": parseInt(matches[2], 16) * 17,
+                    "b": parseInt(matches[3], 16) * 17,
+                    "a": 1
+                };
             }
 
             // Checks for rgba and converts string to
             // integer/float using unary + operator to save bytes
             else if (matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
-                rgba.r = +matches[1];
-                rgba.g = +matches[2];
-                rgba.b = +matches[3];
-                rgba.a = +matches[4];
+                rgba = {
+                    "r": +matches[1],
+                    "g": +matches[2],
+                    "b": +matches[3],
+                    "a": +matches[4]
+                };
             }
 
             // Checks for rgb and converts string to
             // integer/float using unary + operator to save bytes
             else if (matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
-                rgba.r = +matches[1];
-                rgba.g = +matches[2];
-                rgba.b = +matches[3];
-                rgba.a = 1;
+                rgba = {
+                    "r": +matches[1],
+                    "g": +matches[2],
+                    "b": +matches[3],
+                    "a": 1
+                };
             }
         }
 
         return rgba;
+    };
+    
+    Color.toCSS = function(color){
+        
+        var rgba = Color.parse(color);
+        
+        return rgba ? 'rgba('+ rgba.r +','+ rgba.g +','+ rgba.b +','+ rgba.a +')' : null;
+        
     };
 
     return Color;
@@ -5865,8 +5878,7 @@ metaScore.namespace('player.component').Block = (function () {
                     return this.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.css('background-color', metaScore.Color.toCSS(value));
                 }
             },
             'background-image': {
@@ -5912,8 +5924,7 @@ metaScore.namespace('player.component').Block = (function () {
                     return this.css('border-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.css('border-color', metaScore.Color.toCSS(value));
                 }
             },
             'border-radius': {
@@ -6626,8 +6637,7 @@ metaScore.namespace('player.component').Element = (function () {
                     return this.contents.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.contents.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.contents.css('background-color', metaScore.Color.toCSS(value));
                 }
             },
             'background-image': {
@@ -6673,8 +6683,7 @@ metaScore.namespace('player.component').Element = (function () {
                     return this.contents.css('border-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.contents.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.contents.css('border-color', metaScore.Color.toCSS(value));
                 }
             },
             'border-radius': {
@@ -7039,9 +7048,8 @@ metaScore.namespace('player.component').Media = (function () {
                 'getter': function(skipDefault){
                     return this.css('background-color', undefined, skipDefault);
                 },
-                'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                'setter': function(value){                    
+                    this.css('background-color', metaScore.Color.toCSS(value));
                 }
             },
             'border-width': {
@@ -7067,8 +7075,7 @@ metaScore.namespace('player.component').Media = (function () {
                     return this.css('border-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.css('border-color', metaScore.Color.toCSS(value));
                 }
             },
             'border-radius': {
@@ -7421,8 +7428,7 @@ metaScore.namespace('player.component').Page = (function () {
                     return this.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.css('background-color', metaScore.Color.toCSS(value));
                 }
             },
             'background-image': {
@@ -7728,8 +7734,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                      return this.cursor.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.cursor.css('background-color', metaScore.Color.toCSS(value));
                 }
             }
         })

@@ -131,8 +131,7 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                      return this.cursor.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.cursor.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.cursor.css('background-color', metaScore.Color.toCSS(value));
                 }
             }
         })

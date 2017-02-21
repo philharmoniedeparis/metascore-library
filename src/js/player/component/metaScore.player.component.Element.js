@@ -144,8 +144,7 @@ metaScore.namespace('player.component').Element = (function () {
                     return this.contents.css('background-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.contents.css('background-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.contents.css('background-color', metaScore.Color.toCSS(value));
                 }
             },
             'background-image': {
@@ -191,8 +190,7 @@ metaScore.namespace('player.component').Element = (function () {
                     return this.contents.css('border-color', undefined, skipDefault);
                 },
                 'setter': function(value){
-                    var color = metaScore.Color.parse(value);
-                    this.contents.css('border-color', 'rgba('+ color.r +','+ color.g +','+ color.b +','+ color.a +')');
+                    this.contents.css('border-color', metaScore.Color.toCSS(value));
                 }
             },
             'border-radius': {
