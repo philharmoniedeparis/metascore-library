@@ -8577,7 +8577,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 252,
+            "line": 246,
             "description": "The filters reset button click event handler",
             "itemtype": "method",
             "name": "onFiltersResetClick",
@@ -8596,7 +8596,7 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 265,
+            "line": 259,
             "description": "Setup the results",
             "itemtype": "method",
             "name": "setupResults",
@@ -8609,17 +8609,10 @@
         },
         {
             "file": "src\\js\\editor\\overlay\\metaScore.editor.overlay.GuideSelector.js",
-            "line": 371,
+            "line": 365,
             "description": "Load guides",
             "itemtype": "method",
             "name": "load",
-            "params": [
-                {
-                    "name": "data",
-                    "description": "The data to send with the request",
-                    "type": "FormData"
-                }
-            ],
             "access": "private",
             "tagname": "",
             "chainable": 1,

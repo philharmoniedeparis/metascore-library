@@ -139,7 +139,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                         'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
                     }
                 ],
-                'value': 'title'
+                'value': 'created'
             })
             .data('name', 'sort_by')
             .appendTo(fieldset);
@@ -156,7 +156,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                         'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_order.desc.lable', 'Desc')
                     }
                 ],
-                'value': 'ASC'
+                'value': 'DESC'
             })
             .data('name', 'sort_order')
             .appendTo(fieldset);
@@ -237,13 +237,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @param {Event} evt The event object
      */
     GuideSelector.prototype.onFilterFormSubmit = function(evt){
-        var data = {};
-        
-        metaScore.Object.each(this.filter_fields, function(key, field){
-            data[field.data('name')] = field.getValue();
-        });
-        
-        this.load(data);
+        this.load();
     
         evt.preventDefault();
         evt.stopPropagation();
@@ -372,11 +366,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * Load guides
      * 
      * @method load
-     * @param {FormData} data The data to send with the request
      * @private
      * @chainable
      */
-    GuideSelector.prototype.load = function(data){
+    GuideSelector.prototype.load = function(){
+        var data = {};
+        
+        metaScore.Object.each(this.filter_fields, function(key, field){
+            data[field.data('name')] = field.getValue();
+        });
+        
         this.loadmask = new metaScore.overlay.LoadMask({
             'parent': this.getContents(),
             'autoShow': true
