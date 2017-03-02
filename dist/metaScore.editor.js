@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "f4c783";
+        return "ec652a";
     },
 
     /**
@@ -6076,7 +6076,7 @@ metaScore.Editor = (function(){
                     this.getMediaFileDuration(data['media'].url, metaScore.Function.proxy(function(new_duration){
                         var old_duration = player.getMedia().getDuration(),
                             formatted_old_duration, formatted_new_duration,
-                            blocks = [], block, page;
+                            blocks = [], block, page, msg;
 
                         if(new_duration !== old_duration){
                             formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
@@ -6115,17 +6115,24 @@ metaScore.Editor = (function(){
                             if(blocks.length > 0){
                                 new metaScore.overlay.Alert({
                                     'parent': this,
-                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
+                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
                                     'buttons': {
-                                        'ok': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.ok', 'OK'),
+                                        'ok': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
                                     },
                                     'autoShow': true
                                 });
                             }
                             else{
+                                if(new_duration < old_duration){
+                                    msg = metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                                }
+                                else{                                    
+                                    msg = metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                                }
+                                
                                 new metaScore.overlay.Alert({
                                     'parent': this,
-                                    'text': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.msg', 'The duration of selected media file (!new_duration) differs from the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration}),
+                                    'text': msg,
                                     'buttons': {
                                         'confirm': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
                                         'cancel': metaScore.Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
