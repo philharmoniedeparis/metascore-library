@@ -430,10 +430,11 @@ metaScore.Editor = (function(){
                 .clearValues(true)
                 .setValues(data, true);
 
-            player.updateData(data, true);
-            player.setRevision(data.vid);
+            player.updateData(data, true)
+                  .setRevision(data.vid);
         
-            this.updateMainmenu();
+            this.setDirty(false)
+                .updateMainmenu();
         }
     };
 
@@ -1723,7 +1724,8 @@ metaScore.Editor = (function(){
      * @param {CustomEvent} evt The event object. See {{#crossLink "History/add:event"}}History.add{{/crossLink}}
      */
     Editor.prototype.onHistoryAdd = function(evt){
-        this.setDirty(true).updateMainmenu();
+        this.setDirty(true)
+            .updateMainmenu();
     };
 
     /**
@@ -1804,7 +1806,8 @@ metaScore.Editor = (function(){
                     player.updateData(data);
                     overlay.setValues(metaScore.Object.extend({}, player.getData(), data), true).hide();
                     
-                    this.setDirty(true).updateMainmenu();
+                    this.setDirty(true)
+                        .updateMainmenu();
                 }, this);
 
                 if('media' in data){
@@ -2028,7 +2031,7 @@ metaScore.Editor = (function(){
         this.mainmenu.toggleButton('publish', hasPlayer);
         this.mainmenu.toggleButton('delete', hasPlayer);
         this.mainmenu.toggleButton('share', hasPlayer && player.getData('published'));
-        //this.mainmenu.toggleButton('download', hasPlayer);
+        this.mainmenu.toggleButton('download', hasPlayer);
 
         this.mainmenu.toggleButton('undo', this.history.hasUndo());
         this.mainmenu.toggleButton('redo', this.history.hasRedo());
@@ -2230,7 +2233,8 @@ metaScore.Editor = (function(){
         
         this.panels.block.unsetComponent();
         this.history.clear();
-        this.setDirty(false).updateMainmenu();
+        this.setDirty(false)
+            .updateMainmenu();
 
         return this;
     };

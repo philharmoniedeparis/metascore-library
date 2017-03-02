@@ -484,7 +484,7 @@
   width: 1.75em;
   height: 1.6em;
   flex: 0 0 auto;
-  margin: 0 10px;
+  margin: 0 0.75em;
   vertical-align: middle;
 }
 .metaScore-editor .main-menu > button[data-action="new"],
@@ -513,7 +513,6 @@
 }
 .metaScore-editor .main-menu > button[data-action="delete"],
 .metaScore-editor .main-menu .button-group button[data-action="delete"] {
-  margin-right: 50px;
   background-image: url('img/editor/main-menu/delete.png');
 }
 .metaScore-editor .main-menu > button[data-action="share"],
@@ -522,12 +521,11 @@
 }
 .metaScore-editor .main-menu > button[data-action="download"],
 .metaScore-editor .main-menu .button-group button[data-action="download"] {
-  margin-right: 50px;
+  display: none;
   background-image: url('img/editor/main-menu/download.png');
 }
 .metaScore-editor .main-menu > button[data-action="revert"],
 .metaScore-editor .main-menu .button-group button[data-action="revert"] {
-  margin-left: 50px;
   background-image: url('img/editor/main-menu/revert.png');
 }
 .metaScore-editor .main-menu > button[data-action="undo"],
@@ -536,12 +534,10 @@
 }
 .metaScore-editor .main-menu > button[data-action="redo"],
 .metaScore-editor .main-menu .button-group button[data-action="redo"] {
-  margin-right: 50px;
   background-image: url('img/editor/main-menu/redo.png');
 }
 .metaScore-editor .main-menu > button[data-action="edit-toggle"],
 .metaScore-editor .main-menu .button-group button[data-action="edit-toggle"] {
-  margin-right: 50px;
   background-image: url('img/editor/main-menu/edit-toggle.png');
 }
 .metaScore-editor .main-menu > button[data-action="settings"],

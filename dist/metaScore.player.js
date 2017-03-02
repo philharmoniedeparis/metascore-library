@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "147024";
+        return "f4c783";
     },
 
     /**
@@ -4951,6 +4951,7 @@ metaScore.Player = (function(){
      * @method updateData
      * @param {Object} data The data key, value pairs to update
      * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
+     * @chainable
      */
     Player.prototype.updateData = function(data, skipInternalUpdates){
         metaScore.Object.extend(this.json, data);
@@ -4968,6 +4969,8 @@ metaScore.Player = (function(){
                 this.setRevision(data.vid);
             }
         }
+        
+        return this;
     };
 
     /**

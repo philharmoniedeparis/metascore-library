@@ -689,6 +689,7 @@ metaScore.Player = (function(){
      * @method updateData
      * @param {Object} data The data key, value pairs to update
      * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
+     * @chainable
      */
     Player.prototype.updateData = function(data, skipInternalUpdates){
         metaScore.Object.extend(this.json, data);
@@ -706,6 +707,8 @@ metaScore.Player = (function(){
                 this.setRevision(data.vid);
             }
         }
+        
+        return this;
     };
 
     /**
