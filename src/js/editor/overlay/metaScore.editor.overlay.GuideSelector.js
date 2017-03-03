@@ -139,7 +139,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
                         'text': metaScore.Locale.t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
                     }
                 ],
-                'value': 'created'
+                'value': 'changed'
             })
             .data('name', 'sort_by')
             .appendTo(fieldset);
