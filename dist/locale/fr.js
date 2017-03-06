@@ -104,7 +104,7 @@ var metaScoreLocale = {
 	"editor.overlay.GuideDetails.fields.description.label": "Description",
 	"editor.overlay.GuideDetails.fields.credits.label": "Crédits",
 	"editor.overlay.GuideDetails.fields.thumbnail.label": "Miniature",
-	"editor.overlay.GuideDetails.fields.thumbnail.description": "Extensions autorisées: !types",
+	"editor.overlay.GuideDetails.fields.thumbnail.description": "Dimensions préférées: !dimentions pixels<br/>Extensions autorisées: !types",
 	"editor.overlay.GuideDetails.fields.media.label": "Média",
 	"editor.overlay.GuideDetails.fields.media.description": "Extensions autorisées: !types",
 	"editor.overlay.GuideDetails.fields.css.label": "CSS",

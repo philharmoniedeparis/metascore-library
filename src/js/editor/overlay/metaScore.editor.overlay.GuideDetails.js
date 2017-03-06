@@ -116,7 +116,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
         this.fields['thumbnail'] = new metaScore.editor.field.File({
                 'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
-                'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Allowed file types: !types', {'!types': 'png gif jpg jpeg'}),
+                'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
                 'accept': '.png,.gif,.jpg,.jpeg'
             })
             .data('name', 'thumbnail')

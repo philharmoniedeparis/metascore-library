@@ -186,7 +186,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     GuideSelector.prototype.show = function(){
         GuideSelector.parent.prototype.show.call(this);
         
-        this.load();
+        this.load(true);
 
         return this;
     };
@@ -369,12 +369,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @private
      * @chainable
      */
-    GuideSelector.prototype.load = function(){
+    GuideSelector.prototype.load = function(initial){
         var data = {};
         
         metaScore.Object.each(this.filter_fields, function(key, field){
             data[field.data('name')] = field.getValue();
         });
+        
+        if(initial === true){
+            data['with_filter_options'] = true;
+        }
         
         this.loadmask = new metaScore.overlay.LoadMask({
             'parent': this.getContents(),

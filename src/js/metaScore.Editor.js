@@ -22,6 +22,7 @@ metaScore.Editor = (function(){
      * @param {String} [configs.account_url=''] The URL of the user account page
      * @param {String} [configs.logout_url=''] The URL of the user logout page
      * @param {Object} [configs.user_groups={}] The groups the user belongs to
+     * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
     function Editor(configs) {
@@ -365,6 +366,7 @@ metaScore.Editor = (function(){
         'account_url': '',
         'logout_url': '',
         'user_groups': {},
+        'reload_player_on_save': false,
         'ajax': {}
     };
 
@@ -422,7 +424,7 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        if(data.id !== player.getId()){
+        if((data.id !== player.getId()) || this.configs.reload_player_on_save){
             this.loadPlayer(data.id, data.vid);
         }
         else{

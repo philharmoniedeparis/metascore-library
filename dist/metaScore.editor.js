@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-03-03 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-03-06 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "c95f92";
+        return "c8157f";
     },
 
     /**
@@ -4284,6 +4284,7 @@ metaScore.Editor = (function(){
      * @param {String} [configs.account_url=''] The URL of the user account page
      * @param {String} [configs.logout_url=''] The URL of the user logout page
      * @param {Object} [configs.user_groups={}] The groups the user belongs to
+     * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
     function Editor(configs) {
@@ -4627,6 +4628,7 @@ metaScore.Editor = (function(){
         'account_url': '',
         'logout_url': '',
         'user_groups': {},
+        'reload_player_on_save': false,
         'ajax': {}
     };
 
@@ -4684,7 +4686,7 @@ metaScore.Editor = (function(){
         this.loadmask.hide();
         delete this.loadmask;
 
-        if(data.id !== player.getId()){
+        if((data.id !== player.getId()) || this.configs.reload_player_on_save){
             this.loadPlayer(data.id, data.vid);
         }
         else{
@@ -11841,7 +11843,7 @@ metaScore.namespace('editor.overlay').GuideDetails = (function () {
 
         this.fields['thumbnail'] = new metaScore.editor.field.File({
                 'label': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
-                'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Allowed file types: !types', {'!types': 'png gif jpg jpeg'}),
+                'description': metaScore.Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
                 'accept': '.png,.gif,.jpg,.jpeg'
             })
             .data('name', 'thumbnail')
@@ -12242,7 +12244,7 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
     GuideSelector.prototype.show = function(){
         GuideSelector.parent.prototype.show.call(this);
         
-        this.load();
+        this.load(true);
 
         return this;
     };
@@ -12425,12 +12427,16 @@ metaScore.namespace('editor.overlay').GuideSelector = (function () {
      * @private
      * @chainable
      */
-    GuideSelector.prototype.load = function(){
+    GuideSelector.prototype.load = function(initial){
         var data = {};
         
         metaScore.Object.each(this.filter_fields, function(key, field){
             data[field.data('name')] = field.getValue();
         });
+        
+        if(initial === true){
+            data['with_filter_options'] = true;
+        }
         
         this.loadmask = new metaScore.overlay.LoadMask({
             'parent': this.getContents(),

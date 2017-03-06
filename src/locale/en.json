@@ -104,7 +104,7 @@
 	"editor.overlay.GuideDetails.fields.description.label": "Description",
 	"editor.overlay.GuideDetails.fields.credits.label": "Credits",
 	"editor.overlay.GuideDetails.fields.thumbnail.label": "Thumbnail",
-	"editor.overlay.GuideDetails.fields.thumbnail.description": "Allowed file types: !types",
+	"editor.overlay.GuideDetails.fields.thumbnail.description": "Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types",
 	"editor.overlay.GuideDetails.fields.media.label": "Media",
 	"editor.overlay.GuideDetails.fields.media.description": "Allowed file types: !types",
 	"editor.overlay.GuideDetails.fields.css.label": "CSS",
