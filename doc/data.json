@@ -13583,7 +13583,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2451,
+            "line": 2452,
             "description": "Opens the guide selector",
             "itemtype": "method",
             "name": "openGuideSelector",
@@ -13593,7 +13593,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2467,
+            "line": 2468,
             "description": "Creates a new guide",
             "itemtype": "method",
             "name": "createGuide",
@@ -13617,7 +13617,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2510,
+            "line": 2511,
             "description": "Saves the loaded guide",
             "itemtype": "method",
             "name": "saveGuide",
@@ -13639,7 +13639,7 @@
         },
         {
             "file": "src\\js\\metaScore.Editor.js",
-            "line": 2583,
+            "line": 2584,
             "description": "Get a media file's duration in centiseconds",
             "itemtype": "method",
             "name": "getMediaFileDuration",

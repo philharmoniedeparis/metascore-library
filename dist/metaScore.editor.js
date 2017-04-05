@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-03-06 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-04-05 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "c8157f";
+        return "856303";
     },
 
     /**
@@ -6616,7 +6616,8 @@ metaScore.Editor = (function(){
      * @chainable 
      */
     Editor.prototype.deletePlayerComponent = function(component){
-        var panel, block, page,
+        var player = this.getPlayer(),
+            panel, block, page,
             index, configs, auto_page;
         
         if(component.instanceOf('Block')){
@@ -6630,7 +6631,7 @@ metaScore.Editor = (function(){
  
             this.history.add({
                 'undo': function(){
-                    this.getPlayer().addBlock(component);
+                    player.addBlock(component);
                     panel.setComponent(component);
                 },
                 'redo': function(){
@@ -6652,7 +6653,7 @@ metaScore.Editor = (function(){
 
                 if(block.getProperty('synched')){
                     configs['start-time'] = 0;
-                    configs['end-time'] = this.getPlayer().getMedia().getDuration();
+                    configs['end-time'] = player.getMedia().getDuration();
                 }
 
                 auto_page = block.addPage(configs);
