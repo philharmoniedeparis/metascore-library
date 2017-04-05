@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-03-06 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-04-05 - Oussama Mubarak */
 /**
  * @module Player
  */
@@ -274,12 +274,11 @@ window.metaScoreAPI = (function(){
             iframes = document.querySelectorAll('iframe#'+ ids.join(',iframe#'));
 
             callback = function(api){
-                var links, handler;
-                links = document.querySelectorAll('a[rel="metascore"][data-guide="'+ api.target.id +'"]');
+                var links = document.querySelectorAll('a[rel="metascore"][data-guide="'+ api.target.id +'"]'),
+                    link, handler;
 
-                handler = function(evt){
-                    var link = evt.target,
-                        actions = link.hash.replace(/^#/, '').split('&'),
+                handler = function(link, evt){
+                    var actions = link.hash.replace(/^#/, '').split('&'),
                         action;
 
                     for(var i=0,length=actions.length; i<length; i++){
@@ -294,7 +293,7 @@ window.metaScoreAPI = (function(){
                 };
 
                 for(var i = 0; i < links.length; ++i){
-                    links[i].addEventListener('click', handler);
+                    links[i].addEventListener('click', handler.bind(null, links[i]));
                 }
             };
 
