@@ -1372,6 +1372,12 @@
 .metaScore-editor .overlay.alert > .inner > .contents .buttons button[data-action="cancel"]:hover {
   opacity: 0.4;
 }
+.metaScore-editor .overlay.alert.guide-delete button[data-action="confirm"] {
+  opacity: 0.75;
+}
+.metaScore-editor .overlay.alert.guide-delete button[data-action="cancel"] {
+  opacity: 1 !important;
+}
 .metaScore-editor .overlay.loadmask > .inner > .contents {
   padding: 12px 16px 12px 45px;
   background: #ffffff url('img/editor/loader.gif') no-repeat 16px center;

@@ -741,13 +741,14 @@ metaScore.Editor = (function(){
             case 'delete':
                 new metaScore.overlay.Alert({
                         'parent': this,
-                        'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide ?'),
+                        'text': metaScore.Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
                             'cancel': metaScore.Locale.t('editor.onMainmenuClick.delete.no', 'No')
                         },
                         'autoShow': true
                     })
+                    .addClass('guide-delete')
                     .addListener('buttonclick', metaScore.Function.proxy(function(evt){
                         if(evt.detail.action === 'confirm'){
                             this.onGuideDeleteConfirm();

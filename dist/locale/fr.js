@@ -33,7 +33,7 @@ var metaScoreLocale = {
 	"editor.onMainmenuClick.publish.msg": "Cette action rendra cette version la version publique.<br/>Êtes-vous sûr de vouloir continuer ?",
 	"editor.onMainmenuClick.publish.yes": "Oui",
 	"editor.onMainmenuClick.publish.no": "Non",
-	"editor.onMainmenuClick.delete.msg": "Êtes-vous sûr de vouloir supprimer ce guide?",
+	"editor.onMainmenuClick.delete.msg": "Êtes-vous sûr de vouloir supprimer ce guide ?<br/><b style=\"color: #F00;\">Cette action est irréversible.</b>",
 	"editor.onMainmenuClick.delete.yes": "Oui",
 	"editor.onMainmenuClick.delete.no": "Non",
 	"editor.onMainmenuClick.revert.msg": "Êtes-vous sûr de vouloir revenir à la dernière version enregistrée ?<br/><strong>Toutes les données non sauvegardées seront perdues.</strong>",
