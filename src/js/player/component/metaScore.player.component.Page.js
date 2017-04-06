@@ -69,8 +69,12 @@ metaScore.namespace('player.component').Page = (function () {
                     if(value === 'none' || !metaScore.Var.is(value, "string")){
                         return null;
                     }
+                    
+                    value = value.replace(/^url\(["']?/, '');
+                    value = value.replace(/["']?\)$/, '');
+                    value = value.replace(document.baseURI, '');
 
-                    return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                    return value;
                 },
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;

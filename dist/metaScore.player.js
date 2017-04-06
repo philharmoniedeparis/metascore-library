@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-04-05 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-04-06 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "856303";
+        return "dbb1ec";
     },
 
     /**
@@ -4352,6 +4352,7 @@ metaScore.Player = (function(){
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      * @param {Boolean} [configs.keyboard=false] Whether to activate keyboard shortcuts or not
      * @param {Boolean} [configs.api=false] Whether to allow API access or not
+     * @param {Boolean} [configs.autoload=true] Whether to automatically call the load function
      */
     function Player(configs) {
         this.configs = this.getConfigs(configs);
@@ -4375,7 +4376,9 @@ metaScore.Player = (function(){
 
         this.appendTo(this.configs.container);
 
-        this.load();
+        if(this.configs.autoload !== false){
+            this.load();
+        }
     }
 
     Player.defaults = {
@@ -4383,7 +4386,8 @@ metaScore.Player = (function(){
         'container': 'body',
         'ajax': {},
         'keyboard': false,
-        'api': false
+        'api': false,
+        'autoload': true
     };
 
     metaScore.Dom.extend(Player);
@@ -5896,8 +5900,12 @@ metaScore.namespace('player.component').Block = (function () {
                     if(value === 'none' || !metaScore.Var.is(value, "string")){
                         return null;
                     }
+                    
+                    value = value.replace(/^url\(["']?/, '');
+                    value = value.replace(/["']?\)$/, '');
+                    value = value.replace(document.baseURI, '');
 
-                    return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                    return value;
                 },
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
@@ -6655,8 +6663,12 @@ metaScore.namespace('player.component').Element = (function () {
                     if(value === 'none' || !metaScore.Var.is(value, "string")){
                         return null;
                     }
+                    
+                    value = value.replace(/^url\(["']?/, '');
+                    value = value.replace(/["']?\)$/, '');
+                    value = value.replace(document.baseURI, '');
 
-                    return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                    return value;
                 },
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
@@ -7445,8 +7457,12 @@ metaScore.namespace('player.component').Page = (function () {
                     if(value === 'none' || !metaScore.Var.is(value, "string")){
                         return null;
                     }
+                    
+                    value = value.replace(/^url\(["']?/, '');
+                    value = value.replace(/["']?\)$/, '');
+                    value = value.replace(document.baseURI, '');
 
-                    return value.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                    return value;
                 },
                 'setter': function(value){
                     value = (value !== 'none' && metaScore.Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;

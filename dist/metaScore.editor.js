@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-04-05 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-04-06 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "856303";
+        return "dbb1ec";
     },
 
     /**
@@ -5749,7 +5749,8 @@ metaScore.Editor = (function(){
                 .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
                 .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
                 .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
-                .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
+                .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this))
+                .load();
         }
     };
 
@@ -6466,7 +6467,7 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.loadPlayer = function(id, vid){
-        var url = this.configs.player_url + id +"?keyboard=1";
+        var url = this.configs.player_url + id +"?autoload=false&keyboard=1";
 
         if(vid){
             url += "&vid="+ vid;

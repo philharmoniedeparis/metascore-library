@@ -1487,7 +1487,8 @@ metaScore.Editor = (function(){
                 .addListener('load', metaScore.Function.proxy(this.onPlayerLoadSuccess, this))
                 .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
                 .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
-                .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this));
+                .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this))
+                .load();
         }
     };
 
@@ -2204,7 +2205,7 @@ metaScore.Editor = (function(){
      * @chainable
      */
     Editor.prototype.loadPlayer = function(id, vid){
-        var url = this.configs.player_url + id +"?keyboard=1";
+        var url = this.configs.player_url + id +"?autoload=false&keyboard=1";
 
         if(vid){
             url += "&vid="+ vid;
