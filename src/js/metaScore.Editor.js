@@ -167,7 +167,7 @@ metaScore.Editor = (function(){
                 'delete-element': {
                     'text': metaScore.Locale.t('editor.contextmenu.delete-element', 'Delete element'),
                     'callback': metaScore.Function.proxy(function(context){
-                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore);
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.element')._metaScore, true);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
                         if(this.editing !== true){
@@ -224,7 +224,7 @@ metaScore.Editor = (function(){
                 'delete-page': {
                     'text': metaScore.Locale.t('editor.contextmenu.delete-page', 'Delete page'),
                     'callback': metaScore.Function.proxy(function(context){
-                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore);
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.page')._metaScore, true);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
                         return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.page') ? true : false);
@@ -280,7 +280,7 @@ metaScore.Editor = (function(){
                 'delete-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.delete-block', 'Delete block'),
                     'callback': metaScore.Function.proxy(function(context){
-                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore);
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore, true);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
                         if(this.editing !== true){
@@ -748,7 +748,7 @@ metaScore.Editor = (function(){
                         },
                         'autoShow': true
                     })
-                    .addClass('guide-delete')
+                    .addClass('delete-guide')
                     .addListener('buttonclick', metaScore.Function.proxy(function(evt){
                         if(evt.detail.action === 'confirm'){
                             this.onGuideDeleteConfirm();
@@ -1000,7 +1000,7 @@ metaScore.Editor = (function(){
 
             case 'delete':
                 block = this.panels.block.getComponent();
-                this.deletePlayerComponent(block);
+                this.deletePlayerComponent(block, true);
                 break;
         }
 
@@ -1199,7 +1199,7 @@ metaScore.Editor = (function(){
 
             case 'delete':
                 page = this.panels.page.getComponent();
-                this.deletePlayerComponent(page);
+                this.deletePlayerComponent(page, true);
                 break;
         }
 
@@ -1347,7 +1347,7 @@ metaScore.Editor = (function(){
 
             case 'delete':
                 element = this.panels.element.getComponent();   
-                this.deletePlayerComponent(element);
+                this.deletePlayerComponent(element, true);
                 break;
         }
     };
@@ -2355,98 +2355,148 @@ metaScore.Editor = (function(){
      * @param {player.Component} component The component
      * @chainable 
      */
-    Editor.prototype.deletePlayerComponent = function(component){
-        var player = this.getPlayer(),
+    Editor.prototype.deletePlayerComponent = function(component, confirm){
+        var editor = this,
+            player = this.getPlayer(),
             panel, block, page,
-            index, configs, auto_page;
-        
-        if(component.instanceOf('Block')){
-            panel = this.panels.block;
+            index, configs, auto_page,
+            type, alert_msg;
             
-            if(panel.getComponent() === component){
-                panel.unsetComponent();
+        if(component.instanceOf('Block')){
+            type = 'block';
+        }
+        else if(component.instanceOf('Page')){
+            type = 'page';
+        }
+        else if(component.instanceOf('Element')){
+            type = 'element';
+        }
+            
+        if(type && (confirm === true)){
+            switch(type){
+                case 'block':
+                    alert_msg = metaScore.Locale.t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
+                    break;
+                    
+                case 'page':
+                    block = component.getBlock();
+                    alert_msg = metaScore.Locale.t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
+                    break;
+                    
+                case 'element':
+                    alert_msg = metaScore.Locale.t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
+                    break;
             }
             
-            component.remove();
- 
-            this.history.add({
-                'undo': function(){
-                    player.addBlock(component);
-                    panel.setComponent(component);
+            new metaScore.overlay.Alert({
+                'parent': this,
+                'text': alert_msg,
+                'buttons': {
+                    'confirm': metaScore.Locale.t('editor.deletePlayerComponent.yes', 'Yes'),
+                    'cancel': metaScore.Locale.t('editor.deletePlayerComponent.no', 'No')
                 },
-                'redo': function(){
-                    panel.unsetComponent();
-                    component.remove();
+                'autoShow': true
+            })
+            .addClass('delete-player-component')
+            .addListener('buttonclick', function(evt){
+                if(evt.detail.action === 'confirm'){
+                    editor.deletePlayerComponent(component, false);
                 }
             });
         }
-        else if(component.instanceOf('Page')){
-            panel = this.panels.page;
-            block = component.getBlock();
-            index = block.getActivePageIndex();
-
-            panel.unsetComponent();
-            block.removePage(component);
-
-            if(block.getPageCount() < 1){
-                configs = {};
-
-                if(block.getProperty('synched')){
-                    configs['start-time'] = 0;
-                    configs['end-time'] = player.getMedia().getDuration();
-                }
-
-                auto_page = block.addPage(configs);
-                panel.setComponent(auto_page);
-            }
-
-            block.setActivePage(Math.max(0, index-1));
-
-            this.history.add({
-                'undo': function(){
-                    if(auto_page){
-                        block.removePage(auto_page, true);
+        else{
+            switch(type){
+                case 'block':
+                    panel = this.panels.block;
+                    
+                    if(panel.getComponent() === component){
+                        panel.unsetComponent();
                     }
+                    
+                    component.remove();
+         
+                    this.history.add({
+                        'undo': function(){
+                            player.addBlock(component);
+                            panel.setComponent(component);
+                        },
+                        'redo': function(){
+                            panel.unsetComponent();
+                            component.remove();
+                        }
+                    });
+                    break;
+                    
+                case 'page':
+                    panel = this.panels.page;
+                    block = component.getBlock();
+                    index = block.getActivePageIndex();
 
-                    block.addPage(component, index);
-                    panel.setComponent(component);
-                },
-                'redo': function(){
                     panel.unsetComponent();
-                    block.removePage(component, true);
+                    block.removePage(component);
 
-                    if(auto_page){
-                        block.addPage(auto_page);
+                    if(block.getPageCount() < 1){
+                        configs = {};
+
+                        if(block.getProperty('synched')){
+                            configs['start-time'] = 0;
+                            configs['end-time'] = player.getMedia().getDuration();
+                        }
+
+                        auto_page = block.addPage(configs);
                         panel.setComponent(auto_page);
                     }
 
-                    block.setActivePage(index-1);
-                }
-            });
-        }
-        else if(component.instanceOf('Element')){
-            panel = this.panels.element;
-            page = component.getPage();
-        
-            if(panel.getComponent() === component){
-                panel.unsetComponent();
-            }
-            
-            component.remove();
- 
-            this.history.add({
-                'undo': function(){
-                    page.addElement(component);
-                    panel.setComponent(component);
-                },
-                'redo': function(){
-                    panel.unsetComponent();
+                    block.setActivePage(Math.max(0, index-1));
+
+                    this.history.add({
+                        'undo': function(){
+                            if(auto_page){
+                                block.removePage(auto_page, true);
+                            }
+
+                            block.addPage(component, index);
+                            panel.setComponent(component);
+                        },
+                        'redo': function(){
+                            panel.unsetComponent();
+                            block.removePage(component, true);
+
+                            if(auto_page){
+                                block.addPage(auto_page);
+                                panel.setComponent(auto_page);
+                            }
+
+                            block.setActivePage(index-1);
+                        }
+                    });
+                    break;
+                
+                case 'element':
+                    panel = this.panels.element;
+                    page = component.getPage();
+                
+                    if(panel.getComponent() === component){
+                        panel.unsetComponent();
+                    }
+                    
                     component.remove();
-                }
-            });
-        }
+         
+                    this.history.add({
+                        'undo': function(){
+                            page.addElement(component);
+                            panel.setComponent(component);
+                        },
+                        'redo': function(){
+                            panel.unsetComponent();
+                            component.remove();
+                        }
+                    });
+                    break;
+            }
         
-        this.player_frame.focus();
+            this.player_frame.focus();
+        }
         
         return this;
     };

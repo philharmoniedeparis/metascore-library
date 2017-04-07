@@ -1367,16 +1367,38 @@
   background: #ccc;
 }
 .metaScore-editor .overlay.alert > .inner > .contents .buttons button[data-action="cancel"] {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+  filter: alpha(opacity=(75));
   opacity: 0.75;
 }
 .metaScore-editor .overlay.alert > .inner > .contents .buttons button[data-action="cancel"]:hover {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  filter: alpha(opacity=(40));
   opacity: 0.4;
 }
-.metaScore-editor .overlay.alert.guide-delete button[data-action="confirm"] {
+.metaScore-editor .overlay.alert.delete-guide button[data-action="confirm"],
+.metaScore-editor .overlay.alert.delete-player-component button[data-action="confirm"] {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+  filter: alpha(opacity=(75));
   opacity: 0.75;
 }
-.metaScore-editor .overlay.alert.guide-delete button[data-action="cancel"] {
+.metaScore-editor .overlay.alert.delete-guide button[data-action="confirm"]:hover,
+.metaScore-editor .overlay.alert.delete-player-component button[data-action="confirm"]:hover {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  filter: alpha(opacity=(40));
+  opacity: 0.4;
+}
+.metaScore-editor .overlay.alert.delete-guide button[data-action="cancel"],
+.metaScore-editor .overlay.alert.delete-player-component button[data-action="cancel"] {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)" !important;
+  filter: alpha(opacity=(100)) !important;
   opacity: 1 !important;
+}
+.metaScore-editor .overlay.alert.delete-guide button[data-action="cancel"]:hover,
+.metaScore-editor .overlay.alert.delete-player-component button[data-action="cancel"]:hover {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)" !important;
+  filter: alpha(opacity=(75)) !important;
+  opacity: 0.75 !important;
 }
 .metaScore-editor .overlay.loadmask > .inner > .contents {
   padding: 12px 16px 12px 45px;

@@ -1616,10 +1616,10 @@
                             background: #ccc;
 
                             &[data-action="cancel"]{
-                                opacity: 0.75;
+                                .opacity(0.75);
                                 
                                 &:hover{
-                                    opacity: 0.4;
+                                    .opacity(0.4);
                                 }
                             }
                         }
@@ -1627,12 +1627,22 @@
                 }
             }
             
-            &.guide-delete{
+            &.delete-guide,
+            &.delete-player-component{
                 button[data-action="confirm"]{
-                    opacity: 0.75;
+                    .opacity(0.75);
+                                
+                    &:hover{
+                        .opacity(0.4);
+                    }
                 }
                 button[data-action="cancel"]{
-                    opacity: 1 !important;
+                    .opacity(1) !important;
+                    
+                    &:hover{
+                        .opacity(0.75) !important;
+                    }
+
                 }
             }
         }
