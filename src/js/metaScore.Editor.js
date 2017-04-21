@@ -371,6 +371,27 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * XHR error callback
+     *
+     * @method onXHRError
+     * @private
+     * @param {XMLHttpRequest} xhr The XHR request
+     */
+    Editor.prototype.onXHRError = function(xhr){
+        this.loadmask.hide();
+        delete this.loadmask;
+
+        new metaScore.overlay.Alert({
+            'parent': this,
+            'text': metaScore.Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
+            'buttons': {
+                'ok': metaScore.Locale.t('editor.onXHRError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
+    };
+
+    /**
      * Guide creation success callback
      *
      * @method onGuideCreateSuccess
@@ -387,27 +408,6 @@ metaScore.Editor = (function(){
         overlay.hide();
 
         this.loadPlayer(json.id, json.vid);
-    };
-
-    /**
-     * Guide creation error callback
-     *
-     * @method onGuideCreateError
-     * @private
-     * @param {XMLHttpRequest} xhr The XHR request
-     */
-    Editor.prototype.onGuideCreateError = function(xhr){
-        this.loadmask.hide();
-        delete this.loadmask;
-
-        new metaScore.overlay.Alert({
-            'parent': this,
-            'text': metaScore.Locale.t('editor.onGuideCreateError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
-            'buttons': {
-                'ok': metaScore.Locale.t('editor.onGuideCreateError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
     };
 
     /**
@@ -441,27 +441,6 @@ metaScore.Editor = (function(){
     };
 
     /**
-     * Guide saving error callback
-     *
-     * @method onGuideSaveError
-     * @private
-     * @param {XMLHttpRequest} xhr The XHR request
-     */
-    Editor.prototype.onGuideSaveError = function(xhr){
-        this.loadmask.hide();
-        delete this.loadmask;
-
-        new metaScore.overlay.Alert({
-            'parent': this,
-            'text': metaScore.Locale.t('editor.onGuideSaveError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
-            'buttons': {
-                'ok': metaScore.Locale.t('editor.onGuideSaveError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
-    };
-
-    /**
      * Guide deletion confirm callback
      *
      * @method onGuideDeleteConfirm
@@ -475,7 +454,7 @@ metaScore.Editor = (function(){
             'dataType': 'json',
             'method': 'DELETE',
             'success': metaScore.Function.proxy(this.onGuideDeleteSuccess, this),
-            'error': metaScore.Function.proxy(this.onGuideDeleteError, this)
+            'error': metaScore.Function.proxy(this.onXHRError, this)
         }, this.configs.ajax);
 
         this.loadmask = new metaScore.overlay.LoadMask({
@@ -498,27 +477,6 @@ metaScore.Editor = (function(){
 
         this.loadmask.hide();
         delete this.loadmask;
-    };
-
-    /**
-     * Guide deletion error callback
-     *
-     * @method onGuideDeleteError
-     * @private
-     * @param {XMLHttpRequest} xhr The XHR request
-     */
-    Editor.prototype.onGuideDeleteError = function(xhr){
-        this.loadmask.hide();
-        delete this.loadmask;
-
-        new metaScore.overlay.Alert({
-            'parent': this,
-            'text': metaScore.Locale.t('editor.onGuideDeleteError.msg', 'The following error occured:<br/><strong><em>@error (@code)</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
-            'buttons': {
-                'ok': metaScore.Locale.t('editor.onGuideDeleteError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
     };
 
     /**
@@ -2545,7 +2503,7 @@ metaScore.Editor = (function(){
             'data': data,
             'dataType': 'json',
             'success': metaScore.Function.proxy(this.onGuideCreateSuccess, this, [overlay]),
-            'error': metaScore.Function.proxy(this.onGuideCreateError, this)
+            'error': metaScore.Function.proxy(this.onXHRError, this)
         }, this.configs.ajax);
 
         // add a loading mask
@@ -2618,7 +2576,7 @@ metaScore.Editor = (function(){
             'data': data,
             'dataType': 'json',
             'success': metaScore.Function.proxy(this.onGuideSaveSuccess, this),
-            'error': metaScore.Function.proxy(this.onGuideSaveError, this)
+            'error': metaScore.Function.proxy(this.onXHRError, this)
         }, this.configs.ajax);
 
         // add a loading mask
