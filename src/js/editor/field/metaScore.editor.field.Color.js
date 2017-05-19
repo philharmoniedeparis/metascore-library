@@ -135,7 +135,7 @@ metaScore.namespace('editor.field').Color = (function () {
      * @param {Event} evt The event object
      */
     ColorField.prototype.onClearClick = function(evt){
-        this.setValue(null);
+        this.setValue("transparent");
     };
 
     return ColorField;

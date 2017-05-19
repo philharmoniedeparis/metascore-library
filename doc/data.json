@@ -1022,7 +1022,7 @@
             "module": "Core",
             "namespace": "",
             "file": "src\\js\\core\\metaScore.Color.js",
-            "line": 7,
+            "line": 160,
             "description": "A class for color helper functions",
             "is_constructor": 1
         },
@@ -3550,7 +3550,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Color.js",
-            "line": 16,
+            "line": 169,
             "description": "Convert an RGB value to HSV",
             "itemtype": "method",
             "name": "rgb2hsv",
@@ -3571,7 +3571,7 @@
         },
         {
             "file": "src\\js\\core\\metaScore.Color.js",
-            "line": 62,
+            "line": 215,
             "description": "Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys",
             "itemtype": "method",
             "name": "parse",
