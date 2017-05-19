@@ -10,7 +10,8 @@
   },
   "scripts": {
     "build": "grunt",
-    "dev": "grunt watch"
+    "dev": "grunt watch",
+    "doc": "grunt doc"
   },
   "repository": {
     "type": "git",
