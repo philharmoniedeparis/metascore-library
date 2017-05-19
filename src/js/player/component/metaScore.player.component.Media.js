@@ -99,7 +99,7 @@ metaScore.namespace('player.component').Media = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Media.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";

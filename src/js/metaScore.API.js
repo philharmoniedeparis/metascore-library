@@ -11,7 +11,7 @@ window.metaScoreAPI = (function(){
      * @private
      * @type Object
      */
-    var origin_regex = /^http?:\/\/metascore.philharmoniedeparis.fr/;
+    var origin_regex = /^http[s]?:\/\/(.*\.)?metascore.philharmoniedeparis.fr/;
 
      /**
      * The player API class <br/>
@@ -31,6 +31,9 @@ window.metaScoreAPI = (function(){
      *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEL TO 500 SECONDS</a>
      *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
      *         <a href="#rindex=2" rel="metascore" data-guide="guide-93">SET THE READING INDEX TO 2</a>
+     *         <a href="#showBlock=block1" rel="metascore" data-guide="guide-93">SHOW BLOCK 1</a>
+     *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
+     *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
      *         <a href="#page=permanentText,3&rindex=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE READING INDEX TO 2 AND SEEK TO 500 SECONDS</a>
      *
      * @class API
@@ -197,6 +200,48 @@ window.metaScoreAPI = (function(){
      */
     API.prototype.page = function(block, index){
         this.postMessage('page', {'block': block, 'index': parseInt(index)-1});
+
+        return this;
+    };
+
+    /**
+     * Sends a 'hideBlock' message to the player
+     * Used to hide a given block in the player
+     *
+     * @method hideBlock
+     * @param {String} name The block's name
+     * @chainable
+     */
+    API.prototype.hideBlock = function(name){
+        this.postMessage('hideBlock', {'name': name});
+
+        return this;
+    };
+
+    /**
+     * Sends a 'showBlock' message to the player
+     * Used to hide a given block in the player
+     *
+     * @method showBlock
+     * @param {String} name The block's name
+     * @chainable
+     */
+    API.prototype.showBlock = function(name){
+        this.postMessage('showBlock', {'name': name});
+
+        return this;
+    };
+
+    /**
+     * Sends a 'toggleBlock' message to the player
+     * Used to toggle the visibility of a block in the player
+     *
+     * @method toggleBlock
+     * @param {String} name The block's name
+     * @chainable
+     */
+    API.prototype.toggleBlock = function(name){
+        this.postMessage('toggleBlock', {'name': name});
 
         return this;
     };

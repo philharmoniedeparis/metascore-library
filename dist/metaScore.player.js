@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-04-21 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-05-16 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "dda6ba";
+        return "05d4f4";
     },
 
     /**
@@ -4359,6 +4359,8 @@ metaScore.Player = (function(){
 
         // call parent constructor
         Player.parent.call(this, '<div></div>', {'class': 'metaScore-player'});
+        
+        this.loaded = false;
 
         if(this.configs.api){
             metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
@@ -4427,7 +4429,9 @@ metaScore.Player = (function(){
      */
     Player.prototype.onAPIMessage = function(evt){
         var player = this,
-            data, source, origin, method, params, dom;
+            data,
+            source, origin, method, params,
+            dom;
 
         try {
             data = JSON.parse(evt.data);
@@ -4460,8 +4464,29 @@ metaScore.Player = (function(){
 
             case 'page':
                 dom = player.getComponent('.block[data-name="'+ params.block +'"]');
-                if(dom._metaScore){
+                if(dom && dom._metaScore){
                     dom._metaScore.setActivePage(params.index);
+                }
+                break;
+
+            case 'hideBlock':
+                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
+                if(dom && dom._metaScore){
+                    dom._metaScore.data('hidden', "true");
+                }
+                break;
+
+            case 'showBlock':
+                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
+                if(dom && dom._metaScore){
+                    dom._metaScore.data('hidden', null);
+                }
+                break;
+
+            case 'toggleBlock':
+                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
+                if(dom && dom._metaScore){
+                    dom._metaScore.data('hidden', (dom._metaScore.data('hidden') === "true") ? null : "true");
                 }
                 break;
 
@@ -4486,11 +4511,18 @@ metaScore.Player = (function(){
             case 'addEventListener':
                 switch(params.type){
                     case 'ready':
-                        player.addListener('load', function(event){
+                        if(player.loaded){
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback
                             }), origin);
-                        });
+                        }
+                        else{
+                            player.addListener('load', function(event){
+                                source.postMessage(JSON.stringify({
+                                    'callback': params.callback
+                                }), origin);
+                            });
+                        }
                         break;
 
                     case 'timeupdate':
@@ -4753,10 +4785,8 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onTextElementPage = function(evt){
-        var dom;
-
-        dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
-        if(dom._metaScore){
+        var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
+        if(dom && dom._metaScore){
             dom._metaScore.setActivePage(evt.detail.index);
         }
     };
@@ -4831,6 +4861,8 @@ metaScore.Player = (function(){
         }
 
         this.removeClass('loading');
+        
+        this.loaded = true;
 
         this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
     };
@@ -5802,13 +5834,25 @@ metaScore.namespace('player.component').Block = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Block.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
+                }
+            },
+            'hidden': {
+                'type': 'Checkbox',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.hidden', 'Hidden?')
+                },
+                'getter': function(skipDefault){
+                    return this.data('hidden') === "true";
+                },
+                'setter': function(value){
+                    this.data('hidden', value ? "true" : null);
                 }
             },
             'x': {
@@ -6348,7 +6392,7 @@ metaScore.namespace('player.component').Controller = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Controller.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
@@ -6551,7 +6595,7 @@ metaScore.namespace('player.component').Element = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Element.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
@@ -6981,7 +7025,7 @@ metaScore.namespace('player.component').Media = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Media.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Media.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
@@ -7966,7 +8010,7 @@ metaScore.namespace('player.component.element').Text = (function () {
             'text-locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.element.Text.locked', 'Text locked ?')
+                    'label': metaScore.Locale.t('player.component.element.Text.locked', 'Text locked?')
                 }
             },
             'text': {

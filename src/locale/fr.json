@@ -161,6 +161,7 @@
 	"player.Pager.count": "page !current/!count",
 	"player.component.Block.name": "Nom",
 	"player.component.Block.locked": "Verrouillé ?",
+	"player.component.Block.hidden": "Caché ?",
 	"player.component.Block.x": "X",
 	"player.component.Block.y": "Y",
 	"player.component.Block.width": "Largeur",
@@ -208,7 +209,5 @@
 	"player.component.element.Cursor.acceleration": "Accélération",
 	"player.component.element.Cursor.cursor-width": "Largeur du curseur",
 	"player.component.element.Cursor.cursor-color": "Couleur du curseur",
-	"player.component.element.Text.locked": "Texte verrouillé ?",
-	"editor.deletePlayerComponent.msg": "Êtes-vous sûr de vouloir supprimer <em>@name</em> (@type) ?",
-	"player.component.Page.name": "page @index"
+	"player.component.element.Text.locked": "Texte verrouillé ?"
 }

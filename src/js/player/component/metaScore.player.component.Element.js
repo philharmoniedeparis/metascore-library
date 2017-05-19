@@ -47,7 +47,7 @@ metaScore.namespace('player.component').Element = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Element.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";

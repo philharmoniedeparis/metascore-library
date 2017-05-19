@@ -49,7 +49,7 @@ metaScore.namespace('player.component.element').Text = (function () {
             'text-locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.element.Text.locked', 'Text locked ?')
+                    'label': metaScore.Locale.t('player.component.element.Text.locked', 'Text locked?')
                 }
             },
             'text': {

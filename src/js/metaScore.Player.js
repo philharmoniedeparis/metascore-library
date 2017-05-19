@@ -97,6 +97,8 @@ metaScore.Player = (function(){
 
         // call parent constructor
         Player.parent.call(this, '<div></div>', {'class': 'metaScore-player'});
+        
+        this.loaded = false;
 
         if(this.configs.api){
             metaScore.Dom.addListener(window, 'message', metaScore.Function.proxy(this.onAPIMessage, this));
@@ -165,7 +167,9 @@ metaScore.Player = (function(){
      */
     Player.prototype.onAPIMessage = function(evt){
         var player = this,
-            data, source, origin, method, params, dom;
+            data,
+            source, origin, method, params,
+            dom;
 
         try {
             data = JSON.parse(evt.data);
@@ -198,8 +202,29 @@ metaScore.Player = (function(){
 
             case 'page':
                 dom = player.getComponent('.block[data-name="'+ params.block +'"]');
-                if(dom._metaScore){
+                if(dom && dom._metaScore){
                     dom._metaScore.setActivePage(params.index);
+                }
+                break;
+
+            case 'hideBlock':
+                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
+                if(dom && dom._metaScore){
+                    dom._metaScore.data('hidden', "true");
+                }
+                break;
+
+            case 'showBlock':
+                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
+                if(dom && dom._metaScore){
+                    dom._metaScore.data('hidden', null);
+                }
+                break;
+
+            case 'toggleBlock':
+                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
+                if(dom && dom._metaScore){
+                    dom._metaScore.data('hidden', (dom._metaScore.data('hidden') === "true") ? null : "true");
                 }
                 break;
 
@@ -224,11 +249,18 @@ metaScore.Player = (function(){
             case 'addEventListener':
                 switch(params.type){
                     case 'ready':
-                        player.addListener('load', function(event){
+                        if(player.loaded){
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback
                             }), origin);
-                        });
+                        }
+                        else{
+                            player.addListener('load', function(event){
+                                source.postMessage(JSON.stringify({
+                                    'callback': params.callback
+                                }), origin);
+                            });
+                        }
                         break;
 
                     case 'timeupdate':
@@ -491,10 +523,8 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onTextElementPage = function(evt){
-        var dom;
-
-        dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
-        if(dom._metaScore){
+        var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
+        if(dom && dom._metaScore){
             dom._metaScore.setActivePage(evt.detail.index);
         }
     };
@@ -569,6 +599,8 @@ metaScore.Player = (function(){
         }
 
         this.removeClass('loading');
+        
+        this.loaded = true;
 
         this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
     };

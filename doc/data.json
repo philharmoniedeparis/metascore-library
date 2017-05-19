@@ -2636,7 +2636,7 @@
             "namespace": "",
             "file": "src\\js\\metaScore.API.js",
             "line": 16,
-            "description": "The player API class <br/>\n<b>A signleton is made available in the global context under metaScoreAPI</b> <br/>\nHTML links that follow the following format are automatically parsed:\n\n        <a href=\"#{action(s)}\" rel=\"metascore\" data-guide=\"{player's iframe id}\">{link text}</a>\n\nAn action can take arguments in the form of action=arg1,arg2,.. <br/>\nMultiple actions can be specified seperated by &\n\nExamples:\n\n        <a href=\"#play\" rel=\"metascore\" data-guide=\"guide-93\">PLAY</a>\n        <a href=\"#play=20,500,2\" rel=\"metascore\" data-guide=\"guide-93\">PLAY EXTRACT</a>\n        <a href=\"#pause\" rel=\"metascore\" data-guide=\"guide-93\">PAUSE</a>\n        <a href=\"#seek=500\" rel=\"metascore\" data-guide=\"guide-93\">SEEL TO 500 SECONDS</a>\n        <a href=\"#page=permanentText,3\" rel=\"metascore\" data-guide=\"guide-93\">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>\n        <a href=\"#rindex=2\" rel=\"metascore\" data-guide=\"guide-93\">SET THE READING INDEX TO 2</a>\n        <a href=\"#page=permanentText,3&rindex=2&seek=500\" rel=\"metascore\" data-guide=\"guide-93\">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE READING INDEX TO 2 AND SEEK TO 500 SECONDS</a>",
+            "description": "The player API class <br/>\n<b>A signleton is made available in the global context under metaScoreAPI</b> <br/>\nHTML links that follow the following format are automatically parsed:\n\n        <a href=\"#{action(s)}\" rel=\"metascore\" data-guide=\"{player's iframe id}\">{link text}</a>\n\nAn action can take arguments in the form of action=arg1,arg2,.. <br/>\nMultiple actions can be specified seperated by &\n\nExamples:\n\n        <a href=\"#play\" rel=\"metascore\" data-guide=\"guide-93\">PLAY</a>\n        <a href=\"#play=20,500,2\" rel=\"metascore\" data-guide=\"guide-93\">PLAY EXTRACT</a>\n        <a href=\"#pause\" rel=\"metascore\" data-guide=\"guide-93\">PAUSE</a>\n        <a href=\"#seek=500\" rel=\"metascore\" data-guide=\"guide-93\">SEEL TO 500 SECONDS</a>\n        <a href=\"#page=permanentText,3\" rel=\"metascore\" data-guide=\"guide-93\">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>\n        <a href=\"#rindex=2\" rel=\"metascore\" data-guide=\"guide-93\">SET THE READING INDEX TO 2</a>\n        <a href=\"#showBlock=block1\" rel=\"metascore\" data-guide=\"guide-93\">SHOW BLOCK 1</a>\n        <a href=\"#hideBlock=block1\" rel=\"metascore\" data-guide=\"guide-93\">HIDE BLOCK 1</a>\n        <a href=\"#toggleBlock=block1\" rel=\"metascore\" data-guide=\"guide-93\">TOGGLE BLOCK 1</a>\n        <a href=\"#page=permanentText,3&rindex=2&seek=500\" rel=\"metascore\" data-guide=\"guide-93\">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE READING INDEX TO 2 AND SEEK TO 500 SECONDS</a>",
             "is_constructor": 1,
             "params": [
                 {
@@ -10467,7 +10467,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 250,
+            "line": 262,
             "description": "Setup the block's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -10479,7 +10479,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 271,
+            "line": 283,
             "description": "Page cuepointstart event handler",
             "itemtype": "method",
             "name": "onPageCuePointStart",
@@ -10498,7 +10498,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 282,
+            "line": 294,
             "description": "Pager click event handler",
             "itemtype": "method",
             "name": "onPagerClick",
@@ -10517,7 +10517,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 312,
+            "line": 324,
             "description": "Get the block's pages",
             "itemtype": "method",
             "name": "getPages",
@@ -10531,7 +10531,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 328,
+            "line": 340,
             "description": "Add a page",
             "itemtype": "method",
             "name": "addPage",
@@ -10564,7 +10564,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 377,
+            "line": 389,
             "description": "Remove a page",
             "itemtype": "method",
             "name": "removePage",
@@ -10592,7 +10592,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 407,
+            "line": 419,
             "description": "Remove all pages",
             "itemtype": "method",
             "name": "removePages",
@@ -10603,7 +10603,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 419,
+            "line": 431,
             "description": "Get a page by index",
             "itemtype": "method",
             "name": "getPage",
@@ -10624,7 +10624,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 432,
+            "line": 444,
             "description": "Get the index of a page",
             "itemtype": "method",
             "name": "getPageIndex",
@@ -10645,7 +10645,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 443,
+            "line": 455,
             "description": "Get the currently active page",
             "itemtype": "method",
             "name": "getActivePage",
@@ -10659,7 +10659,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 453,
+            "line": 465,
             "description": "Get the index of the currently active page",
             "itemtype": "method",
             "name": "getActivePageIndex",
@@ -10673,7 +10673,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 463,
+            "line": 475,
             "description": "Get the page count",
             "itemtype": "method",
             "name": "getPageCount",
@@ -10687,7 +10687,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 473,
+            "line": 485,
             "description": "Set the active page",
             "itemtype": "method",
             "name": "setActivePage",
@@ -10712,7 +10712,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 503,
+            "line": 515,
             "description": "Update the pager",
             "itemtype": "method",
             "name": "updatePager",
@@ -10725,7 +10725,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 521,
+            "line": 533,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10748,7 +10748,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 555,
+            "line": 567,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -11947,7 +11947,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 58,
+            "line": 61,
             "description": "Send a message to the player to invoke a desired method",
             "itemtype": "method",
             "name": "postMessage",
@@ -11969,7 +11969,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 83,
+            "line": 86,
             "description": "Callback called when the player finished loading",
             "itemtype": "method",
             "name": "onLoad",
@@ -11994,7 +11994,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 97,
+            "line": 100,
             "description": "Callback called when a message is received from the player\nIf the received message contains a callback id, it will be invoked with any passed parameters",
             "itemtype": "method",
             "name": "onMessage",
@@ -12012,7 +12012,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 128,
+            "line": 131,
             "description": "Add a listener for player messages",
             "itemtype": "method",
             "name": "on",
@@ -12034,7 +12034,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 146,
+            "line": 149,
             "description": "Sends a 'play' message to the player\nUsed to start playing the player's media, or play a specific extract",
             "itemtype": "method",
             "name": "play",
@@ -12064,7 +12064,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 162,
+            "line": 165,
             "description": "Sends a 'pause' message to the player\nUsed to pause the player's media playback",
             "itemtype": "method",
             "name": "pause",
@@ -12074,7 +12074,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 175,
+            "line": 178,
             "description": "Sends a 'seek' message to the player\nUsed to seek the player's media to a specific time",
             "itemtype": "method",
             "name": "seek",
@@ -12091,7 +12091,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 189,
+            "line": 192,
             "description": "Sends a 'page' message to the player\nUsed to set a block's active page",
             "itemtype": "method",
             "name": "page",
@@ -12113,7 +12113,58 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 204,
+            "line": 207,
+            "description": "Sends a 'hideBlock' message to the player\nUsed to hide a given block in the player",
+            "itemtype": "method",
+            "name": "hideBlock",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The block's name",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "API",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\metaScore.API.js",
+            "line": 221,
+            "description": "Sends a 'showBlock' message to the player\nUsed to hide a given block in the player",
+            "itemtype": "method",
+            "name": "showBlock",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The block's name",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "API",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\metaScore.API.js",
+            "line": 235,
+            "description": "Sends a 'toggleBlock' message to the player\nUsed to toggle the visibility of a block in the player",
+            "itemtype": "method",
+            "name": "toggleBlock",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "The block's name",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "API",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\metaScore.API.js",
+            "line": 249,
             "description": "Sends a 'rIndex' message to the player\nUsed to set the reading index of the player",
             "itemtype": "method",
             "name": "rIndex",
@@ -12130,7 +12181,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 218,
+            "line": 263,
             "description": "Sends a 'playing' message to the player\nUsed to check the state of the player",
             "itemtype": "method",
             "name": "playing",
@@ -12154,7 +12205,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 237,
+            "line": 282,
             "description": "Sends a 'time' message to the player\nUsed to get the current time of the player's media",
             "itemtype": "method",
             "name": "time",
@@ -12178,7 +12229,7 @@
         },
         {
             "file": "src\\js\\metaScore.API.js",
-            "line": 256,
+            "line": 301,
             "description": "Automatically process API links in the current HTML document",
             "class": "API",
             "module": "Player"
@@ -13892,7 +13943,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 133,
+            "line": 135,
             "description": "Keydown event callback",
             "itemtype": "method",
             "name": "onKeydown",
@@ -13910,7 +13961,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 159,
+            "line": 161,
             "description": "API message event callback",
             "itemtype": "method",
             "name": "onAPIMessage",
@@ -13928,7 +13979,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 259,
+            "line": 291,
             "description": "Controller button click event callback",
             "itemtype": "method",
             "name": "onControllerButtonClick",
@@ -13946,7 +13997,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 282,
+            "line": 314,
             "description": "Media loadedmetadata event callback",
             "itemtype": "method",
             "name": "onMediaLoadedMetadata",
@@ -13964,7 +14015,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 293,
+            "line": 325,
             "description": "Media waiting event callback",
             "itemtype": "method",
             "name": "onMediaWaiting",
@@ -13982,7 +14033,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 304,
+            "line": 336,
             "description": "Media seeking event callback",
             "itemtype": "method",
             "name": "onMediaSeeking",
@@ -14000,7 +14051,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 315,
+            "line": 347,
             "description": "Media seeked event callback",
             "itemtype": "method",
             "name": "onMediaSeeked",
@@ -14018,7 +14069,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 326,
+            "line": 358,
             "description": "Media playing event callback",
             "itemtype": "method",
             "name": "onMediaPlaying",
@@ -14036,7 +14087,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 339,
+            "line": 371,
             "description": "Media play event callback",
             "itemtype": "method",
             "name": "onMediaPlay",
@@ -14054,7 +14105,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 352,
+            "line": 384,
             "description": "Media pause event callback",
             "itemtype": "method",
             "name": "onMediaPause",
@@ -14072,7 +14123,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 365,
+            "line": 397,
             "description": "Media timeupdate event callback",
             "itemtype": "method",
             "name": "onMediaTimeUpdate",
@@ -14090,7 +14141,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 378,
+            "line": 410,
             "description": "Media suspend event callback",
             "itemtype": "method",
             "name": "onMediaSuspend",
@@ -14108,7 +14159,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 389,
+            "line": 421,
             "description": "Media suspend event callback",
             "itemtype": "method",
             "name": "onMediaStalled",
@@ -14126,7 +14177,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 400,
+            "line": 432,
             "description": "Media error event callback",
             "itemtype": "method",
             "name": "onMediaError",
@@ -14144,7 +14195,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 445,
+            "line": 477,
             "description": "Block pageactivate event callback",
             "itemtype": "method",
             "name": "onPageActivate",
@@ -14162,7 +14213,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 462,
+            "line": 494,
             "description": "Element of type Cursor time event callback",
             "itemtype": "method",
             "name": "onCursorElementTime",
@@ -14180,7 +14231,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 475,
+            "line": 507,
             "description": "Element of type Text play event callback",
             "itemtype": "method",
             "name": "onTextElementPlay",
@@ -14198,7 +14249,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 486,
+            "line": 518,
             "description": "Element of type Text page event callback",
             "itemtype": "method",
             "name": "onTextElementPage",
@@ -14216,7 +14267,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 502,
+            "line": 532,
             "description": "Componenet propchange event callback",
             "itemtype": "method",
             "name": "onComponenetPropChange",
@@ -14234,7 +14285,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 531,
+            "line": 561,
             "description": "loadsuccess event callback",
             "itemtype": "method",
             "name": "onLoadSuccess",
@@ -14252,7 +14303,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 576,
+            "line": 608,
             "description": "loaderror event callback",
             "itemtype": "method",
             "name": "onLoadError",
@@ -14270,7 +14321,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 589,
+            "line": 621,
             "description": "Load the guide",
             "itemtype": "method",
             "name": "load",
@@ -14281,7 +14332,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 609,
+            "line": 641,
             "description": "Get the id of the loaded guide",
             "itemtype": "method",
             "name": "getId",
@@ -14294,7 +14345,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 619,
+            "line": 651,
             "description": "Set the id of the loaded guide in a data attribute",
             "itemtype": "method",
             "name": "setId",
@@ -14318,7 +14369,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 637,
+            "line": 669,
             "description": "Get the revision id of the loaded guide",
             "itemtype": "method",
             "name": "getRevision",
@@ -14331,7 +14382,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 647,
+            "line": 679,
             "description": "Set the revision id of the loaded guide in a data attribute",
             "itemtype": "method",
             "name": "setRevision",
@@ -14355,7 +14406,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 665,
+            "line": 697,
             "description": "Get the loaded JSON data",
             "itemtype": "method",
             "name": "getData",
@@ -14376,7 +14427,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 680,
+            "line": 712,
             "description": "Get the media instance",
             "itemtype": "method",
             "name": "getMedia",
@@ -14389,7 +14440,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 690,
+            "line": 722,
             "description": "Update the loaded JSON data",
             "itemtype": "method",
             "name": "updateData",
@@ -14413,7 +14464,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 718,
+            "line": 750,
             "description": "Get a component by CSS selector",
             "itemtype": "method",
             "name": "getComponent",
@@ -14433,7 +14484,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 729,
+            "line": 761,
             "description": "Get components by CSS selector",
             "itemtype": "method",
             "name": "getComponents",
@@ -14453,7 +14504,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 748,
+            "line": 780,
             "description": "Create and add a Media instance",
             "itemtype": "method",
             "name": "addMedia",
@@ -14480,7 +14531,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 778,
+            "line": 810,
             "description": "Create and add a Controller instance",
             "itemtype": "method",
             "name": "addController",
@@ -14507,7 +14558,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 798,
+            "line": 830,
             "description": "Create and add a Block instance",
             "itemtype": "method",
             "name": "addBlock",
@@ -14534,7 +14585,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 833,
+            "line": 865,
             "description": "Update the custom CSS",
             "itemtype": "method",
             "name": "updateCSS",
@@ -14551,7 +14602,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 846,
+            "line": 878,
             "description": "Toggles the media playing state",
             "itemtype": "method",
             "name": "togglePlay",
@@ -14561,7 +14612,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 865,
+            "line": 897,
             "description": "Start playing the media at the current position, or plays a specific extract",
             "itemtype": "method",
             "name": "play",
@@ -14591,7 +14642,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 916,
+            "line": 948,
             "description": "Set the current reading index",
             "itemtype": "method",
             "name": "setReadingIndex",
@@ -14701,15 +14752,15 @@
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:328"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:340"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:328"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:340"
         },
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:377"
+            "line": " src\\js\\player\\component\\metaScore.player.component.Block.js:389"
         },
         {
             "message": "unknown tag: namepsace",
@@ -14717,7 +14768,7 @@
         },
         {
             "message": "Missing item type\nAutomatically process API links in the current HTML document",
-            "line": " src\\js\\metaScore.API.js:256"
+            "line": " src\\js\\metaScore.API.js:301"
         },
         {
             "message": "Missing item type\nPolyfills",

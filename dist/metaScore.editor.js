@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-04-21 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-05-16 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "dda6ba";
+        return "05d4f4";
     },
 
     /**
@@ -4872,7 +4872,7 @@ metaScore.Editor = (function(){
                 if(this.isDirty()){
                     new metaScore.overlay.Alert({
                             'parent': this,
-                            'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
                                 'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
                                 'cancel': metaScore.Locale.t('editor.onMainmenuClick.open.no', 'No')
@@ -4896,7 +4896,7 @@ metaScore.Editor = (function(){
                 if(this.isDirty()){
                     new metaScore.overlay.Alert({
                             'parent': this,
-                            'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'text': metaScore.Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
                                 'confirm': metaScore.Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
                                 'cancel': metaScore.Locale.t('editor.onMainmenuClick.open.no', 'No')
@@ -4979,7 +4979,7 @@ metaScore.Editor = (function(){
             case 'revert':
                 new metaScore.overlay.Alert({
                         'parent': this,
-                        'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version ?<br/><strong>Any unsaved data will be lost.</strong>'),
+                        'text': metaScore.Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
                         'buttons': {
                             'confirm': metaScore.Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
                             'cancel': metaScore.Locale.t('editor.onMainmenuClick.revert.no', 'No')
@@ -6134,7 +6134,7 @@ metaScore.Editor = (function(){
         if(this.isDirty()){
             new metaScore.overlay.Alert({
                     'parent': this,
-                    'text': metaScore.Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide ?<br/><strong>Any unsaved data will be lost.</strong>'),
+                    'text': metaScore.Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                     'buttons': {
                         'confirm': metaScore.Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
                         'cancel': metaScore.Locale.t('editor.onWindowHashChange.alert.no', 'No')

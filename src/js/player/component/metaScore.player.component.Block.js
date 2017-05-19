@@ -66,13 +66,25 @@ metaScore.namespace('player.component').Block = (function () {
             'locked': {
                 'type': 'Checkbox',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Block.locked', 'Locked ?')
+                    'label': metaScore.Locale.t('player.component.Block.locked', 'Locked?')
                 },
                 'getter': function(skipDefault){
                     return this.data('locked') === "true";
                 },
                 'setter': function(value){
                     this.data('locked', value ? "true" : null);
+                }
+            },
+            'hidden': {
+                'type': 'Checkbox',
+                'configs': {
+                    'label': metaScore.Locale.t('player.component.Block.hidden', 'Hidden?')
+                },
+                'getter': function(skipDefault){
+                    return this.data('hidden') === "true";
+                },
+                'setter': function(value){
+                    this.data('hidden', value ? "true" : null);
                 }
             },
             'x': {

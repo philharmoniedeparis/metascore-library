@@ -25,6 +25,9 @@ body {
 .metaScore-player .metaScore-component:focus {
   outline: none;
 }
+.metaScore-player .metaScore-component[data-hidden="true"] {
+  display: none;
+}
 .metaScore-player .metaScore-component.media.audio {
   display: none;
 }
@@ -493,7 +496,7 @@ body {
 .metaScore-player.in-editor.editing .metaScore-component.element[data-type="Text"] a {
   pointer-events: none;
 }
-.metaScore-player.in-editor.editing .metaScore-component.element[data-type="Text"].unlocked .contents {
+.metaScore-player.in-editor.editing .metaScore-component.element[data-type="Text"].text-unlocked .contents {
   display: block;
 }
 .metaScore-player.in-editor.editing.show-contents .metaScore-component.element[data-r-index="0"] {
