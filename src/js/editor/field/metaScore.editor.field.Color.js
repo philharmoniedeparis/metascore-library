@@ -61,7 +61,7 @@ metaScore.namespace('editor.field').Color = (function () {
         buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
-        new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear'})
+        new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Color.clear.tooltip', 'Clear value')})
             .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
             .appendTo(buttons);
 

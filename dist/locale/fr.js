@@ -76,6 +76,7 @@ var metaScoreLocale = {
 	"editor.MainMenu.help": "Aide",
 	"editor.MainMenu.account": "Mon Compte",
 	"editor.MainMenu.logout": "Se Déconnecter",
+	"editor.field.Color.clear.tooltip": "Clear value",
 	"editor.field.Image.placeholder": "Parcourir ...",
 	"editor.field.Image.resize.tooltip": "Adapter la taille du récipient à l'image",
 	"editor.field.Image.clear.tooltip": "Effacer la valeur",
