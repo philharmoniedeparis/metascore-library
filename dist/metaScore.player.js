@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-05-19 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2017-05-22 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "e3aac3";
+        return "dbfd07";
     },
 
     /**
@@ -4635,21 +4635,21 @@ metaScore.Player = (function(){
             case 'hideBlock':
                 dom = player.getComponent('.block[data-name="'+ params.name +'"]');
                 if(dom && dom._metaScore){
-                    dom._metaScore.data('hidden', "true");
+                    dom._metaScore.toggleVisibility(false);
                 }
                 break;
 
             case 'showBlock':
                 dom = player.getComponent('.block[data-name="'+ params.name +'"]');
                 if(dom && dom._metaScore){
-                    dom._metaScore.data('hidden', null);
+                    dom._metaScore.toggleVisibility(true);
                 }
                 break;
 
             case 'toggleBlock':
                 dom = player.getComponent('.block[data-name="'+ params.name +'"]');
                 if(dom && dom._metaScore){
-                    dom._metaScore.data('hidden', (dom._metaScore.data('hidden') === "true") ? null : "true");
+                    dom._metaScore.toggleVisibility();
                 }
                 break;
 
@@ -4951,6 +4951,31 @@ metaScore.Player = (function(){
         var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
         if(dom && dom._metaScore){
             dom._metaScore.setActivePage(evt.detail.index);
+        }
+    };
+
+    /**
+     * Element of type Text block_visibility event callback
+     *
+     * @method onTextElementBlockVisibility
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    Player.prototype.onTextElementBlockVisibility = function(evt){
+        var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]'),
+            show;
+            
+        if(dom && dom._metaScore){
+            switch(evt.detail.action){
+                case 'show':
+                    show = true;
+                    break;
+                case 'hide':
+                    show = false;
+                    break;
+            }
+            
+            dom._metaScore.toggleVisibility(show);
         }
     };
 
@@ -5277,7 +5302,8 @@ metaScore.Player = (function(){
                 .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
                 .addDelegate('.element[data-type="Cursor"]', 'time', metaScore.Function.proxy(this.onCursorElementTime, this))
                 .addDelegate('.element[data-type="Text"]', 'play', metaScore.Function.proxy(this.onTextElementPlay, this))
-                .addDelegate('.element[data-type="Text"]', 'page', metaScore.Function.proxy(this.onTextElementPage, this));
+                .addDelegate('.element[data-type="Text"]', 'page', metaScore.Function.proxy(this.onTextElementPage, this))
+                .addDelegate('.element[data-type="Text"]', 'block_visibility', metaScore.Function.proxy(this.onTextElementBlockVisibility, this));
         }
 
         if(supressEvent !== true){
@@ -6459,6 +6485,29 @@ metaScore.namespace('player.component').Block = (function () {
         this.data('page-count', count);
         
         return this;
+    };
+
+    /**
+     * Show/hide
+     *
+     * @method toggleVisibility
+     * @param {Boolean} [show=undefined] Whether to show or hide the block. If undefined, the visibility will be toggle
+     * @chainable
+     */
+    Block.prototype.toggleVisibility = function(show){
+        
+        if(show === true){
+            this.data('hidden', null);
+        }
+        else if(show === false){
+            this.data('hidden', "true");
+        }
+        else{
+            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
+        }
+    
+        return this;
+
     };
 
     /**
@@ -8133,7 +8182,7 @@ metaScore.namespace('player.component.element').Text = (function () {
      *
      * @event page
      * @param {Object} element The element instance
-     * @param {Object} block The block instance
+     * @param {String} block The block's name
      * @param {Integer} index The page index
      */
     var EVT_PAGE = 'page';
@@ -8148,6 +8197,16 @@ metaScore.namespace('player.component.element').Text = (function () {
      * @param {Integer} rIndex The reading index
      */
     var EVT_PLAY = 'play';
+
+    /**
+     * Fired when a block visibility link is clicked
+     *
+     * @event block_visibility
+     * @param {Object} element The element instance
+     * @param {String} block The block's name
+     * @param {String} action The action to perform
+     */
+    var EVT_BLOCK_VISIBILITY = 'block_visibility';
 
     /**
      * A text element
@@ -8223,6 +8282,9 @@ metaScore.namespace('player.component.element').Text = (function () {
             }
             else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
                 this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
+            }
+            else if(matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/)){
+                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': matches[2], 'action': matches[1]});
             }
             else{
                 window.open(link.href,'_blank');

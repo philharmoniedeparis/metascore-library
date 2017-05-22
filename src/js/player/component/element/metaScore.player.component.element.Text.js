@@ -9,7 +9,7 @@ metaScore.namespace('player.component.element').Text = (function () {
      *
      * @event page
      * @param {Object} element The element instance
-     * @param {Object} block The block instance
+     * @param {String} block The block's name
      * @param {Integer} index The page index
      */
     var EVT_PAGE = 'page';
@@ -24,6 +24,16 @@ metaScore.namespace('player.component.element').Text = (function () {
      * @param {Integer} rIndex The reading index
      */
     var EVT_PLAY = 'play';
+
+    /**
+     * Fired when a block visibility link is clicked
+     *
+     * @event block_visibility
+     * @param {Object} element The element instance
+     * @param {String} block The block's name
+     * @param {String} action The action to perform
+     */
+    var EVT_BLOCK_VISIBILITY = 'block_visibility';
 
     /**
      * A text element
@@ -99,6 +109,9 @@ metaScore.namespace('player.component.element').Text = (function () {
             }
             else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
                 this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
+            }
+            else if(matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/)){
+                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': matches[2], 'action': matches[1]});
             }
             else{
                 window.open(link.href,'_blank');

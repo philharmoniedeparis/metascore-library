@@ -2448,7 +2448,7 @@
             "module": "Player",
             "namespace": "player.component.element",
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Text.js",
-            "line": 28,
+            "line": 38,
             "description": "A text element",
             "extends": "player.component.Element",
             "is_constructor": 1,
@@ -10323,8 +10323,8 @@
                 },
                 {
                     "name": "block",
-                    "description": "The block instance",
-                    "type": "Object"
+                    "description": "The block's name",
+                    "type": "String"
                 },
                 {
                     "name": "index",
@@ -10368,7 +10368,33 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Text.js",
-            "line": 67,
+            "line": 28,
+            "description": "Fired when a block visibility link is clicked",
+            "itemtype": "event",
+            "name": "block_visibility",
+            "params": [
+                {
+                    "name": "element",
+                    "description": "The element instance",
+                    "type": "Object"
+                },
+                {
+                    "name": "block",
+                    "description": "The block's name",
+                    "type": "String"
+                },
+                {
+                    "name": "action",
+                    "description": "The action to perform",
+                    "type": "String"
+                }
+            ],
+            "class": "player.component.element.Cursor",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Text.js",
+            "line": 77,
             "description": "Setup the text's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -10380,7 +10406,7 @@
         },
         {
             "file": "src\\js\\player\\component\\element\\metaScore.player.component.element.Text.js",
-            "line": 80,
+            "line": 90,
             "description": "The link click event handler",
             "itemtype": "method",
             "name": "onLinkClick",
@@ -10726,6 +10752,26 @@
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
             "line": 533,
+            "description": "Show/hide",
+            "itemtype": "method",
+            "name": "toggleVisibility",
+            "params": [
+                {
+                    "name": "show",
+                    "description": "Whether to show or hide the block. If undefined, the visibility will be toggle",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "undefined"
+                }
+            ],
+            "chainable": 1,
+            "class": "player.component.Block",
+            "module": "Player",
+            "namespace": "player.component"
+        },
+        {
+            "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
+            "line": 556,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -10748,7 +10794,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 567,
+            "line": 590,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -14268,6 +14314,24 @@
         {
             "file": "src\\js\\metaScore.Player.js",
             "line": 532,
+            "description": "Element of type Text block_visibility event callback",
+            "itemtype": "method",
+            "name": "onTextElementBlockVisibility",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "CustomEvent"
+                }
+            ],
+            "class": "Player",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\metaScore.Player.js",
+            "line": 557,
             "description": "Componenet propchange event callback",
             "itemtype": "method",
             "name": "onComponenetPropChange",
@@ -14285,7 +14349,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 561,
+            "line": 586,
             "description": "loadsuccess event callback",
             "itemtype": "method",
             "name": "onLoadSuccess",
@@ -14303,7 +14367,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 608,
+            "line": 633,
             "description": "loaderror event callback",
             "itemtype": "method",
             "name": "onLoadError",
@@ -14321,7 +14385,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 621,
+            "line": 646,
             "description": "Load the guide",
             "itemtype": "method",
             "name": "load",
@@ -14332,7 +14396,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 641,
+            "line": 666,
             "description": "Get the id of the loaded guide",
             "itemtype": "method",
             "name": "getId",
@@ -14345,7 +14409,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 651,
+            "line": 676,
             "description": "Set the id of the loaded guide in a data attribute",
             "itemtype": "method",
             "name": "setId",
@@ -14369,7 +14433,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 669,
+            "line": 694,
             "description": "Get the revision id of the loaded guide",
             "itemtype": "method",
             "name": "getRevision",
@@ -14382,7 +14446,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 679,
+            "line": 704,
             "description": "Set the revision id of the loaded guide in a data attribute",
             "itemtype": "method",
             "name": "setRevision",
@@ -14406,7 +14470,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 697,
+            "line": 722,
             "description": "Get the loaded JSON data",
             "itemtype": "method",
             "name": "getData",
@@ -14427,7 +14491,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 712,
+            "line": 737,
             "description": "Get the media instance",
             "itemtype": "method",
             "name": "getMedia",
@@ -14440,7 +14504,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 722,
+            "line": 747,
             "description": "Update the loaded JSON data",
             "itemtype": "method",
             "name": "updateData",
@@ -14464,7 +14528,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 750,
+            "line": 775,
             "description": "Get a component by CSS selector",
             "itemtype": "method",
             "name": "getComponent",
@@ -14484,7 +14548,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 761,
+            "line": 786,
             "description": "Get components by CSS selector",
             "itemtype": "method",
             "name": "getComponents",
@@ -14504,7 +14568,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 780,
+            "line": 805,
             "description": "Create and add a Media instance",
             "itemtype": "method",
             "name": "addMedia",
@@ -14531,7 +14595,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 810,
+            "line": 835,
             "description": "Create and add a Controller instance",
             "itemtype": "method",
             "name": "addController",
@@ -14558,7 +14622,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 830,
+            "line": 855,
             "description": "Create and add a Block instance",
             "itemtype": "method",
             "name": "addBlock",
@@ -14585,7 +14649,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 865,
+            "line": 891,
             "description": "Update the custom CSS",
             "itemtype": "method",
             "name": "updateCSS",
@@ -14602,7 +14666,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 878,
+            "line": 904,
             "description": "Toggles the media playing state",
             "itemtype": "method",
             "name": "togglePlay",
@@ -14612,7 +14676,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 897,
+            "line": 923,
             "description": "Start playing the media at the current position, or plays a specific extract",
             "itemtype": "method",
             "name": "play",
@@ -14642,7 +14706,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 948,
+            "line": 974,
             "description": "Set the current reading index",
             "itemtype": "method",
             "name": "setReadingIndex",

@@ -210,21 +210,21 @@ metaScore.Player = (function(){
             case 'hideBlock':
                 dom = player.getComponent('.block[data-name="'+ params.name +'"]');
                 if(dom && dom._metaScore){
-                    dom._metaScore.data('hidden', "true");
+                    dom._metaScore.toggleVisibility(false);
                 }
                 break;
 
             case 'showBlock':
                 dom = player.getComponent('.block[data-name="'+ params.name +'"]');
                 if(dom && dom._metaScore){
-                    dom._metaScore.data('hidden', null);
+                    dom._metaScore.toggleVisibility(true);
                 }
                 break;
 
             case 'toggleBlock':
                 dom = player.getComponent('.block[data-name="'+ params.name +'"]');
                 if(dom && dom._metaScore){
-                    dom._metaScore.data('hidden', (dom._metaScore.data('hidden') === "true") ? null : "true");
+                    dom._metaScore.toggleVisibility();
                 }
                 break;
 
@@ -526,6 +526,31 @@ metaScore.Player = (function(){
         var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]');
         if(dom && dom._metaScore){
             dom._metaScore.setActivePage(evt.detail.index);
+        }
+    };
+
+    /**
+     * Element of type Text block_visibility event callback
+     *
+     * @method onTextElementBlockVisibility
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    Player.prototype.onTextElementBlockVisibility = function(evt){
+        var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]'),
+            show;
+            
+        if(dom && dom._metaScore){
+            switch(evt.detail.action){
+                case 'show':
+                    show = true;
+                    break;
+                case 'hide':
+                    show = false;
+                    break;
+            }
+            
+            dom._metaScore.toggleVisibility(show);
         }
     };
 
@@ -852,7 +877,8 @@ metaScore.Player = (function(){
                 .addListener('pageactivate', metaScore.Function.proxy(this.onPageActivate, this))
                 .addDelegate('.element[data-type="Cursor"]', 'time', metaScore.Function.proxy(this.onCursorElementTime, this))
                 .addDelegate('.element[data-type="Text"]', 'play', metaScore.Function.proxy(this.onTextElementPlay, this))
-                .addDelegate('.element[data-type="Text"]', 'page', metaScore.Function.proxy(this.onTextElementPage, this));
+                .addDelegate('.element[data-type="Text"]', 'page', metaScore.Function.proxy(this.onTextElementPage, this))
+                .addDelegate('.element[data-type="Text"]', 'block_visibility', metaScore.Function.proxy(this.onTextElementBlockVisibility, this));
         }
 
         if(supressEvent !== true){
