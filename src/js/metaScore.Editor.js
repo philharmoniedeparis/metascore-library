@@ -86,9 +86,7 @@ metaScore.Editor = (function(){
         this.panels.element = new metaScore.editor.panel.Element().appendTo(this.sidebar)
             .addListener('componentbeforeset', metaScore.Function.proxy(this.onElementBeforeSet, this))
             .addListener('componentset', metaScore.Function.proxy(this.onElementSet, this))
-            .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this))
-            .addDelegate('.timefield[data-name="start-time"]', 'checkboxchange', metaScore.Function.proxy(this.onElementPanelStartTimeFieldToggled, this))
-            .addDelegate('.timefield[data-name="end-time"]', 'checkboxchange', metaScore.Function.proxy(this.onElementPanelEndTimeFieldToggled, this));
+            .addListener('valueschange', metaScore.Function.proxy(this.onElementPanelValueChange, this));
 
         this.panels.element.getToolbar()
             .addDelegate('.selector', 'valuechange', metaScore.Function.proxy(this.onElementPanelSelectorChange, this))
@@ -1254,39 +1252,6 @@ metaScore.Editor = (function(){
     /**
      * Element panel toolbar click event callback
      *
-     * @method onElementPanelStartTimeFieldToggled
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    Editor.prototype.onElementPanelStartTimeFieldToggled = function(evt){        
-        if(evt.detail.active){            
-            this.panels.element.getComponent().setProperty('start-time', this.getPlayer().getMedia().getTime());            
-            this.panels.element.getField('end-time').toggle(true);
-        }
-    };
-
-    /**
-     * Element panel toolbar click event callback
-     *
-     * @method onElementPanelEndTimeFieldToggled
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    Editor.prototype.onElementPanelEndTimeFieldToggled = function(evt){
-        var element, page, block;
-        
-        if(evt.detail.active){
-            element = this.panels.element.getComponent();
-            page = element.getPage();
-            block = page.getBlock();
-            
-            element.setProperty('end-time', block.getProperty('synched') ? page.getProperty('end-time') : this.getPlayer().getMedia().getDuration());
-        }
-    };
-
-    /**
-     * Element panel toolbar click event callback
-     *
      * @method onElementPanelToolbarClick
      * @private
      * @param {MouseEvent} evt The event object
@@ -1357,6 +1322,17 @@ metaScore.Editor = (function(){
         var player = evt.detail.player;
 
         window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
+    };
+
+    /**
+     * Player loadedmetadata event callback
+     *
+     * @method onPlayerLoadedMetadata
+     * @private
+     * @param {CustomEvent} evt The event object. See {{#crossLink "Media/loadedmetadata:event"}}Media.loadedmetadata{{/crossLink}}
+     */
+    Editor.prototype.onPlayerLoadedMetadata = function(evt){        
+        this.mainmenu.timefield.setMax(this.player.getMedia().getDuration());
     };
 
     /**
@@ -1447,6 +1423,7 @@ metaScore.Editor = (function(){
                 .addListener('error', metaScore.Function.proxy(this.onPlayerLoadError, this))
                 .addListener('idset', metaScore.Function.proxy(this.onPlayerIdSet, this))
                 .addListener('revisionset', metaScore.Function.proxy(this.onPlayerRevisionSet, this))
+                .addListener('loadedmetadata', metaScore.Function.proxy(this.onPlayerLoadedMetadata, this))
                 .load();
         }
     };
@@ -1521,8 +1498,9 @@ metaScore.Editor = (function(){
             .toggleButton('save', data.permissions.update)
             .toggleButton('clone', data.permissions.clone)
             .toggleButton('publish', data.permissions.update)
-            .toggleButton('delete', data.permissions.delete)
-            .rindexfield.setValue(0, true);
+            .toggleButton('delete', data.permissions.delete);
+
+        this.mainmenu.rindexfield.setValue(0, true);
 
         this.detailsOverlay
             .clearValues(true)
@@ -1767,6 +1745,8 @@ metaScore.Editor = (function(){
                     
                     player.updateData(data);
                     overlay.setValues(metaScore.Object.extend({}, player.getData(), data), true).hide();
+
+                    this.mainmenu.timefield.setMax(new_duration);
                     
                     this.setDirty(true)
                         .updateMainmenu();

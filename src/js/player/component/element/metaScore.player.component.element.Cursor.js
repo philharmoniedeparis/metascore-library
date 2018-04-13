@@ -36,7 +36,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
-                    'checkbox': false,
                     'inButton': true,
                     'outButton': true
                 },
@@ -52,7 +51,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
-                    'checkbox': false,
                     'inButton': true,
                     'outButton': true
                 },

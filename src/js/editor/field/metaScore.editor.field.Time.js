@@ -14,13 +14,6 @@ metaScore.namespace('editor.field').Time = (function () {
     var EVT_VALUECHANGE = 'valuechange';
 
     /**
-     * Fired when the field's checkbox changes
-     *
-     * @event checkboxchange
-     */
-    var EVT_CHECKBOXCHANGE = 'checkboxchange';
-
-    /**
      * Fired when the in button is clicked
      *
      * @event valuein
@@ -33,6 +26,47 @@ metaScore.namespace('editor.field').Time = (function () {
      * @event valueout
      */
     var EVT_VALUEOUT = 'valueout';
+    
+    var PARTS = [
+        {
+            "name": "hours",
+            "regex": "[–0-9]{1,2}",
+            "multiplier": 360000,
+            "prefix": "",
+            "suffix": "",
+            "max_value": 99
+        },
+        {
+            "name": "minutes",
+            "regex": "[–0-5]?[–0-9]",
+            "multiplier": 6000,
+            "prefix": ":",
+            "suffix": "",
+            "max_value": 59
+        },
+        {
+            "name": "seconds",
+            "regex": "[–0-5]?[\–0-9]",
+            "multiplier": 100,
+            "prefix": ":",
+            "suffix": "",
+            "max_value": 59
+        },
+        {
+            "name": "centiseconds",
+            "regex": "[–0-9]{1,2}",
+            "multiplier": 1,
+            "prefix": ".",
+            "suffix": "",
+            "max_value": 99
+        }
+    ];
+
+    var PART_PLACEHOLDER = "––";
+
+    var GLOBAL_REGEX = new RegExp("^"+ PARTS.reduce(function(accumulator, value) {
+          return accumulator + value.prefix +'('+ value.regex +')'+ value.suffix;
+    }, "") +"$");
 
     /**
      * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
@@ -45,7 +79,7 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Number} [configs.value=0] The default value
      * @param {Number} [configs.min=0] The minimum allowed value
      * @param {Number} [configs.max=null] The maximum allowed value
-     * @param {Boolean} [configs.checkbox=false] Whether to show the enable/disable checkbox
+     * @param {Boolean} [configs.clearButton=false] Whether to show the clear button
      * @param {Boolean} [configs.inButton=false] Whether to show the in button
      * @param {Boolean} [configs.outButton=false] Whether to show the out button
      */
@@ -56,13 +90,20 @@ metaScore.namespace('editor.field').Time = (function () {
         TimeField.parent.call(this, this.configs);
 
         this.addClass('timefield');
+
+        if(this.configs.min !== null){
+            this.setMin(this.configs.min);
+        }
+        if(this.configs.max !== null){
+            this.setMax(this.configs.max);
+        }
     }
 
     TimeField.defaults = {
-        'value': 0,
+        'value': null,
         'min': 0,
         'max': null,
-        'checkbox': false,
+        'clearButton': false,
         'inButton': false,
         'outButton': false
     };
@@ -78,63 +119,45 @@ metaScore.namespace('editor.field').Time = (function () {
     TimeField.prototype.setupUI = function(){
         var buttons;
 
-        if(this.configs.label){
-            this.label = new metaScore.Dom('<label/>', {'text': this.configs.label})
-                .appendTo(this);
-        }
+        TimeField.parent.prototype.setupUI.call(this);
 
-        this.input_wrapper = new metaScore.Dom('<div/>', {'class': 'input-wrapper'})
-            .appendTo(this);
+        this.input_el = this.input.get(0);
 
-        if(this.configs.checkbox){
-            this.checkbox = new metaScore.Dom('<input/>', {'type': 'checkbox'})
-                .addListener('change', metaScore.Function.proxy(this.onCheckboxChange, this))
-                .appendTo(this.input_wrapper);
-         }
+        this.input
+            .addListener('mousedown', metaScore.Function.proxy(this.onMouseDown, this))
+            .addListener('mousewheel', metaScore.Function.proxy(this.onMouseWheel, this))
+            .addListener('click', metaScore.Function.proxy(this.onClick, this))
+            .addListener('focus', metaScore.Function.proxy(this.onFocus, this))
+            .addListener('blur', metaScore.Function.proxy(this.onBlur, this))
+            .addListener('dragstart', metaScore.Function.proxy(this.onDragstart, this))
+            .addListener('drop', metaScore.Function.proxy(this.onDrop, this))
+            .addListener('cut', metaScore.Function.proxy(this.onCut, this))
+            .addListener('paste', metaScore.Function.proxy(this.onPaste, this))
+            .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
+            .addListener('keypress', metaScore.Function.proxy(this.onKeypress, this));
 
-        this.hours = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'hours'})
-            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
-            .appendTo(this.input_wrapper);
-
-        new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
-            .appendTo(this.input_wrapper);
-
-        this.minutes = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'minutes'})
-            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
-            .appendTo(this.input_wrapper);
-
-        new metaScore.Dom('<span/>', {'text': ':', 'class': 'separator'})
-            .appendTo(this.input_wrapper);
-
-        this.seconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'seconds'})
-            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
-            .appendTo(this.input_wrapper);
-
-        new metaScore.Dom('<span/>', {'text': '.', 'class': 'separator'})
-            .appendTo(this.input_wrapper);
-
-        this.centiseconds = new metaScore.Dom('<input/>', {'type': 'number', 'class': 'centiseconds'})
-            .addListener('input', metaScore.Function.proxy(this.onTimeInput, this))
-            .appendTo(this.input_wrapper);
-
-        if(this.configs.inButton || this.configs.outButton){
+        if(this.configs.clearButton || this.configs.inButton || this.configs.outButton){
             buttons = new metaScore.Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this.input_wrapper);
 
+            if(this.configs.clearButton){
+                this.clearButton = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': metaScore.Locale.t('editor.field.Time.clear.tooltip', 'Clear value')})
+                    .addListener('click', metaScore.Function.proxy(this.onClearClick, this))
+                    .appendTo(buttons);
+            }
+
             if(this.configs.inButton){
-                this.in = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': metaScore.Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
+                this.inButton = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': metaScore.Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
                     .addListener('click', metaScore.Function.proxy(this.onInClick, this))
                     .appendTo(buttons);
             }
 
             if(this.configs.outButton){
-                this.out = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': metaScore.Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
+                this.outButton = new metaScore.Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': metaScore.Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
                     .addListener('click', metaScore.Function.proxy(this.onOutClick, this))
                     .appendTo(buttons);
             }
         }
-
-        this.addListener('change', metaScore.Function.proxy(this.onChange, this));
     };
 
     /**
@@ -149,42 +172,247 @@ metaScore.namespace('editor.field').Time = (function () {
     };
 
     /**
-     * The checkbox change event handler
+     * The mousedown event handler
      * 
-     * @method onCheckboxChange
+     * @method onMouseDown
      * @private
      * @param {Event} evt The event object
      */
-    TimeField.prototype.onCheckboxChange = function(evt){        
-        this.onTimeInput(evt);
-        
-        this.triggerEvent(EVT_CHECKBOXCHANGE, {'field': this, 'active': this.isActive()}, true, false);
+    TimeField.prototype.onMouseDown = function(evt){
+        this.skipFocus = true;
     };
 
     /**
-     * The sub-field's input event handler
+     * The mousewheel event handler
      * 
-     * @method onInput
+     * @method onMouseWheel
      * @private
      * @param {Event} evt The event object
      */
-    TimeField.prototype.onTimeInput = function(evt){
-        var active = this.isActive(),
-            centiseconds_val, seconds_val, minutes_val, hours_val;
+    TimeField.prototype.onMouseWheel = function(evt){
+        var segment = this.getFocusedSegment();
 
-        if(active){
-            centiseconds_val = parseInt(this.centiseconds.val(), 10) || 0;
-            seconds_val = parseInt(this.seconds.val(), 10) || 0;
-            minutes_val = parseInt(this.minutes.val(), 10) || 0;
-            hours_val = parseInt(this.hours.val(), 10) || 0;
-
-            this.setValue(centiseconds_val + (seconds_val * 100) + (minutes_val * 6000) + (hours_val * 360000));
-        }
-        else{
-            this.setValue(null);
+        if(segment !== undefined){
+            if(evt.deltaY < 0){
+                this.incrementSegmentValue(segment);
+                this.setFocusedSegment(segment);
+            }
+            else if(evt.deltaY > 0){
+                this.decrementSegmentValue(segment);
+                this.setFocusedSegment(segment);
+            }
         }
 
-        evt.stopPropagation();
+        evt.preventDefault();
+    };
+
+    /**
+     * The click event handler
+     * 
+     * @method onClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onClick = function(evt){
+        var caretPosition = this.getCaretPosition();
+
+        this.setFocusedSegment(Math.floor(caretPosition / 3));
+
+        delete this.skipFocus;
+    };
+
+    /**
+     * The focus event handler
+     * 
+     * @method onFocus
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onFocus = function(evt){
+        this.keys_pressed = 0;
+
+        if(!this.skipFocus){
+            this.setFocusedSegment(0);
+        }
+    };
+
+    /**
+     * The blur event handler
+     * 
+     * @method onBlur
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onBlur = function(evt){
+        delete this.keys_pressed;
+        delete this.focused_segment;
+
+        if(this.dirty){
+            delete this.dirty;
+            this.input.triggerEvent('change');
+        }
+    };
+
+    /**
+     * The dragstart event handler
+     * 
+     * @method onDragstart
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onDragstart = function(evt){
+        evt.preventDefault();
+    };
+
+    /**
+     * The drop event handler
+     * 
+     * @method onDrop
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onDrop = function(evt){
+        evt.preventDefault();
+    };
+
+    /**
+     * The cut event handler
+     * 
+     * @method onCut
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onCut = function(evt){
+        evt.preventDefault();
+    };
+
+    /**
+     * The paste event handler
+     * 
+     * @method onPaste
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onPaste = function(evt){
+        var clipboard_data = evt.clipboardData || window.clipboardData,
+            pasted_data = clipboard_data.getData('Text');
+
+        if(this.isValid(pasted_data)){
+            this.setValue(this.getNumericalValue(pasted_data), false);
+        }
+
+        evt.preventDefault();
+    };
+
+    /**
+     * The keydown event handler
+     * 
+     * @method onKeydown
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onKeydown = function(evt){
+        var segment;
+
+        switch (evt.keyCode) {
+            case 37: // left arrow
+            case 39: // right arrow
+                segment = this.getFocusedSegment() + (evt.keyCode === 37 ? -1 : 1);
+
+                if(segment >= 0 && segment < PARTS.length){
+                    this.setFocusedSegment(segment);
+                }
+
+                evt.preventDefault();
+                break;
+                
+            case 38: // up arrow
+                segment = this.getFocusedSegment();
+
+                if(segment !== undefined){
+                    this.incrementSegmentValue(segment);
+                    this.setFocusedSegment(segment);
+                }
+                
+                evt.preventDefault();
+                break;
+                
+            case 40: // down arrow
+                segment = this.getFocusedSegment();
+
+                if(segment !== undefined){
+                    this.decrementSegmentValue(segment);
+                    this.setFocusedSegment(segment);
+                }
+
+                evt.preventDefault();
+                break;
+                
+            case 9: // tab
+                segment = this.getFocusedSegment() + (evt.shiftKey ? -1 : 1);
+
+                if(segment >= 0 && segment < PARTS.length){
+                    this.setFocusedSegment(segment);
+                    evt.preventDefault();
+                }
+
+                break;
+        }
+    };
+
+    /**
+     * The keypress event handler
+     * 
+     * @method onKeypress
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onKeypress = function(evt){
+        var focused_segment = this.getFocusedSegment(),
+            segment_value;
+
+        // Numeric key
+        if(focused_segment < PARTS.length && evt.keyCode >= 48 && evt.keyCode <= 57){
+            segment_value = parseInt(this.getSegmentValue(focused_segment));
+
+            if(this.keys_pressed === 0 || isNaN(segment_value)){
+                segment_value = 0;
+            }
+
+            segment_value += String.fromCharCode(evt.keyCode);
+
+            segment_value = metaScore.String.pad(Math.min(PARTS[focused_segment].max_value, parseInt(segment_value)), 2, "0", "left");
+
+            if(this.setSegmentValue(focused_segment, segment_value, true)){
+                this.dirty = true;
+            }
+
+            if(++this.keys_pressed === 2){
+                this.keys_pressed = 0;
+                this.setFocusedSegment(focused_segment + 1);
+            }
+            else{
+                this.setFocusedSegment(focused_segment);
+            }
+        }
+        // Enter key
+        else if(evt.keyCode === 13 && this.dirty){
+            delete this.dirty;
+            this.input.triggerEvent('change');
+        }
+
+        evt.preventDefault();
+    };
+
+    /**
+     * The clear button click event handler
+     * 
+     * @method onClearClick
+     * @private
+     * @param {Event} evt The event object
+     */
+    TimeField.prototype.onClearClick = function(evt){
+        this.setValue(null);
     };
 
     /**
@@ -209,6 +437,133 @@ metaScore.namespace('editor.field').Time = (function () {
         this.triggerEvent(EVT_VALUEOUT, {'field': this, 'value': this.getValue()});
     };
 
+    TimeField.prototype.isValid = function(value){
+        return GLOBAL_REGEX.test(value);
+    };
+
+    TimeField.prototype.getCaretPosition = function(){
+        var caretPosition;
+            
+        if(typeof this.input_el.selectionStart === 'number'){
+            caretPosition = this.input_el.selectionDirection === 'backward' ? this.input_el.selectionStart : this.input_el.selectionEnd;
+        }
+        
+        return caretPosition;
+    };
+        
+    TimeField.prototype.getFocusedSegment = function(){
+        return this.focused_segment;
+    };
+
+    TimeField.prototype.setFocusedSegment = function(segment){
+        var start = segment * 3,
+            end = start + 2;
+            
+        this.input_el.setSelectionRange(0, 0);
+        this.input_el.setSelectionRange(start, end, 'forward');
+                  
+        this.focused_segment = segment;
+    };
+        
+    TimeField.prototype.getSegmentValue = function(segment){
+        var textual_value = this.input.val(),
+            matches = textual_value.match(GLOBAL_REGEX),
+            value = "";
+
+        if(matches){
+            matches.shift();
+            return matches[segment];
+        }
+    };
+    
+    TimeField.prototype.setSegmentValue = function(segment, value, supressEvent){
+        var textual_value = this.input.val(),
+            matches = textual_value.match(GLOBAL_REGEX);
+
+        if(matches){
+            textual_value = "";
+            matches.shift();
+
+            matches.forEach(function(match, i){
+                textual_value += PARTS[i].prefix;
+                textual_value += (i === segment) ? value : (matches[i] === "––" ? "00" : matches[i]);
+                textual_value += PARTS[i].suffix;
+            });
+
+            this.setValue(this.getNumericalValue(textual_value), supressEvent);
+
+            return true;
+        }
+
+        return false;
+    };
+
+    TimeField.prototype.incrementSegmentValue = function(segment){
+        var value = this.getValue();
+
+        if(value === null){
+            value = 0;
+        }
+
+        value += PARTS[segment].multiplier;
+        this.setValue(Math.max(0, value));
+    };
+
+    TimeField.prototype.decrementSegmentValue = function(segment){
+        var value = this.getValue();
+
+        value = this.getValue();
+
+        if(value === null){
+            value = 0;
+        }
+        
+        if(value >= PARTS[segment].multiplier){
+            value -= PARTS[segment].multiplier;
+            this.setValue(Math.max(0, value));
+        }
+    };
+
+    TimeField.prototype.getNumericalValue = function(textual_value){
+        var matches, value;
+
+        if(textual_value.indexOf(PART_PLACEHOLDER) !== -1){
+            return null;
+        }
+
+        matches = textual_value.match(GLOBAL_REGEX);
+        value = 0;
+        
+        if(matches){
+            matches.shift();
+
+            matches.forEach(function(match, i){
+                value += parseInt(matches[i]) * PARTS[i].multiplier;
+            });
+        }
+        
+        return value;
+    };
+
+    TimeField.prototype.getTextualValue = function(value){
+        var textual_value = "";
+
+        PARTS.forEach(function(part, i){
+            textual_value += part.prefix;
+
+            if(value === null){
+                textual_value += PART_PLACEHOLDER;
+            }
+            else{
+                textual_value += metaScore.String.pad(parseInt((value / part.multiplier) % (part.max_value + 1), 10) || 0, 2, "0", "left");
+            }
+
+            textual_value += part.suffix;
+        });
+        
+        return textual_value;
+    };
+
     /**
      * Set the field's value
      * 
@@ -217,74 +572,25 @@ metaScore.namespace('editor.field').Time = (function () {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
-    TimeField.prototype.setValue = function(centiseconds, supressEvent){
-        var centiseconds_val, seconds_val, minutes_val, hours_val;
-
-        centiseconds = parseFloat(centiseconds);
-
-        if(isNaN(centiseconds)){
-            this.value = null;
-
-            this.centiseconds.val(0);
-            this.seconds.val(0);
-            this.minutes.val(0);
-            this.hours.val(0);
-
-            if(!this.disabled){
-                this.hours.attr('disabled', 'disabled');
-                this.minutes.attr('disabled', 'disabled');
-                this.seconds.attr('disabled', 'disabled');
-                this.centiseconds.attr('disabled', 'disabled');
-
-                if(this.in){
-                    this.in.attr('disabled', 'disabled');
-                }
-                if(this.out){
-                    this.out.attr('disabled', 'disabled');
-                }
-            }
-
-            this.toggle(false);
-        }
-        else{
-            this.value = Math.floor(centiseconds);
-            
+    TimeField.prototype.setValue = function(value, supressEvent){
+        if(value !== null){
+            value = parseInt(value);
+    
             if(this.min !== null){
-                this.value = Math.max(this.value, this.min);
+                value = Math.max(value, this.min);
             }
+    
             if(this.max !== null){
-                this.value = Math.min(this.value, this.max);
+                value = Math.min(value, this.max);
             }
-
-            centiseconds_val = parseInt((this.value) % 100, 10) || 0;
-            seconds_val = parseInt((this.value / 100) % 60, 10) || 0;
-            minutes_val = parseInt((this.value / 6000) % 60, 10) || 0;
-            hours_val = parseInt((this.value / 360000), 10) || 0;
-
-            if(!this.disabled){
-                this.hours.attr('disabled', null);
-                this.minutes.attr('disabled', null);
-                this.seconds.attr('disabled', null);
-                this.centiseconds.attr('disabled', null);
-
-                if(this.in){
-                    this.in.attr('disabled', null);
-                }
-                if(this.out){
-                    this.out.attr('disabled', null);
-                }
-            }
-
-            this.centiseconds.val(centiseconds_val);
-            this.seconds.val(seconds_val);
-            this.minutes.val(minutes_val);
-            this.hours.val(hours_val);
-
-            this.toggle(true);
         }
+
+        this.input.val(this.getTextualValue(value));
+
+        this.value = value;
 
         if(supressEvent !== true){
-            this.triggerEvent('change');
+            this.input.triggerEvent('change');
         }
 
         return this;
@@ -294,11 +600,17 @@ metaScore.namespace('editor.field').Time = (function () {
      * Set the minimum allowed value
      * 
      * @method setMin
-     * @param {Number} value The minimum allowed value
+     * @param {Number} min The minimum allowed value
      * @chainable
      */
-    TimeField.prototype.setMin = function(value){
-        this.min = value;
+    TimeField.prototype.setMin = function(min){
+        var value = this.getValue();
+
+        this.min = min;
+
+        if(this.min !== null && value !== null && value < this.min){
+            this.setValue(this.min);
+        }
 
         return this;
     };
@@ -307,37 +619,18 @@ metaScore.namespace('editor.field').Time = (function () {
      * Set the maximum allowed value
      * 
      * @method setMax
-     * @param {Number} value The maximum allowed value
+     * @param {Number} max The maximum allowed value
      * @chainable
      */
-    TimeField.prototype.setMax = function(value){
-        this.max = value;
+    TimeField.prototype.setMax = function(max){
+        var value = this.getValue();
 
-        return this;
-    };
+        this.max = max;
 
-    /**
-     * Check whether the field's checkbox is checked
-     * 
-     * @method isActive
-     * @return {Boolean} Whether the field does not have a checkbox or is active
-     */
-    TimeField.prototype.isActive = function(){
-        return !this.checkbox || this.checkbox.is(":checked");
-    };
-
-    /**
-     * Activate or deactivate the field by toggling its checkbox if available
-     * 
-     * @method toggle
-     * @param {Boolean} state True to activate or false to deactivate the field
-     * @chainable
-     */
-    TimeField.prototype.toggle = function(state){
-        if(this.checkbox && (state !== this.checkbox.is(":checked"))){
-            this.checkbox.get(0).click();
+        if(this.max !== null && value !== null && value > this.max){
+            this.setValue(this.max);
         }
-        
+
         return this;
     };
 
@@ -350,20 +643,15 @@ metaScore.namespace('editor.field').Time = (function () {
     TimeField.prototype.disable = function(){
         TimeField.parent.prototype.disable.call(this);
 
-        if(this.checkbox){
-            this.checkbox.attr('disabled', 'disabled');
+        if(this.clearButton){
+            this.clearButton.attr('disabled', 'disabled');
         }
 
-        this.hours.attr('disabled', 'disabled');
-        this.minutes.attr('disabled', 'disabled');
-        this.seconds.attr('disabled', 'disabled');
-        this.centiseconds.attr('disabled', 'disabled');
-
-        if(this.in){
-            this.in.attr('disabled', 'disabled');
+        if(this.inButton){
+            this.inButton.attr('disabled', 'disabled');
         }
-        if(this.out){
-            this.out.attr('disabled', 'disabled');
+        if(this.outButton){
+            this.outButton.attr('disabled', 'disabled');
         }
 
         return this;
@@ -375,28 +663,18 @@ metaScore.namespace('editor.field').Time = (function () {
      * @method enable
      * @chainable
      */
-    TimeField.prototype.enable = function(){
-        var active = this.isActive(),
-            disabled_attr;
-        
+    TimeField.prototype.enable = function(){        
         TimeField.parent.prototype.enable.call(this);
 
-        if(this.checkbox){
-            this.checkbox.attr('disabled', null);
+        if(this.clearButton){
+            this.clearButton.attr('disabled', null);
         }
-        
-        disabled_attr = active ? null : 'disabled';
 
-        this.hours.attr('disabled', disabled_attr);
-        this.minutes.attr('disabled', disabled_attr);
-        this.seconds.attr('disabled', disabled_attr);
-        this.centiseconds.attr('disabled', disabled_attr);
-
-        if(this.in){
-            this.in.attr('disabled', disabled_attr);
+        if(this.inButton){
+            this.inButton.attr('disabled', null);
         }
-        if(this.out){
-            this.out.attr('disabled', disabled_attr);
+        if(this.outButton){
+            this.outButton.attr('disabled', null);
         }
 
         return this;
@@ -416,17 +694,12 @@ metaScore.namespace('editor.field').Time = (function () {
         
         readonly_attr = this.is_readonly ? "readonly" : null;
 
-        if(this.checkbox){
-            this.checkbox.attr('readonly', readonly_attr);
+        if(this.clearButton){
+            this.clearButton.attr('readonly', readonly_attr);
         }
-
-        this.hours.attr('readonly', readonly_attr);
-        this.minutes.attr('readonly', readonly_attr);
-        this.seconds.attr('readonly', readonly_attr);
-        this.centiseconds.attr('readonly', readonly_attr);
         
-        if(this.in){
-            this.in.attr('readonly', readonly_attr);
+        if(this.inButton){
+            this.inButton.attr('readonly', readonly_attr);
         }
 
         return this;

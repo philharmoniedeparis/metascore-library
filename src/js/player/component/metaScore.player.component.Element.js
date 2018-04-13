@@ -228,7 +228,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
-                    'checkbox': true,
+                    'clearButton': true,
                     'inButton': true,
                     'outButton': true
                 },
@@ -244,7 +244,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
-                    'checkbox': true,
+                    'clearButton': true,
                     'inButton': true,
                     'outButton': true
                 },

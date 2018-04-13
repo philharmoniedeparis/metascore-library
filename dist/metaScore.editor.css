@@ -280,24 +280,12 @@
   display: inline-block;
   vertical-align: top;
 }
-.metaScore-editor .field.timefield .input-wrapper input[type="checkbox"] {
-  float: left;
-}
-.metaScore-editor .field.timefield .input-wrapper input[type="number"] {
-  width: 1.1em !important;
+.metaScore-editor .field.timefield .input-wrapper input {
+  width: 6em;
   height: 100%;
   border: none;
   background: none;
-  text-align: right;
   font-family: Tahoma, Geneva, sans-serif;
-  -moz-appearance: textfield;
-}
-.metaScore-editor .field.timefield .input-wrapper input[type="number"]::-webkit-outer-spin-button,
-.metaScore-editor .field.timefield .input-wrapper input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-.metaScore-editor .field.timefield .input-wrapper .separator {
-  font-size: 0.8em;
 }
 .metaScore-editor .field.timefield .input-wrapper .buttons button[data-action="in"] {
   background-image: url('img/editor/field/time/in.png');
@@ -645,8 +633,8 @@
   top: 42px;
   left: auto !important;
   bottom: 0;
-  width: 285px;
-  min-width: 280px;
+  width: 300px;
+  min-width: 300px;
   max-width: 500px;
   overflow: hidden;
   background: #f2f2f2;

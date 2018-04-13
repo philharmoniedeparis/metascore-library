@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2017-05-22 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2018-04-13 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "dbfd07";
+        return "8ed53f";
     },
 
     /**
@@ -6988,7 +6988,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
-                    'checkbox': true,
+                    'clearButton': true,
                     'inButton': true,
                     'outButton': true
                 },
@@ -7004,7 +7004,7 @@ metaScore.namespace('player.component').Element = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
-                    'checkbox': true,
+                    'clearButton': true,
                     'inButton': true,
                     'outButton': true
                 },
@@ -7729,7 +7729,6 @@ metaScore.namespace('player.component').Page = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Page.start-time', 'Start time'),
-                    'checkbox': false,
                     'inButton': true,
                     'outButton': true
                 },
@@ -7745,7 +7744,6 @@ metaScore.namespace('player.component').Page = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Page.end-time', 'End time'),
-                    'checkbox': false,
                     'inButton': true,
                     'outButton': true
                 },
@@ -7914,7 +7912,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.start-time', 'Start time'),
-                    'checkbox': false,
                     'inButton': true,
                     'outButton': true
                 },
@@ -7930,7 +7927,6 @@ metaScore.namespace('player.component.element').Cursor = (function () {
                 'type': 'Time',
                 'configs': {
                     'label': metaScore.Locale.t('player.component.Element.end-time', 'End time'),
-                    'checkbox': false,
                     'inButton': true,
                     'outButton': true
                 },

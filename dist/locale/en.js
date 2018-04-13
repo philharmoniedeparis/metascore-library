@@ -80,6 +80,7 @@ var metaScoreLocale = {
 	"editor.field.Image.placeholder": "Browse...",
 	"editor.field.Image.resize.tooltip": "Adapt container size to image",
 	"editor.field.Image.clear.tooltip": "Clear value",
+	"editor.field.Time.clear.tooltip": "Clear value",
 	"editor.field.Time.in.tooltip": "Set field value to current time",
 	"editor.field.Time.out.tooltip": "Set current time to field value",
 	"editor.panel.Block.title": "Block",

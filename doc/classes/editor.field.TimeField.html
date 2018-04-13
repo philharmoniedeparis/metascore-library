@@ -236,12 +236,12 @@
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[checkbox=false]</code>
+                                            <code class="param-name optional">[clearButton=false]</code>
                                             <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Whether to show the enable/disable checkbox</p>
+                                            <p>Whether to show the clear button</p>
         
                                         </div>
         
@@ -411,12 +411,12 @@
                                 <a href="#method_is">is</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_isActive">isActive</a>
-
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_offset">offset</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onBlur">onBlur</a>
 
                             </li>
                             <li class="index-item method private inherited">
@@ -424,7 +424,27 @@
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_onCheckboxChange">onCheckboxChange</a>
+                                <a href="#method_onClearClick">onClearClick</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onClick">onClick</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onCut">onCut</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onDragstart">onDragstart</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onDrop">onDrop</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onFocus">onFocus</a>
 
                             </li>
                             <li class="index-item method private">
@@ -432,11 +452,27 @@
 
                             </li>
                             <li class="index-item method private">
-                                <a href="#method_onInput">onInput</a>
+                                <a href="#method_onKeydown">onKeydown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onKeypress">onKeypress</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onMouseDown">onMouseDown</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onMouseWheel">onMouseWheel</a>
 
                             </li>
                             <li class="index-item method private">
                                 <a href="#method_onOutClick">onOutClick</a>
+
+                            </li>
+                            <li class="index-item method private">
+                                <a href="#method_onPaste">onPaste</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -491,10 +527,6 @@
                                 <a href="#method_text">text</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_toggle">toggle</a>
-
-                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_toggleClass">toggleClass</a>
 
@@ -532,10 +564,6 @@
                     <ul class="index-list events extends">
                             <li class="index-item event inherited">
                                 <a href="#event_beforeremove">beforeremove</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_checkboxchange">checkboxchange</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -2304,47 +2332,6 @@
 
 
 </div>
-<div id="method_isActive" class="method item">
-    <h3 class="name"><code>isActive</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Check whether the field&#39;s checkbox is checked</p>
-
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Boolean</span>:
-                    <p>Whether the field does not have a checkbox or is active</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_offset" class="method item inherited">
     <h3 class="name"><code>offset</code></h3>
 
@@ -2384,6 +2371,59 @@
 
             </div>
         </div>
+
+
+</div>
+<div id="method_onBlur" class="method item private">
+    <h3 class="name"><code>onBlur</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The blur event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -2443,8 +2483,8 @@
 
 
 </div>
-<div id="method_onCheckboxChange" class="method item private">
-    <h3 class="name"><code>onCheckboxChange</code></h3>
+<div id="method_onClearClick" class="method item private">
+    <h3 class="name"><code>onClearClick</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
@@ -2471,7 +2511,272 @@
     </div>
 
     <div class="description">
-        <p>The checkbox change event handler</p>
+        <p>The clear button click event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onClick" class="method item private">
+    <h3 class="name"><code>onClick</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The click event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onCut" class="method item private">
+    <h3 class="name"><code>onCut</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The cut event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onDragstart" class="method item private">
+    <h3 class="name"><code>onDragstart</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The dragstart event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onDrop" class="method item private">
+    <h3 class="name"><code>onDrop</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The drop event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onFocus" class="method item private">
+    <h3 class="name"><code>onFocus</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The focus event handler</p>
 
     </div>
 
@@ -2549,8 +2854,8 @@
 
 
 </div>
-<div id="method_onInput" class="method item private">
-    <h3 class="name"><code>onInput</code></h3>
+<div id="method_onKeydown" class="method item private">
+    <h3 class="name"><code>onKeydown</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
@@ -2577,7 +2882,166 @@
     </div>
 
     <div class="description">
-        <p>The sub-field&#39;s input event handler</p>
+        <p>The keydown event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onKeypress" class="method item private">
+    <h3 class="name"><code>onKeypress</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The keypress event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onMouseDown" class="method item private">
+    <h3 class="name"><code>onMouseDown</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The mousedown event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onMouseWheel" class="method item private">
+    <h3 class="name"><code>onMouseWheel</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The mousewheel event handler</p>
 
     </div>
 
@@ -2631,6 +3095,59 @@
 
     <div class="description">
         <p>The out button&#39;s click event handler</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">evt</code>
+                        <span class="type">Event</span>
+
+
+                    <div class="param-description">
+                        <p>The event object</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_onPaste" class="method item private">
+    <h3 class="name"><code>onPaste</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>evt</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+        <span class="flag private">private</span>
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>The paste event handler</p>
 
     </div>
 
@@ -3059,7 +3576,7 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>value</code>
+                        <code>max</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -3090,7 +3607,7 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">value</code>
+                        <code class="param-name">max</code>
                         <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
 
 
@@ -3112,7 +3629,7 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>value</code>
+                        <code>min</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -3143,7 +3660,7 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">value</code>
+                        <code class="param-name">min</code>
                         <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
 
 
@@ -3356,59 +3873,6 @@
 
             </div>
         </div>
-
-
-</div>
-<div id="method_toggle" class="method item">
-    <h3 class="name"><code>toggle</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>state</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Activate or deactivate the field by toggling its checkbox if available</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">state</code>
-                        <span class="type">Boolean</span>
-
-
-                    <div class="param-description">
-                        <p>True to activate or false to deactivate the field</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
 
 
 </div>
@@ -3736,29 +4200,6 @@
                     
                         <div class="description">
                             <p>Fired before an element is removed</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="event_checkboxchange" class="events item">
-                        <h3 class="name"><code>checkboxchange</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired when the field&#39;s checkbox changes</p>
                     
                         </div>
                     
