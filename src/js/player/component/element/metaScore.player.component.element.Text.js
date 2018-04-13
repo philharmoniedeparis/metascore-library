@@ -104,17 +104,17 @@ metaScore.namespace('player.component.element').Text = (function () {
 
         if(link){
             if(matches = link.hash.match(/^#page=([^,]*),(\d+)$/)){
-                this.triggerEvent(EVT_PAGE, {'element': this, 'block': matches[1], 'index': parseInt(matches[2])-1});
+                this.triggerEvent(EVT_PAGE, {'element': this, 'block': decodeURIComponent(matches[1]), 'index': parseInt(matches[2])-1});
                 evt.preventDefault();
             }
             else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
                 this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
             }
             else if(matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/)){
-                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': matches[2], 'action': matches[1]});
+                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
             }
             else{
-                window.open(link.href,'_blank');
+                window.open(link.href, '_blank');
             }
 
             evt.preventDefault();
