@@ -7862,7 +7862,219 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 440,
+            "description": "Helper function to check if a certain value is a valid textual value",
+            "itemtype": "method",
+            "name": "isValid",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The value to check",
+                    "type": "String"
+                }
+            ],
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 451,
+            "description": "Helper function to retreive the input's current caret position",
+            "itemtype": "method",
+            "name": "getCaretPosition",
+            "access": "private",
+            "tagname": "",
+            "return": {
+                "description": "The caret position",
+                "type": "Number"
+            },
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 468,
+            "description": "Helper function to retreive the index of the focused segmnet",
+            "itemtype": "method",
+            "name": "getFocusedSegment",
+            "access": "private",
+            "tagname": "",
+            "return": {
+                "description": "The focus segment's index",
+                "type": "Number"
+            },
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 479,
+            "description": "Helper function to set the focused segmnet",
+            "itemtype": "method",
+            "name": "setFocusedSegment",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "segment",
+                    "description": "The focus segment's index",
+                    "type": "Number"
+                }
+            ],
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 496,
+            "description": "Helper function to retreive the value of a segmnet",
+            "itemtype": "method",
+            "name": "getSegmentValue",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "segment",
+                    "description": "The segment's index",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "The segment's value",
+                "type": "String"
+            },
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 514,
+            "description": "Helper function to set the value of a segmnet",
+            "itemtype": "method",
+            "name": "setSegmentValue",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "segment",
+                    "description": "The segment's index",
+                    "type": "Number"
+                },
+                {
+                    "name": "value",
+                    "description": "The segment's value",
+                    "type": "String"
+                },
+                {
+                    "name": "supressEvent",
+                    "description": "Whether to prevent the change event from firing",
+                    "type": "Boolean"
+                }
+            ],
+            "return": {
+                "description": "Whether the value was set",
+                "type": "Boolean"
+            },
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 546,
+            "description": "Helper function to increment a segment's value",
+            "itemtype": "method",
+            "name": "incrementSegmentValue",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "segment",
+                    "description": "The segment's index",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
             "line": 567,
+            "description": "Helper function to decrement a segment's value",
+            "itemtype": "method",
+            "name": "decrementSegmentValue",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "segment",
+                    "description": "The segment's index",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 592,
+            "description": "Helper function to convert a textual value to a numerical one",
+            "itemtype": "method",
+            "name": "getNumericalValue",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "textual_value",
+                    "description": "The textual value",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The numercial value",
+                "type": "Number"
+            },
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 621,
+            "description": "Helper function to convert a numerical value to a textual one",
+            "itemtype": "method",
+            "name": "getTextualValue",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The numercial value",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "The textual value",
+                "type": "String"
+            },
+            "class": "editor.field.TimeField",
+            "module": "Editor",
+            "namespace": "editor.field"
+        },
+        {
+            "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
+            "line": 648,
             "description": "Set the field's value",
             "itemtype": "method",
             "name": "setValue",
@@ -7885,7 +8097,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 599,
+            "line": 680,
             "description": "Set the minimum allowed value",
             "itemtype": "method",
             "name": "setMin",
@@ -7903,7 +8115,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 618,
+            "line": 699,
             "description": "Set the maximum allowed value",
             "itemtype": "method",
             "name": "setMax",
@@ -7921,7 +8133,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 637,
+            "line": 718,
             "description": "Disable the field",
             "itemtype": "method",
             "name": "disable",
@@ -7932,7 +8144,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 660,
+            "line": 741,
             "description": "Enable the field",
             "itemtype": "method",
             "name": "enable",
@@ -7943,7 +8155,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 683,
+            "line": 764,
             "description": "Toggle the field's readonly state",
             "itemtype": "method",
             "name": "readonly",
@@ -7962,7 +8174,7 @@
         },
         {
             "file": "src\\js\\editor\\field\\metaScore.editor.field.Time.js",
-            "line": 708,
+            "line": 789,
             "description": "Reset the field's configs",
             "itemtype": "method",
             "name": "reset",
@@ -12004,7 +12216,7 @@
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
             "line": 85,
-            "description": "The media's seek event handler",
+            "description": "The media's seeked event handler",
             "itemtype": "method",
             "name": "onMediaSeeked",
             "access": "private",
@@ -12044,7 +12256,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 133,
+            "line": 132,
             "description": "Start executing the cuepoint",
             "itemtype": "method",
             "name": "start",
@@ -12062,7 +12274,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 155,
+            "line": 154,
             "description": "Update the cuepoint",
             "itemtype": "method",
             "name": "update",
@@ -12080,7 +12292,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 189,
+            "line": 188,
             "description": "Stop executing the cuepoint",
             "itemtype": "method",
             "name": "stop",

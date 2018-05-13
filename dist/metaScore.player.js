@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2018-04-13 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2018-04-21 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "63d3cb";
+        return "ab00cb";
     },
 
     /**
@@ -5379,14 +5379,14 @@ metaScore.Player = (function(){
             .addListener('start', function(evt){
                 player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
             })
-            .addListener('stop', function(evt){
-                evt.target.getMedia().pause();
-            })
             .addListener('seekout', function(evt){
                 evt.target.destroy();
                 delete player.cuepoint;
 
                 player.setReadingIndex(0);
+            })
+            .addListener('stop', function(evt){
+                evt.target.getMedia().pause();
             })
             .init();
 
@@ -5756,7 +5756,7 @@ metaScore.namespace('player').CuePoint = (function () {
     };
 
     /**
-     * The media's seek event handler
+     * The media's seeked event handler
      * 
      * @method onMediaSeeked
      * @private
@@ -5765,7 +5765,7 @@ metaScore.namespace('player').CuePoint = (function () {
     CuePoint.prototype.onMediaSeeked = function(evt){
         var cur_time = this.getMedia().getTime();
         
-        if('previous_time' in this){
+        if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
             this.max_error = 0;
             this.previous_time = cur_time;
@@ -5795,9 +5795,8 @@ metaScore.namespace('player').CuePoint = (function () {
      */
     CuePoint.prototype.init = function(){
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
-            
-            this.onMediaTimeUpdate();
+            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);            
+            this.update();
         }
         
         return this;
@@ -5870,6 +5869,8 @@ metaScore.namespace('player').CuePoint = (function () {
         if(!this.running){
             return;
         }
+
+        this.getMedia().removeListener('seeked', this.onMediaSeeked);
         
         if(supressEvent !== true){
             this.triggerEvent(EVT_STOP);
@@ -5880,7 +5881,6 @@ metaScore.namespace('player').CuePoint = (function () {
             delete this.previous_time;
         }
 
-        this.getMedia().removeListener('seeked', this.onMediaSeeked);
         this.running = false;
     };
 
@@ -5891,6 +5891,7 @@ metaScore.namespace('player').CuePoint = (function () {
      */
     CuePoint.prototype.destroy = function(){
         this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
+
         this.stop();
     };
 
@@ -8283,7 +8284,7 @@ metaScore.namespace('player.component.element').Text = (function () {
                 this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
             }
             else{
-                window.open(link.href,'_blank');
+                window.open(link.href, '_blank');
             }
 
             evt.preventDefault();

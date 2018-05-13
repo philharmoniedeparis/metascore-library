@@ -954,14 +954,14 @@ metaScore.Player = (function(){
             .addListener('start', function(evt){
                 player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
             })
-            .addListener('stop', function(evt){
-                evt.target.getMedia().pause();
-            })
             .addListener('seekout', function(evt){
                 evt.target.destroy();
                 delete player.cuepoint;
 
                 player.setReadingIndex(0);
+            })
+            .addListener('stop', function(evt){
+                evt.target.getMedia().pause();
             })
             .init();
 

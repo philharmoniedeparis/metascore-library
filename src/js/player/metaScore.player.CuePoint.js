@@ -83,7 +83,7 @@ metaScore.namespace('player').CuePoint = (function () {
     };
 
     /**
-     * The media's seek event handler
+     * The media's seeked event handler
      * 
      * @method onMediaSeeked
      * @private
@@ -92,7 +92,7 @@ metaScore.namespace('player').CuePoint = (function () {
     CuePoint.prototype.onMediaSeeked = function(evt){
         var cur_time = this.getMedia().getTime();
         
-        if('previous_time' in this){
+        if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
             this.max_error = 0;
             this.previous_time = cur_time;
@@ -122,9 +122,8 @@ metaScore.namespace('player').CuePoint = (function () {
      */
     CuePoint.prototype.init = function(){
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
-            
-            this.onMediaTimeUpdate();
+            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);            
+            this.update();
         }
         
         return this;
@@ -197,6 +196,8 @@ metaScore.namespace('player').CuePoint = (function () {
         if(!this.running){
             return;
         }
+
+        this.getMedia().removeListener('seeked', this.onMediaSeeked);
         
         if(supressEvent !== true){
             this.triggerEvent(EVT_STOP);
@@ -207,7 +208,6 @@ metaScore.namespace('player').CuePoint = (function () {
             delete this.previous_time;
         }
 
-        this.getMedia().removeListener('seeked', this.onMediaSeeked);
         this.running = false;
     };
 
@@ -218,6 +218,7 @@ metaScore.namespace('player').CuePoint = (function () {
      */
     CuePoint.prototype.destroy = function(){
         this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
+
         this.stop();
     };
 

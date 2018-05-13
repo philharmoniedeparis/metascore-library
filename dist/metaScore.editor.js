@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2018-04-13 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2018-04-21 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "63d3cb";
+        return "ab00cb";
     },
 
     /**
@@ -10575,10 +10575,24 @@ metaScore.namespace('editor.field').Time = (function () {
         this.triggerEvent(EVT_VALUEOUT, {'field': this, 'value': this.getValue()});
     };
 
+    /**
+     * Helper function to check if a certain value is a valid textual value
+     * 
+     * @method isValid
+     * @private
+     * @param {String} value The value to check
+     */
     TimeField.prototype.isValid = function(value){
         return GLOBAL_REGEX.test(value);
     };
 
+    /**
+     * Helper function to retreive the input's current caret position
+     * 
+     * @method getCaretPosition
+     * @private
+     * @return {Number} The caret position
+     */
     TimeField.prototype.getCaretPosition = function(){
         var caretPosition;
             
@@ -10588,11 +10602,25 @@ metaScore.namespace('editor.field').Time = (function () {
         
         return caretPosition;
     };
-        
+
+    /**
+     * Helper function to retreive the index of the focused segmnet
+     * 
+     * @method getFocusedSegment
+     * @private
+     * @return {Number} The focus segment's index
+     */
     TimeField.prototype.getFocusedSegment = function(){
         return this.focused_segment;
     };
 
+    /**
+     * Helper function to set the focused segmnet
+     * 
+     * @method setFocusedSegment
+     * @private
+     * @param {Number} segment The focus segment's index
+     */
     TimeField.prototype.setFocusedSegment = function(segment){
         var start = segment * 3,
             end = start + 2;
@@ -10602,18 +10630,35 @@ metaScore.namespace('editor.field').Time = (function () {
                   
         this.focused_segment = segment;
     };
-        
+
+    /**
+     * Helper function to retreive the value of a segmnet
+     * 
+     * @method getSegmentValue
+     * @private
+     * @param {Number} segment The segment's index
+     * @return {String} The segment's value
+     */
     TimeField.prototype.getSegmentValue = function(segment){
         var textual_value = this.input.val(),
-            matches = textual_value.match(GLOBAL_REGEX),
-            value = "";
+            matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
             matches.shift();
             return matches[segment];
         }
     };
-    
+
+    /**
+     * Helper function to set the value of a segmnet
+     * 
+     * @method setSegmentValue
+     * @private
+     * @param {Number} segment The segment's index
+     * @param {String} value The segment's value
+     * @param {Boolean} supressEvent Whether to prevent the change event from firing
+     * @return {Boolean} Whether the value was set
+     */
     TimeField.prototype.setSegmentValue = function(segment, value, supressEvent){
         var textual_value = this.input.val(),
             matches = textual_value.match(GLOBAL_REGEX);
@@ -10636,6 +10681,14 @@ metaScore.namespace('editor.field').Time = (function () {
         return false;
     };
 
+    /**
+     * Helper function to increment a segment's value
+     * 
+     * @method incrementSegmentValue
+     * @private
+     * @param {Number} segment The segment's index
+     * @chainable
+     */
     TimeField.prototype.incrementSegmentValue = function(segment){
         var value = this.getValue();
 
@@ -10645,8 +10698,18 @@ metaScore.namespace('editor.field').Time = (function () {
 
         value += PARTS[segment].multiplier;
         this.setValue(Math.max(0, value));
+
+        return this;
     };
 
+    /**
+     * Helper function to decrement a segment's value
+     * 
+     * @method decrementSegmentValue
+     * @private
+     * @param {Number} segment The segment's index
+     * @chainable
+     */
     TimeField.prototype.decrementSegmentValue = function(segment){
         var value = this.getValue();
 
@@ -10660,8 +10723,18 @@ metaScore.namespace('editor.field').Time = (function () {
             value -= PARTS[segment].multiplier;
             this.setValue(Math.max(0, value));
         }
+
+        return this;
     };
 
+    /**
+     * Helper function to convert a textual value to a numerical one
+     * 
+     * @method getNumericalValue
+     * @private
+     * @param {String} textual_value The textual value
+     * @return {Number} The numercial value
+     */
     TimeField.prototype.getNumericalValue = function(textual_value){
         var matches, value;
 
@@ -10683,6 +10756,14 @@ metaScore.namespace('editor.field').Time = (function () {
         return value;
     };
 
+    /**
+     * Helper function to convert a numerical value to a textual one
+     * 
+     * @method getTextualValue
+     * @private
+     * @param {Number} value The numercial value
+     * @return {String} The textual value
+     */
     TimeField.prototype.getTextualValue = function(value){
         var textual_value = "";
 
