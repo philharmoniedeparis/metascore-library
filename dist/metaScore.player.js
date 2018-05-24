@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "e56835";
+        return "abc1a3";
     },
 
     /**
@@ -4632,25 +4632,25 @@ metaScore.Player = (function(){
                 }
                 break;
 
-            case 'hideBlock':
-                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
-                if(dom && dom._metaScore){
-                    dom._metaScore.toggleVisibility(false);
-                }
-                break;
-
             case 'showBlock':
-                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
-                if(dom && dom._metaScore){
-                    dom._metaScore.toggleVisibility(true);
-                }
-                break;
-
+            case 'hideBlock':
             case 'toggleBlock':
-                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
-                if(dom && dom._metaScore){
-                    dom._metaScore.toggleVisibility();
+                var show;
+
+                switch(method){
+                    case 'showBlock':
+                        show = true;
+                        break;
+                    case 'hideBlock':
+                        show = false;
+                        break;
                 }
+
+                player.getComponents('.media.video, .controller, .block').each(function(index, dom){                    
+                    if(dom._metaScore && dom._metaScore.getName() === params.name){
+                        dom._metaScore.toggleVisibility(show);
+                    }
+                });
                 break;
 
             case 'rindex':
@@ -4962,21 +4962,22 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onTextElementBlockVisibility = function(evt){
-        var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]'),
-            show;
-            
-        if(dom && dom._metaScore){
-            switch(evt.detail.action){
-                case 'show':
-                    show = true;
-                    break;
-                case 'hide':
-                    show = false;
-                    break;
-            }
-            
-            dom._metaScore.toggleVisibility(show);
+        var show;
+
+        switch(evt.detail.action){
+            case 'show':
+                show = true;
+                break;
+            case 'hide':
+                show = false;
+                break;
         }
+        
+        this.getComponents('.media.video, .controller, .block').each(function(index, dom){                    
+            if(dom._metaScore && dom._metaScore.getName() === evt.detail.block){
+                dom._metaScore.toggleVisibility(show);
+            }
+        });
     };
 
     /**
@@ -5617,6 +5618,29 @@ metaScore.namespace('player').Component = (function () {
         }, this);
 
         return this;
+    };
+
+    /**
+     * Show/hide
+     *
+     * @method toggleVisibility
+     * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggle
+     * @chainable
+     */
+    Component.prototype.toggleVisibility = function(show){
+        
+        if(show === true){
+            this.data('hidden', null);
+        }
+        else if(show === false){
+            this.data('hidden', "true");
+        }
+        else{
+            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
+        }
+    
+        return this;
+
     };
 
     /**
@@ -6486,29 +6510,6 @@ metaScore.namespace('player.component').Block = (function () {
         this.data('page-count', count);
         
         return this;
-    };
-
-    /**
-     * Show/hide
-     *
-     * @method toggleVisibility
-     * @param {Boolean} [show=undefined] Whether to show or hide the block. If undefined, the visibility will be toggle
-     * @chainable
-     */
-    Block.prototype.toggleVisibility = function(show){
-        
-        if(show === true){
-            this.data('hidden', null);
-        }
-        else if(show === false){
-            this.data('hidden', "true");
-        }
-        else{
-            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
-        }
-    
-        return this;
-
     };
 
     /**

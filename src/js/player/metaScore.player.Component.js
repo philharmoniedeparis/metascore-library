@@ -188,6 +188,29 @@ metaScore.namespace('player').Component = (function () {
     };
 
     /**
+     * Show/hide
+     *
+     * @method toggleVisibility
+     * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggle
+     * @chainable
+     */
+    Component.prototype.toggleVisibility = function(show){
+        
+        if(show === true){
+            this.data('hidden', null);
+        }
+        else if(show === false){
+            this.data('hidden', "true");
+        }
+        else{
+            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
+        }
+    
+        return this;
+
+    };
+
+    /**
      * Set a cuepoint on the component
      * 
      * @method setCuePoint

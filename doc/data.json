@@ -11113,26 +11113,6 @@
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
             "line": 533,
-            "description": "Show/hide",
-            "itemtype": "method",
-            "name": "toggleVisibility",
-            "params": [
-                {
-                    "name": "show",
-                    "description": "Whether to show or hide the block. If undefined, the visibility will be toggle",
-                    "type": "Boolean",
-                    "optional": true,
-                    "optdefault": "undefined"
-                }
-            ],
-            "chainable": 1,
-            "class": "player.component.Block",
-            "module": "Player",
-            "namespace": "player.component"
-        },
-        {
-            "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 556,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -11155,7 +11135,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Block.js",
-            "line": 590,
+            "line": 567,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -12127,6 +12107,26 @@
         {
             "file": "src\\js\\player\\metaScore.player.Component.js",
             "line": 190,
+            "description": "Show/hide",
+            "itemtype": "method",
+            "name": "toggleVisibility",
+            "params": [
+                {
+                    "name": "show",
+                    "description": "Whether to show or hide the component. If undefined, the visibility will be toggle",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "undefined"
+                }
+            ],
+            "chainable": 1,
+            "class": "player.Component",
+            "module": "Player",
+            "namespace": "player"
+        },
+        {
+            "file": "src\\js\\player\\metaScore.player.Component.js",
+            "line": 213,
             "description": "Set a cuepoint on the component",
             "itemtype": "method",
             "name": "setCuePoint",
@@ -12147,7 +12147,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.Component.js",
-            "line": 229,
+            "line": 252,
             "description": "Get the cuepoint of the component",
             "itemtype": "method",
             "name": "getCuePoint",
@@ -14674,7 +14674,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 557,
+            "line": 558,
             "description": "Componenet propchange event callback",
             "itemtype": "method",
             "name": "onComponenetPropChange",
@@ -14692,7 +14692,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 586,
+            "line": 587,
             "description": "loadsuccess event callback",
             "itemtype": "method",
             "name": "onLoadSuccess",
@@ -14710,7 +14710,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 633,
+            "line": 634,
             "description": "loaderror event callback",
             "itemtype": "method",
             "name": "onLoadError",
@@ -14728,7 +14728,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 646,
+            "line": 647,
             "description": "Load the guide",
             "itemtype": "method",
             "name": "load",
@@ -14739,7 +14739,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 666,
+            "line": 667,
             "description": "Get the id of the loaded guide",
             "itemtype": "method",
             "name": "getId",
@@ -14752,7 +14752,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 676,
+            "line": 677,
             "description": "Set the id of the loaded guide in a data attribute",
             "itemtype": "method",
             "name": "setId",
@@ -14776,7 +14776,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 694,
+            "line": 695,
             "description": "Get the revision id of the loaded guide",
             "itemtype": "method",
             "name": "getRevision",
@@ -14789,7 +14789,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 704,
+            "line": 705,
             "description": "Set the revision id of the loaded guide in a data attribute",
             "itemtype": "method",
             "name": "setRevision",
@@ -14813,7 +14813,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 722,
+            "line": 723,
             "description": "Get the loaded JSON data",
             "itemtype": "method",
             "name": "getData",
@@ -14834,7 +14834,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 737,
+            "line": 738,
             "description": "Get the media instance",
             "itemtype": "method",
             "name": "getMedia",
@@ -14847,7 +14847,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 747,
+            "line": 748,
             "description": "Update the loaded JSON data",
             "itemtype": "method",
             "name": "updateData",
@@ -14871,7 +14871,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 775,
+            "line": 776,
             "description": "Get a component by CSS selector",
             "itemtype": "method",
             "name": "getComponent",
@@ -14891,7 +14891,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 786,
+            "line": 787,
             "description": "Get components by CSS selector",
             "itemtype": "method",
             "name": "getComponents",
@@ -14911,7 +14911,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 805,
+            "line": 806,
             "description": "Create and add a Media instance",
             "itemtype": "method",
             "name": "addMedia",
@@ -14938,7 +14938,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 835,
+            "line": 836,
             "description": "Create and add a Controller instance",
             "itemtype": "method",
             "name": "addController",
@@ -14965,7 +14965,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 855,
+            "line": 856,
             "description": "Create and add a Block instance",
             "itemtype": "method",
             "name": "addBlock",
@@ -14992,7 +14992,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 891,
+            "line": 892,
             "description": "Update the custom CSS",
             "itemtype": "method",
             "name": "updateCSS",
@@ -15009,7 +15009,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 904,
+            "line": 905,
             "description": "Toggles the media playing state",
             "itemtype": "method",
             "name": "togglePlay",
@@ -15019,7 +15019,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 923,
+            "line": 924,
             "description": "Start playing the media at the current position, or plays a specific extract",
             "itemtype": "method",
             "name": "play",
@@ -15049,7 +15049,7 @@
         },
         {
             "file": "src\\js\\metaScore.Player.js",
-            "line": 974,
+            "line": 975,
             "description": "Set the current reading index",
             "itemtype": "method",
             "name": "setReadingIndex",

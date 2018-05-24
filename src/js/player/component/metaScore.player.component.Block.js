@@ -531,29 +531,6 @@ metaScore.namespace('player.component').Block = (function () {
     };
 
     /**
-     * Show/hide
-     *
-     * @method toggleVisibility
-     * @param {Boolean} [show=undefined] Whether to show or hide the block. If undefined, the visibility will be toggle
-     * @chainable
-     */
-    Block.prototype.toggleVisibility = function(show){
-        
-        if(show === true){
-            this.data('hidden', null);
-        }
-        else if(show === false){
-            this.data('hidden', "true");
-        }
-        else{
-            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
-        }
-    
-        return this;
-
-    };
-
-    /**
      * Set/Unset the draggable behaviour
      *
      * @method setDraggable

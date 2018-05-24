@@ -207,25 +207,25 @@ metaScore.Player = (function(){
                 }
                 break;
 
-            case 'hideBlock':
-                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
-                if(dom && dom._metaScore){
-                    dom._metaScore.toggleVisibility(false);
-                }
-                break;
-
             case 'showBlock':
-                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
-                if(dom && dom._metaScore){
-                    dom._metaScore.toggleVisibility(true);
-                }
-                break;
-
+            case 'hideBlock':
             case 'toggleBlock':
-                dom = player.getComponent('.block[data-name="'+ params.name +'"]');
-                if(dom && dom._metaScore){
-                    dom._metaScore.toggleVisibility();
+                var show;
+
+                switch(method){
+                    case 'showBlock':
+                        show = true;
+                        break;
+                    case 'hideBlock':
+                        show = false;
+                        break;
                 }
+
+                player.getComponents('.media.video, .controller, .block').each(function(index, dom){                    
+                    if(dom._metaScore && dom._metaScore.getName() === params.name){
+                        dom._metaScore.toggleVisibility(show);
+                    }
+                });
                 break;
 
             case 'rindex':
@@ -537,21 +537,22 @@ metaScore.Player = (function(){
      * @param {CustomEvent} evt The event object
      */
     Player.prototype.onTextElementBlockVisibility = function(evt){
-        var dom = this.getComponent('.block[data-name="'+ evt.detail.block +'"]'),
-            show;
-            
-        if(dom && dom._metaScore){
-            switch(evt.detail.action){
-                case 'show':
-                    show = true;
-                    break;
-                case 'hide':
-                    show = false;
-                    break;
-            }
-            
-            dom._metaScore.toggleVisibility(show);
+        var show;
+
+        switch(evt.detail.action){
+            case 'show':
+                show = true;
+                break;
+            case 'hide':
+                show = false;
+                break;
         }
+        
+        this.getComponents('.media.video, .controller, .block').each(function(index, dom){                    
+            if(dom._metaScore && dom._metaScore.getName() === evt.detail.block){
+                dom._metaScore.toggleVisibility(show);
+            }
+        });
     };
 
     /**
