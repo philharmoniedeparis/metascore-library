@@ -11,7 +11,7 @@ window.metaScoreAPI = (function(){
      * @private
      * @type Object
      */
-    var origin_regex = /^http[s]?:\/\/(.*\.)?metascore.philharmoniedeparis.fr/;
+    var origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedeparis.fr/;
 
      /**
      * The player API class <br/>
@@ -318,18 +318,27 @@ window.metaScoreAPI = (function(){
             iframes = document.querySelectorAll('iframe#'+ ids.join(',iframe#'));
 
             callback = function(api){
+
                 var links = document.querySelectorAll('a[rel="metascore"][data-guide="'+ api.target.id +'"]'),
-                    link, handler;
+                    link, handler, cleanArg;
+
+                cleanArg = function(arg){
+                    return decodeURIComponent(arg);
+                };
 
                 handler = function(link, evt){
-                    var actions = link.hash.replace(/^#/, '').split('&'),
-                        action;
+                    var actions = link.hash.replace(/^#/, '').split('&');
 
                     for(var i=0,length=actions.length; i<length; i++){
-                        action = actions[i].split('=');
+                        var action, fn, args;
 
-                        if(action[0] in api){
-                            api[action[0]].apply(api, action[1].split(','));
+                        action = actions[i].split('=');
+                        fn = action[0];
+
+                        if(fn in api){
+                            args = action[1].split(',').map(cleanArg);
+                            
+                            api[fn].apply(api, args);
                         }
                     }
 
