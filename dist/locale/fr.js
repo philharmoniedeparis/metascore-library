@@ -177,6 +177,7 @@ var metaScoreLocale = {
 	"player.component.Controller.locked": "Verrouillé ?",
 	"player.component.Controller.x": "X",
 	"player.component.Controller.y": "Y",
+	"player.component.Controller.z-index": "Indice d'affichage",
 	"player.component.Controller.border-radius": "Rayon de bordure",
 	"player.component.Element.name": "Nom",
 	"player.component.Element.locked": "Verrouillé ?",

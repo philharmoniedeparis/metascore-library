@@ -61,10 +61,22 @@ metaScore.namespace('player.component').Controller = (function () {
                     this.css('top', value +'px');
                 }
             },
+            'width': {
+                'editable': false,
+                'getter': function(skipDefault){
+                    return parseInt(this.css('width'), 10);
+                }
+            },
+            'height': {
+                'editable': false,
+                'getter': function(skipDefault){
+                    return parseInt(this.css('height'), 10);
+                }
+            },
             'z-index': {
                 'type': 'Number',
                 'configs': {
-                    'label': metaScore.Locale.t('player.component.Element.z-index', 'Display index')
+                    'label': metaScore.Locale.t('player.component.Controller.z-index', 'Display index')
                 },
                 'getter': function(skipDefault){
                     var value = parseInt(this.css('z-index', undefined, skipDefault), 10);

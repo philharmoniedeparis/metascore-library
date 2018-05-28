@@ -456,7 +456,7 @@ metaScore.namespace('player.component').Media = (function () {
         if(draggable && !this._draggable){
             this._draggable = new metaScore.Draggable({
                 'target': this,
-                'handle': this.child('video'),
+                'handle': this,
                 'limits': {
                     'top': 0,
                     'left': 0

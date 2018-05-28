@@ -5569,6 +5569,36 @@
             "module": "Core"
         },
         {
+            "file": "src\\js\\core\\metaScore.Function.js",
+            "line": 45,
+            "description": "Returns a throttled version of a function\nThe returned function will only call the original function at most once per the specified threshhold",
+            "itemtype": "method",
+            "name": "throttle",
+            "params": [
+                {
+                    "name": "fn",
+                    "description": "The function to throttle",
+                    "type": "Function"
+                },
+                {
+                    "name": "threshhold",
+                    "description": "The threshhold in milliseconds",
+                    "type": "Number"
+                },
+                {
+                    "name": "scope",
+                    "description": "The scope in which the original function will be called",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "The throttled function",
+                "type": "Function"
+            },
+            "class": "Function",
+            "module": "Core"
+        },
+        {
             "file": "src\\js\\core\\metaScore.Locale.js",
             "line": 16,
             "description": "Translate a string",
@@ -11158,7 +11188,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 92,
+            "line": 104,
             "description": "Setup the controller's UI",
             "itemtype": "method",
             "name": "setupUI",
@@ -11170,7 +11200,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 119,
+            "line": 131,
             "description": "Get the value of the controller's name property",
             "itemtype": "method",
             "name": "getName",
@@ -11184,7 +11214,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 129,
+            "line": 141,
             "description": "Update the displayed time",
             "itemtype": "method",
             "name": "updateTime",
@@ -11202,7 +11232,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Controller.js",
-            "line": 146,
+            "line": 158,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",

@@ -1,4 +1,4 @@
-/*! metaScore - v0.9.1 - 2018-05-24 - Oussama Mubarak */
+/*! metaScore - v0.9.1 - 2018-05-28 - Oussama Mubarak */
 ;(function (global) {
 "use strict";
 
@@ -132,7 +132,7 @@ var metaScore = {
      * @return {String} The revision identifier
      */
     getRevision: function(){
-        return "abc1a3";
+        return "525f07";
     },
 
     /**
@@ -3182,6 +3182,37 @@ metaScore.Function = (function () {
             return fn.apply(scope || this, args_array);
         };
     };
+    /**
+    * Returns a throttled version of a function
+    * The returned function will only call the original function at most once per the specified threshhold
+    * @method throttle
+    * @param {Function} fn The function to throttle
+    * @param {Number} threshhold The threshhold in milliseconds
+    * @param {Object} scope The scope in which the original function will be called
+    * @return {Function} The throttled function
+    */
+    Function.throttle = function(fn, threshhold, scope){
+        var lastFn, lastRan;
+
+        return function() {
+          var args = arguments;
+
+          if (!lastRan) {
+            fn.apply(scope, args);
+            lastRan = Date.now();
+          }
+          else {
+            clearTimeout(lastFn);
+
+            lastFn = setTimeout(function(){
+              if((Date.now() - lastRan) >= threshhold){
+                fn.apply(scope, args);
+                lastRan = Date.now();
+              }
+            }, threshhold - (Date.now() - lastRan));
+          }
+        };
+      };
 
     return Function;
 
