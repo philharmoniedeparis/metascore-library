@@ -125,6 +125,33 @@ body{
             }
         }
 
+        &.block-toggler{
+            min-width: 50px;
+            min-height: 10px;
+            width: 100px;
+            height: 20px;
+            overflow: hidden;
+            background-color: rgb(238, 238, 238);
+            border: 1px solid rgb(238, 238, 238);
+            .border-radius(0px);
+
+            .buttons{
+                display: flex;
+                width: 100%;
+                height: 100%;
+                flex-direction: row;
+                align-items: stretch;
+                align-content: stretch;
+
+                .button{
+                    svg{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+            }
+        }
+
         &.block{
             min-width: 50px;
             min-height: 50px;
@@ -525,6 +552,7 @@ body{
 
         &.editing{
             .draggable{
+                &.drag-handle,
                 .drag-handle{
                     cursor: move;
                 }
@@ -537,7 +565,8 @@ body{
             .metaScore-component{
                 &.media,
                 &.controller,
-                &.block{
+                &.block,
+                &.block-toggler{
                     &.selected{
                         z-index: 2147483647 !important;
                         .box-shadow(@block-outline 0px 0px 4px 2px);
@@ -548,6 +577,12 @@ body{
                         .pager{
                             display: block !important;
                         }
+                    }
+                }
+
+                &.block-toggler{
+                    .button{
+                        pointer-events: none;
                     }
                 }
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>editor.field.NumberField - metaScore</title>
+    <title>player.component.BlockToggler - metaScore</title>
     <link rel="stylesheet" href="../assets/css/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -138,33 +138,36 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>editor.field.NumberField Class</h1>
+<h1>player.component.BlockToggler Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/editor.Field.html" class="crosslink">editor.Field</a>
+            Extends <a href="../classes/player.Component.html" class="crosslink">player.Component</a>
         </div>
 
 
-            Module: <a href="../modules/Editor.html">Editor</a>
+            Module: <a href="../modules/Player.html">Player</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A number field based on an HTML input[type=number] element</p>
+    <p>A block toggler component</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_editor.field.NumberField" class="method item">
-            <h3 class="name"><code>editor.field.NumberField</code></h3>
+        <div id="method_player.component.BlockToggler" class="method item">
+            <h3 class="name"><code>player.component.BlockToggler</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
                                 <code>configs</code>
+                        </li>
+                        <li class="arg">
+                                <code>[configs.properties={...}}</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -202,96 +205,17 @@
         
                             </div>
         
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[value=0]</code>
-                                            <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                        </li>
+                        <li class="param">
+                                <code class="param-name">[configs.properties={...}}</code>
+                                <span class="type">Object</span>
         
-                                        <div class="param-description">
-                                            <p>The default value</p>
         
-                                        </div>
+                            <div class="param-description">
+                                <p>A list of the component properties as name/descriptor pairs</p>
         
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[min=null]</code>
-                                            <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                            </div>
         
-                                        <div class="param-description">
-                                            <p>The minimum allowed value</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[max=null]</code>
-                                            <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The maximum allowed value</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[step=1]</code>
-                                            <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The spin up/down step amount</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[spinButtons=true]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Whether to show the spin buttons</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[spinInterval=200]</code>
-                                            <span class="type">Integer</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The speed of the spin buttons</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[spinDirection=&#x27;horizontal&#x27;]</code>
-                                            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The direction of the spin buttons</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[flipSpinButtons=false]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Whether to flip the spin buttons</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
                         </li>
                     </ul>
                 </div>
@@ -371,19 +295,11 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_disable">disable</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_each">each</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_empty">empty</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_enable">enable</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -411,11 +327,31 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_getValue">getValue</a>
+                                <a href="#method_getCuePoint">getCuePoint</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_getId">getId</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_getName">getName</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_getProperties">getProperties</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_getProperty">getProperty</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_hasClass">hasClass</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_hasProperty">hasProperty</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -431,39 +367,15 @@
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_instanceOf">instanceOf</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_is">is</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_offset">offset</a>
-
-                            </li>
-                            <li class="index-item method private inherited">
-                                <a href="#method_onChange">onChange</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onInput">onInput</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onKeyDown">onKeyDown</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onMouseWheel">onMouseWheel</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onSpinBtnMouseDown">onSpinBtnMouseDown</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onSpinBtnMouseOut">onSpinBtnMouseOut</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_onSpinBtnMouseUp">onSpinBtnMouseUp</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -475,10 +387,6 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_readonly">readonly</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_remove">remove</a>
 
                             </li>
@@ -487,19 +395,23 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_reset">reset</a>
+                                <a href="#method_setCuePoint">setCuePoint</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_setDraggable">setDraggable</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_setDraggable">setDraggable</a>
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_setDescription">setDescription</a>
+                                <a href="#method_setProperties">setProperties</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_setMax">setMax</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_setMin">setMin</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_setProperty">setProperty</a>
 
                             </li>
                             <li class="index-item method private inherited">
@@ -507,19 +419,7 @@
 
                             </li>
                             <li class="index-item method inherited">
-                                <a href="#method_setValue">setValue</a>
-
-                            </li>
-                            <li class="index-item method inherited">
                                 <a href="#method_show">show</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_spinDown">spinDown</a>
-
-                            </li>
-                            <li class="index-item method private">
-                                <a href="#method_spinUp">spinUp</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -531,7 +431,15 @@
 
                             </li>
                             <li class="index-item method inherited">
+                                <a href="#method_toggleVisibility">toggleVisibility</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_triggerEvent">triggerEvent</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_update">update</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -570,11 +478,7 @@
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_reset">reset</a>
-
-                            </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_valuechange">valuechange</a>
+                                <a href="#event_propchange">propchange</a>
 
                             </li>
                     </ul>
@@ -1457,37 +1361,6 @@
 
 
 </div>
-<div id="method_disable" class="method item inherited">
-    <h3 class="name"><code>disable</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_disable">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Disable the field</p>
-
-    </div>
-
-
-
-
-</div>
 <div id="method_each" class="method item inherited">
     <h3 class="name"><code>each</code></h3>
 
@@ -1601,37 +1474,6 @@
 
     <div class="description">
         <p>Remove all children of each element managed by the Dom object</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_enable" class="method item inherited">
-    <h3 class="name"><code>enable</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_enable">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Enable the field</p>
 
     </div>
 
@@ -1983,10 +1825,208 @@
 
 
 </div>
-<div id="method_getValue" class="method item inherited">
-    <h3 class="name"><code>getValue</code></h3>
+<div id="method_getCuePoint" class="method item inherited">
+    <h3 class="name"><code>getCuePoint</code></h3>
 
         <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type">player.CuePoint</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_getCuePoint">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the cuepoint of the component</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">player.CuePoint</span>:
+                    <p>The cuepoint</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getId" class="method item inherited">
+    <h3 class="name"><code>getId</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_getId">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the component&#39;s id</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The id</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getName" class="method item inherited">
+    <h3 class="name"><code>getName</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_getName">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the value of the component&#39;s name property</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>:
+                    <p>The name</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getProperties" class="method item inherited">
+    <h3 class="name"><code>getProperties</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[skipDefaults=true]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_getProperties">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Get the values of all properties</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[skipDefaults=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to skip properties that have the default value</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Object</span>:
+                    <p>The values of the properties as name/value pairs</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_getProperty" class="method item inherited">
+    <h3 class="name"><code>getProperty</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>name</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
 
         <span class="returns-inline">
             <span class="type">Mixed</span>
@@ -2000,7 +2040,7 @@
 
     <div class="meta">
                 <p>Inherited from
-                <a href="../classes/editor.Field.html#method_getValue">editor.Field</a>:
+                <a href="../classes/player.Component.html#method_getProperty">player.Component</a>:
         </p>
 
 
@@ -2008,17 +2048,34 @@
     </div>
 
     <div class="description">
-        <p>Get the field&#39;s current value</p>
+        <p>Get the value of a given property</p>
 
     </div>
 
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">name</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The name of the property</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
 
         <div class="returns">
             <h4>Returns:</h4>
 
             <div class="returns-description">
                         <span class="type">Mixed</span>:
-                    <p>The value</p>
+                    <p>The value of the property</p>
 
             </div>
         </div>
@@ -2084,6 +2141,71 @@
             <div class="returns-description">
                         <span class="type">Boolean</span>:
                     <p>Whether a match was found</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_hasProperty" class="method item inherited">
+    <h3 class="name"><code>hasProperty</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>name</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_hasProperty">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Check if the component has a given property</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">name</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The property&#39;s name</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>Whether the component has the given property</p>
 
             </div>
         </div>
@@ -2254,6 +2376,71 @@
 
 
 </div>
+<div id="method_instanceOf" class="method item inherited">
+    <h3 class="name"><code>instanceOf</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_instanceOf">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Check if the component is of a given type</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
+
+
+                    <div class="param-description">
+                        <p>The type to check for</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>Whether the component is of the given type</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_is" class="method item inherited">
     <h3 class="name"><code>is</code></h3>
 
@@ -2358,380 +2545,6 @@
 
             </div>
         </div>
-
-
-</div>
-<div id="method_onChange" class="method item private">
-    <h3 class="name"><code>onChange</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-            <p>Inherited from
-            <a href="../classes/editor.Field.html#method_onChange">
-                editor.Field
-            </a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The change event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onInput" class="method item private">
-    <h3 class="name"><code>onInput</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The input event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onKeyDown" class="method item private">
-    <h3 class="name"><code>onKeyDown</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The keydown event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onMouseWheel" class="method item private">
-    <h3 class="name"><code>onMouseWheel</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The mousewheel event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onSpinBtnMouseDown" class="method item private">
-    <h3 class="name"><code>onSpinBtnMouseDown</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The spin button&#39;s mousedown event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onSpinBtnMouseOut" class="method item private">
-    <h3 class="name"><code>onSpinBtnMouseOut</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The spin button&#39;s mouseout event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_onSpinBtnMouseUp" class="method item private">
-    <h3 class="name"><code>onSpinBtnMouseUp</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>evt</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>The spin button&#39;s mouseup event handler</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">evt</code>
-                        <span class="type">Event</span>
-
-
-                    <div class="param-description">
-                        <p>The event object</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
 
 
 </div>
@@ -2881,61 +2694,6 @@
 
 
 </div>
-<div id="method_readonly" class="method item inherited">
-    <h3 class="name"><code>readonly</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code class="optional">[readonly]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/editor.Field.html#method_readonly">editor.Field</a>:
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Toggle the field&#39;s readonly state</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name optional">[readonly]</code>
-                        <span class="type">Boolean</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Whether the field should be readonly, the current state is toggled if not provided</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_remove" class="method item inherited">
     <h3 class="name"><code>remove</code></h3>
 
@@ -3021,30 +2779,30 @@
 
 
 </div>
-<div id="method_reset" class="method item">
-    <h3 class="name"><code>reset</code></h3>
+<div id="method_setCuePoint" class="method item inherited">
+    <h3 class="name"><code>setCuePoint</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>supressEvent</code>
+                        <code>configs</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
 
+        <span class="returns-inline">
+            <span class="type">player.CuePoint</span>
+        </span>
 
 
 
 
 
-        <span class="flag chainable">chainable</span>
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/editor.Field.html#method_reset">
-                editor.Field
-            </a>
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_setCuePoint">player.Component</a>:
         </p>
 
 
@@ -3052,7 +2810,7 @@
     </div>
 
     <div class="description">
-        <p>Reset the field&#39;s configs</p>
+        <p>Set a cuepoint on the component</p>
 
     </div>
 
@@ -3061,12 +2819,12 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">supressEvent</code>
-                        <span class="type">Boolean</span>
+                        <code class="param-name">configs</code>
+                        <span class="type">Object</span>
 
 
                     <div class="param-description">
-                        <p>Whether to prevent the custom event from firing</p>
+                        <p>Custom configs to override defaults</p>
 
                     </div>
 
@@ -3074,16 +2832,158 @@
             </ul>
         </div>
 
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">player.CuePoint</span>:
+                    <p>The created cuepoint</p>
+
+            </div>
+        </div>
 
 
 </div>
-<div id="method_setDescription" class="method item inherited">
-    <h3 class="name"><code>setDescription</code></h3>
+<div id="method_setDraggable" class="method item">
+    <h3 class="name"><code>setDraggable</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>description</code>
+                        <code class="optional">[draggable=true]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Draggable.html" class="crosslink">Draggable</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set/Unset the draggable behaviour</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[draggable=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to activate or deactivate the draggable</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Draggable.html" class="crosslink">Draggable</a></span>:
+                    <p>The draggable behaviour</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_setDraggable" class="method item">
+    <h3 class="name"><code>setDraggable</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[resizable=true]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Resizable.html" class="crosslink">Resizable</a></span>
+        </span>
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set/Unset the resizable behaviour</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[resizable=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to activate or deactivate the resizable</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"><a href="../classes/Resizable.html" class="crosslink">Resizable</a></span>:
+                    <p>The resizable behaviour</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_setProperties" class="method item inherited">
+    <h3 class="name"><code>setProperties</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>properties</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[supressEvent=false]</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -3098,7 +2998,7 @@
 
     <div class="meta">
                 <p>Inherited from
-                <a href="../classes/editor.Field.html#method_setDescription">editor.Field</a>:
+                <a href="../classes/player.Component.html#method_setProperties">player.Component</a>:
         </p>
 
 
@@ -3106,7 +3006,7 @@
     </div>
 
     <div class="description">
-        <p>Set the description text</p>
+        <p>Set property values</p>
 
     </div>
 
@@ -3115,118 +3015,107 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">description</code>
+                        <code class="param-name">properties</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                        <p>The list of properties to set as name/value pairs</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[supressEvent=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to supress the propchange event</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_setProperty" class="method item inherited">
+    <h3 class="name"><code>setProperty</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>name</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[supressEvent=false]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_setProperty">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Set the value of a given property</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">name</code>
                         <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
 
 
                     <div class="param-description">
-                        <p>The description text</p>
+                        <p>The name of the property</p>
 
                     </div>
 
                 </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_setMax" class="method item">
-    <h3 class="name"><code>setMax</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set the maximum allowed value</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
                 <li class="param">
                         <code class="param-name">value</code>
-                        <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
+                        <span class="type">Mixed</span>
 
 
                     <div class="param-description">
-                        <p>The maximum allowed value</p>
+                        <p>The value to set</p>
 
                     </div>
 
                 </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_setMin" class="method item">
-    <h3 class="name"><code>setMin</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>value</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set the minimum allowed value</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
+                        <code class="param-name optional">[supressEvent=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
                     <div class="param-description">
-                        <p>The minimum allowed value</p>
+                        <p>Whether to supress the propchange event</p>
 
                     </div>
 
@@ -3252,8 +3141,8 @@
 
     <div class="meta">
             <p>Inherited from
-            <a href="../classes/editor.Field.html#method_setupUI">
-                editor.Field
+            <a href="../classes/player.Component.html#method_setupUI">
+                player.Component
             </a>
         </p>
 
@@ -3262,80 +3151,10 @@
     </div>
 
     <div class="description">
-        <p>Setup the field&#39;s UI</p>
+        <p>Setup the block&#39;s UI</p>
 
     </div>
 
-
-
-
-</div>
-<div id="method_setValue" class="method item">
-    <h3 class="name"><code>setValue</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>value</code>
-                </li>
-                <li class="arg">
-                        <code>supressEvent</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-        <span class="flag chainable">chainable</span>
-
-
-    <div class="meta">
-            <p>Inherited from
-            <a href="../classes/editor.Field.html#method_setValue">
-                editor.Field
-            </a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Set the field&#39;s value</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type"><a href="../classes/Number.html" class="crosslink">Number</a></span>
-
-
-                    <div class="param-description">
-                        <p>The new value</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">supressEvent</code>
-                        <span class="type">Boolean</span>
-
-
-                    <div class="param-description">
-                        <p>Whether to prevent the custom event from firing</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
@@ -3364,66 +3183,6 @@
 
     <div class="description">
         <p>Make all the elements managed by the Dom object visible</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_spinDown" class="method item private">
-    <h3 class="name"><code>spinDown</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Decrement the value by one step</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_spinUp" class="method item private">
-    <h3 class="name"><code>spinUp</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-        <span class="flag private">private</span>
-
-
-
-
-
-    <div class="meta">
-                <p>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Increment the value by one step</p>
 
     </div>
 
@@ -3566,6 +3325,61 @@
 
 
 </div>
+<div id="method_toggleVisibility" class="method item inherited">
+    <h3 class="name"><code>toggleVisibility</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[show=undefined]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/player.Component.html#method_toggleVisibility">player.Component</a>:
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Show/hide</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[show=undefined]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Whether to show or hide the component. If undefined, the visibility will be toggle</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_triggerEvent" class="method item inherited">
     <h3 class="name"><code>triggerEvent</code></h3>
 
@@ -3673,6 +3487,59 @@
 
             </div>
         </div>
+
+
+</div>
+<div id="method_update" class="method item">
+    <h3 class="name"><code>update</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>blocks</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+        <span class="flag chainable">chainable</span>
+
+
+    <div class="meta">
+                <p>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Update the displayed time</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">blocks</code>
+                        <span class="type"><a href="../classes/Dom.html" class="crosslink">Dom</a></span>
+
+
+                    <div class="param-description">
+                        <p>A Dom instance containing the components to control</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -3868,8 +3735,8 @@
                     
                     
                     </div>
-                    <div id="event_reset" class="events item inherited">
-                        <h3 class="name"><code>reset</code></h3>
+                    <div id="event_propchange" class="events item inherited">
+                        <h3 class="name"><code>propchange</code></h3>
                         <span class="type"></span>
                     
                     
@@ -3878,14 +3745,14 @@
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/editor.Field.html#event_reset">editor.Field</a>:
+                                    <a href="../classes/player.Component.html#event_propchange">player.Component</a>:
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired when the field is reset</p>
+                            <p>Fired when a property changed</p>
                     
                         </div>
                     
@@ -3894,55 +3761,23 @@
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">field</code>
+                                            <code class="param-name">component</code>
                                             <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
-                                            <p>The field instance</p>
+                                            <p>The component instance</p>
                     
                                         </div>
                     
                                     </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_valuechange" class="events item">
-                        <h3 class="name"><code>valuechange</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/editor.Field.html#event_valuechange">
-                                    editor.Field
-                                </a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired when the field&#39;s value changes</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">field</code>
-                                            <span class="type">Object</span>
+                                            <code class="param-name">property</code>
+                                            <span class="type"><a href="../classes/String.html" class="crosslink">String</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>The field instance</p>
+                                            <p>The name of the property</p>
                     
                                         </div>
                     
@@ -3953,7 +3788,7 @@
                     
                     
                                         <div class="param-description">
-                                            <p>The new value</p>
+                                            <p>The new value of the property</p>
                     
                                         </div>
                     

@@ -27,6 +27,7 @@ metaScore.namespace('editor.panel').Block = (function () {
             'menuItems': {
                 'synched': metaScore.Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
                 'non-synched': metaScore.Locale.t('editor.panel.Block.menuItems.non-synched', 'Add a non-synchronized block'),
+                'block-toggler': metaScore.Locale.t('editor.panel.Block.menuItems.block-toggler', 'Add a block toggler'),
                 'delete': metaScore.Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
             }
         }

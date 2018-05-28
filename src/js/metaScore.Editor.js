@@ -248,6 +248,12 @@ metaScore.Editor = (function(){
                             'callback': metaScore.Function.proxy(function(context){
                                 this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
                             }, this)
+                        },
+                        'add-block-toggler': {
+                            'text': metaScore.Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
+                            'callback': metaScore.Function.proxy(function(context){
+                                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
+                            }, this)
                         }
                     },
                     'toggler': metaScore.Function.proxy(function(context){
@@ -257,63 +263,74 @@ metaScore.Editor = (function(){
                 'copy-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.copy-block', 'Copy block'),
                     'callback': metaScore.Function.proxy(function(context){
-                        this.clipboard.setData('block', metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.getProperties());
+                        var component = metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
+                            type = component.instanceOf('BlockToggler') ? 'block-toggler' : 'block';
+
+                        this.clipboard.setData(type, component.getProperties());
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
-                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.block') ? true : false);
+                        return (this.editing === true) && (metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
                     }, this)
                 },
                 'paste-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.paste-block', 'Paste block'),
                     'callback': metaScore.Function.proxy(function(context){
-                        var component = this.clipboard.getData();
+                        var type = this.clipboard.getDataType(),
+                            component = this.clipboard.getData();
+
                         component.x += 5;
                         component.y += 5;
-                        this.getPlayer().addBlock(component);
+
+                        if(type === 'block-toggler'){
+                            this.getPlayer().addBlockToggler(component);
+                        }
+                        else{
+                            this.getPlayer().addBlock(component);
+                        }
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block');
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block' || this.clipboard.getDataType() === 'block-toggler');
                     }, this)
                 },
                 'delete-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.delete-block', 'Delete block'),
                     'callback': metaScore.Function.proxy(function(context){
-                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore, true);
+                        this.deletePlayerComponent(metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
                         if(this.editing !== true){
                             return false;
                         }
                         
-                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getProperty('locked');
                     }, this)
                 },
                 'lock-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.lock-block', 'Lock block'),
                     'callback': metaScore.Function.proxy(function(context){
-                        metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.setProperty('locked', true);
+                        metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', true);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
                         if(this.editing !== true){
                             return false;
                         }
                         
-                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getProperty('locked');
                     }, this)
                 },
                 'unlock-block': {
                     'text': metaScore.Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
                     'callback': metaScore.Function.proxy(function(context){
-                        metaScore.Dom.closest(context, '.metaScore-component.block')._metaScore.setProperty('locked', false);
+                        metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', false);
                     }, this),
                     'toggler': metaScore.Function.proxy(function(context){
                         if(this.editing !== true){
                             return false;
                         }
                         
-                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block');
+                        var dom = metaScore.Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && dom._metaScore.getProperty('locked');
                     }, this)
                 },
@@ -935,6 +952,12 @@ metaScore.Editor = (function(){
                 panel.updateProperties(block, new_values);
             }
         });
+
+        if(!block.instanceOf('BlockToggler')){
+            if(('x' in new_values) || ('y' in new_values) || ('width' in new_values) || ('height' in new_values)){
+                this.getPlayer().updateBlockTogglers();
+            }
+        }
     };
 
     /**
@@ -952,6 +975,10 @@ metaScore.Editor = (function(){
             case 'synched':
             case 'non-synched':
                 this.addPlayerComponent('block', {'synched': action === 'synched'}, this.getPlayer());
+                break;
+
+            case 'block-toggler':
+                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
                 break;
 
             case 'delete':
@@ -978,7 +1005,7 @@ metaScore.Editor = (function(){
             this.panels.block.unsetComponent();
         }
         else{
-            dom = this.getPlayer().getComponent('.media#'+ id +', .controller#'+ id +', .block#'+ id);
+            dom = this.getPlayer().getComponent('.media#'+ id +', .controller#'+ id +', .block#'+ id +', .block-toggler#'+ id);
 
             if(dom && dom._metaScore){
                 this.panels.block.setComponent(dom._metaScore);
@@ -1373,6 +1400,46 @@ metaScore.Editor = (function(){
     };
 
     /**
+     * Player mediaadd event callback
+     *
+     * @method onPlayerMediaAdd
+     * @private
+     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/mediaadd:event"}}Player.blockadd{{/crossLink}}
+     */
+    Editor.prototype.onPlayerMediaAdd = function(evt){
+        this.updateBlockSelector();
+        
+        this.getPlayer().updateBlockTogglers();
+    };
+
+    /**
+     * Player controlleradd event callback
+     *
+     * @method onPlayerControllerAdd
+     * @private
+     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/controlleradd:event"}}Player.blockadd{{/crossLink}}
+     */
+    Editor.prototype.onPlayerControllerAdd = function(evt){
+        this.updateBlockSelector();
+
+        this.getPlayer().updateBlockTogglers();
+    };
+
+    /**
+     * Player blocktaggleradd event callback
+     *
+     * @method onPlayerBlockTogglerAdd
+     * @private
+     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/blocktaggleradd:event"}}Player.blockadd{{/crossLink}}
+     */
+    Editor.prototype.onPlayerBlockTogglerAdd = function(evt){
+        this.updateBlockSelector();
+
+        var blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
+        evt.detail.blocktoggler.update(blocks);
+    };
+
+    /**
      * Player blockadd event callback
      *
      * @method onPlayerBlockAdd
@@ -1381,6 +1448,8 @@ metaScore.Editor = (function(){
      */
     Editor.prototype.onPlayerBlockAdd = function(evt){
         this.updateBlockSelector();
+
+        this.getPlayer().updateBlockTogglers();
     };
 
     /**
@@ -1395,8 +1464,12 @@ metaScore.Editor = (function(){
             component = child._metaScore;
 
         if(component){
-            if(component.instanceOf('Block')){
+            if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
                 this.updateBlockSelector();
+                
+                if(!component.instanceOf('BlockToggler')){
+                    this.getPlayer().updateBlockTogglers();
+                }
             }
             else if(component.instanceOf('Page')){
                 this.updatePageSelector();
@@ -1468,6 +1541,9 @@ metaScore.Editor = (function(){
             .addDelegate('.metaScore-component.block', 'pageactivate', metaScore.Function.proxy(this.onBlockPageActivate, this))
             .addDelegate('.metaScore-component.page', 'elementadd', metaScore.Function.proxy(this.onPageElementAdd, this))
             .addListener('mousedown', metaScore.Function.proxy(this.onPlayerMousedown, this))
+            .addListener('mediaadd', metaScore.Function.proxy(this.onPlayerMediaAdd, this))
+            .addListener('controlleradd', metaScore.Function.proxy(this.onPlayerControlleAdd, this))
+            .addListener('blocktoggleradd', metaScore.Function.proxy(this.onPlayerBlockTogglerAdd, this))
             .addListener('blockadd', metaScore.Function.proxy(this.onPlayerBlockAdd, this))
             .addListener('keydown', metaScore.Function.proxy(this.onKeydown, this))
             .addListener('keyup', metaScore.Function.proxy(this.onKeyup, this))
@@ -2006,7 +2082,7 @@ metaScore.Editor = (function(){
             .clear()
             .addOption(null, '');
 
-        this.getPlayer().getComponents('.media.video, .controller, .block').each(function(index, dom){
+        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').each(function(index, dom){
             if(dom._metaScore){
                 block = dom._metaScore;                
                 selector.addOption(block.getId(), panel.getSelectorLabel(block));
@@ -2278,6 +2354,24 @@ metaScore.Editor = (function(){
                     }
                 });
                 break;
+                
+            case 'block-toggler':
+                panel = this.panels.block;
+                component = parent.addBlockToggler(metaScore.Object.extend({'name': metaScore.Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
+
+                panel.setComponent(component);
+
+                this.history.add({
+                    'undo': function(){
+                        panel.unsetComponent();
+                        component.remove();
+                    },
+                    'redo': function(){
+                        parent.addBlockToggler(component);
+                        panel.setComponent(component);
+                    }
+                });
+                break;
         }
         
         this.player_frame.focus();
@@ -2300,7 +2394,7 @@ metaScore.Editor = (function(){
             index, configs, auto_page,
             type, alert_msg;
             
-        if(component.instanceOf('Block')){
+        if(component.instanceOf('Block') || component.instanceOf('BlockToggler')){
             type = 'block';
         }
         else if(component.instanceOf('Page')){
@@ -2355,7 +2449,12 @@ metaScore.Editor = (function(){
          
                     this.history.add({
                         'undo': function(){
-                            player.addBlock(component);
+                            if(component.instanceOf('BlockToggler')){
+                                player.addBlockToggler(component);
+                            }
+                            else{
+                                player.addBlock(component);
+                            }
                             panel.setComponent(component);
                         },
                         'redo': function(){
@@ -2363,6 +2462,10 @@ metaScore.Editor = (function(){
                             component.remove();
                         }
                     });
+
+                    if(!component.instanceOf('BlockToggler')){
+                        player.updateBlockTogglers();
+                    }
                     break;
                     
                 case 'page':
@@ -2510,7 +2613,7 @@ metaScore.Editor = (function(){
         var player = this.getPlayer(),
             id = player.getId(),
             vid = player.getRevision(),
-            components = player.getComponents('.media, .controller, .block'),
+            components = player.getComponents('.media, .controller, .block, .block-toggler'),
             data = new FormData(),
             details = this.detailsOverlay.getValues(),
             blocks = [],
@@ -2546,8 +2649,11 @@ metaScore.Editor = (function(){
             else if(component.instanceOf('Controller')){
                 data.append('blocks[]', JSON.stringify(metaScore.Object.extend({'type': 'controller'}, component.getProperties())));
             }
+            else if(component.instanceOf('BlockToggler')){
+                data.append('blocks[]', JSON.stringify(metaScore.Object.extend({'type': 'block-toggler'}, component.getProperties())));
+            }
             else if(component.instanceOf('Block')){
-                data.append('blocks[]', JSON.stringify(component.getProperties()));
+                data.append('blocks[]', JSON.stringify(metaScore.Object.extend({'type': 'block'}, component.getProperties())));
             }
         }, this);
 

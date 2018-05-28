@@ -61,6 +61,15 @@ metaScore.Player = (function(){
     var EVT_CONTROLLERADD = 'controlleradd';
 
     /**
+       * Fired when a block toggler is added
+       *
+       * @event blocktoggleradd
+       * @param {Object} player The player instance
+       * @param {Object} blocktoggler The blocktoggler instance
+       */
+    var EVT_BLOCKTOGGLERADD = 'blocktoggleradd';
+
+    /**
        * Fired when a block is added
        *
        * @event blockadd
@@ -615,10 +624,16 @@ metaScore.Player = (function(){
                     this.controller = this.addController(block);
                     break;
 
+                case 'block-toggler':
+                    this.addBlockToggler(block);
+                    break;
+
                 default:
                     this.addBlock(block);
             }
         }, this);
+
+        this.updateBlockTogglers();
 
         if(this.configs.keyboard){
             new metaScore.Dom('body').addListener('keydown', metaScore.Function.proxy(this.onKeydown, this));
@@ -854,6 +869,25 @@ metaScore.Player = (function(){
     };
 
     /**
+     * Create and add a Block Toggler instance
+     *
+     * @method addBlockToggler
+     * @param {Object} configs The configurations to send to the Controller class
+     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
+     * @return {BlockToggler} The Block Toggler instance
+     */
+    Player.prototype.addBlockToggler = function(configs, supressEvent){
+        var toggler = new metaScore.player.component.BlockToggler(configs)
+            .appendTo(this);
+
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_BLOCKTOGGLERADD, {'player': this, 'blocktoggler': toggler}, true, false);
+        }
+
+        return toggler;
+    };
+
+    /**
      * Create and add a Block instance
      *
      * @method addBlock
@@ -1001,6 +1035,15 @@ metaScore.Player = (function(){
         }
 
         return this;
+    };
+
+    Player.prototype.updateBlockTogglers = function(){
+        var block_togglers = this.getComponents('.block-toggler'),
+            blocks = this.getComponents('.block, .media.video, .controller');
+
+        block_togglers.each(function(index, dom){
+            dom._metaScore.update(blocks);
+        });
     };
 
     return Player;
