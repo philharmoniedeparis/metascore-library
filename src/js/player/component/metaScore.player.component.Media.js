@@ -413,8 +413,6 @@ metaScore.namespace('player.component').Media = (function () {
     Media.prototype.setTime = function(time) {
         this.dom.currentTime = parseFloat(time) / 100;
 
-        this.triggerTimeUpdate(false);
-
         return this;
     };
 

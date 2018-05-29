@@ -59,6 +59,7 @@ metaScore.namespace('player').CuePoint = (function () {
         this.start = metaScore.Function.proxy(this.start, this);
         this.stop = metaScore.Function.proxy(this.stop, this);
         this.onMediaTimeUpdate = metaScore.Function.proxy(this.onMediaTimeUpdate, this);
+        this.onMediaSeeking = metaScore.Function.proxy(this.onMediaSeeking, this);
         this.onMediaSeeked = metaScore.Function.proxy(this.onMediaSeeked, this);
     }
 
@@ -89,8 +90,25 @@ metaScore.namespace('player').CuePoint = (function () {
      * @private
      * @param {Event} evt The event object
      */
+    CuePoint.prototype.onMediaSeeking = function(evt){
+        this.getMedia()
+            .addListener('seeked', this.onMediaSeeked)
+            .removeListener('timeupdate', this.onMediaTimeUpdate);
+    };
+
+    /**
+     * The media's seeked event handler
+     * 
+     * @method onMediaSeeked
+     * @private
+     * @param {Event} evt The event object
+     */
     CuePoint.prototype.onMediaSeeked = function(evt){
         var cur_time = this.getMedia().getTime();
+
+        this.getMedia()
+            .addListener('timeupdate', this.onMediaTimeUpdate)
+            .removeListener('seeked', this.onMediaSeeked);
         
         if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
@@ -101,6 +119,9 @@ metaScore.namespace('player').CuePoint = (function () {
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
             this.triggerEvent(EVT_SEEKOUT);
             this.stop();
+        }
+        else{
+            this.update();
         }
     };
 
@@ -146,7 +167,7 @@ metaScore.namespace('player').CuePoint = (function () {
         }
         
         this.running = true;
-        this.getMedia().addListener('seeked', this.onMediaSeeked);
+        this.getMedia().addListener('seeking', this.onMediaSeeking);
 
         this.triggerEvent(EVT_UPDATE);
     };
@@ -197,7 +218,7 @@ metaScore.namespace('player').CuePoint = (function () {
             return;
         }
 
-        this.getMedia().removeListener('seeked', this.onMediaSeeked);
+        this.getMedia().removeListener('seeking', this.onMediaSeeking);
         
         if(supressEvent !== true){
             this.triggerEvent(EVT_STOP);

@@ -11717,7 +11717,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 421,
+            "line": 419,
             "description": "Get the current media time",
             "itemtype": "method",
             "name": "getTime",
@@ -11731,7 +11731,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 431,
+            "line": 429,
             "description": "Get the media's duration",
             "itemtype": "method",
             "name": "getDuration",
@@ -11745,7 +11745,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 441,
+            "line": 439,
             "description": "Set/Unset the draggable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -11768,7 +11768,7 @@
         },
         {
             "file": "src\\js\\player\\component\\metaScore.player.component.Media.js",
-            "line": 475,
+            "line": 473,
             "description": "Set/Unset the resizable behaviour",
             "itemtype": "method",
             "name": "setDraggable",
@@ -12227,7 +12227,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 74,
+            "line": 75,
             "description": "The media's timeupdate event handler",
             "itemtype": "method",
             "name": "onMediaTimeUpdate",
@@ -12245,7 +12245,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 85,
+            "line": 86,
             "description": "The media's seeked event handler",
             "itemtype": "method",
             "name": "onMediaSeeked",
@@ -12263,7 +12263,25 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 107,
+            "line": 99,
+            "description": "The media's seeked event handler",
+            "itemtype": "method",
+            "name": "onMediaSeeked",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "evt",
+                    "description": "The event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "CuePoint",
+            "module": "Player"
+        },
+        {
+            "file": "src\\js\\player\\metaScore.player.CuePoint.js",
+            "line": 128,
             "description": "Get the media component on which this cuepoint is attached",
             "itemtype": "method",
             "name": "getMedia",
@@ -12276,7 +12294,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 117,
+            "line": 138,
             "description": "Init the cuepoint",
             "itemtype": "method",
             "name": "init",
@@ -12286,7 +12304,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 132,
+            "line": 153,
             "description": "Start executing the cuepoint",
             "itemtype": "method",
             "name": "start",
@@ -12304,7 +12322,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 154,
+            "line": 175,
             "description": "Update the cuepoint",
             "itemtype": "method",
             "name": "update",
@@ -12322,7 +12340,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 188,
+            "line": 209,
             "description": "Stop executing the cuepoint",
             "itemtype": "method",
             "name": "stop",
@@ -12340,7 +12358,7 @@
         },
         {
             "file": "src\\js\\player\\metaScore.player.CuePoint.js",
-            "line": 214,
+            "line": 235,
             "description": "Destroy the cuepoint",
             "itemtype": "method",
             "name": "destroy",
