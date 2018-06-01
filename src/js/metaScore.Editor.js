@@ -249,6 +249,9 @@ metaScore.Editor = (function(){
                                 this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
                             }, this)
                         },
+                        'separator': {
+                            'class': 'separator'
+                        },
                         'add-block-toggler': {
                             'text': metaScore.Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
                             'callback': metaScore.Function.proxy(function(context){
