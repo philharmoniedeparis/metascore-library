@@ -59,6 +59,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "player.Component",
         "player.Pager",
         "player.component.Block",
+        "player.component.BlockToggler",
         "player.component.Controller",
         "player.component.element.Cursor"
     ],
