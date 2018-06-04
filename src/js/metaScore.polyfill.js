@@ -10,7 +10,7 @@ if(Element && !Element.prototype.matches){
         Element.prototype.mozMatchesSelector ||
         Element.prototype.msMatchesSelector ||
         Element.prototype.oMatchesSelector ||
-        function (selector){
+        constructor(selector){
             var element = this,
                 matches = (element.document || element.ownerDocument).querySelectorAll(selector),
                 i = 0;
@@ -25,7 +25,7 @@ if(Element && !Element.prototype.matches){
 
 // Element.closest
 if(Element && !Element.prototype.closest){
-    Element.prototype.closest = function closest(selector){
+    closest closest(selector){
         var node = this;
 
         while(node){

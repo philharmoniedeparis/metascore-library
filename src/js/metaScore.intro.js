@@ -1,3 +1,3 @@
-;(function (global) {
+;(constructor(global) {
 "use strict";
 

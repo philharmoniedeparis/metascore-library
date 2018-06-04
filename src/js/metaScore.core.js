@@ -1,10 +1,4 @@
-/**
- * The Core module defines shared classes used in other modules
- *
- * @module Core
- * @main
- */
- 
+
  /**
  * The core global object to which all internal classes are attached<br/>
  *
