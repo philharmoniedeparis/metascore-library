@@ -1,5 +1,5 @@
-import {Dom} from '../core/Dom';
-import {Locale} from '../core/Locale';
+import Dom from '../core/Dom';
+import {t} from '../core/utils/Locale';
 
 export default class Pager extends Dom{
 
@@ -19,7 +19,7 @@ export default class Pager extends Dom{
             .appendTo(this);
 
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
-            .addListener('mousedown', function(evt){
+            .addListener('mousedown', (evt) => {
                 evt.stopPropagation();
             })
             .appendTo(this);
@@ -34,20 +34,20 @@ export default class Pager extends Dom{
 
     /**
      * Update the page counter
-     * 
+     *
      * @method updateCount
      * @param {Integer} index The index of the block's active page
      * @param {Integer} count The number of pages
      * @chainable
      */
     updateCount(index, count){
-        this.count.text(Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
+        this.count.text(t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 
         this.buttons.first.toggleClass('inactive', index < 1);
         this.buttons.previous.toggleClass('inactive', index < 1);
         this.buttons.next.toggleClass('inactive', index >= count - 1);
 
         return this;
-    };
+    }
 
 }

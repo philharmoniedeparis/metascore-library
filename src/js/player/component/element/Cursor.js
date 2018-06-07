@@ -1,9 +1,7 @@
-import {Element} from '../Element';
-import {Dom} from '../../../core/Dom';
-import {Locale} from '../core/Locale';
-import {_Function} from '../core/utils/Function';
-import {_Object} from '../core/utils/Object';
-import {_Color} from '../core/utils/Color';
+import Element from '../Element';
+import Dom from '../../../core/Dom';
+import {t} from '../../../core/utils/Locale';
+import {toCSS} from '../../../core/utils/Color';
 
 /**
  * Fired when a cursor is clicked, requesting a time update
@@ -12,133 +10,123 @@ import {_Color} from '../core/utils/Color';
  * @param {Object} element The element instance
  * @param {Number} time The time value according to the click position
  */
-var EVT_TIME = 'time';
+const EVT_TIME = 'time';
 
+/**
+ * A cursor element
+ */
 export default class Cursor extends Element {
 
-    /**
-     * A cursor element
-     *
-     * @class Cursor
-     * @namespace player.component.element
-     * @extends player.component.Element
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'properties': Object.assign({}, Cursor.parent.defaults.properties, {
+                'start-time': {
+                    'type': 'Time',
+                    'configs': {
+                        'label': t('player.component.Element.start-time', 'Start time'),
+                        'inButton': true,
+                        'outButton': true
+                    },
+                    'getter': function(){
+                        const value = parseFloat(this.data('start-time'));
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.data('start-time', isNaN(value) ? null : value);
+                    }
+                },
+                'end-time': {
+                    'type': 'Time',
+                    'configs': {
+                        'label': t('player.component.Element.end-time', 'End time'),
+                        'inButton': true,
+                        'outButton': true
+                    },
+                    'getter': function(){
+                        const value = parseFloat(this.data('end-time'));
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.data('end-time', isNaN(value) ? null : value);
+                    }
+                },
+                'direction': {
+                    'type': 'Select',
+                    'configs': {
+                        'label': t('player.component.element.Cursor.direction', 'Direction'),
+                        'options': [
+                            {
+                                'value': 'right',
+                                'text': t('player.component.element.Cursor.direction.right', 'Left > Right')
+                            },
+                            {
+                                'value': 'left',
+                                'text': t('player.component.element.Cursor.direction.left', 'Right > Left')
+                            },
+                            {
+                                'value': 'bottom',
+                                'text': t('player.component.element.Cursor.direction.bottom', 'Top > Bottom')
+                            },
+                            {
+                                'value': 'top',
+                                'text': t('player.component.element.Cursor.direction.top', 'Bottom > Top')
+                            }
+                        ]
+                    },
+                    'getter': function(){
+                        return this.data('direction');
+                    },
+                    'setter': function(value){
+                        this.data('direction', value);
+                    }
+                },
+                'acceleration': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.element.Cursor.acceleration', 'Acceleration'),
+                        'step': 0.01,
+                        'min': 0.01
+                    },
+                    'getter': function(){
+                        const value = parseFloat(this.data('accel'));
+                        return isNaN(value) ? 1 : value;
+                    },
+                    'setter': function(value){
+                        this.data('accel', value);
+                    }
+                },
+                'cursor-width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.element.Cursor.cursor-width', 'Cursor width')
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.cursor.css('width', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.cursor.css('width', `${value}px`);
+                    }
+                },
+                'cursor-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.element.Cursor.cursor-color', 'Cursor color')
+                    },
+                    'getter': function(skipDefault){
+                         return this.cursor.css('background-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.cursor.css('background-color', toCSS(value));
+                    }
+                }
+            })
+        });
     }
-
-    Cursor.defaults = {
-        'properties': _Object.extend({}, Cursor.parent.defaults.properties, {
-            'start-time': {
-                'type': 'Time',
-                'configs': {
-                    'label': Locale.t('player.component.Element.start-time', 'Start time'),
-                    'inButton': true,
-                    'outButton': true
-                },
-                'getter': function(skipDefault){
-                    var value = parseFloat(this.data('start-time'));
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.data('start-time', isNaN(value) ? null : value);
-                }
-            },
-            'end-time': {
-                'type': 'Time',
-                'configs': {
-                    'label': Locale.t('player.component.Element.end-time', 'End time'),
-                    'inButton': true,
-                    'outButton': true
-                },
-                'getter': function(skipDefault){
-                    var value = parseFloat(this.data('end-time'));
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.data('end-time', isNaN(value) ? null : value);
-                }
-            },
-            'direction': {
-                'type': 'Select',
-                'configs': {
-                    'label': Locale.t('player.component.element.Cursor.direction', 'Direction'),
-                    'options': [
-                        {
-                            'value': 'right',
-                            'text': Locale.t('player.component.element.Cursor.direction.right', 'Left > Right')
-                        },
-                        {
-                            'value': 'left',
-                            'text': Locale.t('player.component.element.Cursor.direction.left', 'Right > Left')
-                        },
-                        {
-                            'value': 'bottom',
-                            'text': Locale.t('player.component.element.Cursor.direction.bottom', 'Top > Bottom')
-                        },
-                        {
-                            'value': 'top',
-                            'text': Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top')
-                        }
-                    ]
-                },
-                'getter': function(skipDefault){
-                    return this.data('direction');
-                },
-                'setter': function(value){
-                    this.data('direction', value);
-                }
-            },
-            'acceleration': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.element.Cursor.acceleration', 'Acceleration'),
-                    'step': 0.01,
-                    'min': 0.01
-                },
-                'getter': function(skipDefault){
-                    var value = parseFloat(this.data('accel'));
-                    return isNaN(value) ? 1 : value;
-                },
-                'setter': function(value){
-                    this.data('accel', value);
-                }
-            },
-            'cursor-width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.cursor.css('width', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.cursor.css('width', value +'px');
-                }
-            },
-            'cursor-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
-                },
-                'getter': function(skipDefault){
-                     return this.cursor.css('background-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.cursor.css('background-color', _Color.toCSS(value));
-                }
-            }
-        })
-    };
 
     /**
      * Setup the cursor's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
@@ -151,8 +139,8 @@ export default class Cursor extends Element {
         this.cursor = new Dom('<div/>', {'class': 'cursor'})
             .appendTo(this.contents);
 
-        this.addListener('click', _Function.proxy(this.onClick, this));
-    };
+        this.addListener('click', this.onClick.bind(this));
+    }
 
     /**
      * The click event handler
@@ -162,7 +150,7 @@ export default class Cursor extends Element {
      * @param {Event} evt The event object
      */
     onClick(evt){
-        var pos, time,
+        let pos, time,
             inTime, outTime,
             direction, acceleration,
             rect;
@@ -198,7 +186,7 @@ export default class Cursor extends Element {
         }
 
         this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
-    };
+    }
 
     /**
      * The cuepoint update event handler
@@ -207,8 +195,8 @@ export default class Cursor extends Element {
      * @private
      * @param {Event} evt The event object
      */
-    onCuePointUpdate = function(evt){
-        var width, height,
+    onCuePointUpdate(evt){
+        let width, height,
             curTime, inTime, outTime, pos,
             direction = this.getProperty('direction'),
             acceleration = this.getProperty('acceleration');
@@ -218,7 +206,7 @@ export default class Cursor extends Element {
         outTime = this.getProperty('end-time');
 
         if(!acceleration || acceleration === 1){
-            pos = (curTime - inTime)    / (outTime - inTime);
+            pos = (curTime - inTime) / (outTime - inTime);
         }
         else{
             pos = Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
@@ -228,26 +216,26 @@ export default class Cursor extends Element {
             case 'left':
                 width = this.getProperty('width');
                 pos = Math.min(width * pos, width);
-                this.cursor.css('right', pos +'px');
+                this.cursor.css('right', `${pos}px`);
                 break;
 
             case 'bottom':
                 height = this.getProperty('height');
                 pos = Math.min(height * pos, height);
-                this.cursor.css('top', pos +'px');
+                this.cursor.css('top', `${pos}px`);
                 break;
 
             case 'top':
                 height = this.getProperty('height');
                 pos = Math.min(height * pos, height);
-                this.cursor.css('bottom', pos +'px');
+                this.cursor.css('bottom', `${pos}px`);
                 break;
 
             default:
                 width = this.getProperty('width');
                 pos = Math.min(width * pos, width);
-                this.cursor.css('left', pos +'px');
+                this.cursor.css('left', `${pos}px`);
         }
-    };
+    }
 
 }

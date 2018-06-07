@@ -1,6 +1,5 @@
-import {Dom} from '../core/Dom';
-import {_String} from '../core/utils/String';
-import {_Function} from '../core/utils/Function';
+import Dom from '../core/Dom';
+import {uuid} from '../core/utils/String';
 
 /**
  * Fired when the field's value changes
@@ -9,7 +8,7 @@ import {_Function} from '../core/utils/Function';
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-var EVT_VALUECHANGE = 'valuechange';
+const EVT_VALUECHANGE = 'valuechange';
 
 /**
  * Fired when the field is reset
@@ -17,7 +16,7 @@ var EVT_VALUECHANGE = 'valuechange';
  * @event reset
  * @param {Object} field The field instance
  */
-var EVT_RESET = 'reset';
+const EVT_RESET = 'reset';
 
 export default class Field extends Dom{
 
@@ -36,10 +35,10 @@ export default class Field extends Dom{
      * @param {String} [configs.description=''] A description to add to the field
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call the super constructor.
         super('<div/>', {'class': 'field'});
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.setupUI();
 
@@ -60,7 +59,7 @@ export default class Field extends Dom{
         if(this.configs.description){
             this.setDescription(this.configs.description);
         }
-        
+
         this.reset(true);
     }
 
@@ -81,7 +80,7 @@ export default class Field extends Dom{
      * @private
      */
     setupUI() {
-        var uid = 'field-'+ _String.uuid(5);
+        const uid = `field-${uuid(5)}`;
 
         if(this.configs.label){
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
@@ -92,9 +91,9 @@ export default class Field extends Dom{
             .appendTo(this);
 
         this.input = new Dom('<input/>', {'id': uid})
-            .addListener('change', _Function.proxy(this.onChange, this))
+            .addListener('change', this.onChange.bind(this))
             .appendTo(this.input_wrapper);
-    };
+    }
 
     /**
      * Set the description text
@@ -110,22 +109,21 @@ export default class Field extends Dom{
         }
 
         this.description.text(description);
-        
+
         return this;
-    };
+    }
 
     /**
      * The change event handler
      *
      * @method onChange
-     * @param {Event} evt The event object
      * @private
      */
-    onChange(evt){
+    onChange(){
         this.value = this.input.val();
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
-    };
+    }
 
     /**
      * Set the field's value
@@ -142,9 +140,9 @@ export default class Field extends Dom{
         if(supressEvent !== true){
             this.input.triggerEvent('change');
         }
-        
+
         return this;
-    };
+    }
 
     /**
      * Get the field's current value
@@ -154,7 +152,7 @@ export default class Field extends Dom{
      */
     getValue() {
         return this.value;
-    };
+    }
 
     /**
      * Disable the field
@@ -172,7 +170,7 @@ export default class Field extends Dom{
         }
 
         return this;
-    };
+    }
 
     /**
      * Enable the field
@@ -190,7 +188,7 @@ export default class Field extends Dom{
         }
 
         return this;
-    };
+    }
 
     /**
      * Toggle the field's readonly state
@@ -209,8 +207,8 @@ export default class Field extends Dom{
         }
 
         return this;
-    };
-    
+    }
+
     /**
      * Reset the field's configs
      *
@@ -235,6 +233,6 @@ export default class Field extends Dom{
         }
 
         return this;
-    };
-    
+    }
+
 }

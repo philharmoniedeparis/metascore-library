@@ -1,40 +1,39 @@
-import {Evented} from '../core/Evented';
-import {_String} from '../core/utils/String';
-import {_Function} from '../core/utils/Function';
+import Evented from '../core/Evented';
+import {uuid} from '../core/utils/String';
 
 /**
  * Fired when the cuepoint starts
  *
  * @event start
  */
-var EVT_START = 'start';
+const EVT_START = 'start';
 
 /**
  * Fired when the cuepoint is active (between the start and end times) and the media time is updated
  *
  * @event update
  */
-var EVT_UPDATE = 'update';
+const EVT_UPDATE = 'update';
 
 /**
  * Fired when the cuepoint stops
  *
  * @event stop
  */
-var EVT_STOP = 'stop';
+const EVT_STOP = 'stop';
 
 /**
  * Fired when the media is seeked outside of the cuepoint's time
  *
  * @event seekout
  */
-var EVT_SEEKOUT = 'seekout';
+const EVT_SEEKOUT = 'seekout';
 
 export default class CuePoint extends Evented{
 
     /**
      * A class for managing media cuepoints to execute actions at specific media times
-     * 
+     *
      * @class CuePoint
      * @namepsace player
      * @extends Evented
@@ -46,68 +45,67 @@ export default class CuePoint extends Evented{
      * @param {Boolean} [configs.considerError] Whether to estimate and use the error margin in timed events
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        CuePoint.parent.call(this);
+        super();
 
-        this.id = _String.uuid();
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        this.id = uuid();
 
         this.running = false;
         this.max_error = 0;
 
-        this.start = _Function.proxy(this.start, this);
-        this.stop = _Function.proxy(this.stop, this);
-        this.onMediaTimeUpdate = _Function.proxy(this.onMediaTimeUpdate, this);
-        this.onMediaSeeking = _Function.proxy(this.onMediaSeeking, this);
-        this.onMediaSeeked = _Function.proxy(this.onMediaSeeked, this);
+        this.start = this.start.bind(this);
+        this.stop = this.stop.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
+        this.onMediaSeeking = this.onMediaSeeking.bind(this);
+        this.onMediaSeeked = this.onMediaSeeked.bind(this);
     }
 
-    CuePoint.defaults = {
-        'media': null,
-        'inTime': null,
-        'outTime': null,
-        'considerError': false
-    };
+    static getDefaults(){
+        return {
+            'media': null,
+            'inTime': null,
+            'outTime': null,
+            'considerError': false
+        };
+    }
 
     /**
      * The media's timeupdate event handler
-     * 
+     *
      * @method onMediaTimeUpdate
      * @private
-     * @param {Event} evt The event object
      */
-    onMediaTimeUpdate(evt){
+    onMediaTimeUpdate(){
         this.update();
-    };
+    }
 
     /**
      * The media's seeked event handler
-     * 
+     *
      * @method onMediaSeeked
      * @private
-     * @param {Event} evt The event object
      */
-    onMediaSeeking(evt){
+    onMediaSeeking(){
         this.getMedia()
             .addListener('seeked', this.onMediaSeeked)
             .removeListener('timeupdate', this.onMediaTimeUpdate);
-    };
+    }
 
     /**
      * The media's seeked event handler
-     * 
+     *
      * @method onMediaSeeked
      * @private
-     * @param {Event} evt The event object
      */
-    onMediaSeeked(evt){
-        var cur_time = this.getMedia().getTime();
+    onMediaSeeked(){
+        const cur_time = this.getMedia().getTime();
 
         this.getMedia()
             .addListener('timeupdate', this.onMediaTimeUpdate)
             .removeListener('seeked', this.onMediaSeeked);
-        
+
         if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
             this.max_error = 0;
@@ -121,36 +119,36 @@ export default class CuePoint extends Evented{
         else{
             this.update();
         }
-    };
+    }
 
     /**
      * Get the media component on which this cuepoint is attached
-     * 
+     *
      * @method getMedia
      * @return {player.component.Media} The media component
      */
     getMedia() {
         return this.configs.media;
-    };
+    }
 
     /**
      * Init the cuepoint
-     * 
+     *
      * @method init
      * @chainable
      */
     init() {
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);            
+            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
             this.update();
         }
-        
+
         return this;
-    };
+    }
 
     /**
      * Start executing the cuepoint
-     * 
+     *
      * @method start
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -163,22 +161,22 @@ export default class CuePoint extends Evented{
         if(supressEvent !== true){
             this.triggerEvent(EVT_START);
         }
-        
+
         this.running = true;
         this.getMedia().addListener('seeking', this.onMediaSeeking);
 
         this.triggerEvent(EVT_UPDATE);
-    };
+    }
 
     /**
      * Update the cuepoint
-     * 
+     *
      * @method update
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
     update(supressEvent){
-        var cur_time = this.getMedia().getTime();
+        const cur_time = this.getMedia().getTime();
 
         if(!this.running){
             if(((this.configs.inTime === null) || (Math.floor(cur_time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
@@ -202,11 +200,11 @@ export default class CuePoint extends Evented{
                 this.stop();
             }
         }
-    };
+    }
 
     /**
      * Stop executing the cuepoint
-     * 
+     *
      * @method stop
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -217,7 +215,7 @@ export default class CuePoint extends Evented{
         }
 
         this.getMedia().removeListener('seeking', this.onMediaSeeking);
-        
+
         if(supressEvent !== true){
             this.triggerEvent(EVT_STOP);
         }
@@ -228,17 +226,17 @@ export default class CuePoint extends Evented{
         }
 
         this.running = false;
-    };
+    }
 
     /**
      * Destroy the cuepoint
-     * 
+     *
      * @method destroy
      */
     destroy() {
         this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
 
         this.stop();
-    };
-    
+    }
+
 }

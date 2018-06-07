@@ -1,10 +1,12 @@
+import Evented from '../core/Evented';
+
 /**
  * Fired when a command is added
  *
  * @event add
  * @param {Object} command The added command
  */
-var EVT_ADD = 'add';
+const EVT_ADD = 'add';
 
 /**
  * Fired when a command is undone
@@ -12,7 +14,7 @@ var EVT_ADD = 'add';
  * @event undo
  * @param {Object} command The added command
  */
-var EVT_UNDO = 'undo';
+const EVT_UNDO = 'undo';
 
 /**
  * Fired when a command is redone
@@ -20,14 +22,14 @@ var EVT_UNDO = 'undo';
  * @event redo
  * @param {Object} command The added command
  */
-var EVT_REDO = 'redo';
+const EVT_REDO = 'redo';
 
 /**
  * Fired when the command history is cleared
  *
  * @event clear
  */
-var EVT_CLEAR = 'clear';
+const EVT_CLEAR = 'clear';
 
 export default class History extends Evented {
 
@@ -42,19 +44,21 @@ export default class History extends Evented {
      * @param {Integer} [configs.max_commands=30] The max number of commands to store
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
         super();
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.commands = [];
         this.index = -1;
         this.executing = false;
     }
 
-    History.defaults = {
-        'max_commands': 30
-    };
+    static getDefaults() {
+        return {
+            'max_commands': 30
+        };
+    }
 
     /**
      * Execute a command's action
@@ -73,7 +77,7 @@ export default class History extends Evented {
         }
 
         return this;
-    };
+    }
 
     /**
      * Add a command
@@ -104,7 +108,7 @@ export default class History extends Evented {
         this.triggerEvent(EVT_ADD, {'command': command});
 
         return this;
-    };
+    }
 
     /**
      * Execute the undo action of the current command
@@ -113,7 +117,7 @@ export default class History extends Evented {
      * @chainable
      */
     undo() {
-        var command = this.commands[this.index];
+        const command = this.commands[this.index];
 
         if (!command) {
             return this;
@@ -128,7 +132,7 @@ export default class History extends Evented {
         this.triggerEvent(EVT_UNDO, {'command': command});
 
         return this;
-    };
+    }
 
     /**
      * Execute the redo action of the previous command
@@ -137,7 +141,7 @@ export default class History extends Evented {
      * @chainable
      */
     redo() {
-        var command = this.commands[this.index + 1];
+        const command = this.commands[this.index + 1];
 
         if (!command) {
             return this;
@@ -152,7 +156,7 @@ export default class History extends Evented {
         this.triggerEvent(EVT_REDO, {'command': command});
 
         return this;
-    };
+    }
 
     /**
      * Remove all commands
@@ -161,7 +165,7 @@ export default class History extends Evented {
      * @chainable
      */
     clear () {
-        var length = this.commands.length;
+        const length = this.commands.length;
 
         this.commands = [];
         this.index = -1;
@@ -169,10 +173,10 @@ export default class History extends Evented {
         if(length > 0) {
             this.triggerEvent(EVT_CLEAR);
         }
-        
+
         return this;
 
-    };
+    }
 
     /**
      * Check if an undo action is available
@@ -182,7 +186,7 @@ export default class History extends Evented {
      */
     hasUndo() {
         return this.index !== -1;
-    };
+    }
 
     /**
      * Check if a redo action is available
@@ -192,6 +196,6 @@ export default class History extends Evented {
      */
     hasRedo() {
         return this.index < (this.commands.length - 1);
-    };
-    
+    }
+
 }

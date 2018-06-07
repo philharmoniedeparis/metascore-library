@@ -1,10 +1,8 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
-import {Locale} from '../../core/Locale';
-import {_Function} from '../../core/utils/Function';
-import {_Object} from '../../core/utils/Object';
-import {_Color} from '../../core/utils/Color';
-import {ColorSelector} from '../overlay/ColorSelector';
+import Field from '../Field';
+import Dom from '../../core/Dom';
+import {t} from '../../core/utils/Locale';
+import {toRGBA} from '../../core/utils/Color';
+import ColorSelector from '../overlay/ColorSelector';
 
 /**
  * Fired when the field's value changes
@@ -13,7 +11,7 @@ import {ColorSelector} from '../overlay/ColorSelector';
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-var EVT_VALUECHANGE = 'valuechange';
+const EVT_VALUECHANGE = 'valuechange';
 
 export default class Color extends Field {
 
@@ -28,22 +26,22 @@ export default class Color extends Field {
      * @param {Mixed} [configs.value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('colorfield');
     }
 
-    ColorField.defaults = {
-        value: {
-            r: 255,
-            g: 255,
-            b: 255,
-            a: 1
-        }
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            value: {
+                r: 255,
+                g: 255,
+                b: 255,
+                a: 1
+            }
+        });
+    }
 
     /**
      * Setup the field's UI
@@ -52,39 +50,39 @@ export default class Color extends Field {
      * @private
      */
     setupUI() {
-        var buttons;
-        
+        let buttons;
+
         super.setupUI();
 
         this.input
             .attr('readonly', 'readonly')
-            .addListener('click', _Function.proxy(this.onClick, this));
-            
+            .addListener('click', this.onClick.bind(this));
+
         buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
-        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': _Locale.t('editor.field.Color.clear.tooltip', 'Clear value')})
-            .addListener('click', _Function.proxy(this.onClearClick, this))
+        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': t('editor.field.Color.clear.tooltip', 'Clear value')})
+            .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 
         this.overlay = new ColorSelector()
-            .addListener('submit', _Function.proxy(this.onOverlaySubmit, this));
-    };
+            .addListener('submit', this.onOverlaySubmit.bind(this));
+    }
 
     /**
      * Set the field'S value
-     * 
+     *
      * @method setValue
      * @param {Mixed} value The new color's value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
     setValue(value, supressEvent){
-        var rgba;
+        let rgba;
 
-        this.value = value ? _Color.parse(value) : null;
+        this.value = value ? toRGBA(value) : null;
 
-        rgba = this.value ? 'rgba('+ this.value.r +','+ this.value.g +','+ this.value.b +','+ this.value.a +')' : null;
+        rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;
 
         this.input
             .attr('title', rgba)
@@ -96,48 +94,43 @@ export default class Color extends Field {
 
         return this;
 
-    };
+    }
 
     /**
      * The click event handler
-     * 
+     *
      * @method onClick
      * @private
-     * @param {Event} evt The event object
      */
-    onClick(evt){
+    onClick(){
         if(this.disabled){
             return;
         }
 
         this.overlay
-            .setValue(_Object.copy(this.value))
+            .setValue(Object.assign({}, this.value))
             .show();
-    };
+    }
 
     /**
      * The overlay's submit event handler
-     * 
+     *
      * @method onOverlaySubmit
      * @private
      * @param {Event} evt The event object
      */
     onOverlaySubmit(evt){
-        var value = evt.detail.value,
-            overlay = evt.detail.overlay;
-
-        this.setValue(value);
-    };
+        this.setValue(evt.detail.value);
+    }
 
     /**
      * The clear button click event handler
-     * 
+     *
      * @method onClearClick
      * @private
-     * @param {Event} evt The event object
      */
-    onClearClick(evt){
+    onClearClick(){
         this.setValue("transparent");
-    };
+    }
 
 }

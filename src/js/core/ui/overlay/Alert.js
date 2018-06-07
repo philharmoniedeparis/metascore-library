@@ -1,9 +1,6 @@
-import {Dom} from '../../Dom';
-import {Button} from '../Button';
-import {Overlay} from '../Overlay';
-
-import {FunctionUtils} from '../../utils/Function';
-import {ObjectUtils} from '../../utils/Object';
+import Dom from '../../Dom';
+import Button from '../Button';
+import Overlay from '../Overlay';
 
 /**
  * Fired when a button is clicked
@@ -12,7 +9,7 @@ import {ObjectUtils} from '../../utils/Object';
  * @param {Object} alert The alert instance
  * @param {String} action The buttons's action
  */
-var EVT_BUTTONCLICK = 'buttonclick';
+const EVT_BUTTONCLICK = 'buttonclick';
 
 /**
  * An alert overlay to show a simple message with buttons
@@ -32,10 +29,10 @@ export default class Alert extends Overlay{
     }
 
     static getDefaults(){
-        return {
+        return Object.assign({}, super.getDefaults(), {
             'text': '',
             'buttons': {}
-        };
+        });
     }
 
     /**
@@ -54,17 +51,17 @@ export default class Alert extends Overlay{
         }
 
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
-            .addDelegate('button', 'click', FunctionUtils.proxy(this.onButtonClick, this))
+            .addDelegate('button', 'click', this.onButtonClick.bind(this))
             .appendTo(this.contents);
 
         if(this.configs.buttons){
-            ObjectUtils.each(this.configs.buttons, function(action, label){
+			Object.entries(this.configs.buttons).forEach(([action, label]) => {
                 this.addButton(action, label);
-            }, this);
+            });
         }
 
     }
-    
+
     /**
      * Set the message's text
      * @param {String} str The message's text
@@ -83,7 +80,7 @@ export default class Alert extends Overlay{
      * @return {Button} The button object
      */
     addButton(action, label){
-        var button = new Button()
+        const button = new Button()
             .setLabel(label)
             .data('action', action)
             .appendTo(this.buttons);
@@ -97,7 +94,7 @@ export default class Alert extends Overlay{
      * @param {Event} evt The event object
      */
     onButtonClick(evt){
-        var action = new Dom(evt.target).data('action');
+        const action = new Dom(evt.target).data('action');
 
         this.hide();
 

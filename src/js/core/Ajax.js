@@ -1,5 +1,4 @@
-import {_Var} from './utils/Var';
-import {_Object} from './utils/Object';
+import {isFunction} from './utils/Var';
 
 /**
  * A class to handle AJAX requests
@@ -26,8 +25,7 @@ export default class Ajax {
      */
     static send(url, options) {
 
-        var key,
-            xhr = new XMLHttpRequest(),
+        let xhr = new XMLHttpRequest(),
             defaults = {
                 'method': 'GET',
                 'headers': {},
@@ -41,37 +39,37 @@ export default class Ajax {
             },
             params;
 
-        options = _Object.extend({}, defaults, options);
-        
+        options = Object.assign({}, defaults, options);
+
         if(options.method === 'GET' && options.data){
             params = [];
-            
-            _Object.each(options.data, function(key, value){
-                params.push(key +'='+ encodeURIComponent(value));
+
+			Object.entries(options.data).forEach(([key, value]) => {
+                params.push(`${key}=${encodeURIComponent(value)}`);
             });
-            
-            url += '?'+ params.join('&');
-            
+
+            url += `?${params.join('&')}`;
+
             options.data = null;
         }
 
         xhr.open(options.method, url, options.async);
 
-        _Object.each(options.headers, function(key, value){
+		Object.entries(options.headers).forEach(([key, value]) => {
             xhr.setRequestHeader(key, value);
         });
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-                if(_Var.is(options.complete, 'function')){
+                if(isFunction(options.complete)){
                     options.complete.call(options.scope, xhr);
                 }
                 if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
-                    if(_Var.is(options.success, 'function')){
+                    if(isFunction(options.success)){
                         options.success.call(options.scope, xhr);
                     }
                 }
-                else if(_Var.is(options.error, 'function')){
+                else if(isFunction(options.error)){
                     options.error.call(options.scope, xhr);
                 }
             }
@@ -81,11 +79,11 @@ export default class Ajax {
 
         return xhr;
 
-    };
+    }
 
     /**
      * Send an XMLHttp GET request
-     * 
+     *
      * @method get
      * @static
      * @param {String} url The URL to which the request is sent
@@ -94,15 +92,15 @@ export default class Ajax {
      */
     static get(url, options) {
 
-        _Object.extend(options, {'method': 'GET'});
+        Object.assign(options, {'method': 'GET'});
 
         return Ajax.send(url, options);
 
-    };
+    }
 
     /**
      * Send an XMLHttp POST request
-     * 
+     *
      * @method post
      * @static
      * @param {String} url The URL to which the request is sent
@@ -111,15 +109,15 @@ export default class Ajax {
      */
     static post(url, options) {
 
-        _Object.extend(options, {'method': 'POST'});
+        Object.assign(options, {'method': 'POST'});
 
         return Ajax.send(url, options);
 
-    };
+    }
 
     /**
      * Send an XMLHttp PUT request
-     * 
+     *
      * @method put
      * @static
      * @param {String} url The URL to which the request is sent
@@ -128,10 +126,10 @@ export default class Ajax {
      */
     static put(url, options) {
 
-        _Object.extend(options, {'method': 'PUT'});
+        Object.assign(options, {'method': 'PUT'});
 
         return Ajax.send(url, options);
 
-    };
+    }
 
 }

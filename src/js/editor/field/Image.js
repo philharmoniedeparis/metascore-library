@@ -1,7 +1,6 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
-import {Locale} from '../../core/Locale';
-import {_Function} from '../../core/utils/Function';
+import Field from '../Field';
+import Dom from '../../core/Dom';
+import {t} from '../../core/utils/Locale';
 
 /**
  * Fired when the external filebrowser should be opened
@@ -9,7 +8,7 @@ import {_Function} from '../../core/utils/Function';
  * @event filebrowser
  * @param {Function} callback The callback to invoke once a file is selected throught the external file browser
  */
-var EVT_FILEBROWSER = 'filebrowser';
+const EVT_FILEBROWSER = 'filebrowser';
 
 /**
  * Fired when the resize button is clicked
@@ -18,7 +17,7 @@ var EVT_FILEBROWSER = 'filebrowser';
  * @param {Object} field The field instance
  * @param {Mixed} value The field value
  */
-var EVT_RESIZE = 'resize';
+const EVT_RESIZE = 'resize';
 
 export default class Image extends Field {
 
@@ -34,20 +33,20 @@ export default class Image extends Field {
      * @param {Boolean} [configs.resizeButton=false] Whether to show the resize button
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
+        // call parent constructor
+        super(configs);
 
         // fix event handlers scope
-        this.onFileSelect = _Function.proxy(this.onFileSelect, this);
-
-        // call parent constructor
-        super(this.configs);
+        this.onFileSelect = this.onFileSelect.bind(this);
 
         this.addClass('imagefield');
     }
 
-    ImageField.defaults = {
-        'placeholder': Locale.t('editor.field.Image.placeholder', 'Browse...')
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'placeholder': t('editor.field.Image.placeholder', 'Browse...')
+        });
+    }
 
     /**
      * Setup the field's UI
@@ -56,91 +55,88 @@ export default class Image extends Field {
      * @private
      */
     setupUI() {
-        var buttons;
-        
+        let buttons;
+
         super.setupUI();
 
         this.input
             .attr('readonly', 'readonly')
             .attr('placeholder', this.configs.placeholder)
-            .addListener('click', _Function.proxy(this.onClick, this));
-            
+            .addListener('click', this.onClick.bind(this));
+
         buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
-            
+
         if(this.configs.resizeButton){
-            this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': Locale.t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
-                .addListener('click', _Function.proxy(this.onResizeClick, this))
+            this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
+                .addListener('click', this.onResizeClick.bind(this))
                 .appendTo(buttons);
         }
 
-        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
-            .addListener('click', _Function.proxy(this.onClearClick, this))
+        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': t('editor.field.Image.clear.tooltip', 'Clear value')})
+            .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
-    };
+    }
 
     /**
      * Set the field'S value
-     * 
+     *
      * @method setValue
      * @param {String} value The image file's url
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
     setValue(value, supressEvent){
-        ImageField.parent.prototype.setValue.call(this, value, supressEvent);
+        super.setValue(value, supressEvent);
 
         this.input.attr('title', value);
 
         return this;
-    };
+    }
 
     /**
      * The click event handler
-     * 
+     *
      * @method onClick
      * @private
-     * @param {Event} evt The event object
      */
-    onClick(evt){
+    onClick(){
         if(this.disabled){
             return;
         }
 
         this.triggerEvent(EVT_FILEBROWSER, {'callback': this.onFileSelect}, true, false);
-    };
+    }
 
     /**
      * The resize button click event handler
-     * 
+     *
      * @method onResizeClick
      * @private
-     * @param {Event} evt The event object
      */
-    onResizeClick(evt){
+    onResizeClick(){
         this.triggerEvent(EVT_RESIZE, {'field': this, 'value': this.value}, true, false);
-    };
+    }
 
     /**
      * The clear button click event handler
-     * 
+     *
      * @method onClearClick
      * @private
-     * @param {Event} evt The event object
      */
-    onClearClick(evt){
+    onClearClick(){
         this.setValue(null);
-    };
+    }
 
     /**
      * The file select event handler
-     * 
+     *
      * @method onFileSelect
      * @private
      * @param {String} url The image file's url
      */
     onFileSelect(url){
         this.setValue(url);
-    };
-    
+    }
+
 }

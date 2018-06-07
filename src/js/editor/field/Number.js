@@ -1,9 +1,7 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
-import {Locale} from '../../core/Locale';
-import {_Function} from '../../core/utils/Function';
-import {_String} from '../../core/utils/String';
-import {_Number} from '../../core/utils/Number';
+import Field from '../Field';
+import Dom from '../../core/Dom';
+import {uuid} from '../../core/utils/String';
+import {getDecimalPlaces} from '../../core/utils/Number';
 
 /**
  * Fired when the field's value changes
@@ -12,7 +10,7 @@ import {_Number} from '../../core/utils/Number';
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-var EVT_VALUECHANGE = 'valuechange';
+const EVT_VALUECHANGE = 'valuechange';
 
 export default class Number extends Field {
 
@@ -34,27 +32,27 @@ export default class Number extends Field {
      * @param {Boolean} [configs.flipSpinButtons=false] Whether to flip the spin buttons
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
-        
-        this.spinDown = _Function.proxy(this.spinDown, this);
-        this.spinUp = _Function.proxy(this.spinUp, this);
+        super(configs);
+
+        this.spinDown = this.spinDown.bind(this);
+        this.spinUp = this.spinUp.bind(this);
 
         this.addClass('numberfield');
     }
 
-    NumberField.defaults = {
-        'value': 0,
-        'min': null,
-        'max': null,
-        'step': 1,
-        'spinButtons': true,
-        'spinInterval': 200,
-        'spinDirection': 'horizontal',
-        'flipSpinButtons': false
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'value': 0,
+            'min': null,
+            'max': null,
+            'step': 1,
+            'spinButtons': true,
+            'spinInterval': 200,
+            'spinDirection': 'horizontal',
+            'flipSpinButtons': false
+        });
+    }
 
     /**
      * Setup the field's UI
@@ -63,7 +61,7 @@ export default class Number extends Field {
      * @private
      */
     setupUI() {
-        var uid = 'field-'+ _String.uuid(5),
+        let uid = `field-${uuid(5)}`,
             buttons;
 
         if(this.configs.label){
@@ -75,90 +73,89 @@ export default class Number extends Field {
             .appendTo(this);
 
         this.input = new Dom('<input/>', {'type': 'text', 'id': uid})
-            .addListener('input', _Function.proxy(this.onInput, this))
-            .addListener('mousewheel', _Function.proxy(this.onMouseWheel, this))
-            .addListener('DOMMouseScroll', _Function.proxy(this.onMouseWheel, this))
-            .addListener('keydown', _Function.proxy(this.onKeyDown, this))
+            .addListener('input', this.onInput.bind(this))
+            .addListener('mousewheel', this.onMouseWheel.bind(this))
+            .addListener('DOMMouseScroll', this.onMouseWheel.bind(this))
+            .addListener('keydown', this.onKeyDown.bind(this))
             .appendTo(this.input_wrapper);
 
         if(this.configs.spinButtons){
             buttons = new Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this.input_wrapper);
-                
+
             if(this.configs.flipSpinButtons){
                 buttons.addClass('flip');
             }
-                
+
             this.spindown_btn = new Dom('<button/>', {'text': '-', 'data-action': 'spin-down'})
-                .addListener('mousedown', _Function.proxy(this.onSpinBtnMouseDown, this))
-                .addListener('mouseup', _Function.proxy(this.onSpinBtnMouseUp, this))
-                .addListener('mouseout', _Function.proxy(this.onSpinBtnMouseOut, this))
+                .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
+                .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
+                .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
                 .appendTo(buttons);
-                
+
             this.spinup_btn = new Dom('<button/>', {'text': '+', 'data-action': 'spin-up'})
-                .addListener('mousedown', _Function.proxy(this.onSpinBtnMouseDown, this))
-                .addListener('mouseup', _Function.proxy(this.onSpinBtnMouseUp, this))
-                .addListener('mouseout', _Function.proxy(this.onSpinBtnMouseOut, this))
+                .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
+                .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
+                .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
                 .appendTo(buttons);
         }
-        
+
         this.addClass(this.configs.spinDirection === 'vertical' ? 'vertical' : 'horizontal');
 
-        this.addListener('change', _Function.proxy(this.onChange, this));
-    };
+        this.addListener('change', this.onChange.bind(this));
+    }
 
     /**
      * The change event handler
-     * 
+     *
      * @method onChange
      * @private
-     * @param {Event} evt The event object
      */
-    onChange(evt){
+    onChange(){
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
-    };
+    }
 
     /**
      * The input event handler
-     * 
+     *
      * @method onInput
      * @private
      * @param {Event} evt The event object
      */
     onInput(evt){
         this.setValue(this.input.val());
-        
+
         evt.stopPropagation();
-    };
+    }
 
     /**
      * The mousewheel event handler
-     * 
+     *
      * @method onMouseWheel
      * @private
      * @param {Event} evt The event object
      */
     onMouseWheel(evt){
-        var delta, decimals, value;
-        
+        let delta, decimals, value;
+
         if(this.input.is(':focus')){
             delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
-            
+
             value = this.getValue() + (this.configs.step * delta);
-            
+
             // work around the well-known floating point issue
-            decimals = _Number.getDecimalPlaces(this.configs.step); 
+            decimals = getDecimalPlaces(this.configs.step);
             value = parseFloat(value.toFixed(decimals));
-            
+
             this.setValue(value);
-        
+
             evt.preventDefault();
         }
-    };
+    }
 
     /**
      * The keydown event handler
-     * 
+     *
      * @method onKeyDown
      * @private
      * @param {Event} evt The event object
@@ -169,24 +166,24 @@ export default class Number extends Field {
                 this.spinUp();
                 evt.preventDefault();
                 break;
-                
+
             case 40:
                 this.spinDown();
                 evt.preventDefault();
                 break;
         }
-    };
+    }
 
     /**
      * The spin button's mousedown event handler
-     * 
+     *
      * @method onSpinBtnMouseDown
      * @private
      * @param {Event} evt The event object
      */
     onSpinBtnMouseDown(evt){
-        var fn;
-        
+        let fn;
+
         if(this.disabled){
             return;
         }
@@ -195,75 +192,75 @@ export default class Number extends Field {
             case 'spin-down':
                 fn = this.spinDown;
                 break;
-                
+
             default:
                 fn = this.spinUp;
         }
-        
+
         fn();
-        
+
         this.interval = setInterval(fn, this.configs.spinInterval);
-    };
+    }
 
     /**
      * The spin button's mouseup event handler
-     * 
+     *
      * @method onSpinBtnMouseUp
      * @private
-     * @param {Event} evt The event object
      */
-    onSpinBtnMouseUp(evt){
+    onSpinBtnMouseUp(){
         clearInterval(this.interval);
-    };
+    }
 
     /**
      * The spin button's mouseout event handler
-     * 
+     *
      * @method onSpinBtnMouseOut
      * @private
-     * @param {Event} evt The event object
      */
-    NumberField.prototype.onSpinBtnMouseOut = NumberField.prototype.onSpinBtnMouseUp;
+    onSpinBtnMouseOut(){
+        clearInterval(this.interval);
+    }
 
     /**
      * Decrement the value by one step
-     * 
+     *
      * @method spinDown
      * @private
      */
     spinDown() {
-        var decimals, value;
-        
-        value = this.getValue() - this.configs.step; 
-        
-        // work around the well-known floating point issue       
-        decimals = _Number.getDecimalPlaces(this.configs.step);
+        let decimals, value;
+
+        value = this.getValue() - this.configs.step;
+
+        // work around the well-known floating point issue
+        decimals = getDecimalPlaces(this.configs.step);
         value = parseFloat(value.toFixed(decimals));
-        
+
         this.setValue(value);
-    };
+    }
 
     /**
      * Increment the value by one step
-     * 
+     *
      * @method spinUp
      * @private
      */
     spinUp() {
-        var decimals, value;
-        
+        let decimals, value;
+
         value = this.getValue() + this.configs.step;
-        
+
         // work around the well-known floating point issue
-        decimals = _Number.getDecimalPlaces(this.configs.step);
+        decimals = getDecimalPlaces(this.configs.step);
         value = parseFloat(value.toFixed(decimals));
-        
+
         this.setValue(value);
-    };
+    }
 
     /**
      * Set the field's value
-     * 
+     *
      * @method setValue
      * @param {Number} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -271,26 +268,26 @@ export default class Number extends Field {
      */
     setValue(value, supressEvent){
         value = parseFloat(value);
-        
+
         if(isNaN(value)){
             value = 0;
         }
-        
+
         if(this.min !== null){
             value = Math.max(value, this.min);
         }
         if(this.max !== null){
             value = Math.min(value, this.max);
         }
-        
-        NumberField.parent.prototype.setValue.call(this, value, supressEvent);
-        
+
+        super.setValue(value, supressEvent);
+
         return this;
-    };
+    }
 
     /**
      * Set the minimum allowed value
-     * 
+     *
      * @method setMin
      * @param {Number} value The minimum allowed value
      * @chainable
@@ -299,11 +296,11 @@ export default class Number extends Field {
         this.min = value;
 
         return this;
-    };
+    }
 
     /**
      * Set the maximum allowed value
-     * 
+     *
      * @method setMax
      * @param {Number} value The maximum allowed value
      * @chainable
@@ -312,7 +309,7 @@ export default class Number extends Field {
         this.max = value;
 
         return this;
-    };
+    }
 
     /**
      * Reset the field's configs
@@ -325,10 +322,10 @@ export default class Number extends Field {
         this
             .setMin(this.configs.min)
             .setMax(this.configs.max);
-        
-        NumberField.parent.prototype.reset.call(this, supressEvent);
+
+        super.reset(supressEvent);
 
         return this;
-    };
-    
+    }
+
 }

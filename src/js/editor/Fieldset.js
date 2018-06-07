@@ -1,5 +1,5 @@
-import {Dom} from '../core/Dom';
-import {_String} from '../core/utils/String';
+import Dom from '../core/Dom';
+import {uuid} from '../core/utils/String';
 
 export default class Fieldset extends Dom {
 
@@ -18,20 +18,22 @@ export default class Fieldset extends Dom {
      * @param {Boolean} [configs.collapsed=false] Whether or not the fieldset is collapsed by default
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call the super constructor.
         super('<fieldset/>');
 
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
         this.setupUI();
-        
+
     }
 
-    Fieldset.defaults = {
-        'legend_text': null,
-        'collapsible': false,
-        'collapsed': false
-    };
+    static getDefaults() {
+        return {
+            'legend_text': null,
+            'collapsible': false,
+            'collapsed': false
+        };
+    }
 
     /**
      * Setup the fieldset's UI
@@ -40,8 +42,8 @@ export default class Fieldset extends Dom {
      * @private
      */
     setupUI() {
-        var uid = 'fieldset-'+ _String.uuid(5);
-        
+        const uid = `fieldset-${uuid(5)}`;
+
         this.attr('id', uid);
 
         this.legend = new Dom('<legend/>', {'text': this.configs.legend_text})
@@ -49,28 +51,27 @@ export default class Fieldset extends Dom {
 
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
-            
+
         if(this.configs.collapsible){
             this.addClass('collapsible');
-            
+
             if(this.configs.collapsed){
                 this.toggle(true);
             }
-            
+
             this.legend.addListener('click', this.onLegendClick.bind(this));
         }
-    };
+    }
 
     /**
      * The legend's click handler
      *
      * @method onLegendClick
      * @private
-     * @param {Event} evt The event object
      */
-    onLegendClick(evt){
+    onLegendClick(){
         this.toggle();
-    };
+    }
 
     /**
      * Toggle the fieldset's collapsed state
@@ -81,9 +82,9 @@ export default class Fieldset extends Dom {
      */
     toggle(collapse){
         this.toggleClass('collapsed', collapse);
-        
+
         return this;
-    };
+    }
 
     /**
      * Get the fieldset's contents
@@ -91,8 +92,8 @@ export default class Fieldset extends Dom {
      * @method getContents
      * @return {Dom} The contents
      */
-    getContents() {        
+    getContents() {
         return this.contents;
-    };
+    }
 
 }

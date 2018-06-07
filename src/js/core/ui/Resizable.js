@@ -1,60 +1,57 @@
-import {Base} from '../Base';
-import {Dom} from '../Dom';
-import {_Function} from '../utils/Function';
-import {_Array} from '../utils/Array';
-import {_Object} from '../utils/Object';
+import Dom from '../Dom';
 
 /**
  * Fired when a resize started
  *
  * @event resizestart
  */
-var EVT_RESIZESTART = 'resizestart';
+const EVT_RESIZESTART = 'resizestart';
 
 /**
  * Fired when a resize occured
  *
  * @event resize
  */
-var EVT_RESIZE = 'resize';
+const EVT_RESIZE = 'resize';
 
 /**
  * Fired when a resize ended
  *
  * @event resizeend
  */
-var EVT_RESIZEEND = 'resizeend';
+const EVT_RESIZEEND = 'resizeend';
 
-export default class Resizable extends Base {
+export default class Resizable {
 
     /**
      * A class for adding resizable behaviors
-     * 
+     *
      * @class Resizable
      * @extends Class
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Dom} configs.target The Dom object to add the behavior to
-     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed 
+     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
         this.handles = {};
 
         // fix event handlers scope
-        this.onMouseDown = _Function.proxy(this.onMouseDown, this);
-        this.onMouseMove = _Function.proxy(this.onMouseMove, this);
-        this.onMouseUp = _Function.proxy(this.onMouseUp, this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
 
-        _Array.each(this.configs.directions, function(index, direction){
+
+        this.configs.directions.forEach(this.configs.directions, (direction) => {
             this.handles[direction] = new Dom('<div/>', {'class': 'resize-handle'})
                 .data('direction', direction)
                 .addListener('mousedown', this.onMouseDown)
                 .appendTo(this.configs.target);
-        }, this);
+        });
 
         this.enable();
     }
@@ -77,7 +74,7 @@ export default class Resizable extends Base {
 
     /**
      * The mousedown event handler
-     * 
+     *
      * @method onMouseDown
      * @private
      * @param {Event} evt The event object
@@ -106,17 +103,17 @@ export default class Resizable extends Base {
             .triggerEvent(EVT_RESIZESTART, null, false, true);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * The mousemove event handler
-     * 
+     *
      * @method onMouseMove
      * @private
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        var handle = new Dom(this.start_state.handle),
+        let handle = new Dom(this.start_state.handle),
             w, h, top, left;
 
         switch(handle.data('direction')){
@@ -157,23 +154,23 @@ export default class Resizable extends Base {
         }
 
         if(top !== undefined){
-            this.configs.target.css('top', top +'px');
+            this.configs.target.css('top', `${top}px`);
         }
         if(left !== undefined){
-            this.configs.target.css('left', left +'px');
+            this.configs.target.css('left', `${left}px`);
         }
 
         this.configs.target
-            .css('width', w +'px')
-            .css('height', h +'px')
+            .css('width', `${w}px`)
+            .css('height', `${h}px`)
             .triggerEvent(EVT_RESIZE, null, false, true);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * The mouseup event handler
-     * 
+     *
      * @method onMouseUp
      * @private
      * @param {Event} evt The event object
@@ -188,7 +185,7 @@ export default class Resizable extends Base {
             .triggerEvent(EVT_RESIZEEND, null, false, true);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Get a handle
@@ -198,11 +195,11 @@ export default class Resizable extends Base {
      */
     getHandle(direction){
         return this.handles[direction];
-    };
+    }
 
     /**
      * Enable the behavior
-     * 
+     *
      * @method enable
      * @chainable
      */
@@ -212,11 +209,11 @@ export default class Resizable extends Base {
         this.enabled = true;
 
         return this;
-    };
+    }
 
     /**
      * Disable the behavior
-     * 
+     *
      * @method disable
      * @chainable
      */
@@ -226,22 +223,22 @@ export default class Resizable extends Base {
         this.enabled = false;
 
         return this;
-    };
+    }
 
     /**
      * Destroy the behavior
-     * 
+     *
      * @method destroy
      * @chainable
      */
     destroy() {
         this.disable();
 
-        _Object.each(this.handles, function(index, handle){
+		Object.entries(this.handles).forEach(([, handle]) => {
             handle.remove();
-        }, this);
+        });
 
         return this;
-    };
-    
+    }
+
 }

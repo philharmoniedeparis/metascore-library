@@ -1,7 +1,5 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
-import {_Function} from '../../core/utils/Function';
-import {_Object} from '../../core/utils/Object';
+import Field from '../Field';
+import Dom from '../../core/Dom';
 
 /**
  * Fired when a value is selected though a button click
@@ -10,7 +8,7 @@ import {_Object} from '../../core/utils/Object';
  * @param {Object} field The field instance
  * @param {Mixed} value The clicked button's key
  */
-var EVT_VALUECHANGE = 'valuechange';
+const EVT_VALUECHANGE = 'valuechange';
 
 export default class Buttons extends Field{
 
@@ -25,23 +23,16 @@ export default class Buttons extends Field{
      * @param {Object} [configs.buttons={}}] The list of buttons as name/attributes pairs
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
-        this.buttons = {};
-
-        // fix event handlers scope
-        this.onClick = _Function.proxy(this.onClick, this);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('buttonsfield');
     }
 
     static getDefaults(){
-        return {
+        return Object.assign({}, super.getDefaults(), {
             'buttons': {}
-        };
+        });
     }
 
     /**
@@ -51,7 +42,9 @@ export default class Buttons extends Field{
      * @private
      */
     setupUI() {
-        var field = this;
+        const field = this;
+
+        this.buttons = {};
 
         if(this.configs.label){
             this.label = new Dom('<label/>', {'text': this.configs.label})
@@ -61,44 +54,44 @@ export default class Buttons extends Field{
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        _Object.each(this.configs.buttons, function(name, attr){
+		Object.entries(this.configs.buttons).forEach(([name, attr]) => {
             this.buttons[name] = new Dom('<button/>', attr)
-                .addListener('click', function(){
+                .addListener('click', () => {
                     field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
                 })
                 .appendTo(this.input_wrapper);
-        }, this);
-    };
+        });
+    }
 
     /**
      * Set the field's value
-     * 
+     *
      * @method setValue
      * @chainable
      */
     setValue() {
         return this;
-    };
+    }
 
     /**
      * Get the list of buttons
-     * 
+     *
      * @method getButtons
      * @return {Object} The list of buttons as a name/Dom pair
      */
     getButtons() {
         return this.buttons;
-    };
+    }
 
     /**
      * Get a button by name
-     * 
+     *
      * @method getButton
      * @param {String} name The button's name
      * @return {Dom} The button's Dom object
      */
     getButton(name){
         return this.buttons[name];
-    };
-    
+    }
+
 }

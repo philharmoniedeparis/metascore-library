@@ -1,11 +1,9 @@
-import {Component} from '../Component';
-import {Dom} from '../../core/Dom';
-import {_Function} from '../core/utils/Function';
-import {Locale} from '../core/Locale';
-import {_Color} from '../core/utils/Color';
-import {_Array} from '../core/utils/Array';
-import {Draggable} from '../core/ui/Draggable';
-import {Resizable} from '../core/ui/Resizable';
+import Component from '../Component';
+import Dom from '../../core/Dom';
+import {t} from '../../core/utils/Locale';
+import {toCSS} from '../../core/utils/Color';
+import Draggable from '../../core/ui/Draggable';
+import Resizable from '../../core/ui/Resizable';
 
 /**
  * Fired when the media source is set
@@ -13,7 +11,7 @@ import {Resizable} from '../core/ui/Resizable';
  * @event sourcesset
  * @param {Object} media The media instance
  */
-var EVT_SOURCESSET = 'sourcesset';
+const EVT_SOURCESSET = 'sourcesset';
 
 /**
  * Fired when the metadata has loaded
@@ -21,7 +19,7 @@ var EVT_SOURCESSET = 'sourcesset';
  * @event loadedmetadata
  * @param {Object} media The media instance
  */
-var EVT_LOADEDMETADATA = 'loadedmetadata';
+const EVT_LOADEDMETADATA = 'loadedmetadata';
 
 /**
  * Fired when the media starts playing
@@ -29,7 +27,7 @@ var EVT_LOADEDMETADATA = 'loadedmetadata';
  * @event play
  * @param {Object} media The media instance
  */
-var EVT_PLAY = 'play';
+const EVT_PLAY = 'play';
 
 /**
  * Fired when the media is paused
@@ -37,7 +35,7 @@ var EVT_PLAY = 'play';
  * @event pause
  * @param {Object} media The media instance
  */
-var EVT_PAUSE = 'pause';
+const EVT_PAUSE = 'pause';
 
 /**
  * Fired when a seek operation begins
@@ -45,7 +43,7 @@ var EVT_PAUSE = 'pause';
  * @event seeking
  * @param {Object} media The media instance
  */
-var EVT_SEEKING = 'seeking';
+const EVT_SEEKING = 'seeking';
 
 /**
  * Fired when a seek operation completes
@@ -53,7 +51,7 @@ var EVT_SEEKING = 'seeking';
  * @event seeked
  * @param {Object} media The media instance
  */
-var EVT_SEEKED = 'seeked';
+const EVT_SEEKED = 'seeked';
 
 /**
  * Fired when the media's time changed
@@ -61,7 +59,7 @@ var EVT_SEEKED = 'seeked';
  * @event timeupdate
  * @param {Object} media The media instance
  */
-var EVT_TIMEUPDATE = 'timeupdate';
+const EVT_TIMEUPDATE = 'timeupdate';
 
 export default class Media extends Component{
 
@@ -81,13 +79,13 @@ export default class Media extends Component{
 
         this.addClass('media').addClass(this.configs.type);
 
-        this.el = new Dom('<'+ this.configs.type +'></'+ this.configs.type +'>', {'preload': 'auto'})
-            .addListener('loadedmetadata', _Function.proxy(this.onLoadedMetadata, this))
-            .addListener('play', _Function.proxy(this.onPlay, this))
-            .addListener('pause', _Function.proxy(this.onPause, this))
-            .addListener('timeupdate', _Function.proxy(this.onTimeUpdate, this))
-            .addListener('seeking', _Function.proxy(this.onSeeking, this))
-            .addListener('seeked', _Function.proxy(this.onSeeked, this))
+        this.el = new Dom(`<${this.configs.type}></${this.configs.type}>`, {'preload': 'auto'})
+            .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
+            .addListener('play', this.onPlay.bind(this))
+            .addListener('pause', this.onPause.bind(this))
+            .addListener('timeupdate', this.onTimeUpdate.bind(this))
+            .addListener('seeking', this.onSeeking.bind(this))
+            .addListener('seeked', this.onSeeked.bind(this))
             .appendTo(this);
 
         this.dom = this.el.get(0);
@@ -95,139 +93,141 @@ export default class Media extends Component{
         this.playing = false;
     }
 
-    Media.defaults = {
-        'type': 'audio',
-        'useFrameAnimation': true,
-        'properties': {
-            'locked': {
-                'type': 'Checkbox',
-                'configs': {
-                    'label': Locale.t('player.component.Media.locked', 'Locked?')
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'type': 'audio',
+            'useFrameAnimation': true,
+            'properties': {
+                'locked': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': t('player.component.Media.locked', 'Locked?')
+                    },
+                    'getter': function(){
+                        return this.data('locked') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('locked', value ? "true" : null);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return this.data('locked') === "true";
+                'x': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Media.x', 'X'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('left'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('left', `${value}px`);
+                    }
                 },
-                'setter': function(value){
-                    this.data('locked', value ? "true" : null);
-                }
-            },
-            'x': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Media.x', 'X'),
-                    'spinDirection': 'vertical'
+                'y': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Media.y', 'Y'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('top'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('top', `${value}px`);
+                    },
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('left'), 10);
+                'width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Media.width', 'Width'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('width'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('width', `${value}px`);
+                    }
                 },
-                'setter': function(value){
-                    this.css('left', value +'px');
-                }
-            },
-            'y': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Media.y', 'Y'),
-                    'flipSpinButtons': true
+                'height': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Media.height', 'Height'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('height'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('height', `${value}px`);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('top'), 10);
+                'z-index': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Element.z-index', 'Display index')
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('z-index', value);
+                    }
                 },
-                'setter': function(value){
-                    this.css('top', value +'px');
+                'background-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.Block.background-color', 'Background color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('background-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('background-color', toCSS(value));
+                    }
                 },
-            },
-            'width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Media.width', 'Width'),
-                    'spinDirection': 'vertical'
+                'border-width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Block.border-width', 'Border width'),
+                        'min': 0
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('border-width', `${value}px`);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('width'), 10);
+                'border-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.Block.border-color', 'Border color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-color', toCSS(value));
+                    }
                 },
-                'setter': function(value){
-                    this.css('width', value +'px');
-                }
-            },
-            'height': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Media.height', 'Height'),
-                    'flipSpinButtons': true
-                },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('height'), 10);
-                },
-                'setter': function(value){
-                    this.css('height', value +'px');
-                }
-            },
-            'z-index': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Element.z-index', 'Display index')
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('z-index', value);
-                }
-            },
-            'background-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.Block.background-color', 'Background color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('background-color', undefined, skipDefault);
-                },
-                'setter': function(value){                    
-                    this.css('background-color', _Color.toCSS(value));
-                }
-            },
-            'border-width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Block.border-width', 'Border width'),
-                    'min': 0
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('border-width', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('border-width', value +'px');
-                }
-            },
-            'border-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.Block.border-color', 'Border color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-color', _Color.toCSS(value));
-                }
-            },
-            'border-radius': {
-                'type': 'BorderRadius',
-                'configs': {
-                    'label': Locale.t('player.component.Media.border-radius', 'Border radius')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-radius', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-radius', value);
+                'border-radius': {
+                    'type': 'BorderRadius',
+                    'configs': {
+                        'label': t('player.component.Media.border-radius', 'Border radius')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-radius', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-radius', value);
+                    }
                 }
             }
-        }
-    };
+        });
+    }
 
     /**
      * Set the media sources
@@ -238,11 +238,11 @@ export default class Media extends Component{
      * @chainable
      */
     setSources(sources, supressEvent){
-        var source_tags = '';
+        let source_tags = '';
 
-        _Array.each(sources, function(index, source) {
-            source_tags += '<source src="'+ source.url +'" type="'+ source.mime +'"></source>';
-        }, this);
+		sources.forEach((source) => {
+            source_tags += `<source src="${source.url}" type="${source.mime}"></source>`;
+        });
 
         this.el.text(source_tags);
 
@@ -254,37 +254,35 @@ export default class Media extends Component{
 
         return this;
 
-    };
+    }
 
     /**
      * Get the value of the media's name property
-     * 
+     *
      * @method getName
      * @return {String} The name
      */
     getName() {
         return '[media]';
-    };
+    }
 
     /**
      * The loadedmetadata event handler
      *
      * @method onLoadedMetadata
      * @private
-     * @param {Event} evt The event object
      */
-    onLoadedMetadata(evt) {
+    onLoadedMetadata() {
         this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
-    };
+    }
 
     /**
      * The play event handler
      *
      * @method onPlay
      * @private
-     * @param {Event} evt The event object
      */
-    onPlay(evt) {
+    onPlay() {
         this.playing = true;
 
         this.triggerEvent(EVT_PLAY, {'media': this});
@@ -292,55 +290,51 @@ export default class Media extends Component{
         if(this.configs.useFrameAnimation){
             this.triggerTimeUpdate();
         }
-    };
+    }
 
     /**
      * The pause event handler
      *
      * @method onPause
      * @private
-     * @param {Event} evt The event object
      */
-    onPause(evt) {
+    onPause() {
         this.playing = false;
 
         this.triggerEvent(EVT_PAUSE, {'media': this});
-    };
+    }
 
     /**
      * The timeupdate event handler
      *
      * @method onTimeUpdate
      * @private
-     * @param {Event} evt The event object
      */
-    onTimeUpdate(evt){
+    onTimeUpdate(){
         if(!this.configs.useFrameAnimation){
             this.triggerTimeUpdate(false);
         }
-    };
+    }
 
     /**
      * The seeking event handler
      *
      * @method onSeeking
      * @private
-     * @param {Event} evt The event object
      */
-    onSeeking(evt){
+    onSeeking(){
         this.triggerEvent(EVT_SEEKING, {'media': this});
-    };
+    }
 
     /**
      * The seeked event handler
      *
      * @method onSeeked
      * @private
-     * @param {Event} evt The event object
      */
-    onSeeked(evt){
+    onSeeked(){
         this.triggerEvent(EVT_SEEKED, {'media': this});
-    };
+    }
 
     /**
      * Check whether the media is playing
@@ -350,7 +344,7 @@ export default class Media extends Component{
      */
     isPlaying() {
         return this.playing;
-    };
+    }
 
     /**
      * Reset the media time
@@ -362,7 +356,7 @@ export default class Media extends Component{
         this.setTime(0);
 
         return this;
-    };
+    }
 
     /**
      * Play the media
@@ -374,7 +368,7 @@ export default class Media extends Component{
         this.dom.play();
 
         return this;
-    };
+    }
 
     /**
      * Pause the media
@@ -386,7 +380,7 @@ export default class Media extends Component{
         this.dom.pause();
 
         return this;
-    };
+    }
 
     /**
      * Trigger the timeupdate event
@@ -398,13 +392,13 @@ export default class Media extends Component{
      */
     triggerTimeUpdate(loop) {
         if(loop !== false && this.isPlaying()){
-            window.requestAnimationFrame(_Function.proxy(this.triggerTimeUpdate, this));
+            window.requestAnimationFrame(this.triggerTimeUpdate.bind(this));
         }
 
         this.triggerEvent(EVT_TIMEUPDATE, {'media': this});
-        
+
         return this;
-    };
+    }
 
     /**
      * Set the media time
@@ -417,7 +411,7 @@ export default class Media extends Component{
         this.dom.currentTime = parseFloat(time) / 100;
 
         return this;
-    };
+    }
 
     /**
      * Get the current media time
@@ -427,7 +421,7 @@ export default class Media extends Component{
      */
     getTime() {
         return Math.round(parseFloat(this.dom.currentTime) * 100);
-    };
+    }
 
     /**
      * Get the media's duration
@@ -437,7 +431,7 @@ export default class Media extends Component{
      */
     getDuration() {
         return Math.round(parseFloat(this.dom.duration) * 100);
-    };
+    }
 
     /**
      * Set/Unset the draggable behaviour
@@ -471,7 +465,7 @@ export default class Media extends Component{
 
         return this._draggable;
 
-    };
+    }
 
     /**
      * Set/Unset the resizable behaviour
@@ -500,6 +494,6 @@ export default class Media extends Component{
 
         return this._resizable;
 
-    };
-    
+    }
+
 }

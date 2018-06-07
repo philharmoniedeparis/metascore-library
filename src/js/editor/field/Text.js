@@ -1,4 +1,6 @@
 
+import Field from '../Field';
+
 export default class Text extends Field {
 
     /**
@@ -12,17 +14,17 @@ export default class Text extends Field {
      * @param {String} [configs.value=''] The default value
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('textfield');
     }
 
-    TextField.defaults = {
-        'value': ''
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'value': ''
+        });
+    }
 
     /**
      * Setup the field's UI
@@ -34,6 +36,6 @@ export default class Text extends Field {
         super.setupUI();
 
         this.input.attr('type', 'text');
-    };
+    }
 
 }

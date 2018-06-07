@@ -1,6 +1,5 @@
-import {Dom} from '../Dom';
-import {_Function} from '../utils/Function';
-import {Toolbar} from './overlay/Toolbar';
+import Dom from '../Dom';
+import Toolbar from './overlay/Toolbar';
 
 /**
  * Fired when the overlay is shown
@@ -8,7 +7,7 @@ import {Toolbar} from './overlay/Toolbar';
  * @event show
  * @param {Object} overlay The overlay instance
  */
-var EVT_SHOW = 'show';
+const EVT_SHOW = 'show';
 
 /**
  * Fired when the overlay is hidden
@@ -16,7 +15,7 @@ var EVT_SHOW = 'show';
  * @event hide
  * @param {Object} overlay The overlay instance
  */
-var EVT_HIDE = 'hide';
+const EVT_HIDE = 'hide';
 
 export default class Overlay extends Dom {
 
@@ -34,10 +33,10 @@ export default class Overlay extends Dom {
      * @param {String} [configs.title=''] The overlay's title
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
         super('<div/>', {'class': 'overlay clearfix'});
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.setupUI();
 
@@ -65,7 +64,7 @@ export default class Overlay extends Dom {
     setupUI() {
 
         this.toggleClass('modal', this.configs.modal);
-        
+
         this.inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
 
@@ -74,13 +73,13 @@ export default class Overlay extends Dom {
                 .appendTo(this.inner);
 
             this.toolbar.addButton('close')
-                .addListener('click', _Function.proxy(this.onCloseClick, this));
+                .addListener('click', this.onCloseClick.bind(this));
         }
 
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this.inner);
 
-    };
+    }
 
     /**
      * Show the overlay
@@ -94,7 +93,7 @@ export default class Overlay extends Dom {
         this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
 
         return this;
-    };
+    }
 
     /**
      * Hide the overlay
@@ -108,7 +107,7 @@ export default class Overlay extends Dom {
         this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
 
         return this;
-    };
+    }
 
     /**
      * Get the overlay's toolbar
@@ -118,7 +117,7 @@ export default class Overlay extends Dom {
      */
     getToolbar() {
         return this.toolbar;
-    };
+    }
 
     /**
      * Get the overlay's contents
@@ -128,17 +127,16 @@ export default class Overlay extends Dom {
      */
     getContents() {
         return this.contents;
-    };
+    }
 
     /**
      * The close button's click handler
      *
      * @method onCloseClick
      * @private
-     * @param {Event} evt The event object
      */
-    onCloseClick(evt){
+    onCloseClick(){
         this.hide();
-    };
-    
+    }
+
 }

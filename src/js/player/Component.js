@@ -1,10 +1,7 @@
-import {Dom} from '../core/Dom';
-import {Locale} from '../core/Locale';
-import {_Function} from '../core/utils/Function';
-import {_Var} from '../core/utils/Var';
-import {_String} from '../core/utils/String';
-import {_Object} from '../core/utils/Object';
-import {CuePoint} from './CuePoint';
+import Dom from '../core/Dom';
+import {isNumber} from '../core/utils/Var';
+import {uuid} from '../core/utils/String';
+import CuePoint from './CuePoint';
 
 /**
  * Fired when a property changed
@@ -14,13 +11,13 @@ import {CuePoint} from './CuePoint';
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
  */
-var EVT_PROPCHANGE = 'propchange';
+const EVT_PROPCHANGE = 'propchange';
 
 export default class Component extends Dom {
 
     /**
      * A generic component class
-     * 
+     *
      * @class Component
      * @namespace player
      * @extends Dom
@@ -31,16 +28,16 @@ export default class Component extends Dom {
      * @param {Object} [configs.properties={}} A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-component', 'id': 'component-'+ _String.uuid(5)});
+        super('<div/>', {'class': 'metaScore-component', 'id': `component-${uuid(5)}`});
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
 
         if(this.configs.container){
-            if(_Var.is(this.configs.index, 'number')){
+            if(isNumber(this.configs.index)){
                 this.insertAt(this.configs.container, this.configs.index);
             }
             else{
@@ -48,74 +45,89 @@ export default class Component extends Dom {
             }
         }
 
-        _Object.each(this.configs.listeners, function(key, value){
+		Object.entries(this.configs.listeners).forEach(([key, value]) => {
             this.addListener(key, value);
-        }, this);
+        });
 
         this.setupUI();
 
         this.setProperties(this.configs);
     }
 
-    Component.defaults = {
-        'container': null,
-        'index': null,
-        'properties': {}
-    };
+    static getDefaults(){
+        return {
+            'container': null,
+            'index': null,
+            'properties': {}
+        };
+    }
+
+    static instanceOf(type){
+        if(type === this.name){
+            return true;
+        }
+
+        const parent = Object.getPrototypeOf(this);
+        if('instanceOf' in parent){
+            return parent.instanceOf(type);
+        }
+
+        return false;
+    }
 
     /**
      * Setup the component's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
-    setupUI() {};
+    setupUI() {}
 
     /**
      * Get the component's id
-     * 
+     *
      * @method getId
      * @return {String} The id
      */
     getId() {
         return this.attr('id');
-    };
+    }
 
     /**
      * Get the value of the component's name property
-     * 
+     *
      * @method getName
      * @return {String} The name
      */
     getName() {
         return this.getProperty('name');
-    };
+    }
 
     /**
      * Check if the component is of a given type
-     * 
+     *
      * @method instanceOf
      * @param {String} type The type to check for
      * @return {Boolean} Whether the component is of the given type
      */
     instanceOf(type){
-        return (type in metaScore.player.component) && (this instanceof metaScore.player.component[type]);
-    };
+        return this.constructor.instanceOf(type);
+    }
 
     /**
      * Check if the component has a given property
-     * 
+     *
      * @method hasProperty
      * @param {String} name The property's name
      * @return {Boolean} Whether the component has the given property
      */
     hasProperty(name){
         return name in this.configs.properties;
-    };
+    }
 
     /**
      * Get the value of a given property
-     * 
+     *
      * @method getProperty
      * @param {String} name The name of the property
      * @return {Mixed} The value of the property
@@ -124,22 +136,22 @@ export default class Component extends Dom {
         if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
             return this.configs.properties[name].getter.call(this);
         }
-    };
+    }
 
     /**
      * Get the values of all properties
-     * 
+     *
      * @method getProperties
      * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
      * @return {Object} The values of the properties as name/value pairs
      */
     getProperties(skipDefaults){
-        var values = {},
+        let values = {},
             value;
-            
+
         skipDefaults = skipDefaults === undefined ? true : skipDefaults;
 
-        _Object.each(this.configs.properties, function(name, prop){
+		Object.entries(this.configs.properties).forEach(([name, prop]) => {
             if('getter' in prop){
                 value = prop.getter.call(this, skipDefaults);
 
@@ -147,14 +159,14 @@ export default class Component extends Dom {
                     values[name] = value;
                 }
             }
-        }, this);
+        });
 
         return values;
-    };
+    }
 
     /**
      * Set the value of a given property
-     * 
+     *
      * @method setProperty
      * @param {String} name The name of the property
      * @param {Mixed} value The value to set
@@ -171,23 +183,23 @@ export default class Component extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Set property values
-     * 
+     *
      * @method setProperties
      * @param {Object} properties The list of properties to set as name/value pairs
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @chainable
      */
     setProperties(properties, supressEvent){
-        _Object.each(properties, function(key, value){
+		Object.entries(properties).forEach(([key, value]) => {
             this.setProperty(key, value, supressEvent);
-        }, this);
+        });
 
         return this;
-    };
+    }
 
     /**
      * Show/hide
@@ -197,7 +209,7 @@ export default class Component extends Dom {
      * @chainable
      */
     toggleVisibility(show){
-        
+
         if(show === true){
             this.data('hidden', null);
         }
@@ -207,58 +219,58 @@ export default class Component extends Dom {
         else{
             this.data('hidden', (this.data('hidden') === "true") ? null : "true");
         }
-    
+
         return this;
 
-    };
+    }
 
     /**
      * Set a cuepoint on the component
-     * 
+     *
      * @method setCuePoint
      * @param {Object} configs Custom configs to override defaults
      * @return {player.CuePoint} The created cuepoint
      */
     setCuePoint(configs){
-        var inTime = this.getProperty('start-time'),
+        let inTime = this.getProperty('start-time'),
             outTime = this.getProperty('end-time');
 
         if(this.cuepoint){
             this.cuepoint.destroy();
         }
 
-        if(inTime != null || outTime != null){
-            this.cuepoint = new CuePoint(_Object.extend({}, configs, {
+        if(inTime !== null || outTime !== null){
+            this.cuepoint = new CuePoint(Object.assign({}, configs, {
                 'inTime': inTime,
                 'outTime': outTime
             }));
-            
+
             if(this.onCuePointStart){
-                this.cuepoint.addListener('start', _Function.proxy(this.onCuePointStart, this));
+                this.cuepoint.addListener('start', this.onCuePointStart.bind(this));
             }
-            
+
             if(this.onCuePointUpdate){
-                this.cuepoint.addListener('update', _Function.proxy(this.onCuePointUpdate, this));
+                this.cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
             }
-            
+
             if(this.onCuePointStop){
-                this.cuepoint.addListener('stop', _Function.proxy(this.onCuePointStop, this));
+                this.cuepoint.addListener('stop', this.onCuePointStop.bind(this));
             }
-            
+
             this.cuepoint.init();
         }
 
         return this.cuepoint;
-    };
+    }
 
     /**
      * Get the cuepoint of the component
-     * 
+     *
      * @method getCuePoint
      * @return {player.CuePoint} The cuepoint
      */
     getCuePoint() {
         return this.cuepoint;
-    };
+    }
 
 }

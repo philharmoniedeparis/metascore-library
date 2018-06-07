@@ -1,11 +1,11 @@
-import {Panel} from '../Panel';
-import {Locale} from '../../core/Locale';
+import Panel from '../Panel';
+import {t} from '../../core/utils/Locale';
 
 export default class Page extends Panel {
 
     /**
      * A panel for {{#crossLink "player.component.Page"}}{{/crossLink}} components
-     * 
+     *
      * @class Page
      * @namespace editor.panel
      * @extends editor.Panel
@@ -20,13 +20,15 @@ export default class Page extends Panel {
         this.addClass('page');
     }
 
-    PagePanel.defaults = {
-        'toolbarConfigs': {
-            'title': Locale.t('editor.panel.Page.title', 'Page'),
-            'menuItems': {
-                'new': Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
-                'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'toolbarConfigs': {
+                'title': t('editor.panel.Page.title', 'Page'),
+                'menuItems': {
+                    'new': t('editor.panel.Page.menuItems.new', 'Add a new page'),
+                    'delete': t('editor.panel.Page.menuItems.delete', 'Delete the active page')
+                }
             }
-        }
-    };
+        });
+    }
 }

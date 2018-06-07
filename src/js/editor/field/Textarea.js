@@ -1,7 +1,6 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
-import {_Function} from '../../core/utils/Function';
-import {_String} from '../../core/utils/String';
+import Field from '../Field';
+import Dom from '../../core/Dom';
+import {uuid} from '../../core/utils/String';
 
 export default class Textarea extends Field {
 
@@ -16,17 +15,17 @@ export default class Textarea extends Field {
      * @param {String} [configs.value=''] The default value
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('textareafield');
     }
 
-    TextareaField.defaults = {
-        'value': ''
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'value': ''
+        });
+    }
 
     /**
      * Setup the field's UI
@@ -35,7 +34,7 @@ export default class Textarea extends Field {
      * @private
      */
     setupUI() {
-        var uid = 'field-'+ _String.uuid(5);
+        const uid = `field-${uuid(5)}`;
 
         if(this.configs.label){
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
@@ -46,8 +45,8 @@ export default class Textarea extends Field {
             .appendTo(this);
 
         this.input = new Dom('<textarea></textarea>', {'id': uid})
-            .addListener('change', _Function.proxy(this.onChange, this))
+            .addListener('change', this.onChange.bind(this))
             .appendTo(this.input_wrapper);
-    };
+    }
 
 }

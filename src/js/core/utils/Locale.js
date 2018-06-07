@@ -1,6 +1,6 @@
 /* global metaScoreLocale */
 
-import {replaceAll} from './utils/String';
+import {replaceAll} from './String';
 
 /**
  * Replace placeholders with sanitized values in a string
@@ -12,8 +12,8 @@ import {replaceAll} from './utils/String';
  * @return {String} The translated string
  */
 export function formatString(str, args) {
-    Object.entries(args).forEach(([key]) => {
-        str = replaceAll(str, key, args[key]);
+    Object.entries(args).forEach(([key, value]) => {
+        str = replaceAll(str, key, value);
     });
 
     return str;

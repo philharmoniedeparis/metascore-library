@@ -1,4 +1,4 @@
-import {Dom} from '../core/Dom';
+import Dom from '../core/Dom';
 
 export default class DropDownMenu extends Dom{
 
@@ -24,11 +24,11 @@ export default class DropDownMenu extends Dom{
      * @return {Dom} item The added item
      */
     addItem(action, label){
-        var item = new Dom('<li/>', {'data-action': action, 'text': label})
+        const item = new Dom('<li/>', {'data-action': action, 'text': label})
             .appendTo(this);
 
         return item;
-    };
+    }
 
     /**
      * Toggle an item's enabled state
@@ -39,9 +39,9 @@ export default class DropDownMenu extends Dom{
      * @chainable
      */
     toggleItem(action, state){
-        this.child('[data-action="'+ action +'"]').toggleClass('disabled', state === false);
+        this.child(`[data-action="${action}"]`).toggleClass('disabled', state === false);
 
         return this;
-    };
+    }
 
 }

@@ -1,5 +1,4 @@
-import {_Function} from '../utils/Function';
-import {Dom} from '../Dom';
+import Dom from '../Dom';
 
 export default class Button extends Dom {
 
@@ -13,10 +12,10 @@ export default class Button extends Dom {
      * @param {String} [configs.label=null] A text to add as a label
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call the super constructor.
         super('<button/>');
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.disabled = false;
 
@@ -24,7 +23,7 @@ export default class Button extends Dom {
             this.setLabel(this.configs.label);
         }
 
-        this.addListener('click', _Function.proxy(this.onClick, this));
+        this.addListener('click', this.onClick.bind(this));
     }
 
     static getDefaults(){
@@ -44,7 +43,7 @@ export default class Button extends Dom {
         if(this.disabled){
             evt.stopPropagation();
         }
-    };
+    }
 
     /**
      * Set the button's text
@@ -62,7 +61,7 @@ export default class Button extends Dom {
         this.label.text(text);
 
         return this;
-    };
+    }
 
     /**
      * Disable the button
@@ -76,7 +75,7 @@ export default class Button extends Dom {
         this.addClass('disabled');
 
         return this;
-    };
+    }
 
     /**
      * Enable the button
@@ -90,6 +89,6 @@ export default class Button extends Dom {
         this.removeClass('disabled');
 
         return this;
-    };
+    }
 
 }

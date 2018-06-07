@@ -1,7 +1,8 @@
-import {Dom} from '../../Dom';
-import {Locale} from '../../Locale';
+import Overlay from '../Overlay';
+import Dom from '../../Dom';
+import {t} from '../../Locale';
 
-export default class LoadMask extends PARENT{
+export default class LoadMask extends Overlay{
 
     /**
      * A loading mask
@@ -14,10 +15,8 @@ export default class LoadMask extends PARENT{
      * @param {String} [configs.text='Loading...'] The text to display
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('loadmask');
 
@@ -26,9 +25,9 @@ export default class LoadMask extends PARENT{
     }
 
     static getDefaults(){
-        return {
-            'text': Locale.t('overlay.LoadMask.text', 'Loading...')
-        };
+        return Object.assign({}, super.getDefaults(), {
+            'text': t('overlay.LoadMask.text', 'Loading...')
+        });
     }
 
 }

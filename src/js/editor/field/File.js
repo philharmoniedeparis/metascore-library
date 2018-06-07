@@ -1,5 +1,5 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
+import Field from '../Field';
+import Dom from '../../core/Dom';
 
 export default class File extends Field {
 
@@ -14,10 +14,8 @@ export default class File extends Field {
      * @param {String} [configs.accept=null] The list of accepted file types (see {{#crossLink "editor.field.FileField/setAcceptedTypes:method"}}{{/crossLink}})
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         if(this.configs.accept){
             this.setAcceptedTypes(this.configs.accept);
@@ -26,9 +24,11 @@ export default class File extends Field {
         this.addClass('filefield');
     }
 
-    FileField.defaults = {
-        'accept': null
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'accept': null
+        });
+    }
 
     /**
      * Setup the field's UI
@@ -43,21 +43,21 @@ export default class File extends Field {
 
         this.current = new Dom('<div/>')
             .appendTo(this.input_wrapper);
-    };
+    }
 
     /**
      * Set the accepted file types
-     * 
+     *
      * @method setAcceptedTypes
      * @param {String} types A comma seperated list of accepted file types (ex: ".gif,.jpg,.png,.doc" or "audio/*,video/*,image/*")
      */
     setAcceptedTypes(types){
         this.input.attr('accept', types);
-    };
+    }
 
     /**
      * Set the field's value
-     * 
+     *
      * @method setValue
      * @param {Object} [value] The new value
      * @param {String} value.name The file's name
@@ -65,7 +65,7 @@ export default class File extends Field {
      * @chainable
      */
     setValue(value){
-        var info;
+        let info;
 
         this.current.empty();
 
@@ -79,7 +79,7 @@ export default class File extends Field {
             if('url' in value){
                 info.attr('href', value.url);
             }
-            
+
             this.input.attr('required', null);
         }
         else if(this.configs.required){
@@ -87,24 +87,24 @@ export default class File extends Field {
         }
 
         return this;
-    };
+    }
 
     /**
      * Helper function to get a selected file from the HTML input field
-     * 
+     *
      * @method getFile
      * @private
      * @param {Integer} [index] The index of the selected file, all files will be returned if not provided
      * @return {Mixed} The <a href="https://developer.mozilla.org/en-US/docs/Web/API/File" target="_blank">File</a> or <a href="https://developer.mozilla.org/en/docs/Web/API/FileList" target="_blank">FileList</a>
      */
     getFile(index){
-        var files = this.input.get(0).files;
+        const files = this.input.get(0).files;
 
         if(index !== undefined){
             return files[index];
         }
 
         return files;
-    };
-    
+    }
+
 }

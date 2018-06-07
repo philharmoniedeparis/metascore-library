@@ -1,3 +1,4 @@
+import Evented from './Evented';
 
 export default class Clipboard extends Evented {
 
@@ -30,7 +31,7 @@ export default class Clipboard extends Evented {
         };
 
         return this;
-    };
+    }
 
     /**
     * Get the stored data
@@ -40,7 +41,7 @@ export default class Clipboard extends Evented {
     */
     getData() {
         return this.data ? this.data.data : null;
-    };
+    }
 
     /**
     * Get the stored data type
@@ -50,7 +51,7 @@ export default class Clipboard extends Evented {
     */
     getDataType() {
         return this.data ? this.data.type : null;
-    };
+    }
 
     /**
     * Clear the stored data
@@ -58,10 +59,10 @@ export default class Clipboard extends Evented {
     * @method clearData
     * @chainable
     */
-    clearData() {  
+    clearData() {
         this.data = null;
 
         return this;
-    };
-    
+    }
+
 }

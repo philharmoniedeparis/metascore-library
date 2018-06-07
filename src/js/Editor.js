@@ -1,25 +1,22 @@
-import {Dom} from './core/Dom';
-import {_Function} from './core/utils/Function';
-import {_Array} from './core/utils/Array';
-import {_Object} from './core/utils/Object';
-import {_String} from './core/utils/String';
-import {_Var} from './core/utils/Var';
-import {Locale} from './core/Locale';
-import {MainMenu} from './editor/MainMenu';
-import {Resizable} from './core/ui/Resizable';
-import {BlockPanel} from './editor/panel/Block';
-import {PagePanel} from './editor/panel/Page';
-import {ElementPanel} from './editor/panel/Element';
-import {History} from './editor/History';
-import {Alert} from './core/ui/overlay/Alert';
-import {LoadMask} from './core/ui/overlay/LoadMask';
-import {Clipboard} from './core/Clipboard';
-import {Ajax} from './core/Ajax';
-import {ContextMenu} from './core/ContextMenu';
-import {GuideDetails} from './editor/overlay/GuideDetails';
-import {GuideSelector} from './editor/overlay/GuideSelector';
-import {Share} from './editor/overlay/Share';
-
+import Dom from './core/Dom';
+import {naturalSortInsensitive} from './core/utils/Array';
+import {pad} from './core/utils/String';
+import {isArray} from './core/utils/Var';
+import {t} from './core/utils/Locale';
+import MainMenu from './editor/MainMenu';
+import Resizable from './core/ui/Resizable';
+import BlockPanel from './editor/panel/Block';
+import PagePanel from './editor/panel/Page';
+import ElementPanel from './editor/panel/Element';
+import History from './editor/History';
+import Alert from './core/ui/overlay/Alert';
+import LoadMask from './core/ui/overlay/LoadMask';
+import Clipboard from './core/Clipboard';
+import Ajax from './core/Ajax';
+import ContextMenu from './core/ui/ContextMenu';
+import GuideDetails from './editor/overlay/GuideDetails';
+import GuideSelector from './editor/overlay/GuideSelector';
+import Share from './editor/overlay/Share';
 
 export default class Editor extends Dom {
 
@@ -42,10 +39,10 @@ export default class Editor extends Dom {
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
         super('<div/>', {'class': 'metaScore-editor'});
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         if(this.configs.container){
             this.appendTo(this.configs.container);
@@ -62,239 +59,240 @@ export default class Editor extends Dom {
             .toggleButton('help', this.configs.help_url ? true : false)
             .toggleButton('account', this.configs.account_url ? true : false)
             .toggleButton('logout', this.configs.logout_url ? true : false)
-            .addDelegate('button[data-action]:not(.disabled)', 'click', _Function.proxy(this.onMainmenuClick, this))
-            .addDelegate('.time', 'valuechange', _Function.proxy(this.onMainmenuTimeFieldChange, this))
-            .addDelegate('.r-index', 'valuechange', _Function.proxy(this.onMainmenuRindexFieldChange, this));
+            .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
+            .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
+            .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
         this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
-            .addListener('resizestart', _Function.proxy(this.onSidebarResizeStart, this))
-            .addListener('resize', _Function.proxy(this.onSidebarResize, this))
-            .addListener('resizeend', _Function.proxy(this.onSidebarResizeEnd, this));
+            .addListener('resizestart', this.onSidebarResizeStart.bind(this))
+            .addListener('resize', this.onSidebarResize.bind(this))
+            .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
 
         this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
 
         this.sidebar_resizer = new Resizable({target: this.sidebar_wrapper, directions: ['left']});
         this.sidebar_resizer.getHandle('left')
-            .addListener('dblclick', _Function.proxy(this.onSidebarResizeDblclick, this));
+            .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
 
         this.panels = {};
 
         this.panels.block = new BlockPanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', _Function.proxy(this.onBlockBeforeSet, this))
-            .addListener('componentset', _Function.proxy(this.onBlockSet, this))
-            .addListener('componentunset', _Function.proxy(this.onBlockUnset, this))
-            .addListener('valueschange', _Function.proxy(this.onBlockPanelValueChange, this));
+            .addListener('componentbeforeset', this.onBlockBeforeSet.bind(this))
+            .addListener('componentset', this.onBlockSet.bind(this))
+            .addListener('componentunset', this.onBlockUnset.bind(this))
+            .addListener('valueschange', this.onBlockPanelValueChange.bind(this));
 
         this.panels.block.getToolbar()
-            .addDelegate('.selector', 'valuechange', _Function.proxy(this.onBlockPanelSelectorChange, this))
-            .addDelegate('.buttons [data-action]', 'click', _Function.proxy(this.onBlockPanelToolbarClick, this));
+            .addDelegate('.selector', 'valuechange', this.onBlockPanelSelectorChange.bind(this))
+            .addDelegate('.buttons [data-action]', 'click', this.onBlockPanelToolbarClick.bind(this));
 
         this.panels.page = new PagePanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', _Function.proxy(this.onPageBeforeSet, this))
-            .addListener('componentset', _Function.proxy(this.onPageSet, this))
-            .addListener('componentunset', _Function.proxy(this.onPageUnset, this))
-            .addListener('valueschange', _Function.proxy(this.onPagePanelValueChange, this));
+            .addListener('componentbeforeset', this.onPageBeforeSet.bind(this))
+            .addListener('componentset', this.onPageSet.bind(this))
+            .addListener('componentunset', this.onPageUnset.bind(this))
+            .addListener('valueschange', this.onPagePanelValueChange.bind(this));
 
         this.panels.page.getToolbar()
-            .addDelegate('.selector', 'valuechange', _Function.proxy(this.onPagePanelSelectorChange, this))
-            .addDelegate('.buttons [data-action]', 'click', _Function.proxy(this.onPagePanelToolbarClick, this));
+            .addDelegate('.selector', 'valuechange', this.onPagePanelSelectorChange.bind(this))
+            .addDelegate('.buttons [data-action]', 'click', this.onPagePanelToolbarClick.bind(this));
 
         this.panels.element = new ElementPanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', _Function.proxy(this.onElementBeforeSet, this))
-            .addListener('componentset', _Function.proxy(this.onElementSet, this))
-            .addListener('valueschange', _Function.proxy(this.onElementPanelValueChange, this));
+            .addListener('componentbeforeset', this.onElementBeforeSet.bind(this))
+            .addListener('componentset', this.onElementSet.bind(this))
+            .addListener('valueschange', this.onElementPanelValueChange.bind(this));
 
         this.panels.element.getToolbar()
-            .addDelegate('.selector', 'valuechange', _Function.proxy(this.onElementPanelSelectorChange, this))
-            .addDelegate('.buttons [data-action]', 'click', _Function.proxy(this.onElementPanelToolbarClick, this));
+            .addDelegate('.selector', 'valuechange', this.onElementPanelSelectorChange.bind(this))
+            .addDelegate('.buttons [data-action]', 'click', this.onElementPanelToolbarClick.bind(this));
 
         this.grid = new Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
 
         this.history = new History()
-            .addListener('add', _Function.proxy(this.onHistoryAdd, this))
-            .addListener('undo', _Function.proxy(this.onHistoryUndo, this))
-            .addListener('redo', _Function.proxy(this.onHistoryRedo, this));
-            
+            .addListener('add', this.onHistoryAdd.bind(this))
+            .addListener('undo', this.onHistoryUndo.bind(this))
+            .addListener('redo', this.onHistoryRedo.bind(this));
+
         this.clipboard = new Clipboard();
-        
+
         // prevent the custom contextmenu from overriding the native one in inputs
-        this.addDelegate('input', 'contextmenu', function(evt){
+        this.addDelegate('input', 'contextmenu', (evt) => {
             evt.stopImmediatePropagation();
             evt.stopPropagation();
         });
-        
+
         this.contextmenu = new ContextMenu({'target': this, 'items': {
                 'about': {
-                    'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                    'text': t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.getVersion(), '!revision': this.getRevision()})
                 }
             }})
             .appendTo(this);
-                
+
         this.player_contextmenu = new ContextMenu({'target': null, 'items': {
                 'add-element': {
-                    'text': Locale.t('editor.contextmenu.add-element', 'Add an element'),
+                    'text': t('editor.contextmenu.add-element', 'Add an element'),
                     'items': {
                         'add-element-cursor': {
-                            'text': Locale.t('editor.contextmenu.add-element-cursor', 'Cursor'),
-                            'callback': _Function.proxy(function(context){
+                            'text': t('editor.contextmenu.add-element-cursor', 'Cursor'),
+                            'callback': (context) => {
                                 this.addPlayerComponent('element', {'type': 'Cursor'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                            }, this)
+                            }
                         },
                         'add-element-image': {
-                            'text': Locale.t('editor.contextmenu.add-element-image', 'Image'),
-                            'callback': _Function.proxy(function(context){
+                            'text': t('editor.contextmenu.add-element-image', 'Image'),
+                            'callback': (context) => {
                                 this.addPlayerComponent('element', {'type': 'Image'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                            }, this)
+                            }
                         },
                         'add-element-text': {
-                            'text': Locale.t('editor.contextmenu.add-element-text', 'Text'),
-                            'callback': _Function.proxy(function(context){
+                            'text': t('editor.contextmenu.add-element-text', 'Text'),
+                            'callback': (context) => {
                                 this.addPlayerComponent('element', {'type': 'Text'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                            }, this)
+                            }
                         }
                     },
-                    'toggler': _Function.proxy(function(context){
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
-                    }, this)
+                    }
                 },
                 'copy-element': {
-                    'text': Locale.t('editor.contextmenu.copy-element', 'Copy element'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.copy-element', 'Copy element'),
+                    'callback': (context) => {
                         this.clipboard.setData('element', Dom.closest(context, '.metaScore-component.element')._metaScore.getProperties());
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.element') ? true : false);
-                    }, this)
+                    }
                 },
                 'paste-element': {
-                    'text': Locale.t('editor.contextmenu.paste-element', 'Paste element'),
-                    'callback': _Function.proxy(function(context){
-                        var component = this.clipboard.getData();
+                    'text': t('editor.contextmenu.paste-element', 'Paste element'),
+                    'callback': (context) => {
+                        const component = this.clipboard.getData();
                         component.x += 5;
                         component.y += 5;
+
                         this.addPlayerComponent('element', component, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (Dom.closest(context, '.metaScore-component.page') ? true : false);
-                    }, this)
+                    }
                 },
                 'delete-element': {
-                    'text': Locale.t('editor.contextmenu.delete-element', 'Delete element'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.delete-element', 'Delete element'),
+                    'callback': (context) => {
                         this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.element')._metaScore, true);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         if(this.editing !== true){
                             return false;
                         }
-                        
-                        var dom = Dom.closest(context, '.metaScore-component.element');
+
+                        const dom = Dom.closest(context, '.metaScore-component.element');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }, this)
+                    }
                 },
                 'lock-element': {
-                    'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.lock-element', 'Lock element'),
+                    'callback': (context) => {
                         Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', true);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         if(this.editing !== true){
                             return false;
                         }
-                        
-                        var dom = Dom.closest(context, '.metaScore-component.element');
+
+                        const dom = Dom.closest(context, '.metaScore-component.element');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }, this)
+                    }
                 },
                 'unlock-element': {
-                    'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.unlock-element', 'Unlock element'),
+                    'callback': (context) => {
                         Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', false);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         if(this.editing !== true){
                             return false;
                         }
-                        
-                        var dom = Dom.closest(context, '.metaScore-component.element');
+
+                        const dom = Dom.closest(context, '.metaScore-component.element');
                         return dom && dom._metaScore.getProperty('locked');
-                    }, this)
+                    }
                 },
                 'element-separator': {
                     'class': 'separator',
-                    'toggler': _Function.proxy(function(context){
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false);
-                    }, this)
+                    }
                 },
                 'add-page': {
-                    'text': Locale.t('editor.contextmenu.add-page', 'Add a page'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.add-page', 'Add a page'),
+                    'callback': (context) => {
                         this.addPlayerComponent('page', {}, Dom.closest(context, '.metaScore-component.block')._metaScore);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block') ? true : false);
-                    }, this)
+                    }
                 },
                 'delete-page': {
-                    'text': Locale.t('editor.contextmenu.delete-page', 'Delete page'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.delete-page', 'Delete page'),
+                    'callback': (context) => {
                         this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.page')._metaScore, true);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
-                    }, this)
+                    }
                 },
                 'page-separator': {
                     'class': 'separator',
-                    'toggler': _Function.proxy(function(context){
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false);
-                    }, this)
+                    }
                 },
                 'add-block': {
-                    'text': Locale.t('editor.contextmenu.add-block', 'Add a block'),
+                    'text': t('editor.contextmenu.add-block', 'Add a block'),
                     'items': {
                         'add-block-synched': {
-                            'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
-                            'callback': _Function.proxy(function(context){
+                            'text': t('editor.contextmenu.add-block-synched', 'Synchronized'),
+                            'callback': () => {
                                 this.addPlayerComponent('block', {'synched': true}, this.getPlayer());
-                            }, this)
+                            }
                         },
                         'add-block-non-synched': {
-                            'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
-                            'callback': _Function.proxy(function(context){
+                            'text': t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
+                            'callback': () => {
                                 this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
-                            }, this)
+                            }
                         },
                         'separator': {
                             'class': 'separator'
                         },
                         'add-block-toggler': {
-                            'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
-                            'callback': _Function.proxy(function(context){
+                            'text': t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
+                            'callback': () => {
                                 this.addPlayerComponent('block-toggler', {}, this.getPlayer());
-                            }, this)
+                            }
                         }
                     },
-                    'toggler': _Function.proxy(function(context){
+                    'toggler': () => {
                         return (this.editing === true);
-                    }, this)
+                    }
                 },
                 'copy-block': {
-                    'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
-                    'callback': _Function.proxy(function(context){
-                        var component = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
+                    'text': t('editor.contextmenu.copy-block', 'Copy block'),
+                    'callback': (context) => {
+                        const component = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
                             type = component.instanceOf('BlockToggler') ? 'block-toggler' : 'block';
 
                         this.clipboard.setData(type, component.getProperties());
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
-                    }, this)
+                    }
                 },
                 'paste-block': {
-                    'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
-                    'callback': _Function.proxy(function(context){
-                        var type = this.clipboard.getDataType(),
+                    'text': t('editor.contextmenu.paste-block', 'Paste block'),
+                    'callback': () => {
+                        const type = this.clipboard.getDataType(),
                             component = this.clipboard.getData();
 
                         component.x += 5;
@@ -306,83 +304,83 @@ export default class Editor extends Dom {
                         else{
                             this.getPlayer().addBlock(component);
                         }
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': () => {
                         return (this.editing === true) && (this.clipboard.getDataType() === 'block' || this.clipboard.getDataType() === 'block-toggler');
-                    }, this)
+                    }
                 },
                 'delete-block': {
-                    'text': Locale.t('editor.contextmenu.delete-block', 'Delete block'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.delete-block', 'Delete block'),
+                    'callback': (context) => {
                         this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         if(this.editing !== true){
                             return false;
                         }
-                        
-                        var dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+
+                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }, this)
+                    }
                 },
                 'lock-block': {
-                    'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.lock-block', 'Lock block'),
+                    'callback': (context) => {
                         Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', true);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         if(this.editing !== true){
                             return false;
                         }
-                        
-                        var dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+
+                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getProperty('locked');
-                    }, this)
+                    }
                 },
                 'unlock-block': {
-                    'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
-                    'callback': _Function.proxy(function(context){
+                    'text': t('editor.contextmenu.unlock-block', 'Unlock block'),
+                    'callback': (context) => {
                         Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', false);
-                    }, this),
-                    'toggler': _Function.proxy(function(context){
+                    },
+                    'toggler': (context) => {
                         if(this.editing !== true){
                             return false;
                         }
-                        
-                        var dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+
+                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && dom._metaScore.getProperty('locked');
-                    }, this)
+                    }
                 },
                 'block-separator': {
                     'class': 'separator',
-                    'toggler': _Function.proxy(function(context){
+                    'toggler': () => {
                         return (this.editing === true);
-                    }, this)
+                    }
                 },
                 'about': {
-                    'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': metaScore.getVersion(), '!revision': metaScore.getRevision()})
+                    'text': t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.getVersion(), '!revision': this.getRevision()})
                 }
             }})
             .appendTo(this.workspace);
 
         this.detailsOverlay = new GuideDetails({
                 'groups': this.configs.user_groups,
-                'submit_text': Locale.t('editor.detailsOverlay.submit_text', 'Apply')
+                'submit_text': t('editor.detailsOverlay.submit_text', 'Apply')
             })
-            .addListener('show', _Function.proxy(this.onDetailsOverlayShow, this))
-            .addListener('submit', _Function.proxy(this.onDetailsOverlaySubmit, this, ['update']));
+            .addListener('show', this.onDetailsOverlayShow.bind(this))
+            .addListener('submit', this.onDetailsOverlaySubmit.bind(this, ['update']));
 
         this.detailsOverlay.getField('type').readonly(true);
 
-        Dom.addListener(window, 'hashchange', _Function.proxy(this.onWindowHashChange, this));
-        Dom.addListener(window, 'beforeunload', _Function.proxy(this.onWindowBeforeUnload, this));
+        Dom.addListener(window, 'hashchange', this.onWindowHashChange.bind(this));
+        Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
 
         this
-            .addListener('mousedown', _Function.proxy(this.onMousedown, this))
-            .addListener('keydown', _Function.proxy(this.onKeydown, this))
-            .addListener('keyup', _Function.proxy(this.onKeyup, this))
-            .addDelegate('.timefield', 'valuein', _Function.proxy(this.onTimeFieldIn, this))
-            .addDelegate('.timefield', 'valueout', _Function.proxy(this.onTimeFieldOut, this))
+            .addListener('mousedown', this.onMousedown.bind(this))
+            .addListener('keydown', this.onKeydown.bind(this))
+            .addListener('keyup', this.onKeyup.bind(this))
+            .addDelegate('.timefield', 'valuein', this.onTimeFieldIn.bind(this))
+            .addDelegate('.timefield', 'valueout', this.onTimeFieldOut.bind(this))
             .setDirty(false)
             .setEditing(false)
             .updateMainmenu()
@@ -404,6 +402,14 @@ export default class Editor extends Dom {
         };
     }
 
+    static getVersion(){
+        return "[[VERSION]]";
+    }
+
+    static getRevision(){
+        return "[[REVISION]]";
+    }
+
     /**
      * XHR error callback
      *
@@ -417,13 +423,13 @@ export default class Editor extends Dom {
 
         new Alert({
             'parent': this,
-            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
+            'text': t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
-                'ok': Locale.t('editor.onXHRError.ok', 'OK'),
+                'ok': t('editor.onXHRError.ok', 'OK'),
             },
             'autoShow': true
         });
-    };
+    }
 
     /**
      * Guide creation success callback
@@ -434,7 +440,7 @@ export default class Editor extends Dom {
      * @param {XMLHttpRequest} xhr The XHR request
      */
     onGuideCreateSuccess(overlay, xhr){
-        var json = JSON.parse(xhr.response);
+        const json = JSON.parse(xhr.response);
 
         this.loadmask.hide();
         delete this.loadmask;
@@ -442,7 +448,7 @@ export default class Editor extends Dom {
         overlay.hide();
 
         this.loadPlayer(json.id, json.vid);
-    };
+    }
 
     /**
      * Guide saving success callback
@@ -452,7 +458,7 @@ export default class Editor extends Dom {
      * @param {XMLHttpRequest} xhr The XHR request
      */
     onGuideSaveSuccess(xhr){
-        var player = this.getPlayer(),
+        let player = this.getPlayer(),
             data = JSON.parse(xhr.response);
 
         this.loadmask.hide();
@@ -468,11 +474,11 @@ export default class Editor extends Dom {
 
             player.updateData(data, true)
                   .setRevision(data.vid);
-        
+
             this.setDirty(false)
                 .updateMainmenu();
         }
-    };
+    }
 
     /**
      * Guide deletion confirm callback
@@ -481,14 +487,14 @@ export default class Editor extends Dom {
      * @private
      */
     onGuideDeleteConfirm() {
-        var id = this.getPlayer().getId(),
-            component, options;
+        let id = this.getPlayer().getId(),
+            options;
 
-        options = _Object.extend({}, {
+        options = Object.assign({}, {
             'dataType': 'json',
             'method': 'DELETE',
-            'success': _Function.proxy(this.onGuideDeleteSuccess, this),
-            'error': _Function.proxy(this.onXHRError, this)
+            'success': this.onGuideDeleteSuccess.bind(this),
+            'error': this.onXHRError.bind(this)
         }, this.configs.ajax);
 
         this.loadmask = new LoadMask({
@@ -496,22 +502,21 @@ export default class Editor extends Dom {
             'autoShow': true
         });
 
-        Ajax.send(this.configs.api_url +'guide/'+ id +'.json', options);
-    };
+        Ajax.send(`${this.configs.api_url}guide/${id}.json`, options);
+    }
 
     /**
      * Guide deletion success callback
      *
      * @method onGuideDeleteSuccess
      * @private
-     * @param {XMLHttpRequest} xhr The XHR request
      */
-    onGuideDeleteSuccess(xhr){
+    onGuideDeleteSuccess(){
         this.unloadPlayer();
 
         this.loadmask.hide();
         delete this.loadmask;
-    };
+    }
 
     /**
      * Guide revert confirm callback
@@ -520,10 +525,10 @@ export default class Editor extends Dom {
      * @private
      */
     onGuideRevertConfirm() {
-        var player = this.getPlayer();
+        const player = this.getPlayer();
 
         this.loadPlayer(player.getId(), player.getRevision());
-    };
+    }
 
     /**
      * GuideSelector submit callback
@@ -533,7 +538,7 @@ export default class Editor extends Dom {
      */
     onGuideSelectorSubmit(evt){
         this.loadPlayer(evt.detail.guide.id, evt.detail.vid);
-    };
+    }
 
     /**
      * Keydown event callback
@@ -543,7 +548,7 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeydown(evt){
-        var player;
+        let player;
 
         switch(evt.keyCode){
             case 18: //alt
@@ -577,7 +582,7 @@ export default class Editor extends Dom {
                 }
                 break;
         }
-    };
+    }
 
     /**
      * Keyup event callback
@@ -587,7 +592,7 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeyup(evt){
-        var player;
+        let player;
 
         switch(evt.keyCode){
             case 18: //alt
@@ -605,20 +610,19 @@ export default class Editor extends Dom {
                 }
                 break;
         }
-    };
+    }
 
     /**
      * Mousedown event callback
      *
      * @method onMousedown
      * @private
-     * @param {CustomEvent} evt The event object
      */
-    onMousedown(evt){
+    onMousedown(){
         if(this.player_contextmenu){
             this.player_contextmenu.hide();
         }
-    };
+    }
 
     /**
      * Mainmenu click event callback
@@ -628,31 +632,31 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onMainmenuClick(evt){
-        var callback;
+        let callback;
 
         switch(Dom.data(evt.target, 'action')){
             case 'new':
-                callback = _Function.proxy(function(){
+                callback = () => {
                     new GuideDetails({
                             'groups': this.configs.user_groups,
                             'autoShow': true
                         })
-                        .addListener('show', _Function.proxy(this.onDetailsOverlayShow, this))
-                        .addListener('submit', _Function.proxy(this.onDetailsOverlaySubmit, this, ['create']));
-                }, this);
+                        .addListener('show', this.onDetailsOverlayShow.bind(this))
+                        .addListener('submit', this.onDetailsOverlaySubmit.bind(this, ['create']));
+                };
 
                 if(this.isDirty()){
                     new Alert({
                             'parent': this,
-                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'text': t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
-                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
-                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
+                                'confirm': t('editor.onMainmenuClick.open.yes', 'Yes'),
+                                'cancel': t('editor.onMainmenuClick.open.no', 'No')
                             },
                             'autoShow': true
                         })
-                        .addListener('buttonclick', function(evt){
-                            if(evt.detail.action === 'confirm'){
+                        .addListener('buttonclick', (click_evt) => {
+                            if(click_evt.detail.action === 'confirm'){
                                 callback();
                             }
                         });
@@ -663,20 +667,20 @@ export default class Editor extends Dom {
                 break;
 
             case 'open':
-                callback = _Function.proxy(this.openGuideSelector, this);
+                callback = this.openGuideSelector.bind(this);
 
                 if(this.isDirty()){
                     new Alert({
                             'parent': this,
-                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'text': t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
-                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
-                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
+                                'confirm': t('editor.onMainmenuClick.open.yes', 'Yes'),
+                                'cancel': t('editor.onMainmenuClick.open.no', 'No')
                             },
                             'autoShow': true
                         })
-                        .addListener('buttonclick', function(evt){
-                            if(evt.detail.action === 'confirm'){
+                        .addListener('buttonclick', (click_evt) => {
+                            if(click_evt.detail.action === 'confirm'){
                                 callback();
                             }
                         });
@@ -699,21 +703,21 @@ export default class Editor extends Dom {
                 break;
 
             case 'publish':
-                callback = _Function.proxy(function(){
+                callback = () => {
                     this.saveGuide('update', true);
-                }, this);
+                };
 
                 new Alert({
                         'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
+                        'text': t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
                         'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.publish.no', 'No')
+                            'confirm': t('editor.onMainmenuClick.publish.yes', 'Yes'),
+                            'cancel': t('editor.onMainmenuClick.publish.no', 'No')
                         },
                         'autoShow': true
                     })
-                    .addListener('buttonclick', function(evt){
-                        if(evt.detail.action === 'confirm'){
+                    .addListener('buttonclick', (click_evt) => {
+                        if(click_evt.detail.action === 'confirm'){
                             callback();
                         }
                     });
@@ -733,36 +737,36 @@ export default class Editor extends Dom {
             case 'delete':
                 new Alert({
                         'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
+                        'text': t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
                         'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.delete.no', 'No')
+                            'confirm': t('editor.onMainmenuClick.delete.yes', 'Yes'),
+                            'cancel': t('editor.onMainmenuClick.delete.no', 'No')
                         },
                         'autoShow': true
                     })
                     .addClass('delete-guide')
-                    .addListener('buttonclick', _Function.proxy(function(evt){
-                        if(evt.detail.action === 'confirm'){
+                    .addListener('buttonclick', (click_evt) => {
+                        if(click_evt.detail.action === 'confirm'){
                             this.onGuideDeleteConfirm();
                         }
-                    }, this));
+                    });
                 break;
 
             case 'revert':
                 new Alert({
                         'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
+                        'text': t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
                         'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
+                            'confirm': t('editor.onMainmenuClick.revert.yes', 'Yes'),
+                            'cancel': t('editor.onMainmenuClick.revert.no', 'No')
                         },
                         'autoShow': true
                     })
-                    .addListener('buttonclick', _Function.proxy(function(evt){
-                        if(evt.detail.action === 'confirm'){
+                    .addListener('buttonclick', (click_evt) => {
+                        if(click_evt.detail.action === 'confirm'){
                             this.onGuideRevertConfirm();
                         }
-                    }, this));
+                    });
                 break;
 
             case 'undo':
@@ -783,16 +787,16 @@ export default class Editor extends Dom {
             case 'help':
                 window.open(this.configs.help_url, '_blank');
                 break;
-        
+
             case 'account':
                 window.location.href = this.configs.account_url;
                 break;
-                
+
             case 'logout':
                 window.location.href = this.configs.logout_url;
                 break;
         }
-    };
+    }
 
     /**
      * Mainmenu time field valuechange event callback
@@ -802,11 +806,11 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
      */
     onMainmenuTimeFieldChange(evt){
-        var field = evt.target._metaScore,
+        let field = evt.target._metaScore,
             time = field.getValue();
 
         this.getPlayer().getMedia().setTime(time);
-    };
+    }
 
     /**
      * Mainmenu reading index field valuechange event callback
@@ -816,11 +820,11 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Number/valuechange:event"}}Number.valuechange{{/crossLink}}
      */
     onMainmenuRindexFieldChange(evt){
-        var field = evt.target._metaScore,
+        let field = evt.target._metaScore,
             value = field.getValue();
 
         this.getPlayer().setReadingIndex(value, true);
-    };
+    }
 
     /**
      * Time field valuein event callback
@@ -830,11 +834,11 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
      */
     onTimeFieldIn(evt){
-        var field = evt.detail.field,
+        let field = evt.detail.field,
             time = this.getPlayer().getMedia().getTime();
 
         field.setValue(time);
-    };
+    }
 
     /**
      * Time field valueout event callback
@@ -844,72 +848,65 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valueout:event"}}Time.valueout{{/crossLink}}
      */
     onTimeFieldOut(evt){
-        var time = evt.detail.value;
+        const time = evt.detail.value;
 
         this.getPlayer().getMedia().setTime(time);
-    };
+    }
 
     /**
      * Sidebar resizestart event callback
      *
      * @method onSidebarResizeStart
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Resizable/resizestart:event"}}Resizable.resizestart{{/crossLink}}
      */
-    onSidebarResizeStart(evt){
+    onSidebarResizeStart(){
         this.addClass('sidebar-resizing');
-    };
+    }
 
     /**
      * Sidebar resize event callback
      *
      * @method onSidebarResize
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Resizable/resize:event"}}Resizable.resize{{/crossLink}}
      */
-    onSidebarResize(evt){
-        var width = parseInt(this.sidebar_wrapper.css('width'), 10);
+    onSidebarResize(){
+        const width = parseInt(this.sidebar_wrapper.css('width'), 10);
 
-        this.workspace.css('right', width +'px');
-    };
+        this.workspace.css('right', `${width}px`);
+    }
 
     /**
      * Sidebar resizeend event callback
      *
      * @method onSidebarResizeEnd
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Resizable/resizeend:event"}}Resizable.resizeend{{/crossLink}}
      */
-    onSidebarResizeEnd(evt){
+    onSidebarResizeEnd(){
         this.removeClass('sidebar-resizing');
-    };
+    }
 
     /**
      * Sidebar resize handle dblclick event callback
      *
      * @method onSidebarResizeDblclick
      * @private
-     * @param {MouseEvent} evt The event object
      */
-    onSidebarResizeDblclick(evt){
+    onSidebarResizeDblclick(){
         this.toggleClass('sidebar-hidden');
 
         this.toggleSidebarResizer();
-    };
+    }
 
     /**
      * Block panel componentbeforeset event callback
      *
      * @method onBlockBeforeSet
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
      */
-    onBlockBeforeSet(evt){
-        var block = evt.detail.component;
-
+    onBlockBeforeSet(){
         this.panels.element.unsetComponent();
         this.panels.page.unsetComponent();
-    };
+    }
 
     /**
      * Block panel componentset event callback
@@ -919,7 +916,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onBlockSet(evt){
-        var block = evt.detail.component;
+        const block = evt.detail.component;
 
         if(block.instanceOf('Block')){
             this.panels.page.getToolbar()
@@ -936,19 +933,18 @@ export default class Editor extends Dom {
         this.updatePageSelector();
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Block panel componentunset event callback
      *
      * @method onBlockUnset
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
      */
-    onBlockUnset(evt){
+    onBlockUnset(){
         this.panels.page.unsetComponent();
         this.panels.page.getToolbar().toggleMenuItem('new', false);
-    };
+    }
 
     /**
      * Block panel valuechange event callback
@@ -958,7 +954,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onBlockPanelValueChange(evt){
-        var panel = this.panels.block,
+        let panel = this.panels.block,
             block = evt.detail.component,
             old_values = evt.detail.old_values,
             new_values = evt.detail.new_values;
@@ -977,7 +973,7 @@ export default class Editor extends Dom {
                 this.getPlayer().updateBlockTogglers();
             }
         }
-    };
+    }
 
     /**
      * Block panel toolbar click event callback
@@ -987,7 +983,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onBlockPanelToolbarClick(evt){
-        var block,
+        let block,
             action = Dom.data(evt.target, 'action');
 
         switch(action){
@@ -1007,7 +1003,7 @@ export default class Editor extends Dom {
         }
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Block panel toolbar selector valuechange event callback
@@ -1017,20 +1013,20 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onBlockPanelSelectorChange(evt){
-        var id = evt.detail.value,
+        let id = evt.detail.value,
             dom;
 
         if(!id){
             this.panels.block.unsetComponent();
         }
         else{
-            dom = this.getPlayer().getComponent('.media#'+ id +', .controller#'+ id +', .block#'+ id +', .block-toggler#'+ id);
+            dom = this.getPlayer().getComponent(`.media#${id}, .controller#${id}, .block#${id}, .block-toggler#${id}`);
 
             if(dom && dom._metaScore){
                 this.panels.block.setComponent(dom._metaScore);
             }
         }
-    };
+    }
 
     /**
      * Page panel componentbeforeset event callback
@@ -1040,12 +1036,12 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
      */
     onPageBeforeSet(evt){
-        var page = evt.detail.component,
+        let page = evt.detail.component,
             block = page.getBlock();
 
         this.panels.element.unsetComponent();
         this.panels.block.setComponent(block);
-    };
+    }
 
     /**
      * Page panel componentset event callback
@@ -1054,9 +1050,8 @@ export default class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
-    onPageSet(evt){        
-        var page = evt.detail.component,
-            block = this.panels.block.getComponent(),
+    onPageSet(evt){
+        let block = this.panels.block.getComponent(),
             index, previous_page, next_page,
             start_time_field = this.panels.page.getField('start-time'),
             end_time_field = this.panels.page.getField('end-time');
@@ -1097,23 +1092,22 @@ export default class Editor extends Dom {
         this.updateElementSelector();
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Page panel componentunset event callback
      *
      * @method onPageUnset
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentunset:event"}}Panel.componentunset{{/crossLink}}
      */
-    onPageUnset(evt){
+    onPageUnset(){
         this.panels.element
             .unsetComponent()
             .getToolbar()
                 .toggleMenuItem('Cursor', false)
                 .toggleMenuItem('Image', false)
                 .toggleMenuItem('Text', false);
-    };
+    }
 
     /**
      * Page panel valuechange event callback
@@ -1123,7 +1117,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onPagePanelValueChange(evt){
-        var editor = this,
+        let editor = this,
             panel = this.panels.page,
             page = evt.detail.component,
             old_values = evt.detail.old_values,
@@ -1180,7 +1174,7 @@ export default class Editor extends Dom {
                 }
             }
         });
-    };
+    }
 
     /**
      * Page panel toolbar click event callback
@@ -1190,7 +1184,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onPagePanelToolbarClick(evt){
-        var block, page,
+        let block, page,
             action = Dom.data(evt.target, 'action');
 
         switch(action){
@@ -1206,7 +1200,7 @@ export default class Editor extends Dom {
         }
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Page panel toolbar selector valuechange event callback
@@ -1216,18 +1210,18 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onPagePanelSelectorChange(evt){
-        var block = this.panels.block.getComponent(),
+        let block = this.panels.block.getComponent(),
             id, dom;
 
         if(block){
             id = evt.detail.value;
-            dom = this.getPlayer().getComponent('.page#'+ id);
+            dom = this.getPlayer().getComponent(`.page#${id}`);
 
             if(dom && dom._metaScore){
                 block.setActivePage(dom._metaScore);
             }
         }
-    };
+    }
 
     /**
      * Element panel componentbeforeset event callback
@@ -1237,11 +1231,11 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
      */
     onElementBeforeSet(evt){
-        var element = evt.detail.component,
+        let element = evt.detail.component,
             page = element.parents().get(0)._metaScore;
 
         this.panels.page.setComponent(page);
-    };
+    }
 
     /**
      * Element panel componentset event callback
@@ -1251,13 +1245,13 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onElementSet(evt){
-        var element = evt.detail.component,
+        let element = evt.detail.component,
             player = this.getPlayer();
 
         player.setReadingIndex(element.getProperty('r-index') || 0);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Element panel valuechange event callback
@@ -1267,7 +1261,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onElementPanelValueChange(evt){
-        var editor = this,
+        let editor = this,
             panel = this.panels.element,
             element = evt.detail.component,
             old_values = evt.detail.old_values,
@@ -1293,7 +1287,7 @@ export default class Editor extends Dom {
                 }
             }
         });
-    };
+    }
 
     /**
      * Element panel toolbar click event callback
@@ -1303,7 +1297,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onElementPanelToolbarClick(evt){
-        var page, element,
+        let page, element,
             action = Dom.data(evt.target, 'action');
 
         switch(action){
@@ -1315,11 +1309,11 @@ export default class Editor extends Dom {
                 break;
 
             case 'delete':
-                element = this.panels.element.getComponent();   
+                element = this.panels.element.getComponent();
                 this.deletePlayerComponent(element, true);
                 break;
         }
-    };
+    }
 
     /**
      * Element panel toolbar selector valuechange event callback
@@ -1329,20 +1323,20 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onElementPanelSelectorChange(evt){
-        var id = evt.detail.value,
+        let id = evt.detail.value,
             dom;
 
         if(!id){
             this.panels.element.unsetComponent();
         }
         else{
-            dom = this.getPlayer().getComponent('.element#'+ id);
+            dom = this.getPlayer().getComponent(`.element#${id}`);
 
             if(dom && dom._metaScore){
                 this.panels.element.setComponent(dom._metaScore);
             }
         }
-    };
+    }
 
     /**
      * Player idset event callback
@@ -1352,10 +1346,10 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/idset:event"}}Player.idset{{/crossLink}}
      */
     onPlayerIdSet(evt){
-        var player = evt.detail.player;
+        const player = evt.detail.player;
 
-        window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
-    };
+        window.history.replaceState(null, null, `#guide=${player.getId()}:${player.getRevision()}`);
+    }
 
     /**
      * Player revisionset event callback
@@ -1365,21 +1359,20 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/revisionset:event"}}Player.revisionset{{/crossLink}}
      */
     onPlayerRevisionSet(evt){
-        var player = evt.detail.player;
+        const player = evt.detail.player;
 
-        window.history.replaceState(null, null, '#guide='+ player.getId() +':'+ player.getRevision());
-    };
+        window.history.replaceState(null, null, `#guide=${player.getId()}:${player.getRevision()}`);
+    }
 
     /**
      * Player loadedmetadata event callback
      *
      * @method onPlayerLoadedMetadata
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Media/loadedmetadata:event"}}Media.loadedmetadata{{/crossLink}}
      */
-    onPlayerLoadedMetadata(evt){        
+    onPlayerLoadedMetadata(){
         this.mainmenu.timefield.setMax(this.player.getMedia().getDuration());
-    };
+    }
 
     /**
      * Media timeupdate event callback
@@ -1389,10 +1382,10 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Media/timeupdate:event"}}Media.timeupdate{{/crossLink}}
      */
     onPlayerTimeUpdate(evt){
-        var time = evt.detail.media.getTime();
+        const time = evt.detail.media.getTime();
 
         this.mainmenu.timefield.setValue(time, true);
-    };
+    }
 
     /**
      * Player rindex event callback
@@ -1402,47 +1395,44 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/rindex:event"}}Player.rindex{{/crossLink}}
      */
     onPlayerReadingIndex(evt){
-        var rindex = evt.detail.value;
+        const rindex = evt.detail.value;
 
         this.mainmenu.rindexfield.setValue(rindex, true);
-    };
+    }
 
     /**
      * Player mousedown event callback
      *
      * @method onPlayerMousedown
      * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPlayerMousedown(evt){
+      */
+    onPlayerMousedown(){
         this.contextmenu.hide();
-    };
+    }
 
     /**
      * Player mediaadd event callback
      *
      * @method onPlayerMediaAdd
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/mediaadd:event"}}Player.blockadd{{/crossLink}}
      */
-    onPlayerMediaAdd(evt){
+    onPlayerMediaAdd(){
         this.updateBlockSelector();
-        
+
         this.getPlayer().updateBlockTogglers();
-    };
+    }
 
     /**
      * Player controlleradd event callback
      *
      * @method onPlayerControllerAdd
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/controlleradd:event"}}Player.blockadd{{/crossLink}}
      */
-    onPlayerControllerAdd(evt){
+    onPlayerControllerAdd(){
         this.updateBlockSelector();
 
         this.getPlayer().updateBlockTogglers();
-    };
+    }
 
     /**
      * Player blocktaggleradd event callback
@@ -1454,22 +1444,21 @@ export default class Editor extends Dom {
     onPlayerBlockTogglerAdd(evt){
         this.updateBlockSelector();
 
-        var blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
+        const blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
         evt.detail.blocktoggler.update(blocks);
-    };
+    }
 
     /**
      * Player blockadd event callback
      *
      * @method onPlayerBlockAdd
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/blockadd:event"}}Player.blockadd{{/crossLink}}
      */
-    onPlayerBlockAdd(evt){
+    onPlayerBlockAdd(){
         this.updateBlockSelector();
 
         this.getPlayer().updateBlockTogglers();
-    };
+    }
 
     /**
      * Player childremove event callback
@@ -1479,13 +1468,13 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Dom/childremove:event"}}Dom.childremove{{/crossLink}}
      */
     onPlayerChildRemove(evt){
-        var child = evt.detail.child,
+        let child = evt.detail.child,
             component = child._metaScore;
 
         if(component){
             if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
                 this.updateBlockSelector();
-                
+
                 if(!component.instanceOf('BlockToggler')){
                     this.getPlayer().updateBlockTogglers();
                 }
@@ -1497,49 +1486,47 @@ export default class Editor extends Dom {
                 this.updateElementSelector();
             }
         }
-    };
+    }
 
     /**
      * Player frame load event callback
      *
      * @method onPlayerFrameLoadSuccess
      * @private
-     * @param {UIEvent} evt The event object
      */
-    onPlayerFrameLoadSuccess(evt){
-        var player = this.player_frame.get(0).contentWindow.player;
-    
+    onPlayerFrameLoadSuccess(){
+        const player = this.player_frame.get(0).contentWindow.player;
+
         if(player){
             player
-                .addListener('load', _Function.proxy(this.onPlayerLoadSuccess, this))
-                .addListener('error', _Function.proxy(this.onPlayerLoadError, this))
-                .addListener('idset', _Function.proxy(this.onPlayerIdSet, this))
-                .addListener('revisionset', _Function.proxy(this.onPlayerRevisionSet, this))
-                .addListener('loadedmetadata', _Function.proxy(this.onPlayerLoadedMetadata, this))
+                .addListener('load', this.onPlayerLoadSuccess.bind(this))
+                .addListener('error', this.onPlayerLoadError.bind(this))
+                .addListener('idset', this.onPlayerIdSet.bind(this))
+                .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
+                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
                 .load();
         }
-    };
+    }
 
     /**
      * Player frame error event callback
      *
      * @method onPlayerFrameLoadError
      * @private
-     * @param {UIEvent} evt The event object
      */
-    onPlayerFrameLoadError(evt){
+    onPlayerFrameLoadError(){
         this.loadmask.hide();
         delete this.loadmask;
 
         new Alert({
             'parent': this,
-            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'text': t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
-                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
+                'ok': t('editor.onPlayerLoadError.ok', 'OK'),
             },
             'autoShow': true
         });
-    };
+    }
 
     /**
      * Player load event callback
@@ -1549,40 +1536,40 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
     onPlayerLoadSuccess(evt){
-        var player_body = this.player_frame.get(0).contentWindow.document.body,
+        let player_body = this.player_frame.get(0).contentWindow.document.body,
             data;
-        
+
         this.player = evt.detail.player
             .addClass('in-editor')
-            .addDelegate('.metaScore-component', 'beforedrag', _Function.proxy(this.onComponentBeforeDrag, this))
-            .addDelegate('.metaScore-component', 'click', _Function.proxy(this.onComponentClick, this))
-            .addDelegate('.metaScore-component.block', 'pageadd', _Function.proxy(this.onBlockPageAdd, this))
-            .addDelegate('.metaScore-component.block', 'pageactivate', _Function.proxy(this.onBlockPageActivate, this))
-            .addDelegate('.metaScore-component.page', 'elementadd', _Function.proxy(this.onPageElementAdd, this))
-            .addListener('mousedown', _Function.proxy(this.onPlayerMousedown, this))
-            .addListener('mediaadd', _Function.proxy(this.onPlayerMediaAdd, this))
-            .addListener('controlleradd', _Function.proxy(this.onPlayerControlleAdd, this))
-            .addListener('blocktoggleradd', _Function.proxy(this.onPlayerBlockTogglerAdd, this))
-            .addListener('blockadd', _Function.proxy(this.onPlayerBlockAdd, this))
-            .addListener('keydown', _Function.proxy(this.onKeydown, this))
-            .addListener('keyup', _Function.proxy(this.onKeyup, this))
-            .addListener('click', _Function.proxy(this.onPlayerClick, this))
-            .addListener('timeupdate', _Function.proxy(this.onPlayerTimeUpdate, this))
-            .addListener('rindex', _Function.proxy(this.onPlayerReadingIndex, this))
-            .addListener('childremove', _Function.proxy(this.onPlayerChildRemove, this));
-            
+            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component', 'click', this.onComponentClick.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
+            .addListener('mousedown', this.onPlayerMousedown.bind(this))
+            .addListener('mediaadd', this.onPlayerMediaAdd.bind(this))
+            .addListener('controlleradd', this.onPlayerControlleAdd.bind(this))
+            .addListener('blocktoggleradd', this.onPlayerBlockTogglerAdd.bind(this))
+            .addListener('blockadd', this.onPlayerBlockAdd.bind(this))
+            .addListener('keydown', this.onKeydown.bind(this))
+            .addListener('keyup', this.onKeyup.bind(this))
+            .addListener('click', this.onPlayerClick.bind(this))
+            .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
+            .addListener('rindex', this.onPlayerReadingIndex.bind(this))
+            .addListener('childremove', this.onPlayerChildRemove.bind(this));
+
         this.player.contextmenu
             .disable();
-        
+
         this.player_contextmenu
             .setTarget(player_body)
             .enable();
-            
+
         data = this.player.getData();
 
         new Dom(player_body)
-            .addListener('keydown', _Function.proxy(this.onKeydown, this))
-            .addListener('keyup', _Function.proxy(this.onKeyup, this));
+            .addListener('keydown', this.onKeydown.bind(this))
+            .addListener('keyup', this.onKeyup.bind(this));
 
         this
             .setEditing(true)
@@ -1603,28 +1590,27 @@ export default class Editor extends Dom {
 
         this.loadmask.hide();
         delete this.loadmask;
-    };
+    }
 
     /**
      * Player error event callback
      *
      * @method onPlayerLoadError
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/error:event"}}Player.error{{/crossLink}}
      */
-    onPlayerLoadError(evt){
+    onPlayerLoadError(){
         this.loadmask.hide();
         delete this.loadmask;
 
         new Alert({
             'parent': this,
-            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'text': t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
-                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
+                'ok': t('editor.onPlayerLoadError.ok', 'OK'),
             },
             'autoShow': true
         });
-    };
+    }
 
     /**
      * Player click event callback
@@ -1641,7 +1627,7 @@ export default class Editor extends Dom {
         this.panels.block.unsetComponent();
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Component beforedrag event callback
@@ -1654,7 +1640,7 @@ export default class Editor extends Dom {
         if(this.editing !== true){
             evt.preventDefault();
         }
-    };
+    }
 
     /**
      * Component click event callback
@@ -1664,7 +1650,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onComponentClick(evt, dom){
-        var component;
+        let component;
 
         if(this.editing !== true){
             return;
@@ -1683,7 +1669,7 @@ export default class Editor extends Dom {
         }
 
         evt.stopImmediatePropagation();
-    };
+    }
 
     /**
      * Block pageadd event callback
@@ -1693,14 +1679,14 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageadd:event"}}Block.pageadd{{/crossLink}}
      */
     onBlockPageAdd(evt){
-        var block = evt.detail.block;
+        const block = evt.detail.block;
 
         if(block === this.panels.block.getComponent()){
             this.updatePageSelector();
         }
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Block pageactivate event callback
@@ -1710,7 +1696,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageactivate:event"}}Block.pageactivate{{/crossLink}}
      */
     onBlockPageActivate(evt){
-        var page, basis;
+        let page, basis;
 
         if(this.editing !== true){
             return;
@@ -1722,7 +1708,7 @@ export default class Editor extends Dom {
         if((basis !== 'pagecuepoint') || (page.getBlock() === this.panels.block.getComponent())){
             this.panels.page.setComponent(page);
         }
-    };
+    }
 
     /**
      * Page elementadd event callback
@@ -1732,13 +1718,13 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
      */
     onPageElementAdd(evt){
-        var page = evt.detail.page,
+        let page = evt.detail.page,
             block, media;
-        
+
         if((evt.detail.new) && (evt.detail.element.data('type') === 'Cursor')){
             block = page.getBlock();
             media = this.getPlayer().getMedia();
-            
+
             evt.detail.element
                 .setProperty('start-time', media.getTime())
                 .setProperty('end-time', block.getProperty('synched') ? page.getProperty('end-time') : media.getDuration());
@@ -1749,56 +1735,52 @@ export default class Editor extends Dom {
         }
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * History add event callback
      *
      * @method onHistoryAdd
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "History/add:event"}}History.add{{/crossLink}}
      */
-    onHistoryAdd(evt){
+    onHistoryAdd(){
         this.setDirty(true)
             .updateMainmenu();
-    };
+    }
 
     /**
      * History undo event callback
      *
      * @method onHistoryUndo
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "History/undo:event"}}History.undo{{/crossLink}}
      */
-    onHistoryUndo(evt){
+    onHistoryUndo(){
         this.updateMainmenu();
-    };
+    }
 
     /**
      * History redo event callback
      *
      * @method onHistoryRedo
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "History/redo:event"}}History.redo{{/crossLink}}
      */
-    onHistoryRedo(evt){
+    onHistoryRedo(){
         this.updateMainmenu();
-    };
+    }
 
     /**
      * GuideDetails show event callback
      *
      * @method onDetailsOverlayShow
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Overlay/show:event"}}Overlay.show{{/crossLink}}
      */
-    onDetailsOverlayShow(evt){
-        var player = this.getPlayer();
+    onDetailsOverlayShow(){
+        const player = this.getPlayer();
 
         if(player){
             player.getMedia().pause();
         }
-    };
+    }
 
     /**
      * GuideDetails submit event callback
@@ -1808,7 +1790,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
      */
     onDetailsOverlaySubmit(op, evt){
-        var overlay = evt.detail.overlay,
+        let overlay = evt.detail.overlay,
             data = evt.detail.values,
             player, callback;
 
@@ -1820,11 +1802,11 @@ export default class Editor extends Dom {
             case 'update':
                 player = this.getPlayer();
 
-                callback = _Function.proxy(function(new_duration){
+                callback = (new_duration) => {
                     if(new_duration){
-                        player.getComponents('.block').each(function(index, block_dom){
-                            var block, page;
-                            
+                        player.getComponents('.block').each((block_dom) => {
+                            let block, page;
+
                             if(block_dom._metaScore){
                                 block = block_dom._metaScore;
 
@@ -1837,50 +1819,52 @@ export default class Editor extends Dom {
                             }
                         });
                     }
-                    
+
                     player.updateData(data);
-                    overlay.setValues(_Object.extend({}, player.getData(), data), true).hide();
+                    overlay.setValues(Object.assign({}, player.getData(), data), true).hide();
 
                     this.mainmenu.timefield.setMax(new_duration);
-                    
+
                     this.setDirty(true)
                         .updateMainmenu();
-                }, this);
+                };
 
                 if('media' in data){
-                    this.getMediaFileDuration(data['media'].url, _Function.proxy(function(new_duration){
-                        var old_duration = player.getMedia().getDuration(),
+                    this.getMediaFileDuration(data.media.url, (new_duration) => {
+                        let old_duration = player.getMedia().getDuration(),
                             formatted_old_duration, formatted_new_duration,
-                            blocks = [], block, page, msg;
+                            blocks = [], block, msg;
 
                         if(new_duration !== old_duration){
                             formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
                             formatted_old_duration += ":";
-                            formatted_old_duration += _String.pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
+                            formatted_old_duration += pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
                             formatted_old_duration += ":";
-                            formatted_old_duration += _String.pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
+                            formatted_old_duration += pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
                             formatted_old_duration += ".";
-                            formatted_old_duration += _String.pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
-                                                     
+                            formatted_old_duration += pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
+
                             formatted_new_duration = (parseInt((new_duration / 360000), 10) || 0);
                             formatted_new_duration += ":";
-                            formatted_new_duration += _String.pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
+                            formatted_new_duration += pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
                             formatted_new_duration += ":";
-                            formatted_new_duration += _String.pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
+                            formatted_new_duration += pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
                             formatted_new_duration += ".";
-                            formatted_new_duration += _String.pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
-                            
+                            formatted_new_duration += pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
+
                             if(new_duration < old_duration){
-                                player.getComponents('.block').each(function(index, block_dom){
+                                player.getComponents('.block').each((index, block_dom) => {
                                     if(block_dom._metaScore){
                                         block = block_dom._metaScore;
 
                                         if(block.getProperty('synched')){
-                                            _Array.each(block.getPages(), function(index, page){
+                                            block.getPages().some((page) => {
                                                 if(page.getProperty('start-time') > new_duration){
                                                     blocks.push(block.getProperty('name'));
-                                                    return false;
+                                                    return true;
                                                 }
+
+                                                return false;
                                             });
                                         }
                                     }
@@ -1890,32 +1874,32 @@ export default class Editor extends Dom {
                             if(blocks.length > 0){
                                 new Alert({
                                     'parent': this,
-                                    'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
+                                    'text': t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
                                     'buttons': {
-                                        'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
+                                        'ok': t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
                                     },
                                     'autoShow': true
                                 });
                             }
                             else{
                                 if(new_duration < old_duration){
-                                    msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                                    msg = t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                                 }
-                                else{                                    
-                                    msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                                else{
+                                    msg = t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                                 }
-                                
+
                                 new Alert({
                                     'parent': this,
                                     'text': msg,
                                     'buttons': {
-                                        'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
-                                        'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
+                                        'confirm': t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
+                                        'cancel': t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
                                     },
                                     'autoShow': true
                                 })
-                                .addListener('buttonclick', function(evt){
-                                    if(evt.detail.action === 'confirm'){
+                                .addListener('buttonclick', (click_evt) => {
+                                    if(click_evt.detail.action === 'confirm'){
                                         callback(new_duration);
                                     }
                                 });
@@ -1924,14 +1908,14 @@ export default class Editor extends Dom {
                         else{
                             callback();
                         }
-                    }, this));
+                    });
                 }
                 else{
                     callback();
                 }
                 break;
         }
-    };
+    }
 
     /**
      * Window hashchange event callback
@@ -1941,21 +1925,21 @@ export default class Editor extends Dom {
      * @param {HashChangeEvent} evt The event object
      */
     onWindowHashChange(evt){
-        var callback = _Function.proxy(this.loadPlayerFromHash, this),
+        let callback = this.loadPlayerFromHash.bind(this),
             oldURL = evt.oldURL;
 
         if(this.isDirty()){
             new Alert({
                     'parent': this,
-                    'text': Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                    'text': t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                     'buttons': {
-                        'confirm': Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
-                        'cancel': Locale.t('editor.onWindowHashChange.alert.no', 'No')
+                        'confirm': t('editor.onWindowHashChange.alert.yes', 'Yes'),
+                        'cancel': t('editor.onWindowHashChange.alert.no', 'No')
                     },
                     'autoShow': true
                 })
-                .addListener('buttonclick', function(evt){
-                    if(evt.detail.action === 'confirm'){
+                .addListener('buttonclick', (click_evt) => {
+                    if(click_evt.detail.action === 'confirm'){
                         callback();
                     }
                     else{
@@ -1968,7 +1952,7 @@ export default class Editor extends Dom {
         }
 
         evt.preventDefault();
-    };
+    }
 
     /**
      * Window beforeunload event callback
@@ -1979,9 +1963,9 @@ export default class Editor extends Dom {
      */
     onWindowBeforeUnload(evt){
         if(this.isDirty()){
-            evt.returnValue = Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
+            evt.returnValue = t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
         }
-    };
+    }
 
     /**
      * Updates the editing state
@@ -1992,7 +1976,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     setEditing(editing, sticky){
-        var player = this.getPlayer();
+        const player = this.getPlayer();
 
         this.editing = editing !== false;
 
@@ -2000,14 +1984,14 @@ export default class Editor extends Dom {
             this.persistentEditing = this.editing;
         }
 
-        _Object.each(this.panels, function(key, panel){
+		Object.entries(this.panels).forEach(([, panel]) => {
             if(this.editing){
                 panel.enable();
             }
             else{
                 panel.disable();
             }
-        }, this);
+        });
 
         this.toggleClass('editing', this.editing);
 
@@ -2018,8 +2002,7 @@ export default class Editor extends Dom {
         this.toggleSidebarResizer();
 
         return this;
-
-    };
+    }
 
     /**
      * Toggles the activation of the sidebar resizer
@@ -2037,7 +2020,7 @@ export default class Editor extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Loads a player from the location hash
@@ -2047,16 +2030,17 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayerFromHash() {
-        var hash, match;
+        let hash, match;
 
         hash = window.location.hash;
+        match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/);
 
-        if(match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/)){
+        if(match){
             this.loadPlayer(match[2], match[4]);
         }
 
         return this;
-    };
+    }
 
     /**
      * Updates the states of the mainmenu buttons
@@ -2066,7 +2050,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateMainmenu() {
-        var player = this.getPlayer(),
+        let player = this.getPlayer(),
             hasPlayer = player ? true : false;
 
         this.mainmenu.toggleButton('edit', hasPlayer);
@@ -2082,7 +2066,7 @@ export default class Editor extends Dom {
         this.mainmenu.toggleButton('revert', this.isDirty());
 
         return this;
-    };
+    }
 
     /**
      * Updates the selector of the block panel
@@ -2092,27 +2076,27 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateBlockSelector() {
-        var panel = this.panels.block,
+        let panel = this.panels.block,
             toolbar = panel.getToolbar(),
             selector = toolbar.getSelector(),
-            block, label;
+            block;
 
         selector
             .clear()
             .addOption(null, '');
 
-        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').each(function(index, dom){
+        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').each((index, dom) => {
             if(dom._metaScore){
-                block = dom._metaScore;                
+                block = dom._metaScore;
                 selector.addOption(block.getId(), panel.getSelectorLabel(block));
             }
-        }, this);
+        });
 
         block = panel.getComponent();
         selector.setValue(block ? block.getId() : null, true);
 
         return this;
-    };
+    }
 
     /**
      * Updates the selector of the page panel
@@ -2122,23 +2106,23 @@ export default class Editor extends Dom {
      * @chainable
      */
     updatePageSelector() {
-        var block = this.panels.block.getComponent(),
-            page = this.panels.page.getComponent(),
+        let block = this.panels.block.getComponent(),
             toolbar = this.panels.page.getToolbar(),
             selector = toolbar.getSelector();
 
         selector.clear();
 
         if(block && block.instanceOf('Block')){
-            _Array.each(block.getPages(), function(index, page){
+            block.getPages().forEach((page, index) => {
                 selector.addOption(page.getId(), index+1);
             });
         }
 
+        const page = this.panels.page.getComponent();
         selector.setValue(page ? page.getId() : null, true);
 
         return this;
-    };
+    }
 
     /**
      * Updates the selector of the element panel
@@ -2148,54 +2132,52 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateElementSelector() {
-        var panel = this.panels.element,
-            block = this.panels.block.getComponent(),
+        let panel = this.panels.element,
             page = this.panels.page.getComponent(),
             toolbar = panel.getToolbar(),
             selector = toolbar.getSelector(),
-            element, rindex, optgroups = {};
+            optgroups = {};
 
         // clear the selector
         selector.clear();
 
         // fill the list of optgroups
         if(page.instanceOf('Page')){
-            _Array.each(page.getElements(), function(index, element){
-                rindex = element.getProperty('r-index') || 0;
+            page.getElements().forEach((element) => {
+                const rindex = element.getProperty('r-index') || 0;
 
                 if(!(rindex in optgroups)){
                     optgroups[rindex] = [];
                 }
 
                 optgroups[rindex].push(element);
-            }, this);
+            });
         }
 
         // create the optgroups and their options
-        _Array.each(Object.keys(optgroups).sort(_Array.naturalSortInsensitive), function(index, rindex){
-            var options = optgroups[rindex],
+        Object.keys(optgroups).sort(naturalSortInsensitive).forEach((rindex) => {
+            let options = optgroups[rindex],
                 optgroup;
 
             // sort options by element names
-            options.sort(function(a, b){
-                return _Array.naturalSortInsensitive(a.getName(), b.getName());
+            options.sort((a, b) => {
+                return naturalSortInsensitive(a.getName(), b.getName());
             });
 
             // create the optgroup
-            optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
+            optgroup = selector.addGroup(t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
 
             // create the options
-            _Array.each(options, function(index, element){
+            options.forEach((element) => {
                 selector.addOption(element.getId(), panel.getSelectorLabel(element), optgroup);
-            }, this);
-        }, this);
+            });
+        });
 
-        element = panel.getComponent();
-
+        const element = panel.getComponent();
         selector.setValue(element ? element.getId() : null, true);
 
         return this;
-    };
+    }
 
     /**
      * Set whether the guide is dirty
@@ -2206,9 +2188,9 @@ export default class Editor extends Dom {
      */
     setDirty(dirty){
         this.dirty = dirty;
-        
+
         return this;
-    };
+    }
 
     /**
      * Check whether the guide is dirty
@@ -2218,7 +2200,7 @@ export default class Editor extends Dom {
      */
     isDirty() {
         return this.dirty;
-    };
+    }
 
     /**
      * Get the player instance if any
@@ -2228,7 +2210,7 @@ export default class Editor extends Dom {
      */
     getPlayer() {
         return this.player;
-    };
+    }
 
     /**
      * Loads a player by guide id and vid
@@ -2239,25 +2221,25 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayer(id, vid){
-        var url = this.configs.player_url + id +"?autoload=false&keyboard=1";
+        let url = `${this.configs.player_url + id}?autoload=false&keyboard=1`;
 
         if(vid){
-            url += "&vid="+ vid;
+            url += `&vid=${vid}`;
         }
 
         this.loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });
-        
+
         this.unloadPlayer();
-        
+
         this.player_frame = new Dom('<iframe/>', {'src': url, 'class': 'player-frame'}).appendTo(this.workspace)
-            .addListener('load', _Function.proxy(this.onPlayerFrameLoadSuccess, this))
-            .addListener('error', _Function.proxy(this.onPlayerFrameLoadError, this));
+            .addListener('load', this.onPlayerFrameLoadSuccess.bind(this))
+            .addListener('error', this.onPlayerFrameLoadError.bind(this));
 
         return this;
-    };
+    }
 
     /**
      * Unload the player
@@ -2267,22 +2249,22 @@ export default class Editor extends Dom {
      */
     unloadPlayer() {
         delete this.player;
-        
+
         this.player_contextmenu.disable();
-        
+
         if(this.player_frame){
-            this.player_frame.remove();                
+            this.player_frame.remove();
             delete this.player_frame;
         }
-        
+
         this.panels.block.unsetComponent();
         this.history.clear();
         this.setDirty(false)
             .updateMainmenu();
 
         return this;
-    };
-    
+    }
+
     /**
      * Add a component to the player
      *
@@ -2291,17 +2273,17 @@ export default class Editor extends Dom {
      * @param {String} type The component's type
      * @param {Object} configs Configs to pass to the component
      * @param {Mixed} parent The component's parent
-     * @chainable 
+     * @chainable
      */
     addPlayerComponent(type, configs, parent){
-        var panel, component,
+        let panel, component,
             page_configs,
             index, previous_page, start_time, end_time;
-        
+
         switch(type){
             case 'element':
                 panel = this.panels.element;
-                component = parent.addElement(_Object.extend({'name': Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
+                component = parent.addElement(Object.assign({'name': t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
 
                 panel.setComponent(component);
 
@@ -2316,10 +2298,10 @@ export default class Editor extends Dom {
                     }
                 });
                 break;
-                
+
             case 'page':
                 panel = this.panels.page;
-                
+
                 if(parent.getProperty('synched')){
                     index = parent.getActivePageIndex();
                     previous_page = parent.getPage(index);
@@ -2346,10 +2328,10 @@ export default class Editor extends Dom {
                     }
                 });
                 break;
-                
+
             case 'block':
                 panel = this.panels.block;
-                component = parent.addBlock(_Object.extend({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
+                component = parent.addBlock(Object.assign({'name': t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
 
                 page_configs = {};
 
@@ -2373,10 +2355,10 @@ export default class Editor extends Dom {
                     }
                 });
                 break;
-                
+
             case 'block-toggler':
                 panel = this.panels.block;
-                component = parent.addBlockToggler(_Object.extend({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
+                component = parent.addBlockToggler(Object.assign({'name': t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
 
                 panel.setComponent(component);
 
@@ -2392,27 +2374,27 @@ export default class Editor extends Dom {
                 });
                 break;
         }
-        
+
         this.player_frame.focus();
-        
+
         return this;
-    };
-    
+    }
+
     /**
      * Remove a component from the player
      *
      * @method deletePlayerComponent
      * @private
      * @param {player.Component} component The component
-     * @chainable 
+     * @chainable
      */
     deletePlayerComponent(component, confirm){
-        var editor = this,
+        let editor = this,
             player = this.getPlayer(),
             panel, block, page,
             index, configs, auto_page,
             type, alert_msg;
-            
+
         if(component.instanceOf('Block') || component.instanceOf('BlockToggler')){
             type = 'block';
         }
@@ -2422,34 +2404,34 @@ export default class Editor extends Dom {
         else if(component.instanceOf('Element')){
             type = 'element';
         }
-            
+
         if(type && (confirm === true)){
             switch(type){
                 case 'block':
-                    alert_msg = Locale.t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
+                    alert_msg = t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
                     break;
-                    
+
                 case 'page':
                     block = component.getBlock();
-                    alert_msg = Locale.t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
+                    alert_msg = t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
                     break;
-                    
+
                 case 'element':
-                    alert_msg = Locale.t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
+                    alert_msg = t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
                     break;
             }
-            
+
             new Alert({
                 'parent': this,
                 'text': alert_msg,
                 'buttons': {
-                    'confirm': Locale.t('editor.deletePlayerComponent.yes', 'Yes'),
-                    'cancel': Locale.t('editor.deletePlayerComponent.no', 'No')
+                    'confirm': t('editor.deletePlayerComponent.yes', 'Yes'),
+                    'cancel': t('editor.deletePlayerComponent.no', 'No')
                 },
                 'autoShow': true
             })
             .addClass('delete-player-component')
-            .addListener('buttonclick', function(evt){
+            .addListener('buttonclick', (evt) => {
                 if(evt.detail.action === 'confirm'){
                     editor.deletePlayerComponent(component, false);
                 }
@@ -2459,13 +2441,13 @@ export default class Editor extends Dom {
             switch(type){
                 case 'block':
                     panel = this.panels.block;
-                    
+
                     if(panel.getComponent() === component){
                         panel.unsetComponent();
                     }
-                    
+
                     component.remove();
-         
+
                     this.history.add({
                         'undo': function(){
                             if(component.instanceOf('BlockToggler')){
@@ -2486,7 +2468,7 @@ export default class Editor extends Dom {
                         player.updateBlockTogglers();
                     }
                     break;
-                    
+
                 case 'page':
                     panel = this.panels.page;
                     block = component.getBlock();
@@ -2531,17 +2513,17 @@ export default class Editor extends Dom {
                         }
                     });
                     break;
-                
+
                 case 'element':
                     panel = this.panels.element;
                     page = component.getPage();
-                
+
                     if(panel.getComponent() === component){
                         panel.unsetComponent();
                     }
-                    
+
                     component.remove();
-         
+
                     this.history.add({
                         'undo': function(){
                             page.addElement(component);
@@ -2554,12 +2536,12 @@ export default class Editor extends Dom {
                     });
                     break;
             }
-        
+
             this.player_frame.focus();
         }
-        
+
         return this;
-    };
+    }
 
     /**
      * Opens the guide selector
@@ -2569,13 +2551,13 @@ export default class Editor extends Dom {
      */
     openGuideSelector() {
         new GuideSelector({
-                'url': this.configs.api_url +'guide.json',
+                'url': `${this.configs.api_url}guide.json`,
                 'autoShow': true
             })
-            .addListener('submit', _Function.proxy(this.onGuideSelectorSubmit, this));
+            .addListener('submit', this.onGuideSelectorSubmit.bind(this));
 
         return this;
-    };
+    }
 
     /**
      * Creates a new guide
@@ -2587,13 +2569,13 @@ export default class Editor extends Dom {
      * @chainable
      */
     createGuide(details, overlay){
-        var data = new FormData(),
+        let data = new FormData(),
             options;
 
         // append values from the details overlay
-        _Object.each(details, function(key, value){
+		Object.entries(details).forEach(([key, value]) => {
             if(key === 'thumbnail' || key === 'media'){
-                data.append('files['+ key +']', value.object);
+                data.append(`files[${key}]`, value.object);
             }
             else{
                 data.append(key, value);
@@ -2601,24 +2583,24 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        options = _Object.extend({
+        options = Object.assign({
             'data': data,
             'dataType': 'json',
-            'success': _Function.proxy(this.onGuideCreateSuccess, this, [overlay]),
-            'error': _Function.proxy(this.onXHRError, this)
+            'success': this.onGuideCreateSuccess.bind(this, [overlay]),
+            'error': this.onXHRError.bind(this)
         }, this.configs.ajax);
 
         // add a loading mask
         this.loadmask = new LoadMask({
             'parent': this,
-            'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving...'),
+            'text': t('editor.createGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
 
-        Ajax.post(this.configs.api_url +'guide.json', options);
+        Ajax.post(`${this.configs.api_url}guide.json`, options);
 
         return this;
-    };
+    }
 
     /**
      * Saves the loaded guide
@@ -2629,13 +2611,12 @@ export default class Editor extends Dom {
      * @chainable
      */
     saveGuide(action, publish){
-        var player = this.getPlayer(),
+        let player = this.getPlayer(),
             id = player.getId(),
             vid = player.getRevision(),
             components = player.getComponents('.media, .controller, .block, .block-toggler'),
             data = new FormData(),
             details = this.detailsOverlay.getValues(),
-            blocks = [],
             component, options;
 
         // append the publish flag if true
@@ -2644,13 +2625,13 @@ export default class Editor extends Dom {
         }
 
         // append values from the details overlay
-        _Object.each(details, function(key, value){
+		Object.entries(details).forEach(([key, value]) => {
             if(key === 'thumbnail' || key === 'media'){
-                data.append('files['+ key +']', value.object);
+                data.append(`files[${key}]`, value.object);
             }
-            else if(_Var.is(value, 'array')){
-                _Array.each(value, function(index, val){
-                    data.append(key +'[]', val);
+            else if(isArray(value)){
+                value.forEach((val) => {
+                    data.append(`${key}[]`, val);
                 });
             }
             else{
@@ -2659,42 +2640,42 @@ export default class Editor extends Dom {
         });
 
         // append blocks data
-        components.each(function(index, dom){
+        components.each((index, dom) => {
             component = dom._metaScore;
 
             if(component.instanceOf('Media')){
-                data.append('blocks[]', JSON.stringify(_Object.extend({'type': 'media'}, component.getProperties())));
+                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'media'}, component.getProperties())));
             }
             else if(component.instanceOf('Controller')){
-                data.append('blocks[]', JSON.stringify(_Object.extend({'type': 'controller'}, component.getProperties())));
+                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'controller'}, component.getProperties())));
             }
             else if(component.instanceOf('BlockToggler')){
-                data.append('blocks[]', JSON.stringify(_Object.extend({'type': 'block-toggler'}, component.getProperties())));
+                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'block-toggler'}, component.getProperties())));
             }
             else if(component.instanceOf('Block')){
-                data.append('blocks[]', JSON.stringify(_Object.extend({'type': 'block'}, component.getProperties())));
+                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'block'}, component.getProperties())));
             }
-        }, this);
+        });
 
         // prepare the Ajax options object
-        options = _Object.extend({
+        options = Object.assign({
             'data': data,
             'dataType': 'json',
-            'success': _Function.proxy(this.onGuideSaveSuccess, this),
-            'error': _Function.proxy(this.onXHRError, this)
+            'success': this.onGuideSaveSuccess.bind(this),
+            'error': this.onXHRError.bind(this)
         }, this.configs.ajax);
 
         // add a loading mask
         this.loadmask = new LoadMask({
             'parent': this,
-            'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving...'),
+            'text': t('editor.saveGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
 
-        Ajax.post(this.configs.api_url +'guide/'+ id +'/'+ action +'.json?vid='+ vid, options);
+        Ajax.post(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options);
 
         return this;
-    };
+    }
 
     /**
      * Get a media file's duration in centiseconds
@@ -2705,12 +2686,12 @@ export default class Editor extends Dom {
      * @param {Function} callback A callback function to call with the duration
      */
     getMediaFileDuration(url, callback){
-        var media = new Dom('<audio/>', {'src': url})
-            .addListener('loadedmetadata', function(evt){
-                var duration = Math.round(parseFloat(media.get(0).duration) * 100);
+        const media = new Dom('<audio/>', {'src': url})
+            .addListener('loadedmetadata', () => {
+                const duration = Math.round(parseFloat(media.get(0).duration) * 100);
 
                 callback(duration);
             });
-    };
-    
+    }
+
 }

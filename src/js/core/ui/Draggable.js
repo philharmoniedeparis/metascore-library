@@ -1,6 +1,4 @@
-import {_Function} from '../utils/Function';
-import {Base} from '../Base';
-import {Dom} from '../Dom';
+import Dom from '../Dom';
 
 /**
  * Fired before the dragging starts
@@ -8,33 +6,33 @@ import {Dom} from '../Dom';
  *
  * @event beforedrag
  */
-var EVT_BEFOREDRAG = 'beforedrag';
+const EVT_BEFOREDRAG = 'beforedrag';
 
 /**
  * Fired when the dragging started
  *
  * @event dragstart
  */
-var EVT_DRAGSTART = 'dragstart';
+const EVT_DRAGSTART = 'dragstart';
 
 /**
  * Fired when a drag occured
  *
  * @event drag
  */
-var EVT_DRAG = 'drag';
+const EVT_DRAG = 'drag';
 
 /**
  * Fired when the dragging ended
  *
  * @event dragend
  */
-var EVT_DRAGEND = 'dragend';
+const EVT_DRAGEND = 'dragend';
 
 /**
  * A class for adding draggable behaviors
  */
-export default class Draggable extends Base {
+export default class Draggable {
 
     /**
      * Create a Draggable behaviour
@@ -44,14 +42,14 @@ export default class Draggable extends Base {
      * @param {Object} [configs.limits={'top': null, 'left': null}] The limits of the dragging
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
-        this.onMouseDown = _Function.proxy(this.onMouseDown, this);
-        this.onMouseMove = _Function.proxy(this.onMouseMove, this);
-        this.onMouseUp = _Function.proxy(this.onMouseUp, this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
 
         this.configs.handle.addListener('mousedown', this.onMouseDown);
 
@@ -71,7 +69,7 @@ export default class Draggable extends Base {
 
     /**
      * The mousedown event handler
-     * 
+     *
      * @method onMouseDown
      * @private
      * @param {Event} evt The event object
@@ -80,7 +78,7 @@ export default class Draggable extends Base {
         if(!this.enabled){
             return;
         }
-        
+
         if(!this.configs.target.triggerEvent(EVT_BEFOREDRAG, null, true, true)){
             return;
         }
@@ -99,17 +97,17 @@ export default class Draggable extends Base {
             .triggerEvent(EVT_DRAGSTART, null, false, true);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * The mousemove event handler
-     * 
+     *
      * @method onMouseMove
      * @private
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        var left = evt.clientX + this.start_state.left,
+        let left = evt.clientX + this.start_state.left,
             top = evt.clientY + this.start_state.top;
 
         if(!isNaN(this.configs.limits.top)){
@@ -121,16 +119,16 @@ export default class Draggable extends Base {
         }
 
         this.configs.target
-            .css('left', left + 'px')
-            .css('top', top + 'px')
+            .css('left', `${left}px`)
+            .css('top', `${top}px`)
             .triggerEvent(EVT_DRAG, null, false, true);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * The mouseup event handler
-     * 
+     *
      * @method onMouseUp
      * @private
      * @param {Event} evt The event object
@@ -145,11 +143,11 @@ export default class Draggable extends Base {
             .triggerEvent(EVT_DRAGEND, null, false, true);
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Enable the behavior
-     * 
+     *
      * @method enable
      * @chainable
      */
@@ -161,11 +159,11 @@ export default class Draggable extends Base {
         this.enabled = true;
 
         return this;
-    };
+    }
 
     /**
      * Disable the behavior
-     * 
+     *
      * @method disable
      * @chainable
      */
@@ -177,11 +175,11 @@ export default class Draggable extends Base {
         this.enabled = false;
 
         return this;
-    };
+    }
 
     /**
      * Destroy the behavior
-     * 
+     *
      * @method destroy
      * @chainable
      */
@@ -191,6 +189,6 @@ export default class Draggable extends Base {
         this.configs.handle.removeListener('mousedown', this.onMouseDown);
 
         return this;
-    };
-    
+    }
+
 }

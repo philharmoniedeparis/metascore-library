@@ -1,7 +1,5 @@
-import {_Function} from '../utils/Function';
-import {_Object} from '../utils/Object';
-import {_Var} from '../utils/Var';
-import {Dom} from '../Dom';
+import {isFunction} from '../utils/Var';
+import Dom from '../Dom';
 
 /**
  * Fired before the menu is shows
@@ -9,7 +7,7 @@ import {Dom} from '../Dom';
  * @event beforeshow
  * @param {Object} original_event The original contextmenu event
  */
-var EVT_BEFORESHOW = 'beforeshow';
+const EVT_BEFORESHOW = 'beforeshow';
 
 /**
  * Fired when a task is clicked
@@ -18,7 +16,7 @@ var EVT_BEFORESHOW = 'beforeshow';
  * @param {Object} action The task's action
  * @param {Object} context The task's context
  */
-var EVT_TASKCLICK = 'taskclick';
+const EVT_TASKCLICK = 'taskclick';
 
 export default class ContextMenu extends Dom{
 
@@ -33,36 +31,36 @@ export default class ContextMenu extends Dom{
      * @param {Mixed} [configs.items={}] The list of items and subitems
      */
     constructor(configs) {
-        var list;
-        
-        this.configs = this.getConfigs(configs);
+        let list;
 
         // call parent constructor
         super('<div/>', {'class': 'contextmenu'});
-        
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
         this.tasks = {};
         this.context = null;
 
         // fix event handlers scope
-        this.onTargetContextmenu = _Function.proxy(this.onTargetContextmenu, this);
-        this.onTargetMousedown = _Function.proxy(this.onTargetMousedown, this);
-        this.onTaskClick = _Function.proxy(this.onTaskClick, this);
-        
+        this.onTargetContextmenu = this.onTargetContextmenu.bind(this);
+        this.onTargetMousedown = this.onTargetMousedown.bind(this);
+        this.onTaskClick = this.onTaskClick.bind(this);
+
         list = new Dom('<ul/>')
             .appendTo(this);
-        
-        _Object.each(this.configs.items, function(key, task){
+
+		Object.entries(this.configs.items).forEach(([key, task]) => {
             this.addTask(key, task, list);
-        }, this);
-        
+        });
+
         if(this.configs.target){
             this.setTarget(this.configs.target);
         }
-        
+
         this
-            .addListener('contextmenu', _Function.proxy(this.onContextmenu, this))
-            .addListener('mousedown', _Function.proxy(this.onMousedown, this))
-            .addDelegate('li', 'mouseover', _Function.proxy(this.onItemMouseover, this))
+            .addListener('contextmenu', this.onContextmenu.bind(this))
+            .addListener('mousedown', this.onMousedown.bind(this))
+            .addDelegate('li', 'mouseover', this.onItemMouseover.bind(this))
             .hide()
             .enable();
     }
@@ -81,14 +79,14 @@ export default class ContextMenu extends Dom{
      * @private
      * @param {Event} evt The event object
      */
-    onContextmenu(evt){        
+    onContextmenu(evt){
         if(!evt.shiftKey){
             evt.preventDefault();
         }
-        
+
         evt.stopPropagation();
-        
-    };
+
+    }
 
     /**
      * Mousedown event handler
@@ -99,7 +97,7 @@ export default class ContextMenu extends Dom{
      */
     onMousedown(evt){
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Task mouseover event handler
@@ -109,23 +107,23 @@ export default class ContextMenu extends Dom{
      * @param {Event} evt The event object
      */
     onItemMouseover(evt){
-        var item = new Dom(evt.target),
+        let item = new Dom(evt.target),
             container, conteiner_width, conteiner_offset,
             subitems, subitems_width, subitems_offset;
-            
+
         if(!item.hasClass('has-subitems')){
             return;
         }
-        
+
         container = this.parents();
         conteiner_width = container.get(0).offsetWidth;
         conteiner_offset = container.offset();
         subitems = item.child('ul').removeClass('left');
         subitems_width = subitems.get(0).offsetWidth;
         subitems_offset = subitems.offset();
-            
+
         subitems.toggleClass('left', subitems_offset.left - conteiner_offset.left + subitems_width > conteiner_width);
-    };
+    }
 
     /**
      * Target's contextmenu event handler
@@ -135,16 +133,16 @@ export default class ContextMenu extends Dom{
      * @param {Event} evt The event object
      */
     onTargetContextmenu(evt){
-        var x, y;
-        
+        let x, y;
+
         if(this.triggerEvent(EVT_BEFORESHOW, {'original_event': evt}) === false){
             return;
         }
-        
+
         if(evt.shiftKey){
             return;
         }
-        
+
         if(evt.pageX || evt.pageY){
             x = evt.pageX;
             y = evt.pageY;
@@ -157,22 +155,21 @@ export default class ContextMenu extends Dom{
             x = 0;
             y = 0;
         }
-        
+
         this.show(evt.target, x, y);
-        
+
         evt.preventDefault();
-    };
+    }
 
     /**
      * Target's mousedown event handler
      *
      * @method onTargetMousedown
      * @private
-     * @param {Event} evt The event object
      */
-    onTargetMousedown(evt){    
+    onTargetMousedown(){
         this.hide();
-    };
+    }
 
     /**
      * Task's click event handler
@@ -182,19 +179,19 @@ export default class ContextMenu extends Dom{
      * @param {Event} evt The event object
      */
     onTaskClick(evt){
-        var action = new Dom(evt.target).data('action');
-            
+        const action = new Dom(evt.target).data('action');
+
         if(action in this.tasks){
             if(this.tasks[action].callback){
                 this.tasks[action].callback(this.context);
                 this.hide();
             }
-            
+
             this.triggerEvent(EVT_TASKCLICK, {'action': action, 'context': this.context}, true, false);
         }
-        
+
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Sets the target element
@@ -203,17 +200,17 @@ export default class ContextMenu extends Dom{
      * @param {Mixed} target The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
      * @chainable
      */
-    setTarget(target){        
+    setTarget(target){
         this.disable();
-        
+
         this.target = target;
-        
+
         if(!(this.target instanceof Dom)){
             this.target = new Dom(this.target);
         }
-        
+
         return this;
-    };
+    }
 
     /**
      * Add a task
@@ -227,43 +224,43 @@ export default class ContextMenu extends Dom{
      * @chainable
      */
     addTask(action, configs, parent){
-        var task, subtasks;
-            
+        let task, subtasks;
+
         task = new Dom('<li/>', {'data-action': action})
             .addListener('click', this.onTaskClick)
             .appendTo(parent);
-            
+
         if('text' in configs){
             task.text(configs.text);
         }
-            
+
         if(!('callback' in configs)){
             task.addClass('no-callback');
         }
-            
+
         if('class' in configs){
             task.addClass(configs.class);
         }
-        
+
         if('items' in configs){
             task.addClass('has-subitems');
-            
+
             subtasks = new Dom('<ul/>')
                 .appendTo(task);
-            
-            _Object.each(configs.items, function(subkey, subtask){
+
+			Object.entries(configs.items).forEach(([subkey, subtask]) => {
                 this.addTask(subkey, subtask, subtasks);
-            }, this);
+            });
         }
-        
+
         this.tasks[action] = {
             'toggler': 'toggler' in configs ? configs.toggler : true,
             'callback': 'callback' in configs ? configs.callback : null,
             'el': task
         };
-            
+
         return this;
-    };
+    }
 
     /**
      * Add a separator
@@ -274,9 +271,9 @@ export default class ContextMenu extends Dom{
     addSeparator() {
         new Dom('<li/>', {'class': 'separator'})
             .appendTo(this);
-            
+
         return this;
-    };
+    }
 
     /**
      * Show the menu
@@ -288,34 +285,34 @@ export default class ContextMenu extends Dom{
      * @chainable
      */
     show(el, x, y){
-        var window, window_width, window_height,
+        let window, window_width, window_height,
             menu_el, menu_width, menu_height;
-        
+
         this.context = el;
-    
-        _Object.each(this.tasks, function(key, task){
-            var active = _Var.is(task.toggler, 'function') ? task.toggler(this.context) === true : task.toggler !== false;
-            
+
+		Object.entries(this.tasks).forEach(([, task]) => {
+            const active = isFunction(task.toggler) ? task.toggler(this.context) === true : task.toggler !== false;
+
             if(active){
                 task.el.removeClass('disabled');
             }
             else{
                 task.el.addClass('disabled');
             }
-        }, this);
-    
+        });
+
         this.target.addListener('mousedown', this.onTargetMousedown);
 
         // call parent function
         super.show();
-        
+
         menu_el = this.get(0);
         window = Dom.getElementWindow(this.context);
         window_width = window.innerWidth;
         window_height = window.innerHeight;
         menu_width = menu_el.offsetWidth;
         menu_height = menu_el.offsetHeight;
-        
+
         if((menu_width + x) > window_width){
             x = window_width - menu_width;
         }
@@ -323,13 +320,13 @@ export default class ContextMenu extends Dom{
         if((menu_height + y) > window_height){
             y = window_height - menu_height;
         }
-        
+
         this
-            .css('left', x +'px')
-            .css('top', y +'px');
-        
+            .css('left', `${x}px`)
+            .css('top', `${y}px`);
+
         return this;
-    };
+    }
 
     /**
      * Hide the menu
@@ -341,34 +338,34 @@ export default class ContextMenu extends Dom{
         if(this.target){
             this.target.removeListener('mousedown', this.onTargetMousedown);
         }
-        
+
         this.context = null;
 
         // call parent function
         super.hide();
-        
+
         return this;
-    };
+    }
 
     /**
      * Enable the menu
-     * 
+     *
      * @method enable
      * @chainable
      */
-    enable() {        
+    enable() {
         if(this.target){
             this.enabled = true;
-            
+
             this.target.addListener('contextmenu', this.onTargetContextmenu);
         }
 
         return this;
-    };
+    }
 
     /**
      * Disable the menu
-     * 
+     *
      * @method disable
      * @chainable
      */
@@ -376,12 +373,12 @@ export default class ContextMenu extends Dom{
         if(this.target){
             this.target.removeListener('contextmenu', this.onTargetContextmenu);
         }
-        
+
         this.hide();
 
         this.enabled = false;
 
         return this;
-    };
+    }
 
 }

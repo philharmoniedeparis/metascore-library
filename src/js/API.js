@@ -1,14 +1,13 @@
+/**
+ * A regular expression used to test incoming messages origin
+ *
+ * @property _origin_regex
+ * @private
+ * @type Object
+ */
+const origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedeparis.fr/;
 
-window.metaScoreAPI = (function(){
-
-    /**
-     * A regular expression used to test incoming messages origin
-     *
-     * @property _origin_regex
-     * @private
-     * @type Object
-     */
-    var origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedeparis.fr/;
+export default class API{
 
      /**
      * The player API class <br/>
@@ -64,7 +63,7 @@ window.metaScoreAPI = (function(){
      * @chainable
      */
     postMessage(method, params){
-        var data;
+        let data;
 
         if (!this.target.contentWindow.postMessage) {
             return false;
@@ -78,7 +77,7 @@ window.metaScoreAPI = (function(){
         this.target.contentWindow.postMessage(data, this.origin);
 
         return this;
-    };
+    }
 
     /**
      * Callback called when the player finished loading
@@ -89,10 +88,10 @@ window.metaScoreAPI = (function(){
      * @param {API} callback.api The API instance
      */
     onLoad(callback){
-        this.on('ready', function(){
-            callback.call(null, this);
+        this.on('ready', () => {
+            callback(this);
         });
-    };
+    }
 
     /**
      * Callback called when a message is received from the player
@@ -103,27 +102,27 @@ window.metaScoreAPI = (function(){
      * @param {MessageEvent} evt The event object containing the message details
      */
     onMessage(evt){
-        var data, callback, params;
+        let data, callback, params;
 
         if(!(origin_regex).test(evt.origin)) {
-            return false;
+            return;
         }
 
         try {
             data = JSON.parse(evt.data);
         }
         catch(e){
-            return false;
+            return;
         }
 
         if (!('callback' in data) || !(callback = this.callbacks[data.callback])) {
-            return false;
+            return;
         }
 
         params = 'params' in data ? data.params : null;
 
-        callback.call(this, params);
-    };
+        callback(params);
+    }
 
     /**
      * Add a listener for player messages
@@ -134,14 +133,14 @@ window.metaScoreAPI = (function(){
      * @chainable
      */
     on(type, callback){
-        var callback_id = new Date().valueOf().toString() + Math.random();
+        const callback_id = new Date().valueOf().toString() + Math.random();
 
         this.callbacks[callback_id] = callback;
 
         this.postMessage('addEventListener', {'type': type, 'callback': callback_id});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'play' message to the player
@@ -157,7 +156,7 @@ window.metaScoreAPI = (function(){
         this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'rIndex': rIndex});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'pause' message to the player
@@ -170,7 +169,7 @@ window.metaScoreAPI = (function(){
         this.postMessage('pause');
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'seek' message to the player
@@ -184,7 +183,7 @@ window.metaScoreAPI = (function(){
         this.postMessage('seek', {'seconds': parseFloat(seconds)});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'page' message to the player
@@ -196,10 +195,10 @@ window.metaScoreAPI = (function(){
      * @chainable
      */
     page(block, index){
-        this.postMessage('page', {'block': block, 'index': parseInt(index)-1});
+        this.postMessage('page', {'block': block, 'index': parseInt(index, 10)-1});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'hideBlock' message to the player
@@ -213,7 +212,7 @@ window.metaScoreAPI = (function(){
         this.postMessage('hideBlock', {'name': name});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'showBlock' message to the player
@@ -227,7 +226,7 @@ window.metaScoreAPI = (function(){
         this.postMessage('showBlock', {'name': name});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'toggleBlock' message to the player
@@ -241,7 +240,7 @@ window.metaScoreAPI = (function(){
         this.postMessage('toggleBlock', {'name': name});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'rIndex' message to the player
@@ -252,10 +251,10 @@ window.metaScoreAPI = (function(){
      * @chainable
      */
     rindex(index){
-        this.postMessage('rindex', {'index': parseInt(index)});
+        this.postMessage('rindex', {'index': parseInt(index, 10)});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'playing' message to the player
@@ -267,14 +266,14 @@ window.metaScoreAPI = (function(){
      * @chainable
      */
     playing(callback){
-        var callback_id = new Date().valueOf().toString() + Math.random();
+        const callback_id = new Date().valueOf().toString() + Math.random();
 
         this.callbacks[callback_id] = callback;
 
         this.postMessage('playing', {'callback': callback_id});
 
         return this;
-    };
+    }
 
     /**
      * Sends a 'time' message to the player
@@ -286,73 +285,61 @@ window.metaScoreAPI = (function(){
      * @chainable
      */
     time(callback){
-        var callback_id = new Date().valueOf().toString() + Math.random();
+        const callback_id = new Date().valueOf().toString() + Math.random();
 
         this.callbacks[callback_id] = callback;
 
         this.postMessage('time', {'callback': callback_id});
 
         return this;
-    };
+    }
+}
 
-    /**
-     * Automatically process API links in the current HTML document
-     */
-    document.addEventListener("DOMContentLoaded", function(event){
-        var links, link, ids = [], iframes, i, callback;
+/**
+ * Automatically process API links in the current HTML document
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    let ids = [], callback;
 
-        links = document.querySelectorAll('a[rel="metascore"][data-guide]');
-
-        for(i = 0; i < links.length; ++i){
-            link = links[i];
-
-            if(ids.indexOf(link.dataset.guide) < 0){
-                ids.push(link.dataset.guide);
-            }
-        }
-
-        if(ids.length > 0){
-            iframes = document.querySelectorAll('iframe#'+ ids.join(',iframe#'));
-
-            callback = function(api){
-
-                var links = document.querySelectorAll('a[rel="metascore"][data-guide="'+ api.target.id +'"]'),
-                    link, handler, cleanArg;
-
-                cleanArg = function(arg){
-                    return decodeURIComponent(arg);
-                };
-
-                handler = function(link, evt){
-                    var actions = link.hash.replace(/^#/, '').split('&');
-
-                    for(var i=0,length=actions.length; i<length; i++){
-                        var action, fn, args;
-
-                        action = actions[i].split('=');
-                        fn = action[0];
-
-                        if(fn in api){
-                            args = action[1].split(',').map(cleanArg);
-                            
-                            api[fn].apply(api, args);
-                        }
-                    }
-
-                    evt.preventDefault();
-                };
-
-                for(var i = 0; i < links.length; ++i){
-                    links[i].addEventListener('click', handler.bind(null, links[i]));
-                }
-            };
-
-            for(i = 0; i < iframes.length; ++i){
-                new API(iframes[i], callback);
-            }
+    document.querySelectorAll('a[rel="metascore"][data-guide]').forEach((link) => {
+        if(!ids.contains(link.dataset.guide)){
+            ids.push(link.dataset.guide);
         }
     });
 
-    return API;
+    if(ids.length > 0){
+        callback = (api) => {
+            const cleanArg = (arg) => {
+                return decodeURIComponent(arg);
+            };
 
-})();
+            const handler = (evt) => {
+                let link = evt.target,
+                    actions = link.hash.replace(/^#/, '').split('&');
+
+                for(let i=0,length=actions.length; i<length; i++){
+                    let action, fn, args;
+
+                    action = actions[i].split('=');
+                    fn = action[0];
+
+                    if(fn in api){
+                        args = action[1].split(',').map(cleanArg);
+
+                        api[fn](...args);
+                    }
+                }
+
+                evt.preventDefault();
+            };
+
+            document.querySelectorAll(`a[rel="metascore"][data-guide="${api.target.id}"]`).forEach((link) => {
+                link.addEventListener('click', handler);
+            });
+        };
+
+        document.querySelectorAll(`iframe#${ids.join(',iframe#')}`).forEach((iframe) => {
+            new API(iframe, callback);
+        });
+    }
+});

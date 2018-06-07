@@ -1,7 +1,6 @@
-import {Field} from '../Field';
-import {Dom} from '../../core/Dom';
-import {_Function} from '../../core/utils/Function';
-import {_String} from '../../core/utils/String';
+import Field from '../Field';
+import Dom from '../../core/Dom';
+import {uuid} from '../../core/utils/String';
 
 /**
  * Fired when the field's value changes
@@ -10,7 +9,7 @@ import {_String} from '../../core/utils/String';
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-var EVT_VALUECHANGE = 'valuechange';
+const EVT_VALUECHANGE = 'valuechange';
 
 export default class Checkbox extends Field{
 
@@ -27,10 +26,8 @@ export default class Checkbox extends Field{
      * @param {Boolean} [configs.unchecked_value=false] The value when unchecked
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('checkboxfield');
 
@@ -38,11 +35,11 @@ export default class Checkbox extends Field{
     }
 
     static getDefaults(){
-        return {
+        return Object.assign({}, super.getDefaults(), {
             'checked': false,
             'checked_value': true,
             'unchecked_value': false
-        };
+        });
     }
 
     /**
@@ -52,7 +49,7 @@ export default class Checkbox extends Field{
      * @private
      */
     setupUI() {
-        var uid = 'field-'+ _String.uuid(5);
+        const uid = `field-${uuid(5)}`;
 
         if(this.configs.label){
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
@@ -63,14 +60,14 @@ export default class Checkbox extends Field{
             .appendTo(this);
 
         this.input = new Dom('<input/>', {'type': 'checkbox', 'id': uid})
-            .addListener('click', _Function.proxy(this.onClick, this))
-            .addListener('change', _Function.proxy(this.onChange, this))
+            .addListener('click', this.onClick.bind(this))
+            .addListener('change', this.onChange.bind(this))
             .appendTo(this.input_wrapper);
-    };
+    }
 
     /**
      * The click event handler
-     * 
+     *
      * @method onClick
      * @private
      * @param {Event} evt The event object
@@ -79,11 +76,11 @@ export default class Checkbox extends Field{
         if(this.is_readonly){
             evt.preventDefault();
         }
-    };
+    }
 
     /**
      * The change event handler
-     * 
+     *
      * @method onChange
      * @private
      * @param {Event} evt The event object
@@ -104,11 +101,11 @@ export default class Checkbox extends Field{
         }
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
-    };
+    }
 
     /**
      * Set the field's value
-     * 
+     *
      * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -122,6 +119,6 @@ export default class Checkbox extends Field{
         }
 
         return this;
-    };
+    }
 
 }

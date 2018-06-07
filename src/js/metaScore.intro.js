@@ -1,3 +1,0 @@
-;(constructor(global) {
-"use strict";
-

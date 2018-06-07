@@ -1,175 +1,164 @@
-import {Component} from '../Component';
-import {Dom} from '../../core/Dom';
-import {Draggable} from '../../core/ui/Draggable';
-import {Resizable} from '../../core/ui/Resizable';
-import {Locale} from '../../core/Locale';
-import {_Function} from '../../core/utils/Function';
-import {_Color} from '../../core/utils/Color';
+import Component from '../Component';
+import Dom from '../../core/Dom';
+import Draggable from '../../core/ui/Draggable';
+import Resizable from '../../core/ui/Resizable';
+import {t} from '../../core/utils/Locale';
+import {toCSS} from '../../core/utils/Color';
 
+/**
+ * A block toggler component
+ */
 export default class BlockToggler extends Component{
 
-    /**
-     * A block toggler component
-     *
-     * @class BlockToggler
-     * @namespace player.component
-     * @extends player.Component
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
-    }
-
-    BlockToggler.defaults = {
-        'properties': {
-            'name': {
-                'type': 'Text',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.name', 'Name')
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'properties': {
+                'name': {
+                    'type': 'Text',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.name', 'Name')
+                    },
+                    'getter': function(){
+                        return this.data('name');
+                    },
+                    'setter': function(value){
+                        this.data('name', value);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return this.data('name');
+                'locked': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.locked', 'Locked?')
+                    },
+                    'getter': function(){
+                        return this.data('locked') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('locked', value ? "true" : null);
+                    }
                 },
-                'setter': function(value){
-                    this.data('name', value);
-                }
-            },
-            'locked': {
-                'type': 'Checkbox',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.locked', 'Locked?')
+                'x': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.x', 'X'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('left'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('left', `${value}px`);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return this.data('locked') === "true";
+                'y': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.y', 'Y'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('top'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('top', `${value}px`);
+                    }
                 },
-                'setter': function(value){
-                    this.data('locked', value ? "true" : null);
-                }
-            },
-            'x': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.x', 'X'),
-                    'spinDirection': 'vertical'
+                'width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.width', 'Width'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('width'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('width', `${value}px`);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('left'), 10);
+                'height': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.height', 'Height'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('height'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('height', `${value}px`);
+                    }
                 },
-                'setter': function(value){
-                    this.css('left', value +'px');
-                }
-            },
-            'y': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.y', 'Y'),
-                    'flipSpinButtons': true
+                'z-index': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.z-index', 'Display index')
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('z-index', value);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('top'), 10);
+                'background-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.Block.background-color', 'Background color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('background-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('background-color', toCSS(value));
+                    }
                 },
-                'setter': function(value){
-                    this.css('top', value +'px');
-                }
-            },
-            'width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.width', 'Width'),
-                    'spinDirection': 'vertical'
+                'border-width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.border-width', 'Border width'),
+                        'min': 0
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('border-width', `${value}px`);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('width'), 10);
+                'border-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.border-color', 'Border color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-color', toCSS(value));
+                    }
                 },
-                'setter': function(value){
-                    this.css('width', value +'px');
-                }
-            },
-            'height': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.height', 'Height'),
-                    'flipSpinButtons': true
-                },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('height'), 10);
-                },
-                'setter': function(value){
-                    this.css('height', value +'px');
-                }
-            },
-            'z-index': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.z-index', 'Display index')
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('z-index', value);
-                }
-            },
-            'background-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.Block.background-color', 'Background color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('background-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('background-color', _Color.toCSS(value));
-                }
-            },
-            'border-width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.border-width', 'Border width'),
-                    'min': 0
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('border-width', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('border-width', value +'px');
-                }
-            },
-            'border-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.border-color', 'Border color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-color', _Color.toCSS(value));
-                }
-            },
-            'border-radius': {
-                'type': 'BorderRadius',
-                'configs': {
-                    'label': Locale.t('player.component.BlockToggler.border-radius', 'Border radius')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-radius', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-radius', value);
+                'border-radius': {
+                    'type': 'BorderRadius',
+                    'configs': {
+                        'label': t('player.component.BlockToggler.border-radius', 'Border radius')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-radius', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-radius', value);
+                    }
                 }
             }
-        }
-    };
+        });
+    }
 
     /**
      * Setup the block's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
@@ -181,7 +170,7 @@ export default class BlockToggler extends Component{
 
         this.btn_wrapper = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
-    };
+    }
 
     /**
      * Update the displayed time
@@ -190,17 +179,15 @@ export default class BlockToggler extends Component{
      * @param {Dom} blocks A Dom instance containing the components to control
      * @chainable
      */
-    update(components){   
-        var blocktoggler = this,
-            button_width = this.getProperty('width') / components.count(),
-            button_height = this.getProperty('height'),
-            componenets_width = 0, componenets_height = 0,
+    update(components){
+        let componenets_width = 0,
+            componenets_height = 0,
             boxes = [];
-        
+
         this.btn_wrapper.empty();
 
-        components.each(function(index, dom){
-            var component = dom._metaScore,
+        components.forEach((dom) => {
+            let component = dom._metaScore,
                 x = component.getProperty('x') || 0,
                 y = component.getProperty('y') || 0,
                 width = component.getProperty('width') || 0,
@@ -216,46 +203,44 @@ export default class BlockToggler extends Component{
 
             componenets_width = Math.max(x + width, componenets_width);
             componenets_height = Math.max(y + height, componenets_height);
-        }, this);
+        });
 
-        boxes.forEach(function(box, index){
-            var button, svg;
+        boxes.forEach((box, index) => {
+            let button, svg;
 
             button = new Dom('<div/>', {'class': 'button'})
-                .addListener('click', _Function.proxy(blocktoggler.onTogglerClick, blocktoggler, [box.component]))
-                .appendTo(blocktoggler.btn_wrapper);
+                .addListener('click', this.onTogglerClick.bind(this, box.component))
+                .appendTo(this.btn_wrapper);
 
             svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svg.setAttributeNS(null, "preserveAspectRatio", "xMidYMidmeet");
-            svg.setAttributeNS(null, "viewBox", "0 0 " + componenets_width +" "+ componenets_height);
+            svg.setAttributeNS(null, "viewBox", `0 0 ${componenets_width} ${componenets_height}`);
             button.get(0).appendChild(svg);
 
-            boxes.forEach(function(box2, index2){
-                var x = box2.x,
+            boxes.forEach((box2, index2) => {
+                let x = box2.x,
                     y = box2.y,
                     width = box2.width,
                     height = box2.height,
                     rect;
-                             
+
                 rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                 rect.setAttributeNS(null, "fill", index2 === index ? "#666666" : "#CECECE");
                 rect.setAttributeNS(null, "width", width);
                 rect.setAttributeNS(null, "height", height);
                 rect.setAttributeNS(null, "x", x);
                 rect.setAttributeNS(null, "y", y);
-                
+
                 svg.appendChild(rect);
             });
         });
 
         return this;
-    };
+    }
 
-    onTogglerClick(component, evt){
-
+    onTogglerClick(component){
         component.toggleVisibility();
-
-    };
+    }
 
     /**
      * Set/Unset the draggable behaviour
@@ -289,7 +274,7 @@ export default class BlockToggler extends Component{
 
         return this._draggable;
 
-    };
+    }
 
     /**
      * Set/Unset the resizable behaviour
@@ -318,6 +303,6 @@ export default class BlockToggler extends Component{
 
         return this._resizable;
 
-    };
-    
+    }
+
 }

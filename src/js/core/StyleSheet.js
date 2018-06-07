@@ -1,9 +1,10 @@
+import Dom from './Dom';
 
 export default class StyleSheet extends Dom {
 
     /**
      * A class for CSS style sheet manipulation
-     * 
+     *
      * @class StyleSheet
      * @extends Dom
      * @constructor
@@ -20,7 +21,7 @@ export default class StyleSheet extends Dom {
 
     /**
      * Add a CSS rule to the style sheet
-     * 
+     *
      * @method addRule
      * @param {String} selector The CSS selector for the rule
      * @param {String} rule The style definitions for the rule
@@ -28,31 +29,31 @@ export default class StyleSheet extends Dom {
      * @chainable
      */
     addRule(selector, rule, index) {
-        var sheet = this.el.sheet;
+        const sheet = this.el.sheet;
 
         if(index === undefined){
             index = sheet.cssRules.length;
         }
 
         if("insertRule" in sheet) {
-            sheet.insertRule(selector + "{" + rule + "}", index);
+            sheet.insertRule(`${selector}{${rule}}`, index);
         }
         else if("addRule" in sheet) {
             sheet.addRule(selector, rule, index);
         }
 
         return this;
-    };
+    }
 
     /**
      * Remove a CSS rule from the style sheet
-     * 
+     *
      * @method removeRule
      * @param {Integer} The index position of the rule to remove
      * @chainable
      */
     removeRule(index) {
-        var sheet = this.el.sheet;
+        const sheet = this.el.sheet;
 
         if("deleteRule" in sheet) {
             sheet.deleteRule(index);
@@ -62,22 +63,22 @@ export default class StyleSheet extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Remove the first CSS rule that matches a selector
-     * 
+     *
      * @method removeRulesBySelector
      * @param {String} selector The CSS selector of the rule to remove
      * @chainable
      */
     removeRulesBySelector(selector) {
-        var sheet = this.el.sheet,
+        let sheet = this.el.sheet,
             rules = sheet.cssRules || sheet.rules;
 
         selector = selector.toLowerCase();
 
-        for (var i=0; i<rules.length; i++){
+        for (let i=0; i<rules.length; i++){
             if(rules[i].selectorText.toLowerCase() === selector){
                 this.removeRule(i);
                 break;
@@ -85,16 +86,16 @@ export default class StyleSheet extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Remove all CSS rule from the style sheet
-     * 
+     *
      * @method removeRules
      * @chainable
      */
     removeRules() {
-        var sheet = this.el.sheet,
+        let sheet = this.el.sheet,
             rules = sheet.cssRules || sheet.rules;
 
         while(rules.length > 0){
@@ -102,11 +103,11 @@ export default class StyleSheet extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Set the internal text value of the style sheet
-     * 
+     *
      * @method setInternalValue
      * @param {String} value The CSS rules
      * @chainable
@@ -120,6 +121,6 @@ export default class StyleSheet extends Dom {
         }
 
         return this;
-    };
+    }
 
 }

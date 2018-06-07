@@ -1,5 +1,5 @@
-import {Dom} from '../../Dom';
-import {Button} from '../Button';
+import Dom from '../../Dom';
+import Button from '../Button';
 
 export default class Toolbar extends Dom{
 
@@ -14,10 +14,10 @@ export default class Toolbar extends Dom{
      * @param {String} [configs.title=null] The text to display as a title
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
         super('<div/>', {'class': 'toolbar clearfix'});
+
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.title = new Dom('<div/>', {'class': 'title'})
             .appendTo(this);
@@ -38,37 +38,37 @@ export default class Toolbar extends Dom{
 
     /**
      * Get the title's Dom
-     * 
+     *
      * @method getTitle
      * @return {Dom} The Dom object
      */
     getTitle() {
         return this.title;
-    };
+    }
 
     /**
      * Add a button
-     * 
+     *
      * @method addButton
      * @param {String} action The action associated with the button
      * @return {Button} The created button
      */
     addButton(action){
-        var button = new Button().data('action', action)
+        const button = new Button().data('action', action)
             .appendTo(this.buttons);
 
         return button;
-    };
+    }
 
     /**
      * Get a button by associated action
-     * 
+     *
      * @method getButton
      * @param {String} action The action associated with the button
      * @return {Dom} The button
      */
     getButton(action){
-        return this.buttons.children('[data-action="'+ action +'"]');
-    };
-    
+        return this.buttons.children(`[data-action="${action}"]`);
+    }
+
 }

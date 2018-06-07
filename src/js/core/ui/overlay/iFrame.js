@@ -1,5 +1,5 @@
-import {Dom} from '../Dom';
-import {Overlay} from '../Overlay';
+import Dom from '../Dom';
+import Overlay from '../Overlay';
 
 export default class iFrame extends Overlay{
 
@@ -17,16 +17,16 @@ export default class iFrame extends Overlay{
      */
     constructor(configs) {
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('iframe');
     }
 
     static getDefaults(){
-        return {
+        return Object.assign({}, super.getDefaults(), {
             'toolbar': true,
             'url': null
-        };
+        });
     }
 
     /**
@@ -41,6 +41,6 @@ export default class iFrame extends Overlay{
 
         this.frame = new Dom('<iframe/>', {'src': this.configs.url})
             .appendTo(this.contents);
-    };
+    }
 
 }

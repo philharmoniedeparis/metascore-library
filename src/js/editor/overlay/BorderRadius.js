@@ -1,10 +1,8 @@
-import {Overlay} from '../../core/ui/Overlay';
-import {Dom} from '../../core/Dom';
-import {Button} from '../../core/utils/ui/Button';
-import {Locale} from '../../core/Locale';
-import {_Function} from '../core/utils/Function';
-import {_Object} from '../core/utils/Object';
-import {NumberField} from '../field/Number';
+import Overlay from '../../core/ui/Overlay';
+import Dom from '../../core/Dom';
+import Button from '../../core/ui/Button';
+import {t} from '../../core/utils/Locale';
+import NumberField from '../field/Number';
 
 /**
  * Fired when the submit button is clicked
@@ -13,7 +11,7 @@ import {NumberField} from '../field/Number';
  * @param {Object} overlay The overlay instance
  * @param {String} value The border radius value in CSS format
  */
-var EVT_SUBMIT = 'submit';
+const EVT_SUBMIT = 'submit';
 
 export default class BorderRadius extends Overlay {
 
@@ -30,19 +28,19 @@ export default class BorderRadius extends Overlay {
      * @param {String} [configs.title='Border Radius'] The overlay's title
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
-        super(this.configs);
+        super(configs);
 
         this.addClass('border-radius');
     }
 
-    BorderRadius.defaults = {
-        'parent': '.metaScore-editor',
-        'toolbar': true,
-        'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
-    };
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'parent': '.metaScore-editor',
+            'toolbar': true,
+            'title': t('editor.overlay.BorderRadius.title', 'Border Radius')
+        });
+    }
 
     /**
      * Setup the overlay's UI
@@ -51,7 +49,7 @@ export default class BorderRadius extends Overlay {
      * @private
      */
     setupUI() {
-        var contents;
+        let contents;
 
         // call parent method
         super.setupUI();
@@ -66,89 +64,89 @@ export default class BorderRadius extends Overlay {
 
         this.fields.tlw = new NumberField({'min': 0})
             .addClass('tlw')
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .appendTo(this.preview);
 
         this.fields.tlh = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('tlh')
             .appendTo(this.preview);
 
         this.fields.trw = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('trw')
             .appendTo(this.preview);
 
         this.fields.trh = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('trh')
             .appendTo(this.preview);
 
         this.fields.brw = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('brw')
             .appendTo(this.preview);
 
         this.fields.brh = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('brh')
             .appendTo(this.preview);
 
         this.fields.blw = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('blw')
             .appendTo(this.preview);
 
         this.fields.blh = new NumberField({'min': 0})
-            .addListener('valuechange', _Function.proxy(this.onValueChange, this))
+            .addListener('valuechange', this.onValueChange.bind(this))
             .addClass('blh')
             .appendTo(this.preview);
 
         // Buttons
         this.buttons.apply = new Button({'label': 'Apply'})
             .addClass('submit')
-            .addListener('click', _Function.proxy(this.onApplyClick, this))
+            .addListener('click', this.onApplyClick.bind(this))
             .appendTo(contents);
 
         this.buttons.cancel = new Button({'label': 'Cancel'})
             .addClass('cancel')
-            .addListener('click', _Function.proxy(this.onCloseClick, this))
+            .addListener('click', this.onCloseClick.bind(this))
             .appendTo(contents);
 
-    };
+    }
 
     /**
      * The valuechange event handler
-     * 
+     *
      * @method onValueChange
      * @private
      * @param {Event} evt The event object
      */
     onValueChange() {
-        var radius    = '';
+        let radius    = '';
 
-        radius += this.fields.tlw.getValue() +'px ';
-        radius += this.fields.trw.getValue() +'px ';
-        radius += this.fields.brw.getValue() +'px ';
-        radius += this.fields.blw.getValue() +'px ';
+        radius += `${this.fields.tlw.getValue()}px `;
+        radius += `${this.fields.trw.getValue()}px `;
+        radius += `${this.fields.brw.getValue()}px `;
+        radius += `${this.fields.blw.getValue()}px `;
         radius += '/ ';
-        radius += this.fields.tlh.getValue() +'px ';
-        radius += this.fields.trh.getValue() +'px ';
-        radius += this.fields.brh.getValue() +'px ';
-        radius += this.fields.blh.getValue() +'px';
+        radius += `${this.fields.tlh.getValue()}px `;
+        radius += `${this.fields.trh.getValue()}px `;
+        radius += `${this.fields.brh.getValue()}px `;
+        radius += `${this.fields.blh.getValue()}px`;
 
         this.preview.css('border-radius', radius);
-    };
+    }
 
     /**
      * Set the current value
-     * 
+     *
      * @method setValue
      * @param {String} val The value in CSS border-radius format
      * @chainable
      */
     setValue(val){
-        var matches,
+        let matches,
             values = {
                 tlw: 0, tlh: 0,
                 trw: 0, trh: 0,
@@ -158,7 +156,8 @@ export default class BorderRadius extends Overlay {
 
         this.preview.css('border-radius', val);
 
-        if(matches = this.preview.css('border-top-left-radius', undefined, true).match(/(\d*)px/g)){
+        matches = this.preview.css('border-top-left-radius', undefined, true).match(/(\d*)px/g);
+        if(matches){
             if(matches.length > 1){
                 values.tlw = matches[0];
                 values.tlh = matches[1];
@@ -168,7 +167,8 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        if(matches = this.preview.css('border-top-right-radius', undefined, true).match(/(\d*)px/g)){
+        matches = this.preview.css('border-top-right-radius', undefined, true).match(/(\d*)px/g);
+        if(matches){
             if(matches.length > 1){
                 values.trw = matches[0];
                 values.trh = matches[1];
@@ -178,7 +178,8 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        if(matches = this.preview.css('border-bottom-left-radius', undefined, true).match(/(\d*)px/g)){
+        matches = this.preview.css('border-bottom-left-radius', undefined, true).match(/(\d*)px/g);
+        if(matches){
             if(matches.length > 1){
                 values.blw = matches[0];
                 values.blh = matches[1];
@@ -188,7 +189,8 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        if(matches = this.preview.css('border-bottom-right-radius', undefined, true).match(/(\d*)px/g)){
+        matches = this.preview.css('border-bottom-right-radius', undefined, true).match(/(\d*)px/g);
+        if(matches){
             if(matches.length > 1){
                 values.brw = matches[0];
                 values.brh = matches[1];
@@ -198,33 +200,32 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        _Object.each(this.fields, function(key, field){
+		Object.entries(this.fields).forEach(([key, field]) => {
             field.setValue(parseInt(values[key], 10), true);
         });
 
         return this;
-    };
+    }
 
     /**
      * Get the current value
-     * 
+     *
      * @method getValue
      * @return {String} The value in CSS border-radius format
      */
     getValue() {
         return this.preview.css('border-radius');
-    };
+    }
 
     /**
      * The apply button's click event handler
-     * 
+     *
      * @method onApplyClick
      * @private
-     * @param {Event} evt The event object
      */
-    onApplyClick(evt){
+    onApplyClick(){
         this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
         this.hide();
-    };
+    }
 
 }

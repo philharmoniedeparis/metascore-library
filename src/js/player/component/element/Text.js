@@ -1,8 +1,6 @@
-import {Element} from '../Element';
-import {Dom} from '../../../core/Dom';
-import {Locale} from '../core/Locale';
-import {_Function} from '../core/utils/Function';
-import {_Object} from '../core/utils/Object';
+import Element from '../Element';
+import Dom from '../../../core/Dom';
+import {t} from '../../../core/utils/Locale';
 
 /**
  * Fired when a page link is clicked
@@ -12,7 +10,7 @@ import {_Object} from '../core/utils/Object';
  * @param {String} block The block's name
  * @param {Integer} index The page index
  */
-var EVT_PAGE = 'page';
+const EVT_PAGE = 'page';
 
 /**
  * Fired when a play link is clicked
@@ -23,7 +21,7 @@ var EVT_PAGE = 'page';
  * @param {Number} outTime The end time
  * @param {Integer} rIndex The reading index
  */
-var EVT_PLAY = 'play';
+const EVT_PLAY = 'play';
 
 /**
  * Fired when a block visibility link is clicked
@@ -33,7 +31,7 @@ var EVT_PLAY = 'play';
  * @param {String} block The block's name
  * @param {String} action The action to perform
  */
-var EVT_BLOCK_VISIBILITY = 'block_visibility';
+const EVT_BLOCK_VISIBILITY = 'block_visibility';
 
 export default class Text extends Element {
 
@@ -51,32 +49,34 @@ export default class Text extends Element {
         // call parent constructor
         super(configs);
 
-        this.addDelegate('a', 'click', _Function.proxy(this.onLinkClick, this));
+        this.addDelegate('a', 'click', this.onLinkClick.bind(this));
     }
 
-    Text.defaults = {
-        'properties': _Object.extend({}, Text.parent.defaults.properties, {
-            'text-locked': {
-                'type': 'Checkbox',
-                'configs': {
-                    'label': Locale.t('player.component.element.Text.locked', 'Text locked?')
-                }
-            },
-            'text': {
-                'editable':false,
-                'getter': function(){
-                    return this.contents.text();
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'properties': Object.assign({}, Text.parent.defaults.properties, {
+                'text-locked': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': t('player.component.element.Text.locked', 'Text locked?')
+                    }
                 },
-                'setter': function(value){
-                    this.contents.text(value);
+                'text': {
+                    'editable':false,
+                    'getter': function(){
+                        return this.contents.text();
+                    },
+                    'setter': function(value){
+                        this.contents.text(value);
+                    }
                 }
-            }
-        })
-    };
+            })
+        });
+    }
 
     /**
      * Setup the text's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
@@ -85,7 +85,7 @@ export default class Text extends Element {
         super.setupUI();
 
         this.data('type', 'Text');
-    };
+    }
 
     /**
      * The link click event handler
@@ -95,31 +95,38 @@ export default class Text extends Element {
      * @param {Event} evt The event object
      */
     onLinkClick(evt){
-        var link = evt.target,
-            matches;
+        let link = evt.target;
 
         if(!Dom.is(link, 'a')){
             link = Dom.closest(link, 'a');
         }
 
         if(link){
-            if(matches = link.hash.match(/^#page=([^,]*),(\d+)$/)){
-                this.triggerEvent(EVT_PAGE, {'element': this, 'block': decodeURIComponent(matches[1]), 'index': parseInt(matches[2])-1});
+            let matches = link.hash.match(/^#page=([^,]*),(\d+)$/);
+            if(matches){
+                this.triggerEvent(EVT_PAGE, {'element': this, 'block': decodeURIComponent(matches[1]), 'index': parseInt(matches[2], 10)-1});
                 evt.preventDefault();
-            }
-            else if(matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)){
-                this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3])});
-            }
-            else if(matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/)){
-                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
-            }
-            else{
-                window.open(link.href, '_blank');
+                return;
             }
 
+            matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)
+            if(matches){
+                this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3], 10)});
+                evt.preventDefault();
+                return;
+            }
+
+            matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/)
+            if(matches){
+                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
+                evt.preventDefault();
+                return;
+            }
+
+            window.open(link.href, '_blank');
             evt.preventDefault();
         }
 
-    };
+    }
 
 }

@@ -1,15 +1,12 @@
-import {Component} from '../Component';
-import {Dom} from '../../core/Dom';
-import {Draggable} from '../core/ui/Draggable';
-import {Resizable} from '../core/ui/Resizable';
-import {Pager} from '../Pager';
-import {Page} from './Page';
-import {Locale} from '../core/Locale';
-import {_Function} from '../core/utils/Function';
-import {_Color} from '../core/utils/Color';
-import {_Var} from '../core/utils/Var';
-import {_Object} from '../core/utils/Object';
-import {_Array} from '../core/utils/Array';
+import Component from '../Component';
+import Dom from '../../core/Dom';
+import Draggable from '../../core/ui/Draggable';
+import Resizable from '../../core/ui/Resizable';
+import Pager from '../Pager';
+import Page from './Page';
+import {t} from '../../core/utils/Locale';
+import {toCSS} from '../../core/utils/Color';
+import {isString, isNumber} from '../../core/utils/Var';
 
 /**
  * Fired when a page is added
@@ -18,7 +15,7 @@ import {_Array} from '../core/utils/Array';
  * @param {Object} block The block instance
  * @param {Object} page The page instance
  */
-var EVT_PAGEADD = 'pageadd';
+const EVT_PAGEADD = 'pageadd';
 
 /**
  * Fired when a page is removed
@@ -27,7 +24,7 @@ var EVT_PAGEADD = 'pageadd';
  * @param {Object} block The block instance
  * @param {Object} page The page instance
  */
-var EVT_PAGEREMOVE = 'pageremove';
+const EVT_PAGEREMOVE = 'pageremove';
 
 /**
  * Fired when the active page is set
@@ -37,238 +34,228 @@ var EVT_PAGEREMOVE = 'pageremove';
  * @param {Object} page The page instance
  * @param {String} basis The reason behind this action
  */
-var EVT_PAGEACTIVATE = 'pageactivate';
+const EVT_PAGEACTIVATE = 'pageactivate';
 
+/**
+ * A block component
+ */
 export default class Block extends Component {
 
-    /**
-     * A block component
-     *
-     * @class Block
-     * @namespace player.component
-     * @extends player.Component
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
-    }
-
-    Block.defaults = {
-        'properties': {
-            'name': {
-                'type': 'Text',
-                'configs': {
-                    'label': Locale.t('player.component.Block.name', 'Name')
-                },
-                'getter': function(skipDefault){
-                    return this.data('name');
-                },
-                'setter': function(value){
-                    this.data('name', value);
-                }
-            },
-            'locked': {
-                'type': 'Checkbox',
-                'configs': {
-                    'label': Locale.t('player.component.Block.locked', 'Locked?')
-                },
-                'getter': function(skipDefault){
-                    return this.data('locked') === "true";
-                },
-                'setter': function(value){
-                    this.data('locked', value ? "true" : null);
-                }
-            },
-            'hidden': {
-                'type': 'Checkbox',
-                'configs': {
-                    'label': Locale.t('player.component.Block.hidden', 'Hidden?')
-                },
-                'getter': function(skipDefault){
-                    return this.data('hidden') === "true";
-                },
-                'setter': function(value){
-                    this.data('hidden', value ? "true" : null);
-                }
-            },
-            'x': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Block.x', 'X'),
-                    'spinDirection': 'vertical'
-                },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('left'), 10);
-                },
-                'setter': function(value){
-                    this.css('left', value +'px');
-                }
-            },
-            'y': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Block.y', 'Y'),
-                    'flipSpinButtons': true
-                },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('top'), 10);
-                },
-                'setter': function(value){
-                    this.css('top', value +'px');
-                },
-            },
-            'width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Block.width', 'Width'),
-                    'spinDirection': 'vertical'
-                },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('width'), 10);
-                },
-                'setter': function(value){
-                    this.css('width', value +'px');
-                }
-            },
-            'height': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Block.height', 'Height'),
-                    'flipSpinButtons': true
-                },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('height'), 10);
-                },
-                'setter': function(value){
-                    this.css('height', value +'px');
-                }
-            },
-            'z-index': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Element.z-index', 'Display index')
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('z-index', value);
-                }
-            },
-            'background-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.Block.background-color', 'Background color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('background-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('background-color', _Color.toCSS(value));
-                }
-            },
-            'background-image': {
-                'type':'Image',
-                'configs': {
-                    'label': Locale.t('player.component.Block.background-image', 'Background image'),
-                    'resizeButton': true
-                },
-                'getter': function(skipDefault){
-                    var value = this.css('background-image', undefined, skipDefault);
-
-                    if(value === 'none' || !_Var.is(value, "string")){
-                        return null;
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'properties': {
+                'name': {
+                    'type': 'Text',
+                    'configs': {
+                        'label': t('player.component.Block.name', 'Name')
+                    },
+                    'getter': function(){
+                        return this.data('name');
+                    },
+                    'setter': function(value){
+                        this.data('name', value);
                     }
-                    
-                    value = value.replace(/^url\(["']?/, '');
-                    value = value.replace(/["']?\)$/, '');
-                    value = value.replace(document.baseURI, '');
+                },
+                'locked': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': t('player.component.Block.locked', 'Locked?')
+                    },
+                    'getter': function(){
+                        return this.data('locked') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('locked', value ? "true" : null);
+                    }
+                },
+                'hidden': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': t('player.component.Block.hidden', 'Hidden?')
+                    },
+                    'getter': function(){
+                        return this.data('hidden') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('hidden', value ? "true" : null);
+                    }
+                },
+                'x': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Block.x', 'X'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('left'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('left', `${value}px`);
+                    }
+                },
+                'y': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Block.y', 'Y'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('top'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('top', `${value}px`);
+                    },
+                },
+                'width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Block.width', 'Width'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('width'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('width', `${value}px`);
+                    }
+                },
+                'height': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Block.height', 'Height'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('height'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('height', `${value}px`);
+                    }
+                },
+                'z-index': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Element.z-index', 'Display index')
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('z-index', value);
+                    }
+                },
+                'background-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.Block.background-color', 'Background color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('background-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('background-color', toCSS(value));
+                    }
+                },
+                'background-image': {
+                    'type':'Image',
+                    'configs': {
+                        'label': t('player.component.Block.background-image', 'Background image'),
+                        'resizeButton': true
+                    },
+                    'getter': function(skipDefault){
+                        let value = this.css('background-image', undefined, skipDefault);
 
-                    return value;
-                },
-                'setter': function(value){
-                    value = (value !== 'none' && _Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
-                    this.css('background-image', value);
-                }
-            },
-            'border-width': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Block.border-width', 'Border width'),
-                    'min': 0
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('border-width', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('border-width', value +'px');
-                }
-            },
-            'border-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.Block.border-color', 'Border color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-color', _Color.toCSS(value));
-                }
-            },
-            'border-radius': {
-                'type': 'BorderRadius',
-                'configs': {
-                    'label': Locale.t('player.component.Block.border-radius', 'Border radius')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-radius', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-radius', value);
-                }
-            },
-            'synched': {
-                'editable': false,
-                'getter': function(skipDefault){
-                    return this.data('synched') === "true";
-                },
-                'setter': function(value){
-                    this.data('synched', value);
-                }
-            },
-            'pages': {
-                'editable':false,
-                'getter': function(skipDefault){
-                    var pages = [];
+                        if(value === 'none' || !isString(value)){
+                            return null;
+                        }
 
-                    _Array.each(this.getPages(), function(index, page){
-                        pages.push(page.getProperties(skipDefault));
-                    });
+                        value = value.replace(/^url\(["']?/, '');
+                        value = value.replace(/["']?\)$/, '');
+                        value = value.replace(document.baseURI, '');
 
-                    return pages;
+                        return value;
+                    },
+                    'setter': function(value){
+                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.css('background-image', value);
+                    }
                 },
-                'setter': function(value){
-                    this.removePages();
+                'border-width': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Block.border-width', 'Border width'),
+                        'min': 0
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('border-width', `${value}px`);
+                    }
+                },
+                'border-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.Block.border-color', 'Border color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-color', toCSS(value));
+                    }
+                },
+                'border-radius': {
+                    'type': 'BorderRadius',
+                    'configs': {
+                        'label': t('player.component.Block.border-radius', 'Border radius')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-radius', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-radius', value);
+                    }
+                },
+                'synched': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.data('synched') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('synched', value);
+                    }
+                },
+                'pages': {
+                    'editable':false,
+                    'getter': function(skipDefault){
+                        const pages = [];
 
-                    _Array.each(value, function(index, configs){
-                        this.addPage(configs);
-                    }, this);
+                        this.getPages().forEach((page) => {
+                            pages.push(page.getProperties(skipDefault));
+                        });
 
-                    this.setActivePage(0);
+                        return pages;
+                    },
+                    'setter': function(value){
+                        this.removePages();
+
+                        value.forEach((configs) => {
+                            this.addPage(configs);
+                        });
+
+                        this.setActivePage(0);
+                    }
                 }
             }
-        }
-    };
+        });
+    }
 
     /**
      * Setup the block's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
@@ -279,13 +266,13 @@ export default class Block extends Component {
         this.addClass('block');
 
         this.page_wrapper = new Dom('<div/>', {'class': 'pages'})
-            .addDelegate('.page', 'cuepointstart', _Function.proxy(this.onPageCuePointStart, this))
+            .addDelegate('.page', 'cuepointstart', this.onPageCuePointStart.bind(this))
             .appendTo(this);
 
         this.pager = new Pager()
-            .addDelegate('.button', 'click', _Function.proxy(this.onPagerClick, this))
+            .addDelegate('.button', 'click', this.onPagerClick.bind(this))
             .appendTo(this);
-    };
+    }
 
     /**
      * Page cuepointstart event handler
@@ -296,7 +283,7 @@ export default class Block extends Component {
      */
     onPageCuePointStart(evt){
         this.setActivePage(evt.target._metaScore, 'pagecuepoint');
-    };
+    }
 
     /**
      * Pager click event handler
@@ -306,7 +293,7 @@ export default class Block extends Component {
      * @param {Event} evt The event object
      */
     onPagerClick(evt){
-        var active = !Dom.hasClass(evt.target, 'inactive'),
+        let active = !Dom.hasClass(evt.target, 'inactive'),
             action;
 
         if(active){
@@ -326,7 +313,7 @@ export default class Block extends Component {
         }
 
         evt.stopPropagation();
-    };
+    }
 
     /**
      * Get the block's pages
@@ -335,32 +322,32 @@ export default class Block extends Component {
      * @return {Array} List of pages
      */
     getPages() {
-        var pages = [];
+        const pages = [];
 
-        this.page_wrapper.children('.page').each(function(index, dom){
+        this.page_wrapper.children('.page').each((index, dom) => {
             pages.push(dom._metaScore);
         });
 
         return pages;
-    };
+    }
 
     /**
      * Add a page
      *
      * @method addPage
      * @params {Mixed} configs Page configs or a player.component.Page instance
-     * @params {Integer} index The new page's index
+     * @params {Integer} [index] The new page's index, page is appended if not given
      * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
      * @return {player.component.Page} The added page
      */
     addPage(configs, index, supressEvent){
-        var page, page_index, sibling,
+        let page, page_index, sibling,
             existing = configs instanceof Page;
 
         if(existing){
             page = configs;
 
-            if(_Var.is(index, 'number')){
+            if(isNumber(index)){
                 page.insertAt(this.page_wrapper, index);
             }
             else{
@@ -368,12 +355,12 @@ export default class Block extends Component {
             }
         }
         else{
-            page = new Page(_Object.extend({}, configs, {
+            page = new Page(Object.assign({}, configs, {
                 'container': this.page_wrapper,
                 'index': index
             }));
         }
-        
+
         page_index = this.getPageIndex(page);
         if(page_index > 0){
             sibling = this.getPage(page_index - 1);
@@ -391,7 +378,7 @@ export default class Block extends Component {
         }
 
         return page;
-    };
+    }
 
     /**
      * Remove a page
@@ -402,11 +389,11 @@ export default class Block extends Component {
      * @return {player.component.Page} The removed page
      */
     removePage(page, supressEvent){
-        var page_index, sibling;
+        let page_index, sibling;
 
         page_index = this.getPageIndex(page);
         page.remove();
-        
+
         if(page_index > 0){
             sibling = this.getPage(page_index - 1);
             sibling.setProperty('end-time', page.getProperty('end-time'));
@@ -421,7 +408,7 @@ export default class Block extends Component {
         }
 
         return page;
-    };
+    }
 
     /**
      * Remove all pages
@@ -433,7 +420,7 @@ export default class Block extends Component {
         this.page_wrapper.children('.page').remove();
 
         return this;
-    };
+    }
 
     /**
      * Get a page by index
@@ -442,11 +429,11 @@ export default class Block extends Component {
      * @param {Integer} index The page's index
      * @return {player.component.Page} The page
      */
-    getPage(index){        
-        var page = this.page_wrapper.child('.page:nth-child('+ (index+1) +')').get(0);
-        
+    getPage(index){
+        const page = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
+
         return page ? page._metaScore : null;
-    };
+    }
 
     /**
      * Get the index of a page
@@ -455,9 +442,9 @@ export default class Block extends Component {
      * @param {player.component.Page} page The page
      * @return {Integer} The page's index
      */
-    getPageIndex(page){        
+    getPageIndex(page){
         return this.getPages().indexOf(page);
-    };
+    }
 
     /**
      * Get the currently active page
@@ -467,7 +454,7 @@ export default class Block extends Component {
      */
     getActivePage() {
         return this.getPage(this.getActivePageIndex());
-    };
+    }
 
     /**
      * Get the index of the currently active page
@@ -477,7 +464,7 @@ export default class Block extends Component {
      */
     getActivePageIndex() {
         return this.page_wrapper.children('.page').index('.active');
-    };
+    }
 
     /**
      * Get the page count
@@ -487,7 +474,7 @@ export default class Block extends Component {
      */
     getPageCount() {
         return this.page_wrapper.children('.page').count();
-    };
+    }
 
     /**
      * Set the active page
@@ -498,26 +485,26 @@ export default class Block extends Component {
      * @chainable
      */
     setActivePage(page, basis, supressEvent){
-        if(_Var.is(page, 'number')){
+        if(isNumber(page)){
             page = this.getPage(page);
         }
 
         if(page instanceof Page){
-            _Array.each(this.getPages(), function(index, page){
-                page.removeClass('active');
+			this.getPages().forEach((other_page) => {
+                other_page.removeClass('active');
             });
 
             page.addClass('active');
-            
+
             this.updatePager();
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'page': page, 'basis': basis});
             }
         }
-        
+
         return this;
-    };
+    }
 
     /**
      * Update the pager
@@ -527,15 +514,15 @@ export default class Block extends Component {
      * @chainable
      */
     updatePager() {
-        var index = this.getActivePageIndex(),
+        let index = this.getActivePageIndex(),
             count = this.getPageCount();
 
         this.pager.updateCount(index, count);
 
         this.data('page-count', count);
-        
+
         return this;
-    };
+    }
 
     /**
      * Set/Unset the draggable behaviour
@@ -569,7 +556,7 @@ export default class Block extends Component {
 
         return this._draggable;
 
-    };
+    }
 
     /**
      * Set/Unset the resizable behaviour
@@ -598,6 +585,6 @@ export default class Block extends Component {
 
         return this._resizable;
 
-    };
-    
+    }
+
 }

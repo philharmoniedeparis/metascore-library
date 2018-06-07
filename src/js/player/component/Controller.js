@@ -1,109 +1,99 @@
-import {Component} from '../Component';
-import {Dom} from '../../core/Dom';
-import {Draggable} from '../core/ui/Draggable';
-import {Locale} from '../core/Locale';
-import {_String} from '../core/utils/String';
+import Component from '../Component';
+import Dom from '../../core/Dom';
+import Draggable from '../../core/ui/Draggable';
+import {t} from '../../core/utils/Locale';
+import {pad} from '../../core/utils/String';
 
+/**
+ * A controller component
+ */
 export default class Controller extends Component{
 
-    /**
-     * A controller component
-     *
-     * @class Controller
-     * @namespace player.component
-     * @extends player.Component
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
-    }
-
-    Controller.defaults = {
-        'properties': {
-            'locked': {
-                'type': 'Checkbox',
-                'configs': {
-                    'label': Locale.t('player.component.Controller.locked', 'Locked?')
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'properties': {
+                'locked': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': t('player.component.Controller.locked', 'Locked?')
+                    },
+                    'getter': function(){
+                        return this.data('locked') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('locked', value ? "true" : null);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return this.data('locked') === "true";
+                'x': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Controller.x', 'X'),
+                        'spinDirection': 'vertical'
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('left'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('left', `${value}px`);
+                    }
                 },
-                'setter': function(value){
-                    this.data('locked', value ? "true" : null);
-                }
-            },
-            'x': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Controller.x', 'X'),
-                    'spinDirection': 'vertical'
+                'y': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Controller.y', 'Y'),
+                        'flipSpinButtons': true
+                    },
+                    'getter': function(){
+                        return parseInt(this.css('top'), 10);
+                    },
+                    'setter': function(value){
+                        this.css('top', `${value}px`);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('left'), 10);
+                'width': {
+                    'editable': false,
+                    'getter': function(){
+                        return parseInt(this.css('width'), 10);
+                    }
                 },
-                'setter': function(value){
-                    this.css('left', value +'px');
-                }
-            },
-            'y': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Controller.y', 'Y'),
-                    'flipSpinButtons': true
+                'height': {
+                    'editable': false,
+                    'getter': function(){
+                        return parseInt(this.css('height'), 10);
+                    }
                 },
-                'getter': function(skipDefault){
-                    return parseInt(this.css('top'), 10);
+                'z-index': {
+                    'type': 'Number',
+                    'configs': {
+                        'label': t('player.component.Controller.z-index', 'Display index')
+                    },
+                    'getter': function(skipDefault){
+                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.css('z-index', value);
+                    }
                 },
-                'setter': function(value){
-                    this.css('top', value +'px');
-                }
-            },
-            'width': {
-                'editable': false,
-                'getter': function(skipDefault){
-                    return parseInt(this.css('width'), 10);
-                }
-            },
-            'height': {
-                'editable': false,
-                'getter': function(skipDefault){
-                    return parseInt(this.css('height'), 10);
-                }
-            },
-            'z-index': {
-                'type': 'Number',
-                'configs': {
-                    'label': Locale.t('player.component.Controller.z-index', 'Display index')
-                },
-                'getter': function(skipDefault){
-                    var value = parseInt(this.css('z-index', undefined, skipDefault), 10);
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.css('z-index', value);
-                }
-            },
-            'border-radius': {
-                'type': 'BorderRadius',
-                'configs': {
-                    'label': Locale.t('player.component.Controller.border-radius', 'Border radius')
-                },
-                'getter': function(skipDefault){
-                    return this.css('border-radius', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('border-radius', value);
+                'border-radius': {
+                    'type': 'BorderRadius',
+                    'configs': {
+                        'label': t('player.component.Controller.border-radius', 'Border radius')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('border-radius', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('border-radius', value);
+                    }
                 }
             }
-        }
-    };
+        });
+    }
 
     /**
      * Setup the controller's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
@@ -126,17 +116,17 @@ export default class Controller extends Component{
             .append(this.rewind_btn)
             .append(this.play_btn)
             .appendTo(this);
-    };
+    }
 
     /**
      * Get the value of the controller's name property
-     * 
+     *
      * @method getName
      * @return {String} The name
      */
     getName() {
         return '[controller]';
-    };
+    }
 
     /**
      * Update the displayed time
@@ -146,14 +136,14 @@ export default class Controller extends Component{
      * @chainable
      */
     updateTime(time){
-        var centiseconds = _String.pad(parseInt(time % 100, 10), 2, '0', 'left'),
-            seconds = _String.pad(parseInt((time / 100) % 60, 10), 2, '0', 'left'),
-            minutes = _String.pad(parseInt((time / 6000), 10), 2, '0', 'left');
+        let centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left'),
+            seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left'),
+            minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
 
-        this.timer.text(minutes +':'+ seconds +'.'+ centiseconds);
-        
+        this.timer.text(`${minutes}:${seconds}.${centiseconds}`);
+
         return this;
-    };
+    }
 
     /**
      * Set/Unset the draggable behaviour
@@ -187,6 +177,6 @@ export default class Controller extends Component{
 
         return this._draggable;
 
-    };
-    
+    }
+
 }

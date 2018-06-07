@@ -1,18 +1,12 @@
-import {_Object} from './core/utils/Object';
-
-export default class Evented extends Class{
+export default class Evented{
 
     /**
      * A base class for event handling
      *
      * @class Evented
-     * @extends Class
      * @constructor
      */
     constructor() {
-        // call parent constructor
-        super();
-
         this.listeners = {};
     }
 
@@ -32,7 +26,7 @@ export default class Evented extends Class{
         this.listeners[type].push(listener);
 
         return this;
-    };
+    }
 
     /**
      * Remove an event listener
@@ -44,8 +38,8 @@ export default class Evented extends Class{
      */
     removeListener(type, listener){
         if(this.listeners[type] instanceof Array){
-            var listeners = this.listeners[type];
-            for (var i=0, len=listeners.length; i < len; i++){
+            const listeners = this.listeners[type];
+            for (let i=0, len=listeners.length; i < len; i++){
                 if (listeners[i] === listener){
                     listeners.splice(i, 1);
                     break;
@@ -54,7 +48,7 @@ export default class Evented extends Class{
         }
 
         return this;
-    };
+    }
 
     /**
      * Check if a listener is attached to a given event type
@@ -69,7 +63,7 @@ export default class Evented extends Class{
         }
 
         return false;
-    };
+    }
 
     /**
      * Trigger an event
@@ -82,7 +76,7 @@ export default class Evented extends Class{
      * @chainable
      */
     triggerEvent(type, data, bubbling, cancelable){
-        var listeners, event;
+        let listeners, event;
 
         if (this.listeners[type] instanceof Array){
             listeners = this.listeners[type];
@@ -95,12 +89,12 @@ export default class Evented extends Class{
                 'cancelable': cancelable !== false
             };
 
-            _Object.each(listeners, function(index, listener){
+			Object.entries(listeners).forEach(([, listener]) => {
                 listener.call(this, event);
-            }, this);
+            });
         }
 
         return this;
-    };
+    }
 
 }

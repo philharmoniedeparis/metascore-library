@@ -1,9 +1,34 @@
-import {Dom} from '../core/Dom';
-import {_Function} from '../core/utils/Function';
-import {_Object} from '../core/utils/Object';
-import {_Array} from '../core/utils/Array';
-import {_Var} from '../core/utils/Var';
-import {Toolbar} from './panel/Toolbar';
+import Dom from '../core/Dom';
+import Toolbar from './panel/Toolbar';
+import {isArray, isFunction} from '../core/utils/Var';
+
+import BorderRadiusField from './field/BorderRadius';
+import ButtonsField from './field/Buttons';
+import CheckboxField from './field/Checkbox';
+import CheckboxesField from './field/Checkboxes';
+import ColorField from './field/Color';
+import FileField from './field/File';
+import ImageField from './field/Image';
+import NumberField from './field/Number';
+import SelectField from './field/Select';
+import TextField from './field/Text';
+import TextareaField from './field/Textarea';
+import TimeField from './field/Time';
+
+const FIELD_TYPES = {
+    'BorderRadius': BorderRadiusField,
+    'Buttons': ButtonsField,
+    'Checkbox': CheckboxField,
+    'Checkboxes': CheckboxesField,
+    'Color': ColorField,
+    'File': FileField,
+    'Image': ImageField,
+    'Number': NumberField,
+    'Select': SelectField,
+    'Text': TextField,
+    'Textarea': TextareaField,
+    'Time': TimeField,
+};
 
 /**
  * Fired before a component is set
@@ -11,7 +36,7 @@ import {Toolbar} from './panel/Toolbar';
  * @event componentbeforeset
  * @param {Object} component The component instance
  */
-var EVT_COMPONENTBEFORESET = 'componentbeforeset';
+const EVT_COMPONENTBEFORESET = 'componentbeforeset';
 
 /**
  * Fired when a component is set
@@ -19,7 +44,7 @@ var EVT_COMPONENTBEFORESET = 'componentbeforeset';
  * @event componentset
  * @param {Object} component The component instance
  */
-var EVT_COMPONENTSET = 'componentset';
+const EVT_COMPONENTSET = 'componentset';
 
 /**
  * Fired before a component is unset
@@ -27,7 +52,7 @@ var EVT_COMPONENTSET = 'componentset';
  * @event componentbeforeunset
  * @param {Object} component The component instance
  */
-var EVT_COMPONENTBEFOREUNSET = 'componentbeforeunset';
+const EVT_COMPONENTBEFOREUNSET = 'componentbeforeunset';
 
 /**
  * Fired when a component is unset
@@ -35,7 +60,7 @@ var EVT_COMPONENTBEFOREUNSET = 'componentbeforeunset';
  * @event componentunset
  * @param {Object} component The component instance
  */
-var EVT_COMPONENTUNSET = 'componentunset';
+const EVT_COMPONENTUNSET = 'componentunset';
 
 /**
  * Fired when a component's values change
@@ -45,7 +70,7 @@ var EVT_COMPONENTUNSET = 'componentunset';
  * @param {Object} old_values The component instance
  * @param {Object} new_values The component instance
  */
-var EVT_VALUESCHANGE = 'valueschange';
+const EVT_VALUESCHANGE = 'valueschange';
 
 export default class Panel extends Dom {
 
@@ -60,39 +85,41 @@ export default class Panel extends Dom {
      * @param {Object} [configs.toolbarConfigs={}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     constructor(configs) {
-        this.configs = this.getConfigs(configs);
-
         // call parent constructor
         super('<div/>', {'class': 'panel'});
 
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
         // fix event handlers scope
-        this.onComponentPropChange = _Function.proxy(this.onComponentPropChange, this);
-        this.onComponentDragStart = _Function.proxy(this.onComponentDragStart, this);
-        this.onComponentDrag = _Function.proxy(this.onComponentDrag, this);
-        this.onComponentDragEnd = _Function.proxy(this.onComponentDragEnd, this);
-        this.onComponentResizeStart = _Function.proxy(this.onComponentResizeStart, this);
-        this.onComponentResize = _Function.proxy(this.onComponentResize, this);
-        this.onComponentResizeEnd = _Function.proxy(this.onComponentResizeEnd, this);
+        this.onComponentPropChange = this.onComponentPropChange.bind(this);
+        this.onComponentDragStart = this.onComponentDragStart.bind(this);
+        this.onComponentDrag = this.onComponentDrag.bind(this);
+        this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
+        this.onComponentResizeStart = this.onComponentResizeStart.bind(this);
+        this.onComponentResize = this.onComponentResize.bind(this);
+        this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
 
         this.toolbar = new Toolbar(this.configs.toolbarConfigs)
-            .addDelegate('.buttons [data-action]', 'click', _Function.proxy(this.onToolbarButtonClick, this))
+            .addDelegate('.buttons [data-action]', 'click', this.onToolbarButtonClick.bind(this))
             .appendTo(this);
 
         this.toolbar.getTitle()
-            .addListener('click', _Function.proxy(this.toggleState, this));
+            .addListener('click', this.toggleState.bind(this));
 
         this.contents = new Dom('<div/>', {'class': 'fields'})
             .appendTo(this);
 
         this
-            .addDelegate('.fields .field', 'valuechange', _Function.proxy(this.onFieldValueChange, this))
-            .addDelegate('.fields .imagefield', 'resize', _Function.proxy(this.onImageFieldResize, this))
+            .addDelegate('.fields .field', 'valuechange', this.onFieldValueChange.bind(this))
+            .addDelegate('.fields .imagefield', 'resize', this.onImageFieldResize.bind(this))
             .unsetComponent();
     }
 
-    Panel.defaults = {
-        'toolbarConfigs': {}
-    };
+    static getDefaults() {
+        return {
+            'toolbarConfigs': {}
+        };
+    }
 
     /**
      * Setup the panel's fields
@@ -103,25 +130,25 @@ export default class Panel extends Dom {
      * @chainable
      */
     setupFields(properties){
-        var configs, fieldType, field;
+        let configs, field;
 
         this.fields = {};
         this.contents.empty();
 
-        _Object.each(properties, function(key, prop){
+		Object.entries(properties).forEach(([key, prop]) => {
             if(prop.editable !== false){
                 configs = prop.configs || {};
 
-                field = new metaScore.editor.field[prop.type](configs)
+                field = new FIELD_TYPES[prop.type](configs)
                     .data('name', key)
                     .appendTo(this.contents);
 
                 this.fields[key] = field;
             }
-        }, this);
+        });
 
         return this;
-    };
+    }
 
     /**
      * Get the panel's toolbar
@@ -131,7 +158,7 @@ export default class Panel extends Dom {
      */
     getToolbar() {
         return this.toolbar;
-    };
+    }
 
     /**
      * Get a field by name
@@ -146,7 +173,7 @@ export default class Panel extends Dom {
         }
 
         return this.fields[name];
-    };
+    }
 
     /**
      * Enable all fields
@@ -155,12 +182,12 @@ export default class Panel extends Dom {
      * @chainable
      */
     enableFields() {
-        _Object.each(this.fields, function(key, field){
+		Object.entries(this.fields).forEach(([, field]) => {
             field.enable();
-        }, this);
-        
+        });
+
         return this;
-    };
+    }
 
     /**
      * Show a field by name
@@ -173,7 +200,7 @@ export default class Panel extends Dom {
         this.getField(name).show();
 
         return this;
-    };
+    }
 
     /**
      * Hide a field by name
@@ -186,7 +213,7 @@ export default class Panel extends Dom {
         this.getField(name).hide();
 
         return this;
-    };
+    }
 
     /**
      * Toggle the panel's collapsed state
@@ -198,7 +225,7 @@ export default class Panel extends Dom {
         this.toggleClass('collapsed');
 
         return this;
-    };
+    }
 
     /**
      * Disable the panel
@@ -210,7 +237,7 @@ export default class Panel extends Dom {
         this.addClass('disabled');
 
         return this;
-    };
+    }
 
     /**
      * Enable the panel
@@ -222,7 +249,7 @@ export default class Panel extends Dom {
         this.removeClass('disabled');
 
         return this;
-    };
+    }
 
     /**
      * Get the currently associated component
@@ -232,7 +259,7 @@ export default class Panel extends Dom {
      */
     getComponent() {
         return this.component;
-    };
+    }
 
     /**
      * Get the currently associated component's label
@@ -242,7 +269,7 @@ export default class Panel extends Dom {
      */
     getSelectorLabel(component){
         return component.getName();
-    };
+    }
 
     /**
      * Set the associated component
@@ -291,7 +318,7 @@ export default class Panel extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Unset the associated component
@@ -301,7 +328,7 @@ export default class Panel extends Dom {
      * @chainable
      */
     unsetComponent(supressEvent){
-        var component = this.getComponent(),
+        let component = this.getComponent(),
             toolbar = this.getToolbar();
 
         this.removeClass('has-component');
@@ -309,7 +336,7 @@ export default class Panel extends Dom {
 
         if(component){
             this.triggerEvent(EVT_COMPONENTBEFOREUNSET, {'component': component}, false);
-        
+
             this
                 .updateDraggable(false)
                 .updateResizable(false);
@@ -334,7 +361,7 @@ export default class Panel extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Set or unset the draggability of the associated component
@@ -345,14 +372,14 @@ export default class Panel extends Dom {
      * @chainable
      */
     updateDraggable(draggable){
-        var component = this.getComponent();
+        const component = this.getComponent();
 
-        draggable = _Var.is(component.setDraggable, 'function') ? component.setDraggable(draggable) : false;
+        draggable = isFunction(component.setDraggable) ? component.setDraggable(draggable) : false;
 
         this.toggleFields(['x', 'y'], draggable ? true : false);
 
         return this;
-    };
+    }
 
     /**
      * Set or unset the resizability of the associated component
@@ -363,14 +390,14 @@ export default class Panel extends Dom {
      * @chainable
      */
     updateResizable(resizable){
-        var component = this.getComponent();
+        const component = this.getComponent();
 
-        resizable = _Var.is(component.setResizable, 'function') ? component.setResizable(resizable) : false;
+        resizable = isFunction(component.setResizable) ? component.setResizable(resizable) : false;
 
         this.toggleFields(['width', 'height'], resizable ? true : false);
 
         return this;
-    };
+    }
 
     /**
      * The toolbar buttons' click event handler
@@ -380,7 +407,7 @@ export default class Panel extends Dom {
      * @param {Event} evt The event object
      */
     onToolbarButtonClick(evt){
-        var selector, options, count, index,
+        let selector, options, count, index,
             action = Dom.data(evt.target, 'action');
 
         switch(action){
@@ -420,7 +447,7 @@ export default class Panel extends Dom {
                 evt.stopPropagation();
                 break;
         }
-    };
+    }
 
     /**
      * The component's propchange event handler
@@ -429,45 +456,42 @@ export default class Panel extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentPropChange(evt){           
+    onComponentPropChange(evt){
         if(evt.detail.component !== this.getComponent()){
             return;
         }
-        
+
         this.updateFieldValue(evt.detail.property, evt.detail.value, true);
-    };
+    }
 
     /**
      * The component's dragstart event handler
      *
      * @method onComponentDragStart
      * @private
-     * @param {Event} evt The event object
      */
-    onComponentDragStart(evt){
+    onComponentDragStart(){
         this._beforeDragValues = this.getValues(['x', 'y']);
-    };
+    }
 
     /**
      * The component's drag event handler
      *
      * @method onComponentDrag
      * @private
-     * @param {Event} evt The event object
      */
-    onComponentDrag(evt){
+    onComponentDrag(){
         this.updateFieldValues(['x', 'y'], true);
-    };
+    }
 
     /**
      * The component's dragend event handler
      *
      * @method onComponentDragEnd
      * @private
-     * @param {Event} evt The event object
      */
-    onComponentDragEnd(evt){
-        var component = this.getComponent(),
+    onComponentDragEnd(){
+        let component = this.getComponent(),
             fields = ['x', 'y'];
 
         this.updateFieldValues(fields, true);
@@ -475,43 +499,40 @@ export default class Panel extends Dom {
         this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': this._beforeDragValues, 'new_values': this.getValues(fields)}, false);
 
         delete this._beforeDragValues;
-    };
+    }
 
     /**
      * The component's resizestart event handler
      *
      * @method onComponentResizeStart
      * @private
-     * @param {Event} evt The event object
      */
-    onComponentResizeStart(evt){
-        var fields = ['x', 'y', 'width', 'height'];
+    onComponentResizeStart(){
+        const fields = ['x', 'y', 'width', 'height'];
 
         this._beforeResizeValues = this.getValues(fields);
-    };
+    }
 
     /**
      * The component's resize event handler
      *
      * @method onComponentResize
      * @private
-     * @param {Event} evt The event object
      */
-    onComponentResize(evt){
-        var fields = ['x', 'y', 'width', 'height'];
+    onComponentResize(){
+        const fields = ['x', 'y', 'width', 'height'];
 
         this.updateFieldValues(fields, true);
-    };
+    }
 
     /**
      * The component's resizeend event handler
      *
      * @method onComponentResizeEnd
      * @private
-     * @param {Event} evt The event object
      */
-    onComponentResizeEnd(evt){
-        var component = this.getComponent(),
+    onComponentResizeEnd(){
+        let component = this.getComponent(),
             fields = ['x', 'y', 'width', 'height'];
 
         this.updateFieldValues(fields, true);
@@ -519,7 +540,7 @@ export default class Panel extends Dom {
         this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': this._beforeResizeValues, 'new_values': this.getValues(fields)}, false);
 
         delete this._beforeResizeValues;
-    };
+    }
 
     /**
      * The fields' valuechange event handler
@@ -529,7 +550,7 @@ export default class Panel extends Dom {
      * @param {Event} evt The event object
      */
     onFieldValueChange(evt){
-        var component = this.getComponent(),
+        let component = this.getComponent(),
             name, value, old_values;
 
         if(!component){
@@ -543,7 +564,7 @@ export default class Panel extends Dom {
         component.setProperty(name, value);
 
         this.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': this.getValues([name])}, false);
-    };
+    }
 
     /**
      * The imagefields' resize event handler
@@ -553,24 +574,24 @@ export default class Panel extends Dom {
      * @param {Event} evt The event object
      */
     onImageFieldResize(evt){
-        var panel = this,
-            component, old_values, img;
-        
+        let panel = this,
+            component, old_values;
+
         if(evt.detail.value){
             component = this.getComponent();
-            
+
             if(!component.getProperty('locked')){
                 old_values = this.getValues(['width', 'height']);
-                
-                img = new Dom('<img/>')
-                    .addListener('load', function(evt){
-                        panel.updateProperties(component, {'width': evt.target.width, 'height': evt.target.height});
+
+                new Dom('<img/>')
+                    .addListener('load', (load_evt) => {
+                        panel.updateProperties(component, {'width': load_evt.target.width, 'height': load_evt.target.height});
                         panel.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': panel.getValues(['width', 'height'])}, false);
                     })
                     .attr('src', evt.detail.value);
             }
         }
-    };
+    }
 
     /**
      * Update a field's value
@@ -584,8 +605,8 @@ export default class Panel extends Dom {
      * @todo add the synched/non synched strings to blocks (see Editor.updateBlockSelector)
      */
     updateFieldValue(name, value, supressEvent){
-        var component;
-        
+        let component;
+
         this.getField(name).setValue(value, supressEvent);
 
         switch(name){
@@ -610,7 +631,7 @@ export default class Panel extends Dom {
         }
 
         return this;
-    };
+    }
 
     /**
      * Update fields' values
@@ -621,19 +642,19 @@ export default class Panel extends Dom {
      * @chainable
      */
     updateFieldValues(values, supressEvent){
-        if(_Var.is(values, 'array')){
-            _Array.each(values, function(index, field){
+        if(isArray(values)){
+            values.forEach((field) => {
                 this.updateFieldValue(field, this.getValue(field), supressEvent);
-            }, this);
+            });
         }
         else{
-            _Object.each(values, function(field, value){
+			Object.entries(values).forEach(([field, value]) => {
                 this.updateFieldValue(field, value, supressEvent);
-            }, this);
+            });
         }
 
         return this;
-    };
+    }
 
     /**
      * Update a component's properties
@@ -644,16 +665,16 @@ export default class Panel extends Dom {
      * @chainable
      */
     updateProperties(component, values){
-        _Object.each(values, function(name, value){
+		Object.entries(values).forEach(([name, value]) => {
             if(!this.getField(name).disabled){
                 component.setProperty(name, value);
             }
-        }, this);
+        });
 
         this.updateFieldValues(values, true);
 
         return this;
-    };
+    }
 
     /**
      * Toggle the enabled state of some fields
@@ -664,10 +685,12 @@ export default class Panel extends Dom {
      * @chainable
      */
     toggleFields(names, toggle){
-        var field;
+        let field;
 
-        _Array.each(names, function(index, name){
-            if(field = this.getField(name)){
+        names.forEach((name) => {
+            field = this.getField(name);
+
+            if(field){
                 if(toggle){
                     field.enable();
                 }
@@ -675,10 +698,10 @@ export default class Panel extends Dom {
                     field.disable();
                 }
             }
-        }, this);
+        });
 
         return this;
-    };
+    }
 
     /**
      * Get the associated component's property value
@@ -689,7 +712,7 @@ export default class Panel extends Dom {
      */
     getValue(name){
         return this.getComponent().getProperty(name);
-    };
+    }
 
     /**
      * Get the associated component's properties values
@@ -699,17 +722,17 @@ export default class Panel extends Dom {
      * @return {Object} A list of values keyed by property name
      */
     getValues(names){
-        var values = {};
+        const values = {};
 
         names = names || Object.keys(this.getField());
 
-        _Array.each(names, function(index, name){
+        names.forEach((name) => {
             if(!this.getField(name).disabled){
                 values[name] = this.getValue(name);
             }
-        }, this);
+        });
 
         return values;
-    };
-    
+    }
+
 }

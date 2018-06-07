@@ -1,7 +1,7 @@
-import {_Var} from './Var';
+import {isString, isObject} from './Var';
 
 // http://www.w3.org/TR/css3-color/
-var COLOR_NAMES = {
+const COLOR_NAMES = {
     "transparent": [0,0,0,0],
     "aliceblue": [240,248,255,1],
     "antiquewhite": [250,235,215,1],
@@ -154,140 +154,137 @@ var COLOR_NAMES = {
 };
 
 /**
- * A class for color helper functions
+ * Convert an RGB value to HSV
+ *
+ * @method rgb2hsv
+ * @static
+ * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
+ * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
  */
-export default class Color {
+export function rgb2hsv(rgb){
+    let r = rgb.r, g = rgb.g, b = rgb.b,
+        max = Math.max(r, g, b),
+        min = Math.min(r, g, b),
+        d = max - min,
+        h, s, v;
 
-    /**
-     * Convert an RGB value to HSV
-     * 
-     * @method rgb2hsv
-     * @static
-     * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
-     * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
-     */
-    static rgb2hsv(rgb){
-        var r = rgb.r, g = rgb.g, b = rgb.b,
-            max = Math.max(r, g, b),
-            min = Math.min(r, g, b),
-            d = max - min,
-            h, s, v;
+    s = max === 0 ? 0 : d / max;
+    v = max;
 
-        s = max === 0 ? 0 : d / max;
-        v = max;
+    if(max === min) {
+        h = 0; // achromatic
+    }
+    else {
+        switch(max) {
+            case r:
+                h = (g - b) / d + (g < b ? 6 : 0);
+                break;
 
-        if(max === min) {
-            h = 0; // achromatic
-        }
-        else {
-            switch(max) {
-                case r:
-                    h = (g - b) / d + (g < b ? 6 : 0);
-                    break;
+            case g:
+                h = (b - r) / d + 2;
+                break;
 
-                case g:
-                    h = (b - r) / d + 2;
-                    break;
-
-                case b:
-                    h = (r - g) / d + 4;
-                    break;
-            }
-
-            h /= 6;
+            case b:
+                h = (r - g) / d + 4;
+                break;
         }
 
+        h /= 6;
+    }
+
+    return {
+        'h': h,
+        's': s,
+        'v': v
+    }
+}
+
+/**
+ * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
+ *
+ * @method parse
+ * @static
+ * @param {Mixed} color The CSS value to parse
+ * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
+ */
+export function toRGBA(color){
+    let matches;
+
+    if(isObject(color)){
         return {
-            'h': h,
-            's': s,
-            'v': v
+            "r": 'r' in color ? color.r : 0,
+            "g": 'g' in color ? color.g : 0,
+            "b": 'b' in color ? color.b : 0,
+            "a": 'a' in color ? color.a : 1
         };
-    };
+    }
 
-    /**
-     * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
-     * 
-     * @method parse
-     * @static
-     * @param {Mixed} color The CSS value to parse
-     * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
-     */
-    static parse(color){
-        var matches;
-
-        if(_Var.is(color, 'object')){
+    if(isString(color)){
+        if(color in COLOR_NAMES){
             return {
-                "r": 'r' in color ? color.r : 0,
-                "g": 'g' in color ? color.g : 0,
-                "b": 'b' in color ? color.b : 0,
-                "a": 'a' in color ? color.a : 1
+                "r": COLOR_NAMES[color][0],
+                "g": COLOR_NAMES[color][1],
+                "b": COLOR_NAMES[color][2],
+                "a": COLOR_NAMES[color][3]
             };
         }
-        
-        if(_Var.is(color, 'string')){            
-            if(color in COLOR_NAMES){
-                return {
-                    "r": COLOR_NAMES[color][0],
-                    "g": COLOR_NAMES[color][1],
-                    "b": COLOR_NAMES[color][2],
-                    "a": COLOR_NAMES[color][3]
-                };
-            }
-            
-            color = color.replace(/\s\s*/g,''); // Remove all spaces
 
-            // Checks for 6 digit hex and converts string to integer
-            if(matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color)){
-                return {
-                    "r": parseInt(matches[1], 16),
-                    "g": parseInt(matches[2], 16),
-                    "b": parseInt(matches[3], 16),
-                    "a": 1
-                };
-            }
+        color = color.replace(/\s\s*/g,''); // Remove all spaces
 
-            // Checks for 3 digit hex and converts string to integer
-            if(matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color)){
-                return {
-                    "r": parseInt(matches[1], 16) * 17,
-                    "g": parseInt(matches[2], 16) * 17,
-                    "b": parseInt(matches[3], 16) * 17,
-                    "a": 1
-                };
-            }
-
-            // Checks for rgba and converts string to
-            // integer/float using unary + operator to save bytes
-            if(matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color)){
-                return {
-                    "r": +matches[1],
-                    "g": +matches[2],
-                    "b": +matches[3],
-                    "a": +matches[4]
-                };
-            }
-
-            // Checks for rgb and converts string to
-            // integer/float using unary + operator to save bytes
-            if(matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color)){
-                return {
-                    "r": +matches[1],
-                    "g": +matches[2],
-                    "b": +matches[3],
-                    "a": 1
-                };
-            }
+        // Checks for 6 digit hex and converts string to integer
+        matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color);
+        if(matches){
+            return {
+                "r": parseInt(matches[1], 16),
+                "g": parseInt(matches[2], 16),
+                "b": parseInt(matches[3], 16),
+                "a": 1
+            };
         }
 
-        return null;
-    };
-    
-    static toCSS(color){
-        
-        var rgba = Color.parse(color);
-        
-        return rgba ? 'rgba('+ rgba.r +','+ rgba.g +','+ rgba.b +','+ rgba.a +')' : null;
-        
-    };
-    
+        // Checks for 3 digit hex and converts string to integer
+        matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color);
+        if(matches){
+            return {
+                "r": parseInt(matches[1], 16) * 17,
+                "g": parseInt(matches[2], 16) * 17,
+                "b": parseInt(matches[3], 16) * 17,
+                "a": 1
+            };
+        }
+
+        // Checks for rgba and converts string to
+        // integer/float using unary + operator to save bytes
+        matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color);
+        if(matches){
+            return {
+                "r": +matches[1],
+                "g": +matches[2],
+                "b": +matches[3],
+                "a": +matches[4]
+            };
+        }
+
+        // Checks for rgb and converts string to
+        // integer/float using unary + operator to save bytes
+        matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color);
+        if(matches){
+            return {
+                "r": +matches[1],
+                "g": +matches[2],
+                "b": +matches[3],
+                "a": 1
+            };
+        }
+    }
+
+    return null;
+}
+
+export function toCSS(color){
+
+    const rgba = toRGBA(color);
+
+    return rgba ? `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})` : null;
+
 }

@@ -1,10 +1,18 @@
-import {Component} from '../Component';
-import {Element} from './Element';
-import {Locale} from '../core/Locale';
-import {_Color} from '../core/utils/Color';
-import {_Var} from '../core/utils/Var';
-import {_Object} from '../core/utils/Object';
-import {_Array} from '../core/utils/Array';
+import Component from '../Component';
+import Element from './Element';
+import {t} from '../../core/utils/Locale';
+import {toCSS} from '../../core/utils/Color';
+import {isString} from '../../core/utils/Var';
+
+import CursorElement from './element/Cursor';
+import ImageElement from './element/Image';
+import TextElement from './element/Text';
+
+const ELEMENT_TYPES = {
+    'Cursor': CursorElement,
+    'Image': ImageElement,
+    'Text': TextElement,
+};
 
 /**
  * Fired when an element is added
@@ -13,129 +21,119 @@ import {_Array} from '../core/utils/Array';
  * @param {Object} page The page instance
  * @param {Object} element The element instance
  */
-var EVT_ELEMENTADD = 'elementadd';
+const EVT_ELEMENTADD = 'elementadd';
 
 /**
  * Fired when a cuepoint started
  *
  * @event cuepointstart
  */
-var EVT_CUEPOINTSTART = 'cuepointstart';
+const EVT_CUEPOINTSTART = 'cuepointstart';
 
 /**
  * Fired when a cuepoint stops
  *
  * @event cuepointstop
  */
-var EVT_CUEPOINTSTOP = 'cuepointstop';
+const EVT_CUEPOINTSTOP = 'cuepointstop';
 
+/**
+ * A page component
+ */
 export default class Page extends Component {
 
-    /**
-     * A page component
-     *
-     * @class Controller
-     * @namespace player.component
-     * @extends player.Component
-     * @constructor
-     * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
-    }
-
-    Page.defaults = {
-        'properties': {
-            'background-color': {
-                'type': 'Color',
-                'configs': {
-                    'label': Locale.t('player.component.Page.background-color', 'Background color')
-                },
-                'getter': function(skipDefault){
-                    return this.css('background-color', undefined, skipDefault);
-                },
-                'setter': function(value){
-                    this.css('background-color', _Color.toCSS(value));
-                }
-            },
-            'background-image': {
-                'type': 'Image',
-                'configs': {
-                    'label': Locale.t('player.component.Page.background-image', 'Background image')
-                },
-                'getter': function(skipDefault){
-                    var value = this.css('background-image', undefined, skipDefault);
-
-                    if(value === 'none' || !_Var.is(value, "string")){
-                        return null;
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'properties': {
+                'background-color': {
+                    'type': 'Color',
+                    'configs': {
+                        'label': t('player.component.Page.background-color', 'Background color')
+                    },
+                    'getter': function(skipDefault){
+                        return this.css('background-color', undefined, skipDefault);
+                    },
+                    'setter': function(value){
+                        this.css('background-color', toCSS(value));
                     }
-                    
-                    value = value.replace(/^url\(["']?/, '');
-                    value = value.replace(/["']?\)$/, '');
-                    value = value.replace(document.baseURI, '');
+                },
+                'background-image': {
+                    'type': 'Image',
+                    'configs': {
+                        'label': t('player.component.Page.background-image', 'Background image')
+                    },
+                    'getter': function(skipDefault){
+                        let value = this.css('background-image', undefined, skipDefault);
 
-                    return value;
-                },
-                'setter': function(value){
-                    value = (value !== 'none' && _Var.is(value, "string") && (value.length > 0)) ? 'url('+ value +')' : null;
-                    this.css('background-image', value);
-                }
-            },
-            'start-time': {
-                'type': 'Time',
-                'configs': {
-                    'label': Locale.t('player.component.Page.start-time', 'Start time'),
-                    'inButton': true,
-                    'outButton': true
-                },
-                'getter': function(skipDefault){
-                    var value = parseFloat(this.data('start-time'));
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.data('start-time', isNaN(value) ? null : value);
-                }
-            },
-            'end-time': {
-                'type': 'Time',
-                'configs': {
-                    'label': Locale.t('player.component.Page.end-time', 'End time'),
-                    'inButton': true,
-                    'outButton': true
-                },
-                'getter': function(skipDefault){
-                    var value = parseFloat(this.data('end-time'));
-                    return isNaN(value) ? null : value;
-                },
-                'setter': function(value){
-                    this.data('end-time', isNaN(value) ? null : value);
-                }
-            },
-            'elements': {
-                'editable': false,
-                'getter': function(skipDefault){
-                    var elements = [];
+                        if(value === 'none' || !isString(value)){
+                            return null;
+                        }
 
-                    _Array.each(this.getElements(), function(index, element){
-                        elements.push(element.getProperties(skipDefault));
-                    }, this);
+                        value = value.replace(/^url\(["']?/, '');
+                        value = value.replace(/["']?\)$/, '');
+                        value = value.replace(document.baseURI, '');
 
-                    return elements;
+                        return value;
+                    },
+                    'setter': function(value){
+                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.css('background-image', value);
+                    }
                 },
-                'setter': function(value){
-                    _Array.each(value, function(index, configs){
-                        this.addElement(configs);
-                    }, this);
+                'start-time': {
+                    'type': 'Time',
+                    'configs': {
+                        'label': t('player.component.Page.start-time', 'Start time'),
+                        'inButton': true,
+                        'outButton': true
+                    },
+                    'getter': function(){
+                        const value = parseFloat(this.data('start-time'));
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.data('start-time', isNaN(value) ? null : value);
+                    }
+                },
+                'end-time': {
+                    'type': 'Time',
+                    'configs': {
+                        'label': t('player.component.Page.end-time', 'End time'),
+                        'inButton': true,
+                        'outButton': true
+                    },
+                    'getter': function(){
+                        const value = parseFloat(this.data('end-time'));
+                        return isNaN(value) ? null : value;
+                    },
+                    'setter': function(value){
+                        this.data('end-time', isNaN(value) ? null : value);
+                    }
+                },
+                'elements': {
+                    'editable': false,
+                    'getter': function(skipDefault){
+                        const elements = [];
+
+                        this.getElements().forEach((element) => {
+                            elements.push(element.getProperties(skipDefault));
+                        });
+
+                        return elements;
+                    },
+                    'setter': function(value){
+                        value.forEach((configs) => {
+                            this.addElement(configs);
+                        });
+                    }
                 }
             }
-        }
-    };
+        });
+    }
 
     /**
      * Setup the page's UI
-     * 
+     *
      * @method setupUI
      * @private
      */
@@ -144,17 +142,17 @@ export default class Page extends Component {
         super.setupUI();
 
         this.addClass('page');
-    };
+    }
 
     /**
      * Add an new element component to this page
-     * 
+     *
      * @method addElement
      * @param {Object} configs Configs to use for the element (see {{#crossLink "player.component.Element}"}}{{/crossLink}})
      * @return {player.component.Element} The element
      */
     addElement(configs, supressEvent){
-        var element,
+        let element,
             existing = configs instanceof Element;
 
         if(existing){
@@ -162,7 +160,7 @@ export default class Page extends Component {
             element.appendTo(this);
         }
         else{
-            element = new metaScore.player.component.element[configs.type](_Object.extend({}, configs, {
+            element = new ELEMENT_TYPES[configs.type](Object.assign({}, configs, {
                 'container': this
             }));
         }
@@ -172,16 +170,16 @@ export default class Page extends Component {
         }
 
         return element;
-    };
+    }
 
     /**
      * Get the block component this page belongs to
-     * 
+     *
      * @method getBlock
      * @return {player.component.Block}
      */
     getBlock() {
-        var dom = this.parents().parents().get(0),
+        let dom = this.parents().parents().get(0),
             block;
 
         if(dom){
@@ -189,44 +187,42 @@ export default class Page extends Component {
         }
 
         return block;
-    };
+    }
 
     /**
      * Get the element components that belong to this page
-     * 
+     *
      * @method getElements
      * @return {Array} The list of elements
      */
     getElements() {
-        var elements = [];
+        const elements = [];
 
-        this.children('.element').each(function(index, dom){
+        this.children('.element').each((index, dom) => {
             elements.push(dom._metaScore);
         });
 
         return elements;
-    };
+    }
 
     /**
      * The cuepoint start event handler
-     * 
+     *
      * @method onCuePointStart
      * @private
-     * @param {Event} evt The event object
      */
-    onCuePointStart(evt){
+    onCuePointStart(){
         this.triggerEvent(EVT_CUEPOINTSTART);
-    };
+    }
 
     /**
      * The cuepoint stop event handler
-     * 
+     *
      * @method onCuePointStop
      * @private
-     * @param {Event} evt The event object
      */
-    onCuePointStop(evt){
+    onCuePointStop(){
         this.triggerEvent(EVT_CUEPOINTSTOP);
-    };
-    
+    }
+
 }
