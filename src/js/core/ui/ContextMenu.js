@@ -49,9 +49,11 @@ export default class ContextMenu extends Dom{
         list = new Dom('<ul/>')
             .appendTo(this);
 
-		Object.entries(this.configs.items).forEach(([key, task]) => {
-            this.addTask(key, task, list);
-        });
+        if(this.configs.items){
+            Object.entries(this.configs.items).forEach(([key, task]) => {
+                this.addTask(key, task, list);
+            });
+        }
 
         if(this.configs.target){
             this.setTarget(this.configs.target);
@@ -290,16 +292,18 @@ export default class ContextMenu extends Dom{
 
         this.context = el;
 
-		Object.entries(this.tasks).forEach(([, task]) => {
-            const active = isFunction(task.toggler) ? task.toggler(this.context) === true : task.toggler !== false;
+        if(this.tasks){
+            Object.entries(this.tasks).forEach(([, task]) => {
+                const active = isFunction(task.toggler) ? task.toggler(this.context) === true : task.toggler !== false;
 
-            if(active){
-                task.el.removeClass('disabled');
-            }
-            else{
-                task.el.addClass('disabled');
-            }
-        });
+                if(active){
+                    task.el.removeClass('disabled');
+                }
+                else{
+                    task.el.addClass('disabled');
+                }
+            });
+        }
 
         this.target.addListener('mousedown', this.onTargetMousedown);
 

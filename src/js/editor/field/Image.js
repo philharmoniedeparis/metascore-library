@@ -1,6 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 
 /**
  * Fired when the external filebrowser should be opened
@@ -44,7 +44,7 @@ export default class Image extends Field {
 
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'placeholder': t('editor.field.Image.placeholder', 'Browse...')
+            'placeholder': Locale.t('editor.field.Image.placeholder', 'Browse...')
         });
     }
 
@@ -68,12 +68,12 @@ export default class Image extends Field {
             .appendTo(this.input_wrapper);
 
         if(this.configs.resizeButton){
-            this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
+            this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': Locale.t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
                 .addListener('click', this.onResizeClick.bind(this))
                 .appendTo(buttons);
         }
 
-        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': t('editor.field.Image.clear.tooltip', 'Clear value')})
+        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Image.clear.tooltip', 'Clear value')})
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
     }

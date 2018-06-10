@@ -1,5 +1,5 @@
 import Dom from '../core/Dom';
-import {t} from '../core/utils/Locale';
+import Locale from '../core/Locale';
 
 export default class Pager extends Dom{
 
@@ -41,7 +41,7 @@ export default class Pager extends Dom{
      * @chainable
      */
     updateCount(index, count){
-        this.count.text(t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
+        this.count.text(Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 
         this.buttons.first.toggleClass('inactive', index < 1);
         this.buttons.previous.toggleClass('inactive', index < 1);

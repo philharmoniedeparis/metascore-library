@@ -1,6 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import {t} from '../../../core/utils/Locale';
+import Locale from '../../../core/Locale';
 
 /**
  * Fired when a page link is clicked
@@ -53,12 +53,14 @@ export default class Text extends Element {
     }
 
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'properties': Object.assign({}, Text.parent.defaults.properties, {
+        let defaults = super.getDefaults();
+
+        return Object.assign({}, defaults, {
+            'properties': Object.assign({}, defaults.properties, {
                 'text-locked': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.element.Text.locked', 'Text locked?')
+                        'label': Locale.t('player.component.element.Text.locked', 'Text locked?')
                     }
                 },
                 'text': {

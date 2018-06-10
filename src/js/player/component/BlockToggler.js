@@ -2,7 +2,7 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 
 /**
@@ -16,7 +16,7 @@ export default class BlockToggler extends Component{
                 'name': {
                     'type': 'Text',
                     'configs': {
-                        'label': t('player.component.BlockToggler.name', 'Name')
+                        'label': Locale.t('player.component.BlockToggler.name', 'Name')
                     },
                     'getter': function(){
                         return this.data('name');
@@ -28,7 +28,7 @@ export default class BlockToggler extends Component{
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.BlockToggler.locked', 'Locked?')
+                        'label': Locale.t('player.component.BlockToggler.locked', 'Locked?')
                     },
                     'getter': function(){
                         return this.data('locked') === "true";
@@ -40,7 +40,7 @@ export default class BlockToggler extends Component{
                 'x': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.BlockToggler.x', 'X'),
+                        'label': Locale.t('player.component.BlockToggler.x', 'X'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -53,7 +53,7 @@ export default class BlockToggler extends Component{
                 'y': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.BlockToggler.y', 'Y'),
+                        'label': Locale.t('player.component.BlockToggler.y', 'Y'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -66,7 +66,7 @@ export default class BlockToggler extends Component{
                 'width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.BlockToggler.width', 'Width'),
+                        'label': Locale.t('player.component.BlockToggler.width', 'Width'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -79,7 +79,7 @@ export default class BlockToggler extends Component{
                 'height': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.BlockToggler.height', 'Height'),
+                        'label': Locale.t('player.component.BlockToggler.height', 'Height'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -92,7 +92,7 @@ export default class BlockToggler extends Component{
                 'z-index': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.BlockToggler.z-index', 'Display index')
+                        'label': Locale.t('player.component.BlockToggler.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
@@ -105,7 +105,7 @@ export default class BlockToggler extends Component{
                 'background-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Block.background-color', 'Background color')
+                        'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
                         return this.css('background-color', undefined, skipDefault);
@@ -117,7 +117,7 @@ export default class BlockToggler extends Component{
                 'border-width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.BlockToggler.border-width', 'Border width'),
+                        'label': Locale.t('player.component.BlockToggler.border-width', 'Border width'),
                         'min': 0
                     },
                     'getter': function(skipDefault){
@@ -131,7 +131,7 @@ export default class BlockToggler extends Component{
                 'border-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.BlockToggler.border-color', 'Border color')
+                        'label': Locale.t('player.component.BlockToggler.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-color', undefined, skipDefault);
@@ -143,7 +143,7 @@ export default class BlockToggler extends Component{
                 'border-radius': {
                     'type': 'BorderRadius',
                     'configs': {
-                        'label': t('player.component.BlockToggler.border-radius', 'Border radius')
+                        'label': Locale.t('player.component.BlockToggler.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-radius', undefined, skipDefault);

@@ -1,6 +1,6 @@
 {
   "name": "metaScore",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "metaScore",
   "homepage": "",
   "author": "Oussama Mubarak",
@@ -11,18 +11,32 @@
     "pack": "webpack",
     "dev": "webpack -d --watch",
     "lint": "eslint -c .eslintrc.json src/js",
-    "doc": "esdoc"
+    "doc": "esdoc",
+    "drupal": "copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:philharmoniedeparis/metascore-library.git"
   },
   "devDependencies": {
+    "clean-webpack-plugin": "^0.1.19",
+    "copy-webpack-plugin": "^4.5.1",
+    "copyfiles": "^2.0.0",
+    "css-loader": "^0.28.11",
     "esdoc": "^1.1.0",
     "esdoc-standard-plugin": "^1.0.0",
     "eslint": "^4.19.1",
     "eslint-loader": "^2.0.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^1.1.11",
+    "git-rev-sync": "^1.12.0",
+    "image-webpack-loader": "^4.3.0",
+    "less": "^3.0.4",
+    "less-loader": "^4.1.0",
+    "string-replace-loader": "^2.1.1",
+    "style-loader": "^0.21.0",
     "webpack": "^4.10.2",
-    "webpack-cli": "^3.0.2"
+    "webpack-cli": "^3.0.2",
+    "webpack-shell-plugin": "^0.5.0"
   }
 }

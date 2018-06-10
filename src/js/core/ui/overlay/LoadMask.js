@@ -1,6 +1,6 @@
 import Overlay from '../Overlay';
 import Dom from '../../Dom';
-import {t} from '../../Locale';
+import Locale from '../../Locale';
 
 export default class LoadMask extends Overlay{
 
@@ -26,7 +26,7 @@ export default class LoadMask extends Overlay{
 
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'text': t('overlay.LoadMask.text', 'Loading...')
+            'text': Locale.t('overlay.LoadMask.text', 'Loading...')
         });
     }
 

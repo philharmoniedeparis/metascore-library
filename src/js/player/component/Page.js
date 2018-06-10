@@ -1,6 +1,6 @@
 import Component from '../Component';
 import Element from './Element';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
 
@@ -48,7 +48,7 @@ export default class Page extends Component {
                 'background-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Page.background-color', 'Background color')
+                        'label': Locale.t('player.component.Page.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
                         return this.css('background-color', undefined, skipDefault);
@@ -60,7 +60,7 @@ export default class Page extends Component {
                 'background-image': {
                     'type': 'Image',
                     'configs': {
-                        'label': t('player.component.Page.background-image', 'Background image')
+                        'label': Locale.t('player.component.Page.background-image', 'Background image')
                     },
                     'getter': function(skipDefault){
                         let value = this.css('background-image', undefined, skipDefault);
@@ -83,7 +83,7 @@ export default class Page extends Component {
                 'start-time': {
                     'type': 'Time',
                     'configs': {
-                        'label': t('player.component.Page.start-time', 'Start time'),
+                        'label': Locale.t('player.component.Page.start-time', 'Start time'),
                         'inButton': true,
                         'outButton': true
                     },
@@ -98,7 +98,7 @@ export default class Page extends Component {
                 'end-time': {
                     'type': 'Time',
                     'configs': {
-                        'label': t('player.component.Page.end-time', 'End time'),
+                        'label': Locale.t('player.component.Page.end-time', 'End time'),
                         'inButton': true,
                         'outButton': true
                     },
@@ -198,7 +198,7 @@ export default class Page extends Component {
     getElements() {
         const elements = [];
 
-        this.children('.element').each((index, dom) => {
+        this.children('.element').forEach((dom) => {
             elements.push(dom._metaScore);
         });
 

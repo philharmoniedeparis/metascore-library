@@ -4,7 +4,7 @@ import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 import Pager from '../Pager';
 import Page from './Page';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString, isNumber} from '../../core/utils/Var';
 
@@ -47,7 +47,7 @@ export default class Block extends Component {
                 'name': {
                     'type': 'Text',
                     'configs': {
-                        'label': t('player.component.Block.name', 'Name')
+                        'label': Locale.t('player.component.Block.name', 'Name')
                     },
                     'getter': function(){
                         return this.data('name');
@@ -59,7 +59,7 @@ export default class Block extends Component {
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.Block.locked', 'Locked?')
+                        'label': Locale.t('player.component.Block.locked', 'Locked?')
                     },
                     'getter': function(){
                         return this.data('locked') === "true";
@@ -71,7 +71,7 @@ export default class Block extends Component {
                 'hidden': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.Block.hidden', 'Hidden?')
+                        'label': Locale.t('player.component.Block.hidden', 'Hidden?')
                     },
                     'getter': function(){
                         return this.data('hidden') === "true";
@@ -83,7 +83,7 @@ export default class Block extends Component {
                 'x': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Block.x', 'X'),
+                        'label': Locale.t('player.component.Block.x', 'X'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -96,7 +96,7 @@ export default class Block extends Component {
                 'y': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Block.y', 'Y'),
+                        'label': Locale.t('player.component.Block.y', 'Y'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -109,7 +109,7 @@ export default class Block extends Component {
                 'width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Block.width', 'Width'),
+                        'label': Locale.t('player.component.Block.width', 'Width'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -122,7 +122,7 @@ export default class Block extends Component {
                 'height': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Block.height', 'Height'),
+                        'label': Locale.t('player.component.Block.height', 'Height'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -135,7 +135,7 @@ export default class Block extends Component {
                 'z-index': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.z-index', 'Display index')
+                        'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
@@ -148,7 +148,7 @@ export default class Block extends Component {
                 'background-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Block.background-color', 'Background color')
+                        'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
                         return this.css('background-color', undefined, skipDefault);
@@ -160,7 +160,7 @@ export default class Block extends Component {
                 'background-image': {
                     'type':'Image',
                     'configs': {
-                        'label': t('player.component.Block.background-image', 'Background image'),
+                        'label': Locale.t('player.component.Block.background-image', 'Background image'),
                         'resizeButton': true
                     },
                     'getter': function(skipDefault){
@@ -184,7 +184,7 @@ export default class Block extends Component {
                 'border-width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Block.border-width', 'Border width'),
+                        'label': Locale.t('player.component.Block.border-width', 'Border width'),
                         'min': 0
                     },
                     'getter': function(skipDefault){
@@ -198,7 +198,7 @@ export default class Block extends Component {
                 'border-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Block.border-color', 'Border color')
+                        'label': Locale.t('player.component.Block.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-color', undefined, skipDefault);
@@ -210,7 +210,7 @@ export default class Block extends Component {
                 'border-radius': {
                     'type': 'BorderRadius',
                     'configs': {
-                        'label': t('player.component.Block.border-radius', 'Border radius')
+                        'label': Locale.t('player.component.Block.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-radius', undefined, skipDefault);
@@ -324,7 +324,7 @@ export default class Block extends Component {
     getPages() {
         const pages = [];
 
-        this.page_wrapper.children('.page').each((index, dom) => {
+        this.page_wrapper.children('.page').forEach((dom) => {
             pages.push(dom._metaScore);
         });
 

@@ -46,7 +46,7 @@ export default class Resizable {
         this.onMouseUp = this.onMouseUp.bind(this);
 
 
-        this.configs.directions.forEach(this.configs.directions, (direction) => {
+        this.configs.directions.forEach((direction) => {
             this.handles[direction] = new Dom('<div/>', {'class': 'resize-handle'})
                 .data('direction', direction)
                 .addListener('mousedown', this.onMouseDown)
@@ -234,9 +234,11 @@ export default class Resizable {
     destroy() {
         this.disable();
 
-		Object.entries(this.handles).forEach(([, handle]) => {
-            handle.remove();
-        });
+        if(this.handles){
+            Object.entries(this.handles).forEach(([, handle]) => {
+                handle.remove();
+            });
+        }
 
         return this;
     }

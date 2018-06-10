@@ -1,5 +1,5 @@
 import Panel from '../Panel';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 
 export default class Page extends Panel {
 
@@ -23,10 +23,10 @@ export default class Page extends Panel {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbarConfigs': {
-                'title': t('editor.panel.Page.title', 'Page'),
+                'title': Locale.t('editor.panel.Page.title', 'Page'),
                 'menuItems': {
-                    'new': t('editor.panel.Page.menuItems.new', 'Add a new page'),
-                    'delete': t('editor.panel.Page.menuItems.delete', 'Delete the active page')
+                    'new': Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
+                    'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
                 }
             }
         });

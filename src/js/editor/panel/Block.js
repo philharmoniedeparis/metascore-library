@@ -1,5 +1,5 @@
 import Panel from '../Panel';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 
 export default class Block extends Panel {
 
@@ -23,12 +23,12 @@ export default class Block extends Panel {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbarConfigs': {
-                'title': t('editor.panel.Block.title', 'Block'),
+                'title': Locale.t('editor.panel.Block.title', 'Block'),
                 'menuItems': {
-                    'synched': t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
-                    'non-synched': t('editor.panel.Block.menuItems.non-synched', 'Add a non-synchronized block'),
-                    'block-toggler': t('editor.panel.Block.menuItems.block-toggler', 'Add a block toggler'),
-                    'delete': t('editor.panel.Block.menuItems.delete', 'Delete the active block')
+                    'synched': Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
+                    'non-synched': Locale.t('editor.panel.Block.menuItems.non-synched', 'Add a non-synchronized block'),
+                    'block-toggler': Locale.t('editor.panel.Block.menuItems.block-toggler', 'Add a block toggler'),
+                    'delete': Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
                 }
             }
         });
@@ -43,10 +43,10 @@ export default class Block extends Panel {
     getSelectorLabel(component){
         if(component.instanceOf('Block')){
             if(component.getProperty('synched')){
-                return t('editor.panel.Block.selector.labelSynched', '!name (synched)', {'!name': component.getName()});
+                return Locale.t('editor.panel.Block.selector.labelSynched', '!name (synched)', {'!name': component.getName()});
             }
 
-                return t('editor.panel.Block.selector.labelNotSynched', '!name (not synched)', {'!name': component.getName()});
+                return Locale.t('editor.panel.Block.selector.labelNotSynched', '!name (not synched)', {'!name': component.getName()});
 
         }
 

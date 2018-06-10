@@ -1,6 +1,6 @@
 import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
-import {t} from '../core/utils/Locale';
+import Locale from '../core/Locale';
 import TimeField from './field/Time';
 import NumberField from './field/Number';
 
@@ -32,21 +32,21 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.new', 'New')
+                'title': Locale.t('editor.MainMenu.new', 'New')
             })
             .data('action', 'new')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.open', 'Open')
+                'title': Locale.t('editor.MainMenu.open', 'Open')
             })
             .data('action', 'open')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.edit', 'Edit')
+                'title': Locale.t('editor.MainMenu.edit', 'Edit')
             })
             .data('action', 'edit')
             .appendTo(this);
@@ -57,28 +57,28 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.save', 'Save as draft')
+                'title': Locale.t('editor.MainMenu.save', 'Save as draft')
             })
             .data('action', 'save')
             .appendTo(btn_group);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.clone', 'Save as copy')
+                'title': Locale.t('editor.MainMenu.clone', 'Save as copy')
             })
             .data('action', 'clone')
             .appendTo(sub_menu);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.publish', 'Save & Publish')
+                'title': Locale.t('editor.MainMenu.publish', 'Save & Publish')
             })
             .data('action', 'publish')
             .appendTo(sub_menu);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.delete', 'Delete')
+                'title': Locale.t('editor.MainMenu.delete', 'Delete')
             })
             .data('action', 'delete')
             .appendTo(this);
@@ -88,14 +88,14 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.share', 'Share')
+                'title': Locale.t('editor.MainMenu.share', 'Share')
             })
             .data('action', 'share')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.download', 'Download')
+                'title': Locale.t('editor.MainMenu.download', 'Download')
             })
             .data('action', 'download')
             .disable()
@@ -106,7 +106,7 @@ export default class MainMenu extends Dom {
 
         this.timefield = new TimeField()
             .attr({
-                'title': t('editor.MainMenu.time', 'Time')
+                'title': Locale.t('editor.MainMenu.time', 'Time')
             })
             .addClass('time')
             .appendTo(this);
@@ -119,7 +119,7 @@ export default class MainMenu extends Dom {
                 'max': 999
             })
             .attr({
-                'title': t('editor.MainMenu.r-index', 'Reading index')
+                'title': Locale.t('editor.MainMenu.r-index', 'Reading index')
             })
             .addClass('r-index')
             .appendTo(this);
@@ -129,7 +129,7 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
+                'title': Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
             })
             .data('action', 'edit-toggle')
             .appendTo(this);
@@ -139,21 +139,21 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.revert', 'Revert')
+                'title': Locale.t('editor.MainMenu.revert', 'Revert')
             })
             .data('action', 'revert')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.undo', 'Undo')
+                'title': Locale.t('editor.MainMenu.undo', 'Undo')
             })
             .data('action', 'undo')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.redo', 'Redo')
+                'title': Locale.t('editor.MainMenu.redo', 'Redo')
             })
             .data('action', 'redo')
             .appendTo(this);
@@ -164,7 +164,7 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.settings', 'Settings')
+                'title': Locale.t('editor.MainMenu.settings', 'Settings')
             })
             .data('action', 'settings')
             .disable()
@@ -172,21 +172,21 @@ export default class MainMenu extends Dom {
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.help', 'Help')
+                'title': Locale.t('editor.MainMenu.help', 'Help')
             })
             .data('action', 'help')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.account', 'My Account')
+                'title': Locale.t('editor.MainMenu.account', 'My Account')
             })
             .data('action', 'account')
             .appendTo(this);
 
         new Button()
             .attr({
-                'title': t('editor.MainMenu.logout', 'Logout')
+                'title': Locale.t('editor.MainMenu.logout', 'Logout')
             })
             .data('action', 'logout')
             .appendTo(this);

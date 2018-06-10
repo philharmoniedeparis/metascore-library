@@ -1,7 +1,7 @@
 import Overlay from '../../core/ui/Overlay';
 import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import NumberField from '../field/Number';
 
 /**
@@ -38,7 +38,7 @@ export default class BorderRadius extends Overlay {
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
             'toolbar': true,
-            'title': t('editor.overlay.BorderRadius.title', 'Border Radius')
+            'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
         });
     }
 

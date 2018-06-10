@@ -45,9 +45,11 @@ export default class Component extends Dom {
             }
         }
 
-		Object.entries(this.configs.listeners).forEach(([key, value]) => {
-            this.addListener(key, value);
-        });
+        if(this.configs.listeners){
+            Object.entries(this.configs.listeners).forEach(([key, value]) => {
+                this.addListener(key, value);
+            });
+        }
 
         this.setupUI();
 

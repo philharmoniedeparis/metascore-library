@@ -1,6 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import {t} from '../../../core/utils/Locale';
+import Locale from '../../../core/Locale';
 import {toCSS} from '../../../core/utils/Color';
 
 /**
@@ -18,12 +18,14 @@ const EVT_TIME = 'time';
 export default class Cursor extends Element {
 
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'properties': Object.assign({}, Cursor.parent.defaults.properties, {
+        let defaults = super.getDefaults();
+
+        return Object.assign({}, defaults, {
+            'properties': Object.assign({}, defaults.properties, {
                 'start-time': {
                     'type': 'Time',
                     'configs': {
-                        'label': t('player.component.Element.start-time', 'Start time'),
+                        'label': Locale.t('player.component.Element.start-time', 'Start time'),
                         'inButton': true,
                         'outButton': true
                     },
@@ -38,7 +40,7 @@ export default class Cursor extends Element {
                 'end-time': {
                     'type': 'Time',
                     'configs': {
-                        'label': t('player.component.Element.end-time', 'End time'),
+                        'label': Locale.t('player.component.Element.end-time', 'End time'),
                         'inButton': true,
                         'outButton': true
                     },
@@ -53,23 +55,23 @@ export default class Cursor extends Element {
                 'direction': {
                     'type': 'Select',
                     'configs': {
-                        'label': t('player.component.element.Cursor.direction', 'Direction'),
+                        'label': Locale.t('player.component.element.Cursor.direction', 'Direction'),
                         'options': [
                             {
                                 'value': 'right',
-                                'text': t('player.component.element.Cursor.direction.right', 'Left > Right')
+                                'text': Locale.t('player.component.element.Cursor.direction.right', 'Left > Right')
                             },
                             {
                                 'value': 'left',
-                                'text': t('player.component.element.Cursor.direction.left', 'Right > Left')
+                                'text': Locale.t('player.component.element.Cursor.direction.left', 'Right > Left')
                             },
                             {
                                 'value': 'bottom',
-                                'text': t('player.component.element.Cursor.direction.bottom', 'Top > Bottom')
+                                'text': Locale.t('player.component.element.Cursor.direction.bottom', 'Top > Bottom')
                             },
                             {
                                 'value': 'top',
-                                'text': t('player.component.element.Cursor.direction.top', 'Bottom > Top')
+                                'text': Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top')
                             }
                         ]
                     },
@@ -83,7 +85,7 @@ export default class Cursor extends Element {
                 'acceleration': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.element.Cursor.acceleration', 'Acceleration'),
+                        'label': Locale.t('player.component.element.Cursor.acceleration', 'Acceleration'),
                         'step': 0.01,
                         'min': 0.01
                     },
@@ -98,7 +100,7 @@ export default class Cursor extends Element {
                 'cursor-width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.element.Cursor.cursor-width', 'Cursor width')
+                        'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.cursor.css('width', undefined, skipDefault), 10);
@@ -111,7 +113,7 @@ export default class Cursor extends Element {
                 'cursor-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.element.Cursor.cursor-color', 'Cursor color')
+                        'label': Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
                     },
                     'getter': function(skipDefault){
                          return this.cursor.css('background-color', undefined, skipDefault);

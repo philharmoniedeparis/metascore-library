@@ -1,6 +1,6 @@
 import Overlay from '../../core/ui/Overlay';
 import Dom from '../../core/Dom';
-import {t, formatString} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {uuid} from '../../core/utils/String';
 import CheckboxField from '../field/Checkbox';
 import TextField from '../field/Text';
@@ -36,7 +36,7 @@ export default class Share extends Overlay {
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
             'toolbar': true,
-            'title': t('editor.overlay.Share.title', 'Share'),
+            'title': Locale.t('editor.overlay.Share.title', 'Share'),
             'url': '',
             'api_help_url': ''
         });
@@ -61,7 +61,7 @@ export default class Share extends Overlay {
 
         // Link
         this.fields.link = new TextField({
-                'label': t('editor.overlay.Share.fields.link.label', 'Link'),
+                'label': Locale.t('editor.overlay.Share.fields.link.label', 'Link'),
                 'readonly': true
             })
             .data('name', 'link')
@@ -73,7 +73,7 @@ export default class Share extends Overlay {
 
         // Embed
         this.fields.embed = new TextareaField({
-                'label': t('editor.overlay.Share.fields.embed.label', 'Embed'),
+                'label': Locale.t('editor.overlay.Share.fields.embed.label', 'Embed'),
                 'readonly': true
             })
             .data('name', 'embed')
@@ -92,7 +92,7 @@ export default class Share extends Overlay {
             .data('role', 'collapsible-toggle')
             .appendTo(options_wrapper);
 
-        new Dom('<label>', {'text': t('editor.overlay.Share.options.label', 'Embed options'), 'for': options_toggle_id})
+        new Dom('<label>', {'text': Locale.t('editor.overlay.Share.options.label', 'Embed options'), 'for': options_toggle_id})
             .data('role', 'collapsible-label')
             .appendTo(options_wrapper);
 
@@ -101,7 +101,7 @@ export default class Share extends Overlay {
             .appendTo(options_wrapper);
 
         this.fields.width = new TextField({
-                'label': t('editor.overlay.Share.fields.width.label', 'Width'),
+                'label': Locale.t('editor.overlay.Share.fields.width.label', 'Width'),
                 'value': '100%'
             })
             .data('name', 'width')
@@ -109,7 +109,7 @@ export default class Share extends Overlay {
             .appendTo(options);
 
         this.fields.height = new TextField({
-                'label': t('editor.overlay.Share.fields.height.label', 'Height'),
+                'label': Locale.t('editor.overlay.Share.fields.height.label', 'Height'),
                 'value': '100%'
             })
             .data('name', 'height')
@@ -117,14 +117,14 @@ export default class Share extends Overlay {
             .appendTo(options);
 
         this.fields.keyboard = new CheckboxField({
-                'label': t('editor.overlay.Share.fields.keyboard.label', 'Enable keyboard shortcuts')
+                'label': Locale.t('editor.overlay.Share.fields.keyboard.label', 'Enable keyboard shortcuts')
             })
             .data('name', 'keyboard')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(options);
 
         this.fields.api = new CheckboxField({
-                'label': t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url})
+                'label': Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url})
             })
             .data('name', 'api')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -185,7 +185,7 @@ export default class Share extends Overlay {
             url += `?${query.join('&')}`;
         }
 
-        return formatString('<iframe type="text/html" src="!url" width="!width" height="!height" frameborder="0" allowfullscreen="true" class="metascore-embed"></iframe>', {
+        return Locale.formatString('<iframe type="text/html" src="!url" width="!width" height="!height" frameborder="0" allowfullscreen="true" class="metascore-embed"></iframe>', {
             '!url': url,
             '!width': width,
             '!height': height

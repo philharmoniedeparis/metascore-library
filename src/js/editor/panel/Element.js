@@ -1,6 +1,6 @@
 import Panel from '../Panel';
 import Dom from '../../core/Dom';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 
 /**
  * Fired when a component's text is locked
@@ -49,12 +49,12 @@ export default class Element extends Panel {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbarConfigs': {
-                'title': t('editor.panel.Element.title', 'Element'),
+                'title': Locale.t('editor.panel.Element.title', 'Element'),
                 'menuItems': {
-                    'Cursor': t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
-                    'Image': t('editor.panel.Element.menuItems.Image', 'Add a new image'),
-                    'Text': t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
-                    'delete': t('editor.panel.Element.menuItems.delete', 'Delete the active element')
+                    'Cursor': Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
+                    'Image': Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
+                    'Text': Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
+                    'delete': Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
                 }
             }
         });

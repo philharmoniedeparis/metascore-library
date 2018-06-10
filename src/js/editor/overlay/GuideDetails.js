@@ -1,12 +1,13 @@
 import Overlay from '../../core/ui/Overlay';
 import Dom from '../../core/Dom';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
 import TextareaField from '../field/Textarea';
 import FileField from '../field/File';
+import CheckboxField from '../field/Checkbox';
 import CheckboxesField from '../field/Checkboxes';
 
 /**
@@ -48,9 +49,9 @@ export default class GuideDetails extends Overlay {
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
             'toolbar': true,
-            'title': t('editor.overlay.GuideDetails.title', 'Guide Info'),
+            'title': Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
             'groups': {},
-            'submit_text': t('editor.overlay.GuideDetails.submitText', 'Save')
+            'submit_text': Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
         });
     }
 
@@ -76,7 +77,7 @@ export default class GuideDetails extends Overlay {
 
         // Fields
         this.fields.type = new SelectField({
-                'label': t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
+                'label': Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
                 'options': [
                     {
                         'value': '',
@@ -84,11 +85,11 @@ export default class GuideDetails extends Overlay {
                     },
                     {
                         'value': 'audio',
-                        'text': t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio')
+                        'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio')
                     },
                     {
                         'value': 'video',
-                        'text': t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
+                        'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
                     }
                 ],
                 'required': true
@@ -98,7 +99,7 @@ export default class GuideDetails extends Overlay {
             .appendTo(form);
 
         this.fields.title = new TextField({
-                'label': t('editor.overlay.GuideDetails.fields.title.label', 'Title'),
+                'label': Locale.t('editor.overlay.GuideDetails.fields.title.label', 'Title'),
                 'required': true
             })
             .data('name', 'title')
@@ -106,22 +107,22 @@ export default class GuideDetails extends Overlay {
             .appendTo(form);
 
         this.fields.description = new TextareaField({
-                'label': t('editor.overlay.GuideDetails.fields.description.label', 'Description')
+                'label': Locale.t('editor.overlay.GuideDetails.fields.description.label', 'Description')
             })
             .data('name', 'description')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
         this.fields.credits = new TextareaField({
-                'label': t('editor.overlay.GuideDetails.fields.credits.label', 'Credits')
+                'label': Locale.t('editor.overlay.GuideDetails.fields.credits.label', 'Credits')
             })
             .data('name', 'credits')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
         this.fields.thumbnail = new FileField({
-                'label': t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
-                'description': t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
+                'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
+                'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
                 'accept': '.png,.gif,.jpg,.jpeg'
             })
             .data('name', 'thumbnail')
@@ -129,8 +130,8 @@ export default class GuideDetails extends Overlay {
             .appendTo(form);
 
         this.fields.media = new FileField({
-                'label': t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
-                'description': t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
+                'label': Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
+                'description': Locale.t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
                 'accept': '.mp4,.m4v,.m4a,.mp3',
                 'required': true
             })
@@ -139,15 +140,22 @@ export default class GuideDetails extends Overlay {
             .appendTo(form);
 
         this.fields.css = new TextareaField({
-                'label': t('editor.overlay.GuideDetails.fields.css.label', 'CSS')
+                'label': Locale.t('editor.overlay.GuideDetails.fields.css.label', 'CSS')
             })
             .data('name', 'css')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
+        new CheckboxField({
+            'label': 'fullscreen'
+            })
+            .addClass('css-fullscreen-toggle')
+            .appendTo(this.fields.css.input_wrapper)
+            .addListener('valuechange', this.onCSSFullscreenChange.bind(this));
+
         this.fields.tags = new TextField({
-                'label': t('editor.overlay.GuideDetails.fields.tags.label', 'Tags'),
-                'description': t('editor.overlay.GuideDetails.fields.tags.description', 'Comma separated list of tags'),
+                'label': Locale.t('editor.overlay.GuideDetails.fields.tags.label', 'Tags'),
+                'description': Locale.t('editor.overlay.GuideDetails.fields.tags.description', 'Comma separated list of tags'),
             })
             .data('name', 'tags')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -155,8 +163,8 @@ export default class GuideDetails extends Overlay {
 
         if(!isEmpty(this.configs.groups)){
             this.fields.groups = new CheckboxesField({
-                    'label': t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
-                    'description': t('editor.overlay.GuideDetails.fields.groups.description', 'The checked groups are those in which this guide is shared'),
+                    'label': Locale.t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
+                    'description': Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The checked groups are those in which this guide is shared'),
                     'multiple': true
                 })
                 .data('name', 'groups')
@@ -173,13 +181,13 @@ export default class GuideDetails extends Overlay {
             .addClass('submit')
             .appendTo(form);
 
-        new Button({'label': t('editor.overlay.GuideDetails.buttons.cancel.label', 'Cancel')})
+        new Button({'label': Locale.t('editor.overlay.GuideDetails.buttons.cancel.label', 'Cancel')})
             .addClass('cancel')
             .addListener('click', this.onCloseClick.bind(this))
             .appendTo(form);
 
         // Information
-        new Dom('<div/>', {'class': 'info', 'text': t('editor.overlay.GuideDetails.info', 'The guide needs to be saved in order for applied changes to become permanent')})
+        new Dom('<div/>', {'class': 'info', 'text': Locale.t('editor.overlay.GuideDetails.info', 'The guide needs to be saved in order for applied changes to become permanent')})
             .appendTo(form);
     }
 
@@ -290,6 +298,10 @@ export default class GuideDetails extends Overlay {
         else{
             this.changed[name] = value;
         }
+    }
+
+    onCSSFullscreenChange(evt){
+        this.toggleClass('css-fullscreen', evt.detail.value);
     }
 
     /**

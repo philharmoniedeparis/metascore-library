@@ -2,7 +2,7 @@ import Overlay from '../../core/ui/Overlay';
 import LoadMask from '../../core/ui/overlay/LoadMask';
 import Dom from '../../core/Dom';
 import Ajax from '../../core/Ajax';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
 import Fieldset from '../Fieldset';
@@ -46,8 +46,8 @@ export default class GuideSelector extends Overlay {
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
             'toolbar': true,
-            'title': t('editor.overlay.GuideSelector.title', 'Select a guide'),
-            'empty_text': t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
+            'title': Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
+            'empty_text': Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
             'url': null
         });
     }
@@ -70,7 +70,7 @@ export default class GuideSelector extends Overlay {
             .appendTo(contents);
 
         fieldset = new Fieldset({
-                'legend_text': t('editor.overlay.GuideSelector.filters.fieldset.legend', 'Search'),
+                'legend_text': Locale.t('editor.overlay.GuideSelector.filters.fieldset.legend', 'Search'),
                 'collapsible': true,
                 'collapsed': true
             })
@@ -80,35 +80,35 @@ export default class GuideSelector extends Overlay {
         this.filter_fields = {};
 
         this.filter_fields.fulltext = new TextField({
-                'label': t('editor.overlay.GuideSelector.filters.fulltext.label', 'Full-text search'),
-                'description': t('editor.overlay.GuideSelector.filters.fulltext.description', "Search in the guide's title, credits, description and blocks")
+                'label': Locale.t('editor.overlay.GuideSelector.filters.fulltext.label', 'Full-text search'),
+                'description': Locale.t('editor.overlay.GuideSelector.filters.fulltext.description', "Search in the guide's title, credits, description and blocks")
             })
             .data('name', 'filters[fulltext]')
             .appendTo(fieldset);
 
         this.filter_fields.tag = new SelectField({
-                'label': t('editor.overlay.GuideSelector.filters.tag.label', 'Tag'),
+                'label': Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag'),
                 'value': ''
             })
             .data('name', 'filters[tag]')
             .appendTo(fieldset);
 
         this.filter_fields.author = new SelectField({
-                'label': t('editor.overlay.GuideSelector.filters.author.label', "Guide's author"),
+                'label': Locale.t('editor.overlay.GuideSelector.filters.author.label', "Guide's author"),
                 'value': ''
             })
             .data('name', 'filters[author]')
             .appendTo(fieldset);
 
         this.filter_fields.group = new SelectField({
-                'label': t('editor.overlay.GuideSelector.filters.group.label', 'Group'),
+                'label': Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group'),
                 'value': ''
             })
             .data('name', 'filters[group]')
             .appendTo(fieldset);
 
         this.filter_fields.status = new SelectField({
-                'label': t('editor.overlay.GuideSelector.filters.status.label', 'Status'),
+                'label': Locale.t('editor.overlay.GuideSelector.filters.status.label', 'Status'),
                 'options': [
                     {
                         'value': '',
@@ -116,11 +116,11 @@ export default class GuideSelector extends Overlay {
                     },
                     {
                         'value': '1',
-                        'text': t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published')
                     },
                     {
                         'value': '0',
-                        'text': t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
                     }
                 ],
                 'value': ''
@@ -129,19 +129,19 @@ export default class GuideSelector extends Overlay {
             .appendTo(fieldset);
 
         this.filter_fields.sort_by = new SelectField({
-                'label': t('editor.overlay.GuideSelector.filters.sort_by.label', 'Sort by'),
+                'label': Locale.t('editor.overlay.GuideSelector.filters.sort_by.label', 'Sort by'),
                 'options': [
                     {
                         'value': 'title',
-                        'text': t('editor.overlay.GuideSelector.filters.sort_by.title.lable', 'Title')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.title.lable', 'Title')
                     },
                     {
                         'value': 'created',
-                        'text': t('editor.overlay.GuideSelector.filters.sort_by.created.lable', 'Creation date')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.created.lable', 'Creation date')
                     },
                     {
                         'value': 'changed',
-                        'text': t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
                     }
                 ],
                 'value': 'changed'
@@ -150,15 +150,15 @@ export default class GuideSelector extends Overlay {
             .appendTo(fieldset);
 
         this.filter_fields.sort_order = new SelectField({
-                'label': t('editor.overlay.GuideSelector.filters.sort_order.label', 'Order'),
+                'label': Locale.t('editor.overlay.GuideSelector.filters.sort_order.label', 'Order'),
                 'options': [
                     {
                         'value': 'ASC',
-                        'text': t('editor.overlay.GuideSelector.filters.sort_order.asc.lable', 'Asc')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_order.asc.lable', 'Asc')
                     },
                     {
                         'value': 'DESC',
-                        'text': t('editor.overlay.GuideSelector.filters.sort_order.desc.lable', 'Desc')
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_order.desc.lable', 'Desc')
                     }
                 ],
                 'value': 'DESC'
@@ -169,11 +169,11 @@ export default class GuideSelector extends Overlay {
         buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(fieldset);
 
-        new Button({'label': t('editor.overlay.GuideSelector.filters.submit.label', 'Submit')})
+        new Button({'label': Locale.t('editor.overlay.GuideSelector.filters.submit.label', 'Submit')})
             .addClass('submit')
             .appendTo(buttons);
 
-        new Button({'label': t('editor.overlay.GuideSelector.filters.reset.label', 'Reset')})
+        new Button({'label': Locale.t('editor.overlay.GuideSelector.filters.reset.label', 'Reset')})
             .addClass('reset')
             .addListener('click', this.onFiltersResetClick.bind(this))
             .appendTo(buttons);
@@ -292,7 +292,7 @@ export default class GuideSelector extends Overlay {
                     .appendTo(row);
 
                 revision_field = new SelectField({
-                        'label': t('editor.overlay.GuideSelector.revisionLabel', 'Version')
+                        'label': Locale.t('editor.overlay.GuideSelector.revisionLabel', 'Version')
                     })
                     .addClass('revisions');
 
@@ -305,17 +305,17 @@ export default class GuideSelector extends Overlay {
                         switch(revision.state){
                             case 0: // archives
                                 group_id = 'archives';
-                                group_label = t('editor.overlay.GuideSelector.archivesGroup', 'archives');
+                                group_label = Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
                                 break;
 
                             case 1: // published
                                 group_id = 'published';
-                                group_label = t('editor.overlay.GuideSelector.publishedGroup', 'published');
+                                group_label = Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
                                 break;
 
                             case 2: // drafts
                                 group_id = 'drafts';
-                                group_label = t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
+                                group_label = Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
                                 break;
                         }
 
@@ -325,7 +325,7 @@ export default class GuideSelector extends Overlay {
 
                         group = groups[group_id];
 
-                        text = t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
+                        text = Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
 
                         revision_field.addOption(vid, text, group);
                     });
@@ -340,7 +340,7 @@ export default class GuideSelector extends Overlay {
 
                 button = new Button()
                     .addClass('submit')
-                    .setLabel(t('editor.overlay.GuideSelector.button', 'Select'))
+                    .setLabel(Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                     .addListener('click', this.onGuideSelect.bind(this, guide, revision_field))
                     .data('action', 'select');
 
@@ -351,8 +351,8 @@ export default class GuideSelector extends Overlay {
                 new Dom('<td/>', {'class': 'details'})
                     .append(new Dom('<h1/>', {'class': 'title', 'text': guide.title}))
                     .append(new Dom('<p/>', {'class': 'description', 'text': guide.description}))
-                    .append(new Dom('<p/>', {'class': 'tags', 'text': t('editor.overlay.GuideSelector.tagsText', 'tags: <em>!tags</em>', {'!tags': guide.tags})}))
-                    .append(new Dom('<p/>', {'class': 'author', 'text': t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
+                    .append(new Dom('<p/>', {'class': 'tags', 'text': Locale.t('editor.overlay.GuideSelector.tagsText', 'tags: <em>!tags</em>', {'!tags': guide.tags})}))
+                    .append(new Dom('<p/>', {'class': 'author', 'text': Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
                     .append(revision_wrapper)
                     .appendTo(row);
             });

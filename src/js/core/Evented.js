@@ -76,22 +76,22 @@ export default class Evented{
      * @chainable
      */
     triggerEvent(type, data, bubbling, cancelable){
-        let listeners, event;
-
         if (this.listeners[type] instanceof Array){
-            listeners = this.listeners[type];
+            let listeners = this.listeners[type];
 
-            event = {
-                'target': this,
-                'type': type,
-                'detail': data,
-                'bubbles': bubbling !== false,
-                'cancelable': cancelable !== false
-            };
+            if(listeners){
+                let event = {
+                    'target': this,
+                    'type': type,
+                    'detail': data,
+                    'bubbles': bubbling !== false,
+                    'cancelable': cancelable !== false
+                };
 
-			Object.entries(listeners).forEach(([, listener]) => {
-                listener.call(this, event);
-            });
+                Object.entries(listeners).forEach(([, listener]) => {
+                    listener.call(this, event);
+                });
+            }
         }
 
         return this;

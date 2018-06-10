@@ -55,9 +55,11 @@ export default class Ajax {
 
         xhr.open(options.method, url, options.async);
 
-		Object.entries(options.headers).forEach(([key, value]) => {
-            xhr.setRequestHeader(key, value);
-        });
+        if(options.headers){
+            Object.entries(options.headers).forEach(([key, value]) => {
+                xhr.setRequestHeader(key, value);
+            });
+        }
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {

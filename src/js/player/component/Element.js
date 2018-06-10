@@ -2,7 +2,7 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
 
@@ -17,7 +17,7 @@ export default class Element extends Component{
                 'name': {
                     'type': 'Text',
                     'configs': {
-                        'label': t('player.component.Element.name', 'Name')
+                        'label': Locale.t('player.component.Element.name', 'Name')
                     },
                     'getter': function(){
                         return this.data('name');
@@ -38,7 +38,7 @@ export default class Element extends Component{
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.Element.locked', 'Locked?')
+                        'label': Locale.t('player.component.Element.locked', 'Locked?')
                     },
                     'getter': function(){
                         return this.data('locked') === "true";
@@ -50,7 +50,7 @@ export default class Element extends Component{
                 'x': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.x', 'X'),
+                        'label': Locale.t('player.component.Element.x', 'X'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -63,7 +63,7 @@ export default class Element extends Component{
                 'y': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.y', 'Y'),
+                        'label': Locale.t('player.component.Element.y', 'Y'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -76,7 +76,7 @@ export default class Element extends Component{
                 'width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.width', 'Width'),
+                        'label': Locale.t('player.component.Element.width', 'Width'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -89,7 +89,7 @@ export default class Element extends Component{
                 'height': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.height', 'Height'),
+                        'label': Locale.t('player.component.Element.height', 'Height'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -102,7 +102,7 @@ export default class Element extends Component{
                 'r-index': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.r-index', 'Reading index'),
+                        'label': Locale.t('player.component.Element.r-index', 'Reading index'),
                         'min': 0
                     },
                     'getter': function(){
@@ -116,7 +116,7 @@ export default class Element extends Component{
                 'z-index': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.z-index', 'Display index')
+                        'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
@@ -129,7 +129,7 @@ export default class Element extends Component{
                 'background-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Element.background-color', 'Background color')
+                        'label': Locale.t('player.component.Element.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
                         return this.contents.css('background-color', undefined, skipDefault);
@@ -141,7 +141,7 @@ export default class Element extends Component{
                 'background-image': {
                     'type': 'Image',
                     'configs': {
-                        'label': t('player.component.Element.background-image', 'Background image'),
+                        'label': Locale.t('player.component.Element.background-image', 'Background image'),
                         'resizeButton': true
                     },
                     'getter': function(skipDefault){
@@ -165,7 +165,7 @@ export default class Element extends Component{
                 'border-width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.border-width', 'Border width'),
+                        'label': Locale.t('player.component.Element.border-width', 'Border width'),
                         'min': 0
                     },
                     'getter': function(skipDefault){
@@ -179,7 +179,7 @@ export default class Element extends Component{
                 'border-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Element.border-color', 'Border color')
+                        'label': Locale.t('player.component.Element.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
                         return this.contents.css('border-color', undefined, skipDefault);
@@ -191,7 +191,7 @@ export default class Element extends Component{
                 'border-radius': {
                     'type': 'BorderRadius',
                     'configs': {
-                        'label': t('player.component.Element.border-radius', 'Border radius')
+                        'label': Locale.t('player.component.Element.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
                         return this.contents.css('border-radius', undefined, skipDefault);
@@ -203,7 +203,7 @@ export default class Element extends Component{
                 'opacity': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.opacity', 'Opacity'),
+                        'label': Locale.t('player.component.Element.opacity', 'Opacity'),
                         'min': 0,
                         'max': 1,
                         'step': 0.1
@@ -218,7 +218,7 @@ export default class Element extends Component{
                 'start-time': {
                     'type': 'Time',
                     'configs': {
-                        'label': t('player.component.Element.start-time', 'Start time'),
+                        'label': Locale.t('player.component.Element.start-time', 'Start time'),
                         'clearButton': true,
                         'inButton': true,
                         'outButton': true
@@ -234,7 +234,7 @@ export default class Element extends Component{
                 'end-time': {
                     'type': 'Time',
                     'configs': {
-                        'label': t('player.component.Element.end-time', 'End time'),
+                        'label': Locale.t('player.component.Element.end-time', 'End time'),
                         'clearButton': true,
                         'inButton': true,
                         'outButton': true

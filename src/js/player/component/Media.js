@@ -1,6 +1,6 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
@@ -101,7 +101,7 @@ export default class Media extends Component{
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.Media.locked', 'Locked?')
+                        'label': Locale.t('player.component.Media.locked', 'Locked?')
                     },
                     'getter': function(){
                         return this.data('locked') === "true";
@@ -113,7 +113,7 @@ export default class Media extends Component{
                 'x': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Media.x', 'X'),
+                        'label': Locale.t('player.component.Media.x', 'X'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -126,7 +126,7 @@ export default class Media extends Component{
                 'y': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Media.y', 'Y'),
+                        'label': Locale.t('player.component.Media.y', 'Y'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -139,7 +139,7 @@ export default class Media extends Component{
                 'width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Media.width', 'Width'),
+                        'label': Locale.t('player.component.Media.width', 'Width'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -152,7 +152,7 @@ export default class Media extends Component{
                 'height': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Media.height', 'Height'),
+                        'label': Locale.t('player.component.Media.height', 'Height'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -165,7 +165,7 @@ export default class Media extends Component{
                 'z-index': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Element.z-index', 'Display index')
+                        'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
@@ -178,7 +178,7 @@ export default class Media extends Component{
                 'background-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Block.background-color', 'Background color')
+                        'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
                         return this.css('background-color', undefined, skipDefault);
@@ -190,7 +190,7 @@ export default class Media extends Component{
                 'border-width': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Block.border-width', 'Border width'),
+                        'label': Locale.t('player.component.Block.border-width', 'Border width'),
                         'min': 0
                     },
                     'getter': function(skipDefault){
@@ -204,7 +204,7 @@ export default class Media extends Component{
                 'border-color': {
                     'type': 'Color',
                     'configs': {
-                        'label': t('player.component.Block.border-color', 'Border color')
+                        'label': Locale.t('player.component.Block.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-color', undefined, skipDefault);
@@ -216,7 +216,7 @@ export default class Media extends Component{
                 'border-radius': {
                     'type': 'BorderRadius',
                     'configs': {
-                        'label': t('player.component.Media.border-radius', 'Border radius')
+                        'label': Locale.t('player.component.Media.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-radius', undefined, skipDefault);

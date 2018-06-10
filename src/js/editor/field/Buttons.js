@@ -54,13 +54,15 @@ export default class Buttons extends Field{
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-		Object.entries(this.configs.buttons).forEach(([name, attr]) => {
-            this.buttons[name] = new Dom('<button/>', attr)
-                .addListener('click', () => {
-                    field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
-                })
-                .appendTo(this.input_wrapper);
-        });
+        if(this.configs.buttons){
+            Object.entries(this.configs.buttons).forEach(([name, attr]) => {
+                this.buttons[name] = new Dom('<button/>', attr)
+                    .addListener('click', () => {
+                        field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
+                    })
+                    .appendTo(this.input_wrapper);
+            });
+        }
     }
 
     /**

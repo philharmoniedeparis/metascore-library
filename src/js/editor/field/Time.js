@@ -1,6 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {pad} from '../../core/utils/String';
 
 /**
@@ -140,19 +140,19 @@ export default class Time extends Field {
                 .appendTo(this.input_wrapper);
 
             if(this.configs.clearButton){
-                this.clearButton = new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': t('editor.field.Time.clear.tooltip', 'Clear value')})
+                this.clearButton = new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Time.clear.tooltip', 'Clear value')})
                     .addListener('click', this.onClearClick.bind(this))
                     .appendTo(buttons);
             }
 
             if(this.configs.inButton){
-                this.inButton = new Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': t('editor.field.Time.in.tooltip', 'Set field value to current time')})
+                this.inButton = new Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
                     .addListener('click', this.onInClick.bind(this))
                     .appendTo(buttons);
             }
 
             if(this.configs.outButton){
-                this.outButton = new Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': t('editor.field.Time.out.tooltip', 'Set current time to field value')})
+                this.outButton = new Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
                     .addListener('click', this.onOutClick.bind(this))
                     .appendTo(buttons);
             }

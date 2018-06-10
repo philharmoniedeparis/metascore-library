@@ -1,6 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {toRGBA} from '../../core/utils/Color';
 import ColorSelector from '../overlay/ColorSelector';
 
@@ -61,7 +61,7 @@ export default class Color extends Field {
         buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
-        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': t('editor.field.Color.clear.tooltip', 'Clear value')})
+        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Color.clear.tooltip', 'Clear value')})
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 

@@ -2,7 +2,7 @@ import Dom from './core/Dom';
 import {naturalSortInsensitive} from './core/utils/Array';
 import {pad} from './core/utils/String';
 import {isArray} from './core/utils/Var';
-import {t} from './core/utils/Locale';
+import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
 import BlockPanel from './editor/panel/Block';
@@ -17,6 +17,16 @@ import ContextMenu from './core/ui/ContextMenu';
 import GuideDetails from './editor/overlay/GuideDetails';
 import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
+
+import '../css/metaScore.editor.less';
+
+/**
+ * Fired when the editor is fully setup
+ *
+ * @event ready
+ * @param {Object} editor The editor instance
+ */
+const EVT_READY = 'ready';
 
 export default class Editor extends Dom {
 
@@ -36,6 +46,7 @@ export default class Editor extends Dom {
      * @param {String} [configs.logout_url=''] The URL of the user logout page
      * @param {Object} [configs.user_groups={}] The groups the user belongs to
      * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
+     * @param {String} [configs.locale] The locale file to load
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      */
     constructor(configs) {
@@ -48,343 +59,12 @@ export default class Editor extends Dom {
             this.appendTo(this.configs.container);
         }
 
-        // add components
-
-        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
-        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
-
-        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(this);
-
-        this.mainmenu = new MainMenu().appendTo(this)
-            .toggleButton('help', this.configs.help_url ? true : false)
-            .toggleButton('account', this.configs.account_url ? true : false)
-            .toggleButton('logout', this.configs.logout_url ? true : false)
-            .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
-            .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
-
-        this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
-            .addListener('resizestart', this.onSidebarResizeStart.bind(this))
-            .addListener('resize', this.onSidebarResize.bind(this))
-            .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
-
-        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
-
-        this.sidebar_resizer = new Resizable({target: this.sidebar_wrapper, directions: ['left']});
-        this.sidebar_resizer.getHandle('left')
-            .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
-
-        this.panels = {};
-
-        this.panels.block = new BlockPanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', this.onBlockBeforeSet.bind(this))
-            .addListener('componentset', this.onBlockSet.bind(this))
-            .addListener('componentunset', this.onBlockUnset.bind(this))
-            .addListener('valueschange', this.onBlockPanelValueChange.bind(this));
-
-        this.panels.block.getToolbar()
-            .addDelegate('.selector', 'valuechange', this.onBlockPanelSelectorChange.bind(this))
-            .addDelegate('.buttons [data-action]', 'click', this.onBlockPanelToolbarClick.bind(this));
-
-        this.panels.page = new PagePanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', this.onPageBeforeSet.bind(this))
-            .addListener('componentset', this.onPageSet.bind(this))
-            .addListener('componentunset', this.onPageUnset.bind(this))
-            .addListener('valueschange', this.onPagePanelValueChange.bind(this));
-
-        this.panels.page.getToolbar()
-            .addDelegate('.selector', 'valuechange', this.onPagePanelSelectorChange.bind(this))
-            .addDelegate('.buttons [data-action]', 'click', this.onPagePanelToolbarClick.bind(this));
-
-        this.panels.element = new ElementPanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', this.onElementBeforeSet.bind(this))
-            .addListener('componentset', this.onElementSet.bind(this))
-            .addListener('valueschange', this.onElementPanelValueChange.bind(this));
-
-        this.panels.element.getToolbar()
-            .addDelegate('.selector', 'valuechange', this.onElementPanelSelectorChange.bind(this))
-            .addDelegate('.buttons [data-action]', 'click', this.onElementPanelToolbarClick.bind(this));
-
-        this.grid = new Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
-
-        this.history = new History()
-            .addListener('add', this.onHistoryAdd.bind(this))
-            .addListener('undo', this.onHistoryUndo.bind(this))
-            .addListener('redo', this.onHistoryRedo.bind(this));
-
-        this.clipboard = new Clipboard();
-
-        // prevent the custom contextmenu from overriding the native one in inputs
-        this.addDelegate('input', 'contextmenu', (evt) => {
-            evt.stopImmediatePropagation();
-            evt.stopPropagation();
-        });
-
-        this.contextmenu = new ContextMenu({'target': this, 'items': {
-                'about': {
-                    'text': t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.getVersion(), '!revision': this.getRevision()})
-                }
-            }})
-            .appendTo(this);
-
-        this.player_contextmenu = new ContextMenu({'target': null, 'items': {
-                'add-element': {
-                    'text': t('editor.contextmenu.add-element', 'Add an element'),
-                    'items': {
-                        'add-element-cursor': {
-                            'text': t('editor.contextmenu.add-element-cursor', 'Cursor'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Cursor'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                            }
-                        },
-                        'add-element-image': {
-                            'text': t('editor.contextmenu.add-element-image', 'Image'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Image'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                            }
-                        },
-                        'add-element-text': {
-                            'text': t('editor.contextmenu.add-element-text', 'Text'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Text'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                            }
-                        }
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
-                    }
-                },
-                'copy-element': {
-                    'text': t('editor.contextmenu.copy-element', 'Copy element'),
-                    'callback': (context) => {
-                        this.clipboard.setData('element', Dom.closest(context, '.metaScore-component.element')._metaScore.getProperties());
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.element') ? true : false);
-                    }
-                },
-                'paste-element': {
-                    'text': t('editor.contextmenu.paste-element', 'Paste element'),
-                    'callback': (context) => {
-                        const component = this.clipboard.getData();
-                        component.x += 5;
-                        component.y += 5;
-
-                        this.addPlayerComponent('element', component, Dom.closest(context, '.metaScore-component.page')._metaScore);
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (Dom.closest(context, '.metaScore-component.page') ? true : false);
-                    }
-                },
-                'delete-element': {
-                    'text': t('editor.contextmenu.delete-element', 'Delete element'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.element')._metaScore, true);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-
-                        const dom = Dom.closest(context, '.metaScore-component.element');
-                        return dom && !dom._metaScore.getProperty('locked');
-                    }
-                },
-                'lock-element': {
-                    'text': t('editor.contextmenu.lock-element', 'Lock element'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', true);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-
-                        const dom = Dom.closest(context, '.metaScore-component.element');
-                        return dom && !dom._metaScore.getProperty('locked');
-                    }
-                },
-                'unlock-element': {
-                    'text': t('editor.contextmenu.unlock-element', 'Unlock element'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', false);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-
-                        const dom = Dom.closest(context, '.metaScore-component.element');
-                        return dom && dom._metaScore.getProperty('locked');
-                    }
-                },
-                'element-separator': {
-                    'class': 'separator',
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false);
-                    }
-                },
-                'add-page': {
-                    'text': t('editor.contextmenu.add-page', 'Add a page'),
-                    'callback': (context) => {
-                        this.addPlayerComponent('page', {}, Dom.closest(context, '.metaScore-component.block')._metaScore);
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block') ? true : false);
-                    }
-                },
-                'delete-page': {
-                    'text': t('editor.contextmenu.delete-page', 'Delete page'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.page')._metaScore, true);
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
-                    }
-                },
-                'page-separator': {
-                    'class': 'separator',
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false);
-                    }
-                },
-                'add-block': {
-                    'text': t('editor.contextmenu.add-block', 'Add a block'),
-                    'items': {
-                        'add-block-synched': {
-                            'text': t('editor.contextmenu.add-block-synched', 'Synchronized'),
-                            'callback': () => {
-                                this.addPlayerComponent('block', {'synched': true}, this.getPlayer());
-                            }
-                        },
-                        'add-block-non-synched': {
-                            'text': t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
-                            'callback': () => {
-                                this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
-                            }
-                        },
-                        'separator': {
-                            'class': 'separator'
-                        },
-                        'add-block-toggler': {
-                            'text': t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
-                            'callback': () => {
-                                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
-                            }
-                        }
-                    },
-                    'toggler': () => {
-                        return (this.editing === true);
-                    }
-                },
-                'copy-block': {
-                    'text': t('editor.contextmenu.copy-block', 'Copy block'),
-                    'callback': (context) => {
-                        const component = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
-                            type = component.instanceOf('BlockToggler') ? 'block-toggler' : 'block';
-
-                        this.clipboard.setData(type, component.getProperties());
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
-                    }
-                },
-                'paste-block': {
-                    'text': t('editor.contextmenu.paste-block', 'Paste block'),
-                    'callback': () => {
-                        const type = this.clipboard.getDataType(),
-                            component = this.clipboard.getData();
-
-                        component.x += 5;
-                        component.y += 5;
-
-                        if(type === 'block-toggler'){
-                            this.getPlayer().addBlockToggler(component);
-                        }
-                        else{
-                            this.getPlayer().addBlock(component);
-                        }
-                    },
-                    'toggler': () => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block' || this.clipboard.getDataType() === 'block-toggler');
-                    }
-                },
-                'delete-block': {
-                    'text': t('editor.contextmenu.delete-block', 'Delete block'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && !dom._metaScore.getProperty('locked');
-                    }
-                },
-                'lock-block': {
-                    'text': t('editor.contextmenu.lock-block', 'Lock block'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', true);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && !dom._metaScore.getProperty('locked');
-                    }
-                },
-                'unlock-block': {
-                    'text': t('editor.contextmenu.unlock-block', 'Unlock block'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', false);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && dom._metaScore.getProperty('locked');
-                    }
-                },
-                'block-separator': {
-                    'class': 'separator',
-                    'toggler': () => {
-                        return (this.editing === true);
-                    }
-                },
-                'about': {
-                    'text': t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.getVersion(), '!revision': this.getRevision()})
-                }
-            }})
-            .appendTo(this.workspace);
-
-        this.detailsOverlay = new GuideDetails({
-                'groups': this.configs.user_groups,
-                'submit_text': t('editor.detailsOverlay.submit_text', 'Apply')
-            })
-            .addListener('show', this.onDetailsOverlayShow.bind(this))
-            .addListener('submit', this.onDetailsOverlaySubmit.bind(this, ['update']));
-
-        this.detailsOverlay.getField('type').readonly(true);
-
-        Dom.addListener(window, 'hashchange', this.onWindowHashChange.bind(this));
-        Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
-
-        this
-            .addListener('mousedown', this.onMousedown.bind(this))
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keyup', this.onKeyup.bind(this))
-            .addDelegate('.timefield', 'valuein', this.onTimeFieldIn.bind(this))
-            .addDelegate('.timefield', 'valueout', this.onTimeFieldOut.bind(this))
-            .setDirty(false)
-            .setEditing(false)
-            .updateMainmenu()
-            .loadPlayerFromHash();
+        if('locale' in this.configs){
+            Locale.load(this.configs.locale, this.onLocaleLoad.bind(this));
+        }
+        else{
+            this.init();
+        }
     }
 
     static getDefaults(){
@@ -398,6 +78,7 @@ export default class Editor extends Dom {
             'logout_url': '',
             'user_groups': {},
             'reload_player_on_save': false,
+            'lang': 'en',
             'ajax': {}
         };
     }
@@ -408,6 +89,10 @@ export default class Editor extends Dom {
 
     static getRevision(){
         return "[[REVISION]]";
+    }
+
+    onLocaleLoad(){
+        this.init();
     }
 
     /**
@@ -423,9 +108,9 @@ export default class Editor extends Dom {
 
         new Alert({
             'parent': this,
-            'text': t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
+            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
             'buttons': {
-                'ok': t('editor.onXHRError.ok', 'OK'),
+                'ok': Locale.t('editor.onXHRError.ok', 'OK'),
             },
             'autoShow': true
         });
@@ -648,10 +333,10 @@ export default class Editor extends Dom {
                 if(this.isDirty()){
                     new Alert({
                             'parent': this,
-                            'text': t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
-                                'confirm': t('editor.onMainmenuClick.open.yes', 'Yes'),
-                                'cancel': t('editor.onMainmenuClick.open.no', 'No')
+                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
                             },
                             'autoShow': true
                         })
@@ -672,10 +357,10 @@ export default class Editor extends Dom {
                 if(this.isDirty()){
                     new Alert({
                             'parent': this,
-                            'text': t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                             'buttons': {
-                                'confirm': t('editor.onMainmenuClick.open.yes', 'Yes'),
-                                'cancel': t('editor.onMainmenuClick.open.no', 'No')
+                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
                             },
                             'autoShow': true
                         })
@@ -709,10 +394,10 @@ export default class Editor extends Dom {
 
                 new Alert({
                         'parent': this,
-                        'text': t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
+                        'text': Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
                         'buttons': {
-                            'confirm': t('editor.onMainmenuClick.publish.yes', 'Yes'),
-                            'cancel': t('editor.onMainmenuClick.publish.no', 'No')
+                            'confirm': Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
+                            'cancel': Locale.t('editor.onMainmenuClick.publish.no', 'No')
                         },
                         'autoShow': true
                     })
@@ -737,10 +422,10 @@ export default class Editor extends Dom {
             case 'delete':
                 new Alert({
                         'parent': this,
-                        'text': t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
+                        'text': Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
                         'buttons': {
-                            'confirm': t('editor.onMainmenuClick.delete.yes', 'Yes'),
-                            'cancel': t('editor.onMainmenuClick.delete.no', 'No')
+                            'confirm': Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
+                            'cancel': Locale.t('editor.onMainmenuClick.delete.no', 'No')
                         },
                         'autoShow': true
                     })
@@ -755,10 +440,10 @@ export default class Editor extends Dom {
             case 'revert':
                 new Alert({
                         'parent': this,
-                        'text': t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
+                        'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
                         'buttons': {
-                            'confirm': t('editor.onMainmenuClick.revert.yes', 'Yes'),
-                            'cancel': t('editor.onMainmenuClick.revert.no', 'No')
+                            'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
+                            'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
                         },
                         'autoShow': true
                     })
@@ -1520,9 +1205,9 @@ export default class Editor extends Dom {
 
         new Alert({
             'parent': this,
-            'text': t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
-                'ok': t('editor.onPlayerLoadError.ok', 'OK'),
+                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
             },
             'autoShow': true
         });
@@ -1541,14 +1226,9 @@ export default class Editor extends Dom {
 
         this.player = evt.detail.player
             .addClass('in-editor')
-            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
-            .addDelegate('.metaScore-component', 'click', this.onComponentClick.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
-            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
             .addListener('mediaadd', this.onPlayerMediaAdd.bind(this))
-            .addListener('controlleradd', this.onPlayerControlleAdd.bind(this))
+            .addListener('controlleradd', this.onPlayerControllerAdd.bind(this))
             .addListener('blocktoggleradd', this.onPlayerBlockTogglerAdd.bind(this))
             .addListener('blockadd', this.onPlayerBlockAdd.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
@@ -1556,40 +1236,45 @@ export default class Editor extends Dom {
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
             .addListener('rindex', this.onPlayerReadingIndex.bind(this))
-            .addListener('childremove', this.onPlayerChildRemove.bind(this));
+            .addListener('childremove', this.onPlayerChildRemove.bind(this))
+            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component', 'click', this.onComponentClick.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this));
 
-        this.player.contextmenu
-            .disable();
+            this.player.contextmenu
+                .disable();
 
-        this.player_contextmenu
-            .setTarget(player_body)
-            .enable();
+            this.player_contextmenu
+                .setTarget(player_body)
+                .enable();
 
-        data = this.player.getData();
+            data = this.player.getData();
 
-        new Dom(player_body)
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keyup', this.onKeyup.bind(this));
+            new Dom(player_body)
+                .addListener('keydown', this.onKeydown.bind(this))
+                .addListener('keyup', this.onKeyup.bind(this));
 
-        this
-            .setEditing(true)
-            .updateMainmenu()
-            .updateBlockSelector();
+            this
+                .setEditing(true)
+                .updateMainmenu()
+                .updateBlockSelector();
 
-        this.mainmenu
-            .toggleButton('save', data.permissions.update)
-            .toggleButton('clone', data.permissions.clone)
-            .toggleButton('publish', data.permissions.update)
-            .toggleButton('delete', data.permissions.delete);
+            this.mainmenu
+                .toggleButton('save', data.permissions.update)
+                .toggleButton('clone', data.permissions.clone)
+                .toggleButton('publish', data.permissions.update)
+                .toggleButton('delete', data.permissions.delete);
 
-        this.mainmenu.rindexfield.setValue(0, true);
+            this.mainmenu.rindexfield.setValue(0, true);
 
-        this.detailsOverlay
-            .clearValues(true)
-            .setValues(data, true);
+            this.detailsOverlay
+                .clearValues(true)
+                .setValues(data, true);
 
-        this.loadmask.hide();
-        delete this.loadmask;
+            this.loadmask.hide();
+            delete this.loadmask;
     }
 
     /**
@@ -1604,9 +1289,9 @@ export default class Editor extends Dom {
 
         new Alert({
             'parent': this,
-            'text': t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
-                'ok': t('editor.onPlayerLoadError.ok', 'OK'),
+                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
             },
             'autoShow': true
         });
@@ -1804,7 +1489,7 @@ export default class Editor extends Dom {
 
                 callback = (new_duration) => {
                     if(new_duration){
-                        player.getComponents('.block').each((block_dom) => {
+                        player.getComponents('.block').forEach((block_dom) => {
                             let block, page;
 
                             if(block_dom._metaScore){
@@ -1853,7 +1538,7 @@ export default class Editor extends Dom {
                             formatted_new_duration += pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
 
                             if(new_duration < old_duration){
-                                player.getComponents('.block').each((index, block_dom) => {
+                                player.getComponents('.block').forEach((block_dom) => {
                                     if(block_dom._metaScore){
                                         block = block_dom._metaScore;
 
@@ -1874,27 +1559,27 @@ export default class Editor extends Dom {
                             if(blocks.length > 0){
                                 new Alert({
                                     'parent': this,
-                                    'text': t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
+                                    'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
                                     'buttons': {
-                                        'ok': t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
+                                        'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
                                     },
                                     'autoShow': true
                                 });
                             }
                             else{
                                 if(new_duration < old_duration){
-                                    msg = t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                                    msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                                 }
                                 else{
-                                    msg = t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                                    msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                                 }
 
                                 new Alert({
                                     'parent': this,
                                     'text': msg,
                                     'buttons': {
-                                        'confirm': t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
-                                        'cancel': t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
+                                        'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
+                                        'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
                                     },
                                     'autoShow': true
                                 })
@@ -1931,10 +1616,10 @@ export default class Editor extends Dom {
         if(this.isDirty()){
             new Alert({
                     'parent': this,
-                    'text': t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                    'text': Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
                     'buttons': {
-                        'confirm': t('editor.onWindowHashChange.alert.yes', 'Yes'),
-                        'cancel': t('editor.onWindowHashChange.alert.no', 'No')
+                        'confirm': Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
+                        'cancel': Locale.t('editor.onWindowHashChange.alert.no', 'No')
                     },
                     'autoShow': true
                 })
@@ -1963,8 +1648,356 @@ export default class Editor extends Dom {
      */
     onWindowBeforeUnload(evt){
         if(this.isDirty()){
-            evt.returnValue = t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
+            evt.returnValue = Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
         }
+    }
+
+    init(){
+        // add components
+
+        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
+        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
+
+        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(this);
+
+        this.mainmenu = new MainMenu().appendTo(this)
+            .toggleButton('help', this.configs.help_url ? true : false)
+            .toggleButton('account', this.configs.account_url ? true : false)
+            .toggleButton('logout', this.configs.logout_url ? true : false)
+            .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
+            .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
+            .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
+
+        this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
+            .addListener('resizestart', this.onSidebarResizeStart.bind(this))
+            .addListener('resize', this.onSidebarResize.bind(this))
+            .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
+
+        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
+
+        this.sidebar_resizer = new Resizable({target: this.sidebar_wrapper, directions: ['left']});
+        this.sidebar_resizer.getHandle('left')
+            .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
+
+        this.panels = {};
+
+        this.panels.block = new BlockPanel().appendTo(this.sidebar)
+            .addListener('componentbeforeset', this.onBlockBeforeSet.bind(this))
+            .addListener('componentset', this.onBlockSet.bind(this))
+            .addListener('componentunset', this.onBlockUnset.bind(this))
+            .addListener('valueschange', this.onBlockPanelValueChange.bind(this));
+
+        this.panels.block.getToolbar()
+            .addDelegate('.selector', 'valuechange', this.onBlockPanelSelectorChange.bind(this))
+            .addDelegate('.buttons [data-action]', 'click', this.onBlockPanelToolbarClick.bind(this));
+
+        this.panels.page = new PagePanel().appendTo(this.sidebar)
+            .addListener('componentbeforeset', this.onPageBeforeSet.bind(this))
+            .addListener('componentset', this.onPageSet.bind(this))
+            .addListener('componentunset', this.onPageUnset.bind(this))
+            .addListener('valueschange', this.onPagePanelValueChange.bind(this));
+
+        this.panels.page.getToolbar()
+            .addDelegate('.selector', 'valuechange', this.onPagePanelSelectorChange.bind(this))
+            .addDelegate('.buttons [data-action]', 'click', this.onPagePanelToolbarClick.bind(this));
+
+        this.panels.element = new ElementPanel().appendTo(this.sidebar)
+            .addListener('componentbeforeset', this.onElementBeforeSet.bind(this))
+            .addListener('componentset', this.onElementSet.bind(this))
+            .addListener('valueschange', this.onElementPanelValueChange.bind(this));
+
+        this.panels.element.getToolbar()
+            .addDelegate('.selector', 'valuechange', this.onElementPanelSelectorChange.bind(this))
+            .addDelegate('.buttons [data-action]', 'click', this.onElementPanelToolbarClick.bind(this));
+
+        this.grid = new Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
+
+        this.history = new History()
+            .addListener('add', this.onHistoryAdd.bind(this))
+            .addListener('undo', this.onHistoryUndo.bind(this))
+            .addListener('redo', this.onHistoryRedo.bind(this));
+
+        this.clipboard = new Clipboard();
+
+        // prevent the custom contextmenu from overriding the native one in inputs
+        this.addDelegate('input', 'contextmenu', (evt) => {
+            evt.stopImmediatePropagation();
+            evt.stopPropagation();
+        });
+
+        this.setupContextMenus();
+
+        this.detailsOverlay = new GuideDetails({
+                'groups': this.configs.user_groups,
+                'submit_text': Locale.t('editor.detailsOverlay.submit_text', 'Apply')
+            })
+            .addListener('show', this.onDetailsOverlayShow.bind(this))
+            .addListener('submit', this.onDetailsOverlaySubmit.bind(this, ['update']));
+
+        this.detailsOverlay.getField('type').readonly(true);
+
+        Dom.addListener(window, 'hashchange', this.onWindowHashChange.bind(this));
+        Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
+
+        this
+            .addListener('mousedown', this.onMousedown.bind(this))
+            .addListener('keydown', this.onKeydown.bind(this))
+            .addListener('keyup', this.onKeyup.bind(this))
+            .addDelegate('.timefield', 'valuein', this.onTimeFieldIn.bind(this))
+            .addDelegate('.timefield', 'valueout', this.onTimeFieldOut.bind(this))
+            .setDirty(false)
+            .setEditing(false)
+            .updateMainmenu()
+            .loadPlayerFromHash();
+
+
+        this.triggerEvent(EVT_READY, {'editor': this}, true, false);
+
+    }
+
+    setupContextMenus(){
+        this.contextmenu = new ContextMenu({'target': this, 'items': {
+            'about': {
+                'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
+            }
+        }})
+        .appendTo(this);
+
+        this.player_contextmenu = new ContextMenu({'target': null, 'items': {
+                'add-element': {
+                    'text': Locale.t('editor.contextmenu.add-element', 'Add an element'),
+                    'items': {
+                        'add-element-cursor': {
+                            'text': Locale.t('editor.contextmenu.add-element-cursor', 'Cursor'),
+                            'callback': (context) => {
+                                this.addPlayerComponent('element', {'type': 'Cursor'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            }
+                        },
+                        'add-element-image': {
+                            'text': Locale.t('editor.contextmenu.add-element-image', 'Image'),
+                            'callback': (context) => {
+                                this.addPlayerComponent('element', {'type': 'Image'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            }
+                        },
+                        'add-element-text': {
+                            'text': Locale.t('editor.contextmenu.add-element-text', 'Text'),
+                            'callback': (context) => {
+                                this.addPlayerComponent('element', {'type': 'Text'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            }
+                        }
+                    },
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    }
+                },
+                'copy-element': {
+                    'text': Locale.t('editor.contextmenu.copy-element', 'Copy element'),
+                    'callback': (context) => {
+                        this.clipboard.setData('element', Dom.closest(context, '.metaScore-component.element')._metaScore.getProperties());
+                    },
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.element') ? true : false);
+                    }
+                },
+                'paste-element': {
+                    'text': Locale.t('editor.contextmenu.paste-element', 'Paste element'),
+                    'callback': (context) => {
+                        const component = this.clipboard.getData();
+                        component.x += 5;
+                        component.y += 5;
+
+                        this.addPlayerComponent('element', component, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                    },
+                    'toggler': (context) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    }
+                },
+                'delete-element': {
+                    'text': Locale.t('editor.contextmenu.delete-element', 'Delete element'),
+                    'callback': (context) => {
+                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.element')._metaScore, true);
+                    },
+                    'toggler': (context) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+
+                        const dom = Dom.closest(context, '.metaScore-component.element');
+                        return dom && !dom._metaScore.getProperty('locked');
+                    }
+                },
+                'lock-element': {
+                    'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
+                    'callback': (context) => {
+                        Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', true);
+                    },
+                    'toggler': (context) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+
+                        const dom = Dom.closest(context, '.metaScore-component.element');
+                        return dom && !dom._metaScore.getProperty('locked');
+                    }
+                },
+                'unlock-element': {
+                    'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
+                    'callback': (context) => {
+                        Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', false);
+                    },
+                    'toggler': (context) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+
+                        const dom = Dom.closest(context, '.metaScore-component.element');
+                        return dom && dom._metaScore.getProperty('locked');
+                    }
+                },
+                'element-separator': {
+                    'class': 'separator',
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false);
+                    }
+                },
+                'add-page': {
+                    'text': Locale.t('editor.contextmenu.add-page', 'Add a page'),
+                    'callback': (context) => {
+                        this.addPlayerComponent('page', {}, Dom.closest(context, '.metaScore-component.block')._metaScore);
+                    },
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block') ? true : false);
+                    }
+                },
+                'delete-page': {
+                    'text': Locale.t('editor.contextmenu.delete-page', 'Delete page'),
+                    'callback': (context) => {
+                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.page')._metaScore, true);
+                    },
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    }
+                },
+                'page-separator': {
+                    'class': 'separator',
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false);
+                    }
+                },
+                'add-block': {
+                    'text': Locale.t('editor.contextmenu.add-block', 'Add a block'),
+                    'items': {
+                        'add-block-synched': {
+                            'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
+                            'callback': () => {
+                                this.addPlayerComponent('block', {'synched': true}, this.getPlayer());
+                            }
+                        },
+                        'add-block-non-synched': {
+                            'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
+                            'callback': () => {
+                                this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
+                            }
+                        },
+                        'separator': {
+                            'class': 'separator'
+                        },
+                        'add-block-toggler': {
+                            'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
+                            'callback': () => {
+                                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
+                            }
+                        }
+                    },
+                    'toggler': () => {
+                        return (this.editing === true);
+                    }
+                },
+                'copy-block': {
+                    'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
+                    'callback': (context) => {
+                        const component = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
+                            type = component.instanceOf('BlockToggler') ? 'block-toggler' : 'block';
+
+                        this.clipboard.setData(type, component.getProperties());
+                    },
+                    'toggler': (context) => {
+                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
+                    }
+                },
+                'paste-block': {
+                    'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
+                    'callback': () => {
+                        const type = this.clipboard.getDataType(),
+                            component = this.clipboard.getData();
+
+                        component.x += 5;
+                        component.y += 5;
+
+                        if(type === 'block-toggler'){
+                            this.getPlayer().addBlockToggler(component);
+                        }
+                        else{
+                            this.getPlayer().addBlock(component);
+                        }
+                    },
+                    'toggler': () => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block' || this.clipboard.getDataType() === 'block-toggler');
+                    }
+                },
+                'delete-block': {
+                    'text': Locale.t('editor.contextmenu.delete-block', 'Delete block'),
+                    'callback': (context) => {
+                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
+                    },
+                    'toggler': (context) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+
+                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+                        return dom && !dom._metaScore.getProperty('locked');
+                    }
+                },
+                'lock-block': {
+                    'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
+                    'callback': (context) => {
+                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', true);
+                    },
+                    'toggler': (context) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+
+                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+                        return dom && !dom._metaScore.getProperty('locked');
+                    }
+                },
+                'unlock-block': {
+                    'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
+                    'callback': (context) => {
+                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', false);
+                    },
+                    'toggler': (context) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+
+                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+                        return dom && dom._metaScore.getProperty('locked');
+                    }
+                },
+                'block-separator': {
+                    'class': 'separator',
+                    'toggler': () => {
+                        return (this.editing === true);
+                    }
+                },
+                'about': {
+                    'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
+                }
+            }})
+            .appendTo(this.workspace);
     }
 
     /**
@@ -2085,7 +2118,7 @@ export default class Editor extends Dom {
             .clear()
             .addOption(null, '');
 
-        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').each((index, dom) => {
+        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').forEach((dom) => {
             if(dom._metaScore){
                 block = dom._metaScore;
                 selector.addOption(block.getId(), panel.getSelectorLabel(block));
@@ -2165,7 +2198,7 @@ export default class Editor extends Dom {
             });
 
             // create the optgroup
-            optgroup = selector.addGroup(t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
+            optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
 
             // create the options
             options.forEach((element) => {
@@ -2283,7 +2316,7 @@ export default class Editor extends Dom {
         switch(type){
             case 'element':
                 panel = this.panels.element;
-                component = parent.addElement(Object.assign({'name': t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
+                component = parent.addElement(Object.assign({'name': Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
 
                 panel.setComponent(component);
 
@@ -2331,7 +2364,7 @@ export default class Editor extends Dom {
 
             case 'block':
                 panel = this.panels.block;
-                component = parent.addBlock(Object.assign({'name': t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
+                component = parent.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
 
                 page_configs = {};
 
@@ -2358,7 +2391,7 @@ export default class Editor extends Dom {
 
             case 'block-toggler':
                 panel = this.panels.block;
-                component = parent.addBlockToggler(Object.assign({'name': t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
+                component = parent.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
 
                 panel.setComponent(component);
 
@@ -2408,16 +2441,16 @@ export default class Editor extends Dom {
         if(type && (confirm === true)){
             switch(type){
                 case 'block':
-                    alert_msg = t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
+                    alert_msg = Locale.t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
                     break;
 
                 case 'page':
                     block = component.getBlock();
-                    alert_msg = t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
+                    alert_msg = Locale.t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
                     break;
 
                 case 'element':
-                    alert_msg = t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
+                    alert_msg = Locale.t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
                     break;
             }
 
@@ -2425,8 +2458,8 @@ export default class Editor extends Dom {
                 'parent': this,
                 'text': alert_msg,
                 'buttons': {
-                    'confirm': t('editor.deletePlayerComponent.yes', 'Yes'),
-                    'cancel': t('editor.deletePlayerComponent.no', 'No')
+                    'confirm': Locale.t('editor.deletePlayerComponent.yes', 'Yes'),
+                    'cancel': Locale.t('editor.deletePlayerComponent.no', 'No')
                 },
                 'autoShow': true
             })
@@ -2593,7 +2626,7 @@ export default class Editor extends Dom {
         // add a loading mask
         this.loadmask = new LoadMask({
             'parent': this,
-            'text': t('editor.createGuide.LoadMask.text', 'Saving...'),
+            'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
 
@@ -2640,7 +2673,7 @@ export default class Editor extends Dom {
         });
 
         // append blocks data
-        components.each((index, dom) => {
+        components.forEach((dom) => {
             component = dom._metaScore;
 
             if(component.instanceOf('Media')){
@@ -2668,7 +2701,7 @@ export default class Editor extends Dom {
         // add a loading mask
         this.loadmask = new LoadMask({
             'parent': this,
-            'text': t('editor.saveGuide.LoadMask.text', 'Saving...'),
+            'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving...'),
             'autoShow': true
         });
 

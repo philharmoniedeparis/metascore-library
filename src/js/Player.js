@@ -1,5 +1,5 @@
 import Dom from './core/Dom';
-import {t} from './core/utils/Locale';
+import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
 import Alert from './core/ui/overlay/Alert';
@@ -9,6 +9,16 @@ import Media from './player/component/Media';
 import Controller from './player/component/Controller';
 import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
+
+import '../css/metaScore.player.less';
+
+/**
+ * Fired when the player finished initializing
+ *
+ * @event ready
+ * @param {Object} player The player instance
+ */
+const EVT_READY = 'ready';
 
 /**
  * Fired when the guide's loading finished successfully
@@ -20,74 +30,74 @@ import Block from './player/component/Block';
 const EVT_LOAD = 'load';
 
 /**
-     * Fired when the guide's loading failed
-     *
-     * @event loaderror
-     * @param {Object} player The player instance
-     */
+ * Fired when the guide's loading failed
+ *
+ * @event loaderror
+ * @param {Object} player The player instance
+ */
 const EVT_ERROR = 'error';
 
 /**
-     * Fired when the id is set
-     *
-     * @event idset
-     * @param {Object} player The player instance
-     * @param {String} id The guide's id
-     */
+ * Fired when the id is set
+ *
+ * @event idset
+ * @param {Object} player The player instance
+ * @param {String} id The guide's id
+ */
 const EVT_IDSET = 'idset';
 
 /**
-     * Fired when the vid is set
-     *
-     * @event revisionset
-     * @param {Object} player The player instance
-     * @param {Integer} vid The guide's vid
-     */
+ * Fired when the vid is set
+ *
+ * @event revisionset
+ * @param {Object} player The player instance
+ * @param {Integer} vid The guide's vid
+ */
 const EVT_REVISIONSET = 'revisionset';
 
 /**
-     * Fired when the media is added
-     *
-     * @event mediaadd
-     * @param {Object} player The player instance
-     * @param {Object} media The media instance
-     */
+ * Fired when the media is added
+ *
+ * @event mediaadd
+ * @param {Object} player The player instance
+ * @param {Object} media The media instance
+ */
 const EVT_MEDIAADD = 'mediaadd';
 
 /**
-     * Fired when the controller is added
-     *
-     * @event controlleradd
-     * @param {Object} player The player instance
-     * @param {Object} controller The controller instance
-     */
+ * Fired when the controller is added
+ *
+ * @event controlleradd
+ * @param {Object} player The player instance
+ * @param {Object} controller The controller instance
+ */
 const EVT_CONTROLLERADD = 'controlleradd';
 
 /**
-     * Fired when a block toggler is added
-     *
-     * @event blocktoggleradd
-     * @param {Object} player The player instance
-     * @param {Object} blocktoggler The blocktoggler instance
-     */
+ * Fired when a block toggler is added
+ *
+ * @event blocktoggleradd
+ * @param {Object} player The player instance
+ * @param {Object} blocktoggler The blocktoggler instance
+ */
 const EVT_BLOCKTOGGLERADD = 'blocktoggleradd';
 
 /**
-     * Fired when a block is added
-     *
-     * @event blockadd
-     * @param {Object} player The player instance
-     * @param {Object} block The block instance
-     */
+ * Fired when a block is added
+ *
+ * @event blockadd
+ * @param {Object} player The player instance
+ * @param {Object} block The block instance
+ */
 const EVT_BLOCKADD = 'blockadd';
 
 /**
-     * Fired when the reading index is set
-     *
-     * @event rindex
-     * @param {Object} player The player instance
-     * @param {Object} value The reading index value
-     */
+ * Fired when the reading index is set
+ *
+ * @event rindex
+ * @param {Object} player The player instance
+ * @param {Object} value The reading index value
+ */
 const EVT_RINDEX = 'rindex';
 
 export default class Player extends Dom {
@@ -104,6 +114,7 @@ export default class Player extends Dom {
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      * @param {Boolean} [configs.keyboard=false] Whether to activate keyboard shortcuts or not
      * @param {Boolean} [configs.api=false] Whether to allow API access or not
+     * @param {String} [configs.locale] The locale file to load
      * @param {Boolean} [configs.autoload=true] Whether to automatically call the load function
      */
     constructor(configs) {
@@ -118,20 +129,11 @@ export default class Player extends Dom {
             Dom.addListener(window, 'message', this.onAPIMessage.bind(this));
         }
 
-        this.contextmenu = new ContextMenu({'target': this, 'items': {
-                'about': {
-                    'text': t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.getVersion(), '!revision': this.getRevision()})
-                },
-                'logo': {
-                    'class': 'logo'
-                }
-            }})
-            .appendTo(this);
-
-        this.appendTo(this.configs.container);
-
-        if(this.configs.autoload !== false){
-            this.load();
+        if('locale' in this.configs){
+            Locale.load(this.configs.locale, this.onLocaleLoad.bind(this));
+        }
+        else{
+            this.init();
         }
     }
 
@@ -142,7 +144,8 @@ export default class Player extends Dom {
             'ajax': {},
             'keyboard': false,
             'api': false,
-            'autoload': true
+            'autoload': true,
+            'lang': 'en'
         };
     }
 
@@ -152,6 +155,10 @@ export default class Player extends Dom {
 
     static getRevision(){
         return "[[REVISION]]";
+    }
+
+    onLocaleLoad(){
+        this.init();
     }
 
     /**
@@ -244,7 +251,7 @@ export default class Player extends Dom {
                         break;
                 }
 
-                this.getComponents('.media.video, .controller, .block').each((index, dom) => {
+                this.getComponents('.media.video, .controller, .block').forEach((dom) => {
                     if(dom._metaScore && dom._metaScore.getName() === params.name){
                         dom._metaScore.toggleVisibility(show);
                     }
@@ -458,23 +465,23 @@ export default class Player extends Dom {
 
         switch(error.code) {
             case error.MEDIA_ERR_ABORTED:
-                text = t('player.onMediaError.Aborted.msg', 'You aborted the media playback.');
+                text = Locale.t('player.onMediaError.Aborted.msg', 'You aborted the media playback.');
                 break;
 
             case error.MEDIA_ERR_NETWORK:
-                text = t('player.onMediaError.Network.msg', 'A network error caused the media download to fail.');
+                text = Locale.t('player.onMediaError.Network.msg', 'A network error caused the media download to fail.');
                 break;
 
             case error.MEDIA_ERR_DECODE:
-                text = t('player.onMediaError.Decode.msg', 'The media playback was aborted due to a format problem.');
+                text = Locale.t('player.onMediaError.Decode.msg', 'The media playback was aborted due to a format problem.');
                 break;
 
             case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                text = t('player.onMediaError.NotSupported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
+                text = Locale.t('player.onMediaError.NotSupported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
                 break;
 
             default:
-                text = t('player.onMediaError.Default.msg', 'An unknown error occurred.');
+                text = Locale.t('player.onMediaError.Default.msg', 'An unknown error occurred.');
                 break;
         }
 
@@ -482,7 +489,7 @@ export default class Player extends Dom {
             'parent': this,
             'text': text,
             'buttons': {
-                'ok': t('editor.onMediaError.ok', 'OK'),
+                'ok': Locale.t('editor.onMediaError.ok', 'OK'),
             },
             'autoShow': true
         });
@@ -562,7 +569,7 @@ export default class Player extends Dom {
                 break;
         }
 
-        this.getComponents('.media.video, .controller, .block').each((index, dom) => {
+        this.getComponents('.media.video, .controller, .block').forEach((dom) => {
             if(dom._metaScore && dom._metaScore.getName() === evt.detail.block){
                 dom._metaScore.toggleVisibility(show);
             }
@@ -618,7 +625,7 @@ export default class Player extends Dom {
         this.rindex_css = new StyleSheet()
             .appendTo(document.head);
 
-        this.json.blocks.forEach((index, block) => {
+        this.json.blocks.forEach((block) => {
             switch(block.type){
                 case 'media':
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
@@ -661,6 +668,26 @@ export default class Player extends Dom {
         this.removeClass('loading');
 
         this.triggerEvent(EVT_ERROR, {'player': this}, true, false);
+    }
+
+    init() {
+        this.contextmenu = new ContextMenu({'target': this, 'items': {
+                'about': {
+                    'text': Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
+                },
+                'logo': {
+                    'class': 'logo'
+                }
+            }})
+            .appendTo(this);
+
+        this.appendTo(this.configs.container);
+
+        this.triggerEvent(EVT_READY, {'player': this}, true, false);
+
+        if(this.configs.autoload !== false){
+            this.load();
+        }
     }
 
     /**
@@ -1045,7 +1072,7 @@ export default class Player extends Dom {
         let block_togglers = this.getComponents('.block-toggler'),
             blocks = this.getComponents('.block, .media.video, .controller');
 
-        block_togglers.each((index, dom) => {
+        block_togglers.forEach((dom) => {
             dom._metaScore.update(blocks);
         });
     }

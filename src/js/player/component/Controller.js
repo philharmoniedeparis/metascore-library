@@ -1,7 +1,7 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
-import {t} from '../../core/utils/Locale';
+import Locale from '../../core/Locale';
 import {pad} from '../../core/utils/String';
 
 /**
@@ -15,7 +15,7 @@ export default class Controller extends Component{
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': t('player.component.Controller.locked', 'Locked?')
+                        'label': Locale.t('player.component.Controller.locked', 'Locked?')
                     },
                     'getter': function(){
                         return this.data('locked') === "true";
@@ -27,7 +27,7 @@ export default class Controller extends Component{
                 'x': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Controller.x', 'X'),
+                        'label': Locale.t('player.component.Controller.x', 'X'),
                         'spinDirection': 'vertical'
                     },
                     'getter': function(){
@@ -40,7 +40,7 @@ export default class Controller extends Component{
                 'y': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Controller.y', 'Y'),
+                        'label': Locale.t('player.component.Controller.y', 'Y'),
                         'flipSpinButtons': true
                     },
                     'getter': function(){
@@ -65,7 +65,7 @@ export default class Controller extends Component{
                 'z-index': {
                     'type': 'Number',
                     'configs': {
-                        'label': t('player.component.Controller.z-index', 'Display index')
+                        'label': Locale.t('player.component.Controller.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
@@ -78,7 +78,7 @@ export default class Controller extends Component{
                 'border-radius': {
                     'type': 'BorderRadius',
                     'configs': {
-                        'label': t('player.component.Controller.border-radius', 'Border radius')
+                        'label': Locale.t('player.component.Controller.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
                         return this.css('border-radius', undefined, skipDefault);
