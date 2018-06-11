@@ -64,8 +64,12 @@ export default class Component extends Dom {
         };
     }
 
+    static getType(){
+        return 'Component';
+    }
+
     static instanceOf(type){
-        if(type === this.name){
+        if(type === this.getType()){
             return true;
         }
 

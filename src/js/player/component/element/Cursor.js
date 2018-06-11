@@ -126,6 +126,10 @@ export default class Cursor extends Element {
         });
     }
 
+    static getType(){
+        return 'Cursor';
+    }
+
     /**
      * Setup the cursor's UI
      *

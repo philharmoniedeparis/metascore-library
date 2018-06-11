@@ -1,6 +1,7 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
+import iFrame from '../../core/ui/overlay/iFrame';
 
 /**
  * Fired when the external filebrowser should be opened
@@ -35,9 +36,6 @@ export default class Image extends Field {
     constructor(configs) {
         // call parent constructor
         super(configs);
-
-        // fix event handlers scope
-        this.onFileSelect = this.onFileSelect.bind(this);
 
         this.addClass('imagefield');
     }
@@ -96,6 +94,7 @@ export default class Image extends Field {
 
     /**
      * The click event handler
+     * If a url is assigned to the event's details object, an iFrame overlay is opened with that URL
      *
      * @method onClick
      * @private
@@ -105,7 +104,18 @@ export default class Image extends Field {
             return;
         }
 
-        this.triggerEvent(EVT_FILEBROWSER, {'callback': this.onFileSelect}, true, false);
+        let details = {'callback': this.onFileSelect.bind(this)};
+
+        this.triggerEvent(EVT_FILEBROWSER, details, true, false);
+
+        if('url' in details){
+            this.browser = new iFrame({
+                'parent': '.metaScore-editor',
+                'title': Locale.t('editor.field.Image.browser.title', 'Select file'),
+                'url': details.url,
+                'autoShow': true
+            });
+        }
     }
 
     /**
@@ -137,6 +147,10 @@ export default class Image extends Field {
      */
     onFileSelect(url){
         this.setValue(url);
+
+        if(this.browser){
+            this.browser.hide();
+        }
     }
 
 }

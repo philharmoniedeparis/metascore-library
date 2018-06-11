@@ -48,6 +48,7 @@
 	"editor.detailsOverlay.submit_text": "Appliquer",
 	"editor.elementSelectorGroupLabel": "Indice de lecture !rindex",
 	"editor.field.Color.clear.tooltip": "Effacer la valeur",
+	"editor.field.Image.browser.title": "Sélectionner un fichier",
 	"editor.field.Image.clear.tooltip": "Effacer la valeur",
 	"editor.field.Image.placeholder": "Parcourir ...",
 	"editor.field.Image.resize.tooltip": "Adapter la taille du récipient à l'image",

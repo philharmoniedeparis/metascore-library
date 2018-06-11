@@ -327,7 +327,7 @@ export default class Editor extends Dom {
                             'autoShow': true
                         })
                         .addListener('show', this.onDetailsOverlayShow.bind(this))
-                        .addListener('submit', this.onDetailsOverlaySubmit.bind(this, ['create']));
+                        .addListener('submit', this.onDetailsOverlaySubmit.bind(this, 'create'));
                 };
 
                 if(this.isDirty()){
@@ -1732,7 +1732,7 @@ export default class Editor extends Dom {
                 'submit_text': Locale.t('editor.detailsOverlay.submit_text', 'Apply')
             })
             .addListener('show', this.onDetailsOverlayShow.bind(this))
-            .addListener('submit', this.onDetailsOverlaySubmit.bind(this, ['update']));
+            .addListener('submit', this.onDetailsOverlaySubmit.bind(this, 'update'));
 
         this.detailsOverlay.getField('type').readonly(true);
 
@@ -2175,7 +2175,7 @@ export default class Editor extends Dom {
         selector.clear();
 
         // fill the list of optgroups
-        if(page.instanceOf('Page')){
+        if(page && page.instanceOf('Page')){
             page.getElements().forEach((element) => {
                 const rindex = element.getProperty('r-index') || 0;
 
@@ -2619,7 +2619,7 @@ export default class Editor extends Dom {
         options = Object.assign({
             'data': data,
             'dataType': 'json',
-            'success': this.onGuideCreateSuccess.bind(this, [overlay]),
+            'success': this.onGuideCreateSuccess.bind(this, overlay),
             'error': this.onXHRError.bind(this)
         }, this.configs.ajax);
 

@@ -588,7 +588,7 @@ export default class Panel extends Dom {
                         panel.updateProperties(component, {'width': load_evt.target.width, 'height': load_evt.target.height});
                         panel.triggerEvent(EVT_VALUESCHANGE, {'component': component, 'old_values': old_values, 'new_values': panel.getValues(['width', 'height'])}, false);
                     })
-                    .attr('src', evt.detail.value);
+                    .attr('src', component.get(0).baseURI + evt.detail.value);
             }
         }
     }
@@ -605,9 +605,12 @@ export default class Panel extends Dom {
      * @todo add the synched/non synched strings to blocks (see Editor.updateBlockSelector)
      */
     updateFieldValue(name, value, supressEvent){
-        let component;
+        let field, component;
 
-        this.getField(name).setValue(value, supressEvent);
+        field = this.getField(name);
+        if(field){
+            field.setValue(value, supressEvent);
+        }
 
         switch(name){
             case 'locked':

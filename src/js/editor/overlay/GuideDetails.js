@@ -7,7 +7,6 @@ import SelectField from '../field/Select';
 import TextField from '../field/Text';
 import TextareaField from '../field/Textarea';
 import FileField from '../field/File';
-import CheckboxField from '../field/Checkbox';
 import CheckboxesField from '../field/Checkboxes';
 
 /**
@@ -145,13 +144,6 @@ export default class GuideDetails extends Overlay {
             .data('name', 'css')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
-
-        new CheckboxField({
-            'label': 'fullscreen'
-            })
-            .addClass('css-fullscreen-toggle')
-            .appendTo(this.fields.css.input_wrapper)
-            .addListener('valuechange', this.onCSSFullscreenChange.bind(this));
 
         this.fields.tags = new TextField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.tags.label', 'Tags'),
@@ -298,10 +290,6 @@ export default class GuideDetails extends Overlay {
         else{
             this.changed[name] = value;
         }
-    }
-
-    onCSSFullscreenChange(evt){
-        this.toggleClass('css-fullscreen', evt.detail.value);
     }
 
     /**

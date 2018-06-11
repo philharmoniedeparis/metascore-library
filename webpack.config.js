@@ -2,6 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 const git = require('git-rev-sync');
 const pckg = require('./package.json');
+
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin');

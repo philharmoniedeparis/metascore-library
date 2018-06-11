@@ -91,6 +91,10 @@ export default class Controller extends Component{
         });
     }
 
+    static getType(){
+        return 'Controller';
+    }
+
     /**
      * Setup the controller's UI
      *

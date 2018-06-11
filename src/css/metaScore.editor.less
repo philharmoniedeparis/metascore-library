@@ -763,13 +763,14 @@
             position: relative;
 
             .toolbar{
+                display: flex;
                 padding: 5px;
                 border-bottom: 1px solid #d7d7d7;
                 .linear-gradient-top(#fefefe, #fefefe, 0%, #fcfcfc, 32%, #fafafa, 36%, #f3f3f3, 100%);
 
                 .title{
-                    float: left;
-                    padding-left: 18px;
+                    flex: none;
+                    padding-left: 12px;
                     margin-right: 5px;
                     font-weight: bold;
                     line-height: 18px;
@@ -779,10 +780,11 @@
                 }
 
                 .selector{
-                    float: right;
+                    flex: auto;
+                    margin-right: 5px;
 
                     select{
-                        width: 100px;
+                        width: 100%;
                         background: none;
                         border: none;
 
@@ -793,7 +795,7 @@
                 }
 
                 .buttons{
-                    float: right;
+                    flex: none;
 
                     button{
                         width: 16px;

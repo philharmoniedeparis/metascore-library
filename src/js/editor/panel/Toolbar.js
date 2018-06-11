@@ -28,18 +28,18 @@ export default class Toolbar extends Dom{
         this.title = new Dom('<div/>', {'class': 'title', 'text': this.configs.title})
             .appendTo(this);
 
+        if(this.configs.selector){
+            this.selector = new SelectField()
+                .addClass('selector')
+                .appendTo(this);
+        }
+
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
 
         this.configs.buttons.forEach((action) => {
             this.addButton(action);
         });
-
-        if(this.configs.selector){
-            this.selector = new SelectField()
-                .addClass('selector')
-                .appendTo(this);
-        }
 
         if(!isEmpty(this.configs.menuItems)){
             this.menu = new DropDownMenu();

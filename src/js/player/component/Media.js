@@ -229,6 +229,10 @@ export default class Media extends Component{
         });
     }
 
+    static getType(){
+        return 'Media';
+    }
+
     /**
      * Set the media sources
      *
@@ -409,6 +413,10 @@ export default class Media extends Component{
      */
     setTime(time) {
         this.dom.currentTime = parseFloat(time) / 100;
+
+        if(!this.isPlaying()){
+            this.triggerTimeUpdate(false);
+        }
 
         return this;
     }

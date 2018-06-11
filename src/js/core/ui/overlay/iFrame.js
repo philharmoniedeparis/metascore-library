@@ -1,4 +1,4 @@
-import Dom from '../Dom';
+import Dom from '../../Dom';
 import Overlay from '../Overlay';
 
 export default class iFrame extends Overlay{

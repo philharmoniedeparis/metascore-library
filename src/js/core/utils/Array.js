@@ -72,7 +72,7 @@ export function naturalSort(insensitive){
  * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
  */
 export function naturalSortInsensitive(){
-    return Array.naturalSort(true);
+    return naturalSort(true);
 }
 
 
@@ -86,5 +86,5 @@ export function naturalSortInsensitive(){
  * @return {Integer} See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
  */
 export function naturalSortSensitive(){
-    return Array.naturalSort(false);
+    return naturalSort(false);
 }

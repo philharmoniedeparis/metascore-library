@@ -76,6 +76,10 @@ export default class Text extends Element {
         });
     }
 
+    static getType(){
+        return 'Text';
+    }
+
     /**
      * Setup the text's UI
      *

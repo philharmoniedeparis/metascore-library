@@ -222,6 +222,18 @@ export default class Dom {
     }
 
     /**
+     * Get the document containing an element
+     *
+     * @method getElementDocument
+     * @static
+     * @param {HTMLElement} element The element
+     * @return {HTML Document } The document
+     */
+    static getElementDocument(element){
+        return element.ownerDocument;
+    }
+
+    /**
      * Get the window containing an element
      *
      * @method getElementWindow
@@ -230,7 +242,7 @@ export default class Dom {
      * @return {HTML Window} The window
      */
     static getElementWindow(element){
-        const doc = element.ownerDocument;
+        const doc = this.getElementDocument(element);
 
         return doc.defaultView || doc.parentWindow;
     }
@@ -302,10 +314,10 @@ export default class Dom {
         }
         // avoid using classList.toggle with a second argument due to a bug in IE 11
         else if(force){
-            Dom.addClass(element, className);
+            this.addClass(element, className);
         }
         else{
-            Dom.removeClass(element, className);
+            this.removeClass(element, className);
         }
     }
 
@@ -366,7 +378,7 @@ export default class Dom {
      * @return {Boolean} Whether the event was not cancelled
      */
     static triggerEvent(element, type, data, bubbles, cancelable){
-        const fn = CustomEvent || Dom.getElementWindow(element).CustomEvent;
+        const fn = CustomEvent || this.getElementWindow(element).CustomEvent;
 
         const event = new fn(type, {
             'detail': data,
@@ -407,24 +419,24 @@ export default class Dom {
         let options, values;
 
         // if this is a multiselect element
-        if(Dom.is(element, 'select[multiple]')){
+        if(this.is(element, 'select[multiple]')){
             if(value){
                 if(!isArray(value)){
                     value = [value];
                 }
 
-                options = Dom.selectElements('option', element);
+                options = this.selectElements('option', element);
 
                 options.forEach((option) => {
-                    Dom.prop(option, 'selected', value.includes(Dom.val(option)));
+                    this.prop(option, 'selected', value.includes(this.val(option)));
                 });
             }
 
-            options = Dom.selectElements('option:checked', element);
+            options = this.selectElements('option:checked', element);
             values = [];
 
             options.forEach((option) => {
-                values.push(Dom.val(option));
+                values.push(this.val(option));
             });
 
             return values;
@@ -450,17 +462,17 @@ export default class Dom {
     static attr(element, name, value){
         if(isObject(name)){
 			Object.entries(name).forEach(([key, val]) => {
-                Dom.attr(element, key, val);
+                this.attr(element, key, val);
             });
         }
         else{
             switch(name){
                 case 'class':
-                    Dom.addClass(element, value);
+                    this.addClass(element, value);
                     break;
 
                 case 'text':
-                    return Dom.text(element, value);
+                    return this.text(element, value);
 
                 default:
                     if(value === null){
@@ -492,7 +504,7 @@ export default class Dom {
     static prop(element, name, value){
         if(isObject(name)){
 			Object.entries(name).forEach(([key, val]) => {
-                Dom.prop(element, key, val);
+                this.prop(element, key, val);
             });
         }
         else{
@@ -662,7 +674,7 @@ export default class Dom {
             return Element.prototype.matches.call(element, selector);
         }
 
-        win = Dom.getElementWindow(element);
+        win = this.getElementWindow(element);
 
         return (element instanceof win.Element) && Element.prototype.matches.call(element, selector);
     }
@@ -677,19 +689,16 @@ export default class Dom {
      * @return {Element} The matched element
      */
     static closest(element, selector){
-        let document, win;
+        let win;
 
         if(element instanceof Element){
             return Element.prototype.closest.call(element, selector);
         }
 
-        if(element.ownerDocument){
-            document = element.ownerDocument;
-            win = document.defaultView || document.parentWindow;
-            if(win){
-                if(element instanceof win.Element){
-                    return Element.prototype.closest.call(element, selector);
-                }
+        win = this.getElementWindow(element);
+        if(win){
+            if(element instanceof win.Element){
+                return Element.prototype.closest.call(element, selector);
             }
         }
 

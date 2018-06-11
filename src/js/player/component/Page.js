@@ -131,6 +131,10 @@ export default class Page extends Component {
         });
     }
 
+    static getType(){
+        return 'Page';
+    }
+
     /**
      * Setup the page's UI
      *

@@ -48,6 +48,7 @@
 	"editor.detailsOverlay.submit_text": "Apply",
 	"editor.elementSelectorGroupLabel": "Reading index !rindex",
 	"editor.field.Color.clear.tooltip": "Clear value",
+	"editor.field.Image.browser.title": "Select file",
 	"editor.field.Image.clear.tooltip": "Clear value",
 	"editor.field.Image.placeholder": "Browse...",
 	"editor.field.Image.resize.tooltip": "Adapt container size to image",

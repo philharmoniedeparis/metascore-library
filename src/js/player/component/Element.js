@@ -251,6 +251,10 @@ export default class Element extends Component{
         });
     }
 
+    static getType(){
+        return 'Element';
+    }
+
     /**
      * Setup the element's UI
      *

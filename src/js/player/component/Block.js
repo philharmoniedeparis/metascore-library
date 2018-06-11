@@ -253,6 +253,10 @@ export default class Block extends Component {
         });
     }
 
+    static getType(){
+        return 'Block';
+    }
+
     /**
      * Setup the block's UI
      *

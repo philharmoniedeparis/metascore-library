@@ -156,6 +156,10 @@ export default class BlockToggler extends Component{
         });
     }
 
+    static getType(){
+        return 'BlockToggler';
+    }
+
     /**
      * Setup the block's UI
      *
