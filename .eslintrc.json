@@ -1,0 +1,179 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "globals": {
+  },
+  "rules": {
+    // Possible Errors
+
+    "for-direction":               ["error"],                                    // enforce “for” loop update clause moving the counter in the right direction.
+    "getter-return":               ["error"],                                    // enforce return statements in getters
+    "no-await-in-loop":            ["error"],                                    // disallow await inside of loops
+    "no-compare-neg-zero":         ["error"],                                    // disallow comparing against -0
+    "no-cond-assign":              ["error", "except-parens"],                   // disallow assignment operators in conditional expressions
+    "no-console":                  ["off"],                                      // disallow the use of console
+    "no-constant-condition":       ["error"],                                    // disallow constant expressions in conditions
+    "no-control-regex":            ["error"],                                    // disallow control characters in regular expressions
+    "no-debugger":                 ["error"],                                    // disallow the use of debugger
+    "no-dupe-args":                ["error"],                                    // disallow duplicate arguments in function definitions
+    "no-dupe-keys":                ["error"],                                    // disallow duplicate keys in object literals
+    "no-duplicate-case":           ["error"],                                    // disallow duplicate case labels
+    "no-empty":                    ["error"],                                    // disallow empty block statements
+    "no-empty-character-class":    ["error"],                                    // disallow empty character classes in regular expressions
+    "no-ex-assign":                ["error"],                                    // disallow reassigning exceptions in catch clauses
+    "no-extra-boolean-cast":       ["error"],                                    // disallow unnecessary boolean casts
+    "no-extra-parens":             ["off"],                                      // disallow unnecessary parentheses
+    "no-extra-semi":               ["error"],                                    // disallow unnecessary semicolons
+    "no-func-assign":              ["error"],                                    // disallow reassigning function declarations
+    "no-inner-declarations":       ["error"],                                    // disallow variable or function declarations in nested blocks
+    "no-invalid-regexp":           ["error"],                                    // disallow invalid regular expression strings in RegExp constructors
+    "no-irregular-whitespace":     ["error"],                                    // disallow irregular whitespace outside of strings and comments
+    "no-obj-calls":                ["error"],                                    // disallow calling global object properties as functions
+    "no-prototype-builtins":       ["off"],                                      // disallow calling some Object.prototype methods directly on objects
+    "no-regex-spaces":             ["off"],                                      // disallow multiple spaces in regular expressions
+    "no-sparse-arrays":            ["error"],                                    // disallow sparse arrays
+    "no-template-curly-in-string": ["error"],                                    // disallow template literal placeholder syntax in regular strings
+    "no-unexpected-multiline":     ["error"],                                    // disallow confusing multiline expressions
+    "no-unreachable":              ["error"],                                    // disallow unreachable code after return, throw, continue, and break statements
+    "no-unsafe-finally":           ["error"],                                    // disallow control flow statements in finally blocks
+    "no-unsafe-negation":          ["error"],                                    // disallow negating the left operand of relational operators
+    "use-isnan":                   ["error"],                                    // require calls to isNaN() when checking for NaN
+    "valid-jsdoc":                 ["off"],                                      // enforce valid JSDoc comments
+    "valid-typeof":                ["error", { "requireStringLiterals": true }], // enforce comparing typeof expressions against valid strings
+
+    // Best Practices
+
+    "accessor-pairs":               ["warn"],                                                        // enforce getter and setter pairs in objects
+    "array-callback-return":        ["error"],                                                       // enforce return statements in callbacks of array methods
+    "block-scoped-var":             ["error"],                                                       // enforce the use of variables within the scope they are defined
+    "class-methods-use-this":       ["warn"],                                                        // enforce that class methods utilize this
+    "complexity":                   ["warn", 6],                                                     // enforce a maximum cyclomatic complexity allowed in a program
+    "consistent-return":            ["warn"],                                                       // require return statements to either always or never specify values
+    "curly":                        ["error", "all"],                                                // enforce consistent brace style for all control statements
+    "default-case":                 ["warn"],                                                        // require default cases in switch statements
+    "dot-location":                 ["error", "property"],                                           // enforce consistent newlines before and after dots
+    "dot-notation":                 ["error"],                                                       // enforce dot notation whenever possible
+    "eqeqeq":                       ["error", "always"],                                             // require the use of === and !==
+    "guard-for-in":                 ["error"],                                                       // require for-in loops to include an if statement
+    "no-alert":                     ["warn"],                                                        // disallow the use of alert, confirm, and prompt
+    "no-caller":                    ["error"],                                                       // disallow the use of arguments.caller or arguments.callee
+    "no-case-declarations":         ["error"],                                                       // disallow lexical declarations in case clauses
+    "no-div-regex":                 ["error"],                                                       // disallow division operators explicitly at the beginning of regular expressions
+    "no-else-return":               ["error"],                                                       // disallow else blocks after return statements in if statements
+    "no-empty-function":            ["warn"] ,                                                       // disallow empty functions
+    "no-empty-pattern":             ["error"],                                                       // disallow empty destructuring patterns
+    "no-eq-null":                   ["error"],                                                       // disallow null comparisons without type-checking operators
+    "no-eval":                      ["error"],                                                       // disallow the use of eval()
+    "no-extend-native":             ["error"],                                                       // disallow extending native types
+    "no-extra-bind":                ["error"],                                                       // disallow unnecessary calls to .bind()
+    "no-extra-label":               ["error"],                                                       // disallow unnecessary labels
+    "no-fallthrough":               ["error"],                                                       // disallow fallthrough of case statements
+    "no-floating-decimal":          ["error"],                                                       // disallow leading or trailing decimal points in numeric literals
+    "no-global-assign":             ["error"],                                                       // disallow assignments to native objects or read-only global variables
+    "no-implicit-coercion":         ["off"],                                                         // disallow shorthand type conversions
+    "no-implicit-globals":          ["error"],                                                       // disallow variable and function declarations in the global scope
+    "no-implied-eval":              ["error"],                                                       // disallow the use of eval()-like methods
+    "no-invalid-this":              ["error"],                                                       // disallow this keywords outside of classes or class-like objects
+    "no-iterator":                  ["error"],                                                       // disallow the use of the __iterator__ property
+    "no-labels":                    ["error"],                                                       // disallow labeled statements
+    "no-lone-blocks":               ["error"],                                                       // disallow unnecessary nested blocks
+    "no-loop-func":                 ["error"],                                                       // disallow function declarations and expressions inside loop statements
+    "no-magic-numbers":             ["warn", { "ignore": [-1, 0, 1], "ignoreArrayIndexes": true }],  // disallow magic numbers
+    "no-multi-spaces":              ["off"],                                                         // disallow multiple spaces
+    "no-multi-str":                 ["error"],                                                       // disallow multiline strings
+    //"no-new":                       ["warn"],                                                        // disallow new operators outside of assignments or comparisons
+    "no-new-func":                  ["error"],                                                       // disallow new operators with the Function object
+    "no-new-wrappers":              ["error"],                                                       // disallow new operators with the String, Number, and Boolean objects
+    "no-octal":                     ["off"],                                                         // disallow octal literals
+    "no-octal-escape":              ["error"],                                                       // disallow octal escape sequences in string literals
+    "no-param-reassign":            ["warn"],                                                        // disallow reassigning function parameters
+    "no-proto":                     ["error"],                                                       // disallow the use of the __proto__ property
+    "no-redeclare":                 ["error"],                                                       // disallow variable redeclaration
+    "no-restricted-properties":     ["off"],                                                         // disallow certain properties on certain objects
+    "no-return-assign":             ["error"],                                                       // disallow assignment operators in return statements
+    "no-return-await":              ["error"],                                                       // disallow unnecessary return await
+    "no-script-url":                ["error"],                                                       // disallow javascript: urls
+    "no-self-assign":               ["error"],                                                       // disallow assignments where both sides are exactly the same
+    "no-self-compare":              ["error"],                                                       // disallow comparisons where both sides are exactly the same
+    "no-sequences":                 ["error"],                                                       // disallow comma operators
+    "no-throw-literal":             ["error"],                                                       // disallow throwing literals as exceptions
+    "no-unmodified-loop-condition": ["error"],                                                       // disallow unmodified loop conditions
+    "no-unused-expressions":        ["error"],                                                       // disallow unused expressions
+    "no-unused-labels":             ["error"],                                                       // disallow unused labels
+    "no-useless-call":              ["error"],                                                       // disallow unnecessary calls to .call() and .apply()
+    "no-useless-concat":            ["error"],                                                       // disallow unnecessary concatenation of literals or template literals
+    "no-useless-escape":            ["error"],                                                       // disallow unnecessary escape characters
+    "no-useless-return":            ["error"],                                                       // disallow redundant return statements
+    "no-void":                      ["error"],                                                       // disallow void operators
+    "no-warning-comments":          ["warn"],                                                        // disallow specified warning terms in comments
+    "no-with":                      ["error"],                                                       // disallow with statements
+    "prefer-promise-reject-errors": ["error"],                                                       // require using Error objects as Promise rejection reasons
+    "radix":                        ["error", "always"],                                             // enforce the consistent use of the radix argument when using parseInt()
+    "require-await":                ["error"],                                                       // disallow async functions which have no await expression
+    "vars-on-top":                  ["off"],                                                         // require var declarations be placed at the top of their containing scope
+    "wrap-iife":                    ["error", "inside"],                                             // require parentheses around immediate function invocations
+    "yoda":                         ["off"],                                                         // require or disallow “Yoda” conditions
+
+    // Variables
+
+    "init-declarations":          ["warn", "always"],                                                   // require or disallow initialization in variable declarations
+    "no-catch-shadow":            ["error"],                                                            // disallow catch clause parameters from shadowing variables in the outer scope
+    "no-delete-var":              ["error"],                                                            // disallow deleting variables
+    "no-label-var":               ["error"],                                                            // disallow labels that share a name with a variable
+    "no-restricted-globals":      ["error", "exports"],                                                 // disallow specified global variables
+    "no-shadow":                  ["error", { "builtinGlobals": false }],                               // disallow variable declarations from shadowing variables declared in the outer scope
+    "no-shadow-restricted-names": ["error"],                                                            // disallow identifiers from shadowing restricted names
+    "no-undef":                   ["error", { "typeof": true }],                                        // disallow the use of undeclared variables unless mentioned in /*global */ comments
+    "no-undef-init":              ["error"],                                                            // disallow initializing variables to undefined
+    "no-undefined":               ["warn"],                                                             // disallow the use of undefined as an identifier
+    "no-unused-vars":             ["error"],                                                            // disallow unused variables
+    "no-use-before-define":       ["error", { "functions": true, "classes": true, "variables": true }], // disallow the use of variables before they are defined
+
+    // Stylistic Issues
+
+    "eol-last":           ["error", "always"], // require or disallow newline at the end of files
+    "linebreak-style":    ["error", "unix"],   // enforce consistent linebreak style
+    "no-trailing-spaces": ["error"],           // disallow trailing whitespace at the end of lines
+
+    // ECMAScript 6
+
+    "arrow-body-style":        ["off"],                                      // require braces around arrow function bodies
+    "arrow-parens":            ["warn", "always"],                           // require parentheses around arrow function arguments
+    "arrow-spacing":           ["error", { "before": true, "after": true }], // enforce consistent spacing before and after the arrow in arrow functions
+    "constructor-super":       ["error"],                                    // require super() calls in constructors
+    "generator-star-spacing":  ["error", {"before": false, "after": true}],  // enforce consistent spacing around * operators in generator functions
+    "no-class-assign":         ["error"],                                    // disallow reassigning class members
+    "no-confusing-arrow":      ["error"],                                    // disallow arrow functions where they could be confused with comparisons
+    "no-const-assign":         ["error"],                                    // disallow reassigning const variables
+    "no-dupe-class-members":   ["error"],                                    // disallow duplicate class members
+    "no-duplicate-imports":    ["warn"],                                     // disallow duplicate module imports
+    "no-new-symbol":           ["error"],                                    // disallow new operators with the Symbol object
+    "no-restricted-imports":   ["off"],                                      // disallow specified modules when loaded by import
+    "no-this-before-super":    ["error"],                                    // disallow this/super before calling super() in constructors
+    "no-useless-computed-key": ["error"],                                    // disallow unnecessary computed property keys in object literals
+    "no-useless-constructor":  ["error"],                                    // disallow unnecessary constructors
+    "no-useless-rename":       ["off"],                                      // disallow renaming import, export, and destructured assignments to the same name
+    "no-var":                  ["warn"],                                     // require let or const instead of var
+    "object-shorthand":        ["error", "consistent"],                      // require or disallow method and property shorthand syntax for object literals
+    "prefer-arrow-callback":   ["error"],                                    // require using arrow functions for callbacks
+    "prefer-const":            ["warn"],                                     // require const declarations for variables that are never reassigned after declared
+    "prefer-destructuring":    ["off"],                                      // require destructuring from arrays and/or objects
+    "prefer-numeric-literals": ["warn"],                                     // disallow parseInt() and Number.parseInt() in favor of binary, octal, and hexadecimal literals
+    "prefer-rest-params":      ["warn"],                                     // require rest parameters instead of arguments
+    "prefer-spread":           ["warn"],                                     // require spread operators instead of .apply()
+    "prefer-template":         ["warn"],                                     // require template literals instead of string concatenation
+    "require-yield":           ["error"],                                    // require generator functions to contain yield
+    "rest-spread-spacing":     ["error", "never"],                           // enforce spacing between rest and spread operators and their expressions
+    "sort-imports":            ["off"],                                      // enforce sorted import declarations within modules
+    "symbol-description":      ["warn"],                                     // require symbol descriptions
+    "template-curly-spacing":  ["error", "never"],                           // require or disallow spacing around embedded expressions of template strings
+    "yield-star-spacing":      ["error", {"before": false, "after": true}]   // require or disallow spacing around the * in yield* expressions
+  }
+}
