@@ -12,13 +12,17 @@
     "dev": "webpack -d --watch",
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",
-    "drupal": "copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore"
+    "drupal": "npm run pack && copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:philharmoniedeparis/metascore-library.git"
   },
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.1",
     "copyfiles": "^2.0.0",
