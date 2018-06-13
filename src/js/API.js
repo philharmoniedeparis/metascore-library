@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let ids = [], callback;
 
     document.querySelectorAll('a[rel="metascore"][data-guide]').forEach((link) => {
-        if(!ids.contains(link.dataset.guide)){
+        if(!ids.includes(link.dataset.guide)){
             ids.push(link.dataset.guide);
         }
     });
