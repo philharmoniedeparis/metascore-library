@@ -79,7 +79,10 @@ export default class Cursor extends Element {
                         return this.data('direction');
                     },
                     'setter': function(value){
+                        const cursor_width = this.getProperty('cursor-width');
+
                         this.data('direction', value);
+                        this.setProperty('cursor-width', cursor_width, true);
                     }
                 },
                 'acceleration': {
@@ -103,11 +106,15 @@ export default class Cursor extends Element {
                         'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.cursor.css('width', undefined, skipDefault), 10);
+                        const direction = this.getProperty('direction');
+                        const prop = direction === 'bottom' || direction === 'top' ? 'height' : 'width';
+                        const value = parseInt(this.cursor.css(prop, undefined, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
-                        this.cursor.css('width', `${value}px`);
+                        const direction = this.getProperty('direction');
+                        const prop = direction === 'bottom' || direction === 'top' ? 'height' : 'width';
+                        this.cursor.css(prop, `${value}px`);
                     }
                 },
                 'cursor-color': {
