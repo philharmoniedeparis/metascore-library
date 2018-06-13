@@ -243,7 +243,7 @@ export default class Time extends Field {
 
         if(this.dirty){
             delete this.dirty;
-            this.input.triggerEvent('change');
+            this.setValue(this.getNumericalValue(this.input.val()));
         }
     }
 
@@ -377,9 +377,7 @@ export default class Time extends Field {
 
             segment_value = pad(Math.min(PARTS[focused_segment].max_value, parseInt(segment_value, 10)), 2, "0", "left");
 
-            if(this.setSegmentValue(focused_segment, segment_value, true)){
-                this.dirty = true;
-            }
+            this.setSegmentValue(focused_segment, segment_value);
 
             if(++this.keys_pressed === 2){
                 this.keys_pressed = 0;
@@ -392,7 +390,7 @@ export default class Time extends Field {
         // Enter key
         else if(evt.keyCode === 13 && this.dirty){
             delete this.dirty;
-            this.input.triggerEvent('change');
+            this.setValue(this.getNumericalValue(this.input.val()));
         }
 
         evt.preventDefault();
@@ -510,9 +508,8 @@ export default class Time extends Field {
      * @param {Number} segment The segment's index
      * @param {String} value The segment's value
      * @param {Boolean} supressEvent Whether to prevent the change event from firing
-     * @return {Boolean} Whether the value was set
      */
-    setSegmentValue(segment, value, supressEvent){
+    setSegmentValue(segment, value){
         let textual_value = this.input.val(),
             matches = textual_value.match(GLOBAL_REGEX);
 
@@ -526,12 +523,10 @@ export default class Time extends Field {
                 textual_value += PARTS[i].suffix;
             });
 
-            this.setValue(this.getNumericalValue(textual_value), supressEvent);
+            this.input.val(textual_value);
 
-            return true;
+            this.dirty = true;
         }
-
-        return false;
     }
 
     /**
