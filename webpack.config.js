@@ -21,10 +21,7 @@ module.exports = {
     },
     devtool: "source-map",
     output: {
-        //filename: LIB_NAME +'.[name].js',
-        filename: (data) => {
-          return `${LIB_NAME}.${data.chunk.name.toLowerCase()}.min.js`;
-        },
+        filename: LIB_NAME +'.[name].js',
         path: DIST,
         library: [LIB_NAME, "[name]"],
         libraryTarget: 'var',
@@ -104,10 +101,7 @@ module.exports = {
     plugins: [
       new CleanWebpackPlugin(DIST),
       new ExtractTextPlugin({
-        //filename: LIB_NAME +'.[name].css'
-        filename: (getPath) => {
-          return getPath(LIB_NAME +'.[name].min.css').toLowerCase();
-        }
+        filename: LIB_NAME +'.[name].css'
       }),
       new WebpackShellPlugin({
         onBuildEnd: ['node ./bin/i18n-extract.js']
