@@ -610,10 +610,10 @@ export default class Player extends Dom {
      *
      * @method onLoadSuccess
      * @private
-     * @param {XMLHttpRequest} xhr The XHR request
+     * @param {Event} evt The event object
      */
-    onLoadSuccess(xhr){
-        this.json = JSON.parse(xhr.response);
+    onLoadSuccess(evt){
+        this.json = JSON.parse(evt.target.getResponse());
 
         this.setId(this.json.id)
             .setRevision(this.json.vid);
@@ -702,12 +702,11 @@ export default class Player extends Dom {
         this.addClass('loading');
 
         options = Object.assign({}, {
-            'success': this.onLoadSuccess.bind(this),
-            'error': this.onLoadError.bind(this)
+            'onSuccess': this.onLoadSuccess.bind(this),
+            'onError': this.onLoadError.bind(this)
         }, this.configs.ajax);
 
-
-        Ajax.get(this.configs.url, options);
+        Ajax.GET(this.configs.url, options);
     }
 
     /**

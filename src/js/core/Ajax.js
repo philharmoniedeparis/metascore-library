@@ -1,137 +1,233 @@
-import {isFunction} from './utils/Var';
+import Evented from './Evented';
+
+/**
+ * Fired when the operation is complete (the request's readyState is 4)
+ *
+ * @event complete
+ */
+const EVT_COMPLETE = 'complete';
+
+/**
+ * Fired when the operation is complete and the status is greater or equal to 200 and less than 300 or equal to 304
+ *
+ * @event success
+ */
+const EVT_SUCCESS = 'success';
+
+/**
+ * Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
+ *
+ * @event error
+ */
+const EVT_ERROR = 'error';
+
+/**
+ * Fired when the operation is aborted
+ *
+ * @event abort
+ */
+const EVT_ABORT = 'abort';
 
 /**
  * A class to handle AJAX requests
  */
-export default class Ajax {
+export default class Ajax extends Evented {
 
-    /**
-     * Send an XMLHttp request
-     *
-     * @method send
-     * @static
-     * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request
-     * @param {String} [options.method='GET'] The method used for the request (GET, POST, or PUT)
-     * @param {Object} [options.headers={}] An object of additional header key/value pairs to send along with requests
-     * @param {Boolean} [options.async=true] Whether the request is asynchronous or not
-     * @param {Object} [options.data] Data to be send along with the request
-     * @param {String} [options.dataType='json'] The type of data expected back from the server
-     * @param {Funtion} [options.complete] A function to be called when the request finishes
-     * @param {Funtion} [options.success] A function to be called if the request succeeds
-     * @param {Funtion} [options.error] A function to be called if the request fails
-     * @param {Object} [options.scope=this] The object to which the scope of the above functions should be set
-     * @return {XMLHttpRequest} The XHR request
-     */
-    static send(url, options) {
+    constructor(url, configs) {
+        // call parent constructor
+        super();
 
-        let xhr = new XMLHttpRequest(),
-            defaults = {
-                'method': 'GET',
-                'headers': {},
-                'async': true,
-                'data': null,
-                'dataType': 'json', // xml, json, script, text or html
-                'complete': null,
-                'success': null,
-                'error': null,
-                'scope': this
-            },
-            params;
+        // bind the readystatechange handler
+        this.onReadyStateChange = this.onReadyStateChange.bind(this);
 
-        options = Object.assign({}, defaults, options);
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        if(options.method === 'GET' && options.data){
-            params = [];
+        this.xhr = new XMLHttpRequest();
 
-			Object.entries(options.data).forEach(([key, value]) => {
+        if(this.configs.method === 'GET' && this.configs.data){
+            let params = [];
+
+			Object.entries(this.configs.data).forEach(([key, value]) => {
                 params.push(`${key}=${encodeURIComponent(value)}`);
             });
 
             url += `?${params.join('&')}`;
-
-            options.data = null;
         }
 
-        xhr.open(options.method, url, options.async);
+        this.xhr.open(this.configs.method, url, this.configs.async);
 
-        if(options.headers){
-            Object.entries(options.headers).forEach(([key, value]) => {
-                xhr.setRequestHeader(key, value);
-            });
+        if(this.configs.headers){
+            this.setHeaders(this.configs.headers);
         }
 
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if(isFunction(options.complete)){
-                    options.complete.call(options.scope, xhr);
-                }
-                if((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304){
-                    if(isFunction(options.success)){
-                        options.success.call(options.scope, xhr);
-                    }
-                }
-                else if(isFunction(options.error)){
-                    options.error.call(options.scope, xhr);
-                }
-            }
+        if(this.configs.withCredentials){
+            this.xhr.withCredentials = true;
+        }
+
+        if(this.configs.timeout){
+            this.xhr.timeout = this.configs.timeout;
+        }
+
+        this.xhr.addEventListener('readystatechange', this.onReadyStateChange);
+        this.xhr.addEventListener('abort', this.onAbort.bind(this));
+
+        if(this.configs.onComplete){
+            this.addListener(EVT_COMPLETE, this.configs.onComplete);
+        }
+        if(this.configs.onSuccess){
+            this.addListener(EVT_SUCCESS, this.configs.onSuccess);
+        }
+        if(this.configs.onError){
+            this.addListener(EVT_ERROR, this.configs.onError);
+        }
+        if(this.configs.onAbort){
+            this.addListener(EVT_ABORT, this.configs.onAbort);
+        }
+
+        if(this.configs.autoSend){
+            this.send();
+        }
+    }
+
+    static getDefaults(){
+        return {
+            'method': 'GET',
+            'headers': {},
+            'async': true,
+            'data': null,
+            'dataType': 'json', // xml, json, script, text or html
+            'withCredentials': false,
+            'timeout': null,
+            'autoSend': true,
+            'onComplete': null,
+            'onSuccess': null,
+            'onError': null,
         };
-
-        xhr.send(options.data);
-
-        return xhr;
-
     }
 
     /**
      * Send an XMLHttp GET request
      *
-     * @method get
+     * @method GET
      * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
-     * @return {XMLHttpRequest} The XHR request
+     * @param {Object} configs to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @return {Ajax} The Ajax instance
      */
-    static get(url, options) {
+    static GET(url, configs) {
 
-        Object.assign(options, {'method': 'GET'});
-
-        return Ajax.send(url, options);
+        return new this(url, Object.assign({}, configs, {'method': 'GET'}));
 
     }
 
     /**
      * Send an XMLHttp POST request
      *
-     * @method post
+     * @method POST
      * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
-     * @return {XMLHttpRequest} The XHR request
+     * @return {Ajax} The Ajax instance
      */
-    static post(url, options) {
+    static POST(url, configs) {
 
-        Object.assign(options, {'method': 'POST'});
-
-        return Ajax.send(url, options);
+        return new this(url, Object.assign({}, configs, {'method': 'POST'}));
 
     }
 
     /**
      * Send an XMLHttp PUT request
      *
-     * @method put
+     * @method PUT
      * @static
      * @param {String} url The URL to which the request is sent
      * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
-     * @return {XMLHttpRequest} The XHR request
+     * @return {Ajax} The Ajax instance
      */
-    static put(url, options) {
+    static PUT(url, configs) {
 
-        Object.assign(options, {'method': 'PUT'});
+        return new this(url, Object.assign({}, configs, {'method': 'PUT'}));
 
-        return Ajax.send(url, options);
+    }
 
+    onReadyStateChange(){
+        switch(this.xhr.readyState){
+            case XMLHttpRequest.DONE: {
+                let success = false;
+
+                if(this.xhr.status === 200 && this.xhr.status < 300 || this.xhr.status === 304){
+                    success = true;
+                }
+                // local requests can return a status of 0 even if no error occurs
+                else if(this.xhr.status === 0 && !this.xhr.error){
+                    success = true;
+                }
+
+                this.triggerEvent(EVT_COMPLETE);
+
+                if(success){
+                    this.triggerEvent(EVT_SUCCESS);
+                }
+                else{
+                    this.triggerEvent(EVT_ERROR);
+                }
+
+                break;
+            }
+        }
+    }
+
+    onAbort(){
+        this.triggerEvent(EVT_ABORT);
+
+        // reattach the readystatechange handler in case the request is sent again
+        this.xhr.addEventListener('readystatechange', this.onReadyStateChange);
+    }
+
+    send(){
+        this.xhr.send(this.configs.method !== 'GET' ? this.configs.data : null);
+        return this;
+    }
+
+    abort(){
+        // detach the readystatechange handler to prevent the success callback from being falsly called
+        this.xhr.removeEventListener('readystatechange', this.onReadyStateChange);
+
+        this.xhr.abort();
+        return this;
+    }
+
+    setHeaders(headers){
+        Object.entries(headers).forEach(([key, value]) => {
+            this.xhr.setRequestHeader(key, value);
+        });
+        return this;
+    }
+
+    getXHR(){
+        return this.xhr;
+    }
+
+    getStatus(){
+        return this.xhr.status;
+    }
+
+    getStatusText(){
+        return this.xhr.statusText;
+    }
+
+    getResponse(){
+        return this.xhr.response;
+    }
+
+    addUploadListener(type, listener){
+        this.xhr.upload.addEventListener(type, listener);
+        return this;
+    }
+
+    removeUploadListener(type, listener){
+        this.xhr.upload.removeEventListener(type, listener);
+        return this;
     }
 
 }

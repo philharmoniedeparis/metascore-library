@@ -3,6 +3,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
+import HiddenField from '../field/Hidden';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
 import TextareaField from '../field/Textarea';
@@ -75,6 +76,11 @@ export default class GuideDetails extends Overlay {
             .appendTo(contents);
 
         // Fields
+        this.fields.action = new HiddenField()
+            .data('name', 'action')
+            .appendTo(form);
+
+
         this.fields.type = new SelectField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
                 'options': [
@@ -169,17 +175,18 @@ export default class GuideDetails extends Overlay {
         }
 
         // Buttons
-        new Button({'label': this.configs.submit_text})
+        this.buttons = {};
+        this.buttons.submit = new Button({'label': this.configs.submit_text})
             .addClass('submit')
             .appendTo(form);
 
-        new Button({'label': Locale.t('editor.overlay.GuideDetails.buttons.cancel.label', 'Cancel')})
+        this.buttons.cancel = new Button({'label': Locale.t('editor.overlay.GuideDetails.buttons.cancel.label', 'Cancel')})
             .addClass('cancel')
             .addListener('click', this.onCloseClick.bind(this))
             .appendTo(form);
 
         // Information
-        new Dom('<div/>', {'class': 'info', 'text': Locale.t('editor.overlay.GuideDetails.info', 'The guide needs to be saved in order for applied changes to become permanent')})
+        this.info = new Dom('<div/>', {'class': 'info'})
             .appendTo(form);
     }
 

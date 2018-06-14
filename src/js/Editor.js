@@ -102,13 +102,12 @@ export default class Editor extends Dom {
      * @private
      * @param {XMLHttpRequest} xhr The XHR request
      */
-    onXHRError(xhr){
-        this.loadmask.hide();
-        delete this.loadmask;
+    onXHRError(loadmask, evt){
+        loadmask.hide();
 
         new Alert({
             'parent': this,
-            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': xhr.statusText, '@code': xhr.status}),
+            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
             'buttons': {
                 'ok': Locale.t('editor.onXHRError.ok', 'OK'),
             },
@@ -117,48 +116,26 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Guide creation success callback
-     *
-     * @method onGuideCreateSuccess
-     * @private
-     * @param {GuideDetails} overlay The GuideDetails overlay that was used to create the guide
-     * @param {XMLHttpRequest} xhr The XHR request
-     */
-    onGuideCreateSuccess(overlay, xhr){
-        const json = JSON.parse(xhr.response);
-
-        this.loadmask.hide();
-        delete this.loadmask;
-
-        overlay.hide();
-
-        this.loadPlayer(json.id, json.vid);
-    }
-
-    /**
      * Guide saving success callback
      *
      * @method onGuideSaveSuccess
      * @private
-     * @param {XMLHttpRequest} xhr The XHR request
+     * @param {Event} evt The event object
      */
-    onGuideSaveSuccess(xhr){
+    onGuideSaveSuccess(loadmask, evt){
         let player = this.getPlayer(),
-            data = JSON.parse(xhr.response);
+            data = JSON.parse(evt.target.getResponse());
 
-        this.loadmask.hide();
-        delete this.loadmask;
+        loadmask.hide();
 
-        if((data.id !== player.getId()) || this.configs.reload_player_on_save){
+        if(!player || (data.id !== player.getId()) || this.configs.reload_player_on_save){
             this.loadPlayer(data.id, data.vid);
         }
         else{
-            this.detailsOverlay
-                .clearValues(true)
-                .setValues(data, true);
-
             player.updateData(data, true)
                   .setRevision(data.vid);
+
+            delete this.dirty_data;
 
             this.setDirty(false)
                 .updateMainmenu();
@@ -173,21 +150,21 @@ export default class Editor extends Dom {
      */
     onGuideDeleteConfirm() {
         let id = this.getPlayer().getId(),
-            options;
+            options, loadmask;
 
-        options = Object.assign({}, {
-            'dataType': 'json',
-            'method': 'DELETE',
-            'success': this.onGuideDeleteSuccess.bind(this),
-            'error': this.onXHRError.bind(this)
-        }, this.configs.ajax);
-
-        this.loadmask = new LoadMask({
+        loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });
 
-        Ajax.send(`${this.configs.api_url}guide/${id}.json`, options);
+        options = Object.assign({}, {
+            'dataType': 'json',
+            'method': 'DELETE',
+            'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
+            'onError': this.onXHRError.bind(this, loadmask)
+        }, this.configs.ajax);
+
+        new Ajax(`${this.configs.api_url}guide/${id}.json`, options);
     }
 
     /**
@@ -196,11 +173,10 @@ export default class Editor extends Dom {
      * @method onGuideDeleteSuccess
      * @private
      */
-    onGuideDeleteSuccess(){
+    onGuideDeleteSuccess(loadmask){
         this.unloadPlayer();
 
-        this.loadmask.hide();
-        delete this.loadmask;
+        loadmask.hide();
     }
 
     /**
@@ -322,12 +298,13 @@ export default class Editor extends Dom {
         switch(Dom.data(evt.target, 'action')){
             case 'new':
                 callback = () => {
-                    new GuideDetails({
-                            'groups': this.configs.user_groups,
-                            'autoShow': true
-                        })
-                        .addListener('show', this.onDetailsOverlayShow.bind(this))
-                        .addListener('submit', this.onDetailsOverlaySubmit.bind(this, 'create'));
+                    this.detailsOverlay.getField('type').readonly(false);
+                    this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
+                    this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
+                    this.detailsOverlay
+                        .clearValues(true)
+                        .setValues({'action': 'new'}, true)
+                        .show();
                 };
 
                 if(this.isDirty()){
@@ -376,7 +353,13 @@ export default class Editor extends Dom {
                 break;
 
             case 'edit':
-                this.detailsOverlay.show();
+                this.detailsOverlay.getField('type').readonly(true);
+                this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.edit.info', 'The guide needs to be saved in order for applied changes to become permanent'));
+                this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.edit.submitText', 'Apply'));
+                this.detailsOverlay
+                    .clearValues(true)
+                    .setValues(Object.assign({'action': 'edit'}, this.getPlayer().getData()), true)
+                    .show();
                 break;
 
             case 'save':
@@ -1179,13 +1162,13 @@ export default class Editor extends Dom {
      * @method onPlayerFrameLoadSuccess
      * @private
      */
-    onPlayerFrameLoadSuccess(){
+    onPlayerFrameLoadSuccess(loadmask){
         const player = this.player_frame.get(0).contentWindow.player;
 
         if(player){
             player
-                .addListener('load', this.onPlayerLoadSuccess.bind(this))
-                .addListener('error', this.onPlayerLoadError.bind(this))
+                .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
+                .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
                 .addListener('idset', this.onPlayerIdSet.bind(this))
                 .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
                 .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
@@ -1199,9 +1182,8 @@ export default class Editor extends Dom {
      * @method onPlayerFrameLoadError
      * @private
      */
-    onPlayerFrameLoadError(){
-        this.loadmask.hide();
-        delete this.loadmask;
+    onPlayerFrameLoadError(loadmask){
+        loadmask.hide();
 
         new Alert({
             'parent': this,
@@ -1220,7 +1202,7 @@ export default class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
-    onPlayerLoadSuccess(evt){
+    onPlayerLoadSuccess(loadmask, evt){
         let player_body = this.player_frame.get(0).contentWindow.document.body,
             data;
 
@@ -1269,12 +1251,7 @@ export default class Editor extends Dom {
 
             this.mainmenu.rindexfield.setValue(0, true);
 
-            this.detailsOverlay
-                .clearValues(true)
-                .setValues(data, true);
-
-            this.loadmask.hide();
-            delete this.loadmask;
+            loadmask.hide();
     }
 
     /**
@@ -1283,9 +1260,8 @@ export default class Editor extends Dom {
      * @method onPlayerLoadError
      * @private
      */
-    onPlayerLoadError(){
-        this.loadmask.hide();
-        delete this.loadmask;
+    onPlayerLoadError(loadmask){
+        loadmask.hide();
 
         new Alert({
             'parent': this,
@@ -1474,131 +1450,128 @@ export default class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
      */
-    onDetailsOverlaySubmit(op, evt){
+    onDetailsOverlaySubmit(evt){
         let overlay = evt.detail.overlay,
             data = evt.detail.values,
-            player, callback;
+            action = overlay.getField('action').getValue(),
+            player = this.getPlayer();
 
-        switch(op){
-            case 'create':
-                this.createGuide(data, overlay);
-                break;
+        if(action === 'new'){
+            this.createGuide(data, overlay);
+        }
+        else{
+            let callback = (new_duration) => {
+                if(new_duration){
+                    player.getComponents('.block').forEach((block_dom) => {
+                        let block, page;
 
-            case 'update':
-                player = this.getPlayer();
+                        if(block_dom._metaScore){
+                            block = block_dom._metaScore;
 
-                callback = (new_duration) => {
-                    if(new_duration){
-                        player.getComponents('.block').forEach((block_dom) => {
-                            let block, page;
-
-                            if(block_dom._metaScore){
-                                block = block_dom._metaScore;
-
-                                if(block.getProperty('synched')){
-                                    page = block.getPage(block.getPageCount()-1);
-                                    if(page){
-                                        page.setProperty('end-time', new_duration);
-                                    }
+                            if(block.getProperty('synched')){
+                                page = block.getPage(block.getPageCount()-1);
+                                if(page){
+                                    page.setProperty('end-time', new_duration);
                                 }
                             }
-                        });
-                    }
-
-                    player.updateData(data);
-                    overlay.setValues(Object.assign({}, player.getData(), data), true).hide();
-
-                    this.mainmenu.timefield.setMax(new_duration);
-
-                    this.setDirty(true)
-                        .updateMainmenu();
-                };
-
-                if('media' in data){
-                    this.getMediaFileDuration(data.media.url, (new_duration) => {
-                        let old_duration = player.getMedia().getDuration(),
-                            formatted_old_duration, formatted_new_duration,
-                            blocks = [], block, msg;
-
-                        if(new_duration !== old_duration){
-                            formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
-                            formatted_old_duration += ":";
-                            formatted_old_duration += pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
-                            formatted_old_duration += ":";
-                            formatted_old_duration += pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
-                            formatted_old_duration += ".";
-                            formatted_old_duration += pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
-
-                            formatted_new_duration = (parseInt((new_duration / 360000), 10) || 0);
-                            formatted_new_duration += ":";
-                            formatted_new_duration += pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
-                            formatted_new_duration += ":";
-                            formatted_new_duration += pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
-                            formatted_new_duration += ".";
-                            formatted_new_duration += pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
-
-                            if(new_duration < old_duration){
-                                player.getComponents('.block').forEach((block_dom) => {
-                                    if(block_dom._metaScore){
-                                        block = block_dom._metaScore;
-
-                                        if(block.getProperty('synched')){
-                                            block.getPages().some((page) => {
-                                                if(page.getProperty('start-time') > new_duration){
-                                                    blocks.push(block.getProperty('name'));
-                                                    return true;
-                                                }
-
-                                                return false;
-                                            });
-                                        }
-                                    }
-                                });
-                            }
-
-                            if(blocks.length > 0){
-                                new Alert({
-                                    'parent': this,
-                                    'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
-                                    'buttons': {
-                                        'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
-                                    },
-                                    'autoShow': true
-                                });
-                            }
-                            else{
-                                if(new_duration < old_duration){
-                                    msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                                }
-                                else{
-                                    msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                                }
-
-                                new Alert({
-                                    'parent': this,
-                                    'text': msg,
-                                    'buttons': {
-                                        'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
-                                        'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
-                                    },
-                                    'autoShow': true
-                                })
-                                .addListener('buttonclick', (click_evt) => {
-                                    if(click_evt.detail.action === 'confirm'){
-                                        callback(new_duration);
-                                    }
-                                });
-                            }
-                        }
-                        else{
-                            callback();
                         }
                     });
                 }
-                else{
-                    callback();
-                }
-                break;
+
+                this.dirty_data = data;
+                player.updateData(data);
+                overlay.hide();
+
+                this.mainmenu.timefield.setMax(new_duration);
+
+                this.setDirty(true)
+                    .updateMainmenu();
+            };
+
+            if('media' in data){
+                this.getMediaFileDuration(data.media.url, (new_duration) => {
+                    let old_duration = player.getMedia().getDuration(),
+                        formatted_old_duration, formatted_new_duration,
+                        blocks = [], block, msg;
+
+                    if(new_duration !== old_duration){
+                        formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
+                        formatted_old_duration += ":";
+                        formatted_old_duration += pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
+                        formatted_old_duration += ":";
+                        formatted_old_duration += pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
+                        formatted_old_duration += ".";
+                        formatted_old_duration += pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
+
+                        formatted_new_duration = (parseInt((new_duration / 360000), 10) || 0);
+                        formatted_new_duration += ":";
+                        formatted_new_duration += pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
+                        formatted_new_duration += ":";
+                        formatted_new_duration += pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
+                        formatted_new_duration += ".";
+                        formatted_new_duration += pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
+
+                        if(new_duration < old_duration){
+                            player.getComponents('.block').forEach((block_dom) => {
+                                if(block_dom._metaScore){
+                                    block = block_dom._metaScore;
+
+                                    if(block.getProperty('synched')){
+                                        block.getPages().some((page) => {
+                                            if(page.getProperty('start-time') > new_duration){
+                                                blocks.push(block.getProperty('name'));
+                                                return true;
+                                            }
+
+                                            return false;
+                                        });
+                                    }
+                                }
+                            });
+                        }
+
+                        if(blocks.length > 0){
+                            new Alert({
+                                'parent': this,
+                                'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
+                                'buttons': {
+                                    'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
+                                },
+                                'autoShow': true
+                            });
+                        }
+                        else{
+                            if(new_duration < old_duration){
+                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                            }
+                            else{
+                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                            }
+
+                            new Alert({
+                                'parent': this,
+                                'text': msg,
+                                'buttons': {
+                                    'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
+                                    'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
+                                },
+                                'autoShow': true
+                            })
+                            .addListener('buttonclick', (click_evt) => {
+                                if(click_evt.detail.action === 'confirm'){
+                                    callback(new_duration);
+                                }
+                            });
+                        }
+                    }
+                    else{
+                        callback();
+                    }
+                });
+            }
+            else{
+                callback();
+            }
         }
     }
 
@@ -1728,13 +1701,10 @@ export default class Editor extends Dom {
         this.setupContextMenus();
 
         this.detailsOverlay = new GuideDetails({
-                'groups': this.configs.user_groups,
-                'submit_text': Locale.t('editor.detailsOverlay.submit_text', 'Apply')
+                'groups': this.configs.user_groups
             })
             .addListener('show', this.onDetailsOverlayShow.bind(this))
-            .addListener('submit', this.onDetailsOverlaySubmit.bind(this, 'update'));
-
-        this.detailsOverlay.getField('type').readonly(true);
+            .addListener('submit', this.onDetailsOverlaySubmit.bind(this));
 
         Dom.addListener(window, 'hashchange', this.onWindowHashChange.bind(this));
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
@@ -1749,7 +1719,6 @@ export default class Editor extends Dom {
             .setEditing(false)
             .updateMainmenu()
             .loadPlayerFromHash();
-
 
         this.triggerEvent(EVT_READY, {'editor': this}, true, false);
 
@@ -2093,6 +2062,7 @@ export default class Editor extends Dom {
         this.mainmenu.toggleButton('delete', hasPlayer);
         this.mainmenu.toggleButton('share', hasPlayer && player.getData('published'));
         this.mainmenu.toggleButton('download', hasPlayer);
+        this.mainmenu.toggleButton('edit-toggle', hasPlayer);
 
         this.mainmenu.toggleButton('undo', this.history.hasUndo());
         this.mainmenu.toggleButton('redo', this.history.hasRedo());
@@ -2254,13 +2224,14 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayer(id, vid){
-        let url = `${this.configs.player_url + id}?autoload=false&keyboard=1`;
+        let url = `${this.configs.player_url + id}?autoload=false&keyboard=1`,
+            loadmask;
 
         if(vid){
             url += `&vid=${vid}`;
         }
 
-        this.loadmask = new LoadMask({
+        loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });
@@ -2268,8 +2239,8 @@ export default class Editor extends Dom {
         this.unloadPlayer();
 
         this.player_frame = new Dom('<iframe/>', {'src': url, 'class': 'player-frame'}).appendTo(this.workspace)
-            .addListener('load', this.onPlayerFrameLoadSuccess.bind(this))
-            .addListener('error', this.onPlayerFrameLoadError.bind(this));
+            .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
+            .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
 
         return this;
     }
@@ -2282,6 +2253,7 @@ export default class Editor extends Dom {
      */
     unloadPlayer() {
         delete this.player;
+        delete this.dirty_data;
 
         this.player_contextmenu.disable();
 
@@ -2293,7 +2265,10 @@ export default class Editor extends Dom {
         this.panels.block.unsetComponent();
         this.history.clear();
         this.setDirty(false)
+            .setEditing(false)
             .updateMainmenu();
+
+        window.history.replaceState(null, null, '#');
 
         return this;
     }
@@ -2603,7 +2578,7 @@ export default class Editor extends Dom {
      */
     createGuide(details, overlay){
         let data = new FormData(),
-            options;
+            loadmask, options;
 
         // append values from the details overlay
 		Object.entries(details).forEach(([key, value]) => {
@@ -2615,22 +2590,40 @@ export default class Editor extends Dom {
             }
         });
 
+        // add a loading mask
+        loadmask = new LoadMask({
+            'parent': this,
+            'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving... (!percent%)'),
+            'bar': true,
+            'autoShow': true
+        });
+
         // prepare the Ajax options object
         options = Object.assign({
             'data': data,
             'dataType': 'json',
-            'success': this.onGuideCreateSuccess.bind(this, overlay),
-            'error': this.onXHRError.bind(this)
+            'onSuccess': (evt) => {
+                overlay.hide();
+                this.onGuideSaveSuccess(loadmask, evt);
+            },
+            'onError': this.onXHRError.bind(this, loadmask),
+            'autoSend': false
         }, this.configs.ajax);
 
-        // add a loading mask
-        this.loadmask = new LoadMask({
-            'parent': this,
-            'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving...'),
-            'autoShow': true
-        });
-
-        Ajax.post(`${this.configs.api_url}guide.json`, options);
+        Ajax.POST(`${this.configs.api_url}guide.json`, options)
+            .addUploadListener('loadstart', () => {
+                loadmask.setProgress(0);
+            })
+            .addUploadListener('progress', (evt) => {
+                if (evt.lengthComputable) {
+                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    loadmask.setProgress(percent);
+                }
+            })
+            .addUploadListener('loadend', () => {
+                loadmask.setProgress(100);
+            })
+            .send();
 
         return this;
     }
@@ -2649,28 +2642,33 @@ export default class Editor extends Dom {
             vid = player.getRevision(),
             components = player.getComponents('.media, .controller, .block, .block-toggler'),
             data = new FormData(),
-            details = this.detailsOverlay.getValues(),
-            component, options;
+            component, loadmask, options;
 
         // append the publish flag if true
         if(publish === true){
             data.append('publish', true);
         }
 
-        // append values from the details overlay
-		Object.entries(details).forEach(([key, value]) => {
-            if(key === 'thumbnail' || key === 'media'){
-                data.append(`files[${key}]`, value.object);
-            }
-            else if(isArray(value)){
-                value.forEach((val) => {
-                    data.append(`${key}[]`, val);
-                });
-            }
-            else{
-                data.append(key, value);
-            }
-        });
+        // append values from the dirty data
+        if(this.dirty_data){
+            Object.entries(this.dirty_data).forEach(([key, value]) => {
+                if(key === 'blocks'){
+                    return;
+                }
+
+                if(key === 'thumbnail' || key === 'media'){
+                    data.append(`files[${key}]`, value.object);
+                }
+                else if(isArray(value)){
+                    value.forEach((val) => {
+                        data.append(`${key}[]`, key === 'blocks' ? JSON.stringify(val) : val);
+                    });
+                }
+                else{
+                    data.append(key, value);
+                }
+            });
+        }
 
         // append blocks data
         components.forEach((dom) => {
@@ -2690,22 +2688,37 @@ export default class Editor extends Dom {
             }
         });
 
+        // add a loading mask
+        loadmask = new LoadMask({
+            'parent': this,
+            'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
+            'bar': true,
+            'autoShow': true,
+        });
+
         // prepare the Ajax options object
         options = Object.assign({
             'data': data,
             'dataType': 'json',
-            'success': this.onGuideSaveSuccess.bind(this),
-            'error': this.onXHRError.bind(this)
+            'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
+            'onError': this.onXHRError.bind(this, loadmask),
+            'autoSend': false
         }, this.configs.ajax);
 
-        // add a loading mask
-        this.loadmask = new LoadMask({
-            'parent': this,
-            'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving...'),
-            'autoShow': true
-        });
-
-        Ajax.post(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options);
+        Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
+            .addUploadListener('loadstart', () => {
+                loadmask.setProgress(0);
+            })
+            .addUploadListener('progress', (evt) => {
+                if (evt.lengthComputable) {
+                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    loadmask.setProgress(percent);
+                }
+            })
+            .addUploadListener('loadend', () => {
+                loadmask.setProgress(100);
+            })
+            .send();
 
         return this;
     }
