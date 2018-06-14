@@ -15,7 +15,7 @@ body{
 .metaScore-player{
     width: 100%;
     height: 100%;
-    
+
     &:focus{
         outline: none;
     }
@@ -24,11 +24,11 @@ body{
         position: absolute;
         top: 0;
         left: 0;
-        
+
         &:focus{
             outline: none;
         }
-        
+
         &[data-hidden="true"]{
             display: none;
         }
@@ -63,7 +63,7 @@ body{
             font-weight: bold;
             font-size: 11px;
             .border-radius(10px);
-            
+
             &:after{
                 content: "";
                 position: absolute;
@@ -71,7 +71,7 @@ body{
                 bottom: 5px;
                 width: 100%;
                 height: 17px;
-                background-image: url('img/logo-metaScore.png');
+                background-image: url('../img/logo-metaScore.png');
                 background-repeat: no-repeat;
                 background-size: contain;
                 background-position: center center;
@@ -93,7 +93,7 @@ body{
                     border: none;
                     outline: none;
                     background-color: transparent;
-                    background-image: url('img/player/controller-buttons.png');
+                    background-image: url('../img/player/controller-buttons.png');
                     background-repeat: no-repeat;
 
                     &[data-action="rewind"]{
@@ -120,6 +120,33 @@ body{
                         &[data-action="play"]{
                             background-position: -94px 0;
                         }
+                    }
+                }
+            }
+        }
+
+        &.block-toggler{
+            min-width: 50px;
+            min-height: 10px;
+            width: 100px;
+            height: 20px;
+            overflow: hidden;
+            background-color: rgb(238, 238, 238);
+            border: 1px solid rgb(238, 238, 238);
+            .border-radius(0px);
+
+            .buttons{
+                display: flex;
+                width: 100%;
+                height: 100%;
+                flex-direction: row;
+                align-items: stretch;
+                align-content: stretch;
+
+                .button{
+                    svg{
+                        width: 100%;
+                        height: 100%;
                     }
                 }
             }
@@ -177,7 +204,7 @@ body{
                         height: 17px;
                         margin: 1px 2px;
                         background-color: rgb(255, 255, 255);
-                        background-image: url('img/player/pager-buttons.png');
+                        background-image: url('../img/player/pager-buttons.png');
                         background-repeat: no-repeat;
                         .border-radius(10px);
                         cursor: pointer;
@@ -267,11 +294,11 @@ body{
                  * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
                  */
                 display: block;
-            
+
                 &:not([data-start-time]):not([data-end-time]),
                 &.active{
                     pointer-events: auto;
-                    
+
                     .contents{
                         display: block;
                     }
@@ -347,11 +374,11 @@ body{
             }
         }
     }
-    
+
     .contextmenu{
         position: absolute;
         z-index: 999999;
-        
+
         ul{
             min-width: 150px;
             margin: 0 !important;
@@ -360,27 +387,27 @@ body{
             background: #fff;
             border: 1px solid rgba(0, 0, 0, 0.1);
             .box-shadow(1px 1px 0px 0px rgba(0, 0, 0, 0.25));
-          
+
             li{
                 position: relative;
                 padding: 0.25em 1em !important;
                 white-space: nowrap;
                 color: #000;
                 cursor: pointer;
-              
+
                 &:hover{
                     color: #fff;
                     background: #0000fe;
                 }
-                
+
                 &.no-callback{
                     cursor: default;
                 }
-              
+
                 &.disabled{
                     display: none;
                 }
-              
+
                 &.separator{
                     height: 1px;
                     margin: 0.5em 0;
@@ -388,7 +415,7 @@ body{
                     background: rgba(0, 0, 0, 0.1);
                     pointer-events: none;
                 }
-                
+
                 &.has-subitems{
                     &::after {
                         position: absolute;
@@ -404,7 +431,7 @@ body{
                         .transform(translateY(-50%));
                         z-index: 0;
                     }
-                
+
                     ul{
                         display: none;
                         position: absolute;
@@ -412,15 +439,15 @@ body{
                         left: 99%;
                         z-index: 1;
                     }
-                    
+
                     &:hover{
                         &::after {
                             border-color: transparent transparent transparent #fff;
                         }
-                        
+
                         > ul{
                             display: block;
-                            
+
                             &.left{
                                 left: auto;
                                 right: 99%;
@@ -428,10 +455,10 @@ body{
                         }
                     }
                 }
-                
+
                 &.logo{
                     height: 36px;
-                    background: transparent url('img/logo-philharmonie.png') left center no-repeat;
+                    background: transparent url('../img/logo-philharmonie.png') left center no-repeat;
                     background-size: contain;
                     margin: 0.5em 1em;
                 }
@@ -525,11 +552,12 @@ body{
 
         &.editing{
             .draggable{
+                &.drag-handle,
                 .drag-handle{
                     cursor: move;
                 }
             }
-            
+
             .resizable > .resize-handle{
                 display: block;
             }
@@ -537,7 +565,8 @@ body{
             .metaScore-component{
                 &.media,
                 &.controller,
-                &.block{
+                &.block,
+                &.block-toggler{
                     &.selected{
                         z-index: 2147483647 !important;
                         .box-shadow(@block-outline 0px 0px 4px 2px);
@@ -548,6 +577,12 @@ body{
                         .pager{
                             display: block !important;
                         }
+                    }
+                }
+
+                &.block-toggler{
+                    .button{
+                        pointer-events: none;
                     }
                 }
 
@@ -569,7 +604,7 @@ body{
 
                         &[data-type="Text"]{
                             .box-shadow(@text-outline 0px 0px 4px 1px);
-                            
+
                             .contents{
                                 &[contenteditable]{
                                     outline-color: @text-outline;
@@ -579,12 +614,12 @@ body{
                             }
                         }
                     }
-                    
+
                     &[data-type="Text"]{
                         a{
                             pointer-events: none;
                         }
-                        
+
                         &.text-unlocked{
                             .contents{
                                 display: block;
@@ -593,7 +628,7 @@ body{
                     }
                 }
             }
-        
+
             &.show-contents{
                 .metaScore-component.element[data-r-index="0"]{
                     /**
