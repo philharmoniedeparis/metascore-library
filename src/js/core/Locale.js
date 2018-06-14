@@ -6,14 +6,14 @@ let translations = {};
 export default class Locale{
 
     static load(file, callback) {
-        Ajax.get(file, {
+        Ajax.GET(file, {
             'dataType': 'json',
-            'success': (xhr) => {
-                translations = JSON.parse(xhr.response);
+            'onSuccess': (evt) => {
+                translations = JSON.parse(evt.target.getResponse());
                 callback(translations);
             },
-            'error': (xhr) => {
-                callback(null, xhr.statusText);
+            'onError': (evt) => {
+                callback(null, evt.target.getStatusText());
             }
         });
     }

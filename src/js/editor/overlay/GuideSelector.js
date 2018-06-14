@@ -1,5 +1,6 @@
 import Overlay from '../../core/ui/Overlay';
 import LoadMask from '../../core/ui/overlay/LoadMask';
+import Alert from '../../core/ui/overlay/Alert';
 import Dom from '../../core/Dom';
 import Ajax from '../../core/Ajax';
 import Locale from '../../core/Locale';
@@ -201,10 +202,10 @@ export default class GuideSelector extends Overlay {
      *
      * @method onLoadSuccess
      * @private
-     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
+     * @param {Event} evt The event object
      */
-    onLoadSuccess(xhr){
-        const data = JSON.parse(xhr.response);
+    onLoadSuccess(loadmask, evt){
+        const data = JSON.parse(evt.target.getResponse());
 
         if('filters' in data){
 			Object.entries(data.filters).forEach(([field, values]) => {
@@ -220,8 +221,9 @@ export default class GuideSelector extends Overlay {
 
         this.setupResults(data.items);
 
-        this.loadmask.hide();
-        delete this.loadmask;
+        loadmask.hide();
+
+        delete this.load_request;
     }
 
     /**
@@ -229,10 +231,32 @@ export default class GuideSelector extends Overlay {
      *
      * @method onLoadError
      * @private
-     * @param {XMLHttpRequest} xhr The <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank">XMLHttpRequest</a> object
-     * @TODO
+     * @param {Event} evt The event object
      */
-    onLoadError(){
+    onLoadError(loadmask, evt){
+        loadmask.hide();
+        delete this.load_request;
+
+        new Alert({
+            'parent': this,
+            'text': Locale.t('editor.overlay.GuideSelector.onLoadError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
+            'buttons': {
+                'ok': Locale.t('editor.overlay.GuideSelector.onLoadError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
+    }
+
+    /**
+     * The load abort event handler
+     *
+     * @method onLoadAbort
+     * @private
+     * @param {Event} evt The event object
+     */
+    onLoadAbort(loadmask){
+        loadmask.hide();
+        delete this.load_request;
     }
 
     /**
@@ -259,6 +283,23 @@ export default class GuideSelector extends Overlay {
 		Object.entries(this.filter_fields).forEach(([, field]) => {
             field.reset();
         });
+    }
+
+    /**
+     * The submit event handler
+     *
+     * @method onGuideSelect
+     * @private
+     * @param {Object} guide The selected guide
+     * @param {SelectField} revision_field The revision selection field
+     * @param {Event} evt The event object
+     */
+    onGuideSelect(guide, revision_field, evt){
+        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+
+        this.hide();
+
+        evt.stopPropagation();
     }
 
     /**
@@ -371,6 +412,11 @@ export default class GuideSelector extends Overlay {
     load(initial){
         const data = {};
 
+        const loadmask = new LoadMask({
+            'parent': this.getContents(),
+            'autoShow': true
+        });
+
 		Object.entries(this.filter_fields).forEach(([, field]) => {
             data[field.data('name')] = field.getValue();
         });
@@ -379,34 +425,21 @@ export default class GuideSelector extends Overlay {
             data.with_filter_options = true;
         }
 
-        this.loadmask = new LoadMask({
-            'parent': this.getContents(),
-            'autoShow': true
-        });
-
-        Ajax.get(this.configs.url, {
+        this.load_request = Ajax.GET(this.configs.url, {
             'data': data,
             'dataType': 'json',
-            'success': this.onLoadSuccess.bind(this),
-            'error': this.onLoadError.bind(this)
+            'onSuccess': this.onLoadSuccess.bind(this, loadmask),
+            'onError': this.onLoadError.bind(this, loadmask),
+            'onAbort': this.onLoadAbort.bind(this, loadmask)
         });
     }
 
-    /**
-     * The submit event handler
-     *
-     * @method onGuideSelect
-     * @private
-     * @param {Object} guide The selected guide
-     * @param {SelectField} revision_field The revision selection field
-     * @param {Event} evt The event object
-     */
-    onGuideSelect(guide, revision_field, evt){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+    hide(){
+        if(this.load_request){
+            this.load_request.abort();
+        }
 
-        this.hide();
-
-        evt.stopPropagation();
+        super.hide();
     }
 
 }
