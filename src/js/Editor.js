@@ -2084,9 +2084,7 @@ export default class Editor extends Dom {
             selector = toolbar.getSelector(),
             block;
 
-        selector
-            .clear()
-            .addOption(null, '');
+        selector.clear();
 
         this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').forEach((dom) => {
             if(dom._metaScore){
@@ -2177,7 +2175,7 @@ export default class Editor extends Dom {
         });
 
         const element = panel.getComponent();
-        selector.setValue(element ? element.getId() : null, true);
+        selector.setValue(element ? element.getId() : '', true);
 
         return this;
     }

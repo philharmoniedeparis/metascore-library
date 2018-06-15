@@ -138,3 +138,14 @@ export function replaceAll(str, search, replacement) {
 
     return str.replace(regex, replacement);
 }
+
+/**
+ */
+export function decodeHTML(str) {
+    const doc = document.implementation.createHTMLDocument("");
+    const element = doc.createElement('div');
+
+    element.innerHTML = str;
+
+    return element.textContent;
+}

@@ -1,6 +1,15 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {uuid} from '../../core/utils/String';
+import {uuid, decodeHTML} from '../../core/utils/String';
+
+/**
+ * Fired when the field's value changes
+ *
+ * @event valuechange
+ * @param {Object} field The field instance
+ * @param {Mixed} value The new value
+ */
+const EVT_VALUECHANGE = 'valuechange';
 
 export default class Select extends Field {
 
@@ -44,10 +53,16 @@ export default class Select extends Field {
         }
 
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
+            .addListener('click', this.onWrapperClick.bind(this))
             .appendTo(this);
 
-        this.input = new Dom('<select/>', {'id': uid})
-            .addListener('change', this.onChange.bind(this))
+        this.input = new Dom('<input/>', {'id': uid, 'readonly': true})
+            .addListener('click', this.onInputClick.bind(this))
+            .appendTo(this.input_wrapper);
+
+        this.menu = new Dom('<ul/>', {'class': 'menu', 'tabindex': 1})
+            .addListener('blur', this.onBlur.bind(this), true)
+            .addDelegate('li', 'click', this.onItemClick.bind(this))
             .appendTo(this.input_wrapper);
 
         this.configs.options.forEach((option) => {
@@ -55,8 +70,77 @@ export default class Select extends Field {
         });
 
         if(this.configs.multiple){
-            this.input.attr('multiple', 'multiple');
+            this.addClass('multiple');
         }
+    }
+
+    onWrapperClick(){
+        this.close();
+    }
+
+    onInputClick(evt){
+        this.open();
+        evt.stopPropagation();
+    }
+
+    onBlur(){
+        this.close();
+    }
+
+    onItemClick(evt){
+        const li = new Dom(evt.target),
+            value = li.data('value');
+
+        this.setValue(value);
+
+        this.close();
+    }
+
+    open(){
+        this.addClass('open');
+        this.menu.focus(false);
+        return this;
+    }
+
+    close(){
+        this.removeClass('open');
+        return this;
+    }
+
+    /**
+     * Set the field's value
+     *
+     * @method setValue
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    setValue(value, supressEvent){
+        const option = this.getOption(value);
+        let label;
+
+        this.menu.find('.option').removeClass('selected');
+
+        if(option.count() > 0){
+            label = decodeHTML(option.text());
+            option.addClass('selected');
+        }
+        else{
+            value = '';
+            label = '';
+        }
+
+        if(value !== this.value){
+            this.value = value;
+
+            this.input.val(label);
+
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -67,9 +151,10 @@ export default class Select extends Field {
      * @return {Dom} The created Dom object
      */
     addGroup(label){
-        const group = new Dom('<optgroup/>', {'label': label});
+        const group = new Dom('<li/>', {'class': 'group', 'text': label});
+        group.append(new Dom('<ul/>'));
 
-        this.input.append(group);
+        this.menu.append(group);
 
         return group;
     }
@@ -84,11 +169,20 @@ export default class Select extends Field {
      * @return {Dom} The created Dom object
      */
     addOption(value, text, group){
-        const option = new Dom('<option/>', {'value': value, 'text': text});
+        const option = new Dom('<li/>', {'text': text, 'class': 'option'});
 
-        option.appendTo(group ? group : this.input);
+        option.data('value', value);
+        option.appendTo(group ? group.child('ul') : this.menu);
 
         return option;
+    }
+
+    getOption(value){
+        return this.menu.find(`li.option[data-value="${value}"]`);
+    }
+
+    getOptions(group){
+        return (group ? group : this.menu).find('li.option');
     }
 
     /**
@@ -100,7 +194,7 @@ export default class Select extends Field {
      * @return {Dom} The option's Dom object
      */
     updateOption(value, text){
-        const option = this.input.find(`option[value="${value}"]`);
+        const option = this.getOption(value);
 
         option.text(text);
 
@@ -115,7 +209,7 @@ export default class Select extends Field {
      * @return {Dom} The option's Dom object
      */
     removeOption(value){
-        const option = this.input.find(`option[value="${value}"]`);
+        const option = this.getOption(value);
 
         option.remove();
 
@@ -129,7 +223,7 @@ export default class Select extends Field {
      * @chainable
      */
     clear() {
-        this.input.empty();
+        this.menu.empty();
 
         return this;
     }
@@ -142,9 +236,9 @@ export default class Select extends Field {
      * @chainable
      */
     readonly(readonly){
-        super.readonly(readonly);
+        this.is_readonly = readonly === true;
 
-        this.input.attr('disabled', this.is_readonly ? "disabled" : null);
+        this.toggleClass('readonly', this.is_readonly);
 
         return this;
     }

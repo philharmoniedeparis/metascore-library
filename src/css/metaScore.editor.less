@@ -70,19 +70,6 @@
         font-weight: normal;
     }
 
-    .field{
-        &.required{
-            label::after{
-                content: '*';
-                color: red;
-            }
-        }
-
-        .description{
-            .opacity(0.5);
-        }
-    }
-
     fieldset{
         margin: 0;
         padding: 0;
@@ -332,6 +319,125 @@
             }
         }
 
+        &.selectfield{
+            .input-wrapper{
+                height: 100%;
+                cursor: pointer;
+
+                input{
+                    position: relative;
+                    width: 100%;
+                    .box-sizing(border-box);
+                    padding: 0 1em 0 0.5em;
+                    line-height: 1.5em;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    cursor: pointer;
+                }
+
+                .menu{
+                    position: absolute;
+                    left: 0;
+                    top: 100%;
+                    right: 0;
+                    max-height: 10em;
+                    overflow-y: auto;
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                    background: #fff;
+                    border: 1px solid #ccc;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity 0.1s ease-in-out 0s, visibility 0s ease-in-out 0.1s;
+                    z-index: 1;
+
+                    &:focus{
+                        outline: 1px solid #ccc;
+                    }
+
+                    li{
+                        padding: 0.25em;
+                        line-height: 1.5em;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        cursor: pointer;
+                    }
+
+                    li.option{
+                        pointer-events: all;
+                        font-weight: normal;
+
+                        &:empty {
+                            &::after{
+                                content: '\00a0';
+                            }
+                        }
+
+                        &.selected{
+                            background: #ccc;
+                        }
+
+                        &:hover{
+                            color: #fff;
+                            background: #0000fe;
+                        }
+
+                        &:not(:last-child){
+                            border-bottom: 1px solid #eee;
+                        }
+                    }
+
+                    li.group{
+                        font-weight: bold;
+                        pointer-events: none;
+                        cursor: default;
+
+                        > ul{
+                            padding: 0;
+
+                            > li{
+                                padding-left: 0.5em;
+                            }
+                        }
+                    }
+                }
+
+                &::after{
+                    content: "";
+                    position: absolute;
+                    right: 0.5em;
+                    top: 0;
+                    bottom: 0;
+                    width: 2em;
+                    background: url('../img/editor/field/select/arrow.png') no-repeat right center;
+                    pointer-events: none;
+                }
+            }
+
+            &.open{
+                input{
+                    pointer-events: none;
+                }
+
+                .menu{
+                    visibility: visible;
+                    opacity: 1;
+                    transition-delay: 0s, 0s;
+                }
+            }
+
+            &.readonly{
+                pointer-events: none;
+            }
+
+            ::-webkit-scrollbar{
+                width: 5px;
+            }
+        }
+
         &.timefield{
             .input-wrapper{
                 display: inline-block;
@@ -443,6 +549,17 @@
                         }
                     }
                 }
+            }
+        }
+
+        .description{
+            .opacity(0.5);
+        }
+
+        &.required{
+            label::after{
+                content: '*';
+                color: red;
             }
         }
 
@@ -764,6 +881,7 @@
 
             .toolbar{
                 display: flex;
+                align-items: center;
                 padding: 5px;
                 border-bottom: 1px solid #d7d7d7;
                 .linear-gradient-top(#fefefe, #fefefe, 0%, #fcfcfc, 32%, #fafafa, 36%, #f3f3f3, 100%);
@@ -925,16 +1043,6 @@
                             &[type="checkbox"]{
                                 width: auto;
                             }
-                        }
-                    }
-
-                    &.selectfield{
-                        select{
-                            display: block;
-                            width: 100%;
-                            height: 100%;
-                            margin: 0;
-                            border: none;
                         }
                     }
 
@@ -1245,32 +1353,18 @@
                             margin: 0.5em 0;
 
                             &.textfield{
-                                display: inline-block;
-                                width: 100%;
-
-                                .input-wrapper{
-                                    input{
-                                        width: 100%;
-                                        .box-sizing(border-box);
-                                    }
+                                input{
+                                    width: 100%;
+                                    .box-sizing(border-box);
                                 }
                             }
 
                             &.selectfield{
                                 display: inline-block;
-                                width: 50%;
-
-                                .input-wrapper{
-                                    select{
-                                        width: 100%;
-                                        .box-sizing(border-box);
-                                    }
-                                }
+                                width: 48%;
 
                                 &:nth-child(even){
-                                    .input-wrapper{
-                                        padding-right: 1em;
-                                    }
+                                    margin-right: 4%;
                                 }
 
                                 &[data-name^="sort_"]{

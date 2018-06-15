@@ -1,19 +1,32 @@
 const path = require("path");
-const webpack = require("webpack");
 const git = require('git-rev-sync');
+const beep = require('beepbeep');
 const pckg = require('./package.json');
 
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const LIB_NAME = pckg.name;
 const DIST = path.join(__dirname, "dist");
 
+class BeepPlugin{
+  apply(compiler){
+    compiler.plugin('done', (stats) => {
+      if(stats.compilation.errors && stats.compilation.errors.length){
+        beep(2);
+      }
+      else{
+        beep();
+      }
+    });
+  }
+}
+
 module.exports = {
     mode: 'production',
+    bail: true,
     entry: {
         Player: './src/js/Player',
         Editor: './src/js/Editor',
@@ -104,11 +117,19 @@ module.exports = {
         filename: LIB_NAME +'.[name].css'
       }),
       new WebpackShellPlugin({
-        onBuildEnd: ['node ./bin/i18n-extract.js']
+        onBuildEnd: [
+          'echo "Extracting i18n"',
+          'node ./bin/i18n-extract.js',
+        ],
+        onBuildExit: [
+          'echo "Copying files to Drupal"',
+          'copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore'
+        ]
       }),
       new CopyWebpackPlugin([{
         from: './src/i18n/',
         to: './i18n/'
-      }])
+      }]),
+      new BeepPlugin()
     ]
   };

@@ -1148,7 +1148,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.data(this.get(0), name);
+        return Dom.data(this.get(0), name);
 
     }
 

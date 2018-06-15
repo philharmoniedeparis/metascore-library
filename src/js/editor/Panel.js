@@ -411,37 +411,27 @@ export default class Panel extends Dom {
             action = Dom.data(evt.target, 'action');
 
         switch(action){
+            case 'next':
             case 'previous':
                 selector = this.getToolbar().getSelector();
-                options = selector.find('option[value^="component"]');
+                options = selector.getOptions();
                 count = options.count();
 
                 if(count > 0){
-                    index = options.index(':checked') - 1;
-
-                    if(index < 0){
-                        index = count - 1;
+                    if(action === 'previous'){
+                        index = options.index('.selected') - 1;
+                        if(index < 0){
+                            index = count - 1;
+                        }
+                    }
+                    else{
+                        index = options.index('.selected') + 1;
+                        if(index >= count){
+                            index = 0;
+                        }
                     }
 
-                    selector.setValue(new Dom(options.get(index)).val());
-                }
-
-                evt.stopPropagation();
-                break;
-
-            case 'next':
-                selector = this.getToolbar().getSelector();
-                options = selector.find('option[value^="component"]');
-                count = options.count();
-
-                if(count > 0){
-                    index = options.index(':checked') + 1;
-
-                    if(index >= count){
-                        index = 0;
-                    }
-
-                    selector.setValue(new Dom(options.get(index)).val());
+                    selector.setValue(Dom.data(options.get(index), 'value'));
                 }
 
                 evt.stopPropagation();
