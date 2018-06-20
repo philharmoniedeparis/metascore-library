@@ -43,5 +43,8 @@
     "webpack": "^4.10.2",
     "webpack-cli": "^3.0.2",
     "webpack-shell-plugin": "^0.5.0"
+  },
+  "dependencies": {
+    "npm": "^6.1.0"
   }
 }

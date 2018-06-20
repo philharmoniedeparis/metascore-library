@@ -1,6 +1,8 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
 import {uuid, decodeHTML} from '../../core/utils/String';
+import {isArray} from '../../core/utils/Var';
 
 /**
  * Fired when the field's value changes
@@ -34,7 +36,8 @@ export default class Select extends Field {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': [],
-            'multiple': false
+            'multiple': false,
+            'multiLabel': Locale.t('editor.field.Select.multiple.label', '(!count selected)')
         });
     }
 
@@ -71,6 +74,7 @@ export default class Select extends Field {
 
         if(this.configs.multiple){
             this.addClass('multiple');
+            this.value = [];
         }
     }
 
@@ -91,7 +95,17 @@ export default class Select extends Field {
         const li = new Dom(evt.target),
             value = li.data('value');
 
-        this.setValue(value);
+        if(evt.shiftKey && this.configs.multiple){
+            if(li.is('.selected')){
+                this.removeValue(value);
+            }
+            else{
+                this.addValue(value);
+            }
+        }
+        else{
+            this.setValue(value);
+        }
 
         this.close();
     }
@@ -117,6 +131,7 @@ export default class Select extends Field {
      */
     setValue(value, supressEvent){
         const option = this.getOption(value);
+        const is_multiple = this.configs.multiple;
         let label;
 
         this.menu.find('.option').removeClass('selected');
@@ -131,9 +146,16 @@ export default class Select extends Field {
         }
 
         if(value !== this.value){
-            this.value = value;
-
-            this.input.val(label);
+            if(is_multiple && isArray(value)){
+                this.value = [];
+                value.forEach((val) => {
+                    this.addValue(val, true);
+                });
+            }
+            else{
+                this.value = is_multiple && !isArray(value) ? [value] : value;
+                this.input.val(label);
+            }
 
             if(supressEvent !== true){
                 this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
@@ -141,6 +163,52 @@ export default class Select extends Field {
         }
 
         return this;
+    }
+
+    addValue(value, supressEvent){
+        const option = this.getOption(value);
+        let label;
+
+        if(option.count() > 0 && !this.value.includes(value)){
+            label = decodeHTML(option.text());
+            option.addClass('selected');
+
+            this.value.push(value);
+
+            this.input.val(this.value.length > 1 ? Locale.formatString(this.configs.multiLabel, {'!count': this.value.length}) : label);
+
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+            }
+        }
+    }
+
+    removeValue(value, supressEvent){
+        let option = this.getOption(value);
+        let label;
+
+        if(option.count() > 0 && this.value.includes(value)){
+            option.removeClass('selected');
+
+            this.value.splice(this.value.indexOf(value), 1);
+
+            if(this.value.length > 1){
+                label = Locale.formatString(this.configs.multiLabel, {'!count': this.value.length});
+            }
+            else if(this.value.length === 1){
+                option = this.getOption(this.value[0]);
+                label = decodeHTML(option.text());
+            }
+            else{
+                label = '';
+            }
+
+            this.input.val(label);
+
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+            }
+        }
     }
 
     /**

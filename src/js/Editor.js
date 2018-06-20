@@ -688,8 +688,7 @@ export default class Editor extends Dom {
             this.panels.block.unsetComponent();
         }
         else{
-            dom = this.getPlayer().getComponent(`.media#${id}, .controller#${id}, .block#${id}, .block-toggler#${id}`);
-
+            dom = this.getPlayer().getComponent(`#${id}`);
             if(dom && dom._metaScore){
                 this.panels.block.setComponent(dom._metaScore);
             }

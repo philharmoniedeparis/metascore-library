@@ -55,6 +55,7 @@
 	"editor.field.Image.clear.tooltip": "Effacer la valeur",
 	"editor.field.Image.placeholder": "Parcourir ...",
 	"editor.field.Image.resize.tooltip": "Adapter la taille du récipient à l'image",
+	"editor.field.Select.multiple.label": "(!count sélectionnés)",
 	"editor.field.Time.clear.tooltip": "Clear value",
 	"editor.field.Time.in.tooltip": "Régler la valeur du champ au temps courant",
 	"editor.field.Time.out.tooltip": "Régler le temps courant à la valeur du champ",

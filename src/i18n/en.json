@@ -55,6 +55,7 @@
 	"editor.field.Image.clear.tooltip": "Clear value",
 	"editor.field.Image.placeholder": "Browse...",
 	"editor.field.Image.resize.tooltip": "Adapt container size to image",
+	"editor.field.Select.multiple.label": "(!count selected)",
 	"editor.field.Time.clear.tooltip": "Clear value",
 	"editor.field.Time.in.tooltip": "Set field value to current time",
 	"editor.field.Time.out.tooltip": "Set current time to field value",
