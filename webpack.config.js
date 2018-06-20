@@ -15,7 +15,7 @@ module.exports = {
     entry: {
         Player: ['babel-polyfill', './src/js/polyfills', './src/js/Player'],
         Editor: ['babel-polyfill', './src/js/polyfills', './src/js/Editor'],
-        API: './src/js/API'
+        API: ['./src/js/polyfills', './src/js/API']
     },
     devtool: "source-map",
     output: {
