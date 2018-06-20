@@ -5,8 +5,8 @@
     }
 
     function CustomEvent(event, params) {
-        let _params = params || {bubbles: false, cancelable: false, detail: undefined};
-        let evt = document.createEvent('CustomEvent');
+        const _params = params || {bubbles: false, cancelable: false, detail: undefined};
+        const evt = document.createEvent('CustomEvent');
 
         evt.initCustomEvent(event, _params.bubbles, _params.cancelable, _params.detail);
         return evt;
@@ -26,10 +26,22 @@
             Element.prototype.oMatchesSelector ||
             Element.prototype.webkitMatchesSelector ||
             function(s) {
-                let matches = (this.document || this.ownerDocument).querySelectorAll(s),
-                    i = matches.length;
+                const matches = (this.document || this.ownerDocument).querySelectorAll(s);
+                let i = matches.length;
                 while (--i >= 0 && matches.item(i) !== this) {continue;}
                 return i > -1;
             };
+    }
+})();
+
+// NodeList.forEach
+(function() {
+    if (window.NodeList && !NodeList.prototype.forEach) {
+        NodeList.prototype.forEach = function (callback, thisArg) {
+            const scope = thisArg || window;
+            for (let i = 0; i < this.length; i++) {
+                callback.call(scope, this[i], i, this);
+            }
+        };
     }
 })();
