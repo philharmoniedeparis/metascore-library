@@ -1,9 +1,7 @@
 const path = require("path");
-const webpack = require("webpack");
 const git = require('git-rev-sync');
 const pckg = require('./package.json');
 
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WebpackShellPlugin = require('webpack-shell-plugin');
@@ -15,8 +13,8 @@ const DIST = path.join(__dirname, "dist");
 module.exports = {
     mode: 'production',
     entry: {
-        Player: './src/js/Player',
-        Editor: './src/js/Editor',
+        Player: ['babel-polyfill', './src/js/polyfills', './src/js/Player'],
+        Editor: ['babel-polyfill', './src/js/polyfills', './src/js/Editor'],
         API: './src/js/API'
     },
     devtool: "source-map",
