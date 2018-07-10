@@ -78,14 +78,25 @@ module.exports = {
            // compiles Less to CSS
           test: /\.less$/,
           use: ExtractTextPlugin.extract({
-            fallback: "style-loader",
+            fallback: 'style-loader',
             use: [
               {
-                loader: 'css-loader'
+                loader: 'css-loader',
+                options: {
+                  importLoaders: 1
+                }
               },
               {
-                loader: 'less-loader'
+                loader: 'postcss-loader',
+                options: {
+                  plugins: () => [
+                    require('autoprefixer')({
+                      browsers: ['last 4 versions']
+                    })
+                  ]
+                }
               },
+              'less-loader'
             ],
           })
         },

@@ -82,12 +82,11 @@ export default class ContextMenu extends Dom{
      * @param {Event} evt The event object
      */
     onContextmenu(evt){
-        if(!evt.shiftKey){
+        if(!evt.ctrlKey){
             evt.preventDefault();
         }
 
         evt.stopPropagation();
-
     }
 
     /**
@@ -141,7 +140,7 @@ export default class ContextMenu extends Dom{
             return;
         }
 
-        if(evt.shiftKey){
+        if(evt.ctrlKey){
             return;
         }
 

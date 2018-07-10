@@ -230,9 +230,9 @@ export default class Player extends Dom {
 
             case 'page':
                 {
-                    const dom = this.getComponent(`.block[data-name="${params.block}"]`);
-                    if(dom && dom._metaScore){
-                        dom._metaScore.setActivePage(params.index);
+                    const block = this.getComponent(`.block[data-name="${params.block}"]`);
+                    if(block){
+                        block.setActivePage(params.index);
                     }
                 }
                 break;
@@ -251,9 +251,9 @@ export default class Player extends Dom {
                         break;
                 }
 
-                this.getComponents('.media.video, .controller, .block').forEach((dom) => {
-                    if(dom._metaScore && dom._metaScore.getName() === params.name){
-                        dom._metaScore.toggleVisibility(show);
+                this.getComponents('.media.video, .controller, .block').forEach((block) => {
+                    if(block.getName() === params.name){
+                        block.toggleVisibility(show);
                     }
                 });
                 break;
@@ -504,11 +504,11 @@ export default class Player extends Dom {
      */
     onPageActivate(evt){
         let block = evt.target._metaScore,
-            page = evt.detail.page,
+            page = evt.detail.current,
             basis = evt.detail.basis;
 
-        if(block.getProperty('synched') && (basis !== 'pagecuepoint')){
-            this.getMedia().setTime(page.getProperty('start-time'));
+        if(block.getPropertyValue('synched') && (basis !== 'pagecuepoint')){
+            this.getMedia().setTime(page.getPropertyValue('start-time'));
         }
     }
 
@@ -544,9 +544,9 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementPage(evt){
-        const dom = this.getComponent(`.block[data-name="${evt.detail.block}"]`);
-        if(dom && dom._metaScore){
-            dom._metaScore.setActivePage(evt.detail.index);
+        const block = this.getComponent(`.block[data-name="${evt.detail.block}"]`);
+        if(block){
+            block.setActivePage(evt.detail.index);
         }
     }
 
@@ -569,9 +569,9 @@ export default class Player extends Dom {
                 break;
         }
 
-        this.getComponents('.media.video, .controller, .block').forEach((dom) => {
-            if(dom._metaScore && dom._metaScore.getName() === evt.detail.block){
-                dom._metaScore.toggleVisibility(show);
+        this.getComponents('.media.video, .controller, .block').forEach((block) => {
+            if(block.getName() === evt.detail.block){
+                block.toggleVisibility(show);
             }
         });
     }
@@ -824,9 +824,11 @@ export default class Player extends Dom {
      * @method getComponent
      * @param {String} selector The CSS selector
      * @return {Component} The component
+     * TODO: improve
      */
     getComponent(selector){
-        return this.getComponents(selector).get(0);
+        const components = this.getComponents(selector);
+        return components[0];
     }
 
     /**
@@ -835,6 +837,7 @@ export default class Player extends Dom {
      * @method getComponents
      * @param {String} selector The CSS selector
      * @return {Dom} A Dom instance containing the selected components
+     * TODO: improve
      */
     getComponents(selector){
         let components;
@@ -845,7 +848,7 @@ export default class Player extends Dom {
             components = components.filter(selector);
         }
 
-        return components;
+        return components.elements.map(dom => dom._metaScore);
     }
 
     /**
@@ -1071,8 +1074,8 @@ export default class Player extends Dom {
         let block_togglers = this.getComponents('.block-toggler'),
             blocks = this.getComponents('.block, .media.video, .controller');
 
-        block_togglers.forEach((dom) => {
-            dom._metaScore.update(blocks);
+        block_togglers.forEach((block_toggler) => {
+            block_toggler.update(blocks);
         });
     }
 

@@ -157,21 +157,14 @@ export default class Controller extends Component{
      * @return {Draggable} The draggable behaviour
      */
     setDraggable(draggable){
-
-        draggable = draggable !== false;
-
-        if(this.getProperty('locked') && draggable){
+        if(this.getPropertyValue('locked') && draggable){
             return false;
         }
 
         if(draggable && !this._draggable){
             this._draggable = new Draggable({
                 'target': this,
-                'handle': this.child('.timer'),
-                'limits': {
-                    'top': 0,
-                    'left': 0
-                }
+                'handle': this.child('.timer')
             });
         }
         else if(!draggable && this._draggable){

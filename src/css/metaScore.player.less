@@ -1,5 +1,7 @@
-@import "../../vendor/prefixer.less";
-@import "variables.less";
+@block-outline: rgb(51,49,47);
+@cursor-outline: rgb(255,0,60);
+@image-outline: rgb(255,138,0);
+@text-outline: rgb(0,193,118);
 
 html,
 body{
@@ -44,7 +46,7 @@ body{
                 overflow: hidden;
                 background-color: rgb(0, 0, 0);
                 border: 0px solid rgb(0, 0, 0);
-                .border-radius(10px);
+                border-radius: 10px;
 
                 video{
                     display: block;
@@ -62,7 +64,7 @@ body{
             background-color: rgb(204,204,204);
             font-weight: bold;
             font-size: 11px;
-            .border-radius(10px);
+            border-radius: 10px;
 
             &:after{
                 content: "";
@@ -75,7 +77,7 @@ body{
                 background-repeat: no-repeat;
                 background-size: contain;
                 background-position: center center;
-                .opacity(0.5);
+                opacity: 0.5;
             }
 
             .timer{
@@ -133,7 +135,7 @@ body{
             overflow: hidden;
             background-color: rgb(238, 238, 238);
             border: 1px solid rgb(238, 238, 238);
-            .border-radius(0px);
+            border-radius: 0px;
 
             .buttons{
                 display: flex;
@@ -165,7 +167,7 @@ body{
             background-color: rgb(238, 238, 238);
             border: 1px solid rgb(204, 204, 204);
             font: normal 11px/normal Verdana, Arial, Helvetica, sans-serif;
-            .border-radius(10px);
+            border-radius: 10px;
             isolation: isolate;
 
             button{
@@ -182,6 +184,7 @@ body{
                 background-color: rgba(214, 214, 214, 0.6);
                 text-align: right;
                 z-index: 2147483647;
+                user-select: none;
 
                 .count{
                     display: inline-block;
@@ -206,7 +209,7 @@ body{
                         background-color: rgb(255, 255, 255);
                         background-image: url('../img/player/pager-buttons.png');
                         background-repeat: no-repeat;
-                        .border-radius(10px);
+                        border-radius: 10px;
                         cursor: pointer;
 
                         &.inactive{
@@ -285,7 +288,7 @@ body{
                 background-position: left top;
                 background-size: contain;
                 border: 0 solid rgb(0, 0, 0);
-                .box-sizing(border-box);
+                box-sizing: border-box;
             }
 
             &:not([data-r-index]),
@@ -305,7 +308,7 @@ body{
                 }
             }
 
-            &[data-type="Cursor"]{
+            &.Cursor{
                 z-index: 9999;
                 pointer-events: auto;
 
@@ -359,7 +362,7 @@ body{
                     }
                 }
             }
-            &[data-type="Text"]{
+            &.Text{
                 .contents{
                     overflow: auto;
 
@@ -386,7 +389,7 @@ body{
             list-style: none !important;
             background: #fff;
             border: 1px solid rgba(0, 0, 0, 0.1);
-            .box-shadow(1px 1px 0px 0px rgba(0, 0, 0, 0.25));
+            box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
 
             li{
                 position: relative;
@@ -428,7 +431,7 @@ body{
                         border-color: transparent transparent transparent #2f2f2f;
                         border-style: solid;
                         border-width: 0.4em 0 0.4em 0.4em;
-                        .transform(translateY(-50%));
+                        transform: translateY(-50%);
                         z-index: 0;
                     }
 
@@ -536,15 +539,15 @@ body{
 
         .metaScore-component{
             &.element{
-                &[data-type="Cursor"]{
+                &.Cursor{
                     outline-color: @cursor-outline;
                 }
 
-                &[data-type="Image"]{
+                &.Image{
                     outline-color: @image-outline;
                 }
 
-                &[data-type="Text"]{
+                &.Text{
                     outline-color: @text-outline;
                 }
             }
@@ -569,7 +572,7 @@ body{
                 &.block-toggler{
                     &.selected{
                         z-index: 2147483647 !important;
-                        .box-shadow(@block-outline 0px 0px 4px 2px);
+                        box-shadow: @block-outline 0px 0px 4px 2px;
                     }
 
                     &:hover,
@@ -594,16 +597,16 @@ body{
                     &.selected{
                         display: block;
 
-                        &[data-type="Cursor"]{
-                            .box-shadow(@cursor-outline 0px 0px 4px 1px);
+                        &.Cursor{
+                            box-shadow: @cursor-outline 0px 0px 4px 1px;
                         }
 
-                        &[data-type="Image"]{
-                            .box-shadow(@image-outline 0px 0px 4px 1px);
+                        &.Image{
+                            box-shadow: @image-outline 0px 0px 4px 1px;
                         }
 
-                        &[data-type="Text"]{
-                            .box-shadow(@text-outline 0px 0px 4px 1px);
+                        &.Text{
+                            box-shadow: @text-outline 0px 0px 4px 1px;
 
                             .contents{
                                 &[contenteditable]{
@@ -615,14 +618,19 @@ body{
                         }
                     }
 
-                    &[data-type="Text"]{
-                        a{
-                            pointer-events: none;
+                    &.Text{
+                        .contents{
+                            user-select: none;
+
+                            a{
+                                pointer-events: none;
+                            }
                         }
 
                         &.text-unlocked{
                             .contents{
                                 display: block;
+                                user-select: auto;
                             }
                         }
                     }

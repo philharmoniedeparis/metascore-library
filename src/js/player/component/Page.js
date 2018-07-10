@@ -116,7 +116,7 @@ export default class Page extends Component {
                         const elements = [];
 
                         this.getElements().forEach((element) => {
-                            elements.push(element.getProperties(skipDefault));
+                            elements.push(element.getPropertyValues(skipDefault));
                         });
 
                         return elements;

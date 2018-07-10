@@ -161,6 +161,7 @@
 	"editor.panel.Page.menuItems.delete": "Delete the active page",
 	"editor.panel.Page.menuItems.new": "Add a page",
 	"editor.panel.Page.title": "Page",
+	"editor.panel.multivalWarning": "The value corresponds to that of the first selected component",
 	"editor.saveGuide.LoadMask.text": "Saving...",
 	"overlay.LoadMask.bar.text": "!percent%",
 	"overlay.LoadMask.text": "Loading...",

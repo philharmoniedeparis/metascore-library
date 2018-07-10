@@ -1,4 +1,4 @@
-import Evented from './Evented';
+import EventEmitter from './EventEmitter';
 
 /**
  * Fired when the operation is complete (the request's readyState is 4)
@@ -31,7 +31,7 @@ const EVT_ABORT = 'abort';
 /**
  * A class to handle AJAX requests
  */
-export default class Ajax extends Evented {
+export default class Ajax extends EventEmitter {
 
     constructor(url, configs) {
         // call parent constructor

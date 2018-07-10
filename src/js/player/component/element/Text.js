@@ -81,19 +81,6 @@ export default class Text extends Element {
     }
 
     /**
-     * Setup the text's UI
-     *
-     * @method setupUI
-     * @private
-     */
-    setupUI() {
-        // call parent function
-        super.setupUI();
-
-        this.data('type', 'Text');
-    }
-
-    /**
      * The link click event handler
      *
      * @method onLinkClick

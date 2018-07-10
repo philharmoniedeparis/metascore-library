@@ -1,7 +1,7 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
-import {uuid, decodeHTML} from '../../core/utils/String';
+import {decodeHTML} from '../../core/utils/String';
 import {isArray} from '../../core/utils/Var';
 
 /**
@@ -10,6 +10,8 @@ import {isArray} from '../../core/utils/Var';
  * @event valuechange
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
+ * @param {Mixed[]} [added] Newly added values
+ * @param {Mixed[]} [removed] Removed values
  */
 const EVT_VALUECHANGE = 'valuechange';
 
@@ -48,24 +50,17 @@ export default class Select extends Field {
      * @private
      */
     setupUI() {
-        const uid = `field-${uuid(5)}`;
+        super.setupUI();
 
-        if(this.configs.label){
-            this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
-                .appendTo(this);
-        }
+        this.input_wrapper.addListener('click', this.onWrapperClick.bind(this));
 
-        this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
-            .addListener('click', this.onWrapperClick.bind(this))
-            .appendTo(this);
-
-        this.input = new Dom('<input/>', {'id': uid, 'readonly': true})
-            .addListener('click', this.onInputClick.bind(this))
-            .appendTo(this.input_wrapper);
+        this.input
+            .attr('readonly', true)
+            .addListener('click', this.onInputClick.bind(this));
 
         this.menu = new Dom('<ul/>', {'class': 'menu', 'tabindex': 1})
-            .addListener('blur', this.onBlur.bind(this), true)
             .addDelegate('li', 'click', this.onItemClick.bind(this))
+            .addListener('blur', this.onBlur.bind(this), true)
             .appendTo(this.input_wrapper);
 
         this.configs.options.forEach((option) => {
@@ -76,6 +71,10 @@ export default class Select extends Field {
             this.addClass('multiple');
             this.value = [];
         }
+    }
+
+    onChange(){
+        console.log('onChange');
     }
 
     onWrapperClick(){
@@ -92,33 +91,43 @@ export default class Select extends Field {
     }
 
     onItemClick(evt){
-        const li = new Dom(evt.target),
-            value = li.data('value');
+        const li = new Dom(evt.target);
+
+        if(li.hasClass('group')){
+            evt.stopImmediatePropagation();
+            evt.preventDefault();
+            return;
+        }
 
         if(evt.shiftKey && this.configs.multiple){
-            if(li.is('.selected')){
-                this.removeValue(value);
-            }
-            else{
-                this.addValue(value);
-            }
+            li.toggleClass('selected');
         }
         else{
-            this.setValue(value);
+            this.menu.find('.option').removeClass('selected');
+            li.addClass('selected');
         }
+
+        this.updateValue();
 
         this.close();
     }
 
-    open(){
-        this.addClass('open');
-        this.menu.focus(false);
-        return this;
+    addValue(value, supressEvent){
+        let options = this.menu.find(`.option[data-value="${value}"]`);
+
+        if(options.count() > 0){
+            options.addClass('selected');
+            this.updateValue(supressEvent);
+        }
     }
 
-    close(){
-        this.removeClass('open');
-        return this;
+    removeValue(value, supressEvent){
+        let options = this.menu.find(`.option[data-value="${value}"]`);
+
+        if(options.count() > 0){
+            options.removeClass('selected');
+            this.updateValue(supressEvent);
+        }
     }
 
     /**
@@ -130,85 +139,87 @@ export default class Select extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        const option = this.getOption(value);
-        const is_multiple = this.configs.multiple;
-        let label;
+        let options = this.menu.find('.option');
 
-        this.menu.find('.option').removeClass('selected');
+        options.removeClass('selected');
 
-        if(option.count() > 0){
-            label = decodeHTML(option.text());
-            option.addClass('selected');
-        }
-        else{
-            value = '';
-            label = '';
-        }
-
-        if(value !== this.value){
-            if(is_multiple && isArray(value)){
-                this.value = [];
-                value.forEach((val) => {
-                    this.addValue(val, true);
-                });
+        if(this.configs.multiple){
+            if(isArray(value)){
+                options.filter(`[data-value="${value.join('"], [data-value="')}"]`)
+                    .addClass('selected');
             }
             else{
-                this.value = is_multiple && !isArray(value) ? [value] : value;
-                this.input.val(label);
-            }
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+                options.filter(`[data-value="${value}"]`)
+                    .addClass('selected');
             }
         }
+        else{
+            options.filter(`[data-value="${value}"]`)
+                .addClass('selected');
+        }
+
+        this.updateValue(supressEvent);
 
         return this;
     }
 
-    addValue(value, supressEvent){
-        const option = this.getOption(value);
-        let label;
+    updateValue(supressEvent){
+        const options = this.menu.find('.option.selected');
+        const count = options.count();
+        const added = [];
+        const removed = [];
+        let value;
 
-        if(option.count() > 0 && !this.value.includes(value)){
-            label = decodeHTML(option.text());
-            option.addClass('selected');
+        if(this.configs.multiple){
+            value = [];
+            options.forEach((option) => {
+                value.push(Dom.data(option, 'value'));
+            });
 
-            this.value.push(value);
+            value.forEach((val) => {
+                if(!this.value.includes(val)){
+                    added.push(val);
+                }
+            });
+            this.value.forEach((val) => {
+                if(!value.includes(val)){
+                    removed.push(val);
+                }
+            });
 
-            this.input.val(this.value.length > 1 ? Locale.formatString(this.configs.multiLabel, {'!count': this.value.length}) : label);
+            if(added.length > 0 || removed.length > 0){
+                this.value = value;
 
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+                if(count > 1){
+                    this.input.val(Locale.formatString(this.configs.multiLabel, {'!count': options.count()}));
+                }
+                else if(count > 0){
+                    this.input.val(decodeHTML(options.text()));
+                }
+                else{
+                    this.input.val('');
+                }
+
+                if(supressEvent !== true){
+                    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value, 'added': added, 'removed': removed}, true, false);
+                }
+            }
+
+        }
+        else{
+            value = count > 0 ? options.data('value') : '';
+
+            if(this.value !== value){
+                this.value = value;
+                this.input.val(count > 0 ? decodeHTML(options.text()) : '');
+
+                if(supressEvent !== true){
+                    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+                }
             }
         }
-    }
 
-    removeValue(value, supressEvent){
-        let option = this.getOption(value);
-        let label;
-
-        if(option.count() > 0 && this.value.includes(value)){
-            option.removeClass('selected');
-
-            this.value.splice(this.value.indexOf(value), 1);
-
-            if(this.value.length > 1){
-                label = Locale.formatString(this.configs.multiLabel, {'!count': this.value.length});
-            }
-            else if(this.value.length === 1){
-                option = this.getOption(this.value[0]);
-                label = decodeHTML(option.text());
-            }
-            else{
-                label = '';
-            }
-
-            this.input.val(label);
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
-            }
-        }
+        return this;
     }
 
     /**
@@ -218,13 +229,10 @@ export default class Select extends Field {
      * @param {String} label The group's text label
      * @return {Dom} The created Dom object
      */
-    addGroup(label){
-        const group = new Dom('<li/>', {'class': 'group', 'text': label});
-        group.append(new Dom('<ul/>'));
-
-        this.menu.append(group);
-
-        return group;
+    addGroup(label, parent){
+        return new Dom('<li/>', {'text': label, 'title': label, 'class': 'group'})
+            .append(new Dom('<ul/>'))
+            .appendTo(parent ? parent.child('ul') : this.menu);
     }
 
     /**
@@ -232,25 +240,22 @@ export default class Select extends Field {
      *
      * @method addOption
      * @param {String} value The option's value
-     * @param {String} text The option's label
-     * @param {Dom} [group] The group to append the option to, it will be appended to the root list if not specified
+     * @param {String} label The option's label
+     * @param {Dom} [parent] A group to append the option to, it will be appended to the root list if not specified
      * @return {Dom} The created Dom object
      */
-    addOption(value, text, group){
-        const option = new Dom('<li/>', {'text': text, 'class': 'option'});
-
-        option.data('value', value);
-        option.appendTo(group ? group.child('ul') : this.menu);
-
-        return option;
+    addOption(value, label, parent){
+        return new Dom('<li/>', {'text': label, 'title': label, 'class': 'option'})
+            .data('value', value)
+            .appendTo(parent ? parent.child('ul') : this.menu);
     }
 
     getOption(value){
         return this.menu.find(`li.option[data-value="${value}"]`);
     }
 
-    getOptions(group){
-        return (group ? group : this.menu).find('li.option');
+    getOptions(parent){
+        return (parent ? parent : this.menu).find('li.option');
     }
 
     /**
@@ -282,6 +287,17 @@ export default class Select extends Field {
         option.remove();
 
         return option;
+    }
+
+    open(){
+        this.addClass('open');
+        this.menu.focus(false);
+        return this;
+    }
+
+    close(){
+        this.removeClass('open');
+        return this;
     }
 
     /**

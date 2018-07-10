@@ -1,6 +1,5 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {uuid} from '../../core/utils/String';
 import {getDecimalPlaces} from '../../core/utils/Number';
 
 /**
@@ -61,23 +60,15 @@ export default class Number extends Field {
      * @private
      */
     setupUI() {
-        let uid = `field-${uuid(5)}`,
-            buttons;
+        let buttons;
 
-        if(this.configs.label){
-            this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
-                .appendTo(this);
-        }
+        super.setupUI();
 
-        this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
-            .appendTo(this);
-
-        this.input = new Dom('<input/>', {'type': 'text', 'id': uid})
+        this.input
             .addListener('input', this.onInput.bind(this))
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('DOMMouseScroll', this.onMouseWheel.bind(this))
-            .addListener('keydown', this.onKeyDown.bind(this))
-            .appendTo(this.input_wrapper);
+            .addListener('keydown', this.onKeyDown.bind(this));
 
         if(this.configs.spinButtons){
             buttons = new Dom('<div/>', {'class': 'buttons'})
@@ -101,8 +92,6 @@ export default class Number extends Field {
         }
 
         this.addClass(this.configs.spinDirection === 'vertical' ? 'vertical' : 'horizontal');
-
-        this.addListener('change', this.onChange.bind(this));
     }
 
     /**

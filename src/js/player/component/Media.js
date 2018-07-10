@@ -449,21 +449,14 @@ export default class Media extends Component{
      * @return {Draggable} The draggable behaviour
      */
     setDraggable(draggable){
-
-        draggable = draggable !== false;
-
-        if(this.getProperty('locked') && draggable){
+        if(this.getPropertyValue('locked') && draggable){
             return false;
         }
 
         if(draggable && !this._draggable){
             this._draggable = new Draggable({
                 'target': this,
-                'handle': this,
-                'limits': {
-                    'top': 0,
-                    'left': 0
-                }
+                'handle': this
             });
         }
         else if(!draggable && this._draggable){
@@ -478,15 +471,12 @@ export default class Media extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setDraggable
+     * @method setResizable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */
     setResizable(resizable){
-
-        resizable = resizable !== false;
-
-        if(this.getProperty('locked') && resizable){
+        if(this.getPropertyValue('locked') && resizable){
             return false;
         }
 

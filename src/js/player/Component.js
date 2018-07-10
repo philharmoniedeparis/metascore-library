@@ -7,7 +7,7 @@ import CuePoint from './CuePoint';
  * Fired when a property changed
  *
  * @event propchange
- * @param {Object} component The component instance
+ * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
  */
@@ -53,7 +53,7 @@ export default class Component extends Dom {
 
         this.setupUI();
 
-        this.setProperties(this.configs);
+        this.setPropertyValues(this.configs);
     }
 
     static getDefaults(){
@@ -106,7 +106,7 @@ export default class Component extends Dom {
      * @return {String} The name
      */
     getName() {
-        return this.getProperty('name');
+        return this.getPropertyValue('name');
     }
 
     /**
@@ -128,7 +128,28 @@ export default class Component extends Dom {
      * @return {Boolean} Whether the component has the given property
      */
     hasProperty(name){
-        return name in this.configs.properties;
+        return name in this.getProperties();
+    }
+
+    /**
+     * Get a given property
+     *
+     * @method getProperty
+     * @param {String} name The name of the property
+     * @return {Mixed} The property
+     */
+    getProperty(name){
+        return this.getProperties()[name];
+    }
+
+    /**
+     * Get all properties
+     *
+     * @method getProperties
+     * @return {Object[]} The properties
+     */
+    getProperties(){
+        return this.configs.properties;
     }
 
     /**
@@ -138,26 +159,30 @@ export default class Component extends Dom {
      * @param {String} name The name of the property
      * @return {Mixed} The value of the property
      */
-    getProperty(name){
-        if(this.hasProperty(name) && 'getter' in this.configs.properties[name]){
-            return this.configs.properties[name].getter.call(this);
+    getPropertyValue(name){
+        if(this.hasProperty(name)){
+            const prop = this.getProperty(name);
+
+            if('getter' in prop){
+                return prop.getter.call(this);
+            }
         }
     }
 
     /**
      * Get the values of all properties
      *
-     * @method getProperties
+     * @method getPropertyValues
      * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
      * @return {Object} The values of the properties as name/value pairs
      */
-    getProperties(skipDefaults){
+    getPropertyValues(skipDefaults){
         let values = {},
             value;
 
         skipDefaults = skipDefaults === undefined ? true : skipDefaults;
 
-		Object.entries(this.configs.properties).forEach(([name, prop]) => {
+		Object.entries(this.getProperties()).forEach(([name, prop]) => {
             if('getter' in prop){
                 value = prop.getter.call(this, skipDefaults);
 
@@ -179,7 +204,7 @@ export default class Component extends Dom {
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @chainable
      */
-    setProperty(name, value, supressEvent){
+    setPropertyValue(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
             this.configs.properties[name].setter.call(this, value);
 
@@ -194,14 +219,14 @@ export default class Component extends Dom {
     /**
      * Set property values
      *
-     * @method setProperties
+     * @method setPropertyValues
      * @param {Object} properties The list of properties to set as name/value pairs
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @chainable
      */
-    setProperties(properties, supressEvent){
+    setPropertyValues(properties, supressEvent){
 		Object.entries(properties).forEach(([key, value]) => {
-            this.setProperty(key, value, supressEvent);
+            this.setPropertyValue(key, value, supressEvent);
         });
 
         return this;
@@ -238,8 +263,8 @@ export default class Component extends Dom {
      * @return {player.CuePoint} The created cuepoint
      */
     setCuePoint(configs){
-        let inTime = this.getProperty('start-time'),
-            outTime = this.getProperty('end-time');
+        let inTime = this.getPropertyValue('start-time'),
+            outTime = this.getPropertyValue('end-time');
 
         if(this.cuepoint){
             this.cuepoint.destroy();

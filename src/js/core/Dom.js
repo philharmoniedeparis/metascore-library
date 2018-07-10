@@ -43,6 +43,8 @@ const bubbleEvents = {
 
 export default class Dom {
 
+    //TODO: improve by using a NodeList for the list of elements
+
     /**
      * A class for Dom manipulation
      *
@@ -339,6 +341,33 @@ export default class Dom {
         }
 
         element.addEventListener(type, callback, useCapture);
+
+        return element;
+    }
+
+    /**
+     * Add an event listener that only executes once on an element
+     *
+     * @method addListenerOnce
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
+     */
+    static addOneTimeListener(element, type, callback, useCapture){
+        if(useCapture === undefined){
+            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        }
+
+        const handler = function(evt){
+            element.removeEventListener(type, handler, useCapture);
+            return callback(evt);
+        };
+
+        element.addEventListener(type, handler, useCapture);
 
         return element;
     }
@@ -668,15 +697,7 @@ export default class Dom {
      * @return {Boolean} Whether the element matches the CSS selector
      */
     static is(element, selector){
-        let win;
-
-        if(element instanceof Element){
-            return Element.prototype.matches.call(element, selector);
-        }
-
-        win = this.getElementWindow(element);
-
-        return (element instanceof win.Element) && Element.prototype.matches.call(element, selector);
+        return element.matches(selector);
     }
 
     /**
@@ -959,6 +980,25 @@ export default class Dom {
     }
 
     /**
+     * Add an event listener that only executes once on all the elements managed by the Dom object
+     *
+     * @method addOneTimeListener
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
+     */
+    addOneTimeListener(type, callback, useCapture) {
+		this.forEach((element) => {
+            Dom.addOneTimeListener(element, type, callback, useCapture);
+        });
+
+        return this;
+    }
+
+    /**
      * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
      *
      * @method addDelegate
@@ -966,29 +1006,14 @@ export default class Dom {
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The original event
-     * @param {Element} callback.match The first matched descendent
      * @param {Mixed} [scope] The value to use as this when executing the callback function
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
      * @chainable
      */
     addDelegate(selector, type, callback, scope, useCapture) {
-        scope = scope || this;
-
         this.addListener(type, (evt) => {
-            let element = evt.target,
-                match;
-
-            while (element) {
-                if(Dom.is(element, selector)){
-                    match = element;
-                    break;
-                }
-
-                element = element.parentElement;
-            }
-
-            if(match){
-                callback.call(scope, evt, match);
+            if(Dom.is(evt.target, selector)) {
+                callback.call(scope || this, evt);
             }
         }, useCapture);
 

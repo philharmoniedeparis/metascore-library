@@ -11,7 +11,7 @@ export default class Block extends Panel {
      * @extends editor.Panel
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={'title':'Block', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @param {Object} [configs.toolbarConfigs={title:'Block', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     constructor(configs) {
         // call parent constructor
@@ -34,6 +34,20 @@ export default class Block extends Panel {
         });
     }
 
+    updateUI(){
+        super.updateUI();
+
+        if(this.components.length > 0){
+            const show_delete = this.components.every((comp) => {
+                return !comp.instanceOf('Controller') && !comp.instanceOf('Media');
+            });
+
+            this.getToolbar().toggleMenuItem('delete', show_delete);
+        }
+
+        return this;
+    }
+
     /**
      * Get the currently associated component's label
      *
@@ -42,7 +56,7 @@ export default class Block extends Panel {
      */
     getSelectorLabel(component){
         if(component.instanceOf('Block')){
-            if(component.getProperty('synched')){
+            if(component.getPropertyValue('synched')){
                 return Locale.t('editor.panel.Block.selector.labelSynched', '!name (synched)', {'!name': component.getName()});
             }
 
