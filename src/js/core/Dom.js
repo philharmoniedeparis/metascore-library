@@ -232,7 +232,7 @@ export default class Dom {
      * @return {HTML Document } The document
      */
     static getElementDocument(element){
-        return element.ownerDocument;
+        return element.ownerDocument || null;
     }
 
     /**
@@ -246,7 +246,7 @@ export default class Dom {
     static getElementWindow(element){
         const doc = this.getElementDocument(element);
 
-        return doc.defaultView || doc.parentWindow;
+        return doc ? (doc.defaultView || doc.parentWindow) : null;
     }
 
     /**
@@ -1353,9 +1353,14 @@ export default class Dom {
      * @return {Element} The matched element
      */
     closest(selector){
-        return this.elements.find((element) => {
-            return Dom.closest(element, selector) !== null;
+        let el = null;
+
+        this.elements.some((element) => {
+            el = Dom.closest(element, selector);
+            return el !== null;
         });
+
+        return el;
     }
 
 }

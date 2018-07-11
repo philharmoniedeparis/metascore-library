@@ -53,7 +53,7 @@ export default class Element extends Panel {
                     'Cursor': Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
                     'Image': Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
                     'Text': Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
-                    'delete': Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
+                    'delete': Locale.t('editor.panel.Element.menuItems.delete', 'Delete the selected elements')
                 }
             }
         });
@@ -101,6 +101,7 @@ export default class Element extends Panel {
 
             if(component.instanceOf('Image') && name === 'background-image'){
                 this.onBeforeImageSet(name, value);
+                return;
             }
 
             if(component.instanceOf('Text') && name === 'text-locked'){
@@ -173,41 +174,107 @@ export default class Element extends Panel {
      * @param {String} url The new image url
      */
     onBeforeImageSet(property, url){
-        let component = this.getComponent(),
-            base_uri = component.get(0).baseURI,
-            old_src, new_src;
+        const promises = [];
 
-        old_src = component.getPropertyValue(property);
-        new_src = url;
+        this.components.forEach((component) => {
+            const promise = new Promise((resolve, reject) => {
+                const name = component.getPropertyValue('name');
+                const width = component.getPropertyValue('width');
+                const height = component.getPropertyValue('height');
 
-        if(old_src){
-            this.getImageMetadata(base_uri + old_src, (old_metadata) => {
-                let name = component.getPropertyValue('name'),
-                    width = component.getPropertyValue('width'),
-                    height = component.getPropertyValue('height');
+                const base_uri = component.get(0).baseURI;
+                const old_src = component.getPropertyValue(property);
+                const new_src = url;
 
-                if((old_metadata.name === name) || (old_metadata.width === width && old_metadata.height === height)){
-                    this.getImageMetadata(base_uri + new_src, (new_metadata) => {
-                        if(old_metadata.name === name){
-                            this.refreshFieldValue('name', new_metadata.name);
+                if(old_src){
+                    this.getImageMetadata(base_uri + old_src, (old_error, old_metadata) => {
+                        if(old_error){
+                            reject(old_error);
+                            return;
                         }
 
-                        if(old_metadata.width === width && old_metadata.height === height){
-                            this.refreshFieldValue('width', new_metadata.width);
-                            this.refreshFieldValue('height', new_metadata.height);
+                        const new_values = {
+                            [property]: new_src
+                        };
+                        const old_values = {
+                            [property]: old_src
+                        };
+
+                        if((old_metadata.name !== name) && (old_metadata.width !== width || old_metadata.height !== height)){
+                            resolve({
+                                component: component,
+                                new_values: new_values,
+                                old_values: old_values
+                            });
                         }
+
+                        this.getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
+                            if(new_error){
+                                reject(new_error);
+                                return;
+                            }
+
+                            if(old_metadata.name === name){
+                                new_values.name = new_metadata.name;
+                                old_values.name = name;
+                            }
+
+                            if(old_metadata.width === width && old_metadata.height === height){
+                                new_values.width = new_metadata.width;
+                                new_values.height = new_metadata.height;
+                                old_values.width = width;
+                                old_values.height = height;
+                            }
+
+                            resolve({
+                                component: component,
+                                new_values: new_values,
+                                old_values: old_values
+                            });
+                        });
                     });
                 }
-            });
-        }
-        else{
-            this.getImageMetadata(base_uri + new_src, (new_metadata) => {
-                this.refreshFieldValue('name', new_metadata.name);
-                this.refreshFieldValue('width', new_metadata.width);
-                this.refreshFieldValue('height', new_metadata.height);
-            });
-        }
+                else{
+                    this.getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
+                        if(new_error){
+                            reject(new_error);
+                            return;
+                        }
 
+                        resolve({
+                            component: component,
+                            new_values: {
+                                [property]: new_src,
+                                name: new_metadata.name,
+                                width: new_metadata.width,
+                                height: new_metadata.height
+                            },
+                            old_values: {
+                                [property]: old_src,
+                                name: name,
+                                width: width,
+                                height: height
+                            }
+                        });
+                    });
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+
+            promises.push(promise);
+        });
+
+        Promise.all(promises).then((results) => {
+            results = results.filter(result => result !== undefined);
+
+            results.forEach((result) => {
+                this.setPropertyValues(result.component, result.new_values);
+            });
+
+            this.triggerEvent('valueschange', results, false);
+        });
     }
 
     /**
@@ -220,6 +287,7 @@ export default class Element extends Panel {
      */
     getImageMetadata(url, callback){
         var img = new Dom('<img/>')
+            .addListener('error', callback)
             .addListener('load', () => {
                 let el = img.get(0),
                     matches, name;
@@ -229,7 +297,7 @@ export default class Element extends Panel {
                     name = matches[1];
                 }
 
-                callback({
+                callback(null, {
                     'name': name,
                     'width': el.naturalWidth,
                     'height': el.naturalHeight

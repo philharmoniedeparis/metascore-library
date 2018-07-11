@@ -612,27 +612,41 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onBlockPanelValueChange(evt){
-        let panel = this.panels.block,
-            blocks = evt.detail.components,
-            old_values = evt.detail.old_values,
-            new_values = evt.detail.new_values;
+        let sets = evt.detail;
+
+        const update = (key) => {
+            const doUpdateBlockTogglers = sets.some((set) => {
+                return (
+                    ('x' in set[key]) ||
+                    ('y' in set[key]) ||
+                    ('width' in set[key]) ||
+                    ('height' in set[key])
+                );
+            });
+
+            if(doUpdateBlockTogglers){
+                this.getPlayer().updateBlockTogglers();
+            }
+        };
 
         this.history.add({
             'undo': () => {
-                blocks.forEach((block, index) => {
-                    panel.setPropertyValues(block, old_values[index]);
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
                 });
+
+                update('old_values');
             },
             'redo': () => {
-                blocks.forEach((block) => {
-                    panel.setPropertyValues(block, new_values);
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
                 });
+
+                update('new_values');
             }
         });
 
-        if(('x' in new_values) || ('y' in new_values) || ('width' in new_values) || ('height' in new_values)){
-            this.getPlayer().updateBlockTogglers();
-        }
+        update('new_values');
     }
 
     /**
@@ -649,11 +663,11 @@ export default class Editor extends Dom {
         switch(action){
             case 'synched':
             case 'non-synched':
-                this.addPlayerComponent('block', {'synched': action === 'synched'}, this.getPlayer());
+                this.addPlayerComponents('block', {'type': 'Block', 'synched': action === 'synched'}, this.getPlayer());
                 break;
 
             case 'block-toggler':
-                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
+                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
                 break;
 
             case 'delete':
@@ -766,63 +780,49 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onPagePanelValueChange(evt){
-        let //panel = this.panels.page,
-            pages = evt.detail.components,
-            //old_values = evt.detail.old_values,
-            new_values = evt.detail.new_values;
+        let sets = evt.detail;
 
-        if(('start-time' in new_values) || ('end-time' in new_values)){
-            pages.forEach((page) => {
-                const block = page.getBlock();
-                if(block.getPropertyValue('synched')){
-                    const index = block.getActivePageIndex();
-                    const previous_page = block.getPage(index - 1);
-                    const next_page = block.getPage(index + 1);
+        const update = (key) => {
+            sets.forEach((set) => {
+                if(('start-time' in set[key]) || ('end-time' in set[key])){
+                    const page = set.component;
+                    const block = page.getBlock();
 
-                    if(('start-time' in new_values) && previous_page){
-                        previous_page.setPropertyValue('end-time', new_values['start-time']);
-                    }
+                    if(block.getPropertyValue('synched')){
+                        const index = block.getPageIndex(page);
+                        const previous_page = block.getPage(index - 1);
+                        const next_page = block.getPage(index + 1);
 
-                    if(('end-time' in new_values) && next_page){
-                        next_page.setPropertyValue('start-time', new_values['end-time']);
+                        if(('start-time' in set[key]) && previous_page){
+                            previous_page.setPropertyValue('end-time', set[key]['start-time']);
+                        }
+
+                        if(('end-time' in set[key]) && next_page){
+                            next_page.setPropertyValue('start-time', set[key]['end-time']);
+                        }
                     }
                 }
             });
-        }
+        };
 
-        // TODO: fix
-        /*this.history.add({
+        this.history.add({
             'undo': () => {
-                panel.setPropertyValues(page, old_values);
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    if(('start-time' in new_values) && previous_page){
-                        previous_page.setPropertyValue('end-time', old_values['start-time']);
-                    }
-
-                    if(('end-time' in new_values) && next_page){
-                        next_page.setPropertyValue('start-time', old_values['end-time']);
-                    }
-
-                    this.updateElementSelector();
-                }
+                update('old_values');
             },
             'redo': () => {
-                panel.setPropertyValues(page, new_values);
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    if(('start-time' in new_values) && previous_page){
-                        previous_page.setPropertyValue('end-time', new_values['start-time']);
-                    }
-
-                    if(('end-time' in new_values) && next_page){
-                        next_page.setPropertyValue('start-time', new_values['end-time']);
-                    }
-
-                    this.updateElementSelector();
-                }
+                update('new_values');
             }
-        });*/
+        });
+
+        update('new_values');
     }
 
     /**
@@ -839,7 +839,7 @@ export default class Editor extends Dom {
         switch(action){
             case 'new':
                 block = this.panels.block.getComponent();
-                this.addPlayerComponent('page', {}, block);
+                this.addPlayerComponents('page', {}, block);
                 break;
 
             case 'delete':
@@ -896,32 +896,35 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onElementPanelValueChange(evt){
-        let editor = this,
-            panel = this.panels.element,
-            element = evt.detail.component,
-            old_values = evt.detail.old_values,
-            new_values = evt.detail.new_values;
+        let sets = evt.detail;
 
-        if(('start-time' in new_values) || ('end-time' in new_values)){
-            editor.updateElementSelector();
-        }
+        const update = (key) => {
+            const doUpdateElementSelector = sets.some((set) => {
+                return ('r-index' in set[key]);
+            });
+            if(doUpdateElementSelector){
+                this.updateElementSelector();
+            }
+        };
 
         this.history.add({
-            'undo': function(){
-                panel.setPropertyValues(element, old_values);
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    editor.updateElementSelector();
-                }
+                update('old_values');
             },
-            'redo': function(){
-                panel.setPropertyValues(element, new_values);
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    editor.updateElementSelector();
-                }
+                update('new_values');
             }
         });
+
+        update('new_values');
     }
 
     /**
@@ -940,7 +943,7 @@ export default class Editor extends Dom {
             case 'Image':
             case 'Text':
                 page = this.panels.page.getComponent();
-                this.addPlayerComponent('element', {'type': action}, page);
+                this.addPlayerComponents('element', {'type': action}, page);
                 break;
 
             case 'delete':
@@ -1329,28 +1332,28 @@ export default class Editor extends Dom {
         else if(component.instanceOf('Page')){
             const block = component.getBlock();
 
-            if(this.panels.page.getComponents().includes(component)){
-                if(evt.shiftKey){
-                    this.panels.block.unsetComponent(block);
-                }
-                else{
-                    const elements = component.getElements();
-                    elements.forEach((element) => {
-                        this.panels.element.unsetComponent(element);
-                    });
-                }
+            if(evt.shiftKey && this.panels.page.getComponents().includes(component)){
+                this.panels.block.unsetComponent(block);
+
+                const elements = component.getElements();
+                elements.forEach((element) => {
+                    this.panels.element.unsetComponent(element);
+                });
             }
             else{
                 this.panels.block.setComponent(block, evt.shiftKey);
                 this.panels.page.setComponent(component, evt.shiftKey);
+
+                if(!evt.shiftKey){
+                    this.panels.element.unsetComponents();
+                }
             }
         }
         else{
-            if(this.panels.block.getComponents().includes(component)){
-                if(evt.shiftKey){
-                    this.panels.block.unsetComponent(component);
-                }
-                else{
+            if(evt.shiftKey && this.panels.block.getComponents().includes(component)){
+                this.panels.block.unsetComponent(component);
+
+                if(component.instanceOf('Block')){
                     const pages = component.getPages();
                     pages.forEach((page) => {
                         this.panels.page.unsetComponent(page);
@@ -1359,6 +1362,15 @@ export default class Editor extends Dom {
             }
             else{
                 this.panels.block.setComponent(component, evt.shiftKey);
+
+                if(!evt.shiftKey){
+                    this.panels.page.unsetComponents();
+                    this.panels.element.unsetComponents();
+                }
+
+                if(component.instanceOf('Block')){
+                    this.panels.page.setComponent(component.getActivePage(), evt.shiftKey);
+                }
             }
         }
 
@@ -1716,8 +1728,6 @@ export default class Editor extends Dom {
             evt.stopPropagation();
         });
 
-        this.setupContextMenus();
-
         this.detailsOverlay = new GuideDetails({
                 'groups': this.configs.user_groups
             })
@@ -1736,6 +1746,7 @@ export default class Editor extends Dom {
             .setDirty(false)
             .setEditing(false)
             .updateMainmenu()
+            .setupContextMenus()
             .loadPlayerFromHash();
 
         this.triggerEvent(EVT_READY, {'editor': this}, true, false);
@@ -1756,119 +1767,160 @@ export default class Editor extends Dom {
                     'items': {
                         'add-element-cursor': {
                             'text': Locale.t('editor.contextmenu.add-element-cursor', 'Cursor'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Cursor'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            'callback': (el) => {
+                                this.addPlayerComponents('element', {'type': 'Cursor'}, el.closest('.metaScore-component.page')._metaScore);
                             }
                         },
                         'add-element-image': {
                             'text': Locale.t('editor.contextmenu.add-element-image', 'Image'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Image'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            'callback': (el) => {
+                                this.addPlayerComponents('element', {'type': 'Image'}, el.closest('.metaScore-component.page')._metaScore);
                             }
                         },
                         'add-element-text': {
                             'text': Locale.t('editor.contextmenu.add-element-text', 'Text'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Text'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            'callback': (el) => {
+                                this.addPlayerComponents('element', {'type': 'Text'}, el.closest('.metaScore-component.page')._metaScore);
                             }
                         }
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
-                'copy-element': {
-                    'text': Locale.t('editor.contextmenu.copy-element', 'Copy element'),
-                    'callback': (context) => {
-                        this.clipboard.setData('element', Dom.closest(context, '.metaScore-component.element')._metaScore.getPropertyValues());
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.element') ? true : false);
-                    }
-                },
-                'paste-element': {
-                    'text': Locale.t('editor.contextmenu.paste-element', 'Paste element'),
-                    'callback': (context) => {
-                        const component = this.clipboard.getData();
-                        component.x += 5;
-                        component.y += 5;
+                'select-elements': {
+                    'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
+                    'callback': (el) => {
+                        const page = el.closest('.metaScore-component.page')._metaScore;
 
-                        this.addPlayerComponent('element', component, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.page.setComponent(page);
+                        page.getElements().forEach((element, index) => {
+                            this.panels.element.setComponent(element, index > 0);
+                        });
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
-                'delete-element': {
-                    'text': Locale.t('editor.contextmenu.delete-element', 'Delete element'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.element')._metaScore, true);
+                'copy-elements': {
+                    'text': () => {
+                        if(this.panels.element.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
+                        }
+                        return Locale.t('editor.contextmenu.copy-element', 'Copy element');
                     },
-                    'toggler': (context) => {
+                    'callback': (el) => {
+                        const configs = [];
+                        let components;
+
+                        if(this.panels.element.getComponents().length > 0){
+                            components = this.panels.element.getComponents();
+                        }
+                        else{
+                            components = [el.closest('.metaScore-component.element')._metaScore];
+                        }
+
+                        components.forEach((component) => {
+                            const config = component.getPropertyValues();
+                            config.x += 5;
+                            config.y += 5;
+
+                            configs.push(config);
+                        });
+
+                        this.clipboard.setData('element', configs);
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && ((this.panels.element.getComponents().length > 0) || (el.closest('.metaScore-component.element') ? true : false));
+                    }
+                },
+                'paste-elements': {
+                    'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
+                    'callback': (el) => {
+                        this.addPlayerComponents('element', this.clipboard.getData(), el.closest('.metaScore-component.page')._metaScore);
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (el.closest('.metaScore-component.page') ? true : false);
+                    }
+                },
+                'delete-elements': {
+                    'text': () => {
+                        if(this.panels.element.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
+                        }
+                        return Locale.t('editor.contextmenu.delete-element', 'Delete element');
+                    },
+                    'callback': (el) => {
+                        this.deletePlayerComponent(el.closest('.metaScore-component.element')._metaScore, true);
+                    },
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
-
-                        const dom = Dom.closest(context, '.metaScore-component.element');
+                        if(this.panels.element.getComponents().length > 0){
+                            return true;
+                        }
+                        const dom = el.closest('.metaScore-component.element');
                         return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'lock-element': {
                     'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.element')._metaScore.setPropertyValue('locked', true);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.element')._metaScore.setPropertyValue('locked', true);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.element');
+                        const dom = el.closest('.metaScore-component.element');
                         return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'unlock-element': {
                     'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.element')._metaScore.setPropertyValue('locked', false);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.element')._metaScore.setPropertyValue('locked', false);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.element');
+                        const dom = el.closest('.metaScore-component.element');
                         return dom && dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'element-separator': {
                     'class': 'separator',
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
                     }
                 },
                 'add-page': {
                     'text': Locale.t('editor.contextmenu.add-page', 'Add a page'),
-                    'callback': (context) => {
-                        this.addPlayerComponent('page', {}, Dom.closest(context, '.metaScore-component.block')._metaScore);
+                    'callback': (el) => {
+                        this.addPlayerComponents('page', {}, el.closest('.metaScore-component.block')._metaScore);
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block') ? true : false);
                     }
                 },
                 'delete-page': {
                     'text': Locale.t('editor.contextmenu.delete-page', 'Delete page'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.page')._metaScore, true);
+                    'callback': (el) => {
+                        this.deletePlayerComponent(el.closest('.metaScore-component.page')._metaScore, true);
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
                 'page-separator': {
                     'class': 'separator',
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block, .metaScore-component.page') ? true : false);
                     }
                 },
                 'add-block': {
@@ -1877,13 +1929,13 @@ export default class Editor extends Dom {
                         'add-block-synched': {
                             'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
                             'callback': () => {
-                                this.addPlayerComponent('block', {'synched': true}, this.getPlayer());
+                                this.addPlayerComponents('block', {'type': 'Block', 'synched': true}, this.getPlayer());
                             }
                         },
                         'add-block-non-synched': {
                             'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
                             'callback': () => {
-                                this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
+                                this.addPlayerComponents('block', {'type': 'Block', 'synched': false}, this.getPlayer());
                             }
                         },
                         'separator': {
@@ -1892,7 +1944,7 @@ export default class Editor extends Dom {
                         'add-block-toggler': {
                             'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
                             'callback': () => {
-                                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
+                                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
                             }
                         }
                     },
@@ -1900,77 +1952,80 @@ export default class Editor extends Dom {
                         return (this.editing === true);
                     }
                 },
+                'select-blocks': {
+                    'text': Locale.t('editor.contextmenu.select-blocks', 'Select all blocks'),
+                    'callback': () => {
+                        const components = this.getPlayer().getComponents('.block, .block-toggler, .media.video, .controller');
+                        components.forEach((component, index) => {
+                            this.panels.block.setComponent(component, index > 0);
+                        });
+                    },
+                    'toggler': () => {
+                        return this.editing === true;
+                    }
+                },
                 'copy-block': {
                     'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
-                    'callback': (context) => {
-                        const component = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
-                            type = component.instanceOf('BlockToggler') ? 'block-toggler' : 'block';
+                    'callback': (el) => {
+                        const component = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
+                        const config = component.getPropertyValues();
+                        config.x += 5;
+                        config.y += 5;
 
-                        this.clipboard.setData(type, component.getPropertyValues());
+                        this.clipboard.setData('block', config);
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
                     }
                 },
                 'paste-block': {
                     'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
                     'callback': () => {
-                        const type = this.clipboard.getDataType(),
-                            component = this.clipboard.getData();
-
-                        component.x += 5;
-                        component.y += 5;
-
-                        if(type === 'block-toggler'){
-                            this.getPlayer().addBlockToggler(component);
-                        }
-                        else{
-                            this.getPlayer().addBlock(component);
-                        }
+                        this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
                     },
                     'toggler': () => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block' || this.clipboard.getDataType() === 'block-toggler');
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block');
                     }
                 },
                 'delete-block': {
                     'text': Locale.t('editor.contextmenu.delete-block', 'Delete block'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
+                    'callback': (el) => {
+                        this.deletePlayerComponent(el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+                        const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'lock-block': {
                     'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', true);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', true);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+                        const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'unlock-block': {
                     'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', false);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', false);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
+                        const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && dom._metaScore.getPropertyValue('locked');
                     }
                 },
@@ -1985,6 +2040,8 @@ export default class Editor extends Dom {
                 }
             }})
             .appendTo(this.workspace);
+
+        return this;
     }
 
     /**
@@ -2121,7 +2178,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     updatePageSelector() {
-        let blocks = this.panels.block.getComponents(),
+        let blocks = this.panels.block.getComponents().filter(block => block.instanceOf('Block')),
             toolbar = this.panels.page.getToolbar(),
             selector = toolbar.getSelector();
 
@@ -2132,7 +2189,7 @@ export default class Editor extends Dom {
             selector.enable();
 
             // add each page to the selector grouped by block
-            blocks.filter(block => block.instanceOf('Block')).forEach((block) => {
+            blocks.forEach((block) => {
                 const optgroup = blocks.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(block));
 
                 block.getPages().forEach((page, index) => {
@@ -2306,54 +2363,61 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Add a component to the player
+     * Add components to the player
      *
-     * @method addPlayerComponent
+     * @method addPlayerComponents
      * @private
-     * @param {String} type The component's type
-     * @param {Object} configs Configs to pass to the component
-     * @param {Mixed} parent The component's parent
+     * @param {String} type The components' type
+     * @param {Array} configs An array of configs to use when creating the components
+     * @param {Mixed} parent The components' parent
      * @chainable
      */
-    addPlayerComponent(type, configs, parent){
-        let panel, component,
-            page_configs,
-            index, previous_page, start_time, end_time;
+    addPlayerComponents(type, configs, parent){
+        if(!isArray(configs)){
+            configs = [configs];
+        }
 
         switch(type){
-            case 'element':
-                panel = this.panels.element;
-                component = parent.addElement(Object.assign({'name': Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
+            case 'element': {
+                const panel = this.panels.element;
+                const components = [];
 
-                panel.setComponent(component);
+                configs.forEach((config, index) => {
+                    const component = parent.addElement(Object.assign({'name': Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, config));
+                    panel.setComponent(component, index > 0);
+                    components.push(component);
+                });
 
                 this.history.add({
                     'undo': function(){
                         panel.unsetComponents();
-                        component.remove();
+                        components.forEach((component) => {
+                            component.remove();
+                        })
                     },
                     'redo': function(){
-                        parent.addElement(component);
-                        panel.setComponent(component);
+                        components.forEach((component, index) => {
+                            parent.addElement(component);
+                            panel.setComponent(component, index > 0);
+                        });
                     }
                 });
                 break;
+            }
 
-            case 'page':
-                panel = this.panels.page;
+            case 'page': {
+                const panel = this.panels.page;
+                const config = configs[0]; // only one page can be added at a time !
+                const index = parent.getActivePageIndex();
 
                 if(parent.getPropertyValue('synched')){
-                    index = parent.getActivePageIndex();
-                    previous_page = parent.getPage(index);
+                    const previous_page = parent.getPage(index);
 
-                    start_time = this.getPlayer().getMedia().getTime();
-                    end_time = previous_page.getPropertyValue('end-time');
-
-                    configs['start-time'] = start_time;
-                    configs['end-time'] = end_time;
+                    config['start-time'] = this.getPlayer().getMedia().getTime();
+                    config['end-time'] = previous_page.getPropertyValue('end-time');
                 }
 
-                component = parent.addPage(configs, index+1);
+                const component = parent.addPage(config, index + 1);
                 panel.setComponent(component);
 
                 this.history.add({
@@ -2363,56 +2427,58 @@ export default class Editor extends Dom {
                         parent.setActivePage(index);
                     },
                     'redo': function(){
-                        parent.addPage(component, index+1);
+                        parent.addPage(component, index + 1);
                         panel.setComponent(component);
                     }
                 });
                 break;
+            }
 
-            case 'block':
-                panel = this.panels.block;
-                component = parent.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
+            case 'block': {
+                const panel = this.panels.block;
+                const components = [];
 
-                page_configs = {};
+                configs.forEach((config, index) => {
+                    let component;
+                    let page_configs;
 
-                if(component.getPropertyValue('synched')){
-                    page_configs['start-time'] = 0;
-                    page_configs['end-time'] = parent.getMedia().getDuration();
-                }
+                    switch(config.type){
+                        case 'BlockToggler':
+                            component = parent.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, config));
+                            break;
 
-                component.addPage(page_configs);
+                        default:
+                            component = parent.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
 
-                panel.setComponent(component);
+                            // add a page
+                            page_configs = {};
+                            if(component.getPropertyValue('synched')){
+                                page_configs['start-time'] = 0;
+                                page_configs['end-time'] = parent.getMedia().getDuration();
+                            }
+                            component.addPage(page_configs);
+                    }
+
+                    panel.setComponent(component, index > 0);
+                    components.push(component);
+                });
 
                 this.history.add({
                     'undo': function(){
                         panel.unsetComponents();
-                        component.remove();
+                        components.forEach((component) => {
+                            component.remove();
+                        });
                     },
                     'redo': function(){
-                        parent.addBlock(component);
-                        panel.setComponent(component);
+                        components.forEach((component, index) => {
+                            parent[`add${component.getPropertyValue('type')}`](component);
+                            panel.setComponent(component, index > 0);
+                        });
                     }
                 });
                 break;
-
-            case 'block-toggler':
-                panel = this.panels.block;
-                component = parent.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
-
-                panel.setComponent(component);
-
-                this.history.add({
-                    'undo': function(){
-                        panel.unsetComponents();
-                        component.remove();
-                    },
-                    'redo': function(){
-                        parent.addBlockToggler(component);
-                        panel.setComponent(component);
-                    }
-                });
-                break;
+            }
         }
 
         this.player_frame.focus();
@@ -2704,18 +2770,7 @@ export default class Editor extends Dom {
 
         // append blocks data
         components.forEach((component) => {
-            if(component.instanceOf('Media')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'media'}, component.getPropertyValues())));
-            }
-            else if(component.instanceOf('Controller')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'controller'}, component.getPropertyValues())));
-            }
-            else if(component.instanceOf('BlockToggler')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'block-toggler'}, component.getPropertyValues())));
-            }
-            else if(component.instanceOf('Block')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'block'}, component.getPropertyValues())));
-            }
+            data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
         });
 
         // add a loading mask

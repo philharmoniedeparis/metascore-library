@@ -98,6 +98,12 @@ export default class Media extends Component{
             'type': 'audio',
             'useFrameAnimation': true,
             'properties': {
+                'type': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {

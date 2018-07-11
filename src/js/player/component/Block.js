@@ -45,6 +45,12 @@ export default class Block extends Component {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
+                'type': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'name': {
                     'type': 'Text',
                     'configs': {

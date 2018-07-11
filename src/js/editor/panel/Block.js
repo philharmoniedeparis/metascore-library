@@ -28,7 +28,7 @@ export default class Block extends Panel {
                     'synched': Locale.t('editor.panel.Block.menuItems.synched', 'Add a synchronized block'),
                     'non-synched': Locale.t('editor.panel.Block.menuItems.non-synched', 'Add a non-synchronized block'),
                     'block-toggler': Locale.t('editor.panel.Block.menuItems.block-toggler', 'Add a block toggler'),
-                    'delete': Locale.t('editor.panel.Block.menuItems.delete', 'Delete the active block')
+                    'delete': Locale.t('editor.panel.Block.menuItems.delete', 'Delete the selected blocks')
                 }
             }
         });
@@ -38,7 +38,7 @@ export default class Block extends Panel {
         super.updateUI();
 
         if(this.components.length > 0){
-            const show_delete = this.components.every((comp) => {
+            const show_delete = this.components.length > 0 && this.components.every((comp) => {
                 return !comp.instanceOf('Controller') && !comp.instanceOf('Media');
             });
 
@@ -60,7 +60,7 @@ export default class Block extends Panel {
                 return Locale.t('editor.panel.Block.selector.labelSynched', '!name (synched)', {'!name': component.getName()});
             }
 
-                return Locale.t('editor.panel.Block.selector.labelNotSynched', '!name (not synched)', {'!name': component.getName()});
+            return Locale.t('editor.panel.Block.selector.labelNotSynched', '!name (not synched)', {'!name': component.getName()});
 
         }
 

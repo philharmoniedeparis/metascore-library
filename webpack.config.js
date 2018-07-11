@@ -5,7 +5,6 @@ const pckg = require('./package.json');
 
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const WebpackShellPlugin = require('webpack-shell-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const LIB_NAME = pckg.name;
@@ -13,7 +12,7 @@ const DIST = path.join(__dirname, "dist");
 
 class BeepPlugin{
   apply(compiler){
-    compiler.plugin('done', (stats) => {
+    compiler.hooks.done.tap('BeepPlugin', (stats) => {
       if(stats.compilation.errors && stats.compilation.errors.length){
         beep(2);
       }
@@ -21,6 +20,53 @@ class BeepPlugin{
         beep();
       }
     });
+  }
+}
+
+class ShellPlugin{
+  constructor(options){
+    this.options = options;
+  }
+
+  apply(compiler){
+    var exec = require('child_process').exec;
+
+    if('onBuildStart' in this.options){
+      compiler.hooks.compilation.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildStart.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+
+        this.options.onBuildStart = [];
+      });
+    }
+
+    if('onBuildEnd' in this.options){
+      compiler.hooks.afterEmit.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildEnd.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+
+        this.options.onBuildEnd = [];
+      });
+    }
+
+    if('onBuildExit' in this.options){
+      compiler.hooks.done.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildExit.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+      });
+    }
   }
 }
 
@@ -127,7 +173,7 @@ module.exports = {
       new ExtractTextPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
-      new WebpackShellPlugin({
+      new ShellPlugin({
         onBuildEnd: [
           'echo "Extracting i18n"',
           'node ./bin/i18n-extract.js',

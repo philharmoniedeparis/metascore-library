@@ -73,10 +73,6 @@ export default class Select extends Field {
         }
     }
 
-    onChange(){
-        console.log('onChange');
-    }
-
     onWrapperClick(){
         this.close();
     }

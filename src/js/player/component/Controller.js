@@ -12,6 +12,12 @@ export default class Controller extends Component{
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
+                'type': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'locked': {
                     'type': 'Checkbox',
                     'configs': {

@@ -26,7 +26,7 @@ export default class Page extends Panel {
                 'title': Locale.t('editor.panel.Page.title', 'Page'),
                 'menuItems': {
                     'new': Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
-                    'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
+                    'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the selected pages')
                 }
             }
         });

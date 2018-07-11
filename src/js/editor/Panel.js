@@ -97,7 +97,8 @@ export default class Panel extends Dom {
 
         this
             .addDelegate('.fields .field', 'valuechange', this.onFieldValueChange.bind(this))
-            .addDelegate('.fields .imagefield', 'resize', this.onImageFieldResize.bind(this));
+            .addDelegate('.fields .imagefield', 'resize', this.onImageFieldResize.bind(this))
+            .updateUI();
     }
 
     static getDefaults() {
@@ -125,9 +126,9 @@ export default class Panel extends Dom {
 
             Object.entries(properties).forEach(([key, prop]) => {
                 if(prop.editable !== false){
-                    let configs = prop.configs || {};
+                    const configs = prop.configs || {};
 
-                    let field = new FIELD_TYPES[prop.type](configs)
+                    const field = new FIELD_TYPES[prop.type](configs)
                         .data('name', key)
                         .appendTo(this.contents);
 
@@ -536,7 +537,20 @@ export default class Panel extends Dom {
 
         this.refreshFieldValues(fields, true);
 
-        this.triggerEvent(EVT_VALUESCHANGE, {'components': this.components, 'old_values': this._beforeDragValues, 'new_values': this.getPropertyValues(fields)}, false);
+        const values = this.components.map((component, index) => {
+            const new_values = {};
+            fields.forEach((field) => {
+                new_values[field] = component.getPropertyValue(field)
+            });
+
+            return {
+                component: component,
+                new_values: new_values,
+                old_values: this._beforeDragValues[index],
+            };
+        });
+
+        this.triggerEvent(EVT_VALUESCHANGE, values, false);
 
         delete this._beforeDragValues;
     }
@@ -548,8 +562,12 @@ export default class Panel extends Dom {
      * @private
      */
     onComponentResizeStart(){
-        const values = this.getPropertyValues(['x', 'y', 'width', 'height']);
-        this._beforeResizeValues = [values];
+        this._beforeResizeValues = {
+            'x': this.getPropertyValue('x'),
+            'y': this.getPropertyValue('y'),
+            'width': this.getPropertyValue('width'),
+            'height': this.getPropertyValue('height'),
+        };
     }
 
     /**
@@ -569,12 +587,17 @@ export default class Panel extends Dom {
      * @private
      */
     onComponentResizeEnd(evt){
-        let component = evt.target._metaScore,
-            fields = ['x', 'y', 'width', 'height'];
+        const component = evt.target._metaScore;
+        const fields = ['x', 'y', 'width', 'height'];
+        const new_values = {};
 
         this.refreshFieldValues(fields, true);
 
-        this.triggerEvent(EVT_VALUESCHANGE, {'components': [component], 'old_values': this._beforeResizeValues, 'new_values': this.getPropertyValues(fields)}, false);
+        fields.forEach((field) => {
+            new_values[field] = component.getPropertyValue(field)
+        });
+
+        this.triggerEvent(EVT_VALUESCHANGE, [{'component': component, 'old_values': this._beforeResizeValues, 'new_values': new_values}], false);
 
         delete this._beforeResizeValues;
     }
@@ -589,19 +612,31 @@ export default class Panel extends Dom {
     onFieldValueChange(evt){
         const name = evt.detail.field.data('name');
         const value = evt.detail.value;
-        const old_values = [];
+        const values = [];
 
         this.components.forEach((component) => {
-            old_values.push({
+            const old_values = {
                 [name]: component.getPropertyValue(name)
-            });
+            };
 
             component.setPropertyValue(name, value);
+
+            const new_values = {
+                [name]: component.getPropertyValue(name)
+            };
+
+            values.push({
+                component: component,
+                new_values: new_values,
+                old_values: old_values,
+            });
         });
 
         this.toggleMultival(evt.detail.field, false);
 
-        this.triggerEvent(EVT_VALUESCHANGE, {'components': this.components, 'old_values': old_values, 'new_values': this.getPropertyValues([name])}, false);
+        this.triggerEvent(EVT_VALUESCHANGE, values, false);
+
+
     }
 
     /**
@@ -616,26 +651,34 @@ export default class Panel extends Dom {
             return;
         }
 
-        const callback = (load_evt) => {
-            const width = load_evt.target.width;
-            const height = load_evt.target.height;
-            const old_values = [];
+        new Dom('<img/>')
+            .addListener('load', (load_evt) => {
+                const width = load_evt.target.width;
+                const height = load_evt.target.height;
 
-            this.components.forEach((component) => {
-                old_values.push({
-                    'width': component.getPropertyValue('width'),
-                    'height': component.getPropertyValue('height')
+                const values = [];
+                this.components.forEach((component) => {
+                    const old_values = {
+                        'width': component.getPropertyValue('width'),
+                        'height': component.getPropertyValue('height')
+                    };
+
+                    component.setPropertyValues({'width': width, 'height': height});
+
+                    const new_values = {
+                        'width': component.getPropertyValue('width'),
+                        'height': component.getPropertyValue('height')
+                    };
+
+                    values.push({
+                        component: component,
+                        new_values: new_values,
+                        old_values: old_values,
+                    });
                 });
 
-                component.setPropertyValue('width', width);
-                component.setPropertyValue('height', height);
-            });
-
-            this.triggerEvent(EVT_VALUESCHANGE, {'components': this.components, 'old_values': old_values, 'new_values': this.getPropertyValues(['width', 'height'])}, false);
-        };
-
-        new Dom('<img/>')
-            .addListener('load', callback)
+                this.triggerEvent(EVT_VALUESCHANGE, values, false);
+            })
             .attr('src', this.getComponent().get(0).baseURI + evt.detail.value);
     }
 
@@ -700,28 +743,6 @@ export default class Panel extends Dom {
         });
 
         return this;
-    }
-
-    /**
-     * Get the associated component's properties values
-     *
-     * @method getPropertyValues
-     * @param {Array} [names] The names of properties, if not set, the panel's field names are used
-     * @return {Object} A list of values keyed by property name
-     */
-    getPropertyValues(names){
-        const values = {};
-        const component = this.getComponent();
-
-        names = names || Object.keys(this.getField());
-
-        names.forEach((name) => {
-            if(!this.getField(name).disabled){
-                values[name] = component.getPropertyValue(name);
-            }
-        });
-
-        return values;
     }
 
     /**

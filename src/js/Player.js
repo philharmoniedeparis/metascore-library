@@ -627,16 +627,16 @@ export default class Player extends Dom {
 
         this.json.blocks.forEach((block) => {
             switch(block.type){
-                case 'media':
+                case 'Media':
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
                         .setSources([this.json.media]);
                     break;
 
-                case 'controller':
+                case 'Controller':
                     this.controller = this.addController(block);
                     break;
 
-                case 'block-toggler':
+                case 'BlockToggler':
                     this.addBlockToggler(block);
                     break;
 
@@ -860,19 +860,27 @@ export default class Player extends Dom {
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
-        const media = new Media(configs)
-            .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
-            .addListener('waiting', this.onMediaWaiting.bind(this))
-            .addListener('seeking', this.onMediaSeeking.bind(this))
-            .addListener('seeked', this.onMediaSeeked.bind(this))
-            .addListener('playing', this.onMediaPlaying.bind(this))
-            .addListener('play', this.onMediaPlay.bind(this))
-            .addListener('pause', this.onMediaPause.bind(this))
-            .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
-            .addListener('suspend', this.onMediaSuspend.bind(this))
-            .addListener('stalled', this.onMediaStalled.bind(this))
-            .addListener('error', this.onMediaError.bind(this))
-            .appendTo(this);
+        let media;
+
+        if(configs instanceof Media){
+            media = configs;
+        }
+        else{
+            media = new Media(configs)
+                .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
+                .addListener('waiting', this.onMediaWaiting.bind(this))
+                .addListener('seeking', this.onMediaSeeking.bind(this))
+                .addListener('seeked', this.onMediaSeeked.bind(this))
+                .addListener('playing', this.onMediaPlaying.bind(this))
+                .addListener('play', this.onMediaPlay.bind(this))
+                .addListener('pause', this.onMediaPause.bind(this))
+                .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
+                .addListener('suspend', this.onMediaSuspend.bind(this))
+                .addListener('stalled', this.onMediaStalled.bind(this))
+                .addListener('error', this.onMediaError.bind(this));
+        }
+
+        media.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
@@ -890,9 +898,17 @@ export default class Player extends Dom {
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
-        const controller = new Controller(configs)
-            .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
-            .appendTo(this);
+        let controller;
+
+        if(configs instanceof Controller){
+            controller = configs;
+        }
+        else{
+            controller = new Controller(configs)
+                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
+        }
+
+        controller.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
@@ -910,8 +926,16 @@ export default class Player extends Dom {
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        const toggler = new BlockToggler(configs)
-            .appendTo(this);
+        let toggler;
+
+        if(configs instanceof BlockToggler){
+            toggler = configs;
+        }
+        else{
+            toggler = new BlockToggler(configs);
+        }
+
+        toggler.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_BLOCKTOGGLERADD, {'player': this, 'blocktoggler': toggler}, true, false);
