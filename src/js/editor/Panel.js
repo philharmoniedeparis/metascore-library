@@ -267,7 +267,7 @@ export default class Panel extends Dom {
      * @return {Component[]} The components
      */
     getComponents() {
-        return this.components;
+        return Array.from(this.components);
     }
 
     /**

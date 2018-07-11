@@ -503,11 +503,10 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPageActivate(evt){
-        let block = evt.target._metaScore,
-            page = evt.detail.current,
-            basis = evt.detail.basis;
+        const block = evt.target._metaScore;
+        const page = evt.detail.current;
 
-        if(block.getPropertyValue('synched') && (basis !== 'pagecuepoint')){
+        if(block.getPropertyValue('synched')){
             this.getMedia().setTime(page.getPropertyValue('start-time'));
         }
     }

@@ -293,7 +293,7 @@ export default class Block extends Component {
      * @param {Event} evt The event object
      */
     onPageCuePointStart(evt){
-        this.setActivePage(evt.target._metaScore, 'pagecuepoint');
+        this.setActivePage(evt.target._metaScore, true);
     }
 
     /**
@@ -495,7 +495,7 @@ export default class Block extends Component {
      * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
      * @chainable
      */
-    setActivePage(page, basis, supressEvent){
+    setActivePage(page, supressEvent){
         const previous = this.getActivePage();
 
         if(isNumber(page)){
@@ -512,7 +512,7 @@ export default class Block extends Component {
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': page, 'previous': previous, 'basis': basis});
+                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': page, 'previous': previous});
             }
         }
 

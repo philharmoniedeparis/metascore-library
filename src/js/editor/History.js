@@ -56,7 +56,7 @@ export default class History extends EventEmitter {
 
     static getDefaults() {
         return {
-            'max_commands': 30
+            'max_commands': 20
         };
     }
 

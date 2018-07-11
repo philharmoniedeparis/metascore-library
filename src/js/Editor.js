@@ -657,8 +657,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onBlockPanelToolbarClick(evt){
-        let block,
-            action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
             case 'synched':
@@ -670,10 +669,11 @@ export default class Editor extends Dom {
                 this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
                 break;
 
-            case 'delete':
-                block = this.panels.block.getComponent();
-                this.deletePlayerComponent(block, true);
+            case 'delete': {
+                const blocks = this.panels.block.getComponents().filter(block => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                this.deletePlayerComponents('block', blocks);
                 break;
+            }
         }
 
         evt.stopPropagation();
@@ -710,7 +710,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onPageSet(evt){
-        let block = this.panels.block.getComponent(),
+        let block = evt.detail.component.getBlock(),
             index, previous_page, next_page,
             start_time_field = this.panels.page.getField('start-time'),
             end_time_field = this.panels.page.getField('end-time');
@@ -833,19 +833,20 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onPagePanelToolbarClick(evt){
-        let block, page,
-            action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
-            case 'new':
-                block = this.panels.block.getComponent();
+            case 'new': {
+                const block = this.panels.block.getComponent();
                 this.addPlayerComponents('page', {}, block);
                 break;
+            }
 
-            case 'delete':
-                page = this.panels.page.getComponent();
-                this.deletePlayerComponent(page, true);
+            case 'delete': {
+                const pages = this.panels.page.getComponents();
+                this.deletePlayerComponents('page', pages);
                 break;
+            }
         }
 
         evt.stopPropagation();
@@ -859,16 +860,19 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onPagePanelSelectorChange(evt){
-        let block = this.panels.block.getComponent(),
-            id, page;
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.page.setComponent(component, true);
+                component.getBlock().setActivePage(component, true);
+            });
+        }
 
-        if(block){
-            id = evt.detail.value;
-            page = this.getPlayer().getComponent(`.page#${id}`);
-
-            if(page){
-                block.setActivePage(page);
-            }
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.page.unsetComponent(component);
+            });
         }
     }
 
@@ -935,21 +939,22 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onElementPanelToolbarClick(evt){
-        let page, element,
-            action = Dom.data(evt.target, 'action');
+        let action = Dom.data(evt.target, 'action');
 
         switch(action){
             case 'Cursor':
             case 'Image':
-            case 'Text':
-                page = this.panels.page.getComponent();
+            case 'Text': {
+                const page = this.panels.page.getComponent();
                 this.addPlayerComponents('element', {'type': action}, page);
                 break;
+            }
 
-            case 'delete':
-                element = this.panels.element.getComponent();
-                this.deletePlayerComponent(element, true);
+            case 'delete': {
+                const elements = this.panels.element.getComponents();
+                this.deletePlayerComponents('element', elements);
                 break;
+            }
         }
     }
 
@@ -1402,12 +1407,9 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageactivate:event"}}Block.pageactivate{{/crossLink}}
      */
     onBlockPageActivate(evt){
-        let page, basis;
+        const page = evt.detail.current;
 
-        page = evt.detail.current;
-        basis = evt.detail.basis;
-
-        if((basis !== 'pagecuepoint') || (page.getBlock() === this.panels.block.getComponent())){
+        if(page.getBlock() === this.panels.block.getComponent()){
             this.panels.page.setComponent(page);
         }
     }
@@ -1852,7 +1854,11 @@ export default class Editor extends Dom {
                         return Locale.t('editor.contextmenu.delete-element', 'Delete element');
                     },
                     'callback': (el) => {
-                        this.deletePlayerComponent(el.closest('.metaScore-component.element')._metaScore, true);
+                        let components = this.panels.element.getComponents();
+                        if(components.length === 0){
+                            components = el.closest('.metaScore-component.element')._metaScore;
+                        }
+                        this.deletePlayerComponents('element', components);
                     },
                     'toggler': (el) => {
                         if(this.editing !== true){
@@ -1896,7 +1902,13 @@ export default class Editor extends Dom {
                 'element-separator': {
                     'class': 'separator',
                     'toggler': (el) => {
-                        return (this.editing === true) && (el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        if(this.panels.element.getComponents().length > 0){
+                            return true;
+                        }
+                        return (el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
                     }
                 },
                 'add-page': {
@@ -1911,7 +1923,7 @@ export default class Editor extends Dom {
                 'delete-page': {
                     'text': Locale.t('editor.contextmenu.delete-page', 'Delete page'),
                     'callback': (el) => {
-                        this.deletePlayerComponent(el.closest('.metaScore-component.page')._metaScore, true);
+                        this.deletePlayerComponents('page', el.closest('.metaScore-component.page')._metaScore);
                     },
                     'toggler': (el) => {
                         return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
@@ -1987,16 +1999,27 @@ export default class Editor extends Dom {
                         return (this.editing === true) && (this.clipboard.getDataType() === 'block');
                     }
                 },
-                'delete-block': {
-                    'text': Locale.t('editor.contextmenu.delete-block', 'Delete block'),
+                'delete-blocks': {
+                    'text': () => {
+                        if(this.panels.block.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
+                        }
+                        return Locale.t('editor.contextmenu.delete-block', 'Delete block');
+                    },
                     'callback': (el) => {
-                        this.deletePlayerComponent(el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
+                        let components = this.panels.block.getComponents().filter(block => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                        if(components.length === 0){
+                            components = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
+                        }
+                        this.deletePlayerComponents('block', components);
                     },
                     'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
-
+                        if(this.panels.block.getComponents().length > 0){
+                            return true;
+                        }
                         const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
                         return dom && !dom._metaScore.getPropertyValue('locked');
                     }
@@ -2487,43 +2510,49 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Remove a component from the player
+     * Remove components from the player
      *
-     * @method deletePlayerComponent
+     * @method deletePlayerComponents
      * @private
-     * @param {player.Component} component The component
+     * @param {Array} components The components
      * @chainable
      */
-    deletePlayerComponent(component, confirm){
-        let editor = this,
-            player = this.getPlayer(),
-            panel, block, page,
-            index, configs, auto_page,
-            type, alert_msg;
-
-        if(component.instanceOf('Block') || component.instanceOf('BlockToggler')){
-            type = 'block';
-        }
-        else if(component.instanceOf('Page')){
-            type = 'page';
-        }
-        else if(component.instanceOf('Element')){
-            type = 'element';
+    deletePlayerComponents(type, components, confirm){
+        if(!isArray(components)){
+            components = [components];
         }
 
-        if(type && (confirm === true)){
+        if(confirm !== false){
+            let alert_msg;
+
             switch(type){
                 case 'block':
-                    alert_msg = Locale.t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
+                    if(components.length > 1){
+                        alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', {'@count': components.length});
+                    }
+                    else{
+                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', {'@name': components[0].getName()});
+                    }
                     break;
 
                 case 'page':
-                    block = component.getBlock();
-                    alert_msg = Locale.t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
+                    if(components.length > 1){
+                        alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', {'@count': components.length});
+                    }
+                    else{
+                        const block = components[0].getBlock();
+                        const index = block.getPageIndex(components[0]) + 1;
+                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', {'@index': index, '@block': block.getName()});
+                    }
                     break;
 
                 case 'element':
-                    alert_msg = Locale.t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
+                    if(components.length > 1){
+                        alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', {'@count': components.length});
+                    }
+                    else{
+                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', {'@name': components[0].getName()});
+                    }
                     break;
             }
 
@@ -2531,116 +2560,135 @@ export default class Editor extends Dom {
                 'parent': this,
                 'text': alert_msg,
                 'buttons': {
-                    'confirm': Locale.t('editor.deletePlayerComponent.yes', 'Yes'),
-                    'cancel': Locale.t('editor.deletePlayerComponent.no', 'No')
+                    'confirm': Locale.t('editor.deletePlayerComponents.yes', 'Yes'),
+                    'cancel': Locale.t('editor.deletePlayerComponents.no', 'No')
                 },
                 'autoShow': true
             })
             .addClass('delete-player-component')
             .addListener('buttonclick', (evt) => {
                 if(evt.detail.action === 'confirm'){
-                    editor.deletePlayerComponent(component, false);
+                    this.deletePlayerComponents(type, components, false);
                 }
             });
         }
         else{
             switch(type){
-                case 'block':
-                    panel = this.panels.block;
+                case 'block': {
+                    const panel = this.panels.block;
 
-                    if(panel.getComponent() === component){
-                        panel.unsetComponents();
-                    }
-
-                    component.remove();
-
-                    this.history.add({
-                        'undo': function(){
-                            if(component.instanceOf('BlockToggler')){
-                                player.addBlockToggler(component);
-                            }
-                            else{
-                                player.addBlock(component);
-                            }
-                            panel.setComponent(component);
-                        },
-                        'redo': function(){
-                            panel.unsetComponents();
-                            component.remove();
-                        }
+                    components.forEach((component) => {
+                        panel.unsetComponent(component);
+                        component.remove();
                     });
 
-                    if(!component.instanceOf('BlockToggler')){
-                        player.updateBlockTogglers();
-                    }
-                    break;
-
-                case 'page':
-                    panel = this.panels.page;
-                    block = component.getBlock();
-                    index = block.getActivePageIndex();
-
-                    panel.unsetComponents();
-                    block.removePage(component);
-
-                    if(block.getPageCount() < 1){
-                        configs = {};
-
-                        if(block.getPropertyValue('synched')){
-                            configs['start-time'] = 0;
-                            configs['end-time'] = player.getMedia().getDuration();
-                        }
-
-                        auto_page = block.addPage(configs);
-                        panel.setComponent(auto_page);
-                    }
-
-                    block.setActivePage(Math.max(0, index-1));
-
                     this.history.add({
-                        'undo': function(){
-                            if(auto_page){
-                                block.removePage(auto_page, true);
-                            }
-
-                            block.addPage(component, index);
-                            panel.setComponent(component);
+                        'undo': () => {
+                            const player = this.getPlayer();
+                            components.forEach((component) => {
+                                player[`add${component.getPropertyValue('type')}`](component);
+                            });
                         },
-                        'redo': function(){
-                            panel.unsetComponents();
-                            block.removePage(component, true);
-
-                            if(auto_page){
-                                block.addPage(auto_page);
-                                panel.setComponent(auto_page);
-                            }
-
-                            block.setActivePage(index-1);
+                        'redo': () => {
+                            components.forEach((component) => {
+                                panel.unsetComponent(component);
+                                component.remove();
+                            });
                         }
                     });
                     break;
+                }
 
-                case 'element':
-                    panel = this.panels.element;
-                    page = component.getPage();
+                case 'page': {
+                    const panel = this.panels.page;
+                    const context = [];
 
-                    if(panel.getComponent() === component){
-                        panel.unsetComponents();
-                    }
+                    components.forEach((component) => {
+                        const block = component.getBlock();
+                        const index = block.getActivePageIndex();
+                        const player = this.getPlayer();
+                        let auto_page;
 
-                    component.remove();
+                        panel.unsetComponent(component);
+                        block.removePage(component);
+
+                        if(block.getPageCount() < 1){
+                            const configs = {};
+
+                            if(block.getPropertyValue('synched')){
+                                configs['start-time'] = 0;
+                                configs['end-time'] = player.getMedia().getDuration();
+                            }
+
+                            auto_page = block.addPage(configs);
+                            panel.setComponent(auto_page);
+                        }
+
+                        block.setActivePage(Math.max(0, index-1));
+
+                        context.push({
+                            'component': component,
+                            'block': block,
+                            'index': index,
+                            'auto_page': auto_page
+                        });
+                    });
 
                     this.history.add({
                         'undo': function(){
-                            page.addElement(component);
-                            panel.setComponent(component);
+                            context.forEach((ctx) => {
+                                if(ctx.auto_page){
+                                    ctx.block.removePage(ctx.auto_page, true);
+                                }
+
+                                ctx.block.addPage(ctx.component, ctx.index);
+                            });
                         },
                         'redo': function(){
-                            panel.unsetComponents();
-                            component.remove();
+                            context.forEach((ctx) => {
+                                panel.unsetComponent(ctx.component);
+                                ctx.block.removePage(ctx.component, true);
+
+                                if(ctx.auto_page){
+                                    ctx.block.addPage(ctx.auto_page);
+                                }
+
+                                ctx.block.setActivePage(ctx.index-1);
+                            });
                         }
                     });
                     break;
+                }
+
+                case 'element': {
+                    const panel = this.panels.element;
+                    const context = [];
+
+                    components.forEach((component) => {
+                        context.push({
+                            'component': component,
+                            'page': component.getPage()
+                        });
+
+                        panel.unsetComponent(component);
+                        component.remove();
+                    });
+
+                    this.history.add({
+                        'undo': function(){
+                            context.forEach((ctx) => {
+                                ctx.page.addElement(ctx.component);
+                            });
+                        },
+                        'redo': function(){
+                            context.forEach((ctx) => {
+                                panel.unsetComponent(ctx.component);
+                                ctx.component.remove();
+                            });
+                        }
+                    });
+                    break;
+                }
             }
 
             this.player_frame.focus();
