@@ -1,9 +1,9 @@
-export default class Evented{
+export default class EventEmitter{
 
     /**
      * A base class for event handling
      *
-     * @class Evented
+     * @class EventEmitter
      * @constructor
      */
     constructor() {

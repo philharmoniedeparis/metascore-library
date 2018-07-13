@@ -39,11 +39,11 @@ export default class ContextMenu extends Dom{
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.tasks = {};
-        this.context = null;
 
         // fix event handlers scope
         this.onTargetContextmenu = this.onTargetContextmenu.bind(this);
         this.onTargetMousedown = this.onTargetMousedown.bind(this);
+        this.onWindowKeyup = this.onWindowKeyup.bind(this);
         this.onTaskClick = this.onTaskClick.bind(this);
 
         list = new Dom('<ul/>')
@@ -82,12 +82,11 @@ export default class ContextMenu extends Dom{
      * @param {Event} evt The event object
      */
     onContextmenu(evt){
-        if(!evt.shiftKey){
+        if(!evt.ctrlKey){
             evt.preventDefault();
         }
 
         evt.stopPropagation();
-
     }
 
     /**
@@ -141,7 +140,7 @@ export default class ContextMenu extends Dom{
             return;
         }
 
-        if(evt.shiftKey){
+        if(evt.ctrlKey){
             return;
         }
 
@@ -174,6 +173,20 @@ export default class ContextMenu extends Dom{
     }
 
     /**
+     * Window's keyup event handler
+     *
+     * @method onWindowKeyup
+     * @private
+     */
+    onWindowKeyup(evt){
+        console.log('onWindowKeyup');
+
+        if(evt.keyCode === 27){
+            this.hide();
+        }
+    }
+
+    /**
      * Task's click event handler
      *
      * @method onTaskClick
@@ -184,7 +197,7 @@ export default class ContextMenu extends Dom{
         const action = new Dom(evt.target).data('action');
 
         if(action in this.tasks){
-            if(this.tasks[action].callback){
+            if('callback' in this.tasks[action]){
                 this.tasks[action].callback(this.context);
                 this.hide();
             }
@@ -229,14 +242,27 @@ export default class ContextMenu extends Dom{
         let task, subtasks;
 
         task = new Dom('<li/>', {'data-action': action})
-            .addListener('click', this.onTaskClick)
             .appendTo(parent);
 
+        this.tasks[action] = {
+            'toggler': 'toggler' in configs ? configs.toggler : true,
+            'el': task
+        };
+
         if('text' in configs){
-            task.text(configs.text);
+            if(isFunction(configs.text)){
+                this.tasks[action].text = configs.text;
+            }
+            else{
+                task.text(configs.text);
+            }
         }
 
-        if(!('callback' in configs)){
+        if('callback' in configs && isFunction(configs.callback)){
+            this.tasks[action].callback = configs.callback;
+            task.addListener('click', this.onTaskClick);
+        }
+        else{
             task.addClass('no-callback');
         }
 
@@ -254,12 +280,6 @@ export default class ContextMenu extends Dom{
                 this.addTask(subkey, subtask, subtasks);
             });
         }
-
-        this.tasks[action] = {
-            'toggler': 'toggler' in configs ? configs.toggler : true,
-            'callback': 'callback' in configs ? configs.callback : null,
-            'el': task
-        };
 
         return this;
     }
@@ -290,11 +310,16 @@ export default class ContextMenu extends Dom{
         let window, window_width, window_height,
             menu_el, menu_width, menu_height;
 
-        this.context = el;
+        this.context = new Dom(el);
 
         if(this.tasks){
+
             Object.entries(this.tasks).forEach(([, task]) => {
                 const active = isFunction(task.toggler) ? task.toggler(this.context) === true : task.toggler !== false;
+
+                if('text' in task && isFunction(task.text)){
+                    task.el.text(task.text(this.context));
+                }
 
                 if(active){
                     task.el.removeClass('disabled');
@@ -311,7 +336,10 @@ export default class ContextMenu extends Dom{
         super.show();
 
         menu_el = this.get(0);
-        window = Dom.getElementWindow(this.context);
+        window = Dom.getElementWindow(el);
+
+        Dom.addListener(Dom.getElementWindow(this.target.get(0)), 'keyup', this.onWindowKeyup);
+
         window_width = window.innerWidth;
         window_height = window.innerHeight;
         menu_width = menu_el.offsetWidth;
@@ -341,9 +369,14 @@ export default class ContextMenu extends Dom{
     hide() {
         if(this.target){
             this.target.removeListener('mousedown', this.onTargetMousedown);
+
+            const window = Dom.getElementWindow(this.target.get(0));
+            if(window){
+                Dom.removeListener(window, 'keyup', this.onWindowKeyup);
+            }
         }
 
-        this.context = null;
+        delete this.context;
 
         // call parent function
         super.hide();

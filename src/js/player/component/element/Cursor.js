@@ -79,10 +79,10 @@ export default class Cursor extends Element {
                         return this.data('direction');
                     },
                     'setter': function(value){
-                        const cursor_width = this.getProperty('cursor-width');
+                        const cursor_width = this.getPropertyValue('cursor-width');
 
                         this.data('direction', value);
-                        this.setProperty('cursor-width', cursor_width, true);
+                        this.setPropertyValue('cursor-width', cursor_width, true);
                     }
                 },
                 'acceleration': {
@@ -106,13 +106,13 @@ export default class Cursor extends Element {
                         'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
                     },
                     'getter': function(skipDefault){
-                        const direction = this.getProperty('direction');
+                        const direction = this.getPropertyValue('direction');
                         const prop = direction === 'bottom' || direction === 'top' ? 'height' : 'width';
                         const value = parseInt(this.cursor.css(prop, undefined, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
-                        const direction = this.getProperty('direction');
+                        const direction = this.getPropertyValue('direction');
                         const prop = direction === 'bottom' || direction === 'top' ? 'height' : 'width';
                         this.cursor.css(prop, `${value}px`);
                     }
@@ -147,8 +147,6 @@ export default class Cursor extends Element {
         // call parent function
         super.setupUI();
 
-        this.data('type', 'Cursor');
-
         this.cursor = new Dom('<div/>', {'class': 'cursor'})
             .appendTo(this.contents);
 
@@ -168,27 +166,27 @@ export default class Cursor extends Element {
             direction, acceleration,
             rect;
 
-        inTime = this.getProperty('start-time');
-        outTime = this.getProperty('end-time');
-        direction = this.getProperty('direction');
-        acceleration = this.getProperty('acceleration');
+        inTime = this.getPropertyValue('start-time');
+        outTime = this.getPropertyValue('end-time');
+        direction = this.getPropertyValue('direction');
+        acceleration = this.getPropertyValue('acceleration');
         rect = this.get(0).getBoundingClientRect();
 
         switch(direction){
             case 'left':
-                pos = (rect.right - evt.clientX) / this.getProperty('width');
+                pos = (rect.right - evt.clientX) / this.getPropertyValue('width');
                 break;
 
             case 'bottom':
-                pos = (evt.clientY - rect.top) / this.getProperty('height');
+                pos = (evt.clientY - rect.top) / this.getPropertyValue('height');
                 break;
 
             case 'top':
-                pos = (rect.bottom - evt.clientY) / this.getProperty('height');
+                pos = (rect.bottom - evt.clientY) / this.getPropertyValue('height');
                 break;
 
             default:
-                pos = (evt.clientX - rect.left) / this.getProperty('width');
+                pos = (evt.clientX - rect.left) / this.getPropertyValue('width');
         }
 
         if(!acceleration || acceleration === 1){
@@ -211,12 +209,12 @@ export default class Cursor extends Element {
     onCuePointUpdate(evt){
         let width, height,
             curTime, inTime, outTime, pos,
-            direction = this.getProperty('direction'),
-            acceleration = this.getProperty('acceleration');
+            direction = this.getPropertyValue('direction'),
+            acceleration = this.getPropertyValue('acceleration');
 
         curTime = evt.target.getMedia().getTime();
-        inTime = this.getProperty('start-time');
-        outTime = this.getProperty('end-time');
+        inTime = this.getPropertyValue('start-time');
+        outTime = this.getPropertyValue('end-time');
 
         if(!acceleration || acceleration === 1){
             pos = (curTime - inTime) / (outTime - inTime);
@@ -227,25 +225,25 @@ export default class Cursor extends Element {
 
         switch(direction){
             case 'left':
-                width = this.getProperty('width');
+                width = this.getPropertyValue('width');
                 pos = Math.min(width * pos, width);
                 this.cursor.css('right', `${pos}px`);
                 break;
 
             case 'bottom':
-                height = this.getProperty('height');
+                height = this.getPropertyValue('height');
                 pos = Math.min(height * pos, height);
                 this.cursor.css('top', `${pos}px`);
                 break;
 
             case 'top':
-                height = this.getProperty('height');
+                height = this.getPropertyValue('height');
                 pos = Math.min(height * pos, height);
                 this.cursor.css('bottom', `${pos}px`);
                 break;
 
             default:
-                width = this.getProperty('width');
+                width = this.getPropertyValue('width');
                 pos = Math.min(width * pos, width);
                 this.cursor.css('left', `${pos}px`);
         }

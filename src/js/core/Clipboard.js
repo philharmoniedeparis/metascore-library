@@ -1,12 +1,11 @@
-import Evented from './Evented';
+import EventEmitter from './EventEmitter';
 
-export default class Clipboard extends Evented {
+export default class Clipboard extends EventEmitter {
 
     /**
      * A class to handle clipboard data
      *
      * @class Clipboard
-     * @extends Evented
      * @constructor
      */
     constructor() {

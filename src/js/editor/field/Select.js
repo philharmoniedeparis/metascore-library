@@ -1,6 +1,19 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {uuid} from '../../core/utils/String';
+import Locale from '../../core/Locale';
+import {decodeHTML} from '../../core/utils/String';
+import {isArray} from '../../core/utils/Var';
+
+/**
+ * Fired when the field's value changes
+ *
+ * @event valuechange
+ * @param {Object} field The field instance
+ * @param {Mixed} value The new value
+ * @param {Mixed[]} [added] Newly added values
+ * @param {Mixed[]} [removed] Removed values
+ */
+const EVT_VALUECHANGE = 'valuechange';
 
 export default class Select extends Field {
 
@@ -25,7 +38,8 @@ export default class Select extends Field {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': [],
-            'multiple': false
+            'multiple': false,
+            'multiLabel': Locale.t('editor.field.Select.multiple.label', '(!count selected)')
         });
     }
 
@@ -36,18 +50,17 @@ export default class Select extends Field {
      * @private
      */
     setupUI() {
-        const uid = `field-${uuid(5)}`;
+        super.setupUI();
 
-        if(this.configs.label){
-            this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
-                .appendTo(this);
-        }
+        this.input_wrapper.addListener('click', this.onWrapperClick.bind(this));
 
-        this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
-            .appendTo(this);
+        this.input
+            .attr('readonly', true)
+            .addListener('click', this.onInputClick.bind(this));
 
-        this.input = new Dom('<select/>', {'id': uid})
-            .addListener('change', this.onChange.bind(this))
+        this.menu = new Dom('<ul/>', {'class': 'menu', 'tabindex': 1})
+            .addDelegate('li', 'click', this.onItemClick.bind(this))
+            .addListener('blur', this.onBlur.bind(this), true)
             .appendTo(this.input_wrapper);
 
         this.configs.options.forEach((option) => {
@@ -55,8 +68,154 @@ export default class Select extends Field {
         });
 
         if(this.configs.multiple){
-            this.input.attr('multiple', 'multiple');
+            this.addClass('multiple');
+            this.value = [];
         }
+    }
+
+    onWrapperClick(){
+        this.close();
+    }
+
+    onInputClick(evt){
+        this.open();
+        evt.stopPropagation();
+    }
+
+    onBlur(){
+        this.close();
+    }
+
+    onItemClick(evt){
+        const li = new Dom(evt.target);
+
+        if(li.hasClass('group')){
+            evt.stopImmediatePropagation();
+            evt.preventDefault();
+            return;
+        }
+
+        if(evt.shiftKey && this.configs.multiple){
+            li.toggleClass('selected');
+        }
+        else{
+            this.menu.find('.option').removeClass('selected');
+            li.addClass('selected');
+        }
+
+        this.updateValue();
+
+        this.close();
+    }
+
+    addValue(value, supressEvent){
+        let options = this.menu.find(`.option[data-value="${value}"]`);
+
+        if(options.count() > 0){
+            options.addClass('selected');
+            this.updateValue(supressEvent);
+        }
+    }
+
+    removeValue(value, supressEvent){
+        let options = this.menu.find(`.option[data-value="${value}"]`);
+
+        if(options.count() > 0){
+            options.removeClass('selected');
+            this.updateValue(supressEvent);
+        }
+    }
+
+    /**
+     * Set the field's value
+     *
+     * @method setValue
+     * @param {Mixed} value The new value
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @chainable
+     */
+    setValue(value, supressEvent){
+        let options = this.menu.find('.option');
+
+        options.removeClass('selected');
+
+        if(this.configs.multiple){
+            if(isArray(value)){
+                options.filter(`[data-value="${value.join('"], [data-value="')}"]`)
+                    .addClass('selected');
+            }
+            else{
+                options.filter(`[data-value="${value}"]`)
+                    .addClass('selected');
+            }
+        }
+        else{
+            options.filter(`[data-value="${value}"]`)
+                .addClass('selected');
+        }
+
+        this.updateValue(supressEvent);
+
+        return this;
+    }
+
+    updateValue(supressEvent){
+        const options = this.menu.find('.option.selected');
+        const count = options.count();
+        const added = [];
+        const removed = [];
+        let value;
+
+        if(this.configs.multiple){
+            value = [];
+            options.forEach((option) => {
+                value.push(Dom.data(option, 'value'));
+            });
+
+            value.forEach((val) => {
+                if(!this.value.includes(val)){
+                    added.push(val);
+                }
+            });
+            this.value.forEach((val) => {
+                if(!value.includes(val)){
+                    removed.push(val);
+                }
+            });
+
+            if(added.length > 0 || removed.length > 0){
+                this.value = value;
+
+                if(count > 1){
+                    this.input.val(Locale.formatString(this.configs.multiLabel, {'!count': options.count()}));
+                }
+                else if(count > 0){
+                    this.input.val(decodeHTML(options.text()));
+                }
+                else{
+                    this.input.val('');
+                }
+
+                if(supressEvent !== true){
+                    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value, 'added': added, 'removed': removed}, true, false);
+                }
+            }
+
+        }
+        else{
+            value = count > 0 ? options.data('value') : '';
+
+            if(this.value !== value){
+                this.value = value;
+                this.input.val(count > 0 ? decodeHTML(options.text()) : '');
+
+                if(supressEvent !== true){
+                    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+                }
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -66,12 +225,10 @@ export default class Select extends Field {
      * @param {String} label The group's text label
      * @return {Dom} The created Dom object
      */
-    addGroup(label){
-        const group = new Dom('<optgroup/>', {'label': label});
-
-        this.input.append(group);
-
-        return group;
+    addGroup(label, parent){
+        return new Dom('<li/>', {'text': label, 'title': label, 'class': 'group'})
+            .append(new Dom('<ul/>'))
+            .appendTo(parent ? parent.child('ul') : this.menu);
     }
 
     /**
@@ -79,16 +236,22 @@ export default class Select extends Field {
      *
      * @method addOption
      * @param {String} value The option's value
-     * @param {String} text The option's label
-     * @param {Dom} [group] The group to append the option to, it will be appended to the root list if not specified
+     * @param {String} label The option's label
+     * @param {Dom} [parent] A group to append the option to, it will be appended to the root list if not specified
      * @return {Dom} The created Dom object
      */
-    addOption(value, text, group){
-        const option = new Dom('<option/>', {'value': value, 'text': text});
+    addOption(value, label, parent){
+        return new Dom('<li/>', {'text': label, 'title': label, 'class': 'option'})
+            .data('value', value)
+            .appendTo(parent ? parent.child('ul') : this.menu);
+    }
 
-        option.appendTo(group ? group : this.input);
+    getOption(value){
+        return this.menu.find(`li.option[data-value="${value}"]`);
+    }
 
-        return option;
+    getOptions(parent){
+        return (parent ? parent : this.menu).find('li.option');
     }
 
     /**
@@ -100,7 +263,7 @@ export default class Select extends Field {
      * @return {Dom} The option's Dom object
      */
     updateOption(value, text){
-        const option = this.input.find(`option[value="${value}"]`);
+        const option = this.getOption(value);
 
         option.text(text);
 
@@ -115,11 +278,22 @@ export default class Select extends Field {
      * @return {Dom} The option's Dom object
      */
     removeOption(value){
-        const option = this.input.find(`option[value="${value}"]`);
+        const option = this.getOption(value);
 
         option.remove();
 
         return option;
+    }
+
+    open(){
+        this.addClass('open');
+        this.menu.focus(false);
+        return this;
+    }
+
+    close(){
+        this.removeClass('open');
+        return this;
     }
 
     /**
@@ -129,7 +303,7 @@ export default class Select extends Field {
      * @chainable
      */
     clear() {
-        this.input.empty();
+        this.menu.empty();
 
         return this;
     }
@@ -142,9 +316,9 @@ export default class Select extends Field {
      * @chainable
      */
     readonly(readonly){
-        super.readonly(readonly);
+        this.is_readonly = readonly === true;
 
-        this.input.attr('disabled', this.is_readonly ? "disabled" : null);
+        this.toggleClass('readonly', this.is_readonly);
 
         return this;
     }

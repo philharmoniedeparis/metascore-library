@@ -14,6 +14,12 @@ export default class Element extends Component{
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
+                'type': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'name': {
                     'type': 'Text',
                     'configs': {
@@ -24,15 +30,6 @@ export default class Element extends Component{
                     },
                     'setter': function(value){
                         this.data('name', value);
-                    }
-                },
-                'type': {
-                    'editable':false,
-                    'getter': function(){
-                        return this.data('type');
-                    },
-                    'setter': function(value){
-                        this.data('type', value);
                     }
                 },
                 'locked': {
@@ -265,7 +262,9 @@ export default class Element extends Component{
         // call parent function
         super.setupUI();
 
-        this.addClass('element');
+        this
+            .addClass('element')
+            .addClass(this.constructor.getType());
 
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
@@ -316,10 +315,7 @@ export default class Element extends Component{
      * @return {Draggable} The draggable behaviour
      */
     setDraggable(draggable){
-
-        draggable = draggable !== false;
-
-        if(this.getProperty('locked') && draggable){
+        if(this.getPropertyValue('locked') && draggable){
             return false;
         }
 
@@ -341,15 +337,12 @@ export default class Element extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setDraggable
+     * @method setResizable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */
     setResizable(resizable){
-
-        resizable = resizable !== false;
-
-        if(this.getProperty('locked') && resizable){
+        if(this.getPropertyValue('locked') && resizable){
             return false;
         }
 

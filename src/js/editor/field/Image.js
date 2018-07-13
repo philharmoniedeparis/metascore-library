@@ -153,4 +153,19 @@ export default class Image extends Field {
         }
     }
 
+    /**
+     * Toggle the readonly attribute of the field
+     *
+     * @method readonly
+     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @chainable
+     */
+    readonly(readonly){
+        this.is_readonly = readonly === true;
+
+        this.toggleClass('readonly', this.is_readonly);
+
+        return this;
+    }
+
 }

@@ -1,6 +1,4 @@
 import Field from '../Field';
-import Dom from '../../core/Dom';
-import {uuid} from '../../core/utils/String';
 
 /**
  * Fired when the field's value changes
@@ -49,20 +47,11 @@ export default class Checkbox extends Field{
      * @private
      */
     setupUI() {
-        const uid = `field-${uuid(5)}`;
+        super.setupUI();
 
-        if(this.configs.label){
-            this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
-                .appendTo(this);
-        }
-
-        this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
-            .appendTo(this);
-
-        this.input = new Dom('<input/>', {'type': 'checkbox', 'id': uid})
-            .addListener('click', this.onClick.bind(this))
-            .addListener('change', this.onChange.bind(this))
-            .appendTo(this.input_wrapper);
+        this.input
+            .attr('type', 'checkbox')
+            .addListener('click', this.onClick.bind(this));
     }
 
     /**

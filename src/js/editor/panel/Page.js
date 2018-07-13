@@ -11,7 +11,7 @@ export default class Page extends Panel {
      * @extends editor.Panel
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={'title':'Page', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @param {Object} [configs.toolbarConfigs={title:'Page', menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     constructor(configs) {
         // call parent constructor
@@ -26,7 +26,7 @@ export default class Page extends Panel {
                 'title': Locale.t('editor.panel.Page.title', 'Page'),
                 'menuItems': {
                     'new': Locale.t('editor.panel.Page.menuItems.new', 'Add a new page'),
-                    'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the active page')
+                    'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the selected pages')
                 }
             }
         });

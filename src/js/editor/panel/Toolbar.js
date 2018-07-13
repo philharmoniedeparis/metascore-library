@@ -16,7 +16,6 @@ export default class Toolbar extends Dom{
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.title=''] The text to display as a title
      * @param {Array} [configs.buttons=['previous', 'next']] The buttons to display
-     * @param {Boolean} [configs.selector=true] Whether to display a selector
      * @param {Object} [configs.menuItems={}}] A list of dropdown menu items to display
      */
     constructor(configs) {
@@ -28,11 +27,9 @@ export default class Toolbar extends Dom{
         this.title = new Dom('<div/>', {'class': 'title', 'text': this.configs.title})
             .appendTo(this);
 
-        if(this.configs.selector){
-            this.selector = new SelectField()
-                .addClass('selector')
-                .appendTo(this);
-        }
+        this.selector = new SelectField({'multiple': this.configs.multiSelection})
+            .addClass('selector')
+            .appendTo(this);
 
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
@@ -58,7 +55,7 @@ export default class Toolbar extends Dom{
         return {
             'title': '',
             'buttons': ['previous', 'next'],
-            'selector': true,
+            'multiSelection': false,
             'menuItems': {}
         };
     }

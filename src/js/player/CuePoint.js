@@ -1,4 +1,4 @@
-import Evented from '../core/Evented';
+import EventEmitter from '../core/EventEmitter';
 import {uuid} from '../core/utils/String';
 
 /**
@@ -29,14 +29,14 @@ const EVT_STOP = 'stop';
  */
 const EVT_SEEKOUT = 'seekout';
 
-export default class CuePoint extends Evented{
+export default class CuePoint extends EventEmitter{
 
     /**
      * A class for managing media cuepoints to execute actions at specific media times
      *
      * @class CuePoint
      * @namepsace player
-     * @extends Evented
+     * @extends EventEmitter
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {player.component.Media} configs.media The media component to which the cuepoint is attached

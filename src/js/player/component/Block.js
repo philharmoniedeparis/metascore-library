@@ -1,19 +1,19 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import Draggable from '../../core/ui/Draggable';
-import Resizable from '../../core/ui/Resizable';
 import Pager from '../Pager';
 import Page from './Page';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString, isNumber} from '../../core/utils/Var';
+import Draggable from '../../core/ui/Draggable';
+import Resizable from '../../core/ui/Resizable';
 
 /**
  * Fired when a page is added
  *
  * @event pageadd
- * @param {Object} block The block instance
- * @param {Object} page The page instance
+ * @param {Block} block The block instance
+ * @param {Page} page The page instance
  */
 const EVT_PAGEADD = 'pageadd';
 
@@ -21,8 +21,8 @@ const EVT_PAGEADD = 'pageadd';
  * Fired when a page is removed
  *
  * @event pageremove
- * @param {Object} block The block instance
- * @param {Object} page The page instance
+ * @param {Block} block The block instance
+ * @param {Page} page The page instance
  */
 const EVT_PAGEREMOVE = 'pageremove';
 
@@ -30,8 +30,9 @@ const EVT_PAGEREMOVE = 'pageremove';
  * Fired when the active page is set
  *
  * @event pageactivate
- * @param {Object} block The block instance
- * @param {Object} page The page instance
+ * @param {Block} block The block instance
+ * @param {Page} current The currently active page instance
+ * @param {Page} previous The previously active page instance
  * @param {String} basis The reason behind this action
  */
 const EVT_PAGEACTIVATE = 'pageactivate';
@@ -44,6 +45,12 @@ export default class Block extends Component {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
+                'type': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'name': {
                     'type': 'Text',
                     'configs': {
@@ -234,7 +241,7 @@ export default class Block extends Component {
                         const pages = [];
 
                         this.getPages().forEach((page) => {
-                            pages.push(page.getProperties(skipDefault));
+                            pages.push(page.getPropertyValues(skipDefault));
                         });
 
                         return pages;
@@ -286,7 +293,7 @@ export default class Block extends Component {
      * @param {Event} evt The event object
      */
     onPageCuePointStart(evt){
-        this.setActivePage(evt.target._metaScore, 'pagecuepoint');
+        this.setActivePage(evt.target._metaScore, true);
     }
 
     /**
@@ -368,11 +375,11 @@ export default class Block extends Component {
         page_index = this.getPageIndex(page);
         if(page_index > 0){
             sibling = this.getPage(page_index - 1);
-            sibling.setProperty('end-time', page.getProperty('start-time'));
+            sibling.setPropertyValue('end-time', page.getPropertyValue('start-time'));
         }
         else if(this.getPageCount() > page_index + 1){
             sibling = this.getPage(page_index + 1);
-            sibling.setProperty('start-time', page.getProperty('end-time'));
+            sibling.setPropertyValue('start-time', page.getPropertyValue('end-time'));
         }
 
         this.setActivePage(page);
@@ -400,11 +407,11 @@ export default class Block extends Component {
 
         if(page_index > 0){
             sibling = this.getPage(page_index - 1);
-            sibling.setProperty('end-time', page.getProperty('end-time'));
+            sibling.setPropertyValue('end-time', page.getPropertyValue('end-time'));
         }
         else if(this.getPageCount() > page_index + 1){
             sibling = this.getPage(page_index + 1);
-            sibling.setProperty('start-time', page.getProperty('start-time'));
+            sibling.setPropertyValue('start-time', page.getPropertyValue('start-time'));
         }
 
         if(supressEvent !== true){
@@ -488,7 +495,9 @@ export default class Block extends Component {
      * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
      * @chainable
      */
-    setActivePage(page, basis, supressEvent){
+    setActivePage(page, supressEvent){
+        const previous = this.getActivePage();
+
         if(isNumber(page)){
             page = this.getPage(page);
         }
@@ -503,7 +512,7 @@ export default class Block extends Component {
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'page': page, 'basis': basis});
+                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': page, 'previous': previous});
             }
         }
 
@@ -536,10 +545,7 @@ export default class Block extends Component {
      * @return {Draggable} The draggable behaviour
      */
     setDraggable(draggable){
-
-        draggable = draggable !== false;
-
-        if(this.getProperty('locked') && draggable){
+        if(this.getPropertyValue('locked') && draggable){
             return false;
         }
 
@@ -570,10 +576,7 @@ export default class Block extends Component {
      * @return {Resizable} The resizable behaviour
      */
     setResizable(resizable){
-
-        resizable = resizable !== false;
-
-        if(this.getProperty('locked') && resizable){
+        if(this.getPropertyValue('locked') && resizable){
             return false;
         }
 
