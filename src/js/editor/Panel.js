@@ -561,12 +561,14 @@ export default class Panel extends Dom {
      * @method onComponentResizeStart
      * @private
      */
-    onComponentResizeStart(){
+    onComponentResizeStart(evt){
+        const component = evt.target._metaScore;
+
         this._beforeResizeValues = {
-            'x': this.getPropertyValue('x'),
-            'y': this.getPropertyValue('y'),
-            'width': this.getPropertyValue('width'),
-            'height': this.getPropertyValue('height'),
+            'x': component.getPropertyValue('x'),
+            'y': component.getPropertyValue('y'),
+            'width': component.getPropertyValue('width'),
+            'height': component.getPropertyValue('height'),
         };
     }
 
