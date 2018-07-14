@@ -966,10 +966,10 @@ export default class Player extends Dom {
                     }
                 }))
                 .addListener('pageactivate', this.onPageActivate.bind(this))
-                .addDelegate('.element[data-type="Cursor"]', 'time', this.onCursorElementTime.bind(this))
-                .addDelegate('.element[data-type="Text"]', 'play', this.onTextElementPlay.bind(this))
-                .addDelegate('.element[data-type="Text"]', 'page', this.onTextElementPage.bind(this))
-                .addDelegate('.element[data-type="Text"]', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
+                .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
+                .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
+                .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
+                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
         }
 
         if(supressEvent !== true){
