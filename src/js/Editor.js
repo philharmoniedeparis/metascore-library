@@ -2406,7 +2406,23 @@ export default class Editor extends Dom {
                 const components = [];
 
                 configs.forEach((config, index) => {
-                    const component = parent.addElement(Object.assign({'name': Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, config));
+                    let name = '';
+                    const el_index = parent.children(`.element.${config.type}`).count() + 1;
+
+                    switch(config.type){
+                        case 'Cursor':
+                            name = `cur ${el_index}`;
+                            break;
+                        case 'Image':
+                            name = `img ${el_index}`;
+                            break;
+
+                        case 'Text':
+                            name = `txt ${el_index}`;
+                            break;
+                    }
+
+                    const component = parent.addElement(Object.assign({'name': name}, config));
                     panel.setComponent(component, index > 0);
                     components.push(component);
                 });

@@ -75,7 +75,6 @@
 	"editor.onDetailsOverlaySubmit.update.needs_review.msg": "La durée du média sélectionné (!new_duration) est inférieure à celui en cours (!old_duration).<br/><strong>Les pages commençant au-delà de !new_duration seront donc hors de portée. Cela concerne les blocs&nbsp;: !blocks.</strong><br/>Veuillez supprimer ces pages ou modifier leur temps de début et ré-essayer.",
 	"editor.onDetailsOverlaySubmit.update.needs_review.ok": "OK",
 	"editor.onDetailsOverlaySubmit.update.shorter.msg": "La durée du média sélectionné (!new_duration) est inférieure à celui en cours (!old_duration).<br/><strong>Il faudra probablement resynchroniser les pages et éléments dont le temps de fin est supérieur à celui du média sélectionné.</strong><br/>Etes-vous sûr que vous voulez utiliser le nouveau fichier&nbsp;?",
-	"editor.onElementPanelToolbarClick.defaultElementName": "sans titre",
 	"editor.onMainmenuClick.delete.msg": "Êtes-vous sûr de vouloir supprimer ce guide ?<br/><b style=\"color: #F00;\">Cette action est irréversible.</b>",
 	"editor.onMainmenuClick.delete.no": "Non",
 	"editor.onMainmenuClick.delete.yes": "Oui",
