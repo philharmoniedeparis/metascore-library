@@ -2405,6 +2405,9 @@ export default class Editor extends Dom {
                 const panel = this.panels.element;
                 const components = [];
 
+                this.panels.block.setComponent(parent.getBlock());
+                this.panels.page.setComponent(parent);
+
                 configs.forEach((config, index) => {
                     let name = '';
                     const el_index = parent.children(`.element.${config.type}`).count() + 1;
@@ -2448,6 +2451,8 @@ export default class Editor extends Dom {
                 const panel = this.panels.page;
                 const config = configs[0]; // only one page can be added at a time !
                 const index = parent.getActivePageIndex();
+
+                this.panels.block.setComponent(parent);
 
                 if(parent.getPropertyValue('synched')){
                     const previous_page = parent.getPage(index);
