@@ -46,6 +46,7 @@
     "webpack-cli": "^3.0.2"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0"
+    "babel-polyfill": "^6.26.0",
+    "mediaelement": "^4.2.9"
   }
 }

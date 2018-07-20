@@ -86,6 +86,11 @@ module.exports = {
         libraryTarget: 'var',
         libraryExport: 'default'
     },
+    resolve: {
+      alias: {
+        'MediaElement': path.resolve(__dirname, 'node_modules/mediaelement/build')
+      }
+    },
     module: {
       rules: [
         {
@@ -122,7 +127,7 @@ module.exports = {
         },
         {
            // compiles Less to CSS
-          test: /\.less$/,
+          test: /\.(css|less)$/,
           use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [

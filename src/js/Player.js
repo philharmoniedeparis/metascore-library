@@ -390,7 +390,9 @@ export default class Player extends Dom {
     onMediaPlaying(){
         this.removeClass('media-waiting');
 
-        this.controller.addClass('playing');
+        if(this.controller){
+            this.controller.addClass('playing');
+        }
     }
 
     /**
@@ -402,7 +404,9 @@ export default class Player extends Dom {
     onMediaPlay(){
         this.removeClass('media-waiting');
 
-        this.controller.addClass('playing');
+        if(this.controller){
+            this.controller.addClass('playing');
+        }
     }
 
     /**
@@ -414,7 +418,9 @@ export default class Player extends Dom {
     onMediaPause(){
         this.removeClass('media-waiting');
 
-        this.controller.removeClass('playing');
+        if(this.controller){
+            this.controller.removeClass('playing');
+        }
     }
 
     /**
@@ -425,9 +431,10 @@ export default class Player extends Dom {
      * @param {Event} evt The event object
      */
     onMediaTimeUpdate(evt){
-        const currentTime = evt.detail.media.getTime();
-
-        this.controller.updateTime(currentTime);
+        if(this.controller){
+            const currentTime = evt.detail.media.getTime();
+            this.controller.updateTime(currentTime);
+        }
     }
 
     /**
@@ -628,7 +635,9 @@ export default class Player extends Dom {
             switch(block.type){
                 case 'Media':
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
-                        .setSources([this.json.media]);
+                        .addListener('ready', () => {
+                            this.media.setSources([this.json.media]);
+                        });
                     break;
 
                 case 'Controller':
@@ -648,6 +657,10 @@ export default class Player extends Dom {
 
         if(this.configs.keyboard){
             new Dom('body').addListener('keydown', this.onKeydown.bind(this));
+        }
+
+        if(this.media){
+            this.media.setSources([this.json.media])
         }
 
         this.removeClass('loading');

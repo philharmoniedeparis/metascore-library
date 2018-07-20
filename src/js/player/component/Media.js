@@ -5,6 +5,22 @@ import {toCSS} from '../../core/utils/Color';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
+/* global mejs */
+import 'mediaelement';
+import 'MediaElement/renderers/vimeo';
+import 'MediaElement/renderers/dailymotion';
+import 'MediaElement/renderers/soundcloud';
+import 'MediaElement/lang/fr';
+import 'MediaElement/mediaelementplayer.css';
+
+/**
+ * Fired when the mediaelement is ready
+ *
+ * @event ready
+ * @param {Object} media The media instance
+ */
+const EVT_READY = 'ready';
+
 /**
  * Fired when the media source is set
  *
@@ -80,23 +96,24 @@ export default class Media extends Component{
         this.addClass('media').addClass(this.configs.type);
 
         this.el = new Dom(`<${this.configs.type}></${this.configs.type}>`, {'preload': 'auto'})
-            .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
-            .addListener('play', this.onPlay.bind(this))
-            .addListener('pause', this.onPause.bind(this))
-            .addListener('timeupdate', this.onTimeUpdate.bind(this))
-            .addListener('seeking', this.onSeeking.bind(this))
-            .addListener('seeked', this.onSeeked.bind(this))
             .appendTo(this);
 
-        this.dom = this.el.get(0);
-
-        this.playing = false;
+        new mejs.MediaElementPlayer(this.el.get(0), Object.assign({}, this.configs.mediaelementConfigs, {
+            success: this.onMediaElementSuccess.bind(this)
+        }));
     }
 
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'type': 'audio',
             'useFrameAnimation': true,
+            'mediaelementConfigs': {
+                'features': [],
+                'videoWidth': '100%',
+                'videoHeight': '100%',
+                'enableAutosize': true,
+                'youtube': {}
+            },
             'properties': {
                 'type': {
                     'editable': false,
@@ -239,6 +256,19 @@ export default class Media extends Component{
         return 'Media';
     }
 
+    onMediaElementSuccess(mediaElement){
+        this.me = mediaElement;
+
+        mediaElement.addEventListener('loadedmetadata', this.onLoadedMetadata.bind(this));
+        mediaElement.addEventListener('play', this.onPlay.bind(this));
+        mediaElement.addEventListener('pause', this.onPause.bind(this));
+        mediaElement.addEventListener('timeupdate', this.onTimeUpdate.bind(this));
+        mediaElement.addEventListener('seeking', this.onSeeking.bind(this));
+        mediaElement.addEventListener('seeked', this.onSeeked.bind(this));
+
+        this.triggerEvent(EVT_READY, {'media': this});
+    }
+
     /**
      * Set the media sources
      *
@@ -248,15 +278,14 @@ export default class Media extends Component{
      * @chainable
      */
     setSources(sources, supressEvent){
-        let source_tags = '';
+        this.me.setSrc(sources.map((source) => {
+            return {
+                src: source.url,
+                type: source.mime
+            };
+        }));
 
-		sources.forEach((source) => {
-            source_tags += `<source src="${source.url}" type="${source.mime}"></source>`;
-        });
-
-        this.el.text(source_tags);
-
-        this.dom.load();
+        this.me.load();
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_SOURCESSET, {'media': this});
@@ -293,8 +322,6 @@ export default class Media extends Component{
      * @private
      */
     onPlay() {
-        this.playing = true;
-
         this.triggerEvent(EVT_PLAY, {'media': this});
 
         if(this.configs.useFrameAnimation){
@@ -309,8 +336,6 @@ export default class Media extends Component{
      * @private
      */
     onPause() {
-        this.playing = false;
-
         this.triggerEvent(EVT_PAUSE, {'media': this});
     }
 
@@ -353,7 +378,7 @@ export default class Media extends Component{
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
-        return this.playing;
+        return !this.me.paused;
     }
 
     /**
@@ -375,7 +400,7 @@ export default class Media extends Component{
      * @chainable
      */
     play() {
-        this.dom.play();
+        this.me.play();
 
         return this;
     }
@@ -387,7 +412,7 @@ export default class Media extends Component{
      * @chainable
      */
     pause() {
-        this.dom.pause();
+        this.me.pause();
 
         return this;
     }
@@ -418,7 +443,7 @@ export default class Media extends Component{
      * @chainable
      */
     setTime(time) {
-        this.dom.currentTime = parseFloat(time) / 100;
+        this.me.currentTime = parseFloat(time) / 100;
 
         if(!this.isPlaying()){
             this.triggerTimeUpdate(false);
@@ -434,7 +459,7 @@ export default class Media extends Component{
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return Math.round(parseFloat(this.dom.currentTime) * 100);
+        return Math.round(parseFloat(this.me.currentTime) * 100);
     }
 
     /**
@@ -444,7 +469,7 @@ export default class Media extends Component{
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return Math.round(parseFloat(this.dom.duration) * 100);
+        return Math.round(parseFloat(this.me.duration) * 100);
     }
 
     /**
@@ -498,6 +523,15 @@ export default class Media extends Component{
 
         return this._resizable;
 
+    }
+
+    remove() {
+        if (this.isPlaying()) {
+            this.pause();
+        }
+        this.me.remove();
+
+        super.remove();
     }
 
 }

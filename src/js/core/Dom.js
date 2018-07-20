@@ -1071,10 +1071,10 @@ export default class Dom {
             this.forEach((element) => {
                 Dom.text(element, value);
             });
+            return this;
         }
-        else{
-            return Dom.text(this.get(0));
-        }
+
+        return Dom.text(this.get(0));
     }
 
     /**
@@ -1092,8 +1092,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.val(this.get(0));
-
+        return Dom.val(this.get(0));
     }
 
     /**
@@ -1112,8 +1111,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.attr(this.get(0), name);
-
+        return Dom.attr(this.get(0), name);
     }
 
     /**
@@ -1132,8 +1130,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.prop(this.get(0), name);
-
+        return Dom.prop(this.get(0), name);
     }
 
     /**
@@ -1153,8 +1150,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.css(this.get(0), name, value, inline);
-
+        return Dom.css(this.get(0), name, value, inline);
     }
 
     /**
@@ -1174,7 +1170,6 @@ export default class Dom {
         }
 
         return Dom.data(this.get(0), name);
-
     }
 
     /**

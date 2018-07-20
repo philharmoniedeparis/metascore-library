@@ -123,8 +123,12 @@ export default class GuideDetails extends Overlay {
 
         this.fields.thumbnail = new FileField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
-                'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
-                'accept': '.png,.gif,.jpg,.jpeg'
+                'sources': {
+                    'upload': {
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
+                        'accept': '.png,.gif,.jpg,.jpeg'
+                    }
+                }
             })
             .data('name', 'thumbnail')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -132,8 +136,17 @@ export default class GuideDetails extends Overlay {
 
         this.fields.media = new FileField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
-                'description': Locale.t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
-                'accept': '.mp4,.m4v,.m4a,.mp3',
+                'sources': {
+                    'upload': {
+                        'label': Locale.t('overlay.GuideDetails.fields.media.sources.upload.label', 'Upload'),
+                        'accept': '.mp4,.m4v,.m4a,.mp3',
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.upload.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
+                    },
+                    'url': {
+                        'label': Locale.t('overlay.GuideDetails.fields.media.sources.url.label', 'URL'),
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.url.description', 'Supported providers: !providers', {'!providers': 'vimeo, youtube, dailymotion, soundcloud'}),
+                    }
+                },
                 'required': true
             })
             .data('name', 'media')
@@ -213,16 +226,14 @@ export default class GuideDetails extends Overlay {
      */
     setValues(values, supressEvent){
 		Object.entries(values).forEach(([name, value]) => {
-            let field;
+            let field = this.getField(name);
 
-            if(name in this.fields){
-                field = this.fields[name];
-
+            if(field){
                 if(name === 'shared_with'){
                     field.clear();
 
                     if(values.available_groups){
-						Object.entries(values.available_groups).forEach(([gid, group_name]) => {
+                        Object.entries(values.available_groups).forEach(([gid, group_name]) => {
                             field.addOption(gid, group_name);
                         });
                     }
@@ -272,27 +283,9 @@ export default class GuideDetails extends Overlay {
     onFieldValueChange(evt){
         let field = evt.detail.field,
             value = evt.detail.value,
-            name = field.data('name'),
-            file;
+            name = field.data('name');
 
-        if(field instanceof FileField){
-            file = field.getFile(0);
-
-            if(file){
-                this.changed[name] = {
-                    'name': file.name,
-                    'url': URL.createObjectURL(file),
-                    'mime': file.type,
-                    'object': file
-                };
-            }
-            else{
-                delete this.changed[name];
-            }
-        }
-        else{
-            this.changed[name] = value;
-        }
+        this.changed[name] = value;
     }
 
     /**

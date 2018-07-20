@@ -51,9 +51,12 @@ export default class Field extends Dom{
             }
 
             if(this.configs.required){
-                this.addClass('required');
                 this.input.attr('required', '');
             }
+        }
+
+        if(this.configs.required){
+            this.addClass('required');
         }
 
         if(this.configs.description){

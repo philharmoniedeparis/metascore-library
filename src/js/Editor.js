@@ -20,6 +20,12 @@ import Share from './editor/overlay/Share';
 
 import '../css/metaScore.editor.less';
 
+/* global mejs */
+import 'mediaelement/standalone';
+import 'MediaElement/renderers/vimeo';
+import 'MediaElement/renderers/dailymotion';
+import 'MediaElement/renderers/soundcloud';
+
 /**
  * Fired when the editor is fully setup
  *
@@ -2859,6 +2865,8 @@ export default class Editor extends Dom {
             'autoSend': false
         }, this.configs.ajax);
 
+        console.log(id, vid, options);
+
         Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
@@ -2886,12 +2894,25 @@ export default class Editor extends Dom {
      * @param {Function} callback A callback function to call with the duration
      */
     getMediaFileDuration(url, callback){
-        const media = new Dom('<audio/>', {'src': url})
-            .addListener('loadedmetadata', () => {
-                const duration = Math.round(parseFloat(media.get(0).duration) * 100);
+        const type = mejs.Utils.getTypeFromFile(url);
+        const tmp_el = new Dom('<video/>', {'preload': 'auto'}).appendTo(this);
 
-                callback(duration);
-            });
+        new mejs.MediaElement(tmp_el.get(0), {
+            success: (mediaElement) => {
+                mediaElement.addEventListener('loadedmetadata', () => {
+                    const duration = Math.round(parseFloat(mediaElement.duration) * 100);
+                    mediaElement.remove();
+                    callback(duration);
+                });
+
+                mediaElement.setSrc({
+                    'src': url,
+                    'type': type
+                });
+
+                mediaElement.load();
+            }
+        });
     }
 
 }
