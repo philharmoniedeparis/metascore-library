@@ -112,7 +112,14 @@ export default class Media extends Component{
                 'videoWidth': '100%',
                 'videoHeight': '100%',
                 'enableAutosize': true,
-                'youtube': {}
+                'clickToPlayPause': false,
+                'youtube': {},
+                'vimeo': {
+                    'title': false,
+                    'byline': false,
+                    'portrait': false,
+                    'transparent': false
+                }
             },
             'properties': {
                 'type': {
@@ -256,8 +263,8 @@ export default class Media extends Component{
         return 'Media';
     }
 
-    onMediaElementSuccess(mediaElement){
-        this.me = mediaElement;
+    onMediaElementSuccess(mediaElement, originalNode, instance){
+        this.me = instance;
 
         mediaElement.addEventListener('loadedmetadata', this.onLoadedMetadata.bind(this));
         mediaElement.addEventListener('play', this.onPlay.bind(this));
@@ -265,6 +272,10 @@ export default class Media extends Component{
         mediaElement.addEventListener('timeupdate', this.onTimeUpdate.bind(this));
         mediaElement.addEventListener('seeking', this.onSeeking.bind(this));
         mediaElement.addEventListener('seeked', this.onSeeked.bind(this));
+        mediaElement.addEventListener('canplay', this.updateMediaSize.bind(this));
+
+        this.addListener('propchange', this.onPropChange.bind(this));
+        this.addListener('resize', this.updateMediaSize.bind(this));
 
         this.triggerEvent(EVT_READY, {'media': this});
     }
@@ -369,6 +380,21 @@ export default class Media extends Component{
      */
     onSeeked(){
         this.triggerEvent(EVT_SEEKED, {'media': this});
+    }
+
+    onPropChange(evt){
+        const property = evt.detail.property;
+
+        if(property === 'width' || property === 'height'){
+            this.updateMediaSize();
+        }
+    }
+
+    updateMediaSize(){
+        const width = this.getPropertyValue('width');
+        const height = this.getPropertyValue('height');
+
+        this.me.setPlayerSize(width, height);
     }
 
     /**

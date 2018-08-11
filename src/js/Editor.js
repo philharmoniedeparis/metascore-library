@@ -1,7 +1,7 @@
 import Dom from './core/Dom';
 import {naturalSortInsensitive} from './core/utils/Array';
 import {pad} from './core/utils/String';
-import {isArray} from './core/utils/Var';
+import {isArray, isObject} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -1534,7 +1534,12 @@ export default class Editor extends Dom {
             };
 
             if('media' in data){
-                this.getMediaFileDuration(data.media.url, (new_duration) => {
+                const loadmask = new LoadMask({
+                    'parent': this,
+                    'autoShow': true
+                });
+
+                this.getMediaFileDuration(data.media, (new_duration) => {
                     let old_duration = player.getMedia().getDuration(),
                         formatted_old_duration, formatted_new_duration,
                         blocks = [], msg;
@@ -1572,6 +1577,8 @@ export default class Editor extends Dom {
                         }
 
                         if(blocks.length > 0){
+                            loadmask.hide();
+
                             new Alert({
                                 'parent': this,
                                 'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
@@ -1599,6 +1606,8 @@ export default class Editor extends Dom {
                                 'autoShow': true
                             })
                             .addListener('buttonclick', (click_evt) => {
+                                loadmask.hide();
+
                                 if(click_evt.detail.action === 'confirm'){
                                     callback(new_duration);
                                 }
@@ -1607,6 +1616,7 @@ export default class Editor extends Dom {
                     }
                     else{
                         callback();
+                        loadmask.hide();
                     }
                 });
             }
@@ -2750,21 +2760,10 @@ export default class Editor extends Dom {
      * @chainable
      */
     createGuide(details, overlay){
-        let data = new FormData(),
-            loadmask, options;
-
-        // append values from the details overlay
-		Object.entries(details).forEach(([key, value]) => {
-            if(key === 'thumbnail' || key === 'media'){
-                data.append(`files[${key}]`, value.object);
-            }
-            else{
-                data.append(key, value);
-            }
-        });
+        const data = this.prepareFormData(details);
 
         // add a loading mask
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving... (!percent%)'),
             'bar': true,
@@ -2772,7 +2771,7 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        options = Object.assign({
+        const options = Object.assign({
             'data': data,
             'dataType': 'json',
             'onSuccess': (evt) => {
@@ -2814,33 +2813,14 @@ export default class Editor extends Dom {
             id = player.getId(),
             vid = player.getRevision(),
             components = player.getComponents('.media, .controller, .block, .block-toggler'),
-            data = new FormData(),
             loadmask, options;
+
+        // prepare the formdata from the dirty data
+        const data = this.prepareFormData(this.dirty_data);
 
         // append the publish flag if true
         if(publish === true){
             data.append('publish', true);
-        }
-
-        // append values from the dirty data
-        if(this.dirty_data){
-            Object.entries(this.dirty_data).forEach(([key, value]) => {
-                if(key === 'blocks'){
-                    return;
-                }
-
-                if(key === 'thumbnail' || key === 'media'){
-                    data.append(`files[${key}]`, value.object);
-                }
-                else if(isArray(value)){
-                    value.forEach((val) => {
-                        data.append(`${key}[]`, key === 'blocks' ? JSON.stringify(val) : val);
-                    });
-                }
-                else{
-                    data.append(key, value);
-                }
-            });
         }
 
         // append blocks data
@@ -2865,8 +2845,6 @@ export default class Editor extends Dom {
             'autoSend': false
         }, this.configs.ajax);
 
-        console.log(id, vid, options);
-
         Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
@@ -2885,17 +2863,45 @@ export default class Editor extends Dom {
         return this;
     }
 
+    prepareFormData(data){
+        const formdata = new FormData();
+
+        if(data){
+            Object.entries(data).forEach(([key, value]) => {
+                if(key === 'blocks'){
+                    return;
+                }
+
+                if((key === 'thumbnail' || key === 'media') && value.source === 'upload'){
+                    formdata.append(`files[${key}]`, value.object);
+                }
+                else if(isArray(value)){
+                    value.forEach((val) => {
+                        formdata.append(`${key}[]`, isObject(val) ? JSON.stringify(val) : val);
+                    });
+                }
+                else if(isObject(value)){
+                    formdata.append(key, JSON.stringify(value));
+                }
+                else{
+                    formdata.append(key, value);
+                }
+            });
+        }
+
+        return formdata;
+    }
+
     /**
      * Get a media file's duration in centiseconds
      *
      * @method getMediaFileDuration
      * @private
-     * @param {String} url The file's url
+     * @param {Object} file A file descriptor object
      * @param {Function} callback A callback function to call with the duration
      */
-    getMediaFileDuration(url, callback){
-        const type = mejs.Utils.getTypeFromFile(url);
-        const tmp_el = new Dom('<video/>', {'preload': 'auto'}).appendTo(this);
+    getMediaFileDuration(file, callback){
+        const tmp_el = new Dom('<audio/>', {'preload': 'auto'}).appendTo(this);
 
         new mejs.MediaElement(tmp_el.get(0), {
             success: (mediaElement) => {
@@ -2906,8 +2912,8 @@ export default class Editor extends Dom {
                 });
 
                 mediaElement.setSrc({
-                    'src': url,
-                    'type': type
+                    'src': file.url,
+                    'type': file.type || mejs.Utils.getTypeFromFile(file.url)
                 });
 
                 mediaElement.load();

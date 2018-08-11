@@ -3,6 +3,9 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import {uuid} from '../../core/utils/String';
 
+/* global mejs */
+import 'mediaelement';
+
 /**
  * Fired when the field's value changes
  *
@@ -53,7 +56,7 @@ export default class File extends Field {
     setupUI() {
         const uid = `field-${uuid(5)}`;
 
-        this.value = {};
+        this.values = {};
 
         if(this.configs.label){
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
@@ -71,8 +74,6 @@ export default class File extends Field {
 
         Object.entries(this.configs.sources).forEach(([source, config]) => {
             const radio_uid = `source_selector-${uuid(5)}`;
-
-            this.value[source] = null;
 
             const radio_wrapper = new Dom('<div/>', {'class': 'source-selector-wrapper'})
                 .appendTo(this.sources_selector);
@@ -129,48 +130,53 @@ export default class File extends Field {
         const parent = input.parents();
         const source = parent.data('source');
 
-        this.value[source] = null;
+        this.values[source] = null;
 
         switch(source){
-            case 'file': {
-                const file = input.get(0).files[0];
-                const current = parent.find('.current');
-
-                current.empty();
-
-                if(file){
-                    this.value[source] = {
-                        'name': file.name,
-                        'url': URL.createObjectURL(file),
-                        'mime': file.type,
-                        'object': file,
-                        'source': source
-                    };
-
-                    const info = new Dom('<a/>', {'text': this.value.name})
-                        .attr('target', '_blank')
-                        .appendTo(current);
-
-                    if('url' in this.value){
-                        info.attr('href', this.value.url);
-                    }
-                }
-                break;
-            }
-
             case 'url': {
                 const url = input.val();
+
                 if(url){
-                    this.value[source] = {
+                    this.values[source] = {
                         'url': url,
-                        'source': source
+                        'source': source,
+                        'mime': mejs.Utils.getTypeFromFile(url)
                     };
                 }
                 break;
             }
+
+            default: {
+                 const file = input.get(0).files[0];
+                 const current = parent.find('.current');
+
+                 current.empty();
+
+                 if(file){
+                     const file_obj = {
+                         'name': file.name,
+                         'url': URL.createObjectURL(file),
+                         'mime': file.type,
+                         'object': file,
+                         'source': source
+                     };
+
+                     this.values[source] = file_obj;
+
+                     const info = new Dom('<a/>', {'text': file_obj.name})
+                         .attr('target', '_blank')
+                         .appendTo(current);
+
+                     if('url' in file_obj){
+                         info.attr('href', file_obj.url);
+                     }
+                 }
+             }
         }
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.getValue()}, true, false);
+        this.setActiveSource(source);
+
+        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     }
 
     /**
@@ -215,19 +221,44 @@ export default class File extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        const source = value && 'source' in value ? value.source : 'upload';
+        const active_source = value && 'source' in value ? value.source : 'upload';
 
-        this.sources_selector.find(`input[value="${source}"]`).attr('checked', true);
-        const input = this.inputs.find(`.input[data-source="${source}"] input`);
+        this.values = {};
 
-        switch(source){
+        this.sources_selector.find(`input`).forEach((selector_el) => {
+            const selector = new Dom(selector_el);
+            const source = selector.val();
+            const input = this.inputs.find(`.input[data-source="${source}"] input`);
+
+            switch(active_source){
+                case 'url':
+                    input.val('');
+                    break;
+
+                default:
+                    input.parents().find('.current').empty();
+                    input.val('');
+
+                    if(this.configs.required){
+                        input.attr('required', '');
+                    }
+            }
+
+            if(source === active_source){
+                selector.attr('checked', true);
+            }
+        });
+
+        const input = this.inputs.find(`.input[data-source="${active_source}"] input`);
+
+        switch(active_source){
             case 'url': {
                 input.val(value && 'url' in value ? value.url : '');
                 break;
             }
 
             default: {
-                const current = input.parents().find('.current').empty();
+                const current = input.parents().find('.current');
 
                 if(value && ('name' in value)){
                     const info = new Dom('<a/>', {'text': value.name})
@@ -240,15 +271,12 @@ export default class File extends Field {
 
                     input.attr('required', null);
                 }
-                else if(this.configs.required){
-                    input.attr('required', '');
-                }
             }
         }
 
-        this.setActiveSource(source);
+        this.values[active_source] = value;
 
-        this.value[source] = value;
+        this.setActiveSource(active_source);
 
         if(supressEvent !== true){
             input.triggerEvent('change');
@@ -257,43 +285,16 @@ export default class File extends Field {
         return this;
     }
 
-    /**
-     * Get the field's current value
-     *
-     * @method getValue
-     * @return {Mixed} The value
-     */
-    getValue() {
-        return this.value[this.source];
-    }
-
     setActiveSource(source){
         const inputs = this.inputs.children('.input');
-        this.source = source;
 
         inputs.hide()
-            .child('input').attr('disabled', 'disabled');
+            .children('input').attr('disabled', 'disabled');
 
         inputs.filter(`[data-source="${source}"`).show()
-            .child('input').attr('disabled', null);
-    }
+            .children('input').attr('disabled', null);
 
-    /**
-     * Helper function to get a selected file from the HTML input field
-     *
-     * @method getFile
-     * @private
-     * @param {Integer} [index] The index of the selected file, all files will be returned if not provided
-     * @return {Mixed} The <a href="https://developer.mozilla.org/en-US/docs/Web/API/File" target="_blank">File</a> or <a href="https://developer.mozilla.org/en/docs/Web/API/FileList" target="_blank">FileList</a>
-     */
-    getFile(index){
-        const files = this.input.get(0).files;
-
-        if(index !== undefined){
-            return files[index];
-        }
-
-        return files;
+        this.value = source in this.values ? this.values[source] : null;
     }
 
     /**
