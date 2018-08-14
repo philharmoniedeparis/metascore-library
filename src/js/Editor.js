@@ -1020,7 +1020,7 @@ export default class Editor extends Dom {
      * @private
      */
     onPlayerLoadedMetadata(){
-        this.mainmenu.timefield.setMax(this.player.getMedia().getDuration());
+        this.mainmenu.timefield.setMax(this.getPlayer().getMedia().getDuration());
     }
 
     /**
@@ -1028,10 +1028,9 @@ export default class Editor extends Dom {
      *
      * @method onPlayerTimeUpdate
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Media/timeupdate:event"}}Media.timeupdate{{/crossLink}}
      */
-    onPlayerTimeUpdate(evt){
-        const time = evt.detail.media.getTime();
+    onPlayerTimeUpdate(){
+        const time = this.getPlayer().getMedia().getTime();
 
         this.mainmenu.timefield.setValue(time, true);
     }

@@ -428,11 +428,10 @@ export default class Player extends Dom {
      *
      * @method onMediaTimeUpdate
      * @private
-     * @param {Event} evt The event object
      */
-    onMediaTimeUpdate(evt){
+    onMediaTimeUpdate(){
         if(this.controller){
-            const currentTime = evt.detail.media.getTime();
+            const currentTime = this.getMedia().getTime();
             this.controller.updateTime(currentTime);
         }
     }
@@ -635,9 +634,7 @@ export default class Player extends Dom {
             switch(block.type){
                 case 'Media':
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
-                        .addListener('ready', () => {
-                            this.media.setSources([this.json.media]);
-                        });
+                        .setSource(this.json.media);
                     break;
 
                 case 'Controller':
@@ -657,10 +654,6 @@ export default class Player extends Dom {
 
         if(this.configs.keyboard){
             new Dom('body').addListener('keydown', this.onKeydown.bind(this));
-        }
-
-        if(this.media){
-            this.media.setSources([this.json.media])
         }
 
         this.removeClass('loading');
@@ -819,7 +812,7 @@ export default class Player extends Dom {
             }
 
             if('media' in data){
-                this.getMedia().setSources([data.media]);
+                this.getMedia().setSource(data.media);
             }
 
             if('vid' in data){
