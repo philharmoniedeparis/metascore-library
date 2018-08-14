@@ -79,7 +79,7 @@ export default class Media extends Component{
 
         this.addClass('media').addClass(this.configs.type);
 
-        this.el = new Dom(`<${this.configs.type}></${this.configs.type}>`, {'preload': 'auto'})
+        this.el = new Dom(`<${this.configs.type}/>`, {'preload': 'auto'})
             .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
             .addListener('play', this.onPlay.bind(this))
             .addListener('pause', this.onPause.bind(this))

@@ -119,7 +119,7 @@ export default class Player extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div></div>', {'class': 'metaScore-player'});
+        super('<div/>', {'class': 'metaScore-player'});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
