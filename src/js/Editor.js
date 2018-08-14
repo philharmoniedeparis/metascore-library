@@ -2826,11 +2826,6 @@ export default class Editor extends Dom {
                 if(key === 'thumbnail' || key === 'media'){
                     data.append(`files[${key}]`, value.object);
                 }
-                else if(isArray(value)){
-                    value.forEach((val) => {
-                        data.append(`${key}[]`, key === 'blocks' ? JSON.stringify(val) : val);
-                    });
-                }
                 else{
                     data.append(key, value);
                 }
