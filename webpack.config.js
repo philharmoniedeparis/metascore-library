@@ -86,6 +86,9 @@ module.exports = {
         libraryTarget: 'var',
         libraryExport: 'default'
     },
+    watchOptions: {
+      ignored: /src\/i18n/
+    },
     module: {
       rules: [
         {
@@ -174,13 +177,9 @@ module.exports = {
         filename: LIB_NAME +'.[name].css'
       }),
       new ShellPlugin({
-        onBuildEnd: [
-          'echo "Extracting i18n"',
-          'node ./bin/i18n-extract.js',
-        ],
+        //onBuildEnd: [],
         onBuildExit: [
-          'echo "Copying files to Drupal"',
-          'copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore'
+          'echo "Extracting i18n" && npm run i18n && echo "Copying files to Drupal" && npm run drupal'
         ]
       }),
       new CopyWebpackPlugin([{
