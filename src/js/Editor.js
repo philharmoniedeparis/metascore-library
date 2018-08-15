@@ -1,6 +1,5 @@
 import Dom from './core/Dom';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {pad} from './core/utils/String';
 import {isArray} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
@@ -17,6 +16,7 @@ import ContextMenu from './core/ui/ContextMenu';
 import GuideDetails from './editor/overlay/GuideDetails';
 import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
+import TimeField from './editor/field/Time';
 
 import '../css/metaScore.editor.less';
 
@@ -123,8 +123,8 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onGuideSaveSuccess(loadmask, evt){
-        let player = this.getPlayer(),
-            data = JSON.parse(evt.target.getResponse());
+        const player = this.getPlayer();
+        const data = JSON.parse(evt.target.getResponse());
 
         loadmask.hide();
 
@@ -149,15 +149,14 @@ export default class Editor extends Dom {
      * @private
      */
     onGuideDeleteConfirm() {
-        let id = this.getPlayer().getId(),
-            options, loadmask;
+        const id = this.getPlayer().getId();
 
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });
 
-        options = Object.assign({}, {
+        const options = Object.assign({}, {
             'dataType': 'json',
             'method': 'DELETE',
             'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
@@ -209,8 +208,6 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeydown(evt){
-        let player;
-
         switch(evt.keyCode){
             case 18: //alt
                 if(!evt.repeat){
@@ -221,7 +218,7 @@ export default class Editor extends Dom {
 
             case 72: //h
                 if(evt.ctrlKey){ // Ctrl+h
-                    player = this.getPlayer();
+                    const player = this.getPlayer();
                     if(player){
                         player.addClass('show-contents');
                     }
@@ -253,8 +250,6 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeyup(evt){
-        let player;
-
         switch(evt.keyCode){
             case 18: //alt
                 this.setEditing(this.persistentEditing, false);
@@ -263,7 +258,7 @@ export default class Editor extends Dom {
 
             case 72: //h
                 if(evt.ctrlKey){ // Ctrl+h
-                    player = this.getPlayer();
+                    const player = this.getPlayer();
                     if(player){
                         player.removeClass('show-contents');
                     }
@@ -488,8 +483,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Number/valuechange:event"}}Number.valuechange{{/crossLink}}
      */
     onMainmenuRindexFieldChange(evt){
-        let field = evt.target._metaScore,
-            value = field.getValue();
+        const field = evt.target._metaScore;
+        const value = field.getValue();
 
         this.getPlayer().setReadingIndex(value, true);
     }
@@ -502,8 +497,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
      */
     onTimeFieldIn(evt){
-        let field = evt.detail.field,
-            time = this.getPlayer().getMedia().getTime();
+        const field = evt.detail.field;
+        const time = this.getPlayer().getMedia().getTime();
 
         field.setValue(time);
     }
@@ -710,21 +705,20 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onPageSet(evt){
-        let block = evt.detail.component.getBlock(),
-            index, previous_page, next_page,
-            start_time_field = this.panels.page.getField('start-time'),
-            end_time_field = this.panels.page.getField('end-time');
-
         this.panels.element
             .getToolbar()
                 .toggleMenuItem('Cursor', true)
                 .toggleMenuItem('Image', true)
                 .toggleMenuItem('Text', true);
 
+        const block = evt.detail.component.getBlock();
+        const start_time_field = this.panels.page.getField('start-time');
+        const end_time_field = this.panels.page.getField('end-time');
+
         if(block.getPropertyValue('synched')){
-            index = block.getActivePageIndex();
-            previous_page = block.getPage(index-1);
-            next_page = block.getPage(index+1);
+            const index = block.getActivePageIndex();
+            const previous_page = block.getPage(index-1);
+            const next_page = block.getPage(index+1);
 
             if(previous_page){
                 start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
@@ -780,7 +774,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onPagePanelValueChange(evt){
-        let sets = evt.detail;
+        const sets = evt.detail;
 
         const update = (key) => {
             sets.forEach((set) => {
@@ -884,8 +878,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onElementSet(evt){
-        let element = evt.detail.component,
-            player = this.getPlayer();
+        const element = evt.detail.component;
+        const player = this.getPlayer();
 
         player.setReadingIndex(element.getPropertyValue('r-index') || 0);
 
@@ -900,7 +894,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onElementPanelValueChange(evt){
-        let sets = evt.detail;
+        const sets = evt.detail;
 
         const update = (key) => {
             const doUpdateElementSelector = sets.some((set) => {
@@ -939,7 +933,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onElementPanelToolbarClick(evt){
-        let action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
             case 'Cursor':
@@ -1494,16 +1488,16 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
      */
     onDetailsOverlaySubmit(evt){
-        let overlay = evt.detail.overlay,
-            data = evt.detail.values,
-            action = overlay.getField('action').getValue(),
-            player = this.getPlayer();
+        const overlay = evt.detail.overlay;
+        const data = evt.detail.values;
+        const action = overlay.getField('action').getValue();
+        const player = this.getPlayer();
 
         if(action === 'new'){
             this.createGuide(data, overlay);
         }
         else{
-            let callback = (new_duration) => {
+            const callback = (new_duration) => {
                 if(new_duration){
                     player.getComponents('.block').forEach((block) => {
                         let page;
@@ -1529,26 +1523,12 @@ export default class Editor extends Dom {
 
             if('media' in data){
                 this.getMediaFileDuration(data.media.url, (new_duration) => {
-                    let old_duration = player.getMedia().getDuration(),
-                        formatted_old_duration, formatted_new_duration,
-                        blocks = [], msg;
+                    const old_duration = player.getMedia().getDuration();
 
                     if(new_duration !== old_duration){
-                        formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
-                        formatted_old_duration += ":";
-                        formatted_old_duration += pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
-                        formatted_old_duration += ":";
-                        formatted_old_duration += pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
-                        formatted_old_duration += ".";
-                        formatted_old_duration += pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
-
-                        formatted_new_duration = (parseInt((new_duration / 360000), 10) || 0);
-                        formatted_new_duration += ":";
-                        formatted_new_duration += pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
-                        formatted_new_duration += ":";
-                        formatted_new_duration += pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
-                        formatted_new_duration += ".";
-                        formatted_new_duration += pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
+                        const formatted_old_duration = TimeField.getTextualValue(old_duration);
+                        const formatted_new_duration = TimeField.getTextualValue(new_duration);
+                        const blocks = [];
 
                         if(new_duration < old_duration){
                             player.getComponents('.block').forEach((block) => {
@@ -1576,6 +1556,7 @@ export default class Editor extends Dom {
                             });
                         }
                         else{
+                            let msg;
                             if(new_duration < old_duration){
                                 msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                             }
@@ -2455,9 +2436,26 @@ export default class Editor extends Dom {
                 this.panels.block.setComponent(parent);
 
                 if(parent.getPropertyValue('synched')){
-                    const previous_page = parent.getPage(index);
+                    const media = this.getPlayer().getMedia();
+                    const currentTime = media.getTime();
+                    const duration = media.getDuration();
 
-                    config['start-time'] = this.getPlayer().getMedia().getTime();
+                    // prevent adding the page if current time == 0 or >= media duration
+                    if(currentTime === 0 || currentTime >= duration){
+                        new Alert({
+                            'parent': this,
+                            'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeField.getTextualValue(0), '@duration': TimeField.getTextualValue(duration)}),
+                            'buttons': {
+                                'ok': Locale.t('editor.addPlayerComponents.page.time.ok', 'OK'),
+                            },
+                            'autoShow': true
+                        });
+
+                        break;
+                    }
+
+                    const previous_page = parent.getPage(index);
+                    config['start-time'] = currentTime;
                     config['end-time'] = previous_page.getPropertyValue('end-time');
                 }
 
@@ -2744,8 +2742,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     createGuide(details, overlay){
-        let data = new FormData(),
-            loadmask, options;
+        const data = new FormData();
 
         // append values from the details overlay
 		Object.entries(details).forEach(([key, value]) => {
@@ -2758,7 +2755,7 @@ export default class Editor extends Dom {
         });
 
         // add a loading mask
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving... (!percent%)'),
             'bar': true,
@@ -2766,7 +2763,7 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        options = Object.assign({
+        const options = Object.assign({
             'data': data,
             'dataType': 'json',
             'onSuccess': (evt) => {
@@ -2804,12 +2801,11 @@ export default class Editor extends Dom {
      * @chainable
      */
     saveGuide(action, publish){
-        let player = this.getPlayer(),
-            id = player.getId(),
-            vid = player.getRevision(),
-            components = player.getComponents('.media, .controller, .block, .block-toggler'),
-            data = new FormData(),
-            loadmask, options;
+        const player = this.getPlayer();
+        const id = player.getId();
+        const vid = player.getRevision();
+        const components = player.getComponents('.media, .controller, .block, .block-toggler');
+        const data = new FormData();
 
         // append the publish flag if true
         if(publish === true){
@@ -2838,7 +2834,7 @@ export default class Editor extends Dom {
         });
 
         // add a loading mask
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
             'bar': true,
@@ -2846,7 +2842,7 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        options = Object.assign({
+        const options = Object.assign({
             'data': data,
             'dataType': 'json',
             'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
@@ -2881,12 +2877,14 @@ export default class Editor extends Dom {
      * @param {Function} callback A callback function to call with the duration
      */
     getMediaFileDuration(url, callback){
-        const media = new Dom('<audio/>', {'src': url})
+        const media = new Dom('<audio/>')
             .addListener('loadedmetadata', () => {
                 const duration = Math.round(parseFloat(media.get(0).duration) * 100);
-
+                media.remove();
                 callback(duration);
-            });
+            })
+            .attr('src', url)
+            .appendTo(this);
     }
 
 }

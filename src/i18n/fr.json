@@ -18,6 +18,8 @@
 	"editor.MainMenu.share": "Partager",
 	"editor.MainMenu.time": "Temps",
 	"editor.MainMenu.undo": "Défaire",
+	"editor.addPlayerComponents.page.time.msg": "Dans un bloc synchronisé, une page ne peut pas être insérée au début (@start_time) ou à la fin (@duration) du média.<br/><b>Veuillez vous déplacer dans le média avant d'insérer une nouvelle page.</b>",
+	"editor.addPlayerComponents.page.time.ok": "OK",
 	"editor.contextmenu.about": "metaScore v.!version r.!revision",
 	"editor.contextmenu.add-block": "Ajouter un bloc",
 	"editor.contextmenu.add-block-non-synched": "Non-synchronisé",
