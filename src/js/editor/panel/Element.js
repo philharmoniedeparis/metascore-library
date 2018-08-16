@@ -286,24 +286,28 @@ export default class Element extends Panel {
      * @param {Function} callback The callback to call with the retreived metadata
      */
     getImageMetadata(url, callback){
-        var img = new Dom('<img/>')
-            .addListener('error', callback)
+        const img = new Dom('<img/>')
+            .addListener('error', (err) => {
+                img.remove();
+                callback(err);
+            })
             .addListener('load', () => {
-                let el = img.get(0),
-                    matches, name;
+                const el = img.get(0);
+                const width = el.naturalWidth;
+                const height = el.naturalHeight;
 
-                matches = el.src.match(/([^/]*)\.[^.]*$/)
+                let name = '';
+                const  matches = el.src.match(/([^/]*)\.[^.]*$/);
                 if(matches){
                     name = matches[1];
                 }
 
-                callback(null, {
-                    'name': name,
-                    'width': el.naturalWidth,
-                    'height': el.naturalHeight
-                });
+                img.remove();
+
+                callback(null, {'name': name, 'width': width, 'height': height});
             })
-            .attr('src', url);
+            .attr('src', url)
+            .appendTo(this);
     }
 
     /**

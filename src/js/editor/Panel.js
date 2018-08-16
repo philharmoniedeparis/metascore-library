@@ -653,7 +653,10 @@ export default class Panel extends Dom {
             return;
         }
 
-        new Dom('<img/>')
+        const img = new Dom('<img/>')
+            .addListener('error', () => {
+                img.remove();
+            })
             .addListener('load', (load_evt) => {
                 const width = load_evt.target.width;
                 const height = load_evt.target.height;
@@ -675,13 +678,16 @@ export default class Panel extends Dom {
                     values.push({
                         component: component,
                         new_values: new_values,
-                        old_values: old_values,
+                        old_values: old_values
                     });
                 });
 
+                img.remove();
+
                 this.triggerEvent(EVT_VALUESCHANGE, values, false);
             })
-            .attr('src', this.getComponent().get(0).baseURI + evt.detail.value);
+            .attr('src', this.getComponent().get(0).baseURI + evt.detail.value)
+            .appendTo(this);
     }
 
     /**
