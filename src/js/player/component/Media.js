@@ -5,9 +5,10 @@ import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
 import HTML5 from '../Renderer';
+import YouTube from '../renderer/YouTube';
 import Vimeo from '../renderer/Vimeo';
 
-const RENDERERS = [Vimeo, HTML5];
+const RENDERERS = [YouTube, Vimeo, HTML5];
 
 export default class Media extends Component{
 

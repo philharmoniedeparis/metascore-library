@@ -20,12 +20,6 @@ import Share from './editor/overlay/Share';
 
 import '../css/metaScore.editor.less';
 
-/* global mejs */
-import 'mediaelement/standalone';
-import 'MediaElement/renderers/vimeo';
-import 'MediaElement/renderers/dailymotion';
-import 'MediaElement/renderers/soundcloud';
-
 /**
  * Fired when the editor is fully setup
  *
@@ -1538,7 +1532,7 @@ export default class Editor extends Dom {
                     'autoShow': true
                 });
 
-                this.getMediaFileDuration(data.media, (new_duration) => {
+                this.getMediaFileDuration(data.media.url, (new_duration) => {
                     let old_duration = player.getMedia().getDuration(),
                         formatted_old_duration, formatted_new_duration,
                         blocks = [], msg;
@@ -2896,28 +2890,18 @@ export default class Editor extends Dom {
      *
      * @method getMediaFileDuration
      * @private
-     * @param {Object} file A file descriptor object
+     * @param {String} url The file's url
      * @param {Function} callback A callback function to call with the duration
      */
-    getMediaFileDuration(file, callback){
-        const tmp_el = new Dom('<audio/>', {'preload': 'auto'}).appendTo(this);
-
-        new mejs.MediaElement(tmp_el.get(0), {
-            success: (mediaElement) => {
-                mediaElement.addEventListener('loadedmetadata', () => {
-                    const duration = Math.round(parseFloat(mediaElement.duration) * 100);
-                    mediaElement.remove();
-                    callback(duration);
-                });
-
-                mediaElement.setSrc({
-                    'src': file.url,
-                    'type': file.type || mejs.Utils.getTypeFromFile(file.url)
-                });
-
-                mediaElement.load();
-            }
-        });
+    getMediaFileDuration(url, callback){
+        const media = new Dom('<audio/>')
+            .addListener('loadedmetadata', () => {
+                const duration = Math.round(parseFloat(media.get(0).duration) * 100);
+                media.remove();
+                callback(duration);
+            })
+            .attr('src', url)
+            .appendTo(this);
     }
 
 }

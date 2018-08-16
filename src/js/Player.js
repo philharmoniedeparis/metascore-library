@@ -348,7 +348,7 @@ export default class Player extends Dom {
      * @private
      */
     onMediaLoadedMetadata(){
-        this.getMedia().reset();
+        //this.getMedia().reset();
     }
 
     /**

@@ -3,9 +3,6 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import {uuid} from '../../core/utils/String';
 
-/* global mejs */
-import 'mediaelement';
-
 /**
  * Fired when the field's value changes
  *
@@ -45,6 +42,43 @@ export default class File extends Field {
                 }
             }
         });
+    }
+
+    static getMimeFromURL(url){
+        let ext = this.getExtensionFromURL(url);
+        const video_exts = ['mp4', 'm4v', 'ogg', 'ogv', 'webm', 'flv', 'mpeg', 'mov'];
+        const audio_exts = ['mp3', 'oga', 'wav', 'mid', 'midi'];
+
+        switch (ext) {
+            case 'mp4':
+            case 'm4v':
+                ext = 'mp4';
+                break;
+            case 'webm':
+            case 'webma':
+            case 'webmv':
+                ext = 'webm';
+                break;
+            case 'ogg':
+            case 'oga':
+            case 'ogv':
+                ext = 'ogg';
+                break;
+        }
+
+        let mime = 'video/mp4';
+
+        if(video_exts.includes(ext)) {
+            mime = `video/${ext}`;
+        } else if (audio_exts.includes(ext)) {
+            mime = `audio/${ext}`;
+        }
+
+        return mime;
+    }
+
+    static getExtensionFromURL(url){
+        return url.split(/#|\?/)[0].split('.').pop().trim();
     }
 
     /**
@@ -140,7 +174,7 @@ export default class File extends Field {
                     this.values[source] = {
                         'url': url,
                         'source': source,
-                        'mime': mejs.Utils.getTypeFromFile(url)
+                        'mime': this.constructor.getMimeFromURL(url)
                     };
                 }
                 break;

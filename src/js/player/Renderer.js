@@ -1,4 +1,5 @@
 import Dom from '../core/Dom';
+import {isFunction} from '../core/utils/Var';
 
 /**
  * Fired when the renderer is ready
@@ -135,7 +136,7 @@ export default class Renderer extends Dom {
     * @chainable
     */
    setSource(source, supressEvent){
-       let source_tags = `<source src="${source.url}" type="${source.mime}"></source>`;
+       const source_tags = `<source src="${source.url}" type="${source.mime}"></source>`;
 
        this.el.text(source_tags);
 
@@ -157,7 +158,9 @@ export default class Renderer extends Dom {
     onLoadedMetadata(evt) {
         this.triggerEvent(EVT_LOADEDMETADATA, {'renderer': this});
 
-        evt.stopPropagation();
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
     }
 
     /**
@@ -175,7 +178,9 @@ export default class Renderer extends Dom {
             this.triggerTimeUpdate();
         }
 
-        evt.stopPropagation();
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
     }
 
     /**
@@ -189,7 +194,9 @@ export default class Renderer extends Dom {
 
         this.triggerEvent(EVT_PAUSE, {'renderer': this});
 
-        evt.stopPropagation();
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
     }
 
     /**
@@ -203,7 +210,9 @@ export default class Renderer extends Dom {
             this.triggerTimeUpdate(false);
         }
 
-        evt.stopPropagation();
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
     }
 
     /**
@@ -215,7 +224,9 @@ export default class Renderer extends Dom {
     onSeeking(evt){
         this.triggerEvent(EVT_SEEKING, {'renderer': this});
 
-        evt.stopPropagation();
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
     }
 
     /**
@@ -227,7 +238,9 @@ export default class Renderer extends Dom {
     onSeeked(evt){
         this.triggerEvent(EVT_SEEKED, {'renderer': this});
 
-        evt.stopPropagation();
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
     }
 
     /**
@@ -238,18 +251,6 @@ export default class Renderer extends Dom {
      */
     isPlaying() {
         return this.playing;
-    }
-
-    /**
-     * Reset the media time
-     *
-     * @method reset
-     * @chainable
-     */
-    reset() {
-        this.setTime(0);
-
-        return this;
     }
 
     /**
