@@ -1,4 +1,4 @@
-import Renderer from '../Renderer';
+import HTML5 from './HTML5';
 import Dom from '../../core/Dom';
 
 /**
@@ -17,12 +17,10 @@ const EVT_READY = 'ready';
 */
 const EVT_SOURCESET = 'sourceset';
 
-let API_LOADED = false;
-
 /**
  * YouTube renderer
  */
-export default class YouTube extends Renderer {
+export default class YouTube extends HTML5 {
 
     static supportedTypes(){
         return [
@@ -43,71 +41,67 @@ export default class YouTube extends Renderer {
     setup(){
         this.addClass('youtube');
 
-        this.triggerEvent(EVT_READY, {'renderer': this});
+        const script = document.createElement("script")
+        script.type = "text/javascript";
+
+        window.onYouTubeIframeAPIReady = () => {
+            delete window.onYouTubeIframeAPIReady;
+            this.ready = true;
+            this.triggerEvent(EVT_READY, {'renderer': this});
+        };
+
+        script.addEventListener('load', () => {
+            script.remove();
+        });
+
+        script.addEventListener('error', () => {
+            script.remove();
+        });
+
+        script.async = true;
+        script.src = 'https://www.youtube.com/player_api';
+
+        document.head.appendChild(script);
     }
 
     setSource(source, supressEvent){
-        if(!API_LOADED){
-            const script = document.createElement("script")
-            script.type = "text/javascript";
+        const container = new Dom(`<div/>`)
+            .appendTo(this);
 
-            window.onYouTubeIframeAPIReady = () => {
-                API_LOADED = true;
+        this.embed = new window.YT.Player(container.get(0), {
+            'videoId': this.constructor.getVideoIDFromURL(source.url),
+            'width': '100%',
+            'height': '100%',
+            'playerVars': {
+                'controls': 0,
+                'disablekb': 1,
+                'rel': 0,
+                'showinfo': 0,
+                'modestbranding': 1
+            },
+            'events': {
+                'onReady': this.onLoadedMetadata.bind(this),
+                'onStateChange': (evt) => {
+                    console.log(evt);
 
-                this.setSource(source, supressEvent);
-            };
+                    switch (evt.data) {
+                        case window.YT.PlayerState.PLAYING:
+                            this.onPlay(evt);
+                            break;
 
-            script.addEventListener('load', () => {
-                script.remove();
-            });
-
-            script.addEventListener('error', () => {
-                script.remove();
-            });
-
-            script.async = true;
-            script.src = 'https://www.youtube.com/player_api';
-
-            document.head.appendChild(script);
-        }
-        else{
-            /* global YT */
-            const container = new Dom(`<div/>`)
-                .appendTo(this);
-
-            this.embed = new YT.Player(container.get(0), {
-                'videoId': this.constructor.getVideoIDFromURL(source.url),
-                'width': '100%',
-                'height': '100%',
-                'playerVars': {
-                    'controls': 0,
-                    'disablekb': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'modestbranding': 1
-                },
-                'events': {
-                    'onReady': this.onLoadedMetadata.bind(this),
-                    'onStateChange': (evt) => {
-                        switch (evt.data) {
-                            case YT.PlayerState.PLAYING:
-                                this.onPlay(evt);
-                                break;
-
-                            case YT.PlayerState.PAUSED:
-                                this.onPause(evt);
-                                break;
-                        }
+                        case window.YT.PlayerState.PAUSED:
+                            this.onPause(evt);
+                            break;
                     }
                 }
-            });
-            //this.embed.on('timeupdate', this.onTimeUpdate.bind(this));
-            //this.embed.on('seeking', this.onSeeking.bind(this));
-            //this.embed.on('seeked', this.onSeeked.bind(this));
-
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_SOURCESET, {'renderer': this});
             }
+        });
+        //this.embed.on('timeupdate', this.onTimeUpdate.bind(this));
+        //this.embed.on('seeking', this.onSeeking.bind(this));
+        //this.embed.on('seeked', this.onSeeked.bind(this));
+
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_SOURCESET, {'renderer': this});
         }
 
         return this;
@@ -120,7 +114,7 @@ export default class YouTube extends Renderer {
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
-        return API_LOADED && this.embed && this.embed.getPlayerState() === YT.PlayerState.PLAYING;
+        return this.embed.getPlayerState() === window.YT.PlayerState.PLAYING;
     }
 
     /**
@@ -154,8 +148,8 @@ export default class YouTube extends Renderer {
      * @param {Number} time The time in centiseconds
      * @chainable
      */
-    setTime() {
-        //this.embed.seekTo(time);
+    setTime(time) {
+        this.embed.seekTo(time);
 
         if(!this.isPlaying()){
             this.triggerTimeUpdate(false);

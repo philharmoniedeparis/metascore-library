@@ -1,5 +1,5 @@
-import Dom from '../core/Dom';
-import {isFunction} from '../core/utils/Var';
+import Dom from '../../core/Dom';
+import {isFunction} from '../../core/utils/Var';
 
 /**
  * Fired when the renderer is ready
@@ -82,8 +82,6 @@ export default class Renderer extends Dom {
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.playing = false;
-
-        this.setup();
     }
 
     static getDefaults(){
@@ -124,6 +122,7 @@ export default class Renderer extends Dom {
 
         this.dom = this.el.get(0);
 
+        this.ready = true;
         this.triggerEvent(EVT_READY, {'renderer': this});
     }
 

@@ -1,4 +1,4 @@
-import Renderer from '../Renderer';
+import HTML5 from './HTML5';
 import VimeoPlayer from '@vimeo/player';
 
 /**
@@ -20,7 +20,7 @@ const EVT_SOURCESET = 'sourceset';
 /**
  * Vimeo renderer
  */
-export default class Vimeo extends Renderer {
+export default class Vimeo extends HTML5 {
 
     static supportedTypes(){
         return [
@@ -31,6 +31,7 @@ export default class Vimeo extends Renderer {
     setup(){
         this.addClass('vimeo');
 
+        this.ready = true;
         this.triggerEvent(EVT_READY, {'renderer': this});
     }
 

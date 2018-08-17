@@ -4,11 +4,15 @@ import {toCSS} from '../../core/utils/Color';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
-import HTML5 from '../Renderer';
+import HTML5 from '../renderer/HTML5';
 import YouTube from '../renderer/YouTube';
 import Vimeo from '../renderer/Vimeo';
 
-const RENDERERS = [YouTube, Vimeo, HTML5];
+const RENDERERS = [
+    YouTube,
+    Vimeo,
+    HTML5
+];
 
 export default class Media extends Component{
 
@@ -199,8 +203,18 @@ export default class Media extends Component{
 
         if(index > -1){
             this.renderer = new RENDERERS[index]({'type': this.configs.type})
-                .appendTo(this)
-                .setSource(source, supressEvent);
+                .appendTo(this);
+
+            console.log(this.renderer.ready);
+            if(this.renderer.ready){
+                this.renderer.setSource(source, supressEvent)
+            }
+            else{
+                this.renderer.addListener('ready', (evt) => {
+                    console.log(this.renderer.ready);
+                    evt.detail.renderer.setSource(source, supressEvent);
+                });
+            }
         }
 
         return this;
