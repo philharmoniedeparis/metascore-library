@@ -12,7 +12,8 @@
     "dev": "webpack -d --watch",
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",
-    "drupal": "npm run pack && copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore"
+    "i18n": "node ./bin/i18n-extract.js",
+    "drupal": "copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore"
   },
   "repository": {
     "type": "git",

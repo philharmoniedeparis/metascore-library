@@ -14,6 +14,7 @@ import SelectField from './field/Select';
 import TextField from './field/Text';
 import TextareaField from './field/Textarea';
 import TimeField from './field/Time';
+import {getImageMetadata} from '../core/utils/Media';
 
 const FIELD_TYPES = {
     'BorderRadius': BorderRadiusField,
@@ -653,35 +654,34 @@ export default class Panel extends Dom {
             return;
         }
 
-        new Dom('<img/>')
-            .addListener('load', (load_evt) => {
-                const width = load_evt.target.width;
-                const height = load_evt.target.height;
+        getImageMetadata(this.getComponent().get(0).baseURI + evt.detail.value, (error, metadata) => {
+            if(error){
+                return;
+            }
 
-                const values = [];
-                this.components.forEach((component) => {
-                    const old_values = {
-                        'width': component.getPropertyValue('width'),
-                        'height': component.getPropertyValue('height')
-                    };
+            const values = [];
+            this.components.forEach((component) => {
+                const old_values = {
+                    'width': component.getPropertyValue('width'),
+                    'height': component.getPropertyValue('height')
+                };
 
-                    component.setPropertyValues({'width': width, 'height': height});
+                component.setPropertyValues({'width': metadata.width, 'height': metadata.height});
 
-                    const new_values = {
-                        'width': component.getPropertyValue('width'),
-                        'height': component.getPropertyValue('height')
-                    };
+                const new_values = {
+                    'width': component.getPropertyValue('width'),
+                    'height': component.getPropertyValue('height')
+                };
 
-                    values.push({
-                        component: component,
-                        new_values: new_values,
-                        old_values: old_values,
-                    });
+                values.push({
+                    component: component,
+                    new_values: new_values,
+                    old_values: old_values
                 });
+            });
 
-                this.triggerEvent(EVT_VALUESCHANGE, values, false);
-            })
-            .attr('src', this.getComponent().get(0).baseURI + evt.detail.value);
+            this.triggerEvent(EVT_VALUESCHANGE, values, false);
+        });
     }
 
     /**

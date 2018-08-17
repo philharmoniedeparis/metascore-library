@@ -1,6 +1,6 @@
 import Panel from '../Panel';
-import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
+import {getImageMetadata} from '../../core/utils/Media';
 
 /**
  * Fired when a component's text is locked
@@ -187,7 +187,7 @@ export default class Element extends Panel {
                 const new_src = url;
 
                 if(old_src){
-                    this.getImageMetadata(base_uri + old_src, (old_error, old_metadata) => {
+                    getImageMetadata(base_uri + old_src, (old_error, old_metadata) => {
                         if(old_error){
                             reject(old_error);
                             return;
@@ -208,7 +208,7 @@ export default class Element extends Panel {
                             });
                         }
 
-                        this.getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
+                        getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
                             if(new_error){
                                 reject(new_error);
                                 return;
@@ -235,7 +235,7 @@ export default class Element extends Panel {
                     });
                 }
                 else{
-                    this.getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
+                    getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
                         if(new_error){
                             reject(new_error);
                             return;
@@ -275,35 +275,6 @@ export default class Element extends Panel {
 
             this.triggerEvent('valueschange', results, false);
         });
-    }
-
-    /**
-     * Get an image's metadata (name, width, and height)
-     *
-     * @method getImageMetadata
-     * @private
-     * @param {String} url The image's url
-     * @param {Function} callback The callback to call with the retreived metadata
-     */
-    getImageMetadata(url, callback){
-        var img = new Dom('<img/>')
-            .addListener('error', callback)
-            .addListener('load', () => {
-                let el = img.get(0),
-                    matches, name;
-
-                matches = el.src.match(/([^/]*)\.[^.]*$/)
-                if(matches){
-                    name = matches[1];
-                }
-
-                callback(null, {
-                    'name': name,
-                    'width': el.naturalWidth,
-                    'height': el.naturalHeight
-                });
-            })
-            .attr('src', url);
     }
 
     /**

@@ -175,7 +175,7 @@ export default class Dom {
     }
 
     /**
-     * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+     * Creates elements from an HTML string
      *
      * @method elementsFromString
      * @static
@@ -183,41 +183,13 @@ export default class Dom {
      * @return {HTML NodeList} A NodeList of the created elements, or null on error
      */
     static elementsFromString(html){
-        let wrapMap = {
-                'option': [1, "<select multiple='multiple'>", "</select>"],
-                'optgroup': [1, "<select multiple='multiple'>", "</select>"],
-                'legend': [1, "<fieldset>", "</fieldset>"],
-                'area': [1, "<map>", "</map>"],
-                'param': [1, "<object>", "</object>"],
-                'thead': [1, "<table>", "</table>"],
-                'tbody': [1, "<table>", "</table>"],
-                'tfoot': [1, "<table>", "</table>"],
-                'colgroup': [1, "<table>", "</table>"],
-                'caption': [1, "<table>", "</table>"],
-                'tr': [2, "<table><tbody>", "</tbody></table>"],
-                'col': [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
-                'th': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-                'td': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-                '_default': [1, "<div>", "</div>" ]
-            },
-            element = document.createElement('div'),
-            match = /<\s*\w.*?>/g.exec(html),
-            tag, map, j;
+        if(isString(html)){
+            const template = document.createElement('template');
+            template.innerHTML = html.trim();
 
-        if(match !== null){
-            tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
-
-            map = wrapMap[tag] || wrapMap._default;
-            html = map[1] + html + map[2];
-            element.innerHTML = html;
-
-            // Descend through wrappers to the right content
-            j = map[0];
-            while(j--) {
-                element = element.lastChild;
+            if(template.content.childElementCount > 0){
+                return template.content.childNodes;
             }
-
-            return element.childNodes;
         }
 
         return null;

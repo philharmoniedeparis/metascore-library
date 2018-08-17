@@ -110,6 +110,62 @@ export default class Time extends Field {
     }
 
     /**
+     * Helper function to convert a textual value to a numerical one
+     *
+     * @method getNumericalValue
+     * @private
+     * @param {String} textual_value The textual value
+     * @return {Number} The numercial value
+     */
+    static getNumericalValue(textual_value){
+        let matches, value;
+
+        if(textual_value.indexOf(PART_PLACEHOLDER) !== -1){
+            return null;
+        }
+
+        matches = textual_value.match(GLOBAL_REGEX);
+        value = 0;
+
+        if(matches){
+            matches.shift();
+
+            matches.forEach((match, i) => {
+                value += parseInt(matches[i], 10) * PARTS[i].multiplier;
+            });
+        }
+
+        return value;
+    }
+
+    /**
+     * Helper function to convert a numerical value to a textual one
+     *
+     * @method getTextualValue
+     * @private
+     * @param {Number} value The numercial value
+     * @return {String} The textual value
+     */
+    static getTextualValue(value){
+        let textual_value = "";
+
+        PARTS.forEach((part) => {
+            textual_value += part.prefix;
+
+            if(value === null){
+                textual_value += PART_PLACEHOLDER;
+            }
+            else{
+                textual_value += pad(parseInt((value / part.multiplier) % (part.max_value + 1), 10) || 0, 2, "0", "left");
+            }
+
+            textual_value += part.suffix;
+        });
+
+        return textual_value;
+    }
+
+    /**
      * Setup the field's UI
      *
      * @method setupUI
@@ -243,7 +299,7 @@ export default class Time extends Field {
 
         if(this.dirty){
             delete this.dirty;
-            this.setValue(this.getNumericalValue(this.input.val()));
+            this.setValue(this.constructor.getNumericalValue(this.input.val()));
         }
     }
 
@@ -292,7 +348,7 @@ export default class Time extends Field {
             pasted_data = clipboard_data.getData('Text');
 
         if(this.isValid(pasted_data)){
-            this.setValue(this.getNumericalValue(pasted_data), false);
+            this.setValue(this.constructor.getNumericalValue(pasted_data), false);
         }
 
         evt.preventDefault();
@@ -390,7 +446,7 @@ export default class Time extends Field {
         // Enter key
         else if(evt.keyCode === 13 && this.dirty){
             delete this.dirty;
-            this.setValue(this.getNumericalValue(this.input.val()));
+            this.setValue(this.constructor.getNumericalValue(this.input.val()));
         }
 
         evt.preventDefault();
@@ -576,62 +632,6 @@ export default class Time extends Field {
     }
 
     /**
-     * Helper function to convert a textual value to a numerical one
-     *
-     * @method getNumericalValue
-     * @private
-     * @param {String} textual_value The textual value
-     * @return {Number} The numercial value
-     */
-    getNumericalValue(textual_value){
-        let matches, value;
-
-        if(textual_value.indexOf(PART_PLACEHOLDER) !== -1){
-            return null;
-        }
-
-        matches = textual_value.match(GLOBAL_REGEX);
-        value = 0;
-
-        if(matches){
-            matches.shift();
-
-            matches.forEach((match, i) => {
-                value += parseInt(matches[i], 10) * PARTS[i].multiplier;
-            });
-        }
-
-        return value;
-    }
-
-    /**
-     * Helper function to convert a numerical value to a textual one
-     *
-     * @method getTextualValue
-     * @private
-     * @param {Number} value The numercial value
-     * @return {String} The textual value
-     */
-    getTextualValue(value){
-        let textual_value = "";
-
-        PARTS.forEach((part) => {
-            textual_value += part.prefix;
-
-            if(value === null){
-                textual_value += PART_PLACEHOLDER;
-            }
-            else{
-                textual_value += pad(parseInt((value / part.multiplier) % (part.max_value + 1), 10) || 0, 2, "0", "left");
-            }
-
-            textual_value += part.suffix;
-        });
-
-        return textual_value;
-    }
-
-    /**
      * Set the field's value
      *
      * @method setValue
@@ -652,7 +652,7 @@ export default class Time extends Field {
             }
         }
 
-        this.input.val(this.getTextualValue(value));
+        this.input.val(this.constructor.getTextualValue(value));
 
         this.value = value;
 
