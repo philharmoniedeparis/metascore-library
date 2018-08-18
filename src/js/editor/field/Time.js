@@ -183,7 +183,6 @@ export default class Time extends Field {
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('click', this.onClick.bind(this))
             .addListener('focus', this.onFocus.bind(this))
-            .addListener('blur', this.onBlur.bind(this))
             .addListener('dragstart', this.onDragstart.bind(this))
             .addListener('drop', this.onDrop.bind(this))
             .addListener('cut', this.onCut.bind(this))
@@ -222,6 +221,14 @@ export default class Time extends Field {
      * @private
      */
     onChange(){
+        delete this.keys_pressed;
+        delete this.focused_segment;
+
+        if(this.dirty){
+            delete this.dirty;
+            this.setValue(this.constructor.getNumericalValue(this.input.val()));
+        }
+
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     }
 
@@ -284,22 +291,6 @@ export default class Time extends Field {
 
         if(!this.skipFocus){
             this.setFocusedSegment(0);
-        }
-    }
-
-    /**
-     * The blur event handler
-     *
-     * @method onBlur
-     * @private
-     */
-    onBlur(){
-        delete this.keys_pressed;
-        delete this.focused_segment;
-
-        if(this.dirty){
-            delete this.dirty;
-            this.setValue(this.constructor.getNumericalValue(this.input.val()));
         }
     }
 
@@ -443,13 +434,11 @@ export default class Time extends Field {
                 this.setFocusedSegment(focused_segment);
             }
         }
-        // Enter key
-        else if(evt.keyCode === 13 && this.dirty){
-            delete this.dirty;
-            this.setValue(this.constructor.getNumericalValue(this.input.val()));
+        // not Enter key
+        else if(evt.keyCode !== 13){
+            evt.preventDefault();
         }
 
-        evt.preventDefault();
     }
 
     /**
