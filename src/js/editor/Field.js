@@ -136,7 +136,7 @@ export default class Field extends Dom{
      * @private
      */
     onKeypress(evt){
-        if(evt.keyCode === 13) {
+        if(evt.key === "Enter") {
             this.input.triggerEvent('change');
         }
     }
