@@ -18,7 +18,7 @@ const EVT_BEFORESHOW = 'beforeshow';
  */
 const EVT_TASKCLICK = 'taskclick';
 
-export default class ContextMenu extends Dom{
+export default class ContextMenu extends Dom {
 
     /**
      * A class for creating context menus
@@ -31,8 +31,6 @@ export default class ContextMenu extends Dom{
      * @param {Mixed} [configs.items={}] The list of items and subitems
      */
     constructor(configs) {
-        let list;
-
         // call parent constructor
         super('<div/>', {'class': 'contextmenu'});
 
@@ -46,7 +44,7 @@ export default class ContextMenu extends Dom{
         this.onWindowKeyup = this.onWindowKeyup.bind(this);
         this.onTaskClick = this.onTaskClick.bind(this);
 
-        list = new Dom('<ul/>')
+        const list = new Dom('<ul/>')
             .appendTo(this);
 
         if(this.configs.items){
@@ -134,7 +132,8 @@ export default class ContextMenu extends Dom{
      * @param {Event} evt The event object
      */
     onTargetContextmenu(evt){
-        let x, y;
+        let x = 0;
+        let y = 0;
 
         if(this.triggerEvent(EVT_BEFORESHOW, {'original_event': evt}) === false){
             return;
@@ -151,10 +150,6 @@ export default class ContextMenu extends Dom{
         else if(evt.clientX || evt.clientY){
             x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
             y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-        }
-        else{
-            x = 0;
-            y = 0;
         }
 
         this.show(evt.target, x, y);
@@ -179,9 +174,7 @@ export default class ContextMenu extends Dom{
      * @private
      */
     onWindowKeyup(evt){
-        console.log('onWindowKeyup');
-
-        if(evt.keyCode === 27){
+        if(evt.key === "Escape"){
             this.hide();
         }
     }

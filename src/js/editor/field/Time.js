@@ -2,6 +2,7 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import {pad} from '../../core/utils/String';
+import {isNumeric} from '../../core/utils/Var';
 
 /**
  * Fired when the field's value changes
@@ -355,10 +356,10 @@ export default class Time extends Field {
     onKeydown(evt){
         let segment;
 
-        switch (evt.keyCode) {
-            case 37: // left arrow
-            case 39: // right arrow
-                segment = this.getFocusedSegment() + (evt.keyCode === 37 ? -1 : 1);
+        switch (evt.key) {
+            case "ArrowLeft":
+            case "ArrowRight":
+                segment = this.getFocusedSegment() + (evt.key === "ArrowLeft" ? -1 : 1);
 
                 if(segment >= 0 && segment < PARTS.length){
                     this.setFocusedSegment(segment);
@@ -367,7 +368,7 @@ export default class Time extends Field {
                 evt.preventDefault();
                 break;
 
-            case 38: // up arrow
+            case "ArrowUp":
                 segment = this.getFocusedSegment();
 
                 if(segment !== undefined){
@@ -378,7 +379,7 @@ export default class Time extends Field {
                 evt.preventDefault();
                 break;
 
-            case 40: // down arrow
+            case "ArrowDown":
                 segment = this.getFocusedSegment();
 
                 if(segment !== undefined){
@@ -389,7 +390,7 @@ export default class Time extends Field {
                 evt.preventDefault();
                 break;
 
-            case 9: // tab
+            case "Tab":
                 segment = this.getFocusedSegment() + (evt.shiftKey ? -1 : 1);
 
                 if(segment >= 0 && segment < PARTS.length){
@@ -413,14 +414,14 @@ export default class Time extends Field {
             segment_value;
 
         // Numeric key
-        if(focused_segment < PARTS.length && evt.keyCode >= 48 && evt.keyCode <= 57){
+        if(isNumeric(evt.key) && focused_segment < PARTS.length){
             segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
 
             if(this.keys_pressed === 0 || isNaN(segment_value)){
                 segment_value = 0;
             }
 
-            segment_value += String.fromCharCode(evt.keyCode);
+            segment_value += evt.key;
 
             segment_value = pad(Math.min(PARTS[focused_segment].max_value, parseInt(segment_value, 10)), 2, "0", "left");
 
@@ -434,8 +435,7 @@ export default class Time extends Field {
                 this.setFocusedSegment(focused_segment);
             }
         }
-        // not Enter key
-        else if(evt.keyCode !== 13){
+        else if(evt.key !== "Enter"){
             evt.preventDefault();
         }
 

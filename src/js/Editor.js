@@ -51,7 +51,7 @@ export default class Editor extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-editor'});
+        super('<div/>', {'class': 'metaScore-editor', 'tabindex': 0});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
@@ -208,16 +208,29 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeydown(evt){
-        switch(evt.keyCode){
-            case 18: //alt
+        if(Dom.is(evt.target, 'input')){
+            return;
+        }
+
+        switch(evt.key){
+            case "Alt":
                 if(!evt.repeat){
                     this.setEditing(!this.persistentEditing, false);
                     evt.preventDefault();
                 }
                 break;
 
-            case 72: //h
-                if(evt.ctrlKey){ // Ctrl+h
+            case " ":
+                if(!evt.repeat){
+                    const player = this.getPlayer();
+                    if(player){
+                        player.togglePlay();
+                    }
+                }
+                break;
+
+            case "h":
+                if(evt.ctrlKey && !evt.repeat){
                     const player = this.getPlayer();
                     if(player){
                         player.addClass('show-contents');
@@ -226,15 +239,15 @@ export default class Editor extends Dom {
                 }
                 break;
 
-            case 90: //z
-                if(evt.ctrlKey){ // Ctrl+z
+            case "z":
+                if(evt.ctrlKey){
                     this.history.undo();
                     evt.preventDefault();
                 }
                 break;
 
-            case 89: //y
-                if(evt.ctrlKey){ // Ctrl+y
+            case "y":
+                if(evt.ctrlKey){
                     this.history.redo();
                     evt.preventDefault();
                 }
@@ -250,14 +263,18 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeyup(evt){
-        switch(evt.keyCode){
-            case 18: //alt
+        if(Dom.is(evt.target, 'input')){
+            return;
+        }
+
+        switch(evt.key){
+            case "Alt":
                 this.setEditing(this.persistentEditing, false);
                 evt.preventDefault();
                 break;
 
-            case 72: //h
-                if(evt.ctrlKey){ // Ctrl+h
+            case "h":
+                if(evt.ctrlKey){
                     const player = this.getPlayer();
                     if(player){
                         player.removeClass('show-contents');
@@ -607,7 +624,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onBlockPanelValueChange(evt){
-        let sets = evt.detail;
+        const sets = evt.detail;
 
         const update = (key) => {
             const doUpdateBlockTogglers = sets.some((set) => {
@@ -665,7 +682,7 @@ export default class Editor extends Dom {
                 break;
 
             case 'delete': {
-                const blocks = this.panels.block.getComponents().filter(block => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
                 this.deletePlayerComponents('block', blocks);
                 break;
             }
@@ -1098,20 +1115,17 @@ export default class Editor extends Dom {
     }
 
     onComponentBeforeRemove(evt){
-        let component = evt.target._metaScore,
-            panel;
+        const component = evt.target._metaScore;
 
         if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
-            panel = this.panels.block;
+            this.panels.block.unsetComponent(component, true);
         }
         else if(component.instanceOf('Page')){
-            panel = this.panels.page;
+            this.panels.page.unsetComponent(component, true);
         }
         else if(component.instanceOf('Element')){
-            panel = this.panels.page;
+            this.panels.page.unsetComponent(component, true);
         }
-
-        panel.unsetComponent(component, true);
     }
 
     /**
@@ -1122,8 +1136,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Dom/childremove:event"}}Dom.childremove{{/crossLink}}
      */
     onPlayerChildRemove(evt){
-        let child = evt.detail.child,
-            component = child._metaScore;
+        const child = evt.detail.child;
+        const component = child._metaScore;
 
         if(component){
             if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
@@ -1189,9 +1203,6 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
     onPlayerLoadSuccess(loadmask, evt){
-        let player_body = this.player_frame.get(0).contentWindow.document.body,
-            data;
-
         this.player = evt.detail.player
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
@@ -1215,11 +1226,10 @@ export default class Editor extends Dom {
             this.player.contextmenu
                 .disable();
 
+            const player_body = this.player_frame.get(0).contentWindow.document.body;
             this.player_contextmenu
                 .setTarget(player_body)
                 .enable();
-
-            data = this.player.getData();
 
             new Dom(player_body)
                 .addListener('keydown', this.onKeydown.bind(this))
@@ -1232,6 +1242,7 @@ export default class Editor extends Dom {
                 .updatePageSelector()
                 .updateElementSelector();
 
+            const data = this.player.getData();
             this.mainmenu
                 .toggleButton('save', data.permissions.update)
                 .toggleButton('clone', data.permissions.clone)
@@ -1599,8 +1610,8 @@ export default class Editor extends Dom {
      * @param {HashChangeEvent} evt The event object
      */
     onWindowHashChange(evt){
-        let callback = this.loadPlayerFromHash.bind(this),
-            oldURL = evt.oldURL;
+        const callback = this.loadPlayerFromHash.bind(this);
+        const oldURL = evt.oldURL;
 
         if(this.isDirty()){
             new Alert({
@@ -1988,7 +1999,7 @@ export default class Editor extends Dom {
                         return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                     },
                     'callback': (el) => {
-                        let components = this.panels.block.getComponents().filter(block => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                        let components = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
                         if(components.length === 0){
                             components = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
                         }
@@ -2111,10 +2122,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayerFromHash() {
-        let hash, match;
-
-        hash = window.location.hash;
-        match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/);
+        const hash = window.location.hash;
+        const match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/);
 
         if(match){
             this.loadPlayer(match[2], match[4]);
@@ -2131,8 +2140,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateMainmenu() {
-        let player = this.getPlayer(),
-            hasPlayer = player ? true : false;
+        const player = this.getPlayer();
+        const hasPlayer = player ? true : false;
 
         this.mainmenu.toggleButton('edit', hasPlayer);
         this.mainmenu.toggleButton('save', hasPlayer);
@@ -2182,9 +2191,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     updatePageSelector() {
-        let blocks = this.panels.block.getComponents().filter(block => block.instanceOf('Block')),
-            toolbar = this.panels.page.getToolbar(),
-            selector = toolbar.getSelector();
+        const selector = this.panels.page.getToolbar().getSelector();
+        const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block'));
 
         // clear the selector
         selector.clear();
@@ -2203,7 +2211,7 @@ export default class Editor extends Dom {
 
             // set the selector's value to all selected pages
             const pages = this.panels.page.getComponents();
-            selector.setValue(pages.map(page => page.getId()), true);
+            selector.setValue(pages.map((page) => page.getId()), true);
         }
         else{
             selector.disable();
@@ -2220,9 +2228,9 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateElementSelector() {
-        let panel = this.panels.element,
-            pages = this.panels.page.getComponents(),
-            selector = panel.getToolbar().getSelector();
+        const panel = this.panels.element;
+        const pages = this.panels.page.getComponents();
+        const selector = panel.getToolbar().getSelector();
 
         // clear the selector
         selector.clear();
@@ -2247,8 +2255,7 @@ export default class Editor extends Dom {
 
                 // create the optgroups and their options
                 Object.keys(optgroups).sort(naturalSortInsensitive).forEach((rindex) => {
-                    let options = optgroups[rindex],
-                        optgroup;
+                    const options = optgroups[rindex];
 
                     // sort options by element names
                     options.sort((a, b) => {
@@ -2256,7 +2263,7 @@ export default class Editor extends Dom {
                     });
 
                     // create the optgroup
-                    optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex}), block_optgroup).attr('data-r-index', rindex);
+                    const optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex}), block_optgroup).attr('data-r-index', rindex);
 
                     // create the options
                     options.forEach((element) => {
@@ -2266,7 +2273,7 @@ export default class Editor extends Dom {
             });
 
             const elements = panel.getComponents();
-            selector.setValue(elements.map(element => element.getId()), true);
+            selector.setValue(elements.map((element) => element.getId()), true);
         }
         else{
             selector.disable();
@@ -2317,14 +2324,13 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayer(id, vid){
-        let url = `${this.configs.player_url + id}?autoload=false&keyboard=1`,
-            loadmask;
+        let url = `${this.configs.player_url + id}?autoload=0&keyboard=0`;
 
         if(vid){
             url += `&vid=${vid}`;
         }
 
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });

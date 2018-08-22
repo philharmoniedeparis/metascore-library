@@ -119,7 +119,7 @@ export default class Player extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-player'});
+        super('<div/>', {'class': 'metaScore-player', 'tabindex': 0});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
@@ -169,20 +169,23 @@ export default class Player extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeydown(evt){
-        switch(evt.keyCode){
-            case 32: //space-bar
+        switch(evt.key){
+            case " ":
                 this.togglePlay();
                 evt.preventDefault();
+                evt.stopPropagation();
                 break;
 
-            case 37: //left
+            case "ArrowLeft":
                 this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
                 evt.preventDefault();
+                evt.stopPropagation();
                 break;
 
-            case 39: //right
+            case "ArrowRight":
                 this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
                 evt.preventDefault();
+                evt.stopPropagation();
                 break;
         }
     }
@@ -647,7 +650,7 @@ export default class Player extends Dom {
         this.updateBlockTogglers();
 
         if(this.configs.keyboard){
-            new Dom('body').addListener('keydown', this.onKeydown.bind(this));
+            this.addListener('keydown', this.onKeydown.bind(this));
         }
 
         this.removeClass('loading');
