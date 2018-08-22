@@ -1,5 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
+import {isNumeric} from '../../core/utils/Var';
 import {getDecimalPlaces} from '../../core/utils/Number';
 
 /**
@@ -69,6 +70,7 @@ export default class Number extends Field {
         this.input
             .addListener('input', this.onInput.bind(this))
             .addListener('keydown', this.onKeyDown.bind(this))
+            .addListener('keypress', this.onKeypress.bind(this))
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('DOMMouseScroll', this.onMouseWheel.bind(this));
 
@@ -130,16 +132,29 @@ export default class Number extends Field {
      * @param {Event} evt The event object
      */
     onKeyDown(evt){
-        switch(evt.keyCode){
-            case 38:
-                this.spinUp();
+        switch(evt.key){
+            case "ArrowUp":
+                this.spinUp(false);
                 evt.preventDefault();
                 break;
 
-            case 40:
-                this.spinDown();
+            case "ArrowDown":
+                this.spinDown(false);
                 evt.preventDefault();
                 break;
+        }
+    }
+
+    /**
+     * The keypress event handler
+     *
+     * @method onKeypress
+     * @private
+     * @param {Event} evt The event object
+     */
+    onKeypress(evt){
+        if(!isNumeric(evt.key)){
+            evt.preventDefault();
         }
     }
 
@@ -217,7 +232,7 @@ export default class Number extends Field {
      * @method spinDown
      * @private
      */
-    spinDown() {
+    spinDown(loop) {
         let value = this.getValue() - this.configs.step;
         const decimals = getDecimalPlaces(this.configs.step);
 
@@ -226,10 +241,12 @@ export default class Number extends Field {
 
         this.setValue(value);
 
-        if(this.spinDelay > this.configs.minSpinDelay){
-            this.spinDelay *= this.configs.spinDelayMultiplier;
+        if(loop !== false){
+            if(this.spinDelay > this.configs.minSpinDelay){
+                this.spinDelay *= this.configs.spinDelayMultiplier;
+            }
+            this.timeout = setTimeout(this.spinDown, this.spinDelay);
         }
-        this.timeout = setTimeout(this.spinDown, this.spinDelay);
     }
 
     /**
@@ -238,7 +255,7 @@ export default class Number extends Field {
      * @method spinUp
      * @private
      */
-    spinUp() {
+    spinUp(loop) {
         let value = this.getValue() + this.configs.step;
         const decimals = getDecimalPlaces(this.configs.step);
 
@@ -247,10 +264,12 @@ export default class Number extends Field {
 
         this.setValue(value);
 
-        if(this.spinDelay > this.configs.minSpinDelay){
-            this.spinDelay *= this.configs.spinDelayMultiplier;
+        if(loop !== false){
+            if(this.spinDelay > this.configs.minSpinDelay){
+                this.spinDelay *= this.configs.spinDelayMultiplier;
+            }
+            this.timeout = setTimeout(this.spinUp, this.spinDelay);
         }
-        this.timeout = setTimeout(this.spinUp, this.spinDelay);
     }
 
     /**

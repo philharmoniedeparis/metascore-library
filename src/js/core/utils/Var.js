@@ -1,7 +1,7 @@
 /**
  * Check if a variable is an array
  * @param {Mixed} value The variable
- * @return {Boolean} Whether the variable is empty
+ * @return {Boolean} Whether the variable is an array
  */
 export function isArray(value){
     return Array.isArray(value);
@@ -10,7 +10,7 @@ export function isArray(value){
 /**
  * Check if a variable is a string
  * @param {Mixed} value The variable
- * @return {Boolean} Whether the variable is empty
+ * @return {Boolean} Whether the variable is a string
  */
 export function isString(value){
     return (value !== null) && (typeof value === 'string' || value instanceof String);
@@ -19,16 +19,25 @@ export function isString(value){
 /**
  * Check if a variable is a number
  * @param {Mixed} value The variable
- * @return {Boolean} Whether the variable is empty
+ * @return {Boolean} Whether the variable is a number
  */
 export function isNumber(value){
     return (value !== null) && (typeof value === 'number' || value instanceof Number);
 }
 
 /**
+ * Check if a variable represents a numeric value
+ * @param {Mixed} value The variable
+ * @return {Boolean} Whether the variable represents a numeric value
+ */
+export function isNumeric(value){
+    return !isArray(value) && ((value - parseFloat(value) + 1) >= 0);
+}
+
+/**
  * Check if a variable is a function
  * @param {Mixed} value The variable
- * @return {Boolean} Whether the variable is empty
+ * @return {Boolean} Whether the variable is a function
  */
 export function isFunction(value){
     return (value !== null) && (typeof value === 'function' || value instanceof Function);
@@ -37,7 +46,7 @@ export function isFunction(value){
 /**
  * Check if a variable is an object
  * @param {Mixed} value The variable
- * @return {Boolean} Whether the variable is empty
+ * @return {Boolean} Whether the variable is an object
  */
 export function isObject(value){
     return (value !== null) && (typeof value === 'object' || value instanceof Object);
