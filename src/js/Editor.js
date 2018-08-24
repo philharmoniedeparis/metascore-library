@@ -1,6 +1,6 @@
 import Dom from './core/Dom';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {isArray} from './core/utils/Var';
+import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -1427,16 +1427,21 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
      */
     onPageElementAdd(evt){
-        let page = evt.detail.page,
-            block, media;
+        const element = evt.detail.element;
+        const page = evt.detail.page;
 
-        if((evt.detail.new) && (evt.detail.element.instanceOf('Cursor'))){
-            block = page.getBlock();
-            media = this.getPlayer().getMedia();
+        if(evt.detail.new && element.instanceOf('Cursor')){
+            const media = this.getPlayer().getMedia();
+            const block = page.getBlock();
 
-            evt.detail.element
-                .setPropertyValue('start-time', media.getTime())
-                .setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+            if(!isNumber(element.getPropertyValue('start-time'))){
+                element.setPropertyValue('start-time', block.getPropertyValue('synched') ? page.getPropertyValue('start-time') : media.getTime());
+
+            }
+
+            if(!isNumber(element.getPropertyValue('end-time'))){
+                element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+            }
         }
 
         if(page === this.panels.page.getComponent()){
