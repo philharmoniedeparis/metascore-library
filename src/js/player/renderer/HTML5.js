@@ -85,45 +85,44 @@ export default class Renderer extends Dom {
     }
 
     static getDefaults(){
-        return {
-            'useFrameAnimation': true
-        };
-    }
-
-    static supportedTypes(){
-        return [
-            'audio/aac',
-            'audio/mp4',
-            'audio/mpeg',
-            'audio/ogg',
-            'audio/wav',
-            'audio/webm',
-            'video/mp4',
-            'video/ogg',
-            'video/webm'
-        ];
+        return {};
     }
 
     static canPlayType(mime){
-        return this.supportedTypes().includes(mime);
+        const audio = new Audio();
+        return audio.canPlayType(mime);
     }
 
-    setup(){
+    static getDurationFromURI(url, callback){
+        const audio = new Audio();
+
+        audio.addEventListener('error', () => {
+            callback(new Error(`An error occured while attempting to load the media: ${url}`));
+        });
+
+        audio.addEventListener('loadedmetadata', () => {
+            callback(null, audio.duration);
+        });
+
+        audio.src = url;
+    }
+
+    init(){
         this.addClass('html5');
 
         this.el = new Dom(`<${this.configs.type}></${this.configs.type}/>`, {'preload': 'auto'})
             .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
             .addListener('play', this.onPlay.bind(this))
             .addListener('pause', this.onPause.bind(this))
-            .addListener('timeupdate', this.onTimeUpdate.bind(this))
             .addListener('seeking', this.onSeeking.bind(this))
             .addListener('seeked', this.onSeeked.bind(this))
             .appendTo(this);
 
         this.dom = this.el.get(0);
 
-        this.ready = true;
-        this.triggerEvent(EVT_READY, {'renderer': this});
+        this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
+
+        return this;
     }
 
     /**
@@ -173,9 +172,7 @@ export default class Renderer extends Dom {
 
         this.triggerEvent(EVT_PLAY, {'renderer': this});
 
-        if(this.configs.useFrameAnimation){
-            this.triggerTimeUpdate();
-        }
+        this.triggerTimeUpdate();
 
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
@@ -192,22 +189,6 @@ export default class Renderer extends Dom {
         this.playing = false;
 
         this.triggerEvent(EVT_PAUSE, {'renderer': this});
-
-        if(isFunction(evt.stopPropagation)){
-            evt.stopPropagation();
-        }
-    }
-
-    /**
-     * The timeupdate event handler
-     *
-     * @method onTimeUpdate
-     * @private
-     */
-    onTimeUpdate(evt){
-        if(!this.configs.useFrameAnimation){
-            this.triggerTimeUpdate(false);
-        }
 
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
@@ -289,7 +270,7 @@ export default class Renderer extends Dom {
             window.requestAnimationFrame(this.triggerTimeUpdate.bind(this));
         }
 
-        this.triggerEvent(EVT_TIMEUPDATE, {'renderer': this});
+        this.triggerEvent(EVT_TIMEUPDATE, {'renderer': this, 'time': this.getTime()});
 
         return this;
     }

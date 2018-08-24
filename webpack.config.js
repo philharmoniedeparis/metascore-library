@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const path = require("path");
 const git = require('git-rev-sync');
 const beep = require('beepbeep');

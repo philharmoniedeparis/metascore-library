@@ -5,13 +5,17 @@ import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
 import HTML5 from '../renderer/HTML5';
+import HLS from '../renderer/HLS';
+import Dash from '../renderer/Dash';
 import YouTube from '../renderer/YouTube';
 import Vimeo from '../renderer/Vimeo';
 
 const RENDERERS = [
+    HTML5,
+    HLS,
+    Dash,
     YouTube,
-    Vimeo,
-    HTML5
+    Vimeo
 ];
 
 export default class Media extends Component{
@@ -180,6 +184,18 @@ export default class Media extends Component{
         return 'Media';
     }
 
+    static getRendererForMime(mime){
+        const index = RENDERERS.findIndex((renderer) => {
+            return renderer.canPlayType(mime);
+        });
+
+        if(index > -1){
+            return RENDERERS[index];
+        }
+
+        return null;
+    }
+
     getRenderer(){
         return this.renderer;
     }
@@ -197,24 +213,14 @@ export default class Media extends Component{
             this.renderer.remove();
         }
 
-        const index = RENDERERS.findIndex((renderer) => {
-            return renderer.canPlayType(source.mime);
-        });
-
-        if(index > -1){
-            this.renderer = new RENDERERS[index]({'type': this.configs.type})
-                .appendTo(this);
-
-            console.log(this.renderer.ready);
-            if(this.renderer.ready){
-                this.renderer.setSource(source, supressEvent)
-            }
-            else{
-                this.renderer.addListener('ready', (evt) => {
-                    console.log(this.renderer.ready);
+        const renderer = this.constructor.getRendererForMime(source.mime);
+        if(renderer){
+            this.renderer = new renderer({'type': this.configs.type})
+                .addListener('ready', (evt) => {
                     evt.detail.renderer.setSource(source, supressEvent);
-                });
-            }
+                })
+                .init()
+                .appendTo(this);
         }
 
         return this;

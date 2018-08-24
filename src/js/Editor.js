@@ -1537,7 +1537,12 @@ export default class Editor extends Dom {
                     'autoShow': true
                 });
 
-                this.getMediaFileDuration(data.media.url, (new_duration) => {
+                this.getMediaFileDuration(data.media, (error, new_duration) => {
+                    if(error){
+                        console.error(error);
+                        return;
+                    }
+
                     const old_duration = player.getMedia().getDuration();
 
                     if(new_duration !== old_duration){
@@ -1752,7 +1757,7 @@ export default class Editor extends Dom {
             .setupContextMenus()
             .loadPlayerFromHash();
 
-        this.triggerEvent(EVT_READY, {'editor': this}, true, false);
+        this.triggerEvent(EVT_READY, {'editor': this}, false, false);
 
     }
 
@@ -2779,18 +2784,19 @@ export default class Editor extends Dom {
             'autoSend': false
         }, this.configs.ajax);
 
+        const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide.json`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
             .addUploadListener('progress', (evt) => {
                 if (evt.lengthComputable) {
-                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
                     loadmask.setProgress(percent);
                 }
             })
             .addUploadListener('loadend', () => {
-                loadmask.setProgress(100);
+                loadmask.setProgress(hundred);
             })
             .send();
 
@@ -2841,18 +2847,19 @@ export default class Editor extends Dom {
             'autoSend': false
         }, this.configs.ajax);
 
+        const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
             .addUploadListener('progress', (evt) => {
                 if (evt.lengthComputable) {
-                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
                     loadmask.setProgress(percent);
                 }
             })
             .addUploadListener('loadend', () => {
-                loadmask.setProgress(100);
+                loadmask.setProgress(hundred);
             })
             .send();
 
@@ -2896,15 +2903,21 @@ export default class Editor extends Dom {
      * @param {String} url The file's url
      * @param {Function} callback A callback function to call with the duration
      */
-    getMediaFileDuration(url, callback){
-        const media = new Dom('<audio/>')
-            .addListener('loadedmetadata', () => {
-                const duration = Math.round(parseFloat(media.get(0).duration) * 100);
-                media.remove();
-                callback(duration);
-            })
-            .attr('src', url)
-            .appendTo(this);
+    getMediaFileDuration(file, callback){
+        const renderer = this.getPlayer().getMedia().constructor.getRendererForMime(file.mime);
+        if(renderer){
+            renderer.getDurationFromURI(file.url, (error, duration) => {
+                if(error){
+                    callback(error);
+                    return;
+                }
+
+                callback(null, Math.round(parseFloat(duration) * 100));
+            });
+        }
+        else{
+            callback(new Error(`No compatible renderer found for ${file.mine}`));
+        }
     }
 
 }

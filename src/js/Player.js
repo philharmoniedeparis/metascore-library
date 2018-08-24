@@ -691,7 +691,7 @@ export default class Player extends Dom {
 
         this.appendTo(this.configs.container);
 
-        this.triggerEvent(EVT_READY, {'player': this}, true, false);
+        this.triggerEvent(EVT_READY, {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
             this.load();

@@ -22,10 +22,12 @@ const EVT_SOURCESET = 'sourceset';
  */
 export default class YouTube extends HTML5 {
 
-    static supportedTypes(){
-        return [
+    static canPlayType(mime){
+        const supported = [
             'video/youtube'
         ];
+
+        return supported.includes(mime.toLowerCase());
     }
 
     static getVideoIDFromURL(url){
@@ -38,7 +40,7 @@ export default class YouTube extends HTML5 {
         return parsed[0];
     }
 
-    setup(){
+    init(){
         this.addClass('youtube');
 
         const script = document.createElement("script")
@@ -47,7 +49,7 @@ export default class YouTube extends HTML5 {
         window.onYouTubeIframeAPIReady = () => {
             delete window.onYouTubeIframeAPIReady;
             this.ready = true;
-            this.triggerEvent(EVT_READY, {'renderer': this});
+            this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
         };
 
         script.addEventListener('load', () => {
@@ -59,17 +61,25 @@ export default class YouTube extends HTML5 {
         });
 
         script.async = true;
-        script.src = 'https://www.youtube.com/player_api';
+        script.src = '//www.youtube.com/player_api';
 
         document.head.appendChild(script);
+
+        return this;
     }
 
     setSource(source, supressEvent){
-        const container = new Dom(`<div/>`)
+        const video_id = this.constructor.getVideoIDFromURL(source.url);
+        const wrapper = new Dom('<div/>', {'class': 'iframe-wrapper'})
             .appendTo(this);
 
-        this.embed = new window.YT.Player(container.get(0), {
-            'videoId': this.constructor.getVideoIDFromURL(source.url),
+        // add a poster to hide the large red play button
+        this.poster = new Dom('<div/>', {'class': 'poster'})
+            .css('background-image', `url('//img.youtube.com/vi/${video_id}/sddefault.jpg')`)
+            .appendTo(this);
+
+        this.dom = new window.YT.Player(wrapper.get(0), {
+            'videoId': video_id,
             'width': '100%',
             'height': '100%',
             'playerVars': {
@@ -81,30 +91,45 @@ export default class YouTube extends HTML5 {
             },
             'events': {
                 'onReady': this.onLoadedMetadata.bind(this),
-                'onStateChange': (evt) => {
-                    console.log(evt);
-
-                    switch (evt.data) {
-                        case window.YT.PlayerState.PLAYING:
-                            this.onPlay(evt);
-                            break;
-
-                        case window.YT.PlayerState.PAUSED:
-                            this.onPause(evt);
-                            break;
-                    }
-                }
+                'onStateChange': this.onStateChange.bind(this)
             }
         });
-        //this.embed.on('timeupdate', this.onTimeUpdate.bind(this));
-        //this.embed.on('seeking', this.onSeeking.bind(this));
-        //this.embed.on('seeked', this.onSeeked.bind(this));
+        //this.dom.on('seeking', this.onSeeking.bind(this));
+        //this.dom.on('seeked', this.onSeeked.bind(this));
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_SOURCESET, {'renderer': this});
         }
 
         return this;
+    }
+
+    onStateChange(evt){
+        switch (evt.data) {
+            case window.YT.PlayerState.PLAYING:
+                this.onPlay(evt);
+                break;
+
+            case window.YT.PlayerState.PAUSED:
+                this.onPause(evt);
+                break;
+        }
+    }
+
+    /**
+     * The play event handler
+     *
+     * @method onPlay
+     * @private
+     */
+    onPlay(...args) {
+        if(this.poster){
+            // remove the poster as it is no longer needed
+            this.poster.remove();
+            delete this.poster;
+        }
+
+        super.onPlay(...args);
     }
 
     /**
@@ -114,7 +139,7 @@ export default class YouTube extends HTML5 {
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
-        return this.embed.getPlayerState() === window.YT.PlayerState.PLAYING;
+        return this.dom.getPlayerState() === window.YT.PlayerState.PLAYING;
     }
 
     /**
@@ -124,7 +149,7 @@ export default class YouTube extends HTML5 {
      * @chainable
      */
     play() {
-        this.embed.playVideo();
+        this.dom.playVideo();
 
         return this;
     }
@@ -136,7 +161,7 @@ export default class YouTube extends HTML5 {
      * @chainable
      */
     pause() {
-        this.embed.pauseVideo();
+        this.dom.pauseVideo();
 
         return this;
     }
@@ -149,7 +174,7 @@ export default class YouTube extends HTML5 {
      * @chainable
      */
     setTime(time) {
-        this.embed.seekTo(time);
+        this.dom.seekTo(time);
 
         if(!this.isPlaying()){
             this.triggerTimeUpdate(false);
@@ -165,7 +190,7 @@ export default class YouTube extends HTML5 {
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return this.embed.getCurrentTime();
+        return this.dom.getCurrentTime();
     }
 
     /**
@@ -175,7 +200,7 @@ export default class YouTube extends HTML5 {
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return this.embed.getDuration();
+        return this.dom.getDuration();
     }
 
 }

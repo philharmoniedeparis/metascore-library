@@ -41,6 +41,9 @@ body{
             }
 
             &.video{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 min-width: 50px;
                 min-height: 50px;
                 overflow: hidden;
@@ -49,15 +52,57 @@ body{
                 border-radius: 10px;
 
                 .metaScore-renderer{
+                    position: relative;
                     width: 100%;
                     height: 100%;
+                    user-select: none;
 
                     video,
+                    .iframe-wrapper,
                     iframe{
                         display: block;
                         width: 100% !important;
                         height: 100% !important;
                     }
+
+                    iframe{
+                        pointer-events: none;
+                    }
+
+                    &.youtube{
+                        .poster{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+                            background-color: #000;
+                        }
+                    }
+
+                    /*&.vimeo{
+                        padding-bottom: 56.25%;
+                        height: 0;
+                        overflow: hidden;
+                        position: relative;
+
+                        .iframe-wrapper{
+                            position: relative;
+                            padding-bottom: 200%;
+                            transform: translateY(-35.95%);
+                        }
+
+                        iframe{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }*/
                 }
             }
         }
