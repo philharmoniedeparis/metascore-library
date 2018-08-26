@@ -44,6 +44,7 @@
 	"editor.contextmenu.paste-elements": "Paste elements",
 	"editor.contextmenu.select-blocks": "Select all blocks",
 	"editor.contextmenu.select-elements": "Select all elements",
+	"editor.contextmenu.select-elements-matching-index": "Select all elements of the current reading index",
 	"editor.contextmenu.unlock-block": "Unlock block",
 	"editor.contextmenu.unlock-element": "Unlock element",
 	"editor.createGuide.LoadMask.text": "Saving...",

@@ -1794,8 +1794,29 @@ export default class Editor extends Dom {
 
                         this.panels.block.setComponent(page.getBlock());
                         this.panels.page.setComponent(page);
+
                         page.getElements().forEach((element, index) => {
                             this.panels.element.setComponent(element, index > 0);
+                        });
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
+                    }
+                },
+                'select-elements-matching-index': {
+                    'text': Locale.t('editor.contextmenu.select-elements-matching-index', 'Select all elements of the current reading index'),
+                    'callback': (el) => {
+                        const rindex = this.getPlayer().getReadingIndex();
+                        const page = el.closest('.metaScore-component.page')._metaScore;
+
+                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.page.setComponent(page);
+                        this.panels.element.unsetComponents();
+
+                        page.getElements().forEach((element) => {
+                            if(element.getPropertyValue('r-index') === rindex){
+                                this.panels.element.setComponent(element, true);
+                            }
                         });
                     },
                     'toggler': (el) => {
@@ -1957,8 +1978,8 @@ export default class Editor extends Dom {
                             }
                         }
                     },
-                    'toggler': () => {
-                        return (this.editing === true);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.is('.metaScore-player'));
                     }
                 },
                 'select-blocks': {
@@ -1992,8 +2013,8 @@ export default class Editor extends Dom {
                     'callback': () => {
                         this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
                     },
-                    'toggler': () => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block');
+                    'toggler': (el) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block') && (el.is('.metaScore-player'));
                     }
                 },
                 'delete-blocks': {
