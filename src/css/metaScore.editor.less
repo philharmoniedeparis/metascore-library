@@ -230,6 +230,10 @@
             }
         }
 
+        &:focus{
+            outline: none;
+        }
+
         &.checkboxfield{
             &.readonly{
                 .input-wrapper{
@@ -1629,7 +1633,11 @@
 
                     .field{
                         padding-left: 0.5em;
-                        border-left: 2px solid #0000fe;
+                        border-left: 2px solid #ddd;
+
+                        &:focus-within{
+                            border-left-color: #0000fe;
+                        }
 
                         &.textfield{
                             input{
