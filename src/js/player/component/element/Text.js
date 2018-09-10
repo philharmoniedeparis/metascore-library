@@ -49,7 +49,7 @@ export default class Text extends Element {
         // call parent constructor
         super(configs);
 
-        this.addDelegate('a', 'click', this.onLinkClick.bind(this));
+        this.addDelegate('a, a *', 'click', this.onLinkClick.bind(this));
     }
 
     static getDefaults(){
