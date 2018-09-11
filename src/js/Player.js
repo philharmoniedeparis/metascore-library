@@ -142,9 +142,9 @@ export default class Player extends Dom {
             'url': '',
             'container': 'body',
             'ajax': {},
-            'keyboard': false,
-            'api': false,
             'autoload': true,
+            'keyboard': true,
+            'api': false,
             'lang': 'en'
         };
     }
