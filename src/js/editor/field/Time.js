@@ -119,14 +119,12 @@ export default class Time extends Field {
      * @return {Number} The numercial value
      */
     static getNumericalValue(textual_value){
-        let matches, value;
-
         if(textual_value.indexOf(PART_PLACEHOLDER) !== -1){
             return null;
         }
 
-        matches = textual_value.match(GLOBAL_REGEX);
-        value = 0;
+        let value = 0;
+        const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
             matches.shift();
@@ -173,8 +171,6 @@ export default class Time extends Field {
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input_el = this.input.get(0);
@@ -188,11 +184,10 @@ export default class Time extends Field {
             .addListener('drop', this.onDrop.bind(this))
             .addListener('cut', this.onCut.bind(this))
             .addListener('paste', this.onPaste.bind(this))
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keypress', this.onKeypress.bind(this));
+            .addListener('keydown', this.onKeydown.bind(this));
 
         if(this.configs.clearButton || this.configs.inButton || this.configs.outButton){
-            buttons = new Dom('<div/>', {'class': 'buttons'})
+            const buttons = new Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this.input_wrapper);
 
             if(this.configs.clearButton){
@@ -354,12 +349,10 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeydown(evt){
-        let segment;
-
         switch (evt.key) {
             case "ArrowLeft":
-            case "ArrowRight":
-                segment = this.getFocusedSegment() + (evt.key === "ArrowLeft" ? -1 : 1);
+            case "ArrowRight": {
+                const segment = this.getFocusedSegment() + (evt.key === "ArrowLeft" ? -1 : 1);
 
                 if(segment >= 0 && segment < PARTS.length){
                     this.setFocusedSegment(segment);
@@ -367,31 +360,31 @@ export default class Time extends Field {
 
                 evt.preventDefault();
                 break;
+            }
+            case "ArrowUp": {
+                const segment = this.getFocusedSegment();
 
-            case "ArrowUp":
-                segment = this.getFocusedSegment();
-
-                if(segment !== undefined){
+                if(typeof segment !== "undefined"){
                     this.incrementSegmentValue(segment);
                     this.setFocusedSegment(segment);
                 }
 
                 evt.preventDefault();
                 break;
+            }
+            case "ArrowDown": {
+                const segment = this.getFocusedSegment();
 
-            case "ArrowDown":
-                segment = this.getFocusedSegment();
-
-                if(segment !== undefined){
+                if(typeof segment !== "undefined"){
                     this.decrementSegmentValue(segment);
                     this.setFocusedSegment(segment);
                 }
 
                 evt.preventDefault();
                 break;
-
-            case "Tab":
-                segment = this.getFocusedSegment() + (evt.shiftKey ? -1 : 1);
+            }
+            case "Tab": {
+                const segment = this.getFocusedSegment() + (evt.shiftKey ? -1 : 1);
 
                 if(segment >= 0 && segment < PARTS.length){
                     this.setFocusedSegment(segment);
@@ -399,6 +392,7 @@ export default class Time extends Field {
                 }
 
                 break;
+            }
         }
     }
 
@@ -410,12 +404,11 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeypress(evt){
-        let focused_segment = this.getFocusedSegment(),
-            segment_value;
+        const focused_segment = this.getFocusedSegment();
 
         // Numeric key
         if(isNumeric(evt.key) && focused_segment < PARTS.length){
-            segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
+            let segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
 
             if(this.keys_pressed === 0 || isNaN(segment_value)){
                 segment_value = 0;
@@ -518,8 +511,8 @@ export default class Time extends Field {
      * @param {Number} segment The focus segment's index
      */
     setFocusedSegment(segment){
-        let start = segment * 3,
-            end = start + 2;
+        const start = segment * 3;
+        const end = start + 2;
 
         this.input_el.setSelectionRange(0, 0);
         this.input_el.setSelectionRange(start, end, 'forward');
@@ -536,8 +529,8 @@ export default class Time extends Field {
      * @return {String} The segment's value
      */
     getSegmentValue(segment){
-        let textual_value = this.input.val(),
-            matches = textual_value.match(GLOBAL_REGEX);
+        const textual_value = this.input.val();
+        const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
             matches.shift();
@@ -555,8 +548,8 @@ export default class Time extends Field {
      * @param {Boolean} supressEvent Whether to prevent the change event from firing
      */
     setSegmentValue(segment, value){
-        let textual_value = this.input.val(),
-            matches = textual_value.match(GLOBAL_REGEX);
+        let textual_value = this.input.val();
+        const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
             textual_value = "";
@@ -744,11 +737,9 @@ export default class Time extends Field {
      * @chainable
      */
     readonly(readonly){
-        let readonly_attr;
-
         super.readonly(readonly);
 
-        readonly_attr = this.is_readonly ? "readonly" : null;
+        const readonly_attr = this.is_readonly ? "readonly" : null;
 
         if(this.clearButton){
             this.clearButton.attr('readonly', readonly_attr);
