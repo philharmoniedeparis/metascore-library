@@ -1,4 +1,5 @@
 import Dom from './core/Dom';
+import {naturalCompare} from './core/utils/String';
 import {naturalSortInsensitive} from './core/utils/Array';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
@@ -2193,9 +2194,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateBlockSelector() {
-        const panel = this.panels.block,
-            toolbar = panel.getToolbar(),
-            selector = toolbar.getSelector();
+        const panel = this.panels.block;
+        const selector = panel.getToolbar().getSelector();
 
         selector.clear();
 
@@ -2285,7 +2285,7 @@ export default class Editor extends Dom {
 
                     // sort options by element names
                     options.sort((a, b) => {
-                        return naturalSortInsensitive(a.getName(), b.getName());
+                        return naturalCompare(a.getName(), b.getName(), false);
                     });
 
                     // create the optgroup
