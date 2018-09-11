@@ -2,7 +2,7 @@ import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
 import SelectField from '../field/Select';
-import DropDownMenu from '../DropDownMenu';
+import DropDownMenu from './DropDownMenu';
 
 export default class Toolbar extends Dom{
 
