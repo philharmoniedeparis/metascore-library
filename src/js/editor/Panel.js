@@ -117,12 +117,13 @@ export default class Panel extends Dom {
      * @chainable
      */
     updateUI(){
+        const has_componenets = this.components.length > 0;
+
         this.fields = {};
 
-        this.removeClass('has-component')
-            .contents.empty();
+        this.contents.empty();
 
-        if(this.components.length > 0){
+        if(has_componenets){
             const properties = this.getComponent().removeClass('selected').getProperties();
 
             Object.entries(properties).forEach(([key, prop]) => {
@@ -150,12 +151,10 @@ export default class Panel extends Dom {
             });
 
             this.getComponent().addClass('selected');
+        }
 
-            this.addClass('has-component');
-        }
-        else{
-            this.getToolbar().toggleMenuItem('delete', false);
-        }
+        this.toggleClass('has-component', has_componenets);
+        this.getToolbar().toggleMenuItem('delete', has_componenets);
 
         return this;
     }
@@ -178,7 +177,7 @@ export default class Panel extends Dom {
      * @return {editor.Field} The field
      */
     getField(name){
-        if(name === undefined){
+        if(typeof name === "undefined"){
             return this.fields;
         }
 
