@@ -151,7 +151,7 @@
 	"editor.overlay.Share.fields.api.label": "Activer le contrôle du lecteur via <a href=\"!url\" target=\"_blank\">l'API JavaScript</a>",
 	"editor.overlay.Share.fields.embed.label": "Embed/Intégration",
 	"editor.overlay.Share.fields.height.label": "Hauteur",
-	"editor.overlay.Share.fields.keyboard.label": "Activer les raccourcis clavier",
+	"editor.overlay.Share.fields.keyboard.label": "Désactiver les raccourcis clavier",
 	"editor.overlay.Share.fields.link.label": "Lien",
 	"editor.overlay.Share.fields.width.label": "Largeur",
 	"editor.overlay.Share.options.label": "Options embed/intégration",

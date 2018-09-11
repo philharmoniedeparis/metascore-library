@@ -151,7 +151,7 @@
 	"editor.overlay.Share.fields.api.label": "Enable controlling the player through the <a href=\"!url\" target=\"_blank\">JavaScript API</a>",
 	"editor.overlay.Share.fields.embed.label": "Embed",
 	"editor.overlay.Share.fields.height.label": "Height",
-	"editor.overlay.Share.fields.keyboard.label": "Enable keyboard shortcuts",
+	"editor.overlay.Share.fields.keyboard.label": "Disable keyboard shortcuts",
 	"editor.overlay.Share.fields.link.label": "Link",
 	"editor.overlay.Share.fields.width.label": "Width",
 	"editor.overlay.Share.options.label": "Embed options",
