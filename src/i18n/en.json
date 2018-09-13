@@ -38,6 +38,7 @@
 	"editor.contextmenu.delete-page": "Delete page",
 	"editor.contextmenu.delete-selected-blocks": "Delete selected blocks",
 	"editor.contextmenu.delete-selected-elements": "Delete selected elements",
+	"editor.contextmenu.delete-selected-pages": "Delete selected pages",
 	"editor.contextmenu.lock-block": "Lock block",
 	"editor.contextmenu.lock-element": "Lock element",
 	"editor.contextmenu.paste-block": "Paste block",

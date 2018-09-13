@@ -156,15 +156,14 @@ export default class Page extends Component {
      * @return {player.component.Element} The element
      */
     addElement(configs, supressEvent){
-        let element,
-            existing = configs instanceof Element;
+        let element = configs;
+        const existing = element instanceof Element;
 
         if(existing){
-            element = configs;
             element.appendTo(this);
         }
         else{
-            element = new ELEMENT_TYPES[configs.type](Object.assign({}, configs, {
+            element = new ELEMENT_TYPES[configs.type](Object.assign({}, element, {
                 'container': this
             }));
         }
@@ -183,14 +182,9 @@ export default class Page extends Component {
      * @return {player.component.Block}
      */
     getBlock() {
-        let dom = this.parents().parents().get(0),
-            block;
+        const dom = this.closest('.metaScore-component.block');
 
-        if(dom){
-            block = dom._metaScore;
-        }
-
-        return block;
+        return dom ? dom._metaScore : null;
     }
 
     /**
