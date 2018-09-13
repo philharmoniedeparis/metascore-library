@@ -247,7 +247,7 @@ export default class Block extends Component {
                         return pages;
                     },
                     'setter': function(value){
-                        this.removePages();
+                        this.removeAllPages();
 
                         value.forEach((configs) => {
                             this.addPage(configs);
@@ -304,11 +304,10 @@ export default class Block extends Component {
      * @param {Event} evt The event object
      */
     onPagerClick(evt){
-        let active = !Dom.hasClass(evt.target, 'inactive'),
-            action;
+        const active = !Dom.hasClass(evt.target, 'inactive');
 
         if(active){
-            action = Dom.data(evt.target, 'action');
+            const action = Dom.data(evt.target, 'action');
 
             switch(action){
                 case 'first':
@@ -343,6 +342,19 @@ export default class Block extends Component {
     }
 
     /**
+     * Get a page by index
+     *
+     * @method getPage
+     * @param {Integer} index The page's index
+     * @return {player.component.Page} The page
+     */
+    getPage(index){
+        const page = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
+
+        return page ? page._metaScore : null;
+    }
+
+    /**
      * Add a page
      *
      * @method addPage
@@ -352,8 +364,8 @@ export default class Block extends Component {
      * @return {player.component.Page} The added page
      */
     addPage(configs, index, supressEvent){
-        let page, page_index, sibling,
-            existing = configs instanceof Page;
+        const existing = configs instanceof Page;
+        let page = null;
 
         if(existing){
             page = configs;
@@ -372,21 +384,11 @@ export default class Block extends Component {
             }));
         }
 
-        page_index = this.getPageIndex(page);
-        if(page_index > 0){
-            sibling = this.getPage(page_index - 1);
-            sibling.setPropertyValue('end-time', page.getPropertyValue('start-time'));
-        }
-        else if(this.getPageCount() > page_index + 1){
-            sibling = this.getPage(page_index + 1);
-            sibling.setPropertyValue('start-time', page.getPropertyValue('end-time'));
-        }
-
-        this.setActivePage(page);
-
         if(supressEvent !== true){
             this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page, 'new': !existing});
         }
+
+        this.setActivePage(page);
 
         return page;
     }
@@ -400,19 +402,7 @@ export default class Block extends Component {
      * @return {player.component.Page} The removed page
      */
     removePage(page, supressEvent){
-        let page_index, sibling;
-
-        page_index = this.getPageIndex(page);
         page.remove();
-
-        if(page_index > 0){
-            sibling = this.getPage(page_index - 1);
-            sibling.setPropertyValue('end-time', page.getPropertyValue('end-time'));
-        }
-        else if(this.getPageCount() > page_index + 1){
-            sibling = this.getPage(page_index + 1);
-            sibling.setPropertyValue('start-time', page.getPropertyValue('start-time'));
-        }
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});
@@ -424,26 +414,13 @@ export default class Block extends Component {
     /**
      * Remove all pages
      *
-     * @method removePages
+     * @method removeAllPages
      * @chainable
      */
-    removePages() {
+    removeAllPages() {
         this.page_wrapper.children('.page').remove();
 
         return this;
-    }
-
-    /**
-     * Get a page by index
-     *
-     * @method getPage
-     * @param {Integer} index The page's index
-     * @return {player.component.Page} The page
-     */
-    getPage(index){
-        const page = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
-
-        return page ? page._metaScore : null;
     }
 
     /**
@@ -527,8 +504,8 @@ export default class Block extends Component {
      * @chainable
      */
     updatePager() {
-        let index = this.getActivePageIndex(),
-            count = this.getPageCount();
+        const index = this.getActivePageIndex();
+        const count = this.getPageCount();
 
         this.pager.updateCount(index, count);
 

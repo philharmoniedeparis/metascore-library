@@ -277,14 +277,9 @@ export default class Element extends Component{
      * @return {player.component.Page} The page
      */
     getPage() {
-        let dom = this.parents().get(0),
-            page;
+        const dom = this.closest('.metaScore-component.page');
 
-        if(dom){
-            page = dom._metaScore;
-        }
-
-        return page;
+        return dom ? dom._metaScore : null;
     }
 
     /**
