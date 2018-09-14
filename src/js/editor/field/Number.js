@@ -70,7 +70,6 @@ export default class Number extends Field {
         this.input
             .addListener('input', this.onInput.bind(this))
             .addListener('keydown', this.onKeyDown.bind(this))
-            .addListener('keypress', this.onKeypress.bind(this))
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('DOMMouseScroll', this.onMouseWheel.bind(this));
 
@@ -153,9 +152,11 @@ export default class Number extends Field {
      * @param {Event} evt The event object
      */
     onKeypress(evt){
-        if(!isNumeric(evt.key)){
-            evt.preventDefault();
+        if(isNumeric(evt.key) || ((evt.key === '.') && this.configs.step < 1) || (evt.key === "Enter")){
+            return;
         }
+
+        evt.preventDefault();
     }
 
     /**

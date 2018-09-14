@@ -106,20 +106,18 @@ export default class ContextMenu extends Dom {
      * @param {Event} evt The event object
      */
     onItemMouseover(evt){
-        let item = new Dom(evt.target),
-            container, conteiner_width, conteiner_offset,
-            subitems, subitems_width, subitems_offset;
+        const item = new Dom(evt.target);
 
         if(!item.hasClass('has-subitems')){
             return;
         }
 
-        container = this.parents();
-        conteiner_width = container.get(0).offsetWidth;
-        conteiner_offset = container.offset();
-        subitems = item.child('ul').removeClass('left');
-        subitems_width = subitems.get(0).offsetWidth;
-        subitems_offset = subitems.offset();
+        const container = this.parents();
+        const conteiner_width = container.get(0).offsetWidth;
+        const conteiner_offset = container.offset();
+        const subitems = item.child('ul').removeClass('left');
+        const subitems_width = subitems.get(0).offsetWidth;
+        const subitems_offset = subitems.offset();
 
         subitems.toggleClass('left', subitems_offset.left - conteiner_offset.left + subitems_width > conteiner_width);
     }
@@ -232,9 +230,7 @@ export default class ContextMenu extends Dom {
      * @chainable
      */
     addTask(action, configs, parent){
-        let task, subtasks;
-
-        task = new Dom('<li/>', {'data-action': action})
+        const task = new Dom('<li/>', {'data-action': action})
             .appendTo(parent);
 
         this.tasks[action] = {
@@ -266,7 +262,7 @@ export default class ContextMenu extends Dom {
         if('items' in configs){
             task.addClass('has-subitems');
 
-            subtasks = new Dom('<ul/>')
+            const subtasks = new Dom('<ul/>')
                 .appendTo(task);
 
 			Object.entries(configs.items).forEach(([subkey, subtask]) => {
@@ -300,13 +296,9 @@ export default class ContextMenu extends Dom {
      * @chainable
      */
     show(el, x, y){
-        let window, window_width, window_height,
-            menu_el, menu_width, menu_height;
-
         this.context = new Dom(el);
 
         if(this.tasks){
-
             Object.entries(this.tasks).forEach(([, task]) => {
                 const active = isFunction(task.toggler) ? task.toggler(this.context) === true : task.toggler !== false;
 
@@ -328,15 +320,14 @@ export default class ContextMenu extends Dom {
         // call parent function
         super.show();
 
-        menu_el = this.get(0);
-        window = Dom.getElementWindow(el);
-
         Dom.addListener(Dom.getElementWindow(this.target.get(0)), 'keyup', this.onWindowKeyup);
 
-        window_width = window.innerWidth;
-        window_height = window.innerHeight;
-        menu_width = menu_el.offsetWidth;
-        menu_height = menu_el.offsetHeight;
+        const menu_el = this.get(0);
+        const window = Dom.getElementWindow(el);
+        const window_width = window.innerWidth;
+        const window_height = window.innerHeight;
+        const menu_width = menu_el.offsetWidth;
+        const menu_height = menu_el.offsetHeight;
 
         if((menu_width + x) > window_width){
             x = window_width - menu_width;

@@ -1,6 +1,7 @@
 import Dom from './core/Dom';
+import {naturalCompare} from './core/utils/String';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {isArray, isObject} from './core/utils/Var';
+import {isArray, isNumber, isObject} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -305,11 +306,9 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onMainmenuClick(evt){
-        let callback;
-
         switch(Dom.data(evt.target, 'action')){
-            case 'new':
-                callback = () => {
+            case 'new':{
+                const callback = () => {
                     this.detailsOverlay.getField('type').readonly(false);
                     this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
                     this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
@@ -339,9 +338,10 @@ export default class Editor extends Dom {
                     callback();
                 }
                 break;
+            }
 
-            case 'open':
-                callback = this.openGuideSelector.bind(this);
+            case 'open':{
+                const callback = this.openGuideSelector.bind(this);
 
                 if(this.isDirty()){
                     new Alert({
@@ -363,6 +363,7 @@ export default class Editor extends Dom {
                     callback();
                 }
                 break;
+            }
 
             case 'edit':
                 this.detailsOverlay.getField('type').readonly(true);
@@ -382,8 +383,8 @@ export default class Editor extends Dom {
                 this.saveGuide('clone');
                 break;
 
-            case 'publish':
-                callback = () => {
+            case 'publish':{
+                const callback = () => {
                     this.saveGuide('update', true);
                 };
 
@@ -402,6 +403,7 @@ export default class Editor extends Dom {
                         }
                     });
                 break;
+            }
 
             case 'share':
                 new Share({
@@ -486,8 +488,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
      */
     onMainmenuTimeFieldChange(evt){
-        let field = evt.target._metaScore,
-            time = field.getValue();
+        const field = evt.target._metaScore;
+        const time = field.getValue();
 
         this.getPlayer().getMedia().setTime(time);
     }
@@ -1312,7 +1314,7 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onComponentClick(evt){
-        let component;
+        let component = null;
 
         if(this.editing !== true){
             return;
@@ -1426,16 +1428,21 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
      */
     onPageElementAdd(evt){
-        let page = evt.detail.page,
-            block, media;
+        const element = evt.detail.element;
+        const page = evt.detail.page;
 
-        if((evt.detail.new) && (evt.detail.element.instanceOf('Cursor'))){
-            block = page.getBlock();
-            media = this.getPlayer().getMedia();
+        if(evt.detail.new && element.instanceOf('Cursor')){
+            const media = this.getPlayer().getMedia();
+            const block = page.getBlock();
 
-            evt.detail.element
-                .setPropertyValue('start-time', media.getTime())
-                .setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+            if(!isNumber(element.getPropertyValue('start-time'))){
+                element.setPropertyValue('start-time', block.getPropertyValue('synched') ? page.getPropertyValue('start-time') : media.getTime());
+
+            }
+
+            if(!isNumber(element.getPropertyValue('end-time'))){
+                element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+            }
         }
 
         if(page === this.panels.page.getComponent()){
@@ -1510,10 +1517,8 @@ export default class Editor extends Dom {
             const callback = (new_duration) => {
                 if(new_duration){
                     player.getComponents('.block').forEach((block) => {
-                        let page;
-
                         if(block.getPropertyValue('synched')){
-                            page = block.getPage(block.getPageCount()-1);
+                            const page = block.getPage(block.getPageCount()-1);
                             if(page){
                                 page.setPropertyValue('end-time', new_duration);
                             }
@@ -1578,7 +1583,7 @@ export default class Editor extends Dom {
                             });
                         }
                         else{
-                            let msg;
+                            let msg = '';
                             if(new_duration < old_duration){
                                 msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                             }
@@ -1803,8 +1808,29 @@ export default class Editor extends Dom {
 
                         this.panels.block.setComponent(page.getBlock());
                         this.panels.page.setComponent(page);
+
                         page.getElements().forEach((element, index) => {
                             this.panels.element.setComponent(element, index > 0);
+                        });
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
+                    }
+                },
+                'select-elements-matching-index': {
+                    'text': Locale.t('editor.contextmenu.select-elements-matching-index', 'Select all elements of the current reading index'),
+                    'callback': (el) => {
+                        const rindex = this.getPlayer().getReadingIndex();
+                        const page = el.closest('.metaScore-component.page')._metaScore;
+
+                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.page.setComponent(page);
+                        this.panels.element.unsetComponents();
+
+                        page.getElements().forEach((element) => {
+                            if(element.getPropertyValue('r-index') === rindex){
+                                this.panels.element.setComponent(element, true);
+                            }
                         });
                     },
                     'toggler': (el) => {
@@ -1820,17 +1846,14 @@ export default class Editor extends Dom {
                     },
                     'callback': (el) => {
                         const configs = [];
-                        let components;
+                        let elements = this.panels.element.getComponents();
 
-                        if(this.panels.element.getComponents().length > 0){
-                            components = this.panels.element.getComponents();
-                        }
-                        else{
-                            components = [el.closest('.metaScore-component.element')._metaScore];
+                        if(elements.length === 0){
+                            elements = [el.closest('.metaScore-component.element')._metaScore];
                         }
 
-                        components.forEach((component) => {
-                            const config = component.getPropertyValues();
+                        elements.forEach((element) => {
+                            const config = element.getPropertyValues();
                             config.x += 5;
                             config.y += 5;
 
@@ -1860,11 +1883,11 @@ export default class Editor extends Dom {
                         return Locale.t('editor.contextmenu.delete-element', 'Delete element');
                     },
                     'callback': (el) => {
-                        let components = this.panels.element.getComponents();
-                        if(components.length === 0){
-                            components = el.closest('.metaScore-component.element')._metaScore;
+                        let elements = this.panels.element.getComponents();
+                        if(elements.length === 0){
+                            elements = [el.closest('.metaScore-component.element')._metaScore];
                         }
-                        this.deletePlayerComponents('element', components);
+                        this.deletePlayerComponents('element', elements);
                     },
                     'toggler': (el) => {
                         if(this.editing !== true){
@@ -1927,12 +1950,27 @@ export default class Editor extends Dom {
                     }
                 },
                 'delete-page': {
-                    'text': Locale.t('editor.contextmenu.delete-page', 'Delete page'),
+                    'text': () => {
+                        if(this.panels.page.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
+                        }
+                        return Locale.t('editor.contextmenu.delete-page', 'Delete page');
+                    },
                     'callback': (el) => {
-                        this.deletePlayerComponents('page', el.closest('.metaScore-component.page')._metaScore);
+                        let pages = this.panels.page.getComponents();
+                        if(pages.length === 0){
+                            pages = [el.closest('.metaScore-component.page')._metaScore];
+                        }
+                        this.deletePlayerComponents('page', pages);
                     },
                     'toggler': (el) => {
-                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        if(this.panels.page.getComponents().length > 0){
+                            return true;
+                        }
+                        return el.closest('.metaScore-component.page') ? true : false;
                     }
                 },
                 'page-separator': {
@@ -1966,8 +2004,8 @@ export default class Editor extends Dom {
                             }
                         }
                     },
-                    'toggler': () => {
-                        return (this.editing === true);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.is('.metaScore-player'));
                     }
                 },
                 'select-blocks': {
@@ -2001,8 +2039,8 @@ export default class Editor extends Dom {
                     'callback': () => {
                         this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
                     },
-                    'toggler': () => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block');
+                    'toggler': (el) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block') && (el.is('.metaScore-player'));
                     }
                 },
                 'delete-blocks': {
@@ -2013,11 +2051,11 @@ export default class Editor extends Dom {
                         return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                     },
                     'callback': (el) => {
-                        let components = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
-                        if(components.length === 0){
-                            components = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
+                        let blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                        if(blocks.length === 0){
+                            blocks = [el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore];
                         }
-                        this.deletePlayerComponents('block', components);
+                        this.deletePlayerComponents('block', blocks);
                     },
                     'toggler': (el) => {
                         if(this.editing !== true){
@@ -2181,9 +2219,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateBlockSelector() {
-        const panel = this.panels.block,
-            toolbar = panel.getToolbar(),
-            selector = toolbar.getSelector();
+        const panel = this.panels.block;
+        const selector = panel.getToolbar().getSelector();
 
         selector.clear();
 
@@ -2273,7 +2310,7 @@ export default class Editor extends Dom {
 
                     // sort options by element names
                     options.sort((a, b) => {
-                        return naturalSortInsensitive(a.getName(), b.getName());
+                        return naturalCompare(a.getName(), b.getName(), false);
                     });
 
                     // create the optgroup
@@ -2403,15 +2440,16 @@ export default class Editor extends Dom {
 
         switch(type){
             case 'element': {
+                const page = parent;
                 const panel = this.panels.element;
                 const components = [];
 
-                this.panels.block.setComponent(parent.getBlock());
-                this.panels.page.setComponent(parent);
+                this.panels.block.setComponent(page.getBlock());
+                this.panels.page.setComponent(page);
 
                 configs.forEach((config, index) => {
                     let name = '';
-                    const el_index = parent.children(`.element.${config.type}`).count() + 1;
+                    const el_index = page.children(`.element.${config.type}`).count() + 1;
 
                     switch(config.type){
                         case 'Cursor':
@@ -2426,7 +2464,7 @@ export default class Editor extends Dom {
                             break;
                     }
 
-                    const component = parent.addElement(Object.assign({'name': name}, config));
+                    const component = page.addElement(Object.assign({'name': name}, config));
                     panel.setComponent(component, index > 0);
                     components.push(component);
                 });
@@ -2440,7 +2478,7 @@ export default class Editor extends Dom {
                     },
                     'redo': function(){
                         components.forEach((component, index) => {
-                            parent.addElement(component);
+                            page.addElement(component);
                             panel.setComponent(component, index > 0);
                         });
                     }
@@ -2449,19 +2487,20 @@ export default class Editor extends Dom {
             }
 
             case 'page': {
+                const block = parent;
                 const panel = this.panels.page;
                 const config = configs[0]; // only one page can be added at a time !
-                const index = parent.getActivePageIndex();
+                const index = block.getActivePageIndex();
+                let current_time = null;
 
-                this.panels.block.setComponent(parent);
-
-                if(parent.getPropertyValue('synched')){
+                if(block.getPropertyValue('synched')){
                     const media = this.getPlayer().getMedia();
-                    const currentTime = media.getTime();
                     const duration = media.getDuration();
 
+                    current_time = media.getTime();
+
                     // prevent adding the page if current time == 0 or >= media duration
-                    if(currentTime === 0 || currentTime >= duration){
+                    if(current_time === 0 || current_time >= duration){
                         new Alert({
                             'parent': this,
                             'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeField.getTextualValue(0), '@duration': TimeField.getTextualValue(duration)}),
@@ -2474,51 +2513,62 @@ export default class Editor extends Dom {
                         break;
                     }
 
-                    const previous_page = parent.getPage(index);
-                    config['start-time'] = currentTime;
+                    const previous_page = block.getPage(index);
+                    config['start-time'] = current_time;
                     config['end-time'] = previous_page.getPropertyValue('end-time');
+
+                    previous_page.setPropertyValue('end-time', current_time);
                 }
 
-                const component = parent.addPage(config, index + 1);
-                panel.setComponent(component);
+                const component = block.addPage(config, index + 1);
+                block.setActivePage(index + 1);
 
                 this.history.add({
                     'undo': function(){
                         panel.unsetComponents();
-                        parent.removePage(component);
-                        parent.setActivePage(index);
+                        if(block.getPropertyValue('synched')){
+                            const previous_page = block.getPage(index);
+                            previous_page.setPropertyValue('end-time', component.getPropertyValue('end-time'));
+                        }
+                        block.removePage(component);
+                        block.setActivePage(index);
                     },
                     'redo': function(){
-                        parent.addPage(component, index + 1);
-                        panel.setComponent(component);
+                        if(block.getPropertyValue('synched')){
+                            const previous_page = block.getPage(index);
+                            previous_page.setPropertyValue('end-time', current_time);
+                        }
+                        block.addPage(component, index + 1);
+                        block.setActivePage(index + 1);
                     }
                 });
                 break;
             }
 
             case 'block': {
+                const player = parent;
                 const panel = this.panels.block;
                 const components = [];
 
                 configs.forEach((config, index) => {
-                    let component;
-                    let page_configs;
+                    let component = null;
 
                     switch(config.type){
                         case 'BlockToggler':
-                            component = parent.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, config));
+                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, config));
                             break;
 
-                        default:
-                            component = parent.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
+                        default: {
+                            component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
 
                             // add a page
-                            page_configs = {};
+                            const page_configs = {};
                             if(component.getPropertyValue('synched')){
                                 page_configs['start-time'] = 0;
-                                page_configs['end-time'] = parent.getMedia().getDuration();
+                                page_configs['end-time'] = player.getMedia().getDuration();
                             }
                             component.addPage(page_configs);
+                        }
                     }
 
                     panel.setComponent(component, index > 0);
@@ -2557,12 +2607,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     deletePlayerComponents(type, components, confirm){
-        if(!isArray(components)){
-            components = [components];
-        }
-
         if(confirm !== false){
-            let alert_msg;
+            let alert_msg = '';
 
             switch(type){
                 case 'block':
@@ -2640,61 +2686,113 @@ export default class Editor extends Dom {
 
                 case 'page': {
                     const panel = this.panels.page;
-                    const context = [];
+                    const player = this.getPlayer();
+                    const contexts = {};
 
                     components.forEach((component) => {
                         const block = component.getBlock();
-                        const index = block.getActivePageIndex();
-                        const player = this.getPlayer();
-                        let auto_page;
+                        const block_id = block.getId();
+                        const index = block.getPageIndex(component);
 
-                        panel.unsetComponent(component);
-                        block.removePage(component);
-
-                        if(block.getPageCount() < 1){
-                            const configs = {};
-
-                            if(block.getPropertyValue('synched')){
-                                configs['start-time'] = 0;
-                                configs['end-time'] = player.getMedia().getDuration();
-                            }
-
-                            auto_page = block.addPage(configs);
-                            panel.setComponent(auto_page);
-                        }
-
-                        block.setActivePage(Math.max(0, index-1));
-
-                        context.push({
-                            'component': component,
+                        contexts[block_id] = contexts[block_id] || {
                             'block': block,
-                            'index': index,
-                            'auto_page': auto_page
+                            'auto_page': null,
+                            'pages': []
+                        };
+
+                        contexts[block_id].pages.push({
+                            'component': component,
+                            'index': index
                         });
                     });
 
-                    this.history.add({
-                        'undo': function(){
-                            context.forEach((ctx) => {
-                                if(ctx.auto_page){
-                                    ctx.block.removePage(ctx.auto_page, true);
-                                }
+                    const removePages = () => {
+                        Object.entries(contexts).forEach(([, context]) => {
+                            let page_index = 0;
 
-                                ctx.block.addPage(ctx.component, ctx.index);
-                            });
-                        },
-                        'redo': function(){
-                            context.forEach((ctx) => {
+                            // store original page start and end times
+                            if(context.block.getPropertyValue('synched')){
+                                context.times = {};
+                                context.block.getPages().forEach((page) => {
+                                    context.times[page.getId()] = {
+                                        'start': page.getPropertyValue('start-time'),
+                                        'end': page.getPropertyValue('end-time')
+                                    };
+                                });
+                            }
+
+                            // remove deleted pages
+                            context.pages.forEach((ctx) => {
+                                const index = context.block.getPageIndex(ctx.component);
                                 panel.unsetComponent(ctx.component);
-                                ctx.block.removePage(ctx.component, true);
 
-                                if(ctx.auto_page){
-                                    ctx.block.addPage(ctx.auto_page);
+                                if(index > 0){
+                                    // if there is a page before, update it's end time
+                                    const previous_page = context.block.getPage(index - 1);
+                                    previous_page.setPropertyValue('end-time', ctx.component.getPropertyValue('end-time'));
+                                }
+                                else if(context.block.getPageCount() > 1){
+                                    // else if there is a page after, update it's start time
+                                    const next_page = context.block.getPage(index + 1);
+                                    next_page.setPropertyValue('start-time', ctx.component.getPropertyValue('start-time'));
                                 }
 
-                                ctx.block.setActivePage(ctx.index-1);
+                                context.block.removePage(ctx.component, true);
+
+                                page_index = ctx.index - 1;
                             });
-                        }
+
+                            // add a new page if the block is empty
+                            if(context.block.getPageCount() < 1){
+                                const configs = {};
+
+                                if(context.block.getPropertyValue('synched')){
+                                    configs['start-time'] = 0;
+                                    configs['end-time'] = player.getMedia().getDuration();
+                                }
+
+                                context.auto_page = context.block.addPage(configs);
+                            }
+
+                            context.block.setActivePage(Math.max(0, page_index));
+                        });
+                    };
+
+                    const unremovePages = () => {
+                        Object.entries(contexts).forEach(([, context]) => {
+                            let page_index = 0;
+
+                            // remove the new page if one was added
+                            if(context.auto_page){
+                                context.block.removePage(context.auto_page);
+                            }
+
+                            // re-add removed pages
+                            context.pages.forEach((ctx) => {
+                                context.block.addPage(ctx.component, ctx.index);
+                                page_index = ctx.index;
+                            });
+
+                            // reset all page times
+                            if(context.block.getPropertyValue('synched')){
+                                context.block.getPages().forEach((page) => {
+                                    const page_id = page.getId();
+                                    if(page_id in context.times){
+                                        page.setPropertyValue('start-time', context.times[page_id].start);
+                                        page.setPropertyValue('end-time', context.times[page_id].end);
+                                    }
+                                });
+                            }
+
+                            context.block.setActivePage(page_index);
+                        });
+                    };
+
+                    removePages();
+
+                    this.history.add({
+                        'undo': unremovePages,
+                        'redo': removePages
                     });
                     break;
                 }

@@ -142,9 +142,9 @@ export default class Player extends Dom {
             'url': '',
             'container': 'body',
             'ajax': {},
-            'keyboard': false,
-            'api': false,
             'autoload': true,
+            'keyboard': true,
+            'api': false,
             'lang': 'en'
         };
     }
@@ -1072,6 +1072,17 @@ export default class Player extends Dom {
     }
 
     /**
+     * Get the current reading index
+     *
+     * @method getReadingIndex
+     * @return {Integer} The reading index
+     */
+    getReadingIndex(){
+        const value = parseInt(this.data('r-index'), 10);
+        return isNaN(value) ? null : value;
+    }
+
+    /**
      * Set the current reading index
      *
      * @method setReadingIndex
@@ -1080,23 +1091,25 @@ export default class Player extends Dom {
      * @chainable
      */
     setReadingIndex(index, supressEvent){
-        this.rindex_css.removeRules();
+        if(index !== this.getReadingIndex()){
+            this.rindex_css.removeRules();
 
-        if(index !== 0){
-            this.rindex_css
-                .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
-                .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
-                .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'display: block;')
-                .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'display: block;');
+            if(index !== 0){
+                this.rindex_css
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'display: block;')
+                    .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'display: block;');
 
-            this.data('r-index', index);
-        }
-        else{
-            this.data('r-index', null);
-        }
+                this.data('r-index', index);
+            }
+            else{
+                this.data('r-index', null);
+            }
 
-        if(supressEvent !== true){
-            this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
+            }
         }
 
         return this;
