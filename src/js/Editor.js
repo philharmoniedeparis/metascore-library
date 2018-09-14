@@ -1,7 +1,7 @@
 import Dom from './core/Dom';
+import {naturalCompare} from './core/utils/String';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {pad} from './core/utils/String';
-import {isArray} from './core/utils/Var';
+import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -17,6 +17,7 @@ import ContextMenu from './core/ui/ContextMenu';
 import GuideDetails from './editor/overlay/GuideDetails';
 import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
+import TimeField from './editor/field/Time';
 
 import '../css/metaScore.editor.less';
 
@@ -51,7 +52,7 @@ export default class Editor extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-editor'});
+        super('<div/>', {'class': 'metaScore-editor', 'tabindex': 0});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
@@ -123,8 +124,8 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onGuideSaveSuccess(loadmask, evt){
-        let player = this.getPlayer(),
-            data = JSON.parse(evt.target.getResponse());
+        const player = this.getPlayer();
+        const data = JSON.parse(evt.target.getResponse());
 
         loadmask.hide();
 
@@ -149,15 +150,14 @@ export default class Editor extends Dom {
      * @private
      */
     onGuideDeleteConfirm() {
-        let id = this.getPlayer().getId(),
-            options, loadmask;
+        const id = this.getPlayer().getId();
 
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });
 
-        options = Object.assign({}, {
+        const options = Object.assign({}, {
             'dataType': 'json',
             'method': 'DELETE',
             'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
@@ -209,19 +209,30 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeydown(evt){
-        let player;
+        if(Dom.is(evt.target, 'input')){
+            return;
+        }
 
-        switch(evt.keyCode){
-            case 18: //alt
+        switch(evt.key){
+            case "Alt":
                 if(!evt.repeat){
                     this.setEditing(!this.persistentEditing, false);
                     evt.preventDefault();
                 }
                 break;
 
-            case 72: //h
-                if(evt.ctrlKey){ // Ctrl+h
-                    player = this.getPlayer();
+            case " ":
+                if(!evt.repeat){
+                    const player = this.getPlayer();
+                    if(player){
+                        player.togglePlay();
+                    }
+                }
+                break;
+
+            case "h":
+                if(evt.ctrlKey && !evt.repeat){
+                    const player = this.getPlayer();
                     if(player){
                         player.addClass('show-contents');
                     }
@@ -229,15 +240,15 @@ export default class Editor extends Dom {
                 }
                 break;
 
-            case 90: //z
-                if(evt.ctrlKey){ // Ctrl+z
+            case "z":
+                if(evt.ctrlKey){
                     this.history.undo();
                     evt.preventDefault();
                 }
                 break;
 
-            case 89: //y
-                if(evt.ctrlKey){ // Ctrl+y
+            case "y":
+                if(evt.ctrlKey){
                     this.history.redo();
                     evt.preventDefault();
                 }
@@ -253,17 +264,19 @@ export default class Editor extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeyup(evt){
-        let player;
+        if(Dom.is(evt.target, 'input')){
+            return;
+        }
 
-        switch(evt.keyCode){
-            case 18: //alt
+        switch(evt.key){
+            case "Alt":
                 this.setEditing(this.persistentEditing, false);
                 evt.preventDefault();
                 break;
 
-            case 72: //h
-                if(evt.ctrlKey){ // Ctrl+h
-                    player = this.getPlayer();
+            case "h":
+                if(evt.ctrlKey){
+                    const player = this.getPlayer();
                     if(player){
                         player.removeClass('show-contents');
                     }
@@ -293,11 +306,9 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onMainmenuClick(evt){
-        let callback;
-
         switch(Dom.data(evt.target, 'action')){
-            case 'new':
-                callback = () => {
+            case 'new':{
+                const callback = () => {
                     this.detailsOverlay.getField('type').readonly(false);
                     this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
                     this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
@@ -327,9 +338,10 @@ export default class Editor extends Dom {
                     callback();
                 }
                 break;
+            }
 
-            case 'open':
-                callback = this.openGuideSelector.bind(this);
+            case 'open':{
+                const callback = this.openGuideSelector.bind(this);
 
                 if(this.isDirty()){
                     new Alert({
@@ -351,6 +363,7 @@ export default class Editor extends Dom {
                     callback();
                 }
                 break;
+            }
 
             case 'edit':
                 this.detailsOverlay.getField('type').readonly(true);
@@ -370,8 +383,8 @@ export default class Editor extends Dom {
                 this.saveGuide('clone');
                 break;
 
-            case 'publish':
-                callback = () => {
+            case 'publish':{
+                const callback = () => {
                     this.saveGuide('update', true);
                 };
 
@@ -390,6 +403,7 @@ export default class Editor extends Dom {
                         }
                     });
                 break;
+            }
 
             case 'share':
                 new Share({
@@ -474,8 +488,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
      */
     onMainmenuTimeFieldChange(evt){
-        let field = evt.target._metaScore,
-            time = field.getValue();
+        const field = evt.target._metaScore;
+        const time = field.getValue();
 
         this.getPlayer().getMedia().setTime(time);
     }
@@ -488,8 +502,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Number/valuechange:event"}}Number.valuechange{{/crossLink}}
      */
     onMainmenuRindexFieldChange(evt){
-        let field = evt.target._metaScore,
-            value = field.getValue();
+        const field = evt.target._metaScore;
+        const value = field.getValue();
 
         this.getPlayer().setReadingIndex(value, true);
     }
@@ -502,8 +516,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
      */
     onTimeFieldIn(evt){
-        let field = evt.detail.field,
-            time = this.getPlayer().getMedia().getTime();
+        const field = evt.detail.field;
+        const time = this.getPlayer().getMedia().getTime();
 
         field.setValue(time);
     }
@@ -566,17 +580,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Block panel componentbeforeset event callback
-     *
-     * @method onBlockBeforeSet
-     * @private
-     */
-    onBlockBeforeSet(){
-        this.panels.element.unsetComponent();
-        this.panels.page.unsetComponent();
-    }
-
-    /**
      * Block panel componentset event callback
      *
      * @method onBlockSet
@@ -587,20 +590,10 @@ export default class Editor extends Dom {
         const block = evt.detail.component;
 
         if(block.instanceOf('Block')){
-            this.panels.page.getToolbar()
-                .toggleMenuItem('new', true);
-
-            this.panels.page.setComponent(block.getActivePage());
-
-            this.panels.element.getToolbar()
-                .toggleMenuItem('Cursor', true)
-                .toggleMenuItem('Image', true)
-                .toggleMenuItem('Text', true);
+            this.panels.page.getToolbar().toggleMenuItem('new', true);
         }
 
         this.updatePageSelector();
-
-        evt.stopPropagation();
     }
 
     /**
@@ -609,9 +602,20 @@ export default class Editor extends Dom {
      * @method onBlockUnset
      * @private
      */
-    onBlockUnset(){
-        this.panels.page.unsetComponent();
-        this.panels.page.getToolbar().toggleMenuItem('new', false);
+    onBlockUnset(evt){
+        const block = evt.detail.component;
+
+        if(block.instanceOf('Block')){
+            block.getPages().forEach((page) => {
+                this.panels.page.unsetComponent(page);
+            });
+
+            const toggle = this.panels.block.getComponents().length > 0;
+            this.panels.page.getToolbar().toggleMenuItem('new', toggle);
+        }
+
+        this.updatePageSelector();
+        this.updateElementSelector();
     }
 
     /**
@@ -622,25 +626,41 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onBlockPanelValueChange(evt){
-        let panel = this.panels.block,
-            block = evt.detail.component,
-            old_values = evt.detail.old_values,
-            new_values = evt.detail.new_values;
+        const sets = evt.detail;
+
+        const update = (key) => {
+            const doUpdateBlockTogglers = sets.some((set) => {
+                return (
+                    ('x' in set[key]) ||
+                    ('y' in set[key]) ||
+                    ('width' in set[key]) ||
+                    ('height' in set[key])
+                );
+            });
+
+            if(doUpdateBlockTogglers){
+                this.getPlayer().updateBlockTogglers();
+            }
+        };
 
         this.history.add({
-            'undo': function(){
-                panel.updateProperties(block, old_values);
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
+
+                update('old_values');
             },
-            'redo': function(){
-                panel.updateProperties(block, new_values);
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
+
+                update('new_values');
             }
         });
 
-        if(!block.instanceOf('BlockToggler')){
-            if(('x' in new_values) || ('y' in new_values) || ('width' in new_values) || ('height' in new_values)){
-                this.getPlayer().updateBlockTogglers();
-            }
-        }
+        update('new_values');
     }
 
     /**
@@ -651,23 +671,23 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onBlockPanelToolbarClick(evt){
-        let block,
-            action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
             case 'synched':
             case 'non-synched':
-                this.addPlayerComponent('block', {'synched': action === 'synched'}, this.getPlayer());
+                this.addPlayerComponents('block', {'type': 'Block', 'synched': action === 'synched'}, this.getPlayer());
                 break;
 
             case 'block-toggler':
-                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
+                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
                 break;
 
-            case 'delete':
-                block = this.panels.block.getComponent();
-                this.deletePlayerComponent(block, true);
+            case 'delete': {
+                const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                this.deletePlayerComponents('block', blocks);
                 break;
+            }
         }
 
         evt.stopPropagation();
@@ -681,34 +701,19 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onBlockPanelSelectorChange(evt){
-        let id = evt.detail.value,
-            dom;
-
-        if(!id){
-            this.panels.block.unsetComponent();
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.block.setComponent(component, true);
+            });
         }
-        else{
-            dom = this.getPlayer().getComponent(`.media#${id}, .controller#${id}, .block#${id}, .block-toggler#${id}`);
 
-            if(dom && dom._metaScore){
-                this.panels.block.setComponent(dom._metaScore);
-            }
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.block.unsetComponent(component);
+            });
         }
-    }
-
-    /**
-     * Page panel componentbeforeset event callback
-     *
-     * @method onPageBeforeSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
-     */
-    onPageBeforeSet(evt){
-        let page = evt.detail.component,
-            block = page.getBlock();
-
-        this.panels.element.unsetComponent();
-        this.panels.block.setComponent(block);
     }
 
     /**
@@ -719,34 +724,30 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onPageSet(evt){
-        let block = this.panels.block.getComponent(),
-            index, previous_page, next_page,
-            start_time_field = this.panels.page.getField('start-time'),
-            end_time_field = this.panels.page.getField('end-time');
-
-        this.panels.page.getToolbar().toggleMenuItem('new', true);
-
         this.panels.element
-            .unsetComponent()
             .getToolbar()
                 .toggleMenuItem('Cursor', true)
                 .toggleMenuItem('Image', true)
                 .toggleMenuItem('Text', true);
 
-        if(block.getProperty('synched')){
-            index = block.getActivePageIndex();
-            previous_page = block.getPage(index-1);
-            next_page = block.getPage(index+1);
+        const block = evt.detail.component.getBlock();
+        const start_time_field = this.panels.page.getField('start-time');
+        const end_time_field = this.panels.page.getField('end-time');
+
+        if(block.getPropertyValue('synched')){
+            const index = block.getActivePageIndex();
+            const previous_page = block.getPage(index-1);
+            const next_page = block.getPage(index+1);
 
             if(previous_page){
-                start_time_field.readonly(false).enable().setMin(previous_page.getProperty('start-time'));
+                start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
             }
             else{
                 start_time_field.readonly(true).enable();
             }
 
             if(next_page){
-                end_time_field.readonly(false).enable().setMax(next_page.getProperty('end-time'));
+                end_time_field.readonly(false).enable().setMax(next_page.getPropertyValue('end-time'));
             }
             else{
                 end_time_field.readonly(true).enable();
@@ -768,13 +769,20 @@ export default class Editor extends Dom {
      * @method onPageUnset
      * @private
      */
-    onPageUnset(){
-        this.panels.element
-            .unsetComponent()
-            .getToolbar()
-                .toggleMenuItem('Cursor', false)
-                .toggleMenuItem('Image', false)
-                .toggleMenuItem('Text', false);
+    onPageUnset(evt){
+        const page = evt.detail.component;
+
+        page.getElements().forEach((element) => {
+            this.panels.element.unsetComponent(element);
+        });
+
+        const toggle = this.panels.page.getComponents().length > 0;
+        this.panels.element.getToolbar()
+            .toggleMenuItem('Cursor', toggle)
+            .toggleMenuItem('Image', toggle)
+            .toggleMenuItem('Text', toggle);
+
+        this.updateElementSelector();
     }
 
     /**
@@ -785,63 +793,49 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onPagePanelValueChange(evt){
-        let editor = this,
-            panel = this.panels.page,
-            page = evt.detail.component,
-            old_values = evt.detail.old_values,
-            new_values = evt.detail.new_values,
-            block, index, previous_page, next_page;
+        const sets = evt.detail;
 
-        if(('start-time' in new_values) || ('end-time' in new_values)){
-            if((block = page.getBlock()) && block.getProperty('synched')){
-                index = block.getActivePageIndex();
-                previous_page = block.getPage(index-1);
-                next_page = block.getPage(index+1);
+        const update = (key) => {
+            sets.forEach((set) => {
+                if(('start-time' in set[key]) || ('end-time' in set[key])){
+                    const page = set.component;
+                    const block = page.getBlock();
 
-                if(('start-time' in new_values) && previous_page){
-                    previous_page.setProperty('end-time', new_values['start-time']);
+                    if(block.getPropertyValue('synched')){
+                        const index = block.getPageIndex(page);
+                        const previous_page = block.getPage(index - 1);
+                        const next_page = block.getPage(index + 1);
+
+                        if(('start-time' in set[key]) && previous_page){
+                            previous_page.setPropertyValue('end-time', set[key]['start-time']);
+                        }
+
+                        if(('end-time' in set[key]) && next_page){
+                            next_page.setPropertyValue('start-time', set[key]['end-time']);
+                        }
+                    }
                 }
-
-                if(('end-time' in new_values) && next_page){
-                    next_page.setProperty('start-time', new_values['end-time']);
-                }
-            }
-
-            editor.updateElementSelector();
-        }
+            });
+        };
 
         this.history.add({
-            'undo': function(){
-                panel.updateProperties(page, old_values);
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    if(('start-time' in new_values) && previous_page){
-                        previous_page.setProperty('end-time', old_values['start-time']);
-                    }
-
-                    if(('end-time' in new_values) && next_page){
-                        next_page.setProperty('start-time', old_values['end-time']);
-                    }
-
-                    editor.updateElementSelector();
-                }
+                update('old_values');
             },
-            'redo': function(){
-                panel.updateProperties(page, new_values);
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    if(('start-time' in new_values) && previous_page){
-                        previous_page.setProperty('end-time', new_values['start-time']);
-                    }
-
-                    if(('end-time' in new_values) && next_page){
-                        next_page.setProperty('start-time', new_values['end-time']);
-                    }
-
-                    editor.updateElementSelector();
-                }
+                update('new_values');
             }
         });
+
+        update('new_values');
     }
 
     /**
@@ -852,19 +846,20 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onPagePanelToolbarClick(evt){
-        let block, page,
-            action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
-            case 'new':
-                block = this.panels.block.getComponent();
-                this.addPlayerComponent('page', {}, block);
+            case 'new': {
+                const block = this.panels.block.getComponent();
+                this.addPlayerComponents('page', {}, block);
                 break;
+            }
 
-            case 'delete':
-                page = this.panels.page.getComponent();
-                this.deletePlayerComponent(page, true);
+            case 'delete': {
+                const pages = this.panels.page.getComponents();
+                this.deletePlayerComponents('page', pages);
                 break;
+            }
         }
 
         evt.stopPropagation();
@@ -878,31 +873,20 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onPagePanelSelectorChange(evt){
-        let block = this.panels.block.getComponent(),
-            id, dom;
-
-        if(block){
-            id = evt.detail.value;
-            dom = this.getPlayer().getComponent(`.page#${id}`);
-
-            if(dom && dom._metaScore){
-                block.setActivePage(dom._metaScore);
-            }
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.page.setComponent(component, true);
+                component.getBlock().setActivePage(component, true);
+            });
         }
-    }
 
-    /**
-     * Element panel componentbeforeset event callback
-     *
-     * @method onElementBeforeSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentbeforeset:event"}}Panel.componentbeforeset{{/crossLink}}
-     */
-    onElementBeforeSet(evt){
-        let element = evt.detail.component,
-            page = element.parents().get(0)._metaScore;
-
-        this.panels.page.setComponent(page);
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.page.unsetComponent(component);
+            });
+        }
     }
 
     /**
@@ -913,10 +897,10 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
      */
     onElementSet(evt){
-        let element = evt.detail.component,
-            player = this.getPlayer();
+        const element = evt.detail.component;
+        const player = this.getPlayer();
 
-        player.setReadingIndex(element.getProperty('r-index') || 0);
+        player.setReadingIndex(element.getPropertyValue('r-index') || 0);
 
         evt.stopPropagation();
     }
@@ -929,32 +913,35 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
      */
     onElementPanelValueChange(evt){
-        let editor = this,
-            panel = this.panels.element,
-            element = evt.detail.component,
-            old_values = evt.detail.old_values,
-            new_values = evt.detail.new_values;
+        const sets = evt.detail;
 
-        if(('start-time' in new_values) || ('end-time' in new_values)){
-            editor.updateElementSelector();
-        }
+        const update = (key) => {
+            const doUpdateElementSelector = sets.some((set) => {
+                return ('r-index' in set[key]);
+            });
+            if(doUpdateElementSelector){
+                this.updateElementSelector();
+            }
+        };
 
         this.history.add({
-            'undo': function(){
-                panel.updateProperties(element, old_values);
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    editor.updateElementSelector();
-                }
+                update('old_values');
             },
-            'redo': function(){
-                panel.updateProperties(element, new_values);
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
 
-                if(('start-time' in new_values) || ('end-time' in new_values)){
-                    editor.updateElementSelector();
-                }
+                update('new_values');
             }
         });
+
+        update('new_values');
     }
 
     /**
@@ -965,44 +952,45 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onElementPanelToolbarClick(evt){
-        let page, element,
-            action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
             case 'Cursor':
             case 'Image':
-            case 'Text':
-                page = this.panels.page.getComponent();
-                this.addPlayerComponent('element', {'type': action}, page);
+            case 'Text': {
+                const page = this.panels.page.getComponent();
+                this.addPlayerComponents('element', {'type': action}, page);
                 break;
+            }
 
-            case 'delete':
-                element = this.panels.element.getComponent();
-                this.deletePlayerComponent(element, true);
+            case 'delete': {
+                const elements = this.panels.element.getComponents();
+                this.deletePlayerComponents('element', elements);
                 break;
+            }
         }
     }
 
     /**
      * Element panel toolbar selector valuechange event callback
      *
-     * @method onPagePanelSelectorChange
+     * @method onElementPanelSelectorChange
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
      */
     onElementPanelSelectorChange(evt){
-        let id = evt.detail.value,
-            dom;
-
-        if(!id){
-            this.panels.element.unsetComponent();
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.element.setComponent(component, true);
+            });
         }
-        else{
-            dom = this.getPlayer().getComponent(`.element#${id}`);
 
-            if(dom && dom._metaScore){
-                this.panels.element.setComponent(dom._metaScore);
-            }
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.element.unsetComponent(component);
+            });
         }
     }
 
@@ -1128,6 +1116,20 @@ export default class Editor extends Dom {
         this.getPlayer().updateBlockTogglers();
     }
 
+    onComponentBeforeRemove(evt){
+        const component = evt.target._metaScore;
+
+        if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
+            this.panels.block.unsetComponent(component, true);
+        }
+        else if(component.instanceOf('Page')){
+            this.panels.page.unsetComponent(component, true);
+        }
+        else if(component.instanceOf('Element')){
+            this.panels.page.unsetComponent(component, true);
+        }
+    }
+
     /**
      * Player childremove event callback
      *
@@ -1136,8 +1138,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Dom/childremove:event"}}Dom.childremove{{/crossLink}}
      */
     onPlayerChildRemove(evt){
-        let child = evt.detail.child,
-            component = child._metaScore;
+        const child = evt.detail.child;
+        const component = child._metaScore;
 
         if(component){
             if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
@@ -1203,11 +1205,13 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
     onPlayerLoadSuccess(loadmask, evt){
-        let player_body = this.player_frame.get(0).contentWindow.document.body,
-            data;
-
         this.player = evt.detail.player
-            .addClass('in-editor')
+            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
+            .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
             .addListener('mediaadd', this.onPlayerMediaAdd.bind(this))
             .addListener('controlleradd', this.onPlayerControllerAdd.bind(this))
@@ -1215,24 +1219,19 @@ export default class Editor extends Dom {
             .addListener('blockadd', this.onPlayerBlockAdd.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addListener('click', this.onPlayerClick.bind(this))
             .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
             .addListener('rindex', this.onPlayerReadingIndex.bind(this))
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
-            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
-            .addDelegate('.metaScore-component', 'click', this.onComponentClick.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
-            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this));
+            .addListener('click', this.onPlayerClick.bind(this))
+            .addClass('in-editor');
 
             this.player.contextmenu
                 .disable();
 
+            const player_body = this.player_frame.get(0).contentWindow.document.body;
             this.player_contextmenu
                 .setTarget(player_body)
                 .enable();
-
-            data = this.player.getData();
 
             new Dom(player_body)
                 .addListener('keydown', this.onKeydown.bind(this))
@@ -1241,8 +1240,11 @@ export default class Editor extends Dom {
             this
                 .setEditing(true)
                 .updateMainmenu()
-                .updateBlockSelector();
+                .updateBlockSelector()
+                .updatePageSelector()
+                .updateElementSelector();
 
+            const data = this.player.getData();
             this.mainmenu
                 .toggleButton('save', data.permissions.update)
                 .toggleButton('clone', data.permissions.clone)
@@ -1285,7 +1287,9 @@ export default class Editor extends Dom {
             return;
         }
 
-        this.panels.block.unsetComponent();
+        this.panels.element.unsetComponents();
+        this.panels.page.unsetComponents();
+        this.panels.block.unsetComponents();
 
         evt.stopPropagation();
     }
@@ -1310,23 +1314,76 @@ export default class Editor extends Dom {
      * @private
      * @param {MouseEvent} evt The event object
      */
-    onComponentClick(evt, dom){
-        let component;
+    onComponentClick(evt){
+        let component = null;
 
         if(this.editing !== true){
             return;
         }
 
-        component = dom._metaScore;
-
-        if(component.instanceOf('Element')){
-            this.panels.element.setComponent(component);
-        }
-        else if(component.instanceOf('Page')){
-            this.panels.page.setComponent(component);
+        if(!Dom.is(evt.target, '.metaScore-component')){
+            component = Dom.closest(evt.target, '.metaScore-component')._metaScore;
         }
         else{
-            this.panels.block.setComponent(component);
+            component = evt.target._metaScore;
+        }
+
+        if(component.instanceOf('Element')){
+            if(evt.shiftKey && this.panels.element.getComponents().includes(component)){
+                this.panels.element.unsetComponent(component);
+            }
+            else{
+                const page = component.getPage();
+                const block = page.getBlock();
+
+                this.panels.block.setComponent(block, evt.shiftKey);
+                this.panels.page.setComponent(page, evt.shiftKey);
+                this.panels.element.setComponent(component, evt.shiftKey);
+            }
+        }
+        else if(component.instanceOf('Page')){
+            const block = component.getBlock();
+
+            if(evt.shiftKey && this.panels.page.getComponents().includes(component)){
+                this.panels.block.unsetComponent(block);
+
+                const elements = component.getElements();
+                elements.forEach((element) => {
+                    this.panels.element.unsetComponent(element);
+                });
+            }
+            else{
+                this.panels.block.setComponent(block, evt.shiftKey);
+                this.panels.page.setComponent(component, evt.shiftKey);
+
+                if(!evt.shiftKey){
+                    this.panels.element.unsetComponents();
+                }
+            }
+        }
+        else{
+            if(evt.shiftKey && this.panels.block.getComponents().includes(component)){
+                this.panels.block.unsetComponent(component);
+
+                if(component.instanceOf('Block')){
+                    const pages = component.getPages();
+                    pages.forEach((page) => {
+                        this.panels.page.unsetComponent(page);
+                    });
+                }
+            }
+            else{
+                this.panels.block.setComponent(component, evt.shiftKey);
+
+                if(!evt.shiftKey){
+                    this.panels.page.unsetComponents();
+                    this.panels.element.unsetComponents();
+                }
+
+                if(component.instanceOf('Block')){
+                    this.panels.page.setComponent(component.getActivePage(), evt.shiftKey);
+                }
+            }
         }
 
         evt.stopImmediatePropagation();
@@ -1357,16 +1414,9 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageactivate:event"}}Block.pageactivate{{/crossLink}}
      */
     onBlockPageActivate(evt){
-        let page, basis;
+        const page = evt.detail.current;
 
-        if(this.editing !== true){
-            return;
-        }
-
-        page = evt.detail.page;
-        basis = evt.detail.basis;
-
-        if((basis !== 'pagecuepoint') || (page.getBlock() === this.panels.block.getComponent())){
+        if(page.getBlock() === this.panels.block.getComponent()){
             this.panels.page.setComponent(page);
         }
     }
@@ -1379,16 +1429,21 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
      */
     onPageElementAdd(evt){
-        let page = evt.detail.page,
-            block, media;
+        const element = evt.detail.element;
+        const page = evt.detail.page;
 
-        if((evt.detail.new) && (evt.detail.element.data('type') === 'Cursor')){
-            block = page.getBlock();
-            media = this.getPlayer().getMedia();
+        if(evt.detail.new && element.instanceOf('Cursor')){
+            const media = this.getPlayer().getMedia();
+            const block = page.getBlock();
 
-            evt.detail.element
-                .setProperty('start-time', media.getTime())
-                .setProperty('end-time', block.getProperty('synched') ? page.getProperty('end-time') : media.getDuration());
+            if(!isNumber(element.getPropertyValue('start-time'))){
+                element.setPropertyValue('start-time', block.getPropertyValue('synched') ? page.getPropertyValue('start-time') : media.getTime());
+
+            }
+
+            if(!isNumber(element.getPropertyValue('end-time'))){
+                element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+            }
         }
 
         if(page === this.panels.page.getComponent()){
@@ -1451,28 +1506,22 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
      */
     onDetailsOverlaySubmit(evt){
-        let overlay = evt.detail.overlay,
-            data = evt.detail.values,
-            action = overlay.getField('action').getValue(),
-            player = this.getPlayer();
+        const overlay = evt.detail.overlay;
+        const data = evt.detail.values;
+        const action = overlay.getField('action').getValue();
+        const player = this.getPlayer();
 
         if(action === 'new'){
             this.createGuide(data, overlay);
         }
         else{
-            let callback = (new_duration) => {
+            const callback = (new_duration) => {
                 if(new_duration){
-                    player.getComponents('.block').forEach((block_dom) => {
-                        let block, page;
-
-                        if(block_dom._metaScore){
-                            block = block_dom._metaScore;
-
-                            if(block.getProperty('synched')){
-                                page = block.getPage(block.getPageCount()-1);
-                                if(page){
-                                    page.setProperty('end-time', new_duration);
-                                }
+                    player.getComponents('.block').forEach((block) => {
+                        if(block.getPropertyValue('synched')){
+                            const page = block.getPage(block.getPageCount()-1);
+                            if(page){
+                                page.setPropertyValue('end-time', new_duration);
                             }
                         }
                     });
@@ -1490,42 +1539,24 @@ export default class Editor extends Dom {
 
             if('media' in data){
                 this.getMediaFileDuration(data.media.url, (new_duration) => {
-                    let old_duration = player.getMedia().getDuration(),
-                        formatted_old_duration, formatted_new_duration,
-                        blocks = [], block, msg;
+                    const old_duration = player.getMedia().getDuration();
 
                     if(new_duration !== old_duration){
-                        formatted_old_duration = (parseInt((old_duration / 360000), 10) || 0);
-                        formatted_old_duration += ":";
-                        formatted_old_duration += pad(parseInt((old_duration / 6000) % 60, 10) || 0, 2, "0", "left");
-                        formatted_old_duration += ":";
-                        formatted_old_duration += pad(parseInt((old_duration / 100) % 60, 10) || 0, 2, "0", "left");
-                        formatted_old_duration += ".";
-                        formatted_old_duration += pad(parseInt((old_duration) % 100, 10) || 0, 2, "0", "left");
-
-                        formatted_new_duration = (parseInt((new_duration / 360000), 10) || 0);
-                        formatted_new_duration += ":";
-                        formatted_new_duration += pad(parseInt((new_duration / 6000) % 60, 10) || 0, 2, "0", "left");
-                        formatted_new_duration += ":";
-                        formatted_new_duration += pad(parseInt((new_duration / 100) % 60, 10) || 0, 2, "0", "left");
-                        formatted_new_duration += ".";
-                        formatted_new_duration += pad(parseInt((new_duration) % 100, 10) || 0, 2, "0", "left");
+                        const formatted_old_duration = TimeField.getTextualValue(old_duration);
+                        const formatted_new_duration = TimeField.getTextualValue(new_duration);
+                        const blocks = [];
 
                         if(new_duration < old_duration){
-                            player.getComponents('.block').forEach((block_dom) => {
-                                if(block_dom._metaScore){
-                                    block = block_dom._metaScore;
+                            player.getComponents('.block').forEach((block) => {
+                                if(block.getPropertyValue('synched')){
+                                    block.getPages().some((page) => {
+                                        if(page.getPropertyValue('start-time') > new_duration){
+                                            blocks.push(block.getPropertyValue('name'));
+                                            return true;
+                                        }
 
-                                    if(block.getProperty('synched')){
-                                        block.getPages().some((page) => {
-                                            if(page.getProperty('start-time') > new_duration){
-                                                blocks.push(block.getProperty('name'));
-                                                return true;
-                                            }
-
-                                            return false;
-                                        });
-                                    }
+                                        return false;
+                                    });
                                 }
                             });
                         }
@@ -1541,6 +1572,7 @@ export default class Editor extends Dom {
                             });
                         }
                         else{
+                            let msg = '';
                             if(new_duration < old_duration){
                                 msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                             }
@@ -1583,8 +1615,8 @@ export default class Editor extends Dom {
      * @param {HashChangeEvent} evt The event object
      */
     onWindowHashChange(evt){
-        let callback = this.loadPlayerFromHash.bind(this),
-            oldURL = evt.oldURL;
+        const callback = this.loadPlayerFromHash.bind(this);
+        const oldURL = evt.oldURL;
 
         if(this.isDirty()){
             new Alert({
@@ -1655,7 +1687,6 @@ export default class Editor extends Dom {
         this.panels = {};
 
         this.panels.block = new BlockPanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', this.onBlockBeforeSet.bind(this))
             .addListener('componentset', this.onBlockSet.bind(this))
             .addListener('componentunset', this.onBlockUnset.bind(this))
             .addListener('valueschange', this.onBlockPanelValueChange.bind(this));
@@ -1665,7 +1696,6 @@ export default class Editor extends Dom {
             .addDelegate('.buttons [data-action]', 'click', this.onBlockPanelToolbarClick.bind(this));
 
         this.panels.page = new PagePanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', this.onPageBeforeSet.bind(this))
             .addListener('componentset', this.onPageSet.bind(this))
             .addListener('componentunset', this.onPageUnset.bind(this))
             .addListener('valueschange', this.onPagePanelValueChange.bind(this));
@@ -1675,7 +1705,6 @@ export default class Editor extends Dom {
             .addDelegate('.buttons [data-action]', 'click', this.onPagePanelToolbarClick.bind(this));
 
         this.panels.element = new ElementPanel().appendTo(this.sidebar)
-            .addListener('componentbeforeset', this.onElementBeforeSet.bind(this))
             .addListener('componentset', this.onElementSet.bind(this))
             .addListener('valueschange', this.onElementPanelValueChange.bind(this));
 
@@ -1698,8 +1727,6 @@ export default class Editor extends Dom {
             evt.stopPropagation();
         });
 
-        this.setupContextMenus();
-
         this.detailsOverlay = new GuideDetails({
                 'groups': this.configs.user_groups
             })
@@ -1718,6 +1745,7 @@ export default class Editor extends Dom {
             .setDirty(false)
             .setEditing(false)
             .updateMainmenu()
+            .setupContextMenus()
             .loadPlayerFromHash();
 
         this.triggerEvent(EVT_READY, {'editor': this}, true, false);
@@ -1738,119 +1766,203 @@ export default class Editor extends Dom {
                     'items': {
                         'add-element-cursor': {
                             'text': Locale.t('editor.contextmenu.add-element-cursor', 'Cursor'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Cursor'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            'callback': (el) => {
+                                this.addPlayerComponents('element', {'type': 'Cursor'}, el.closest('.metaScore-component.page')._metaScore);
                             }
                         },
                         'add-element-image': {
                             'text': Locale.t('editor.contextmenu.add-element-image', 'Image'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Image'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            'callback': (el) => {
+                                this.addPlayerComponents('element', {'type': 'Image'}, el.closest('.metaScore-component.page')._metaScore);
                             }
                         },
                         'add-element-text': {
                             'text': Locale.t('editor.contextmenu.add-element-text', 'Text'),
-                            'callback': (context) => {
-                                this.addPlayerComponent('element', {'type': 'Text'}, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                            'callback': (el) => {
+                                this.addPlayerComponents('element', {'type': 'Text'}, el.closest('.metaScore-component.page')._metaScore);
                             }
                         }
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
-                'copy-element': {
-                    'text': Locale.t('editor.contextmenu.copy-element', 'Copy element'),
-                    'callback': (context) => {
-                        this.clipboard.setData('element', Dom.closest(context, '.metaScore-component.element')._metaScore.getProperties());
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.element') ? true : false);
-                    }
-                },
-                'paste-element': {
-                    'text': Locale.t('editor.contextmenu.paste-element', 'Paste element'),
-                    'callback': (context) => {
-                        const component = this.clipboard.getData();
-                        component.x += 5;
-                        component.y += 5;
+                'select-elements': {
+                    'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
+                    'callback': (el) => {
+                        const page = el.closest('.metaScore-component.page')._metaScore;
 
-                        this.addPlayerComponent('element', component, Dom.closest(context, '.metaScore-component.page')._metaScore);
+                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.page.setComponent(page);
+
+                        page.getElements().forEach((element, index) => {
+                            this.panels.element.setComponent(element, index > 0);
+                        });
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
-                'delete-element': {
-                    'text': Locale.t('editor.contextmenu.delete-element', 'Delete element'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.element')._metaScore, true);
+                'select-elements-matching-index': {
+                    'text': Locale.t('editor.contextmenu.select-elements-matching-index', 'Select all elements of the current reading index'),
+                    'callback': (el) => {
+                        const rindex = this.getPlayer().getReadingIndex();
+                        const page = el.closest('.metaScore-component.page')._metaScore;
+
+                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.page.setComponent(page);
+                        this.panels.element.unsetComponents();
+
+                        page.getElements().forEach((element) => {
+                            if(element.getPropertyValue('r-index') === rindex){
+                                this.panels.element.setComponent(element, true);
+                            }
+                        });
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.page') ? true : false);
+                    }
+                },
+                'copy-elements': {
+                    'text': () => {
+                        if(this.panels.element.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
+                        }
+                        return Locale.t('editor.contextmenu.copy-element', 'Copy element');
+                    },
+                    'callback': (el) => {
+                        const configs = [];
+                        let elements = this.panels.element.getComponents();
+
+                        if(elements.length === 0){
+                            elements = [el.closest('.metaScore-component.element')._metaScore];
+                        }
+
+                        elements.forEach((element) => {
+                            const config = element.getPropertyValues();
+                            config.x += 5;
+                            config.y += 5;
+
+                            configs.push(config);
+                        });
+
+                        this.clipboard.setData('element', configs);
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && ((this.panels.element.getComponents().length > 0) || (el.closest('.metaScore-component.element') ? true : false));
+                    }
+                },
+                'paste-elements': {
+                    'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
+                    'callback': (el) => {
+                        this.addPlayerComponents('element', this.clipboard.getData(), el.closest('.metaScore-component.page')._metaScore);
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (el.closest('.metaScore-component.page') ? true : false);
+                    }
+                },
+                'delete-elements': {
+                    'text': () => {
+                        if(this.panels.element.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
+                        }
+                        return Locale.t('editor.contextmenu.delete-element', 'Delete element');
+                    },
+                    'callback': (el) => {
+                        let elements = this.panels.element.getComponents();
+                        if(elements.length === 0){
+                            elements = [el.closest('.metaScore-component.element')._metaScore];
+                        }
+                        this.deletePlayerComponents('element', elements);
+                    },
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
-
-                        const dom = Dom.closest(context, '.metaScore-component.element');
-                        return dom && !dom._metaScore.getProperty('locked');
+                        if(this.panels.element.getComponents().length > 0){
+                            return true;
+                        }
+                        const dom = el.closest('.metaScore-component.element');
+                        return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'lock-element': {
                     'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', true);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.element')._metaScore.setPropertyValue('locked', true);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.element');
-                        return dom && !dom._metaScore.getProperty('locked');
+                        const dom = el.closest('.metaScore-component.element');
+                        return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'unlock-element': {
                     'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.element')._metaScore.setProperty('locked', false);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.element')._metaScore.setPropertyValue('locked', false);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.element');
-                        return dom && dom._metaScore.getProperty('locked');
+                        const dom = el.closest('.metaScore-component.element');
+                        return dom && dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'element-separator': {
                     'class': 'separator',
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page, .metaScore-component.element') ? true : false);
+                    'toggler': (el) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        if(this.panels.element.getComponents().length > 0){
+                            return true;
+                        }
+                        return (el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
                     }
                 },
                 'add-page': {
                     'text': Locale.t('editor.contextmenu.add-page', 'Add a page'),
-                    'callback': (context) => {
-                        this.addPlayerComponent('page', {}, Dom.closest(context, '.metaScore-component.block')._metaScore);
+                    'callback': (el) => {
+                        this.addPlayerComponents('page', {}, el.closest('.metaScore-component.block')._metaScore);
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block') ? true : false);
                     }
                 },
                 'delete-page': {
-                    'text': Locale.t('editor.contextmenu.delete-page', 'Delete page'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.page')._metaScore, true);
+                    'text': () => {
+                        if(this.panels.page.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
+                        }
+                        return Locale.t('editor.contextmenu.delete-page', 'Delete page');
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.page') ? true : false);
+                    'callback': (el) => {
+                        let pages = this.panels.page.getComponents();
+                        if(pages.length === 0){
+                            pages = [el.closest('.metaScore-component.page')._metaScore];
+                        }
+                        this.deletePlayerComponents('page', pages);
+                    },
+                    'toggler': (el) => {
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        if(this.panels.page.getComponents().length > 0){
+                            return true;
+                        }
+                        return el.closest('.metaScore-component.page') ? true : false;
                     }
                 },
                 'page-separator': {
                     'class': 'separator',
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.page') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block, .metaScore-component.page') ? true : false);
                     }
                 },
                 'add-block': {
@@ -1859,13 +1971,13 @@ export default class Editor extends Dom {
                         'add-block-synched': {
                             'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
                             'callback': () => {
-                                this.addPlayerComponent('block', {'synched': true}, this.getPlayer());
+                                this.addPlayerComponents('block', {'type': 'Block', 'synched': true}, this.getPlayer());
                             }
                         },
                         'add-block-non-synched': {
                             'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
                             'callback': () => {
-                                this.addPlayerComponent('block', {'synched': false}, this.getPlayer());
+                                this.addPlayerComponents('block', {'type': 'Block', 'synched': false}, this.getPlayer());
                             }
                         },
                         'separator': {
@@ -1874,86 +1986,100 @@ export default class Editor extends Dom {
                         'add-block-toggler': {
                             'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
                             'callback': () => {
-                                this.addPlayerComponent('block-toggler', {}, this.getPlayer());
+                                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
                             }
                         }
                     },
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.is('.metaScore-player'));
+                    }
+                },
+                'select-blocks': {
+                    'text': Locale.t('editor.contextmenu.select-blocks', 'Select all blocks'),
+                    'callback': () => {
+                        const components = this.getPlayer().getComponents('.block, .block-toggler, .media.video, .controller');
+                        components.forEach((component, index) => {
+                            this.panels.block.setComponent(component, index > 0);
+                        });
+                    },
                     'toggler': () => {
-                        return (this.editing === true);
+                        return this.editing === true;
                     }
                 },
                 'copy-block': {
                     'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
-                    'callback': (context) => {
-                        const component = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore,
-                            type = component.instanceOf('BlockToggler') ? 'block-toggler' : 'block';
+                    'callback': (el) => {
+                        const component = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
+                        const config = component.getPropertyValues();
+                        config.x += 5;
+                        config.y += 5;
 
-                        this.clipboard.setData(type, component.getProperties());
+                        this.clipboard.setData('block', config);
                     },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
                     }
                 },
                 'paste-block': {
                     'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
                     'callback': () => {
-                        const type = this.clipboard.getDataType(),
-                            component = this.clipboard.getData();
-
-                        component.x += 5;
-                        component.y += 5;
-
-                        if(type === 'block-toggler'){
-                            this.getPlayer().addBlockToggler(component);
-                        }
-                        else{
-                            this.getPlayer().addBlock(component);
-                        }
+                        this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
                     },
-                    'toggler': () => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block' || this.clipboard.getDataType() === 'block-toggler');
+                    'toggler': (el) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'block') && (el.is('.metaScore-player'));
                     }
                 },
-                'delete-block': {
-                    'text': Locale.t('editor.contextmenu.delete-block', 'Delete block'),
-                    'callback': (context) => {
-                        this.deletePlayerComponent(Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore, true);
+                'delete-blocks': {
+                    'text': () => {
+                        if(this.panels.block.getComponents().length > 0){
+                            return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
+                        }
+                        return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                     },
-                    'toggler': (context) => {
+                    'callback': (el) => {
+                        let blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                        if(blocks.length === 0){
+                            blocks = [el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore];
+                        }
+                        this.deletePlayerComponents('block', blocks);
+                    },
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
-
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && !dom._metaScore.getProperty('locked');
+                        if(this.panels.block.getComponents().length > 0){
+                            return true;
+                        }
+                        const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
+                        return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'lock-block': {
                     'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', true);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', true);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && !dom._metaScore.getProperty('locked');
+                        const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
+                        return dom && !dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'unlock-block': {
                     'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
-                    'callback': (context) => {
-                        Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setProperty('locked', false);
+                    'callback': (el) => {
+                        el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', false);
                     },
-                    'toggler': (context) => {
+                    'toggler': (el) => {
                         if(this.editing !== true){
                             return false;
                         }
 
-                        const dom = Dom.closest(context, '.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && dom._metaScore.getProperty('locked');
+                        const dom = el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
+                        return dom && dom._metaScore.getPropertyValue('locked');
                     }
                 },
                 'block-separator': {
@@ -1967,6 +2093,8 @@ export default class Editor extends Dom {
                 }
             }})
             .appendTo(this.workspace);
+
+        return this;
     }
 
     /**
@@ -2032,10 +2160,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayerFromHash() {
-        let hash, match;
-
-        hash = window.location.hash;
-        match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/);
+        const hash = window.location.hash;
+        const match = hash.match(/(#|&)guide=(\w+)(:(\d+))?/);
 
         if(match){
             this.loadPlayer(match[2], match[4]);
@@ -2052,8 +2178,8 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateMainmenu() {
-        let player = this.getPlayer(),
-            hasPlayer = player ? true : false;
+        const player = this.getPlayer();
+        const hasPlayer = player ? true : false;
 
         this.mainmenu.toggleButton('edit', hasPlayer);
         this.mainmenu.toggleButton('save', hasPlayer);
@@ -2079,23 +2205,16 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateBlockSelector() {
-        let panel = this.panels.block,
-            toolbar = panel.getToolbar(),
-            selector = toolbar.getSelector(),
-            block;
+        const panel = this.panels.block;
+        const selector = panel.getToolbar().getSelector();
 
-        selector
-            .clear()
-            .addOption(null, '');
+        selector.clear();
 
-        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').forEach((dom) => {
-            if(dom._metaScore){
-                block = dom._metaScore;
-                selector.addOption(block.getId(), panel.getSelectorLabel(block));
-            }
+        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').forEach((block) => {
+            selector.addOption(block.getId(), panel.getSelectorLabel(block));
         });
 
-        block = panel.getComponent();
+        const block = panel.getComponent();
         selector.setValue(block ? block.getId() : null, true);
 
         return this;
@@ -2109,20 +2228,31 @@ export default class Editor extends Dom {
      * @chainable
      */
     updatePageSelector() {
-        let block = this.panels.block.getComponent(),
-            toolbar = this.panels.page.getToolbar(),
-            selector = toolbar.getSelector();
+        const selector = this.panels.page.getToolbar().getSelector();
+        const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block'));
 
+        // clear the selector
         selector.clear();
 
-        if(block && block.instanceOf('Block')){
-            block.getPages().forEach((page, index) => {
-                selector.addOption(page.getId(), index+1);
-            });
-        }
+        if(blocks.length > 0){
+            selector.enable();
 
-        const page = this.panels.page.getComponent();
-        selector.setValue(page ? page.getId() : null, true);
+            // add each page to the selector grouped by block
+            blocks.forEach((block) => {
+                const optgroup = blocks.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(block));
+
+                block.getPages().forEach((page, index) => {
+                    selector.addOption(page.getId(), index+1, optgroup);
+                });
+            });
+
+            // set the selector's value to all selected pages
+            const pages = this.panels.page.getComponents();
+            selector.setValue(pages.map((page) => page.getId()), true);
+        }
+        else{
+            selector.disable();
+        }
 
         return this;
     }
@@ -2135,49 +2265,56 @@ export default class Editor extends Dom {
      * @chainable
      */
     updateElementSelector() {
-        let panel = this.panels.element,
-            page = this.panels.page.getComponent(),
-            toolbar = panel.getToolbar(),
-            selector = toolbar.getSelector(),
-            optgroups = {};
+        const panel = this.panels.element;
+        const pages = this.panels.page.getComponents();
+        const selector = panel.getToolbar().getSelector();
 
         // clear the selector
         selector.clear();
 
-        // fill the list of optgroups
-        if(page && page.instanceOf('Page')){
-            page.getElements().forEach((element) => {
-                const rindex = element.getProperty('r-index') || 0;
+        if(pages.length > 0){
+            selector.enable();
 
-                if(!(rindex in optgroups)){
-                    optgroups[rindex] = [];
-                }
+            pages.forEach((page) => {
+                const block_optgroup = pages.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(page.getBlock()));
+                const optgroups = {};
 
-                optgroups[rindex].push(element);
+                // fill the list of optgroups
+                page.getElements().forEach((element) => {
+                    const rindex = element.getPropertyValue('r-index') || 0;
+
+                    if(!(rindex in optgroups)){
+                        optgroups[rindex] = [];
+                    }
+
+                    optgroups[rindex].push(element);
+                });
+
+                // create the optgroups and their options
+                Object.keys(optgroups).sort(naturalSortInsensitive).forEach((rindex) => {
+                    const options = optgroups[rindex];
+
+                    // sort options by element names
+                    options.sort((a, b) => {
+                        return naturalCompare(a.getName(), b.getName(), false);
+                    });
+
+                    // create the optgroup
+                    const optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex}), block_optgroup).attr('data-r-index', rindex);
+
+                    // create the options
+                    options.forEach((element) => {
+                        selector.addOption(element.getId(), panel.getSelectorLabel(element), optgroup);
+                    });
+                });
             });
+
+            const elements = panel.getComponents();
+            selector.setValue(elements.map((element) => element.getId()), true);
         }
-
-        // create the optgroups and their options
-        Object.keys(optgroups).sort(naturalSortInsensitive).forEach((rindex) => {
-            let options = optgroups[rindex],
-                optgroup;
-
-            // sort options by element names
-            options.sort((a, b) => {
-                return naturalSortInsensitive(a.getName(), b.getName());
-            });
-
-            // create the optgroup
-            optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex})).attr('data-r-index', rindex);
-
-            // create the options
-            options.forEach((element) => {
-                selector.addOption(element.getId(), panel.getSelectorLabel(element), optgroup);
-            });
-        });
-
-        const element = panel.getComponent();
-        selector.setValue(element ? element.getId() : null, true);
+        else{
+            selector.disable();
+        }
 
         return this;
     }
@@ -2224,14 +2361,13 @@ export default class Editor extends Dom {
      * @chainable
      */
     loadPlayer(id, vid){
-        let url = `${this.configs.player_url + id}?autoload=false&keyboard=1`,
-            loadmask;
+        let url = `${this.configs.player_url + id}?autoload=0&keyboard=0`;
 
         if(vid){
             url += `&vid=${vid}`;
         }
 
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'autoShow': true
         });
@@ -2262,7 +2398,7 @@ export default class Editor extends Dom {
             delete this.player_frame;
         }
 
-        this.panels.block.unsetComponent();
+        this.panels.block.unsetComponents();
         this.history.clear();
         this.setDirty(false)
             .setEditing(false)
@@ -2274,113 +2410,173 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Add a component to the player
+     * Add components to the player
      *
-     * @method addPlayerComponent
+     * @method addPlayerComponents
      * @private
-     * @param {String} type The component's type
-     * @param {Object} configs Configs to pass to the component
-     * @param {Mixed} parent The component's parent
+     * @param {String} type The components' type
+     * @param {Array} configs An array of configs to use when creating the components
+     * @param {Mixed} parent The components' parent
      * @chainable
      */
-    addPlayerComponent(type, configs, parent){
-        let panel, component,
-            page_configs,
-            index, previous_page, start_time, end_time;
+    addPlayerComponents(type, configs, parent){
+        if(!isArray(configs)){
+            configs = [configs];
+        }
 
         switch(type){
-            case 'element':
-                panel = this.panels.element;
-                component = parent.addElement(Object.assign({'name': Locale.t('editor.onElementPanelToolbarClick.defaultElementName', 'untitled')}, configs));
+            case 'element': {
+                const page = parent;
+                const panel = this.panels.element;
+                const components = [];
 
-                panel.setComponent(component);
+                this.panels.block.setComponent(page.getBlock());
+                this.panels.page.setComponent(page);
+
+                configs.forEach((config, index) => {
+                    let name = '';
+                    const el_index = page.children(`.element.${config.type}`).count() + 1;
+
+                    switch(config.type){
+                        case 'Cursor':
+                            name = `cur ${el_index}`;
+                            break;
+                        case 'Image':
+                            name = `img ${el_index}`;
+                            break;
+
+                        case 'Text':
+                            name = `txt ${el_index}`;
+                            break;
+                    }
+
+                    const component = page.addElement(Object.assign({'name': name}, config));
+                    panel.setComponent(component, index > 0);
+                    components.push(component);
+                });
 
                 this.history.add({
                     'undo': function(){
-                        panel.unsetComponent();
-                        component.remove();
+                        panel.unsetComponents();
+                        components.forEach((component) => {
+                            component.remove();
+                        })
                     },
                     'redo': function(){
-                        parent.addElement(component);
-                        panel.setComponent(component);
+                        components.forEach((component, index) => {
+                            page.addElement(component);
+                            panel.setComponent(component, index > 0);
+                        });
                     }
                 });
                 break;
+            }
 
-            case 'page':
-                panel = this.panels.page;
+            case 'page': {
+                const block = parent;
+                const panel = this.panels.page;
+                const config = configs[0]; // only one page can be added at a time !
+                const index = block.getActivePageIndex();
+                let current_time = null;
 
-                if(parent.getProperty('synched')){
-                    index = parent.getActivePageIndex();
-                    previous_page = parent.getPage(index);
+                if(block.getPropertyValue('synched')){
+                    const media = this.getPlayer().getMedia();
+                    const duration = media.getDuration();
 
-                    start_time = this.getPlayer().getMedia().getTime();
-                    end_time = previous_page.getProperty('end-time');
+                    current_time = media.getTime();
 
-                    configs['start-time'] = start_time;
-                    configs['end-time'] = end_time;
+                    // prevent adding the page if current time == 0 or >= media duration
+                    if(current_time === 0 || current_time >= duration){
+                        new Alert({
+                            'parent': this,
+                            'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeField.getTextualValue(0), '@duration': TimeField.getTextualValue(duration)}),
+                            'buttons': {
+                                'ok': Locale.t('editor.addPlayerComponents.page.time.ok', 'OK'),
+                            },
+                            'autoShow': true
+                        });
+
+                        break;
+                    }
+
+                    const previous_page = block.getPage(index);
+                    config['start-time'] = current_time;
+                    config['end-time'] = previous_page.getPropertyValue('end-time');
+
+                    previous_page.setPropertyValue('end-time', current_time);
                 }
 
-                component = parent.addPage(configs, index+1);
-                panel.setComponent(component);
+                const component = block.addPage(config, index + 1);
+                block.setActivePage(index + 1);
 
                 this.history.add({
                     'undo': function(){
-                        panel.unsetComponent();
-                        parent.removePage(component);
-                        parent.setActivePage(index);
+                        panel.unsetComponents();
+                        if(block.getPropertyValue('synched')){
+                            const previous_page = block.getPage(index);
+                            previous_page.setPropertyValue('end-time', component.getPropertyValue('end-time'));
+                        }
+                        block.removePage(component);
+                        block.setActivePage(index);
                     },
                     'redo': function(){
-                        parent.addPage(component, index+1);
-                        panel.setComponent(component);
+                        if(block.getPropertyValue('synched')){
+                            const previous_page = block.getPage(index);
+                            previous_page.setPropertyValue('end-time', current_time);
+                        }
+                        block.addPage(component, index + 1);
+                        block.setActivePage(index + 1);
                     }
                 });
                 break;
+            }
 
-            case 'block':
-                panel = this.panels.block;
-                component = parent.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, configs));
+            case 'block': {
+                const player = parent;
+                const panel = this.panels.block;
+                const components = [];
 
-                page_configs = {};
+                configs.forEach((config, index) => {
+                    let component = null;
 
-                if(component.getProperty('synched')){
-                    page_configs['start-time'] = 0;
-                    page_configs['end-time'] = parent.getMedia().getDuration();
-                }
+                    switch(config.type){
+                        case 'BlockToggler':
+                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, config));
+                            break;
 
-                component.addPage(page_configs);
+                        default: {
+                            component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
 
-                panel.setComponent(component);
+                            // add a page
+                            const page_configs = {};
+                            if(component.getPropertyValue('synched')){
+                                page_configs['start-time'] = 0;
+                                page_configs['end-time'] = player.getMedia().getDuration();
+                            }
+                            component.addPage(page_configs);
+                        }
+                    }
+
+                    panel.setComponent(component, index > 0);
+                    components.push(component);
+                });
 
                 this.history.add({
                     'undo': function(){
-                        panel.unsetComponent();
-                        component.remove();
+                        panel.unsetComponents();
+                        components.forEach((component) => {
+                            component.remove();
+                        });
                     },
                     'redo': function(){
-                        parent.addBlock(component);
-                        panel.setComponent(component);
+                        components.forEach((component, index) => {
+                            parent[`add${component.getPropertyValue('type')}`](component);
+                            panel.setComponent(component, index > 0);
+                        });
                     }
                 });
                 break;
-
-            case 'block-toggler':
-                panel = this.panels.block;
-                component = parent.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, configs));
-
-                panel.setComponent(component);
-
-                this.history.add({
-                    'undo': function(){
-                        panel.unsetComponent();
-                        component.remove();
-                    },
-                    'redo': function(){
-                        parent.addBlockToggler(component);
-                        panel.setComponent(component);
-                    }
-                });
-                break;
+            }
         }
 
         this.player_frame.focus();
@@ -2389,43 +2585,45 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Remove a component from the player
+     * Remove components from the player
      *
-     * @method deletePlayerComponent
+     * @method deletePlayerComponents
      * @private
-     * @param {player.Component} component The component
+     * @param {Array} components The components
      * @chainable
      */
-    deletePlayerComponent(component, confirm){
-        let editor = this,
-            player = this.getPlayer(),
-            panel, block, page,
-            index, configs, auto_page,
-            type, alert_msg;
+    deletePlayerComponents(type, components, confirm){
+        if(confirm !== false){
+            let alert_msg = '';
 
-        if(component.instanceOf('Block') || component.instanceOf('BlockToggler')){
-            type = 'block';
-        }
-        else if(component.instanceOf('Page')){
-            type = 'page';
-        }
-        else if(component.instanceOf('Element')){
-            type = 'element';
-        }
-
-        if(type && (confirm === true)){
             switch(type){
                 case 'block':
-                    alert_msg = Locale.t('editor.deletePlayerComponent.block.msg', 'Are you sure you want to delete the block <em>@name</em>?', {'@name': component.getName()});
+                    if(components.length > 1){
+                        alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', {'@count': components.length});
+                    }
+                    else{
+                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', {'@name': components[0].getName()});
+                    }
                     break;
 
                 case 'page':
-                    block = component.getBlock();
-                    alert_msg = Locale.t('editor.deletePlayerComponent.page.msg', 'Are you sure you want to delete page @index of <em>@block</em>?', {'@index': block.getPageIndex(component) + 1, '@block': block.getName()});
+                    if(components.length > 1){
+                        alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', {'@count': components.length});
+                    }
+                    else{
+                        const block = components[0].getBlock();
+                        const index = block.getPageIndex(components[0]) + 1;
+                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', {'@index': index, '@block': block.getName()});
+                    }
                     break;
 
                 case 'element':
-                    alert_msg = Locale.t('editor.deletePlayerComponent.element.msg', 'Are you sure you want to delete the element <em>@name</em>?', {'@name': component.getName()});
+                    if(components.length > 1){
+                        alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', {'@count': components.length});
+                    }
+                    else{
+                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', {'@name': components[0].getName()});
+                    }
                     break;
             }
 
@@ -2433,116 +2631,187 @@ export default class Editor extends Dom {
                 'parent': this,
                 'text': alert_msg,
                 'buttons': {
-                    'confirm': Locale.t('editor.deletePlayerComponent.yes', 'Yes'),
-                    'cancel': Locale.t('editor.deletePlayerComponent.no', 'No')
+                    'confirm': Locale.t('editor.deletePlayerComponents.yes', 'Yes'),
+                    'cancel': Locale.t('editor.deletePlayerComponents.no', 'No')
                 },
                 'autoShow': true
             })
             .addClass('delete-player-component')
             .addListener('buttonclick', (evt) => {
                 if(evt.detail.action === 'confirm'){
-                    editor.deletePlayerComponent(component, false);
+                    this.deletePlayerComponents(type, components, false);
                 }
             });
         }
         else{
             switch(type){
-                case 'block':
-                    panel = this.panels.block;
+                case 'block': {
+                    const panel = this.panels.block;
 
-                    if(panel.getComponent() === component){
-                        panel.unsetComponent();
-                    }
-
-                    component.remove();
-
-                    this.history.add({
-                        'undo': function(){
-                            if(component.instanceOf('BlockToggler')){
-                                player.addBlockToggler(component);
-                            }
-                            else{
-                                player.addBlock(component);
-                            }
-                            panel.setComponent(component);
-                        },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            component.remove();
-                        }
+                    components.forEach((component) => {
+                        panel.unsetComponent(component);
+                        component.remove();
                     });
 
-                    if(!component.instanceOf('BlockToggler')){
-                        player.updateBlockTogglers();
-                    }
-                    break;
-
-                case 'page':
-                    panel = this.panels.page;
-                    block = component.getBlock();
-                    index = block.getActivePageIndex();
-
-                    panel.unsetComponent();
-                    block.removePage(component);
-
-                    if(block.getPageCount() < 1){
-                        configs = {};
-
-                        if(block.getProperty('synched')){
-                            configs['start-time'] = 0;
-                            configs['end-time'] = player.getMedia().getDuration();
-                        }
-
-                        auto_page = block.addPage(configs);
-                        panel.setComponent(auto_page);
-                    }
-
-                    block.setActivePage(Math.max(0, index-1));
-
                     this.history.add({
-                        'undo': function(){
-                            if(auto_page){
-                                block.removePage(auto_page, true);
-                            }
-
-                            block.addPage(component, index);
-                            panel.setComponent(component);
+                        'undo': () => {
+                            const player = this.getPlayer();
+                            components.forEach((component) => {
+                                player[`add${component.getPropertyValue('type')}`](component);
+                            });
                         },
-                        'redo': function(){
-                            panel.unsetComponent();
-                            block.removePage(component, true);
-
-                            if(auto_page){
-                                block.addPage(auto_page);
-                                panel.setComponent(auto_page);
-                            }
-
-                            block.setActivePage(index-1);
+                        'redo': () => {
+                            components.forEach((component) => {
+                                panel.unsetComponent(component);
+                                component.remove();
+                            });
                         }
                     });
                     break;
+                }
 
-                case 'element':
-                    panel = this.panels.element;
-                    page = component.getPage();
+                case 'page': {
+                    const panel = this.panels.page;
+                    const player = this.getPlayer();
+                    const contexts = {};
 
-                    if(panel.getComponent() === component){
-                        panel.unsetComponent();
-                    }
+                    components.forEach((component) => {
+                        const block = component.getBlock();
+                        const block_id = block.getId();
+                        const index = block.getPageIndex(component);
 
-                    component.remove();
+                        contexts[block_id] = contexts[block_id] || {
+                            'block': block,
+                            'auto_page': null,
+                            'pages': []
+                        };
+
+                        contexts[block_id].pages.push({
+                            'component': component,
+                            'index': index
+                        });
+                    });
+
+                    const removePages = () => {
+                        Object.entries(contexts).forEach(([, context]) => {
+                            let page_index = 0;
+
+                            // store original page start and end times
+                            if(context.block.getPropertyValue('synched')){
+                                context.times = {};
+                                context.block.getPages().forEach((page) => {
+                                    context.times[page.getId()] = {
+                                        'start': page.getPropertyValue('start-time'),
+                                        'end': page.getPropertyValue('end-time')
+                                    };
+                                });
+                            }
+
+                            // remove deleted pages
+                            context.pages.forEach((ctx) => {
+                                const index = context.block.getPageIndex(ctx.component);
+                                panel.unsetComponent(ctx.component);
+
+                                if(index > 0){
+                                    // if there is a page before, update it's end time
+                                    const previous_page = context.block.getPage(index - 1);
+                                    previous_page.setPropertyValue('end-time', ctx.component.getPropertyValue('end-time'));
+                                }
+                                else if(context.block.getPageCount() > 1){
+                                    // else if there is a page after, update it's start time
+                                    const next_page = context.block.getPage(index + 1);
+                                    next_page.setPropertyValue('start-time', ctx.component.getPropertyValue('start-time'));
+                                }
+
+                                context.block.removePage(ctx.component, true);
+
+                                page_index = ctx.index - 1;
+                            });
+
+                            // add a new page if the block is empty
+                            if(context.block.getPageCount() < 1){
+                                const configs = {};
+
+                                if(context.block.getPropertyValue('synched')){
+                                    configs['start-time'] = 0;
+                                    configs['end-time'] = player.getMedia().getDuration();
+                                }
+
+                                context.auto_page = context.block.addPage(configs);
+                            }
+
+                            context.block.setActivePage(Math.max(0, page_index));
+                        });
+                    };
+
+                    const unremovePages = () => {
+                        Object.entries(contexts).forEach(([, context]) => {
+                            let page_index = 0;
+
+                            // remove the new page if one was added
+                            if(context.auto_page){
+                                context.block.removePage(context.auto_page);
+                            }
+
+                            // re-add removed pages
+                            context.pages.forEach((ctx) => {
+                                context.block.addPage(ctx.component, ctx.index);
+                                page_index = ctx.index;
+                            });
+
+                            // reset all page times
+                            if(context.block.getPropertyValue('synched')){
+                                context.block.getPages().forEach((page) => {
+                                    const page_id = page.getId();
+                                    if(page_id in context.times){
+                                        page.setPropertyValue('start-time', context.times[page_id].start);
+                                        page.setPropertyValue('end-time', context.times[page_id].end);
+                                    }
+                                });
+                            }
+
+                            context.block.setActivePage(page_index);
+                        });
+                    };
+
+                    removePages();
+
+                    this.history.add({
+                        'undo': unremovePages,
+                        'redo': removePages
+                    });
+                    break;
+                }
+
+                case 'element': {
+                    const panel = this.panels.element;
+                    const context = [];
+
+                    components.forEach((component) => {
+                        context.push({
+                            'component': component,
+                            'page': component.getPage()
+                        });
+
+                        panel.unsetComponent(component);
+                        component.remove();
+                    });
 
                     this.history.add({
                         'undo': function(){
-                            page.addElement(component);
-                            panel.setComponent(component);
+                            context.forEach((ctx) => {
+                                ctx.page.addElement(ctx.component);
+                            });
                         },
                         'redo': function(){
-                            panel.unsetComponent();
-                            component.remove();
+                            context.forEach((ctx) => {
+                                panel.unsetComponent(ctx.component);
+                                ctx.component.remove();
+                            });
                         }
                     });
                     break;
+                }
             }
 
             this.player_frame.focus();
@@ -2577,8 +2846,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     createGuide(details, overlay){
-        let data = new FormData(),
-            loadmask, options;
+        const data = new FormData();
 
         // append values from the details overlay
 		Object.entries(details).forEach(([key, value]) => {
@@ -2591,7 +2859,7 @@ export default class Editor extends Dom {
         });
 
         // add a loading mask
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.createGuide.LoadMask.text', 'Saving... (!percent%)'),
             'bar': true,
@@ -2599,7 +2867,7 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        options = Object.assign({
+        const options = Object.assign({
             'data': data,
             'dataType': 'json',
             'onSuccess': (evt) => {
@@ -2637,12 +2905,11 @@ export default class Editor extends Dom {
      * @chainable
      */
     saveGuide(action, publish){
-        let player = this.getPlayer(),
-            id = player.getId(),
-            vid = player.getRevision(),
-            components = player.getComponents('.media, .controller, .block, .block-toggler'),
-            data = new FormData(),
-            component, loadmask, options;
+        const player = this.getPlayer();
+        const id = player.getId();
+        const vid = player.getRevision();
+        const components = player.getComponents('.media, .controller, .block, .block-toggler');
+        const data = new FormData();
 
         // append the publish flag if true
         if(publish === true){
@@ -2659,11 +2926,6 @@ export default class Editor extends Dom {
                 if(key === 'thumbnail' || key === 'media'){
                     data.append(`files[${key}]`, value.object);
                 }
-                else if(isArray(value)){
-                    value.forEach((val) => {
-                        data.append(`${key}[]`, key === 'blocks' ? JSON.stringify(val) : val);
-                    });
-                }
                 else{
                     data.append(key, value);
                 }
@@ -2671,25 +2933,12 @@ export default class Editor extends Dom {
         }
 
         // append blocks data
-        components.forEach((dom) => {
-            component = dom._metaScore;
-
-            if(component.instanceOf('Media')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'media'}, component.getProperties())));
-            }
-            else if(component.instanceOf('Controller')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'controller'}, component.getProperties())));
-            }
-            else if(component.instanceOf('BlockToggler')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'block-toggler'}, component.getProperties())));
-            }
-            else if(component.instanceOf('Block')){
-                data.append('blocks[]', JSON.stringify(Object.assign({'type': 'block'}, component.getProperties())));
-            }
+        components.forEach((component) => {
+            data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
         });
 
         // add a loading mask
-        loadmask = new LoadMask({
+        const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
             'bar': true,
@@ -2697,7 +2946,7 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        options = Object.assign({
+        const options = Object.assign({
             'data': data,
             'dataType': 'json',
             'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
@@ -2732,12 +2981,14 @@ export default class Editor extends Dom {
      * @param {Function} callback A callback function to call with the duration
      */
     getMediaFileDuration(url, callback){
-        const media = new Dom('<audio/>', {'src': url})
+        const media = new Dom('<audio/>')
             .addListener('loadedmetadata', () => {
                 const duration = Math.round(parseFloat(media.get(0).duration) * 100);
-
+                media.remove();
                 callback(duration);
-            });
+            })
+            .attr('src', url)
+            .appendTo(this);
     }
 
 }

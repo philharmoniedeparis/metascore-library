@@ -1,6 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {uuid} from '../../core/utils/String';
+import {isNumeric} from '../../core/utils/Var';
 import {getDecimalPlaces} from '../../core/utils/Number';
 
 /**
@@ -27,7 +27,9 @@ export default class Number extends Field {
      * @param {Number} [configs.max=null] The maximum allowed value
      * @param {Number} [configs.step=1] The spin up/down step amount
      * @param {Boolean} [configs.spinButtons=true] Whether to show the spin buttons
-     * @param {Integer} [configs.spinInterval=200] The speed of the spin buttons
+     * @param {Integer} [configs.initSpinDelay=200] The initial delay between each increment/decrement of the spin buttons
+     * @param {Integer} [configs.minSpinDelay=5] The min delay of the spin buttons
+     * @param {Float} [configs.spinDelayMultiplier=0.95] The value to multiply the delay of the spin buttons with
      * @param {String} [configs.spinDirection='horizontal'] The direction of the spin buttons
      * @param {Boolean} [configs.flipSpinButtons=false] Whether to flip the spin buttons
      */
@@ -48,7 +50,9 @@ export default class Number extends Field {
             'max': null,
             'step': 1,
             'spinButtons': true,
-            'spinInterval': 200,
+            'initSpinDelay': 200,
+            'minSpinDelay': 5,
+            'spinDelayMultiplier': 0.95,
             'spinDirection': 'horizontal',
             'flipSpinButtons': false
         });
@@ -61,26 +65,16 @@ export default class Number extends Field {
      * @private
      */
     setupUI() {
-        let uid = `field-${uuid(5)}`,
-            buttons;
+        super.setupUI();
 
-        if(this.configs.label){
-            this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
-                .appendTo(this);
-        }
-
-        this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
-            .appendTo(this);
-
-        this.input = new Dom('<input/>', {'type': 'text', 'id': uid})
+        this.input
             .addListener('input', this.onInput.bind(this))
-            .addListener('mousewheel', this.onMouseWheel.bind(this))
-            .addListener('DOMMouseScroll', this.onMouseWheel.bind(this))
             .addListener('keydown', this.onKeyDown.bind(this))
-            .appendTo(this.input_wrapper);
+            .addListener('mousewheel', this.onMouseWheel.bind(this))
+            .addListener('DOMMouseScroll', this.onMouseWheel.bind(this));
 
         if(this.configs.spinButtons){
-            buttons = new Dom('<div/>', {'class': 'buttons'})
+            const buttons = new Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this.input_wrapper);
 
             if(this.configs.flipSpinButtons){
@@ -101,8 +95,6 @@ export default class Number extends Field {
         }
 
         this.addClass(this.configs.spinDirection === 'vertical' ? 'vertical' : 'horizontal');
-
-        this.addListener('change', this.onChange.bind(this));
     }
 
     /**
@@ -112,6 +104,11 @@ export default class Number extends Field {
      * @private
      */
     onChange(){
+        if(this.dirty){
+            delete this.dirty;
+            this.setValue(this.input.val());
+        }
+
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     }
 
@@ -122,35 +119,8 @@ export default class Number extends Field {
      * @private
      * @param {Event} evt The event object
      */
-    onInput(evt){
-        this.setValue(this.input.val());
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * The mousewheel event handler
-     *
-     * @method onMouseWheel
-     * @private
-     * @param {Event} evt The event object
-     */
-    onMouseWheel(evt){
-        let delta, decimals, value;
-
-        if(this.input.is(':focus')){
-            delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
-
-            value = this.getValue() + (this.configs.step * delta);
-
-            // work around the well-known floating point issue
-            decimals = getDecimalPlaces(this.configs.step);
-            value = parseFloat(value.toFixed(decimals));
-
-            this.setValue(value);
-
-            evt.preventDefault();
-        }
+    onInput(){
+        this.dirty = true;
     }
 
     /**
@@ -161,16 +131,53 @@ export default class Number extends Field {
      * @param {Event} evt The event object
      */
     onKeyDown(evt){
-        switch(evt.keyCode){
-            case 38:
-                this.spinUp();
+        switch(evt.key){
+            case "ArrowUp":
+                this.spinUp(false);
                 evt.preventDefault();
                 break;
 
-            case 40:
-                this.spinDown();
+            case "ArrowDown":
+                this.spinDown(false);
                 evt.preventDefault();
                 break;
+        }
+    }
+
+    /**
+     * The keypress event handler
+     *
+     * @method onKeypress
+     * @private
+     * @param {Event} evt The event object
+     */
+    onKeypress(evt){
+        if(isNumeric(evt.key) || ((evt.key === '.') && this.configs.step < 1) || (evt.key === "Enter")){
+            return;
+        }
+
+        evt.preventDefault();
+    }
+
+    /**
+     * The mousewheel event handler
+     *
+     * @method onMouseWheel
+     * @private
+     * @param {Event} evt The event object
+     */
+    onMouseWheel(evt){
+        if(this.input.is(':focus')){
+            const delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
+            const decimals = getDecimalPlaces(this.configs.step);
+            let value = this.getValue() + (this.configs.step * delta);
+
+            // work around the well-known floating point issue
+            value = parseFloat(value.toFixed(decimals));
+
+            this.setValue(value);
+
+            evt.preventDefault();
         }
     }
 
@@ -182,24 +189,20 @@ export default class Number extends Field {
      * @param {Event} evt The event object
      */
     onSpinBtnMouseDown(evt){
-        let fn;
-
         if(this.disabled){
             return;
         }
 
+        this.spinDelay = this.configs.initSpinDelay;
+
         switch(Dom.data(evt.target, 'action')){
             case 'spin-down':
-                fn = this.spinDown;
+                this.spinDown();
                 break;
 
             default:
-                fn = this.spinUp;
+                this.spinUp();
         }
-
-        fn();
-
-        this.interval = setInterval(fn, this.configs.spinInterval);
     }
 
     /**
@@ -209,7 +212,8 @@ export default class Number extends Field {
      * @private
      */
     onSpinBtnMouseUp(){
-        clearInterval(this.interval);
+        delete this.spinDelay;
+        clearTimeout(this.timeout);
     }
 
     /**
@@ -219,7 +223,8 @@ export default class Number extends Field {
      * @private
      */
     onSpinBtnMouseOut(){
-        clearInterval(this.interval);
+        delete this.spinDelay;
+        clearTimeout(this.timeout);
     }
 
     /**
@@ -228,16 +233,21 @@ export default class Number extends Field {
      * @method spinDown
      * @private
      */
-    spinDown() {
-        let decimals, value;
-
-        value = this.getValue() - this.configs.step;
+    spinDown(loop) {
+        let value = this.getValue() - this.configs.step;
+        const decimals = getDecimalPlaces(this.configs.step);
 
         // work around the well-known floating point issue
-        decimals = getDecimalPlaces(this.configs.step);
         value = parseFloat(value.toFixed(decimals));
 
         this.setValue(value);
+
+        if(loop !== false){
+            if(this.spinDelay > this.configs.minSpinDelay){
+                this.spinDelay *= this.configs.spinDelayMultiplier;
+            }
+            this.timeout = setTimeout(this.spinDown, this.spinDelay);
+        }
     }
 
     /**
@@ -246,16 +256,21 @@ export default class Number extends Field {
      * @method spinUp
      * @private
      */
-    spinUp() {
-        let decimals, value;
-
-        value = this.getValue() + this.configs.step;
+    spinUp(loop) {
+        let value = this.getValue() + this.configs.step;
+        const decimals = getDecimalPlaces(this.configs.step);
 
         // work around the well-known floating point issue
-        decimals = getDecimalPlaces(this.configs.step);
         value = parseFloat(value.toFixed(decimals));
 
         this.setValue(value);
+
+        if(loop !== false){
+            if(this.spinDelay > this.configs.minSpinDelay){
+                this.spinDelay *= this.configs.spinDelayMultiplier;
+            }
+            this.timeout = setTimeout(this.spinUp, this.spinDelay);
+        }
     }
 
     /**
@@ -267,20 +282,20 @@ export default class Number extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        value = parseFloat(value);
+        let val = parseFloat(value);
 
-        if(isNaN(value)){
-            value = 0;
+        if(isNaN(val)){
+            val = 0;
         }
 
         if(this.min !== null){
-            value = Math.max(value, this.min);
+            val = Math.max(val, this.min);
         }
         if(this.max !== null){
-            value = Math.min(value, this.max);
+            val = Math.min(val, this.max);
         }
 
-        super.setValue(value, supressEvent);
+        super.setValue(val, supressEvent);
 
         return this;
     }

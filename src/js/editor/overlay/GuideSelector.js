@@ -40,6 +40,8 @@ export default class GuideSelector extends Overlay {
         // call parent constructor
         super(configs);
 
+        this.onScroll = this.onScroll.bind(this);
+
         this.addClass('guide-selector');
     }
 
@@ -49,7 +51,8 @@ export default class GuideSelector extends Overlay {
             'toolbar': true,
             'title': Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
             'empty_text': Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
-            'url': null
+            'url': null,
+            'loadMoreDistance': 40
         });
     }
 
@@ -183,18 +186,11 @@ export default class GuideSelector extends Overlay {
             .appendTo(contents);
     }
 
-    /**
-     * Show the overlay
-     *
-     * @method show
-     * @chainable
-     */
-    show() {
-        super.show();
-
-        this.load(true);
-
-        return this;
+    onScroll(evt) {
+        const el = evt.target;
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - this.configs.loadMoreDistance) {
+            this.loadMore();
+        }
     }
 
     /**
@@ -204,7 +200,7 @@ export default class GuideSelector extends Overlay {
      * @private
      * @param {Event} evt The event object
      */
-    onLoadSuccess(loadmask, evt){
+    onLoadSuccess(evt){
         const data = JSON.parse(evt.target.getResponse());
 
         if('filters' in data){
@@ -219,9 +215,37 @@ export default class GuideSelector extends Overlay {
             });
         }
 
-        this.setupResults(data.items);
+        if(!data.page){
+            this.results.empty();
 
-        loadmask.hide();
+            if(isEmpty(data.items)){
+                this.results.text(this.configs.empty_text);
+            }
+            else{
+                this.appendResults(data.items);
+            }
+        }
+        else{
+            this.appendResults(data.items);
+        }
+
+        if(data.count > (data.page + 1) * data.page_size){
+            this.load_more_params.page = data.page + 1;
+
+            if(data.page === 0){
+                this.getContents()
+                    .addClass('has-more')
+                    .addListener('scroll', this.onScroll);
+            }
+        }
+        else{
+            delete this.load_more_params;
+
+            this.getContents()
+                .removeClass('has-more')
+                .removeListener('scroll', this.onScroll);
+        }
+
 
         delete this.load_request;
     }
@@ -233,8 +257,7 @@ export default class GuideSelector extends Overlay {
      * @private
      * @param {Event} evt The event object
      */
-    onLoadError(loadmask, evt){
-        loadmask.hide();
+    onLoadError(evt){
         delete this.load_request;
 
         new Alert({
@@ -254,8 +277,7 @@ export default class GuideSelector extends Overlay {
      * @private
      * @param {Event} evt The event object
      */
-    onLoadAbort(loadmask){
-        loadmask.hide();
+    onLoadAbort(){
         delete this.load_request;
     }
 
@@ -267,7 +289,8 @@ export default class GuideSelector extends Overlay {
      * @param {Event} evt The event object
      */
     onFilterFormSubmit(evt){
-        this.load();
+        this.load_more_params = this.getFilters();
+        this.load(Object.assign({}, this.load_more_params));
 
         evt.preventDefault();
         evt.stopPropagation();
@@ -309,95 +332,88 @@ export default class GuideSelector extends Overlay {
      * @private
      * @chainable
      */
-    setupResults(guides){
+    appendResults(guides){
         let row,
             revision_wrapper, revision_field,
             groups, button;
 
-        this.results.empty();
+        guides.forEach((guide) => {
+            if(!(guide.permissions.update || guide.permissions.clone)){
+                return;
+            }
 
-        if(isEmpty(guides)){
-            this.results.text(this.configs.empty_text);
-        }
-        else{
-            guides.forEach((guide) => {
-                if(!(guide.permissions.update || guide.permissions.clone)){
-                    return;
-                }
+            row = new Dom('<tr/>', {'class': `guide-${guide.id}`})
+                .appendTo(this.results);
 
-                row = new Dom('<tr/>', {'class': `guide-${guide.id}`})
-                    .appendTo(this.results);
+            new Dom('<td/>', {'class': 'thumbnail'})
+                .append(new Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
+                .appendTo(row);
 
-                new Dom('<td/>', {'class': 'thumbnail'})
-                    .append(new Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
-                    .appendTo(row);
+            revision_field = new SelectField({
+                    'label': Locale.t('editor.overlay.GuideSelector.revisionLabel', 'Version')
+                })
+                .addClass('revisions');
 
-                revision_field = new SelectField({
-                        'label': Locale.t('editor.overlay.GuideSelector.revisionLabel', 'Version')
-                    })
-                    .addClass('revisions');
+            if('revisions' in guide){
+                groups = {};
 
-                if('revisions' in guide){
-                    groups = {};
+                Object.entries(guide.revisions).forEach(([vid, revision]) => {
+                    let group_id, group_label, group, text;
 
-					Object.entries(guide.revisions).forEach(([vid, revision]) => {
-                        let group_id, group_label, group, text;
+                    switch(revision.state){
+                        case 0: // archives
+                            group_id = 'archives';
+                            group_label = Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
+                            break;
 
-                        switch(revision.state){
-                            case 0: // archives
-                                group_id = 'archives';
-                                group_label = Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
-                                break;
+                        case 1: // published
+                            group_id = 'published';
+                            group_label = Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
+                            break;
 
-                            case 1: // published
-                                group_id = 'published';
-                                group_label = Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
-                                break;
-
-                            case 2: // drafts
-                                group_id = 'drafts';
-                                group_label = Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
-                                break;
-                        }
-
-                        if(!(group_id in groups)){
-                            groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
-                        }
-
-                        group = groups[group_id];
-
-                        text = Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
-
-                        revision_field.addOption(vid, text, group);
-                    });
-
-                    if('latest_revision' in guide){
-                        revision_field.setValue(guide.latest_revision);
+                        case 2: // drafts
+                            group_id = 'drafts';
+                            group_label = Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
+                            break;
                     }
+
+                    if(!(group_id in groups)){
+                        groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
+                    }
+
+                    group = groups[group_id];
+
+                    text = Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
+
+                    revision_field.addOption(vid, text, group);
+                });
+
+                if('latest_revision' in guide){
+                    revision_field.setValue(guide.latest_revision);
                 }
-                else{
-                    revision_field.disable();
-                }
+            }
+            else{
+                revision_field.disable();
+            }
 
-                button = new Button()
-                    .addClass('submit')
-                    .setLabel(Locale.t('editor.overlay.GuideSelector.button', 'Select'))
-                    .addListener('click', this.onGuideSelect.bind(this, guide, revision_field))
-                    .data('action', 'select');
+            button = new Button()
+                .addClass('submit')
+                .setLabel(Locale.t('editor.overlay.GuideSelector.button', 'Select'))
+                .addListener('click', this.onGuideSelect.bind(this, guide, revision_field))
+                .data('action', 'select');
 
-                revision_wrapper = new Dom('<div/>', {'class': 'revision-wrapper'})
-                    .append(revision_field)
-                    .append(button);
+            revision_wrapper = new Dom('<div/>', {'class': 'revision-wrapper'})
+                .append(revision_field)
+                .append(button);
 
-                new Dom('<td/>', {'class': 'details'})
-                    .append(new Dom('<h1/>', {'class': 'title', 'text': guide.title}))
-                    .append(new Dom('<p/>', {'class': 'description', 'text': guide.description}))
-                    .append(new Dom('<p/>', {'class': 'tags', 'text': Locale.t('editor.overlay.GuideSelector.tagsText', 'tags: <em>!tags</em>', {'!tags': guide.tags})}))
-                    .append(new Dom('<p/>', {'class': 'author', 'text': Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
-                    .append(revision_wrapper)
-                    .appendTo(row);
-            });
-        }
+            new Dom('<td/>', {'class': 'details'})
+                .append(new Dom('<h1/>', {'class': 'title', 'text': guide.title}))
+                .append(new Dom('<p/>', {'class': 'description', 'text': guide.description}))
+                .append(new Dom('<p/>', {'class': 'tags', 'text': Locale.t('editor.overlay.GuideSelector.tagsText', 'tags: <em>!tags</em>', {'!tags': guide.tags})}))
+                .append(new Dom('<p/>', {'class': 'author', 'text': Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
+                .append(revision_wrapper)
+                .appendTo(row);
+        });
 
         return this;
     }
@@ -409,29 +425,67 @@ export default class GuideSelector extends Overlay {
      * @private
      * @chainable
      */
-    load(initial){
-        const data = {};
-
+    load(params){
         const loadmask = new LoadMask({
             'parent': this.getContents(),
             'autoShow': true
         });
 
+        this.load_request = Ajax.GET(this.configs.url, {
+            'data': params,
+            'dataType': 'json',
+            'onSuccess': (evt) => {
+                this.onLoadSuccess(evt);
+                loadmask.hide();
+            },
+            'onError': (evt) => {
+                this.onLoadError(evt);
+                loadmask.hide();
+            },
+            'onAbort': (evt) => {
+                this.onLoadAbort(evt);
+                loadmask.hide();
+            }
+        });
+    }
+
+    loadMore(){
+        if(!this.load_request){
+            this.load_request = Ajax.GET(this.configs.url, {
+                'data': this.load_more_params,
+                'dataType': 'json',
+                'onSuccess': this.onLoadSuccess.bind(this),
+                'onError': this.onLoadError.bind(this),
+                'onAbort': this.onLoadAbort.bind(this)
+            });
+        }
+    }
+
+    getFilters(){
+        const data = {};
+
 		Object.entries(this.filter_fields).forEach(([, field]) => {
             data[field.data('name')] = field.getValue();
         });
 
-        if(initial === true){
-            data.with_filter_options = true;
-        }
+        return data;
+    }
 
-        this.load_request = Ajax.GET(this.configs.url, {
-            'data': data,
-            'dataType': 'json',
-            'onSuccess': this.onLoadSuccess.bind(this, loadmask),
-            'onError': this.onLoadError.bind(this, loadmask),
-            'onAbort': this.onLoadAbort.bind(this, loadmask)
-        });
+    /**
+     * Show the overlay
+     *
+     * @method show
+     * @chainable
+     */
+    show() {
+        super.show();
+
+        this.load_more_params = this.getFilters();
+
+        const params = Object.assign({}, this.load_more_params, {with_filter_options: true});
+        this.load(params);
+
+        return this;
     }
 
     hide(){

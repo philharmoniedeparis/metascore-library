@@ -2,6 +2,7 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import {pad} from '../../core/utils/String';
+import {isNumeric} from '../../core/utils/Var';
 
 /**
  * Fired when the field's value changes
@@ -110,14 +111,66 @@ export default class Time extends Field {
     }
 
     /**
+     * Helper function to convert a textual value to a numerical one
+     *
+     * @method getNumericalValue
+     * @private
+     * @param {String} textual_value The textual value
+     * @return {Number} The numercial value
+     */
+    static getNumericalValue(textual_value){
+        if(textual_value.indexOf(PART_PLACEHOLDER) !== -1){
+            return null;
+        }
+
+        let value = 0;
+        const matches = textual_value.match(GLOBAL_REGEX);
+
+        if(matches){
+            matches.shift();
+
+            matches.forEach((match, i) => {
+                value += parseInt(matches[i], 10) * PARTS[i].multiplier;
+            });
+        }
+
+        return value;
+    }
+
+    /**
+     * Helper function to convert a numerical value to a textual one
+     *
+     * @method getTextualValue
+     * @private
+     * @param {Number} value The numercial value
+     * @return {String} The textual value
+     */
+    static getTextualValue(value){
+        let textual_value = "";
+
+        PARTS.forEach((part) => {
+            textual_value += part.prefix;
+
+            if(value === null){
+                textual_value += PART_PLACEHOLDER;
+            }
+            else{
+                textual_value += pad(parseInt((value / part.multiplier) % (part.max_value + 1), 10) || 0, 2, "0", "left");
+            }
+
+            textual_value += part.suffix;
+        });
+
+        return textual_value;
+    }
+
+    /**
      * Setup the field's UI
      *
      * @method setupUI
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input_el = this.input.get(0);
@@ -127,16 +180,14 @@ export default class Time extends Field {
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('click', this.onClick.bind(this))
             .addListener('focus', this.onFocus.bind(this))
-            .addListener('blur', this.onBlur.bind(this))
             .addListener('dragstart', this.onDragstart.bind(this))
             .addListener('drop', this.onDrop.bind(this))
             .addListener('cut', this.onCut.bind(this))
             .addListener('paste', this.onPaste.bind(this))
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keypress', this.onKeypress.bind(this));
+            .addListener('keydown', this.onKeydown.bind(this));
 
         if(this.configs.clearButton || this.configs.inButton || this.configs.outButton){
-            buttons = new Dom('<div/>', {'class': 'buttons'})
+            const buttons = new Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this.input_wrapper);
 
             if(this.configs.clearButton){
@@ -166,6 +217,14 @@ export default class Time extends Field {
      * @private
      */
     onChange(){
+        delete this.keys_pressed;
+        delete this.focused_segment;
+
+        if(this.dirty){
+            delete this.dirty;
+            this.setValue(this.constructor.getNumericalValue(this.input.val()));
+        }
+
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     }
 
@@ -232,22 +291,6 @@ export default class Time extends Field {
     }
 
     /**
-     * The blur event handler
-     *
-     * @method onBlur
-     * @private
-     */
-    onBlur(){
-        delete this.keys_pressed;
-        delete this.focused_segment;
-
-        if(this.dirty){
-            delete this.dirty;
-            this.setValue(this.getNumericalValue(this.input.val()));
-        }
-    }
-
-    /**
      * The dragstart event handler
      *
      * @method onDragstart
@@ -292,7 +335,7 @@ export default class Time extends Field {
             pasted_data = clipboard_data.getData('Text');
 
         if(this.isValid(pasted_data)){
-            this.setValue(this.getNumericalValue(pasted_data), false);
+            this.setValue(this.constructor.getNumericalValue(pasted_data), false);
         }
 
         evt.preventDefault();
@@ -306,12 +349,10 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeydown(evt){
-        let segment;
-
-        switch (evt.keyCode) {
-            case 37: // left arrow
-            case 39: // right arrow
-                segment = this.getFocusedSegment() + (evt.keyCode === 37 ? -1 : 1);
+        switch (evt.key) {
+            case "ArrowLeft":
+            case "ArrowRight": {
+                const segment = this.getFocusedSegment() + (evt.key === "ArrowLeft" ? -1 : 1);
 
                 if(segment >= 0 && segment < PARTS.length){
                     this.setFocusedSegment(segment);
@@ -319,31 +360,31 @@ export default class Time extends Field {
 
                 evt.preventDefault();
                 break;
+            }
+            case "ArrowUp": {
+                const segment = this.getFocusedSegment();
 
-            case 38: // up arrow
-                segment = this.getFocusedSegment();
-
-                if(segment !== undefined){
+                if(typeof segment !== "undefined"){
                     this.incrementSegmentValue(segment);
                     this.setFocusedSegment(segment);
                 }
 
                 evt.preventDefault();
                 break;
+            }
+            case "ArrowDown": {
+                const segment = this.getFocusedSegment();
 
-            case 40: // down arrow
-                segment = this.getFocusedSegment();
-
-                if(segment !== undefined){
+                if(typeof segment !== "undefined"){
                     this.decrementSegmentValue(segment);
                     this.setFocusedSegment(segment);
                 }
 
                 evt.preventDefault();
                 break;
-
-            case 9: // tab
-                segment = this.getFocusedSegment() + (evt.shiftKey ? -1 : 1);
+            }
+            case "Tab": {
+                const segment = this.getFocusedSegment() + (evt.shiftKey ? -1 : 1);
 
                 if(segment >= 0 && segment < PARTS.length){
                     this.setFocusedSegment(segment);
@@ -351,6 +392,7 @@ export default class Time extends Field {
                 }
 
                 break;
+            }
         }
     }
 
@@ -362,18 +404,17 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeypress(evt){
-        let focused_segment = this.getFocusedSegment(),
-            segment_value;
+        const focused_segment = this.getFocusedSegment();
 
         // Numeric key
-        if(focused_segment < PARTS.length && evt.keyCode >= 48 && evt.keyCode <= 57){
-            segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
+        if(isNumeric(evt.key) && focused_segment < PARTS.length){
+            let segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
 
             if(this.keys_pressed === 0 || isNaN(segment_value)){
                 segment_value = 0;
             }
 
-            segment_value += String.fromCharCode(evt.keyCode);
+            segment_value += evt.key;
 
             segment_value = pad(Math.min(PARTS[focused_segment].max_value, parseInt(segment_value, 10)), 2, "0", "left");
 
@@ -387,13 +428,10 @@ export default class Time extends Field {
                 this.setFocusedSegment(focused_segment);
             }
         }
-        // Enter key
-        else if(evt.keyCode === 13 && this.dirty){
-            delete this.dirty;
-            this.setValue(this.getNumericalValue(this.input.val()));
+        else if(evt.key !== "Enter"){
+            evt.preventDefault();
         }
 
-        evt.preventDefault();
     }
 
     /**
@@ -473,8 +511,8 @@ export default class Time extends Field {
      * @param {Number} segment The focus segment's index
      */
     setFocusedSegment(segment){
-        let start = segment * 3,
-            end = start + 2;
+        const start = segment * 3;
+        const end = start + 2;
 
         this.input_el.setSelectionRange(0, 0);
         this.input_el.setSelectionRange(start, end, 'forward');
@@ -491,8 +529,8 @@ export default class Time extends Field {
      * @return {String} The segment's value
      */
     getSegmentValue(segment){
-        let textual_value = this.input.val(),
-            matches = textual_value.match(GLOBAL_REGEX);
+        const textual_value = this.input.val();
+        const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
             matches.shift();
@@ -510,8 +548,8 @@ export default class Time extends Field {
      * @param {Boolean} supressEvent Whether to prevent the change event from firing
      */
     setSegmentValue(segment, value){
-        let textual_value = this.input.val(),
-            matches = textual_value.match(GLOBAL_REGEX);
+        let textual_value = this.input.val();
+        const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
             textual_value = "";
@@ -576,62 +614,6 @@ export default class Time extends Field {
     }
 
     /**
-     * Helper function to convert a textual value to a numerical one
-     *
-     * @method getNumericalValue
-     * @private
-     * @param {String} textual_value The textual value
-     * @return {Number} The numercial value
-     */
-    getNumericalValue(textual_value){
-        let matches, value;
-
-        if(textual_value.indexOf(PART_PLACEHOLDER) !== -1){
-            return null;
-        }
-
-        matches = textual_value.match(GLOBAL_REGEX);
-        value = 0;
-
-        if(matches){
-            matches.shift();
-
-            matches.forEach((match, i) => {
-                value += parseInt(matches[i], 10) * PARTS[i].multiplier;
-            });
-        }
-
-        return value;
-    }
-
-    /**
-     * Helper function to convert a numerical value to a textual one
-     *
-     * @method getTextualValue
-     * @private
-     * @param {Number} value The numercial value
-     * @return {String} The textual value
-     */
-    getTextualValue(value){
-        let textual_value = "";
-
-        PARTS.forEach((part) => {
-            textual_value += part.prefix;
-
-            if(value === null){
-                textual_value += PART_PLACEHOLDER;
-            }
-            else{
-                textual_value += pad(parseInt((value / part.multiplier) % (part.max_value + 1), 10) || 0, 2, "0", "left");
-            }
-
-            textual_value += part.suffix;
-        });
-
-        return textual_value;
-    }
-
-    /**
      * Set the field's value
      *
      * @method setValue
@@ -652,7 +634,7 @@ export default class Time extends Field {
             }
         }
 
-        this.input.val(this.getTextualValue(value));
+        this.input.val(this.constructor.getTextualValue(value));
 
         this.value = value;
 
@@ -755,11 +737,9 @@ export default class Time extends Field {
      * @chainable
      */
     readonly(readonly){
-        let readonly_attr;
-
         super.readonly(readonly);
 
-        readonly_attr = this.is_readonly ? "readonly" : null;
+        const readonly_attr = this.is_readonly ? "readonly" : null;
 
         if(this.clearButton){
             this.clearButton.attr('readonly', readonly_attr);

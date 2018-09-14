@@ -1,4 +1,4 @@
-import Evented from '../core/Evented';
+import EventEmitter from '../core/EventEmitter';
 
 /**
  * Fired when a command is added
@@ -31,14 +31,14 @@ const EVT_REDO = 'redo';
  */
 const EVT_CLEAR = 'clear';
 
-export default class History extends Evented {
+export default class History extends EventEmitter {
 
     /**
      * An undo/redo manager
      *
      * @class History
      * @namespace editor
-     * @extends Evented
+     * @extends EventEmitter
      * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Integer} [configs.max_commands=30] The max number of commands to store
@@ -56,7 +56,7 @@ export default class History extends Evented {
 
     static getDefaults() {
         return {
-            'max_commands': 30
+            'max_commands': 20
         };
     }
 

@@ -1,6 +1,6 @@
 import Panel from '../Panel';
-import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
+import {getImageMetadata} from '../../core/utils/Media';
 
 /**
  * Fired when a component's text is locked
@@ -28,7 +28,7 @@ export default class Element extends Panel {
      * @extends editor.Panel
      * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={'title':'Element', 'menuItems': {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @param {Object} [configs.toolbarConfigs={title:'Element', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     constructor(configs) {
         // call parent constructor
@@ -39,11 +39,10 @@ export default class Element extends Panel {
         this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
         this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
-        this.addClass('element');
-
         this
+            .addClass('element')
             .addListener('componentset', this.onComponentSet.bind(this))
-            .addListener('componentbeforeunset', this.onComponentBeforeUnset.bind(this));
+            .addListener('componentunset', this.onComponentUnset.bind(this));
     }
 
     static getDefaults(){
@@ -54,7 +53,7 @@ export default class Element extends Panel {
                     'Cursor': Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
                     'Image': Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
                     'Text': Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
-                    'delete': Locale.t('editor.panel.Element.menuItems.delete', 'Delete the active element')
+                    'delete': Locale.t('editor.panel.Element.menuItems.delete', 'Delete the selected elements')
                 }
             }
         });
@@ -73,12 +72,12 @@ export default class Element extends Panel {
             element_start_time, element_end_time,
             out_of_range = false;
 
-        if(block.getProperty('synched')){
-            page_start_time = page.getProperty('start-time');
-            page_end_time = page.getProperty('end-time');
+        if(block.getPropertyValue('synched')){
+            page_start_time = page.getPropertyValue('start-time');
+            page_end_time = page.getPropertyValue('end-time');
 
-            element_start_time = component.getProperty('start-time');
-            element_end_time = component.getProperty('end-time');
+            element_start_time = component.getPropertyValue('start-time');
+            element_end_time = component.getPropertyValue('end-time');
 
             out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
         }
@@ -94,30 +93,24 @@ export default class Element extends Panel {
      * @param {Event} evt The event object
      */
     onFieldValueChange(evt){
-        let component = this.getComponent(),
-            name = evt.detail.field.data('name'),
-            type;
+        const component = this.getComponent();
 
         if(component){
-            type = component.getProperty('type');
+            const name = evt.detail.field.data('name');
+            const value = evt.detail.value;
 
-            switch(type){
-                case 'Image':
-                    if(evt.detail.field.data('name') === 'background-image'){
-                        this.onBeforeImageSet(name, evt.detail.value);
-                    }
-                    break;
+            if(component.instanceOf('Image') && name === 'background-image'){
+                this.onBeforeImageSet(name, value);
+                return;
+            }
 
-                case 'Text':
-                    if(evt.detail.field.data('name') === 'text-locked'){
-                        if(evt.detail.value === true){
-                            this.lockText();
-                        }
-                        else{
-                            this.unlockText();
-                        }
-                    }
-                    break;
+            if(component.instanceOf('Text') && name === 'text-locked'){
+                if(value === true){
+                    this.lockText(component);
+                }
+                else{
+                    this.unlockText(component);
+                }
             }
         }
 
@@ -132,8 +125,18 @@ export default class Element extends Panel {
      * @param {Event} evt The event object
      */
     onComponentSet(evt){
-        if(evt.detail.component.getProperty('type') === 'Text'){
-            this.updateFieldValue('text-locked', true);
+        const component = evt.detail.component;
+        const count = evt.detail.count;
+
+        this.lockText(component);
+
+        const field = this.getField('text-locked');
+        if(field){
+            field.setValue(true, true);
+
+            if(count > 1){
+                field.hide();
+            }
         }
     }
 
@@ -144,10 +147,22 @@ export default class Element extends Panel {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentBeforeUnset(evt){
-        if(evt.detail.component.getProperty('type') === 'Text'){
-            this.updateFieldValue('text-locked', true);
+    onComponentUnset(evt){
+        const component = evt.detail.component;
+        const count = evt.detail.count;
+
+        this.lockText(component);
+
+        const field = this.getField('text-locked');
+        if(field){
+            field.setValue(true, true);
+
+            if(count === 1){
+                field.show();
+            }
         }
+
+        return this;
     }
 
     /**
@@ -159,69 +174,107 @@ export default class Element extends Panel {
      * @param {String} url The new image url
      */
     onBeforeImageSet(property, url){
-        let panel = this,
-            component = panel.getComponent(),
-            old_src, new_src;
+        const promises = [];
 
-        old_src = component.getProperty(property);
-        new_src = url;
+        this.components.forEach((component) => {
+            const promise = new Promise((resolve, reject) => {
+                const name = component.getPropertyValue('name');
+                const width = component.getPropertyValue('width');
+                const height = component.getPropertyValue('height');
 
-        if(old_src){
-            panel.getImageMetadata(old_src, (old_metadata) => {
-                let name = component.getProperty('name'),
-                    width = component.getProperty('width'),
-                    height = component.getProperty('height');
+                const base_uri = component.get(0).baseURI;
+                const old_src = component.getPropertyValue(property);
+                const new_src = url;
 
-                if((old_metadata.name === name) || (old_metadata.width === width && old_metadata.height === height)){
-                    panel.getImageMetadata(new_src, (new_metadata) => {
-                        if(old_metadata.name === name){
-                            panel.updateFieldValue('name', new_metadata.name);
+                if(old_src){
+                    getImageMetadata(base_uri + old_src, (old_error, old_metadata) => {
+                        if(old_error){
+                            reject(old_error);
+                            return;
                         }
 
-                        if(old_metadata.width === width && old_metadata.height === height){
-                            panel.updateFieldValue('width', new_metadata.width);
-                            panel.updateFieldValue('height', new_metadata.height);
+                        const new_values = {
+                            [property]: new_src
+                        };
+                        const old_values = {
+                            [property]: old_src
+                        };
+
+                        if((old_metadata.name !== name) && (old_metadata.width !== width || old_metadata.height !== height)){
+                            resolve({
+                                component: component,
+                                new_values: new_values,
+                                old_values: old_values
+                            });
                         }
+
+                        getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
+                            if(new_error){
+                                reject(new_error);
+                                return;
+                            }
+
+                            if(old_metadata.name === name){
+                                new_values.name = new_metadata.name;
+                                old_values.name = name;
+                            }
+
+                            if(old_metadata.width === width && old_metadata.height === height){
+                                new_values.width = new_metadata.width;
+                                new_values.height = new_metadata.height;
+                                old_values.width = width;
+                                old_values.height = height;
+                            }
+
+                            resolve({
+                                component: component,
+                                new_values: new_values,
+                                old_values: old_values
+                            });
+                        });
                     });
                 }
-            });
-        }
-        else{
-            panel.getImageMetadata(new_src, (new_metadata) => {
-                panel.updateFieldValue('name', new_metadata.name);
-                panel.updateFieldValue('width', new_metadata.width);
-                panel.updateFieldValue('height', new_metadata.height);
-            });
-        }
+                else{
+                    getImageMetadata(base_uri + new_src, (new_error, new_metadata) => {
+                        if(new_error){
+                            reject(new_error);
+                            return;
+                        }
 
-    }
-
-    /**
-     * Get an image's metadata (name, width, and height)
-     *
-     * @method getImageMetadata
-     * @private
-     * @param {String} url The image's url
-     * @param {Function} callback The callback to call with the retreived metadata
-     */
-    getImageMetadata(url, callback){
-        var img = new Dom('<img/>')
-            .addListener('load', () => {
-                let el = img.get(0),
-                    matches, name;
-
-                matches = el.src.match(/([^/]*)\.[^.]*$/)
-                if(matches){
-                    name = matches[1];
+                        resolve({
+                            component: component,
+                            new_values: {
+                                [property]: new_src,
+                                name: new_metadata.name,
+                                width: new_metadata.width,
+                                height: new_metadata.height
+                            },
+                            old_values: {
+                                [property]: old_src,
+                                name: name,
+                                width: width,
+                                height: height
+                            }
+                        });
+                    });
                 }
-
-                callback({
-                    'name': name,
-                    'width': el.naturalWidth,
-                    'height': el.naturalHeight
-                });
             })
-            .attr('src', url);
+            .catch((err) => {
+                console.error(err);
+            });
+
+            promises.push(promise);
+        });
+
+        Promise.all(promises).then((results) => {
+            results = results.filter(result => result !== undefined);
+
+            results.forEach((result) => {
+                this.setPropertyValues(result.component, result.new_values);
+            });
+
+            this.triggerEvent('valueschange', results, false);
+        });
     }
 
     /**
@@ -231,10 +284,8 @@ export default class Element extends Panel {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
-    lockText(supressEvent){
-        const component = this.getComponent();
-
-        if(component){
+    lockText(component, supressEvent){
+        if(component.instanceOf('Text')){
             component
                 .addListener('dblclick', this.onComponentDblClick)
                 .removeClass('text-unlocked');
@@ -268,10 +319,8 @@ export default class Element extends Panel {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
-    unlockText(supressEvent){
-        const component = this.getComponent();
-
-        if(component){
+    unlockText(component, supressEvent){
+        if(component.instanceOf('Text')){
             if(component._draggable){
                 component._draggable.disable();
             }
@@ -305,7 +354,7 @@ export default class Element extends Panel {
      * @private
      */
     onComponentDblClick(){
-        this.updateFieldValue('text-locked', false);
+        this.refreshFieldValue('text-locked', false);
     }
 
     /**

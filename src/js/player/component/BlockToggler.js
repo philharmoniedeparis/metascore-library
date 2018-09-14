@@ -13,6 +13,12 @@ export default class BlockToggler extends Component{
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
+                'type': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'name': {
                     'type': 'Text',
                     'configs': {
@@ -190,12 +196,11 @@ export default class BlockToggler extends Component{
 
         this.btn_wrapper.empty();
 
-        components.forEach((dom) => {
-            let component = dom._metaScore,
-                x = component.getProperty('x') || 0,
-                y = component.getProperty('y') || 0,
-                width = component.getProperty('width') || 0,
-                height = component.getProperty('height') || 0;
+        components.forEach((component) => {
+            let x = component.getPropertyValue('x') || 0,
+                y = component.getPropertyValue('y') || 0,
+                width = component.getPropertyValue('width') || 0,
+                height = component.getPropertyValue('height') || 0;
 
             boxes.push({
                 'component': component,
@@ -254,10 +259,7 @@ export default class BlockToggler extends Component{
      * @return {Draggable} The draggable behaviour
      */
     setDraggable(draggable){
-
-        draggable = draggable !== false;
-
-        if(this.getProperty('locked') && draggable){
+        if(this.getPropertyValue('locked') && draggable){
             return false;
         }
 
@@ -288,10 +290,7 @@ export default class BlockToggler extends Component{
      * @return {Resizable} The resizable behaviour
      */
     setResizable(resizable){
-
-        resizable = resizable !== false;
-
-        if(this.getProperty('locked') && resizable){
+        if(this.getPropertyValue('locked') && resizable){
             return false;
         }
 

@@ -43,6 +43,8 @@ const bubbleEvents = {
 
 export default class Dom {
 
+    //TODO: improve by using a NodeList for the list of elements
+
     /**
      * A class for Dom manipulation
      *
@@ -173,7 +175,7 @@ export default class Dom {
     }
 
     /**
-     * Creates elements from an HTML string (see http://krasimirtsonev.com/blog/article/Revealing-the-magic-how-to-properly-convert-HTML-string-to-a-DOM-element)
+     * Creates elements from an HTML string
      *
      * @method elementsFromString
      * @static
@@ -181,41 +183,13 @@ export default class Dom {
      * @return {HTML NodeList} A NodeList of the created elements, or null on error
      */
     static elementsFromString(html){
-        let wrapMap = {
-                'option': [1, "<select multiple='multiple'>", "</select>"],
-                'optgroup': [1, "<select multiple='multiple'>", "</select>"],
-                'legend': [1, "<fieldset>", "</fieldset>"],
-                'area': [1, "<map>", "</map>"],
-                'param': [1, "<object>", "</object>"],
-                'thead': [1, "<table>", "</table>"],
-                'tbody': [1, "<table>", "</table>"],
-                'tfoot': [1, "<table>", "</table>"],
-                'colgroup': [1, "<table>", "</table>"],
-                'caption': [1, "<table>", "</table>"],
-                'tr': [2, "<table><tbody>", "</tbody></table>"],
-                'col': [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
-                'th': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-                'td': [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-                '_default': [1, "<div>", "</div>" ]
-            },
-            element = document.createElement('div'),
-            match = /<\s*\w.*?>/g.exec(html),
-            tag, map, j;
+        if(isString(html)){
+            const template = document.createElement('template');
+            template.innerHTML = html.trim();
 
-        if(match !== null){
-            tag = match[0].replace(/</g, '').replace(/\/?>/g, '');
-
-            map = wrapMap[tag] || wrapMap._default;
-            html = map[1] + html + map[2];
-            element.innerHTML = html;
-
-            // Descend through wrappers to the right content
-            j = map[0];
-            while(j--) {
-                element = element.lastChild;
+            if(template.content.childElementCount > 0){
+                return template.content.childNodes;
             }
-
-            return element.childNodes;
         }
 
         return null;
@@ -230,7 +204,7 @@ export default class Dom {
      * @return {HTML Document } The document
      */
     static getElementDocument(element){
-        return element.ownerDocument;
+        return element.ownerDocument || null;
     }
 
     /**
@@ -244,7 +218,7 @@ export default class Dom {
     static getElementWindow(element){
         const doc = this.getElementDocument(element);
 
-        return doc.defaultView || doc.parentWindow;
+        return doc ? (doc.defaultView || doc.parentWindow) : null;
     }
 
     /**
@@ -339,6 +313,33 @@ export default class Dom {
         }
 
         element.addEventListener(type, callback, useCapture);
+
+        return element;
+    }
+
+    /**
+     * Add an event listener that only executes once on an element
+     *
+     * @method addListenerOnce
+     * @static
+     * @param {HTMLElement} element The element
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @return {HTMLElement} The element
+     */
+    static addOneTimeListener(element, type, callback, useCapture){
+        if(useCapture === undefined){
+            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        }
+
+        const handler = function(evt){
+            element.removeEventListener(type, handler, useCapture);
+            return callback(evt);
+        };
+
+        element.addEventListener(type, handler, useCapture);
 
         return element;
     }
@@ -668,15 +669,7 @@ export default class Dom {
      * @return {Boolean} Whether the element matches the CSS selector
      */
     static is(element, selector){
-        let win;
-
-        if(element instanceof Element){
-            return Element.prototype.matches.call(element, selector);
-        }
-
-        win = this.getElementWindow(element);
-
-        return (element instanceof win.Element) && Element.prototype.matches.call(element, selector);
+        return element.matches(selector);
     }
 
     /**
@@ -959,6 +952,25 @@ export default class Dom {
     }
 
     /**
+     * Add an event listener that only executes once on all the elements managed by the Dom object
+     *
+     * @method addOneTimeListener
+     * @static
+     * @param {String} type The event type
+     * @param {Function} callback The callback function to call when the event is captured
+     * @param {Event} callback.event The event
+     * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
+     * @chainable
+     */
+    addOneTimeListener(type, callback, useCapture) {
+		this.forEach((element) => {
+            Dom.addOneTimeListener(element, type, callback, useCapture);
+        });
+
+        return this;
+    }
+
+    /**
      * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
      *
      * @method addDelegate
@@ -966,29 +978,14 @@ export default class Dom {
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The original event
-     * @param {Element} callback.match The first matched descendent
      * @param {Mixed} [scope] The value to use as this when executing the callback function
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
      * @chainable
      */
     addDelegate(selector, type, callback, scope, useCapture) {
-        scope = scope || this;
-
         this.addListener(type, (evt) => {
-            let element = evt.target,
-                match;
-
-            while (element) {
-                if(Dom.is(element, selector)){
-                    match = element;
-                    break;
-                }
-
-                element = element.parentElement;
-            }
-
-            if(match){
-                callback.call(scope, evt, match);
+            if(Dom.is(evt.target, selector)) {
+                callback.call(scope || this, evt);
             }
         }, useCapture);
 
@@ -1046,10 +1043,10 @@ export default class Dom {
             this.forEach((element) => {
                 Dom.text(element, value);
             });
+            return this;
         }
-        else{
-            return Dom.text(this.get(0));
-        }
+
+        return Dom.text(this.get(0));
     }
 
     /**
@@ -1067,8 +1064,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.val(this.get(0));
-
+        return Dom.val(this.get(0));
     }
 
     /**
@@ -1087,8 +1083,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.attr(this.get(0), name);
-
+        return Dom.attr(this.get(0), name);
     }
 
     /**
@@ -1107,8 +1102,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.prop(this.get(0), name);
-
+        return Dom.prop(this.get(0), name);
     }
 
     /**
@@ -1128,8 +1122,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.css(this.get(0), name, value, inline);
-
+        return Dom.css(this.get(0), name, value, inline);
     }
 
     /**
@@ -1148,8 +1141,7 @@ export default class Dom {
             return this;
         }
 
-            return Dom.data(this.get(0), name);
-
+        return Dom.data(this.get(0), name);
     }
 
     /**
@@ -1328,9 +1320,14 @@ export default class Dom {
      * @return {Element} The matched element
      */
     closest(selector){
-        return this.elements.find((element) => {
-            return Dom.closest(element, selector) !== null;
+        let el = null;
+
+        this.elements.some((element) => {
+            el = Dom.closest(element, selector);
+            return el !== null;
         });
+
+        return el;
     }
 
 }

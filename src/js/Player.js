@@ -119,7 +119,7 @@ export default class Player extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div></div>', {'class': 'metaScore-player'});
+        super('<div/>', {'class': 'metaScore-player', 'tabindex': 0});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
@@ -142,9 +142,9 @@ export default class Player extends Dom {
             'url': '',
             'container': 'body',
             'ajax': {},
-            'keyboard': false,
-            'api': false,
             'autoload': true,
+            'keyboard': true,
+            'api': false,
             'lang': 'en'
         };
     }
@@ -169,20 +169,23 @@ export default class Player extends Dom {
      * @param {KeyboardEvent} evt The event object
      */
     onKeydown(evt){
-        switch(evt.keyCode){
-            case 32: //space-bar
+        switch(evt.key){
+            case " ":
                 this.togglePlay();
                 evt.preventDefault();
+                evt.stopPropagation();
                 break;
 
-            case 37: //left
+            case "ArrowLeft":
                 this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
                 evt.preventDefault();
+                evt.stopPropagation();
                 break;
 
-            case 39: //right
+            case "ArrowRight":
                 this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
                 evt.preventDefault();
+                evt.stopPropagation();
                 break;
         }
     }
@@ -230,9 +233,9 @@ export default class Player extends Dom {
 
             case 'page':
                 {
-                    const dom = this.getComponent(`.block[data-name="${params.block}"]`);
-                    if(dom && dom._metaScore){
-                        dom._metaScore.setActivePage(params.index);
+                    const block = this.getComponent(`.block[data-name="${params.block}"]`);
+                    if(block){
+                        block.setActivePage(params.index);
                     }
                 }
                 break;
@@ -251,9 +254,9 @@ export default class Player extends Dom {
                         break;
                 }
 
-                this.getComponents('.media.video, .controller, .block').forEach((dom) => {
-                    if(dom._metaScore && dom._metaScore.getName() === params.name){
-                        dom._metaScore.toggleVisibility(show);
+                this.getComponents('.media.video, .controller, .block').forEach((block) => {
+                    if(block.getName() === params.name){
+                        block.toggleVisibility(show);
                     }
                 });
                 break;
@@ -503,12 +506,11 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPageActivate(evt){
-        let block = evt.target._metaScore,
-            page = evt.detail.page,
-            basis = evt.detail.basis;
+        const block = evt.target._metaScore;
+        const page = evt.detail.current;
 
-        if(block.getProperty('synched') && (basis !== 'pagecuepoint')){
-            this.getMedia().setTime(page.getProperty('start-time'));
+        if(block.getPropertyValue('synched')){
+            this.getMedia().setTime(page.getPropertyValue('start-time'));
         }
     }
 
@@ -544,9 +546,9 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementPage(evt){
-        const dom = this.getComponent(`.block[data-name="${evt.detail.block}"]`);
-        if(dom && dom._metaScore){
-            dom._metaScore.setActivePage(evt.detail.index);
+        const block = this.getComponent(`.block[data-name="${evt.detail.block}"]`);
+        if(block){
+            block.setActivePage(evt.detail.index);
         }
     }
 
@@ -569,9 +571,9 @@ export default class Player extends Dom {
                 break;
         }
 
-        this.getComponents('.media.video, .controller, .block').forEach((dom) => {
-            if(dom._metaScore && dom._metaScore.getName() === evt.detail.block){
-                dom._metaScore.toggleVisibility(show);
+        this.getComponents('.media.video, .controller, .block').forEach((block) => {
+            if(block.getName() === evt.detail.block){
+                block.toggleVisibility(show);
             }
         });
     }
@@ -627,16 +629,16 @@ export default class Player extends Dom {
 
         this.json.blocks.forEach((block) => {
             switch(block.type){
-                case 'media':
+                case 'Media':
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
                         .setSources([this.json.media]);
                     break;
 
-                case 'controller':
+                case 'Controller':
                     this.controller = this.addController(block);
                     break;
 
-                case 'block-toggler':
+                case 'BlockToggler':
                     this.addBlockToggler(block);
                     break;
 
@@ -648,7 +650,7 @@ export default class Player extends Dom {
         this.updateBlockTogglers();
 
         if(this.configs.keyboard){
-            new Dom('body').addListener('keydown', this.onKeydown.bind(this));
+            this.addListener('keydown', this.onKeydown.bind(this));
         }
 
         this.removeClass('loading');
@@ -824,9 +826,11 @@ export default class Player extends Dom {
      * @method getComponent
      * @param {String} selector The CSS selector
      * @return {Component} The component
+     * TODO: improve
      */
     getComponent(selector){
-        return this.getComponents(selector).get(0);
+        const components = this.getComponents(selector);
+        return components[0];
     }
 
     /**
@@ -835,6 +839,7 @@ export default class Player extends Dom {
      * @method getComponents
      * @param {String} selector The CSS selector
      * @return {Dom} A Dom instance containing the selected components
+     * TODO: improve
      */
     getComponents(selector){
         let components;
@@ -845,7 +850,7 @@ export default class Player extends Dom {
             components = components.filter(selector);
         }
 
-        return components;
+        return components.elements.map(dom => dom._metaScore);
     }
 
     /**
@@ -857,19 +862,27 @@ export default class Player extends Dom {
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
-        const media = new Media(configs)
-            .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
-            .addListener('waiting', this.onMediaWaiting.bind(this))
-            .addListener('seeking', this.onMediaSeeking.bind(this))
-            .addListener('seeked', this.onMediaSeeked.bind(this))
-            .addListener('playing', this.onMediaPlaying.bind(this))
-            .addListener('play', this.onMediaPlay.bind(this))
-            .addListener('pause', this.onMediaPause.bind(this))
-            .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
-            .addListener('suspend', this.onMediaSuspend.bind(this))
-            .addListener('stalled', this.onMediaStalled.bind(this))
-            .addListener('error', this.onMediaError.bind(this))
-            .appendTo(this);
+        let media;
+
+        if(configs instanceof Media){
+            media = configs;
+        }
+        else{
+            media = new Media(configs)
+                .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
+                .addListener('waiting', this.onMediaWaiting.bind(this))
+                .addListener('seeking', this.onMediaSeeking.bind(this))
+                .addListener('seeked', this.onMediaSeeked.bind(this))
+                .addListener('playing', this.onMediaPlaying.bind(this))
+                .addListener('play', this.onMediaPlay.bind(this))
+                .addListener('pause', this.onMediaPause.bind(this))
+                .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
+                .addListener('suspend', this.onMediaSuspend.bind(this))
+                .addListener('stalled', this.onMediaStalled.bind(this))
+                .addListener('error', this.onMediaError.bind(this));
+        }
+
+        media.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
@@ -887,9 +900,17 @@ export default class Player extends Dom {
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
-        const controller = new Controller(configs)
-            .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
-            .appendTo(this);
+        let controller;
+
+        if(configs instanceof Controller){
+            controller = configs;
+        }
+        else{
+            controller = new Controller(configs)
+                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
+        }
+
+        controller.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
@@ -907,8 +928,16 @@ export default class Player extends Dom {
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        const toggler = new BlockToggler(configs)
-            .appendTo(this);
+        let toggler;
+
+        if(configs instanceof BlockToggler){
+            toggler = configs;
+        }
+        else{
+            toggler = new BlockToggler(configs);
+        }
+
+        toggler.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent(EVT_BLOCKTOGGLERADD, {'player': this, 'blocktoggler': toggler}, true, false);
@@ -940,10 +969,10 @@ export default class Player extends Dom {
                     }
                 }))
                 .addListener('pageactivate', this.onPageActivate.bind(this))
-                .addDelegate('.element[data-type="Cursor"]', 'time', this.onCursorElementTime.bind(this))
-                .addDelegate('.element[data-type="Text"]', 'play', this.onTextElementPlay.bind(this))
-                .addDelegate('.element[data-type="Text"]', 'page', this.onTextElementPage.bind(this))
-                .addDelegate('.element[data-type="Text"]', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
+                .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
+                .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
+                .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
+                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
         }
 
         if(supressEvent !== true){
@@ -1037,6 +1066,17 @@ export default class Player extends Dom {
     }
 
     /**
+     * Get the current reading index
+     *
+     * @method getReadingIndex
+     * @return {Integer} The reading index
+     */
+    getReadingIndex(){
+        const value = parseInt(this.data('r-index'), 10);
+        return isNaN(value) ? null : value;
+    }
+
+    /**
      * Set the current reading index
      *
      * @method setReadingIndex
@@ -1045,23 +1085,25 @@ export default class Player extends Dom {
      * @chainable
      */
     setReadingIndex(index, supressEvent){
-        this.rindex_css.removeRules();
+        if(index !== this.getReadingIndex()){
+            this.rindex_css.removeRules();
 
-        if(index !== 0){
-            this.rindex_css
-                .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
-                .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
-                .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'display: block;')
-                .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'display: block;');
+            if(index !== 0){
+                this.rindex_css
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'display: block;')
+                    .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'display: block;');
 
-            this.data('r-index', index);
-        }
-        else{
-            this.data('r-index', null);
-        }
+                this.data('r-index', index);
+            }
+            else{
+                this.data('r-index', null);
+            }
 
-        if(supressEvent !== true){
-            this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
+            if(supressEvent !== true){
+                this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
+            }
         }
 
         return this;
@@ -1071,8 +1113,8 @@ export default class Player extends Dom {
         let block_togglers = this.getComponents('.block-toggler'),
             blocks = this.getComponents('.block, .media.video, .controller');
 
-        block_togglers.forEach((dom) => {
-            dom._metaScore.update(blocks);
+        block_togglers.forEach((block_toggler) => {
+            block_toggler.update(blocks);
         });
     }
 

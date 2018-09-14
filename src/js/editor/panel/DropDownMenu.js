@@ -1,4 +1,4 @@
-import Dom from '../core/Dom';
+import Dom from '../../core/Dom';
 
 export default class DropDownMenu extends Dom{
 

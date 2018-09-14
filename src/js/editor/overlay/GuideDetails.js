@@ -85,10 +85,6 @@ export default class GuideDetails extends Overlay {
                 'label': Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
                 'options': [
                     {
-                        'value': '',
-                        'text': ''
-                    },
-                    {
                         'value': 'audio',
                         'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio')
                     },

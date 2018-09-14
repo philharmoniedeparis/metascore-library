@@ -92,6 +92,7 @@ export default class Field extends Dom{
 
         this.input = new Dom('<input/>', {'id': uid})
             .addListener('change', this.onChange.bind(this))
+            .addListener('keypress', this.onKeypress.bind(this))
             .appendTo(this.input_wrapper);
     }
 
@@ -123,6 +124,18 @@ export default class Field extends Dom{
         this.value = this.input.val();
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+    }
+
+    /**
+     * The keypress event handler
+     *
+     * @method onKeypress
+     * @private
+     */
+    onKeypress(evt){
+        if(evt.key === "Enter") {
+            this.input.triggerEvent('change');
+        }
     }
 
     /**

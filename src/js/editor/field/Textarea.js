@@ -44,7 +44,7 @@ export default class Textarea extends Field {
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
-        this.input = new Dom('<textarea></textarea>', {'id': uid})
+        this.input = new Dom('<textarea/>', {'id': uid})
             .addListener('change', this.onChange.bind(this))
             .appendTo(this.input_wrapper);
     }

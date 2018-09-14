@@ -1,17 +1,78 @@
 const path = require("path");
 const git = require('git-rev-sync');
+const beep = require('beepbeep');
 const pckg = require('./package.json');
 
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const WebpackShellPlugin = require('webpack-shell-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const LIB_NAME = pckg.name;
 const DIST = path.join(__dirname, "dist");
 
+class BeepPlugin{
+  apply(compiler){
+    compiler.hooks.done.tap('BeepPlugin', (stats) => {
+      if(stats.compilation.errors && stats.compilation.errors.length){
+        beep(2);
+      }
+      else{
+        beep();
+      }
+    });
+  }
+}
+
+class ShellPlugin{
+  constructor(options){
+    this.options = options;
+  }
+
+  apply(compiler){
+    var exec = require('child_process').exec;
+
+    if('onBuildStart' in this.options){
+      compiler.hooks.compilation.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildStart.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+
+        this.options.onBuildStart = [];
+      });
+    }
+
+    if('onBuildEnd' in this.options){
+      compiler.hooks.afterEmit.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildEnd.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+
+        this.options.onBuildEnd = [];
+      });
+    }
+
+    if('onBuildExit' in this.options){
+      compiler.hooks.done.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildExit.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+      });
+    }
+  }
+}
+
 module.exports = {
     mode: 'production',
+    bail: true,
     entry: {
         Player: ['babel-polyfill', './src/js/polyfills', './src/js/Player'],
         Editor: ['babel-polyfill', './src/js/polyfills', './src/js/Editor'],
@@ -24,6 +85,9 @@ module.exports = {
         library: [LIB_NAME, "[name]"],
         libraryTarget: 'var',
         libraryExport: 'default'
+    },
+    watchOptions: {
+      ignored: /src\/i18n/
     },
     module: {
       rules: [
@@ -63,14 +127,25 @@ module.exports = {
            // compiles Less to CSS
           test: /\.less$/,
           use: ExtractTextPlugin.extract({
-            fallback: "style-loader",
+            fallback: 'style-loader',
             use: [
               {
-                loader: 'css-loader'
+                loader: 'css-loader',
+                options: {
+                  importLoaders: 1
+                }
               },
               {
-                loader: 'less-loader'
+                loader: 'postcss-loader',
+                options: {
+                  plugins: () => [
+                    require('autoprefixer')({
+                      browsers: ['last 4 versions']
+                    })
+                  ]
+                }
               },
+              'less-loader'
             ],
           })
         },
@@ -101,12 +176,16 @@ module.exports = {
       new ExtractTextPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
-      new WebpackShellPlugin({
-        onBuildEnd: ['node ./bin/i18n-extract.js']
+      new ShellPlugin({
+        //onBuildEnd: [],
+        onBuildExit: [
+          'echo "Extracting i18n" && npm run i18n && echo "Copying files to Drupal" && npm run drupal'
+        ]
       }),
       new CopyWebpackPlugin([{
         from: './src/i18n/',
         to: './i18n/'
-      }])
+      }]),
+      new BeepPlugin()
     ]
   };

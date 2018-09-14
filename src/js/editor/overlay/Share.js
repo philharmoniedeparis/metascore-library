@@ -38,7 +38,13 @@ export default class Share extends Overlay {
             'toolbar': true,
             'title': Locale.t('editor.overlay.Share.title', 'Share'),
             'url': '',
-            'api_help_url': ''
+            'api_help_url': '',
+            'embed_defaults': {
+                'width': '100%',
+                'height': '100%',
+                'keyboard': true,
+                'api': false,
+            }
         });
     }
 
@@ -49,13 +55,10 @@ export default class Share extends Overlay {
      * @private
      */
     setupUI() {
-        let contents,
-            options_wrapper, options_toggle_id, options;
-
         // call parent method
         super.setupUI();
 
-        contents = this.getContents();
+        const contents = this.getContents();
 
         this.fields = {};
 
@@ -84,10 +87,10 @@ export default class Share extends Overlay {
             .appendTo(contents);
 
         // Embed options
-        options_wrapper = new Dom('<div>', {'class': 'collapsible'})
+        const options_wrapper = new Dom('<div>', {'class': 'collapsible'})
             .appendTo(contents);
 
-        options_toggle_id = `toggle-${uuid(5)}`;
+        const options_toggle_id = `toggle-${uuid(5)}`;
         new Dom('<input>', {'type': 'checkbox', 'id': options_toggle_id})
             .data('role', 'collapsible-toggle')
             .appendTo(options_wrapper);
@@ -96,13 +99,13 @@ export default class Share extends Overlay {
             .data('role', 'collapsible-label')
             .appendTo(options_wrapper);
 
-        options = new Dom('<div>', {'class': 'options'})
+        const options = new Dom('<div>', {'class': 'options'})
             .data('role', 'collapsible')
             .appendTo(options_wrapper);
 
         this.fields.width = new TextField({
                 'label': Locale.t('editor.overlay.Share.fields.width.label', 'Width'),
-                'value': '100%'
+                'value': this.configs.embed_defaults.width
             })
             .data('name', 'width')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -110,21 +113,23 @@ export default class Share extends Overlay {
 
         this.fields.height = new TextField({
                 'label': Locale.t('editor.overlay.Share.fields.height.label', 'Height'),
-                'value': '100%'
+                'value': this.configs.embed_defaults.height
             })
             .data('name', 'height')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(options);
 
         this.fields.keyboard = new CheckboxField({
-                'label': Locale.t('editor.overlay.Share.fields.keyboard.label', 'Enable keyboard shortcuts')
+                'label': Locale.t('editor.overlay.Share.fields.keyboard.label', 'Disable keyboard shortcuts'),
+                'checked': this.configs.embed_defaults.keyboard
             })
             .data('name', 'keyboard')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(options);
 
         this.fields.api = new CheckboxField({
-                'label': Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url})
+                'label': Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url}),
+                'checked': this.configs.embed_defaults.api
             })
             .data('name', 'api')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -166,19 +171,19 @@ export default class Share extends Overlay {
      * @return {String} The embed code
      */
     getEmbedCode() {
-        let width = this.getField('width').getValue(),
-            height = this.getField('height').getValue(),
-            keyboard = this.getField('keyboard').getValue(),
-            api = this.getField('api').getValue(),
-            url = this.configs.url,
-            query = [];
+        let url = this.configs.url;
+        const width = this.getField('width').getValue();
+        const height = this.getField('height').getValue();
+        const keyboard = this.getField('keyboard').getValue();
+        const api = this.getField('api').getValue();
+        const query = [];
 
-        if(keyboard){
-            query.push('keyboard=1');
+        if(keyboard !== this.configs.embed_defaults.keyboard){
+            query.push(`keyboard=${keyboard ? '1' : '0'}`);
         }
 
-        if(api){
-            query.push('api=1');
+        if(api !== this.configs.embed_defaults.api){
+            query.push(`api=${api ? '1' : '0'}`);
         }
 
         if(query.length > 0 ){

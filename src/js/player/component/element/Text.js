@@ -49,11 +49,11 @@ export default class Text extends Element {
         // call parent constructor
         super(configs);
 
-        this.addDelegate('a', 'click', this.onLinkClick.bind(this));
+        this.addDelegate('a, a *', 'click', this.onLinkClick.bind(this));
     }
 
     static getDefaults(){
-        let defaults = super.getDefaults();
+        const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
@@ -81,19 +81,6 @@ export default class Text extends Element {
     }
 
     /**
-     * Setup the text's UI
-     *
-     * @method setupUI
-     * @private
-     */
-    setupUI() {
-        // call parent function
-        super.setupUI();
-
-        this.data('type', 'Text');
-    }
-
-    /**
      * The link click event handler
      *
      * @method onLinkClick
@@ -107,28 +94,29 @@ export default class Text extends Element {
             link = Dom.closest(link, 'a');
         }
 
-        if(link){
+        const href = Dom.attr(link, 'href');
+
+        if((/^#/.test(href))){
+            evt.preventDefault();
+
             let matches = link.hash.match(/^#page=([^,]*),(\d+)$/);
             if(matches){
                 this.triggerEvent(EVT_PAGE, {'element': this, 'block': decodeURIComponent(matches[1]), 'index': parseInt(matches[2], 10)-1});
-                evt.preventDefault();
                 return;
             }
 
-            matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/)
+            matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/);
             if(matches){
                 this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3], 10)});
-                evt.preventDefault();
                 return;
             }
 
-            matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/)
+            matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/);
             if(matches){
                 this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
-                evt.preventDefault();
-                return;
             }
-
+        }
+        else{
             window.open(link.href, '_blank');
             evt.preventDefault();
         }
