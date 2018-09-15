@@ -7,15 +7,11 @@ import Resizable from '../../core/ui/Resizable';
 import HTML5 from '../renderer/HTML5';
 import HLS from '../renderer/HLS';
 import Dash from '../renderer/Dash';
-import YouTube from '../renderer/YouTube';
-import Vimeo from '../renderer/Vimeo';
 
 const RENDERERS = [
     HTML5,
     HLS,
-    Dash,
-    YouTube,
-    Vimeo
+    Dash
 ];
 
 export default class Media extends Component{

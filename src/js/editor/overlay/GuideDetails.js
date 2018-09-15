@@ -3,6 +3,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
+import {formatFileSize} from '../../core/utils/Number';
 import HiddenField from '../field/Hidden';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
@@ -50,6 +51,10 @@ export default class GuideDetails extends Overlay {
             'parent': '.metaScore-editor',
             'toolbar': true,
             'title': Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
+            'thumbnail_upload_extensions': ['png', 'jpeg', 'gif'],
+            'thumbnail_upload_max_filesize': 0,
+            'media_upload_extensions': ['mp4', 'mp3'],
+            'media_upload_max_filesize': 0,
             'groups': {},
             'submit_text': Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
         });
@@ -62,16 +67,14 @@ export default class GuideDetails extends Overlay {
      * @private
      */
     setupUI() {
-        let contents, form;
-
         // call parent method
         super.setupUI();
 
-        contents = this.getContents();
+        const contents = this.getContents();
 
         this.fields = {};
 
-        form = new Dom('<form>')
+        const form = new Dom('<form>')
             .addListener('submit', this.onFormSubmit.bind(this))
             .appendTo(contents);
 
@@ -121,12 +124,13 @@ export default class GuideDetails extends Overlay {
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
+        const thumbnail_upload_extensions = `.${this.configs.thumbnail_upload_extensions.join(`, .`)}`;
         this.fields.thumbnail = new FileField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
                 'sources': {
                     'upload': {
-                        'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
-                        'accept': '.png,.gif,.jpg,.jpeg'
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Files must be less than: !size<br/>Supported file types: !types', {'!dimentions': '155x123', '!size': formatFileSize(this.configs.thumbnail_upload_max_filesize), '!types': thumbnail_upload_extensions}),
+                        'accept': thumbnail_upload_extensions
                     }
                 }
             })
@@ -134,17 +138,18 @@ export default class GuideDetails extends Overlay {
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
+        const media_upload_extensions = `.${this.configs.media_upload_extensions.join(`, .`)}`;
         this.fields.media = new FileField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
                 'sources': {
                     'upload': {
                         'label': Locale.t('overlay.GuideDetails.fields.media.sources.upload.label', 'Upload'),
-                        'accept': '.mp4,.m4v,.m4a,.mp3',
-                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.upload.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
+                        'accept': media_upload_extensions,
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.upload.description', 'Files must be less than: !size<br/>Supported file types: !types', {'!size': formatFileSize(this.configs.media_upload_max_filesize),'!types': media_upload_extensions}),
                     },
                     'url': {
                         'label': Locale.t('overlay.GuideDetails.fields.media.sources.url.label', 'URL'),
-                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.url.description', 'Supported providers: !providers', {'!providers': 'vimeo, youtube, dailymotion, soundcloud'}),
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.url.description', 'Supported file types: !types', {'!types': `${media_upload_extensions}, .m3u8 (HLS), .mpd (MPEG-Dash)`}),
                     }
                 },
                 'required': true
@@ -226,7 +231,7 @@ export default class GuideDetails extends Overlay {
      */
     setValues(values, supressEvent){
 		Object.entries(values).forEach(([name, value]) => {
-            let field = this.getField(name);
+            const field = this.getField(name);
 
             if(field){
                 if(name === 'shared_with'){
@@ -281,9 +286,8 @@ export default class GuideDetails extends Overlay {
      * @param {Event} evt The event object
      */
     onFieldValueChange(evt){
-        let field = evt.detail.field,
-            value = evt.detail.value,
-            name = field.data('name');
+        const name = evt.detail.field.data('name');
+        const value = evt.detail.value;
 
         this.changed[name] = value;
     }

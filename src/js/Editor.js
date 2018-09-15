@@ -45,10 +45,10 @@ export default class Editor extends Dom {
      * @param {String} [configs.player_api_help_url=''] The URL of the player API help page
      * @param {String} [configs.account_url=''] The URL of the user account page
      * @param {String} [configs.logout_url=''] The URL of the user logout page
-     * @param {Object} [configs.user_groups={}] The groups the user belongs to
      * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
      * @param {String} [configs.locale] The locale file to load
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {Object} [configs.guide_details={}] Configs to send to the GuideDetails overlay
      */
     constructor(configs) {
         // call parent constructor
@@ -80,7 +80,8 @@ export default class Editor extends Dom {
             'user_groups': {},
             'reload_player_on_save': false,
             'lang': 'en',
-            'ajax': {}
+            'ajax': {},
+            'guide_details': {}
         };
     }
 
@@ -1741,9 +1742,7 @@ export default class Editor extends Dom {
             evt.stopPropagation();
         });
 
-        this.detailsOverlay = new GuideDetails({
-                'groups': this.configs.user_groups
-            })
+        this.detailsOverlay = new GuideDetails(this.configs.guide_details)
             .addListener('show', this.onDetailsOverlayShow.bind(this))
             .addListener('submit', this.onDetailsOverlaySubmit.bind(this));
 
@@ -3010,7 +3009,8 @@ export default class Editor extends Dom {
                     return;
                 }
 
-                callback(null, Math.round(parseFloat(duration) * 100));
+                const centiseconds_multiplier = 100;
+                callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
             });
         }
         else{

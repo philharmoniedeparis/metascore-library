@@ -223,7 +223,7 @@ export default class File extends Field {
 
         this.values = {};
 
-        this.sources_selector.find(`input`).forEach((selector_el) => {
+        this.sources_selector.find('input').forEach((selector_el) => {
             const selector = new Dom(selector_el);
             const source = selector.val();
             const input = this.inputs.find(`.input[data-source="${source}"] input`);
@@ -242,9 +242,7 @@ export default class File extends Field {
                     }
             }
 
-            if(source === active_source){
-                selector.attr('checked', true);
-            }
+            selector_el.checked = source === active_source;
         });
 
         const input = this.inputs.find(`.input[data-source="${active_source}"] input`);
