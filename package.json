@@ -8,7 +8,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "pack": "webpack",
+    "pack": "webpack -p",
     "dev": "webpack -d --watch",
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",

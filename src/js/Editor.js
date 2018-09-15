@@ -1,7 +1,7 @@
 import Dom from './core/Dom';
 import {naturalCompare} from './core/utils/String';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {isArray, isNumber} from './core/utils/Var';
+import {isArray, isNumber, isObject} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -45,10 +45,10 @@ export default class Editor extends Dom {
      * @param {String} [configs.player_api_help_url=''] The URL of the player API help page
      * @param {String} [configs.account_url=''] The URL of the user account page
      * @param {String} [configs.logout_url=''] The URL of the user logout page
-     * @param {Object} [configs.user_groups={}] The groups the user belongs to
      * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
      * @param {String} [configs.locale] The locale file to load
      * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {Object} [configs.guide_details={}] Configs to send to the GuideDetails overlay
      */
     constructor(configs) {
         // call parent constructor
@@ -80,7 +80,8 @@ export default class Editor extends Dom {
             'user_groups': {},
             'reload_player_on_save': false,
             'lang': 'en',
-            'ajax': {}
+            'ajax': {},
+            'guide_details': {}
         };
     }
 
@@ -1027,7 +1028,7 @@ export default class Editor extends Dom {
      * @private
      */
     onPlayerLoadedMetadata(){
-        this.mainmenu.timefield.setMax(this.player.getMedia().getDuration());
+        this.mainmenu.timefield.setMax(this.getPlayer().getMedia().getDuration());
     }
 
     /**
@@ -1035,10 +1036,9 @@ export default class Editor extends Dom {
      *
      * @method onPlayerTimeUpdate
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Media/timeupdate:event"}}Media.timeupdate{{/crossLink}}
      */
-    onPlayerTimeUpdate(evt){
-        const time = evt.detail.media.getTime();
+    onPlayerTimeUpdate(){
+        const time = this.getPlayer().getMedia().getTime();
 
         this.mainmenu.timefield.setValue(time, true);
     }
@@ -1538,7 +1538,17 @@ export default class Editor extends Dom {
             };
 
             if('media' in data){
-                this.getMediaFileDuration(data.media.url, (new_duration) => {
+                const loadmask = new LoadMask({
+                    'parent': this,
+                    'autoShow': true
+                });
+
+                this.getMediaFileDuration(data.media, (error, new_duration) => {
+                    if(error){
+                        console.error(error);
+                        return;
+                    }
+
                     const old_duration = player.getMedia().getDuration();
 
                     if(new_duration !== old_duration){
@@ -1562,6 +1572,8 @@ export default class Editor extends Dom {
                         }
 
                         if(blocks.length > 0){
+                            loadmask.hide();
+
                             new Alert({
                                 'parent': this,
                                 'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
@@ -1590,6 +1602,8 @@ export default class Editor extends Dom {
                                 'autoShow': true
                             })
                             .addListener('buttonclick', (click_evt) => {
+                                loadmask.hide();
+
                                 if(click_evt.detail.action === 'confirm'){
                                     callback(new_duration);
                                 }
@@ -1598,6 +1612,7 @@ export default class Editor extends Dom {
                     }
                     else{
                         callback();
+                        loadmask.hide();
                     }
                 });
             }
@@ -1727,9 +1742,7 @@ export default class Editor extends Dom {
             evt.stopPropagation();
         });
 
-        this.detailsOverlay = new GuideDetails({
-                'groups': this.configs.user_groups
-            })
+        this.detailsOverlay = new GuideDetails(this.configs.guide_details)
             .addListener('show', this.onDetailsOverlayShow.bind(this))
             .addListener('submit', this.onDetailsOverlaySubmit.bind(this));
 
@@ -1748,7 +1761,7 @@ export default class Editor extends Dom {
             .setupContextMenus()
             .loadPlayerFromHash();
 
-        this.triggerEvent(EVT_READY, {'editor': this}, true, false);
+        this.triggerEvent(EVT_READY, {'editor': this}, false, false);
 
     }
 
@@ -2846,17 +2859,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     createGuide(details, overlay){
-        const data = new FormData();
-
-        // append values from the details overlay
-		Object.entries(details).forEach(([key, value]) => {
-            if(key === 'thumbnail' || key === 'media'){
-                data.append(`files[${key}]`, value.object);
-            }
-            else{
-                data.append(key, value);
-            }
-        });
+        const data = this.prepareFormData(details);
 
         // add a loading mask
         const loadmask = new LoadMask({
@@ -2878,18 +2881,19 @@ export default class Editor extends Dom {
             'autoSend': false
         }, this.configs.ajax);
 
+        const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide.json`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
             .addUploadListener('progress', (evt) => {
                 if (evt.lengthComputable) {
-                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
                     loadmask.setProgress(percent);
                 }
             })
             .addUploadListener('loadend', () => {
-                loadmask.setProgress(100);
+                loadmask.setProgress(hundred);
             })
             .send();
 
@@ -2909,27 +2913,13 @@ export default class Editor extends Dom {
         const id = player.getId();
         const vid = player.getRevision();
         const components = player.getComponents('.media, .controller, .block, .block-toggler');
-        const data = new FormData();
+
+        // prepare the formdata from the dirty data
+        const data = this.prepareFormData(this.dirty_data);
 
         // append the publish flag if true
         if(publish === true){
             data.append('publish', true);
-        }
-
-        // append values from the dirty data
-        if(this.dirty_data){
-            Object.entries(this.dirty_data).forEach(([key, value]) => {
-                if(key === 'blocks'){
-                    return;
-                }
-
-                if(key === 'thumbnail' || key === 'media'){
-                    data.append(`files[${key}]`, value.object);
-                }
-                else{
-                    data.append(key, value);
-                }
-            });
         }
 
         // append blocks data
@@ -2954,22 +2944,52 @@ export default class Editor extends Dom {
             'autoSend': false
         }, this.configs.ajax);
 
+        const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
             .addUploadListener('progress', (evt) => {
                 if (evt.lengthComputable) {
-                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
                     loadmask.setProgress(percent);
                 }
             })
             .addUploadListener('loadend', () => {
-                loadmask.setProgress(100);
+                loadmask.setProgress(hundred);
             })
             .send();
 
         return this;
+    }
+
+    prepareFormData(data){
+        const formdata = new FormData();
+
+        if(data){
+            Object.entries(data).forEach(([key, value]) => {
+                if(key === 'blocks'){
+                    return;
+                }
+
+                if((key === 'thumbnail' || key === 'media') && value.source === 'upload'){
+                    formdata.append(`files[${key}]`, value.object);
+                }
+                else if(isArray(value)){
+                    value.forEach((val) => {
+                        formdata.append(`${key}[]`, isObject(val) ? JSON.stringify(val) : val);
+                    });
+                }
+                else if(isObject(value)){
+                    formdata.append(key, JSON.stringify(value));
+                }
+                else{
+                    formdata.append(key, value);
+                }
+            });
+        }
+
+        return formdata;
     }
 
     /**
@@ -2980,15 +3000,22 @@ export default class Editor extends Dom {
      * @param {String} url The file's url
      * @param {Function} callback A callback function to call with the duration
      */
-    getMediaFileDuration(url, callback){
-        const media = new Dom('<audio/>')
-            .addListener('loadedmetadata', () => {
-                const duration = Math.round(parseFloat(media.get(0).duration) * 100);
-                media.remove();
-                callback(duration);
-            })
-            .attr('src', url)
-            .appendTo(this);
+    getMediaFileDuration(file, callback){
+        const renderer = this.getPlayer().getMedia().constructor.getRendererForMime(file.mime);
+        if(renderer){
+            renderer.getDurationFromURI(file.url, (error, duration) => {
+                if(error){
+                    callback(error);
+                    return;
+                }
+
+                const centiseconds_multiplier = 100;
+                callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
+            });
+        }
+        else{
+            callback(new Error(`No compatible renderer found for ${file.mine}`));
+        }
     }
 
 }

@@ -351,7 +351,7 @@ export default class Player extends Dom {
      * @private
      */
     onMediaLoadedMetadata(){
-        this.getMedia().reset();
+        //this.getMedia().reset();
     }
 
     /**
@@ -393,7 +393,9 @@ export default class Player extends Dom {
     onMediaPlaying(){
         this.removeClass('media-waiting');
 
-        this.controller.addClass('playing');
+        if(this.controller){
+            this.controller.addClass('playing');
+        }
     }
 
     /**
@@ -405,7 +407,9 @@ export default class Player extends Dom {
     onMediaPlay(){
         this.removeClass('media-waiting');
 
-        this.controller.addClass('playing');
+        if(this.controller){
+            this.controller.addClass('playing');
+        }
     }
 
     /**
@@ -417,7 +421,9 @@ export default class Player extends Dom {
     onMediaPause(){
         this.removeClass('media-waiting');
 
-        this.controller.removeClass('playing');
+        if(this.controller){
+            this.controller.removeClass('playing');
+        }
     }
 
     /**
@@ -425,12 +431,12 @@ export default class Player extends Dom {
      *
      * @method onMediaTimeUpdate
      * @private
-     * @param {Event} evt The event object
      */
-    onMediaTimeUpdate(evt){
-        const currentTime = evt.detail.media.getTime();
-
-        this.controller.updateTime(currentTime);
+    onMediaTimeUpdate(){
+        if(this.controller){
+            const currentTime = this.getMedia().getTime();
+            this.controller.updateTime(currentTime);
+        }
     }
 
     /**
@@ -631,7 +637,7 @@ export default class Player extends Dom {
             switch(block.type){
                 case 'Media':
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
-                        .setSources([this.json.media]);
+                        .setSource(this.json.media);
                     break;
 
                 case 'Controller':
@@ -685,7 +691,7 @@ export default class Player extends Dom {
 
         this.appendTo(this.configs.container);
 
-        this.triggerEvent(EVT_READY, {'player': this}, true, false);
+        this.triggerEvent(EVT_READY, {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
             this.load();
@@ -809,7 +815,7 @@ export default class Player extends Dom {
             }
 
             if('media' in data){
-                this.getMedia().setSources([data.media]);
+                this.getMedia().setSource(data.media);
             }
 
             if('vid' in data){

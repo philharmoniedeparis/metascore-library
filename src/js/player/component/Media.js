@@ -1,65 +1,18 @@
 import Component from '../Component';
-import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
-/**
- * Fired when the media source is set
- *
- * @event sourcesset
- * @param {Object} media The media instance
- */
-const EVT_SOURCESSET = 'sourcesset';
+import HTML5 from '../renderer/HTML5';
+import HLS from '../renderer/HLS';
+import Dash from '../renderer/Dash';
 
-/**
- * Fired when the metadata has loaded
- *
- * @event loadedmetadata
- * @param {Object} media The media instance
- */
-const EVT_LOADEDMETADATA = 'loadedmetadata';
-
-/**
- * Fired when the media starts playing
- *
- * @event play
- * @param {Object} media The media instance
- */
-const EVT_PLAY = 'play';
-
-/**
- * Fired when the media is paused
- *
- * @event pause
- * @param {Object} media The media instance
- */
-const EVT_PAUSE = 'pause';
-
-/**
- * Fired when a seek operation begins
- *
- * @event seeking
- * @param {Object} media The media instance
- */
-const EVT_SEEKING = 'seeking';
-
-/**
- * Fired when a seek operation completes
- *
- * @event seeked
- * @param {Object} media The media instance
- */
-const EVT_SEEKED = 'seeked';
-
-/**
- * Fired when the media's time changed
- *
- * @event timeupdate
- * @param {Object} media The media instance
- */
-const EVT_TIMEUPDATE = 'timeupdate';
+const RENDERERS = [
+    HTML5,
+    HLS,
+    Dash
+];
 
 export default class Media extends Component{
 
@@ -77,26 +30,14 @@ export default class Media extends Component{
         // call parent constructor
         super(configs);
 
-        this.addClass('media').addClass(this.configs.type);
-
-        this.el = new Dom(`<${this.configs.type}/>`, {'preload': 'auto'})
-            .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
-            .addListener('play', this.onPlay.bind(this))
-            .addListener('pause', this.onPause.bind(this))
-            .addListener('timeupdate', this.onTimeUpdate.bind(this))
-            .addListener('seeking', this.onSeeking.bind(this))
-            .addListener('seeked', this.onSeeked.bind(this))
-            .appendTo(this);
-
-        this.dom = this.el.get(0);
-
-        this.playing = false;
+        this
+            .addClass('media')
+            .addClass(this.configs.type);
     }
 
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'type': 'audio',
-            'useFrameAnimation': true,
             'properties': {
                 'type': {
                     'editable': false,
@@ -239,27 +180,43 @@ export default class Media extends Component{
         return 'Media';
     }
 
+    static getRendererForMime(mime){
+        const index = RENDERERS.findIndex((renderer) => {
+            return renderer.canPlayType(mime);
+        });
+
+        if(index > -1){
+            return RENDERERS[index];
+        }
+
+        return null;
+    }
+
+    getRenderer(){
+        return this.renderer;
+    }
+
     /**
-     * Set the media sources
+     * Set the media source
      *
-     * @method setSources
-     * @param {Array} sources The list of sources as objects with 'url' and 'mime' keys
+     * @method setSource
+     * @param {Object} source The source as objects with 'url' and 'mime' keys
      * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
      * @chainable
      */
-    setSources(sources, supressEvent){
-        let source_tags = '';
+    setSource(source, supressEvent){
+        if(this.renderer){
+            this.renderer.remove();
+        }
 
-		sources.forEach((source) => {
-            source_tags += `<source src="${source.url}" type="${source.mime}"></source>`;
-        });
-
-        this.el.text(source_tags);
-
-        this.dom.load();
-
-        if(supressEvent !== true){
-            this.triggerEvent(EVT_SOURCESSET, {'media': this});
+        const renderer = this.constructor.getRendererForMime(source.mime);
+        if(renderer){
+            this.renderer = new renderer({'type': this.configs.type})
+                .addListener('ready', (evt) => {
+                    evt.detail.renderer.setSource(source, supressEvent);
+                })
+                .init()
+                .appendTo(this);
         }
 
         return this;
@@ -277,83 +234,13 @@ export default class Media extends Component{
     }
 
     /**
-     * The loadedmetadata event handler
-     *
-     * @method onLoadedMetadata
-     * @private
-     */
-    onLoadedMetadata() {
-        this.triggerEvent(EVT_LOADEDMETADATA, {'media': this});
-    }
-
-    /**
-     * The play event handler
-     *
-     * @method onPlay
-     * @private
-     */
-    onPlay() {
-        this.playing = true;
-
-        this.triggerEvent(EVT_PLAY, {'media': this});
-
-        if(this.configs.useFrameAnimation){
-            this.triggerTimeUpdate();
-        }
-    }
-
-    /**
-     * The pause event handler
-     *
-     * @method onPause
-     * @private
-     */
-    onPause() {
-        this.playing = false;
-
-        this.triggerEvent(EVT_PAUSE, {'media': this});
-    }
-
-    /**
-     * The timeupdate event handler
-     *
-     * @method onTimeUpdate
-     * @private
-     */
-    onTimeUpdate(){
-        if(!this.configs.useFrameAnimation){
-            this.triggerTimeUpdate(false);
-        }
-    }
-
-    /**
-     * The seeking event handler
-     *
-     * @method onSeeking
-     * @private
-     */
-    onSeeking(){
-        this.triggerEvent(EVT_SEEKING, {'media': this});
-    }
-
-    /**
-     * The seeked event handler
-     *
-     * @method onSeeked
-     * @private
-     */
-    onSeeked(){
-        this.triggerEvent(EVT_SEEKED, {'media': this});
-    }
-
-    /**
      * Check whether the media is playing
      *
      * @method isPlaying
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
-        return this.playing;
+        return this.getRenderer().isPlaying();
     }
 
     /**
@@ -375,7 +262,7 @@ export default class Media extends Component{
      * @chainable
      */
     play() {
-        this.dom.play();
+        this.getRenderer().play();
 
         return this;
     }
@@ -387,25 +274,7 @@ export default class Media extends Component{
      * @chainable
      */
     pause() {
-        this.dom.pause();
-
-        return this;
-    }
-
-    /**
-     * Trigger the timeupdate event
-     *
-     * @method triggerTimeUpdate
-     * @private
-     * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
-     * @chainable
-     */
-    triggerTimeUpdate(loop) {
-        if(loop !== false && this.isPlaying()){
-            window.requestAnimationFrame(this.triggerTimeUpdate.bind(this));
-        }
-
-        this.triggerEvent(EVT_TIMEUPDATE, {'media': this});
+        this.getRenderer().pause();
 
         return this;
     }
@@ -418,11 +287,7 @@ export default class Media extends Component{
      * @chainable
      */
     setTime(time) {
-        this.dom.currentTime = parseFloat(time) / 100;
-
-        if(!this.isPlaying()){
-            this.triggerTimeUpdate(false);
-        }
+        this.getRenderer().setTime(parseFloat(time) / 100);
 
         return this;
     }
@@ -434,7 +299,13 @@ export default class Media extends Component{
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return Math.round(parseFloat(this.dom.currentTime) * 100);
+        const renderer = this.getRenderer();
+
+        if(renderer){
+            return Math.round(parseFloat(renderer.getTime()) * 100);
+        }
+
+        return null;
     }
 
     /**
@@ -444,7 +315,13 @@ export default class Media extends Component{
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return Math.round(parseFloat(this.dom.duration) * 100);
+        const renderer = this.getRenderer();
+
+        if(renderer){
+            return Math.round(parseFloat(renderer.getDuration()) * 100);
+        }
+
+        return null;
     }
 
     /**
@@ -498,6 +375,14 @@ export default class Media extends Component{
 
         return this._resizable;
 
+    }
+
+    remove() {
+        if(this.renderer){
+            this.renderer.remove();
+        }
+
+        super.remove();
     }
 
 }

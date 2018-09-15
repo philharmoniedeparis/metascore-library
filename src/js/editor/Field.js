@@ -36,7 +36,7 @@ export default class Field extends Dom{
      */
     constructor(configs) {
         // call the super constructor.
-        super('<div/>', {'class': 'field'});
+        super('<div/>', {'class': 'field', 'tabindex': -1});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
@@ -51,9 +51,12 @@ export default class Field extends Dom{
             }
 
             if(this.configs.required){
-                this.addClass('required');
                 this.input.attr('required', '');
             }
+        }
+
+        if(this.configs.required){
+            this.addClass('required');
         }
 
         if(this.configs.description){

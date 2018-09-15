@@ -230,6 +230,10 @@
             }
         }
 
+        &:focus{
+            outline: none;
+        }
+
         &.checkboxfield{
             &.readonly{
                 .input-wrapper{
@@ -247,6 +251,31 @@
 
                 label{
                     display: inline-block;
+                }
+            }
+
+            &.readonly{
+                .input-wrapper{
+                    pointer-events: none;
+                }
+            }
+        }
+
+        &.radiobuttonsfield{
+            .input-wrapper{
+                display: flex;
+
+                .radiobutton-wrapper{
+                    margin-right: 2em;
+
+                    input{
+                        margin: 0 0.5em 0 0;
+                        vertical-align: middle;
+                    }
+
+                    label{
+                        display: inline-block;
+                    }
                 }
             }
 
@@ -538,6 +567,50 @@
                             background-image: url('../img/editor/field/image/resize.svg');
                             background-size: 1.25em;
                         }
+                    }
+                }
+            }
+        }
+
+        &.filefield{
+            .sources-selector{
+                display: flex;
+                margin-bottom: 0.5em;
+
+                .source-selector-wrapper{
+                    label{
+                        display: inline-block;
+                        padding: 0.5em;
+                        background: #f7f7f7;
+                        font-weight: normal;
+
+                        label::after{
+                            display: none;
+                        }
+                    }
+
+                    input:checked+label{
+                        background: #ddd;
+                        border-bottom: 2px solid #0000fe;
+                    }
+
+                    input{
+                        display: none;
+                    }
+
+                }
+            }
+
+            .inputs{
+                input{
+                    width: 100%;
+                }
+            }
+
+            &.required{
+                .source-selector-wrapper{
+                    label::after{
+                        display: none;
                     }
                 }
             }
@@ -1528,14 +1601,14 @@
                         display: block;
                         margin-bottom: 1em;
 
-                        label{
-                            display: block;
-                            font-weight: bold;
-                        }
-
                         textarea{
                             width: 100%;
                             min-height: 5em;
+                        }
+
+                        > label{
+                            display: block;
+                            font-weight: bold;
                         }
                     }
 
@@ -1559,6 +1632,13 @@
                     min-width: 500px;
 
                     .field{
+                        padding-left: 0.5em;
+                        border-left: 2px solid #ddd;
+
+                        &:focus-within{
+                            border-left-color: #0000fe;
+                        }
+
                         &.textfield{
                             input{
                                 width: 100%;

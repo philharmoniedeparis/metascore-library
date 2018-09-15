@@ -10,10 +10,10 @@ export default class Locale{
             'dataType': 'json',
             'onSuccess': (evt) => {
                 translations = JSON.parse(evt.target.getResponse());
-                callback(translations);
+                callback(null, translations);
             },
             'onError': (evt) => {
-                callback(null, evt.target.getStatusText());
+                callback(evt.target.getStatusText());
             }
         });
     }

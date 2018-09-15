@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const path = require("path");
 const git = require('git-rev-sync');
 const beep = require('beepbeep');
@@ -125,7 +127,7 @@ module.exports = {
         },
         {
            // compiles Less to CSS
-          test: /\.less$/,
+          test: /\.(css|less)$/,
           use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [

@@ -1,7 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
 import {uuid} from '../../core/utils/String';
-import {isArray} from '../../core/utils/Var';
 
 /**
  * Fired when the field's value changes
@@ -12,12 +11,12 @@ import {isArray} from '../../core/utils/Var';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
-export default class Checkboxes extends Field {
+export default class RadioButtons extends Field {
 
     /**
      * A select list field based on an HTML select element
      *
-     * @class CheckboxesField
+     * @class RadioButtonsField
      * @namespace editor.field
      * @extends editor.Field
      * @constructor
@@ -28,12 +27,13 @@ export default class Checkboxes extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('checkboxesfield');
+        this.addClass('radiobuttonsfield');
     }
 
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'options': []
+            'options': [],
+            'name': `radiobuttons-${uuid(5)}`
         });
     }
 
@@ -53,7 +53,7 @@ export default class Checkboxes extends Field {
             .appendTo(this);
 
         this.configs.options.forEach((option) => {
-            this.addCheckbox(option.value, option.text);
+            this.addRadioButton(option.value, option.text);
         });
     }
 
@@ -83,15 +83,12 @@ export default class Checkboxes extends Field {
             return;
         }
 
-        this.value = [];
+        this.value = null;
 
-        this.input_wrapper.find('input').forEach((checkbox_el) => {
-            const checkbox = new Dom(checkbox_el);
-
-            if(checkbox.is(":checked")){
-                this.value.push(checkbox.val());
-            }
-        });
+        const radiobutton = this.input_wrapper.find('input:checked');
+        if(radiobutton){
+            this.value = radiobutton.val();
+        }
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
     }
@@ -105,50 +102,53 @@ export default class Checkboxes extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        const arr_value = isArray(value) ? value : [value];
+        this.value = null;
 
-        this.input_wrapper.find('input').forEach((checkbox_el) => {
-            const checkbox = new Dom(checkbox_el);
+        this.input_wrapper.find('input').forEach((radiobutton_el) => {
+            const radiobutton = new Dom(radiobutton_el);
 
-            checkbox_el.checked = arr_value.includes(checkbox.attr('value'));
-
-            if(supressEvent !== true){
-                checkbox.triggerEvent('change');
+            if(radiobutton.attr('value') === value){
+                radiobutton_el.checked = true;
+                this.value = value;
+            }
+            else{
+                radiobutton_el.checked = false;
             }
         });
+
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        }
 
         return this;
     }
 
     /**
-     * Add a checkbox to the list of checkboxes
+     * Add a radio button
      *
-     * @method addCheckbox
+     * @method addRadioButton
      * @param {String} value The option's value
      * @param {String} text The option's label
      * @return {Dom} The created Dom object
      */
-    addCheckbox(value, text){
-        let uid, checkbox_wrapper, checkbox;
+    addRadioButton(value, text){
+        let uid, radio_wrapper, radiobutton;
 
-        uid = `checkbox-${uuid(5)}`;
+        uid = `radiobutton-${uuid(5)}`;
 
-        checkbox_wrapper = new Dom('<div/>', {'class': 'checkbox-wrapper'})
+        radio_wrapper = new Dom('<div/>', {'class': 'radiobutton-wrapper'})
             .appendTo(this.input_wrapper);
 
-        checkbox = new Dom('<input/>', {'id': uid, 'type': 'checkbox', 'value': value})
+        radiobutton = new Dom('<input/>', {'id': uid, 'type': 'radio', 'value': value})
+            .attr('name', this.configs.name)
             .addListener('click', this.onClick.bind(this))
             .addListener('change', this.onChange.bind(this))
-            .appendTo(checkbox_wrapper);
+            .appendTo(radio_wrapper);
 
         new Dom('<label/>', {'text': text, 'for': uid})
-            .appendTo(checkbox_wrapper);
+            .appendTo(radio_wrapper);
 
-        if(this.configs.name){
-            checkbox.attr('name', this.configs.name);
-        }
-
-        return checkbox;
+        return radiobutton;
     }
 
     /**
@@ -158,12 +158,12 @@ export default class Checkboxes extends Field {
      * @param {String} value The value of the option to remove
      * @return {Dom} The checkbox's Dom object
      */
-    removeCheckbox(value){
-        const checkbox = this.input_wrapper.find(`input[value="${value}"]`);
+    removeRadioButton(value){
+        const radiobutton = this.input_wrapper.find(`input[value="${value}"]`);
 
-        checkbox.parents().remove();
+        radiobutton.parents().remove();
 
-        return checkbox;
+        return radiobutton;
     }
 
     /**
