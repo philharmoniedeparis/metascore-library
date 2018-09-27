@@ -26,11 +26,15 @@ export default class HLS extends HTML5 {
 
     static canPlayType(mime){
         const supported = [
+            'application/mpegurl',
             'application/x-mpegurl',
             'application/vnd.apple.mpegurl',
-            'application/octet-stream; charset=utf-8',
+            'application/vnd.apple.mpegurl.audio',
             'audio/mpegurl',
+            'audio/x-mpegurl',
             'audio/hls',
+            'video/mpegurl',
+            'video/x-mpegurl',
             'video/hls'
         ];
 
