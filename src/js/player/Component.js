@@ -166,7 +166,19 @@ export default class Component extends Dom {
             const prop = this.getProperty(name);
 
             if('getter' in prop){
-                return prop.getter.call(this);
+                const selected = this.hasClass('selected');
+
+                if(selected){
+                    this.removeClass('selected');
+                }
+
+                const value = prop.getter.call(this);
+
+                if(selected){
+                    this.addClass('selected');
+                }
+
+                return value;
             }
         }
 
@@ -183,6 +195,11 @@ export default class Component extends Dom {
     getPropertyValues(skipDefaults){
         const values = {};
         const _skipDefaults = (typeof skipDefaults === "undefined") ? true : skipDefaults;
+        const selected = this.hasClass('selected');
+
+        if(selected){
+            this.removeClass('selected');
+        }
 
 		Object.entries(this.getProperties()).forEach(([name, prop]) => {
             if('getter' in prop){
@@ -193,6 +210,10 @@ export default class Component extends Dom {
                 }
             }
         });
+
+        if(selected){
+            this.addClass('selected');
+        }
 
         return values;
     }

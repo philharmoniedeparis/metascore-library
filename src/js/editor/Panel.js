@@ -124,7 +124,7 @@ export default class Panel extends Dom {
         this.contents.empty();
 
         if(has_componenets){
-            const properties = this.getComponent().removeClass('selected').getProperties();
+            const properties = this.getComponent().getProperties();
 
             Object.entries(properties).forEach(([key, prop]) => {
                 if(prop.editable !== false){
@@ -149,8 +149,6 @@ export default class Panel extends Dom {
 
                 this[`${common ? 'show' : 'hide'}Field`](name);
             });
-
-            this.getComponent().addClass('selected');
         }
 
         this.toggleClass('has-component', has_componenets);
