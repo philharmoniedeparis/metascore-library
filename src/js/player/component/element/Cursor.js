@@ -18,7 +18,7 @@ const EVT_TIME = 'time';
 export default class Cursor extends Element {
 
     static getDefaults(){
-        let defaults = super.getDefaults();
+        const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
@@ -108,7 +108,7 @@ export default class Cursor extends Element {
                     'getter': function(skipDefault){
                         const direction = this.getPropertyValue('direction');
                         const prop = direction === 'bottom' || direction === 'top' ? 'height' : 'width';
-                        const value = parseInt(this.cursor.css(prop, undefined, skipDefault), 10);
+                        const value = parseInt(this.cursor.css(prop, void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -123,7 +123,7 @@ export default class Cursor extends Element {
                         'label': Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
                     },
                     'getter': function(skipDefault){
-                         return this.cursor.css('background-color', undefined, skipDefault);
+                         return this.cursor.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.cursor.css('background-color', toCSS(value));
@@ -151,6 +151,8 @@ export default class Cursor extends Element {
             .appendTo(this.contents);
 
         this.addListener('click', this.onClick.bind(this));
+
+        return this;
     }
 
     /**
@@ -161,16 +163,12 @@ export default class Cursor extends Element {
      * @param {Event} evt The event object
      */
     onClick(evt){
-        let pos, time,
-            inTime, outTime,
-            direction, acceleration,
-            rect;
-
-        inTime = this.getPropertyValue('start-time');
-        outTime = this.getPropertyValue('end-time');
-        direction = this.getPropertyValue('direction');
-        acceleration = this.getPropertyValue('acceleration');
-        rect = this.get(0).getBoundingClientRect();
+        const inTime = this.getPropertyValue('start-time');
+        const outTime = this.getPropertyValue('end-time');
+        const direction = this.getPropertyValue('direction');
+        const acceleration = this.getPropertyValue('acceleration') || 1;
+        const rect = this.get(0).getBoundingClientRect();
+        let pos = 0;
 
         switch(direction){
             case 'left':
@@ -189,12 +187,9 @@ export default class Cursor extends Element {
                 pos = (evt.clientX - rect.left) / this.getPropertyValue('width');
         }
 
-        if(!acceleration || acceleration === 1){
-            time = inTime + ((outTime - inTime) * pos);
-        }
-        else{
-            time = inTime + ((outTime - inTime) * Math.pow(pos, 1/acceleration));
-        }
+        pos = Math.pow(pos, 1/acceleration);
+
+        const time = inTime + ((outTime - inTime) * pos);
 
         this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
     }
@@ -207,45 +202,41 @@ export default class Cursor extends Element {
      * @param {Event} evt The event object
      */
     onCuePointUpdate(evt){
-        let width, height,
-            curTime, inTime, outTime, pos,
-            direction = this.getPropertyValue('direction'),
-            acceleration = this.getPropertyValue('acceleration');
+        const curTime = evt.target.getMedia().getTime();
+        const inTime = this.getPropertyValue('start-time');
+        const outTime = this.getPropertyValue('end-time');
+        const direction = this.getPropertyValue('direction');
+        const acceleration = this.getPropertyValue('acceleration') || 1;
 
-        curTime = evt.target.getMedia().getTime();
-        inTime = this.getPropertyValue('start-time');
-        outTime = this.getPropertyValue('end-time');
-
-        if(!acceleration || acceleration === 1){
-            pos = (curTime - inTime) / (outTime - inTime);
-        }
-        else{
-            pos = Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
-        }
+        let pos = Math.pow((curTime - inTime) / (outTime - inTime), acceleration);
 
         switch(direction){
-            case 'left':
-                width = this.getPropertyValue('width');
+            case 'left':{
+                const width = this.getPropertyValue('width');
                 pos = Math.min(width * pos, width);
                 this.cursor.css('right', `${pos}px`);
                 break;
+            }
 
-            case 'bottom':
-                height = this.getPropertyValue('height');
+            case 'bottom':{
+                const height = this.getPropertyValue('height');
                 pos = Math.min(height * pos, height);
                 this.cursor.css('top', `${pos}px`);
                 break;
+            }
 
-            case 'top':
-                height = this.getPropertyValue('height');
+            case 'top':{
+                const height = this.getPropertyValue('height');
                 pos = Math.min(height * pos, height);
                 this.cursor.css('bottom', `${pos}px`);
                 break;
+            }
 
-            default:
-                width = this.getPropertyValue('width');
+            default:{
+                const width = this.getPropertyValue('width');
                 pos = Math.min(width * pos, width);
                 this.cursor.css('left', `${pos}px`);
+            }
         }
     }
 

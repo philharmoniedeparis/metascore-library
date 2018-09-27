@@ -66,18 +66,16 @@ export default class Element extends Panel {
      * @return {String} The component's label for use in the selector
      */
     getSelectorLabel(component){
-        let page = component.getPage(),
-            block = page.getBlock(),
-            page_start_time, page_end_time,
-            element_start_time, element_end_time,
-            out_of_range = false;
+        const page = component.getPage();
+        const block = page.getBlock();
+        let out_of_range = false;
 
         if(block.getPropertyValue('synched')){
-            page_start_time = page.getPropertyValue('start-time');
-            page_end_time = page.getPropertyValue('end-time');
+            const page_start_time = page.getPropertyValue('start-time');
+            const page_end_time = page.getPropertyValue('end-time');
 
-            element_start_time = component.getPropertyValue('start-time');
-            element_end_time = component.getPropertyValue('end-time');
+            const element_start_time = component.getPropertyValue('start-time');
+            const element_end_time = component.getPropertyValue('end-time');
 
             out_of_range = ((element_start_time !== null) && (element_start_time < page_start_time)) || ((element_end_time !== null) && (element_end_time > page_end_time));
         }
@@ -267,9 +265,9 @@ export default class Element extends Panel {
         });
 
         Promise.all(promises).then((results) => {
-            results = results.filter(result => result !== undefined);
+            const _results = results.filter((result) => typeof result !== "undefined");
 
-            results.forEach((result) => {
+            _results.forEach((result) => {
                 this.setPropertyValues(result.component, result.new_values);
             });
 

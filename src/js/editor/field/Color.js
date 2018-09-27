@@ -50,15 +50,13 @@ export default class Color extends Field {
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', this.onClick.bind(this));
 
-        buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
         new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Color.clear.tooltip', 'Clear value')})
@@ -78,11 +76,9 @@ export default class Color extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        let rgba;
-
         this.value = value ? toRGBA(value) : null;
 
-        rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;
+        const rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;
 
         this.input
             .attr('title', rgba)

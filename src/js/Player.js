@@ -9,6 +9,7 @@ import Media from './player/component/Media';
 import Controller from './player/component/Controller';
 import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
+import {toCentiseconds, toSeconds} from './core/utils/Media';
 
 import '../css/metaScore.player.less';
 
@@ -111,7 +112,7 @@ export default class Player extends Dom {
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.url=''] The URL of the guide's JSON data to load
      * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
-     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {Object} [configs.xhr={}] Custom options to send with each XHR request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      * @param {Boolean} [configs.keyboard=false] Whether to activate keyboard shortcuts or not
      * @param {Boolean} [configs.api=false] Whether to allow API access or not
      * @param {String} [configs.locale] The locale file to load
@@ -141,7 +142,7 @@ export default class Player extends Dom {
         return {
             'url': '',
             'container': 'body',
-            'ajax': {},
+            'xhr': {},
             'autoload': true,
             'keyboard': true,
             'api': false,
@@ -197,10 +198,8 @@ export default class Player extends Dom {
      * @private
      * @param {MessageEvent} evt The event object
      */
-    onAPIMessage(evt){
-        let data,
-            source, origin,
-            method, params;
+    onAPIMessage(evt){ // eslint-disable-line complexity
+        let data = null;
 
         try {
             data = JSON.parse(evt.data);
@@ -213,10 +212,10 @@ export default class Player extends Dom {
             return;
         }
 
-        source = evt.source;
-        origin = evt.origin;
-        method = data.method;
-        params = 'params' in data ? data.params : null;
+        const source = evt.source;
+        const origin = evt.origin;
+        const method = data.method;
+        const params = 'params' in data ? data.params : null;
 
         switch(method){
             case 'play':
@@ -228,7 +227,7 @@ export default class Player extends Dom {
                 break;
 
             case 'seek':
-                this.getMedia().setTime(parseFloat(params.seconds, 10) * 100);
+                this.getMedia().setTime(toCentiseconds(params.seconds));
                 break;
 
             case 'page':
@@ -242,17 +241,8 @@ export default class Player extends Dom {
 
             case 'showBlock':
             case 'hideBlock':
-            case 'toggleBlock':
-                var show;
-
-                switch(method){
-                    case 'showBlock':
-                        show = true;
-                        break;
-                    case 'hideBlock':
-                        show = false;
-                        break;
-                }
+            case 'toggleBlock':{
+                const show = method !== 'hideBlock';
 
                 this.getComponents('.media.video, .controller, .block').forEach((block) => {
                     if(block.getName() === params.name){
@@ -260,6 +250,7 @@ export default class Player extends Dom {
                     }
                 });
                 break;
+            }
 
             case 'rindex':
                 this.setReadingIndex(!isNaN(params.index) ? params.index : 0);
@@ -275,7 +266,7 @@ export default class Player extends Dom {
             case 'time':
                 source.postMessage(JSON.stringify({
                     'callback': params.callback,
-                    'params': this.getMedia().getTime() / 100
+                    'params': toSeconds(this.getMedia().getTime())
                 }), origin);
                 break;
 
@@ -300,7 +291,7 @@ export default class Player extends Dom {
                         this.addListener(params.type, (event) => {
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback,
-                                'params': event.detail.media.getTime() / 100
+                                'params': toSeconds(event.detail.media.getTime())
                             }), origin);
                         });
                         break;
@@ -467,8 +458,8 @@ export default class Player extends Dom {
      * @param {Event} evt The event object
      */
     onMediaError(evt){
-        let error = evt.target.error,
-            text;
+        const error = evt.target.error;
+        let text = '';
 
         this.removeClass('media-waiting');
 
@@ -566,16 +557,7 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementBlockVisibility(evt){
-        let show;
-
-        switch(evt.detail.action){
-            case 'show':
-                show = true;
-                break;
-            case 'hide':
-                show = false;
-                break;
-        }
+        const show = evt.detail.action !== 'hide';
 
         this.getComponents('.media.video, .controller, .block').forEach((block) => {
             if(block.getName() === evt.detail.block){
@@ -592,8 +574,7 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onComponenetPropChange(evt){
-        let component = evt.detail.component,
-            cuepoint;
+        const component = evt.detail.component;
 
         switch(evt.detail.property){
             case 'start-time':
@@ -604,12 +585,13 @@ export default class Player extends Dom {
                 break;
 
             case 'direction':
-            case 'acceleration':
-                cuepoint = component.getCuePoint();
+            case 'acceleration':{
+                const cuepoint = component.getCuePoint();
                 if(cuepoint){
                     cuepoint.update();
                 }
                 break;
+            }
         }
     }
 
@@ -705,14 +687,12 @@ export default class Player extends Dom {
      * @private
      */
     load() {
-        let options;
-
         this.addClass('loading');
 
-        options = Object.assign({}, {
+        const options = Object.assign({}, {
             'onSuccess': this.onLoadSuccess.bind(this),
             'onError': this.onLoadError.bind(this)
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
         Ajax.GET(this.configs.url, options);
     }
@@ -848,15 +828,13 @@ export default class Player extends Dom {
      * TODO: improve
      */
     getComponents(selector){
-        let components;
-
-        components = this.find('.metaScore-component');
+        let components = this.find('.metaScore-component');
 
         if(selector){
             components = components.filter(selector);
         }
 
-        return components.elements.map(dom => dom._metaScore);
+        return components.elements.map((dom) => dom._metaScore);
     }
 
     /**
@@ -868,12 +846,9 @@ export default class Player extends Dom {
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
-        let media;
+        let media = configs;
 
-        if(configs instanceof Media){
-            media = configs;
-        }
-        else{
+        if(!(media instanceof Media)){
             media = new Media(configs)
                 .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
@@ -906,13 +881,10 @@ export default class Player extends Dom {
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
-        let controller;
+        let controller = configs;
 
-        if(configs instanceof Controller){
-            controller = configs;
-        }
-        else{
-            controller = new Controller(configs)
+        if(!(controller instanceof Controller)){
+            controller = new Controller(controller)
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
         }
 
@@ -934,13 +906,10 @@ export default class Player extends Dom {
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        let toggler;
+        let toggler = configs;
 
-        if(configs instanceof BlockToggler){
-            toggler = configs;
-        }
-        else{
-            toggler = new BlockToggler(configs);
+        if(!(toggler instanceof BlockToggler)){
+            toggler = new BlockToggler(toggler);
         }
 
         toggler.appendTo(this);
@@ -961,14 +930,13 @@ export default class Player extends Dom {
      * @return {Block} The Block instance
      */
     addBlock(configs, supressEvent){
-        let block;
+        let block = configs;
 
-        if(configs instanceof Block){
-            block = configs;
+        if(block instanceof Block){
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign({}, configs, {
+            block = new Block(Object.assign({}, block, {
                     'container': this,
                     'listeners': {
                         'propchange': this.onComponenetPropChange.bind(this)
@@ -1030,29 +998,29 @@ export default class Player extends Dom {
      * @chainable
      */
     play(inTime, outTime, rIndex){
-        let player = this,
-            media = this.getMedia();
+        const player = this;
+        const media = this.getMedia();
 
         if(this.cuepoint){
             this.cuepoint.destroy();
         }
 
-        inTime = parseFloat(inTime);
-        outTime = parseFloat(outTime);
-        rIndex = parseInt(rIndex, 10);
+        const _inTime = parseFloat(inTime);
+        const _outTime = parseFloat(outTime);
+        const _rIndex = parseInt(rIndex, 10);
 
-        if(isNaN(inTime)){
+        if(isNaN(_inTime)){
             media.play();
         }
         else{
             this.cuepoint = new CuePoint({
                 'media': media,
-                'inTime': inTime,
-                'outTime': !isNaN(outTime) ? outTime : null,
+                'inTime': _inTime,
+                'outTime': !isNaN(_outTime) ? _outTime : null,
                 'considerError': true
             })
             .addListener('start', () => {
-                player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
+                player.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
             })
             .addListener('seekout', (evt) => {
                 evt.target.destroy();
@@ -1065,7 +1033,7 @@ export default class Player extends Dom {
             })
             .init();
 
-            media.setTime(inTime).play();
+            media.setTime(_inTime).play();
         }
 
         return this;
@@ -1116,8 +1084,8 @@ export default class Player extends Dom {
     }
 
     updateBlockTogglers() {
-        let block_togglers = this.getComponents('.block-toggler'),
-            blocks = this.getComponents('.block, .media.video, .controller');
+        const block_togglers = this.getComponents('.block-toggler');
+        const blocks = this.getComponents('.block, .media.video, .controller');
 
         block_togglers.forEach((block_toggler) => {
             block_toggler.update(blocks);

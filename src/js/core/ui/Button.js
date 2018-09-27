@@ -53,7 +53,7 @@ export default class Button extends Dom {
      * @chainable
      */
     setLabel(text){
-        if(this.label === undefined){
+        if(typeof this.label === "undefined"){
             this.label = new Dom('<span/>', {'class': 'label'})
                 .appendTo(this);
         }

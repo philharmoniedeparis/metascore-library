@@ -2,7 +2,6 @@
  * Get an image's metadata (name, width, and height)
  *
  * @method getImageMetadata
- * @private
  * @param {String} url The image's url
  * @param {Function} callback The callback to call with the retreived metadata
  */
@@ -30,10 +29,24 @@ export function getImageMetadata(url, callback){
     img.src = url;
 }
 
+/**
+ * Get a file's extention from its URL
+ *
+ * @method getFileExtension
+ * @param {String} url The file's URL
+ * @return {String} The file's extention
+ */
 export function getFileExtension(url){
     return url.split(/#|\?/)[0].split('.').pop().trim();
 }
 
+/**
+ * Get a file's mimetype from its URL
+ *
+ * @method getFileMime
+ * @param {String} url The file's URL
+ * @return {String} The file's mimetype if supported, null otherwise
+ */
 export function getFileMime(url){
     if(/^(?:(?:https?:)?\/\/)?(?:www\.)?vimeo.com\/(?:channels\/|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/.test(url)){
         return 'video/vimeo';
@@ -58,4 +71,28 @@ export function getFileMime(url){
     };
 
     return ext in ext2mime ? ext2mime[ext] : null;
+}
+
+/**
+ * Converts a given time from seconds to centiseconds
+ *
+ * @method toCentiseconds
+ * @param {Number} time The time in seconds
+ * @return {Number} The time in centiseconds
+ */
+export function toCentiseconds(time){
+    const multiplier = 100;
+    return Math.round(parseFloat(time) * multiplier);
+}
+
+/**
+ * Converts a given time from centiseconds to seconds
+ *
+ * @method toSeconds
+ * @param {Number} time The time in centiseconds
+ * @return {Number} The time in seconds
+ */
+export function toSeconds(time){
+    const multiplier = 0.01;
+    return parseFloat(time) * multiplier;
 }

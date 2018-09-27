@@ -13,7 +13,7 @@ export function isArray(value){
  * @return {Boolean} Whether the variable is a string
  */
 export function isString(value){
-    return (value !== null) && (typeof value === 'string' || value instanceof String);
+    return (value !== null) && ((typeof value === 'string') || (value instanceof String));
 }
 
 /**
@@ -22,7 +22,7 @@ export function isString(value){
  * @return {Boolean} Whether the variable is a number
  */
 export function isNumber(value){
-    return (value !== null) && (typeof value === 'number' || value instanceof Number);
+    return (value !== null) && ((typeof value === 'number') || (value instanceof Number));
 }
 
 /**
@@ -40,7 +40,7 @@ export function isNumeric(value){
  * @return {Boolean} Whether the variable is a function
  */
 export function isFunction(value){
-    return (value !== null) && (typeof value === 'function' || value instanceof Function);
+    return (value !== null) && ((typeof value === 'function') || (value instanceof Function));
 }
 
 /**
@@ -49,7 +49,7 @@ export function isFunction(value){
  * @return {Boolean} Whether the variable is an object
  */
 export function isObject(value){
-    return (value !== null) && (typeof value === 'object' || value instanceof Object);
+    return (value !== null) && ((typeof value === 'object') || (value instanceof Object));
 }
 
 /**
@@ -61,7 +61,7 @@ export function isObject(value){
  * @return {Boolean} Whether the variable is empty
  */
 export function isEmpty(value) {
-    if(value === undefined || value === null){
+    if((typeof value === 'undefined') || (value === null)){
         return true;
     }
 

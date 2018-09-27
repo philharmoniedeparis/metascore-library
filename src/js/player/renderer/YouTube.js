@@ -33,7 +33,7 @@ export default class YouTube extends HTML5 {
     static getVideoIDFromURL(url){
         const parsed = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
 
-        if(parsed[2] !== undefined){
+        if(typeof parsed[2] !== "undefined"){
             return parsed[2].split(/[^0-9a-z_-]/i)[0];
         }
 

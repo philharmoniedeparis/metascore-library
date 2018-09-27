@@ -104,8 +104,8 @@ export default class Draggable {
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        let offsetX = evt.clientX - this._start_state.x;
-        let offsetY = evt.clientY - this._start_state.y;
+        const offsetX = evt.clientX - this._start_state.x;
+        const offsetY = evt.clientY - this._start_state.y;
 
         this._start_state.x = evt.clientX;
         this._start_state.y = evt.clientY;

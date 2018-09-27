@@ -51,7 +51,7 @@ export default class Page extends Component {
                         'label': Locale.t('player.component.Page.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('background-color', undefined, skipDefault);
+                        return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('background-color', toCSS(value));
@@ -63,7 +63,7 @@ export default class Page extends Component {
                         'label': Locale.t('player.component.Page.background-image', 'Background image')
                     },
                     'getter': function(skipDefault){
-                        let value = this.css('background-image', undefined, skipDefault);
+                        let value = this.css('background-image', void 0, skipDefault);
 
                         if(value === 'none' || !isString(value)){
                             return null;
@@ -76,8 +76,8 @@ export default class Page extends Component {
                         return value;
                     },
                     'setter': function(value){
-                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.css('background-image', value);
+                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.css('background-image', css_value);
                     }
                 },
                 'start-time': {
@@ -146,6 +146,8 @@ export default class Page extends Component {
         super.setupUI();
 
         this.addClass('page');
+
+        return this;
     }
 
     /**

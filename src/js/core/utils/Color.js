@@ -1,6 +1,7 @@
 import {isString, isObject} from './Var';
 
 // http://www.w3.org/TR/css3-color/
+/*eslint-disable */
 const COLOR_NAMES = {
     "transparent": [0,0,0,0],
     "aliceblue": [240,248,255,1],
@@ -152,44 +153,45 @@ const COLOR_NAMES = {
     "yellow": [255,255,0,1],
     "yellowgreen": [154,205,50,1]
 };
+/*eslint-enable */
 
 /**
  * Convert an RGB value to HSV
  *
  * @method rgb2hsv
  * @static
- * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys
- * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys
+ * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys with values contained in the set [0, 255]
+ * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys with values contained in the set [0, 1]
  */
 export function rgb2hsv(rgb){
-    let r = rgb.r, g = rgb.g, b = rgb.b,
-        max = Math.max(r, g, b),
-        min = Math.min(r, g, b),
-        d = max - min,
-        h, s, v;
+    const r = rgb.r;
+    const g = rgb.g;
+    const b = rgb.b;
 
-    s = max === 0 ? 0 : d / max;
-    v = max;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const d = max - min;
 
-    if(max === min) {
-        h = 0; // achromatic
-    }
-    else {
+    let h = 0;
+    const s = max === 0 ? 0 : d / max;
+    const v = max;
+
+    if(max !== min) {// chromatic
         switch(max) {
             case r:
-                h = (g - b) / d + (g < b ? 6 : 0);
+                h = (g - b) / d + (g < b ? 6 : 0); // eslint-disable-line no-magic-numbers
                 break;
 
             case g:
-                h = (b - r) / d + 2;
+                h = (b - r) / d + 2; // eslint-disable-line no-magic-numbers
                 break;
 
             case b:
-                h = (r - g) / d + 4;
+                h = (r - g) / d + 4; // eslint-disable-line no-magic-numbers
                 break;
         }
 
-        h /= 6;
+        h /= 6; // eslint-disable-line no-magic-numbers
     }
 
     return {
@@ -208,8 +210,6 @@ export function rgb2hsv(rgb){
  * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
  */
 export function toRGBA(color){
-    let matches;
-
     if(isObject(color)){
         return {
             "r": 'r' in color ? color.r : 0,
@@ -229,10 +229,10 @@ export function toRGBA(color){
             };
         }
 
-        color = color.replace(/\s\s*/g,''); // Remove all spaces
+        const _color = color.replace(/\s\s*/g,''); // Remove all spaces
 
         // Checks for 6 digit hex and converts string to integer
-        matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(color);
+        let matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(_color);
         if(matches){
             return {
                 "r": parseInt(matches[1], 16),
@@ -243,19 +243,21 @@ export function toRGBA(color){
         }
 
         // Checks for 3 digit hex and converts string to integer
-        matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(color);
+        matches = /^#([\da-fA-F])([\da-fA-F])([\da-fA-F])/.exec(_color);
         if(matches){
+            const multiplier = 17;
+
             return {
-                "r": parseInt(matches[1], 16) * 17,
-                "g": parseInt(matches[2], 16) * 17,
-                "b": parseInt(matches[3], 16) * 17,
+                "r": parseInt(matches[1], 16) * multiplier,
+                "g": parseInt(matches[2], 16) * multiplier,
+                "b": parseInt(matches[3], 16) * multiplier,
                 "a": 1
             };
         }
 
         // Checks for rgba and converts string to
         // integer/float using unary + operator to save bytes
-        matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(color);
+        matches = /^rgba\(([\d]+),([\d]+),([\d]+),([\d]+|[\d]*.[\d]+)\)/.exec(_color);
         if(matches){
             return {
                 "r": +matches[1],
@@ -267,7 +269,7 @@ export function toRGBA(color){
 
         // Checks for rgb and converts string to
         // integer/float using unary + operator to save bytes
-        matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(color);
+        matches = /^rgb\(([\d]+),([\d]+),([\d]+)\)/.exec(_color);
         if(matches){
             return {
                 "r": +matches[1],
@@ -282,9 +284,6 @@ export function toRGBA(color){
 }
 
 export function toCSS(color){
-
     const rgba = toRGBA(color);
-
     return rgba ? `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})` : null;
-
 }

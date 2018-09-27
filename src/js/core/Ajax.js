@@ -28,6 +28,11 @@ const EVT_ERROR = 'error';
  */
 const EVT_ABORT = 'abort';
 
+// relevant HTTP status codes
+const MIN_OK_STATUS = 200;
+const MAX_OK_STATUS = 300;
+const NOT_MODIFIED_STATUS = 304
+
 /**
  * A class to handle AJAX requests
  */
@@ -37,6 +42,8 @@ export default class Ajax extends EventEmitter {
         // call parent constructor
         super();
 
+        let _url = url;
+
         // bind the readystatechange handler
         this.onReadyStateChange = this.onReadyStateChange.bind(this);
 
@@ -45,16 +52,16 @@ export default class Ajax extends EventEmitter {
         this.xhr = new XMLHttpRequest();
 
         if(this.configs.method === 'GET' && this.configs.data){
-            let params = [];
+            const params = [];
 
 			Object.entries(this.configs.data).forEach(([key, value]) => {
                 params.push(`${key}=${encodeURIComponent(value)}`);
             });
 
-            url += `?${params.join('&')}`;
+            _url += `?${params.join('&')}`;
         }
 
-        this.xhr.open(this.configs.method, url, this.configs.async);
+        this.xhr.open(this.configs.method, _url, this.configs.async);
 
         if(this.configs.headers){
             this.setHeaders(this.configs.headers);
@@ -155,7 +162,7 @@ export default class Ajax extends EventEmitter {
             case XMLHttpRequest.DONE: {
                 let success = false;
 
-                if(this.xhr.status === 200 && this.xhr.status < 300 || this.xhr.status === 304){
+                if(this.xhr.status >= MIN_OK_STATUS && this.xhr.status < MAX_OK_STATUS || this.xhr.status === NOT_MODIFIED_STATUS){
                     success = true;
                 }
                 // local requests can return a status of 0 even if no error occurs

@@ -47,7 +47,7 @@ export default class Editor extends Dom {
      * @param {String} [configs.logout_url=''] The URL of the user logout page
      * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
      * @param {String} [configs.locale] The locale file to load
-     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @param {Object} [configs.xhr={}] Custom options to send with each XHR request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
      * @param {Object} [configs.guide_details={}] Configs to send to the GuideDetails overlay
      */
     constructor(configs) {
@@ -80,7 +80,7 @@ export default class Editor extends Dom {
             'user_groups': {},
             'reload_player_on_save': false,
             'lang': 'en',
-            'ajax': {},
+            'xhr': {},
             'guide_details': {}
         };
     }
@@ -163,7 +163,7 @@ export default class Editor extends Dom {
             'method': 'DELETE',
             'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask)
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
         new Ajax(`${this.configs.api_url}guide/${id}.json`, options);
     }
@@ -2433,9 +2433,7 @@ export default class Editor extends Dom {
      * @chainable
      */
     addPlayerComponents(type, configs, parent){
-        if(!isArray(configs)){
-            configs = [configs];
-        }
+        const _configs = isArray(configs) ? configs : [configs];
 
         switch(type){
             case 'element': {
@@ -2446,7 +2444,7 @@ export default class Editor extends Dom {
                 this.panels.block.setComponent(page.getBlock());
                 this.panels.page.setComponent(page);
 
-                configs.forEach((config, index) => {
+                _configs.forEach((config, index) => {
                     let name = '';
                     const el_index = page.children(`.element.${config.type}`).count() + 1;
 
@@ -2488,7 +2486,7 @@ export default class Editor extends Dom {
             case 'page': {
                 const block = parent;
                 const panel = this.panels.page;
-                const config = configs[0]; // only one page can be added at a time !
+                const config = _configs[0]; // only one page can be added at a time !
                 const index = block.getActivePageIndex();
                 let current_time = null;
 
@@ -2549,7 +2547,7 @@ export default class Editor extends Dom {
                 const panel = this.panels.block;
                 const components = [];
 
-                configs.forEach((config, index) => {
+                _configs.forEach((config, index) => {
                     let component = null;
 
                     switch(config.type){
@@ -2842,7 +2840,8 @@ export default class Editor extends Dom {
     openGuideSelector() {
         new GuideSelector({
                 'url': `${this.configs.api_url}guide.json`,
-                'autoShow': true
+                'autoShow': true,
+                'xhr': this.configs.xhr
             })
             .addListener('submit', this.onGuideSelectorSubmit.bind(this));
 
@@ -2879,7 +2878,7 @@ export default class Editor extends Dom {
             },
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
         const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide.json`, options)
@@ -2942,7 +2941,7 @@ export default class Editor extends Dom {
             'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
         const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)

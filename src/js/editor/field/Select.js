@@ -109,7 +109,7 @@ export default class Select extends Field {
     }
 
     addValue(value, supressEvent){
-        let options = this.menu.find(`.option[data-value="${value}"]`);
+        const options = this.menu.find(`.option[data-value="${value}"]`);
 
         if(options.count() > 0){
             options.addClass('selected');
@@ -118,7 +118,7 @@ export default class Select extends Field {
     }
 
     removeValue(value, supressEvent){
-        let options = this.menu.find(`.option[data-value="${value}"]`);
+        const options = this.menu.find(`.option[data-value="${value}"]`);
 
         if(options.count() > 0){
             options.removeClass('selected');
@@ -135,7 +135,7 @@ export default class Select extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        let options = this.menu.find('.option');
+        const options = this.menu.find('.option');
 
         options.removeClass('selected');
 
@@ -164,10 +164,9 @@ export default class Select extends Field {
         const count = options.count();
         const added = [];
         const removed = [];
-        let value;
 
         if(this.configs.multiple){
-            value = [];
+            const value = [];
             options.forEach((option) => {
                 value.push(Dom.data(option, 'value'));
             });
@@ -203,7 +202,7 @@ export default class Select extends Field {
 
         }
         else{
-            value = count > 0 ? options.data('value') : '';
+            const value = count > 0 ? options.data('value') : '';
 
             if(this.value !== value){
                 this.value = value;

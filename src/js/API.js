@@ -39,11 +39,7 @@ export default class API{
      * @param {API} callback.api The API instance
      */
     constructor(target, callback) {
-        if(typeof target === "string") {
-            target = document.getElementById(target);
-        }
-
-        this.target = target;
+        this.target = (typeof target === "string") ? document.getElementById(target) : target;
         this.origin = '*';
         this.ready = false;
 
@@ -63,13 +59,11 @@ export default class API{
      * @chainable
      */
     postMessage(method, params){
-        let data;
-
         if (!this.target.contentWindow.postMessage) {
             return false;
         }
 
-        data = JSON.stringify({
+        const data = JSON.stringify({
             'method': method,
             'params': params
         });
@@ -102,26 +96,23 @@ export default class API{
      * @param {MessageEvent} evt The event object containing the message details
      */
     onMessage(evt){
-        let data, callback, params;
-
         if(!(origin_regex).test(evt.origin)) {
             return;
         }
 
         try {
-            data = JSON.parse(evt.data);
+            const data = JSON.parse(evt.data);
+
+            if (('callback' in data) && (data.callback in this.callbacks)){
+                const callback = this.callbacks[data.callback];
+                const params = 'params' in data ? data.params : null;
+
+                callback(params);
+            }
         }
         catch(e){
-            return;
+            console.error(e);
         }
-
-        if (!('callback' in data) || !(callback = this.callbacks[data.callback])) {
-            return;
-        }
-
-        params = 'params' in data ? data.params : null;
-
-        callback(params);
     }
 
     /**
@@ -299,7 +290,7 @@ export default class API{
  * Automatically process API links in the current HTML document
  */
 document.addEventListener("DOMContentLoaded", () => {
-    let ids = [], callback;
+    const ids = [];
 
     document.querySelectorAll('a[rel="metascore"][data-guide]').forEach((link) => {
         if(!ids.includes(link.dataset.guide)){
@@ -308,24 +299,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if(ids.length > 0){
-        callback = (api) => {
+        const callback = (api) => {
             const cleanArg = (arg) => {
                 return decodeURIComponent(arg);
             };
 
             const handler = (evt) => {
-                let link = evt.target,
-                    actions = link.hash.replace(/^#/, '').split('&');
+                const link = evt.target;
+                const actions = link.hash.replace(/^#/, '').split('&');
 
                 for(let i=0,length=actions.length; i<length; i++){
-                    let action, fn, args;
-
-                    action = actions[i].split('=');
-                    fn = action[0];
+                    const action = actions[i].split('=');
+                    const fn = action[0];
 
                     if(fn in api){
-                        args = action[1].split(',').map(cleanArg);
-
+                        const args = action[1].split(',').map(cleanArg);
                         api[fn](...args);
                     }
                 }

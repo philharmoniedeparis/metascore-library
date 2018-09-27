@@ -49,12 +49,10 @@ export default class BorderRadius extends Overlay {
      * @private
      */
     setupUI() {
-        let contents;
-
         // call parent method
         super.setupUI();
 
-        contents = this.getContents();
+        const contents = this.getContents();
 
         this.fields = {};
         this.buttons = {};
@@ -146,17 +144,16 @@ export default class BorderRadius extends Overlay {
      * @chainable
      */
     setValue(val){
-        let matches,
-            values = {
-                tlw: 0, tlh: 0,
-                trw: 0, trh: 0,
-                blw: 0, blh: 0,
-                brw: 0, brh: 0
-            };
+        const values = {
+            tlw: 0, tlh: 0,
+            trw: 0, trh: 0,
+            blw: 0, blh: 0,
+            brw: 0, brh: 0
+        };
 
         this.preview.css('border-radius', val);
 
-        matches = this.preview.css('border-top-left-radius', undefined, true).match(/(\d*)px/g);
+        let matches = this.preview.css('border-top-left-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.tlw = matches[0];
@@ -167,7 +164,7 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        matches = this.preview.css('border-top-right-radius', undefined, true).match(/(\d*)px/g);
+        matches = this.preview.css('border-top-right-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.trw = matches[0];
@@ -178,7 +175,7 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        matches = this.preview.css('border-bottom-left-radius', undefined, true).match(/(\d*)px/g);
+        matches = this.preview.css('border-bottom-left-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.blw = matches[0];
@@ -189,7 +186,7 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        matches = this.preview.css('border-bottom-right-radius', undefined, true).match(/(\d*)px/g);
+        matches = this.preview.css('border-bottom-right-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.brw = matches[0];

@@ -114,8 +114,12 @@ export default class Resizable {
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        let handle = new Dom(this._start_state.handle),
-            w, h, top, left;
+        const handle = new Dom(this._start_state.handle);
+
+        let w = 0;
+        let h = 0;
+        let top = 0;
+        let left = 0;
 
         switch(handle.data('direction')){
             case 'top':
@@ -154,10 +158,10 @@ export default class Resizable {
                 break;
         }
 
-        if(top !== undefined){
+        if(typeof top !== "undefined"){
             this.configs.target.css('top', `${top}px`);
         }
-        if(left !== undefined){
+        if(typeof left !== "undefined"){
             this.configs.target.css('left', `${left}px`);
         }
 

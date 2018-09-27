@@ -43,8 +43,6 @@ const bubbleEvents = {
 
 export default class Dom {
 
-    //TODO: improve by using a NodeList for the list of elements
-
     /**
      * A class for Dom manipulation
      *
@@ -58,17 +56,15 @@ export default class Dom {
      *     var body = new Dom('body');
      */
     constructor(...args) {
-        let elements;
-
         this.elements = [];
 
-        if(arguments.length > 0){
-            elements = Dom.elementsFromString(...args);
+        if(args.length > 0){
+            let elements = Dom.elementsFromString(...args);
             if(elements){
                 this.add(elements);
 
-                if(arguments.length > 1){
-                    this.attr(arguments[1]);
+                if(args.length > 1){
+                    this.attr(args[1]);
                 }
             }
             else{
@@ -76,8 +72,8 @@ export default class Dom {
                 if(elements){
                     this.add(elements);
 
-                    if(arguments.length > 2){
-                        this.attr(arguments[2]);
+                    if(args.length > 2){
+                        this.attr(args[2]);
                     }
                 }
             }
@@ -121,14 +117,11 @@ export default class Dom {
      * @return {HTMLElement} The found element if any
      */
     static selectElement(selector, parent) {
-        let element;
-
-        if(!parent){
-            parent = document;
-        }
+        const _parent = parent || document;
+        let element = null;
 
         if (isString(selector)) {
-            element = parent.querySelector(selector);
+            element = _parent.querySelector(selector);
         }
         else if (selector.length) {
             element = selector[0];
@@ -150,18 +143,17 @@ export default class Dom {
      * @return {Mixed} An HTML NodeList or an array of found elements if any
      */
     static selectElements(selector, parent) {
-        let elements;
+        let elements = [];
 
-        if(selector !== undefined){
-            if(!parent){
-                parent = document;
-            }
-            else if(parent instanceof Dom){
-                parent = parent.get(0);
+        if(typeof selector !== "undefined"){
+            let _parent = parent || document;
+
+            if(_parent instanceof Dom){
+                _parent = _parent.get(0);
             }
 
             if(isString(selector)) {
-                elements = parent.querySelectorAll(selector);
+                elements = _parent.querySelectorAll(selector);
             }
             else if('length' in selector) {
                 elements = selector;
@@ -240,15 +232,11 @@ export default class Dom {
      * @method addClass
      * @static
      * @param {HTMLElement} element The element
-     * @param {String} className The CSS class
+     * @param {String} className The CSS class(es)
      */
     static addClass(element, className){
-        let classNames = className.split(" "),
-            i = 0, l = classNames.length;
-
-        for(; i<l; i++){
-            element.classList.add(classNames[i]);
-        }
+        const classes = className.split(" ");
+        element.classList.add(...classes);
     }
 
     /**
@@ -257,15 +245,11 @@ export default class Dom {
      * @method removeClass
      * @static
      * @param {HTMLElement} element The element
-     * @param {String} className The CSS class
+     * @param {String} className The CSS class(es)
      */
     static removeClass(element, className){
-        let classNames = className.split(" "),
-            i = 0, l = classNames.length;
-
-        for(; i<l; i++){
-            element.classList.remove(classNames[i]);
-        }
+        const classes = className.split(" ");
+        element.classList.remove(...classes);
     }
 
     /**
@@ -278,13 +262,10 @@ export default class Dom {
      * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
      */
     static toggleClass(element, className, force){
-        let classNames = className.split(" "),
-            i = 0, l = classNames.length;
-
-        if(force === undefined){
-            for(; i<l; i++){
-                element.classList.toggle(classNames[i]);
-            }
+        if(typeof force === "undefined"){
+            className.split(" ").forEach((cls) => {
+                element.classList.toggle(cls);
+            });
         }
         // avoid using classList.toggle with a second argument due to a bug in IE 11
         else if(force){
@@ -308,11 +289,13 @@ export default class Dom {
      * @return {HTMLElement} The element
      */
     static addListener(element, type, callback, useCapture){
-        if(useCapture === undefined){
-            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        let _useCapture = useCapture;
+
+        if(typeof _useCapture === "undefined"){
+            _useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
         }
 
-        element.addEventListener(type, callback, useCapture);
+        element.addEventListener(type, callback, _useCapture);
 
         return element;
     }
@@ -330,16 +313,18 @@ export default class Dom {
      * @return {HTMLElement} The element
      */
     static addOneTimeListener(element, type, callback, useCapture){
-        if(useCapture === undefined){
-            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        let _useCapture = useCapture;
+
+        if(typeof _useCapture === "undefined"){
+            _useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
         }
 
         const handler = function(evt){
-            element.removeEventListener(type, handler, useCapture);
+            element.removeEventListener(type, handler, _useCapture);
             return callback(evt);
         };
 
-        element.addEventListener(type, handler, useCapture);
+        element.addEventListener(type, handler, _useCapture);
 
         return element;
     }
@@ -357,11 +342,13 @@ export default class Dom {
      * @return {HTMLElement} The element
      */
     static removeListener(element, type, callback, useCapture){
-        if(useCapture === undefined){
-            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        let _useCapture = useCapture;
+
+        if(typeof _useCapture === "undefined"){
+            _useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
         }
 
-        element.removeEventListener(type, callback, useCapture);
+        element.removeEventListener(type, callback, _useCapture);
 
         return element;
     }
@@ -400,7 +387,7 @@ export default class Dom {
      * @return {String} The innerHTML of the element
      */
     static text(element, html){
-        if(html !== undefined){
+        if(typeof html !== "undefined"){
             element.innerHTML = html;
         }
 
@@ -417,26 +404,18 @@ export default class Dom {
      * @return {String} The value of the element
      */
     static val(element, value){
-        let options, values;
-
-        // if this is a multiselect element
+        // if this is a multi-select element
         if(this.is(element, 'select[multiple]')){
+            const values = [];
+
             if(value){
-                if(!isArray(value)){
-                    value = [value];
-                }
-
-                options = this.selectElements('option', element);
-
-                options.forEach((option) => {
-                    this.prop(option, 'selected', value.includes(this.val(option)));
+                const _value = isArray(value) ? value : [value];
+                this.selectElements('option', element).forEach((option) => {
+                    this.prop(option, 'selected', _value.includes(this.val(option)));
                 });
             }
 
-            options = this.selectElements('option:checked', element);
-            values = [];
-
-            options.forEach((option) => {
+            this.selectElements('option:checked', element).forEach((option) => {
                 values.push(this.val(option));
             });
 
@@ -444,7 +423,7 @@ export default class Dom {
         }
 
         // otherwise
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             element.value = value;
         }
         return element.value;
@@ -480,7 +459,7 @@ export default class Dom {
                         element.removeAttribute(name);
                     }
                     else{
-                        if(value !== undefined){
+                        if(typeof value !== "undefined"){
                             element.setAttribute(name, value);
                         }
 
@@ -490,6 +469,7 @@ export default class Dom {
             }
         }
 
+        return null;
     }
 
     /**
@@ -511,7 +491,7 @@ export default class Dom {
         else{
             if(value === null){
                 try {
-                    element[name] = undefined;
+                    element[name] = void 0;
                     delete element[name];
                 }
                 catch(e){
@@ -519,13 +499,15 @@ export default class Dom {
                 }
             }
             else{
-                if(value !== undefined){
+                if(typeof value !== "undefined"){
                     element[name] = value;
                 }
 
                 return element[name];
             }
         }
+
+        return null;
     }
 
     /**
@@ -540,19 +522,16 @@ export default class Dom {
      * @return {String} The CSS style value of the property
      */
     static css(element, name, value, inline){
-        let camel, style;
+        const camel = this.camel(name);
 
-        camel = this.camel(name);
-
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             element.style[camel] = value;
         }
 
-        style = inline === true ? element.style : window.getComputedStyle(element);
+        const style = inline === true ? element.style : window.getComputedStyle(element);
+        const new_value = style.getPropertyValue(name);
 
-        value = style.getPropertyValue(name);
-
-        return value !== "" ? value : null;
+        return new_value !== "" ? new_value : null;
     }
 
     /**
@@ -566,18 +545,18 @@ export default class Dom {
      * @return {String} The value of the data attribute
      */
     static data(element, name, value){
-        name = this.camel(name);
+        const camel = this.camel(name);
 
         if(value === null){
-            if(element.dataset[name]){
-                delete element.dataset[name];
+            if(element.dataset[camel]){
+                delete element.dataset[camel];
             }
         }
-        else if(value !== undefined){
-            element.dataset[name] = value;
+        else if(typeof value !== "undefined"){
+            element.dataset[camel] = value;
         }
 
-        return element.dataset[name];
+        return element.dataset[camel];
     }
 
     /**
@@ -589,11 +568,9 @@ export default class Dom {
      * @param {Mixed} children An array of elemets or a single element to append
      */
     static append(element, children){
-        if (!isArray(children)) {
-            children = [children];
-        }
+        const _children = isArray(children) ? children : [children];
 
-        children.forEach((child) => {
+        _children.forEach((child) => {
             element.appendChild(child);
         });
     }
@@ -607,11 +584,9 @@ export default class Dom {
      * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     static before(element, siblings){
-        if (!isArray(siblings)) {
-            siblings = [siblings];
-        }
+        const _siblings = isArray(siblings) ? siblings : [siblings];
 
-        siblings.forEach((sibling) => {
+        _siblings.forEach((sibling) => {
             element.parentElement.insertBefore(sibling, element);
         });
     }
@@ -624,11 +599,9 @@ export default class Dom {
      * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     static after(element, siblings){
-        if (!isArray(siblings)) {
-            siblings = [siblings];
-        }
+        const _siblings = isArray(siblings) ? siblings : [siblings];
 
-        siblings.forEach((sibling) => {
+        _siblings.forEach((sibling) => {
             element.parentElement.insertBefore(sibling, element.nextSibling);
         });
     }
@@ -682,13 +655,11 @@ export default class Dom {
      * @return {Element} The matched element
      */
     static closest(element, selector){
-        let win;
-
         if(element instanceof Element){
             return Element.prototype.closest.call(element, selector);
         }
 
-        win = this.getElementWindow(element);
+        const win = this.getElementWindow(element);
         if(win){
             if(element instanceof win.Element){
                 return Element.prototype.closest.call(element, selector);
@@ -707,14 +678,16 @@ export default class Dom {
      * @return {Object} The top and left offset
      */
     static offset(element){
-        let left = 0,
-            top = 0;
+        let el = element;
+        let left = 0;
+        let top = 0;
 
-        if(element.offsetParent){
+        if(el.offsetParent){
             do{
-                left += element.offsetLeft;
-                top += element.offsetTop;
-            }while ((element = element.offsetParent));
+                left += el.offsetLeft;
+                top += el.offsetTop;
+            }
+            while ((el = el.offsetParent));
         }
 
         return {'left': left, 'top': top};
@@ -1039,7 +1012,7 @@ export default class Dom {
      * @return {Mixed} The Dom object if used as a setter, the innerHTML of the first element if used as a getter
      */
     text(value) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.text(element, value);
             });
@@ -1057,7 +1030,7 @@ export default class Dom {
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     val(value) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.val(element, value);
             });
@@ -1076,7 +1049,7 @@ export default class Dom {
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     attr(name, value) {
-        if(value !== undefined || isObject(name)){
+        if((typeof value !== "undefined") || isObject(name)){
             this.forEach((element) => {
                 Dom.attr(element, name, value);
             });
@@ -1095,7 +1068,7 @@ export default class Dom {
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     prop(name, value) {
-        if(value !== undefined || isObject(name)){
+        if((typeof value !== "undefined") || isObject(name)){
             this.forEach((element) => {
                 Dom.prop(element, name, value);
             });
@@ -1115,7 +1088,7 @@ export default class Dom {
      * @return {Mixed} The Dom object if used as a setter, the CSS style value of the property of the first element if used as a getter
      */
     css(name, value, inline) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.css(element, name, value, inline);
             });
@@ -1134,7 +1107,7 @@ export default class Dom {
      * @return {Mixed} The Dom object if used as a setter, the value of the data attribute of the first element if used as a getter
      */
     data(name, value) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.data(element, name, value);
             });
@@ -1152,11 +1125,9 @@ export default class Dom {
      * @chainable
      */
     append(children){
-        if(children instanceof Dom){
-            children = children.elements;
-        }
+        const _children = children instanceof Dom ? children.elements : children;
 
-        Dom.append(this.get(0), children);
+        Dom.append(this.get(0), _children);
 
         return this;
     }
@@ -1169,14 +1140,11 @@ export default class Dom {
      * @chainable
      */
     appendTo(parent){
-        if(!(parent instanceof Dom)){
-            parent = new Dom(parent);
-        }
-
-        parent = parent.get(0);
+        let _parent = parent instanceof Dom ? parent : new Dom(parent);
+        _parent = _parent.get(0);
 
         this.forEach((element) => {
-            Dom.append(parent, element);
+            Dom.append(_parent, element);
         });
 
         return this;
@@ -1191,19 +1159,14 @@ export default class Dom {
      * @chainable
      */
     insertAt(parent, index){
-        let element;
-
-        if(!(parent instanceof Dom)){
-            parent = new Dom(parent);
-        }
-
-        element = parent.children().get(index);
+        const _parent = parent instanceof Dom ? parent : new Dom(parent);
+        const element = _parent.children().get(index);
 
         if(element){
             Dom.before(element, this.elements);
         }
         else{
-            this.appendTo(parent);
+            this.appendTo(_parent);
         }
 
         return this;

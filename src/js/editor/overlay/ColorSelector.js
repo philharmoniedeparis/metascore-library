@@ -161,26 +161,22 @@ export default class ColorSelector extends Overlay {
      * @chainable
      */
     updateValue(val, refillAlpha, updatePositions, updateInputs){
-
-        let hsv;
+        const rgb = isObject(val) ? val : toRGBA(val);
+        const range = 255;
 
         this.value = this.value || {};
 
-        if(!isObject(val)){
-            val = toRGBA(val);
+        if('r' in rgb){
+            this.value.r = parseInt(rgb.r, 10);
         }
-
-        if('r' in val){
-            this.value.r = parseInt(val.r, 10);
+        if('g' in rgb){
+            this.value.g = parseInt(rgb.g, 10);
         }
-        if('g' in val){
-            this.value.g = parseInt(val.g, 10);
+        if('b' in rgb){
+            this.value.b = parseInt(rgb.b, 10);
         }
-        if('b' in val){
-            this.value.b = parseInt(val.b, 10);
-        }
-        if('a' in val){
-            this.value.a = parseFloat(val.a);
+        if('a' in rgb){
+            this.value.a = parseFloat(rgb.a);
         }
 
         if(refillAlpha !== false){
@@ -195,12 +191,12 @@ export default class ColorSelector extends Overlay {
         }
 
         if(updatePositions !== false){
-            hsv = rgb2hsv(this.value);
+            const hsv = rgb2hsv(this.value);
 
-            this.gradient.position.css('left', `${(1 - hsv.h) * 255}px`);
-            this.gradient.position.css('top', `${(hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2))}px`);
+            this.gradient.position.css('left', `${(1 - hsv.h) * range}px`);
+            this.gradient.position.css('top', `${(hsv.s * (range / 2)) + ((1 - (hsv.v/range)) * (range/2))}px`);
 
-            this.alpha.position.css('top', `${(1 - this.value.a) * 255}px`);
+            this.alpha.position.css('top', `${(1 - this.value.a) * range}px`);
         }
 
         this.fillCurrent();
@@ -217,32 +213,31 @@ export default class ColorSelector extends Overlay {
      * @chainable
      */
     fillGradient() {
-        let context = this.gradient.canvas.get(0).getContext('2d'),
-            fill;
+        const context = this.gradient.canvas.get(0).getContext('2d');
 
         // Create color gradient
-        fill = context.createLinearGradient(0, 0, context.canvas.width, 0);
-        fill.addColorStop(0, "rgb(255, 0, 0)");
-        fill.addColorStop(0.15, "rgb(255, 0, 255)");
-        fill.addColorStop(0.33, "rgb(0, 0, 255)");
-        fill.addColorStop(0.49, "rgb(0, 255, 255)");
-        fill.addColorStop(0.67, "rgb(0, 255, 0)");
-        fill.addColorStop(0.84, "rgb(255, 255, 0)");
-        fill.addColorStop(1, "rgb(255, 0, 0)");
+        const colors = context.createLinearGradient(0, 0, context.canvas.width, 0);
+        colors.addColorStop(0, "rgb(255, 0, 0)");
+        colors.addColorStop(0.15, "rgb(255, 0, 255)");
+        colors.addColorStop(0.33, "rgb(0, 0, 255)");
+        colors.addColorStop(0.49, "rgb(0, 255, 255)");
+        colors.addColorStop(0.67, "rgb(0, 255, 0)");
+        colors.addColorStop(0.84, "rgb(255, 255, 0)");
+        colors.addColorStop(1, "rgb(255, 0, 0)");
 
         // Apply gradient to canvas
-        context.fillStyle = fill;
+        context.fillStyle = colors;
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
         // Create semi transparent gradient (white -> trans. -> black)
-        fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
-        fill.addColorStop(0, "rgba(255, 255, 255, 1)");
-        fill.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-        fill.addColorStop(0.5, "rgba(0, 0, 0, 0)");
-        fill.addColorStop(1, "rgba(0, 0, 0, 1)");
+        const white2black = context.createLinearGradient(0, 0, 0, context.canvas.height);
+        white2black.addColorStop(0, "rgba(255, 255, 255, 1)");
+        white2black.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+        white2black.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+        white2black.addColorStop(1, "rgba(0, 0, 0, 1)");
 
         // Apply gradient to canvas
-        context.fillStyle = fill;
+        context.fillStyle = white2black;
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
         return this;
@@ -290,11 +285,10 @@ export default class ColorSelector extends Overlay {
      * @chainable
      */
     fillAlpha() {
-        let context = this.alpha.canvas.get(0).getContext('2d'),
-            fill;
+        const context = this.alpha.canvas.get(0).getContext('2d');
 
         // Create color gradient
-        fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
+        const fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
         fill.addColorStop(0, `rgb(${this.value.r},${this.value.g},${this.value.b})`);
         fill.addColorStop(1, "transparent");
 
@@ -355,12 +349,12 @@ export default class ColorSelector extends Overlay {
      * @param {Event} evt The event object
      */
     onGradientClick(evt){
-        let offset = evt.target.getBoundingClientRect(),
-            colorX = evt.pageX - offset.left,
-            colorY = evt.pageY - offset.top,
-            context = this.gradient.canvas.get(0).getContext('2d'),
-            imageData = context.getImageData(colorX, colorY, 1, 1),
-            value = this.value;
+        const offset = evt.target.getBoundingClientRect();
+        const colorX = evt.pageX - offset.left;
+        const colorY = evt.pageY - offset.top;
+        const context = this.gradient.canvas.get(0).getContext('2d');
+        const imageData = context.getImageData(colorX, colorY, 1, 1);
+        const value = this.value;
 
         this.gradient.position.css('left', `${colorX}px`);
         this.gradient.position.css('top', `${colorY}px`);
@@ -415,11 +409,11 @@ export default class ColorSelector extends Overlay {
      * @param {Event} evt The event object
      */
     onAlphaClick(evt){
-        let offset = evt.target.getBoundingClientRect(),
-            colorY = evt.pageY - offset.top,
-            context = this.alpha.canvas.get(0).getContext('2d'),
-            imageData = context.getImageData(0, colorY, 1, 1),
-            value = this.value;
+        const offset = evt.target.getBoundingClientRect();
+        const colorY = evt.pageY - offset.top;
+        const context = this.alpha.canvas.get(0).getContext('2d');
+        const imageData = context.getImageData(0, colorY, 1, 1);
+        const value = this.value;
 
         this.alpha.position.css('top', `${colorY}px`);
 

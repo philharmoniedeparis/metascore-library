@@ -53,8 +53,6 @@ export default class Image extends Field {
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input
@@ -62,7 +60,7 @@ export default class Image extends Field {
             .attr('placeholder', this.configs.placeholder)
             .addListener('click', this.onClick.bind(this));
 
-        buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
         if(this.configs.resizeButton){
@@ -104,7 +102,7 @@ export default class Image extends Field {
             return;
         }
 
-        let details = {'callback': this.onFileSelect.bind(this)};
+        const details = {'callback': this.onFileSelect.bind(this)};
 
         this.triggerEvent(EVT_FILEBROWSER, details, true, false);
 

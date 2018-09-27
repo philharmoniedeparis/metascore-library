@@ -296,6 +296,9 @@ export default class ContextMenu extends Dom {
      * @chainable
      */
     show(el, x, y){
+        let _x = x;
+        let _y = y;
+
         this.context = new Dom(el);
 
         if(this.tasks){
@@ -329,17 +332,17 @@ export default class ContextMenu extends Dom {
         const menu_width = menu_el.offsetWidth;
         const menu_height = menu_el.offsetHeight;
 
-        if((menu_width + x) > window_width){
-            x = window_width - menu_width;
+        if((menu_width + _x) > window_width){
+            _x = window_width - menu_width;
         }
 
-        if((menu_height + y) > window_height){
-            y = window_height - menu_height;
+        if((menu_height + _y) > window_height){
+            _y = window_height - menu_height;
         }
 
         this
-            .css('left', `${x}px`)
-            .css('top', `${y}px`);
+            .css('left', `${_x}px`)
+            .css('top', `${_y}px`);
 
         return this;
     }

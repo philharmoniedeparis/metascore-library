@@ -116,7 +116,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -129,7 +129,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('background-color', undefined, skipDefault);
+                        return this.contents.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('background-color', toCSS(value));
@@ -142,7 +142,7 @@ export default class Element extends Component{
                         'resizeButton': true
                     },
                     'getter': function(skipDefault){
-                        let value = this.contents.css('background-image', undefined, skipDefault);
+                        let value = this.contents.css('background-image', void 0, skipDefault);
 
                         if(value === 'none' || !isString(value)){
                             return null;
@@ -155,8 +155,8 @@ export default class Element extends Component{
                         return value;
                     },
                     'setter': function(value){
-                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.contents.css('background-image', value);
+                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.contents.css('background-image', css_value);
                     }
                 },
                 'border-width': {
@@ -166,7 +166,7 @@ export default class Element extends Component{
                         'min': 0
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.contents.css('border-width', undefined, skipDefault), 10);
+                        const value = parseInt(this.contents.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -179,7 +179,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('border-color', undefined, skipDefault);
+                        return this.contents.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('border-color', toCSS(value));
@@ -191,7 +191,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('border-radius', undefined, skipDefault);
+                        return this.contents.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('border-radius', value);
@@ -206,7 +206,7 @@ export default class Element extends Component{
                         'step': 0.1
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('opacity', undefined, skipDefault);
+                        return this.contents.css('opacity', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('opacity', value);
@@ -268,6 +268,8 @@ export default class Element extends Component{
 
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
+
+        return this;
     }
 
     /**

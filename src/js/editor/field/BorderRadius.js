@@ -27,15 +27,13 @@ export default class BorderRadius extends Field{
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', this.onClick.bind(this));
 
-        buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
         this.clear = new Dom('<button/>', {'text': '.', 'data-action': 'clear'})

@@ -145,7 +145,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -158,7 +158,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('background-color', undefined, skipDefault);
+                        return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('background-color', toCSS(value));
@@ -171,7 +171,7 @@ export default class Block extends Component {
                         'resizeButton': true
                     },
                     'getter': function(skipDefault){
-                        let value = this.css('background-image', undefined, skipDefault);
+                        let value = this.css('background-image', void 0, skipDefault);
 
                         if(value === 'none' || !isString(value)){
                             return null;
@@ -184,8 +184,8 @@ export default class Block extends Component {
                         return value;
                     },
                     'setter': function(value){
-                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.css('background-image', value);
+                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.css('background-image', css_value);
                     }
                 },
                 'border-width': {
@@ -195,7 +195,7 @@ export default class Block extends Component {
                         'min': 0
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -208,7 +208,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Block.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-color', undefined, skipDefault);
+                        return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-color', toCSS(value));
@@ -220,7 +220,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Block.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-radius', undefined, skipDefault);
+                        return this.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-radius', value);
@@ -283,6 +283,8 @@ export default class Block extends Component {
         this.pager = new Pager()
             .addDelegate('.button', 'click', this.onPagerClick.bind(this))
             .appendTo(this);
+
+        return this;
     }
 
     /**
@@ -474,22 +476,23 @@ export default class Block extends Component {
      */
     setActivePage(page, supressEvent){
         const previous = this.getActivePage();
+        let _page = page;
 
         if(isNumber(page)){
-            page = this.getPage(page);
+            _page = this.getPage(page);
         }
 
-        if(page instanceof Page){
+        if(_page instanceof Page){
 			this.getPages().forEach((other_page) => {
                 other_page.removeClass('active');
             });
 
-            page.addClass('active');
+            _page.addClass('active');
 
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': page, 'previous': previous});
+                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': _page, 'previous': previous});
             }
         }
 

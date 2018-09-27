@@ -248,7 +248,7 @@ export default class Time extends Field {
     onMouseWheel(evt){
         const segment = this.getFocusedSegment();
 
-        if(segment !== undefined){
+        if(typeof segment !== "undefined"){
             if(evt.deltaY < 0){
                 this.incrementSegmentValue(segment);
                 this.setFocusedSegment(segment);
@@ -331,8 +331,8 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onPaste(evt){
-        let clipboard_data = evt.clipboardData || window.clipboardData,
-            pasted_data = clipboard_data.getData('Text');
+        const clipboard_data = evt.clipboardData || window.clipboardData;
+        const pasted_data = clipboard_data.getData('Text');
 
         if(this.isValid(pasted_data)){
             this.setValue(this.constructor.getNumericalValue(pasted_data), false);
@@ -483,7 +483,7 @@ export default class Time extends Field {
      * @return {Number} The caret position
      */
     getCaretPosition() {
-        let caretPosition;
+        let caretPosition = 0;
 
         if(typeof this.input_el.selectionStart === 'number'){
             caretPosition = this.input_el.selectionDirection === 'backward' ? this.input_el.selectionStart : this.input_el.selectionEnd;
@@ -536,6 +536,8 @@ export default class Time extends Field {
             matches.shift();
             return matches[segment];
         }
+
+        return null;
     }
 
     /**
@@ -622,21 +624,23 @@ export default class Time extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
-        if(value !== null){
-            value = parseInt(value, 10);
+        let _value = value;
+
+        if(_value !== null){
+            _value = parseInt(_value, 10);
 
             if(this.min !== null){
-                value = Math.max(value, this.min);
+                _value = Math.max(_value, this.min);
             }
 
             if(this.max !== null){
-                value = Math.min(value, this.max);
+                _value = Math.min(_value, this.max);
             }
         }
 
-        this.input.val(this.constructor.getTextualValue(value));
+        this.input.val(this.constructor.getTextualValue(_value));
 
-        this.value = value;
+        this.value = _value;
 
         if(supressEvent !== true){
             this.input.triggerEvent('change');

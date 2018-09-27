@@ -51,7 +51,7 @@ export default class LoadMask extends Overlay{
         this.text.text(Locale.formatString(this.configs.text, {'!percent': value}));
 
         if(this.bar){
-            this.barProgress.css('width', value + '%');
+            this.barProgress.css('width', `${value}%`);
             this.barText.text(Locale.formatString(this.configs.barText, {'!percent': value}));
         }
     }

@@ -408,15 +408,15 @@ export default class Panel extends Dom {
      * @param {Event} evt The event object
      */
     onToolbarButtonClick(evt){
-        let selector, options, count, index,
-            action = Dom.data(evt.target, 'action');
+        const action = Dom.data(evt.target, 'action');
 
         switch(action){
             case 'next':
-            case 'previous':
-                selector = this.getToolbar().getSelector();
-                options = selector.getOptions();
-                count = options.count();
+            case 'previous': {
+                const selector = this.getToolbar().getSelector();
+                const options = selector.getOptions();
+                const count = options.count();
+                let index = 0;
 
                 if(count > 0){
                     if(action === 'previous'){
@@ -437,6 +437,7 @@ export default class Panel extends Dom {
 
                 evt.stopPropagation();
                 break;
+            }
         }
     }
 
@@ -737,9 +738,9 @@ export default class Panel extends Dom {
      * @chainable
      */
     refreshFieldValues(names, supressEvent){
-        names = names || Object.keys(this.getField());
+        const _names = names || Object.keys(this.getField());
 
-        names.forEach((name) => {
+        _names.forEach((name) => {
             this.refreshFieldValue(name, supressEvent);
         });
 
@@ -775,10 +776,8 @@ export default class Panel extends Dom {
      * @chainable
      */
     toggleFields(names, toggle){
-        let field;
-
         names.forEach((name) => {
-            field = this.getField(name);
+            const field = this.getField(name);
 
             if(field){
                 if(toggle){

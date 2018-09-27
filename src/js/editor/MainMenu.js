@@ -28,8 +28,6 @@ export default class MainMenu extends Dom {
      * @private
      */
     setupUI() {
-        let btn_group, sub_menu;
-
         new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.new', 'New')
@@ -51,9 +49,11 @@ export default class MainMenu extends Dom {
             .data('action', 'edit')
             .appendTo(this);
 
-        btn_group = new Dom('<div/>', {'class': 'button-group save'}).appendTo(this);
+        const btn_group = new Dom('<div/>', {'class': 'button-group save'})
+            .appendTo(this);
 
-        sub_menu = new Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
+        const sub_menu = new Dom('<div/>', {'class': 'sub-menu'})
+            .appendTo(btn_group);
 
         new Button()
             .attr({

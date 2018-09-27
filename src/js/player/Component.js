@@ -87,7 +87,9 @@ export default class Component extends Dom {
      * @method setupUI
      * @private
      */
-    setupUI() {}
+    setupUI() {
+        return this;
+    }
 
     /**
      * Get the component's id
@@ -167,6 +169,8 @@ export default class Component extends Dom {
                 return prop.getter.call(this);
             }
         }
+
+        return null;
     }
 
     /**
@@ -177,14 +181,12 @@ export default class Component extends Dom {
      * @return {Object} The values of the properties as name/value pairs
      */
     getPropertyValues(skipDefaults){
-        let values = {},
-            value;
-
-        skipDefaults = skipDefaults === undefined ? true : skipDefaults;
+        const values = {};
+        const _skipDefaults = (typeof skipDefaults === "undefined") ? true : skipDefaults;
 
 		Object.entries(this.getProperties()).forEach(([name, prop]) => {
             if('getter' in prop){
-                value = prop.getter.call(this, skipDefaults);
+                const value = prop.getter.call(this, _skipDefaults);
 
                 if(value !== null){
                     values[name] = value;
@@ -263,8 +265,8 @@ export default class Component extends Dom {
      * @return {player.CuePoint} The created cuepoint
      */
     setCuePoint(configs){
-        let inTime = this.getPropertyValue('start-time'),
-            outTime = this.getPropertyValue('end-time');
+        const inTime = this.getPropertyValue('start-time');
+        const outTime = this.getPropertyValue('end-time');
 
         if(this.cuepoint){
             this.cuepoint.destroy();

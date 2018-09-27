@@ -1,6 +1,7 @@
 import Component from '../Component';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
+import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
@@ -115,7 +116,7 @@ export default class Media extends Component{
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -128,7 +129,7 @@ export default class Media extends Component{
                         'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('background-color', undefined, skipDefault);
+                        return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('background-color', toCSS(value));
@@ -141,7 +142,7 @@ export default class Media extends Component{
                         'min': 0
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -154,7 +155,7 @@ export default class Media extends Component{
                         'label': Locale.t('player.component.Block.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-color', undefined, skipDefault);
+                        return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-color', toCSS(value));
@@ -166,7 +167,7 @@ export default class Media extends Component{
                         'label': Locale.t('player.component.Media.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-radius', undefined, skipDefault);
+                        return this.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-radius', value);
@@ -287,7 +288,7 @@ export default class Media extends Component{
      * @chainable
      */
     setTime(time) {
-        this.getRenderer().setTime(parseFloat(time) / 100);
+        this.getRenderer().setTime(toSeconds(time));
 
         return this;
     }
@@ -302,7 +303,7 @@ export default class Media extends Component{
         const renderer = this.getRenderer();
 
         if(renderer){
-            return Math.round(parseFloat(renderer.getTime()) * 100);
+            return toCentiseconds(renderer.getTime());
         }
 
         return null;
@@ -318,7 +319,7 @@ export default class Media extends Component{
         const renderer = this.getRenderer();
 
         if(renderer){
-            return Math.round(parseFloat(renderer.getDuration()) * 100);
+            return toCentiseconds(renderer.getDuration());
         }
 
         return null;

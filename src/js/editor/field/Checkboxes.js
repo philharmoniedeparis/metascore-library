@@ -129,14 +129,12 @@ export default class Checkboxes extends Field {
      * @return {Dom} The created Dom object
      */
     addCheckbox(value, text){
-        let uid, checkbox_wrapper, checkbox;
+        const uid = `checkbox-${uuid(5)}`;
 
-        uid = `checkbox-${uuid(5)}`;
-
-        checkbox_wrapper = new Dom('<div/>', {'class': 'checkbox-wrapper'})
+        const checkbox_wrapper = new Dom('<div/>', {'class': 'checkbox-wrapper'})
             .appendTo(this.input_wrapper);
 
-        checkbox = new Dom('<input/>', {'id': uid, 'type': 'checkbox', 'value': value})
+        const checkbox = new Dom('<input/>', {'id': uid, 'type': 'checkbox', 'value': value})
             .addListener('click', this.onClick.bind(this))
             .addListener('change', this.onChange.bind(this))
             .appendTo(checkbox_wrapper);

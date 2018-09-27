@@ -29,17 +29,18 @@ export default class StyleSheet extends Dom {
      * @chainable
      */
     addRule(selector, rule, index) {
+        let _index = index;
         const sheet = this.el.sheet;
 
-        if(index === undefined){
-            index = sheet.cssRules.length;
+        if(typeof _index === "undefined"){
+            _index = sheet.cssRules.length;
         }
 
         if("insertRule" in sheet) {
-            sheet.insertRule(`${selector}{${rule}}`, index);
+            sheet.insertRule(`${selector}{${rule}}`, _index);
         }
         else if("addRule" in sheet) {
-            sheet.addRule(selector, rule, index);
+            sheet.addRule(selector, rule, _index);
         }
 
         return this;
@@ -73,13 +74,12 @@ export default class StyleSheet extends Dom {
      * @chainable
      */
     removeRulesBySelector(selector) {
-        let sheet = this.el.sheet,
-            rules = sheet.cssRules || sheet.rules;
-
-        selector = selector.toLowerCase();
+        const sheet = this.el.sheet;
+        const rules = sheet.cssRules || sheet.rules;
+        const _selector = selector.toLowerCase();
 
         for (let i=0; i<rules.length; i++){
-            if(rules[i].selectorText.toLowerCase() === selector){
+            if(rules[i].selectorText.toLowerCase() === _selector){
                 this.removeRule(i);
                 break;
             }
@@ -95,8 +95,8 @@ export default class StyleSheet extends Dom {
      * @chainable
      */
     removeRules() {
-        let sheet = this.el.sheet,
-            rules = sheet.cssRules || sheet.rules;
+        const sheet = this.el.sheet;
+        const rules = sheet.cssRules || sheet.rules;
 
         while(rules.length > 0){
             this.removeRule(0);

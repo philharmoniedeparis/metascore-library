@@ -77,10 +77,10 @@ export default class EventEmitter{
      */
     triggerEvent(type, data, bubbling, cancelable){
         if (this.listeners[type] instanceof Array){
-            let listeners = this.listeners[type];
+            const listeners = this.listeners[type];
 
             if(listeners){
-                let event = {
+                const event = {
                     'target': this,
                     'type': type,
                     'detail': data,

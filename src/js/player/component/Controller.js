@@ -74,7 +74,7 @@ export default class Controller extends Component{
                         'label': Locale.t('player.component.Controller.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -87,7 +87,7 @@ export default class Controller extends Component{
                         'label': Locale.t('player.component.Controller.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-radius', undefined, skipDefault);
+                        return this.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-radius', value);
@@ -126,6 +126,8 @@ export default class Controller extends Component{
             .append(this.rewind_btn)
             .append(this.play_btn)
             .appendTo(this);
+
+        return this;
     }
 
     /**
@@ -146,9 +148,9 @@ export default class Controller extends Component{
      * @chainable
      */
     updateTime(time){
-        let centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left'),
-            seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left'),
-            minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
+        const centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left');
+        const seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left');
+        const minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
 
         this.timer.text(`${minutes}:${seconds}.${centiseconds}`);
 

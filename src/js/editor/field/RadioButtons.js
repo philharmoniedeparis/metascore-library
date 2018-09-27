@@ -132,14 +132,12 @@ export default class RadioButtons extends Field {
      * @return {Dom} The created Dom object
      */
     addRadioButton(value, text){
-        let uid, radio_wrapper, radiobutton;
+        const uid = `radiobutton-${uuid(5)}`;
 
-        uid = `radiobutton-${uuid(5)}`;
-
-        radio_wrapper = new Dom('<div/>', {'class': 'radiobutton-wrapper'})
+        const radio_wrapper = new Dom('<div/>', {'class': 'radiobutton-wrapper'})
             .appendTo(this.input_wrapper);
 
-        radiobutton = new Dom('<input/>', {'id': uid, 'type': 'radio', 'value': value})
+        const radiobutton = new Dom('<input/>', {'id': uid, 'type': 'radio', 'value': value})
             .attr('name', this.configs.name)
             .addListener('click', this.onClick.bind(this))
             .addListener('change', this.onChange.bind(this))
