@@ -88,6 +88,7 @@ export default class Resizable {
             'handle': evt.target,
             'x': evt.clientX,
             'y': evt.clientY,
+            'position': this.configs.target.css('position'),
             'left': parseInt(this.configs.target.css('left'), 10),
             'top': parseInt(this.configs.target.css('top'), 10),
             'w': parseInt(this.configs.target.css('width'), 10),
@@ -115,61 +116,57 @@ export default class Resizable {
      */
     onMouseMove(evt){
         const handle = new Dom(this._start_state.handle);
-
-        let w = 0;
-        let h = 0;
-        let top = 0;
-        let left = 0;
+        const new_state = {};
 
         switch(handle.data('direction')){
             case 'top':
-                h = this._start_state.h - evt.clientY + this._start_state.y;
-                top = this._start_state.top + evt.clientY    - this._start_state.y;
+                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
                 break;
             case 'right':
-                w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
                 break;
             case 'bottom':
-                h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
                 break;
             case 'left':
-                w = this._start_state.w - evt.clientX + this._start_state.x;
-                left = this._start_state.left + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'top-left':
-                w = this._start_state.w - evt.clientX + this._start_state.x;
-                h = this._start_state.h - evt.clientY + this._start_state.y;
-                top = this._start_state.top + evt.clientY    - this._start_state.y;
-                left = this._start_state.left + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
+                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'top-right':
-                w = this._start_state.w + evt.clientX - this._start_state.x;
-                h = this._start_state.h - evt.clientY + this._start_state.y;
-                top = this._start_state.top + evt.clientY - this._start_state.y;
+                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.top = this._start_state.top + evt.clientY - this._start_state.y;
                 break;
             case 'bottom-left':
-                w = this._start_state.w - evt.clientX + this._start_state.x;
-                h = this._start_state.h + evt.clientY - this._start_state.y;
-                left = this._start_state.left + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'bottom-right':
-                w = this._start_state.w + evt.clientX - this._start_state.x;
-                h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
                 break;
         }
 
-        if(typeof top !== "undefined"){
-            this.configs.target.css('top', `${top}px`);
+        if('top' in new_state){
+            this.configs.target.css('top', `${new_state.top}px`);
         }
-        if(typeof left !== "undefined"){
-            this.configs.target.css('left', `${left}px`);
+        if('left' in new_state){
+            this.configs.target.css('left', `${new_state.left}px`);
         }
 
         this._resized = true;
 
         this.configs.target
-            .css('width', `${w}px`)
-            .css('height', `${h}px`)
+            .css('width', `${new_state.w}px`)
+            .css('height', `${new_state.h}px`)
             .triggerEvent(EVT_RESIZE, null, false, true);
 
         evt.stopPropagation();
