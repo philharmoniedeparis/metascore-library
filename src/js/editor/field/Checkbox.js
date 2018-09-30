@@ -1,5 +1,7 @@
 import Field from '../Field';
 
+import '../../../css/editor/field/Checkbox.less';
+
 /**
  * Fired when the field's value changes
  *

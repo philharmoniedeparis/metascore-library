@@ -19,7 +19,8 @@ import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
 import TimeField from './editor/field/Time';
 
-import '../css/metaScore.editor.less';
+
+import '../css/Editor.less';
 
 /**
  * Fired when the editor is fully setup
@@ -544,18 +545,6 @@ export default class Editor extends Dom {
      */
     onSidebarResizeStart(){
         this.addClass('sidebar-resizing');
-    }
-
-    /**
-     * Sidebar resize event callback
-     *
-     * @method onSidebarResize
-     * @private
-     */
-    onSidebarResize(){
-        const width = parseInt(this.sidebar_wrapper.css('width'), 10);
-
-        this.workspace.css('right', `${width}px`);
     }
 
     /**
@@ -1675,12 +1664,9 @@ export default class Editor extends Dom {
     init(){
         // add components
 
-        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
-        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
+        const top =  new Dom('<div/>', {'id': 'top'}).appendTo(this);
 
-        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(this);
-
-        this.mainmenu = new MainMenu().appendTo(this)
+        this.mainmenu = new MainMenu().appendTo(top)
             .toggleButton('help', this.configs.help_url ? true : false)
             .toggleButton('account', this.configs.account_url ? true : false)
             .toggleButton('logout', this.configs.logout_url ? true : false)
@@ -1688,16 +1674,22 @@ export default class Editor extends Dom {
             .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
             .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
-        this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
-            .addListener('resizestart', this.onSidebarResizeStart.bind(this))
-            .addListener('resize', this.onSidebarResize.bind(this))
-            .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
+        const center =  new Dom('<div/>', {'id': 'center'}).appendTo(this);
 
-        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
+        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(center);
+
+        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
+        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
+
+        this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(center)
+            .addListener('resizestart', this.onSidebarResizeStart.bind(this))
+            .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
 
         this.sidebar_resizer = new Resizable({target: this.sidebar_wrapper, directions: ['left']});
         this.sidebar_resizer.getHandle('left')
             .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
+
+        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
 
         this.panels = {};
 

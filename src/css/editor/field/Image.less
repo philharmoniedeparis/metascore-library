@@ -1,0 +1,25 @@
+.field.imagefield{
+    .input-wrapper{
+        position: relative;
+
+        input{
+            width: 100%;
+            padding-right: 17px !important;
+            box-sizing: border-box;
+            direction: rtl;
+
+            &::placeholder{
+                direction: ltr;
+            }
+        }
+
+        .buttons{
+            button{
+                &[data-action="resize"]{
+                    background-image: url('../../../img/editor/field/image/resize.svg');
+                    background-size: 1.25em;
+                }
+            }
+        }
+    }
+}

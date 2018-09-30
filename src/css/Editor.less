@@ -1,0 +1,317 @@
+@keyframes pulsate {
+    from{
+        box-shadow: none;
+    }
+
+    to{
+        box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 254, 1);
+    }
+};
+
+::-webkit-scrollbar{
+    -webkit-appearance: none;
+    background-color: #d8d8d8;
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-thumb{
+    border-radius: 0;
+    background-color: #818181;
+
+    &:active,
+    &:hover{
+        background-color: #0000fe;
+    }
+}
+html,
+body{
+    height: 100%;
+    margin: 0;
+}
+
+.metaScore-editor{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+
+    *{
+        font-size: 12px;
+        font-family: Verdana, Geneva, sans-serif;
+    }
+
+    .clearfix::after{
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
+    }
+
+    div{
+        user-select: text;
+    }
+
+    table{
+        margin: 0;
+        border: none;
+        border-collapse: collapse;
+        border-spacing: 0;
+
+        td, th{
+            padding: 0;
+            border: 0;
+        }
+    }
+
+    label{
+        display: inline-block;
+        font-weight: normal;
+    }
+
+    fieldset{
+        margin: 0;
+        padding: 0;
+        border: none;
+        background: #eee;
+
+        legend{
+            display: block;
+            width: 100%;
+            padding: 1em;
+            box-sizing: border-box;
+            background: inherit;
+        }
+
+        > .contents{
+            padding: 1em;
+        }
+
+        &.collapsible{
+            legend{
+                cursor: pointer;
+
+                &::before{
+                    content: '';
+                    margin-right: 0.25em;
+                    padding-left: 8px;
+                    background: transparent url('../img/editor/fieldset/expanded.png') left center no-repeat;
+                }
+            }
+
+            &.collapsed{
+                legend{
+                    &::before{
+                        background-image: url('../img/editor/fieldset/collapsed.png');
+                    }
+                }
+
+                > .contents{
+                    display: none;
+                }
+            }
+        }
+    }
+
+    button{
+        border: none;
+        outline: none;
+        background-color: transparent;
+        background-position: center center;
+        background-repeat: no-repeat;
+        cursor: pointer;
+
+        &:hover{
+            opacity: 0.75;
+        }
+        &:active{
+            opacity: 0.5;
+        }
+        &.disabled{
+            opacity: 0.25;
+            cursor: default;
+        }
+
+        &.submit{
+            background: #ccc;
+
+            &:hover{
+                background: #0000fe;
+                color: #fff;
+                opacity: 1;
+            }
+        }
+
+        &.cancel{
+            background: #eee;
+        }
+
+        span{
+            pointer-events: none;
+        }
+    }
+
+    .collapsible{
+        [data-role="collapsible-toggle"],
+        [data-role="collapsible-label"]{
+            display: none;
+        }
+
+        [data-role="collapsible-toggle"] ~ [data-role="collapsible-label"]{
+            display: block;
+            cursor: pointer;
+        }
+
+        [data-role="collapsible-toggle"]:not(:checked) ~ [data-role="collapsible-label"] {
+            font-weight: bold;
+
+            &::before{
+                content: '+\00a0';
+            }
+        }
+
+        [data-role="collapsible-toggle"]:checked ~ [data-role="collapsible-label"] {
+            &::before{
+                content: '-\00a0';
+            }
+        }
+
+        [data-role="collapsible-toggle"]:not(:checked) ~ [data-role="collapsible"] {
+            display: none;
+        }
+
+        [data-role="collapsible-toggle"]:checked ~ [data-role="collapsible"] {
+            display: block;
+        }
+    }
+
+    #top{
+        flex-grow: 0;
+        z-index: 99;
+    }
+
+    #center{
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-content: center;
+        align-items: stretch;
+        flex: 1 1 auto;
+    }
+
+    .workspace{
+        position: relative;
+        flex: 1 1 auto;
+        overflow: hidden;
+        background: #fff;
+        padding: 19px 0 0 19px;
+
+        .ruler{
+            position: absolute;
+            z-index: 2;
+
+            &.horizontal{
+                left: 0;
+                right: 0;
+                top: 0;
+                height: 19px;
+                background: url('../img/editor/ruler-h.png') no-repeat top left;
+            }
+
+            &.vertical{
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 19px;
+                background: url('../img/editor/ruler-v.png') no-repeat top left;
+            }
+        }
+
+        .grid{
+            position: absolute;
+            display: none;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            background: url('../img/editor/grid.png');
+            background-size: 10px 10px;
+            opacity: 0.2;
+        }
+
+        .player-frame{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+    }
+
+    .sidebar-wrapper{
+        display: flex;
+        flex-direction: row;
+        width: 300px;
+        min-width: 300px;
+        max-width: 500px;
+        overflow: hidden;
+        background: #f2f2f2;
+        border-left: 1px solid #b2b2b2;
+
+        .resize-handle{
+            width: 9px;
+            cursor: col-resize;
+            background: #e6e6e6 url('../img/editor/sidebar/resizer-handle.png') no-repeat center center;
+
+            &:hover{
+                background-color: #d9d9d9;
+            }
+        }
+
+        .sidebar{
+            flex: 1 1 auto;
+            overflow-y: scroll;
+        }
+    }
+
+    &.sidebar-resizing{
+        .workspace{
+            pointer-events: none;
+        }
+
+        .sidebar{
+            pointer-events: none;
+            user-select: none;
+        }
+    }
+
+    &:not(.editing),
+    &.sidebar-hidden{
+        .sidebar-wrapper{
+            width: 9px !important;
+            min-width: 9px !important;
+            max-width: 9px !important;
+        }
+    }
+
+    &.editing{
+        .main-menu{
+             button{
+                &[data-action="edit-toggle"]{
+                    opacity: 0.5;
+                }
+             }
+        }
+
+        .workspace{
+            .grid{
+                display: block;
+            }
+        }
+    }
+}

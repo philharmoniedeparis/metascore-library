@@ -76,9 +76,9 @@ module.exports = {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['babel-polyfill', './src/js/polyfills', './src/js/Player'],
-        Editor: ['babel-polyfill', './src/js/polyfills', './src/js/Editor'],
-        API: ['./src/js/polyfills', './src/js/API']
+        Player: ['babel-polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
+        Editor: ['babel-polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
+        API: ['classlist-polyfill', './src/js/polyfills', './src/js/API']
     },
     devtool: "source-map",
     output: {

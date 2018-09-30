@@ -1,6 +1,8 @@
 import Dom from '../../Dom';
 import Overlay from '../Overlay';
 
+import '../../../../css/core/ui/overlay/iFrame.less';
+
 export default class iFrame extends Overlay{
 
 

@@ -2,6 +2,8 @@ import Dom from '../../Dom';
 import Button from '../Button';
 import Overlay from '../Overlay';
 
+import '../../../../css/core/ui/overlay/Alert.less';
+
 /**
  * Fired when a button is clicked
  *

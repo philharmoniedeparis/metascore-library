@@ -10,6 +10,8 @@ import Fieldset from '../Fieldset';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
 
+import '../../../css/editor/overlay/GuideSelector.less';
+
 /**
  * Fired when a guide's select button is clicked
  *

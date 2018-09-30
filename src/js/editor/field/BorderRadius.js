@@ -2,6 +2,8 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 import BorderRadiusOverlay from '../overlay/BorderRadius';
 
+import '../../../css/editor/field/BorderRadius.less';
+
 export default class BorderRadius extends Field{
 
     /**

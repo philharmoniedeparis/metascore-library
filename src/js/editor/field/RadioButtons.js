@@ -2,6 +2,8 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 import {uuid} from '../../core/utils/String';
 
+import '../../../css/editor/field/RadioButtons.less';
+
 /**
  * Fired when the field's value changes
  *

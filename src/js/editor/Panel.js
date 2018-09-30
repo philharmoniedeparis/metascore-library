@@ -16,6 +16,8 @@ import TextareaField from './field/Textarea';
 import TimeField from './field/Time';
 import {getImageMetadata} from '../core/utils/Media';
 
+import '../../css/editor/Panel.less';
+
 const FIELD_TYPES = {
     'BorderRadius': BorderRadiusField,
     'Buttons': ButtonsField,
@@ -140,7 +142,6 @@ export default class Panel extends Dom {
 
             this.refreshFieldValues(Object.keys(this.fields), true);
 
-            // TODO: improve
             // hide fields that are not common with all components
             Object.entries(this.getField()).forEach(([name]) => {
                 const common = this.components.every((component) => {
@@ -690,8 +691,6 @@ export default class Panel extends Dom {
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
-     *
-     * @todo add the synched/non synched strings to blocks (see Editor.updateBlockSelector)
      */
     refreshFieldValue(name, supressEvent){
         const value = this.getComponent().getPropertyValue(name);

@@ -481,6 +481,7 @@ export default class Dom {
      * @param {Mixed} name The attribute's name, or a list of name/value pairs
      * @param {Mixed} [value] The attribute's value
      * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
+     * @todo Handle errors
      */
     static prop(element, name, value){
         if(isObject(name)){
@@ -495,7 +496,7 @@ export default class Dom {
                     delete element[name];
                 }
                 catch(e){
-                    // TODO
+                    //
                 }
             }
             else{

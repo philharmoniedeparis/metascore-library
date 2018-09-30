@@ -4,6 +4,8 @@ import Locale from '../../core/Locale';
 import {decodeHTML} from '../../core/utils/String';
 import {isArray} from '../../core/utils/Var';
 
+import '../../../css/editor/field/Select.less';
+
 /**
  * Fired when the field's value changes
  *

@@ -4,6 +4,8 @@ import Locale from '../../core/Locale';
 import {uuid} from '../../core/utils/String';
 import {getFileMime} from '../../core/utils/Media';
 
+import '../../../css/editor/field/File.less';
+
 /**
  * Fired when the field's value changes
  *

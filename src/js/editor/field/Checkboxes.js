@@ -3,6 +3,8 @@ import Dom from '../../core/Dom';
 import {uuid} from '../../core/utils/String';
 import {isArray} from '../../core/utils/Var';
 
+import '../../../css/editor/field/Checkboxes.less';
+
 /**
  * Fired when the field's value changes
  *

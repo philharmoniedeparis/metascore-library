@@ -1,5 +1,7 @@
 import Dom from '../Dom';
 
+import '../../../css/core/ui/Draggable.less';
+
 /**
  * Fired before the dragging starts
  * The dragging can be canceled by invoking preventDefault on the event

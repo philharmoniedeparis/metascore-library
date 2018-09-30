@@ -11,6 +11,8 @@ import TextareaField from '../field/Textarea';
 import FileField from '../field/File';
 import CheckboxesField from '../field/Checkboxes';
 
+import '../../../css/editor/overlay/GuideDetails.less';
+
 /**
  * Fired when the submit button is clicked
  *

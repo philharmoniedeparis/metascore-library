@@ -11,7 +11,7 @@ import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
 import {toCentiseconds, toSeconds} from './core/utils/Media';
 
-import '../css/metaScore.player.less';
+import '../css/Player.less';
 
 /**
  * Fired when the player finished initializing

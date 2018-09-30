@@ -1,6 +1,8 @@
 import {isFunction} from '../utils/Var';
 import Dom from '../Dom';
 
+import '../../../css/core/ui/ContextMenu.less';
+
 /**
  * Fired before the menu is shows
  *

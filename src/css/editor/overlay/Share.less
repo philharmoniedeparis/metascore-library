@@ -1,0 +1,78 @@
+.overlay.share{
+    > .inner{
+        > .contents{
+            min-width: 500px;
+            padding: 12px 16px;
+
+            .field{
+                display: block;
+                margin-bottom: 1em;
+
+                textarea{
+                    width: 100%;
+                    min-height: 5em;
+                }
+
+                > label{
+                    display: block;
+                    font-weight: bold;
+                }
+            }
+
+            .field[data-name="link"],
+            .field[data-name="embed"]{
+                input{
+                    width: 100%;
+                    box-sizing: border-box;
+                }
+            }
+
+            .options{
+                margin-top: 0.5em;
+                padding: 1em;
+                background: rgba(0, 0, 0, 0.05);
+
+                .field.textfield{
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    align-items: center;
+
+                    label{
+                        margin-right: 0.5em;
+                    }
+
+                    input{
+                        width: 6em;
+                    }
+                }
+
+                .field.checkboxfield{
+                    display: flex;
+                    flex-direction: row-reverse;
+                    justify-content: flex-end;
+                    align-items: center;
+
+                    .input-wrapper{
+                        margin-right: 0.5em;
+
+                        checkbox{
+                            margin: 0;
+                        }
+                    }
+                }
+            }
+
+            button{
+                min-width: 60px;
+                margin-right: 0.5em;
+                padding: 0.5em;
+                pointer-events: auto;
+
+                &.cancel{
+                    background: #eee;
+                }
+            }
+        }
+    }
+}

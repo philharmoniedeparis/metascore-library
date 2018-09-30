@@ -4,6 +4,8 @@ import Locale from '../core/Locale';
 import TimeField from './field/Time';
 import NumberField from './field/Number';
 
+import '../../css/editor/MainMenu.less';
+
 export default class MainMenu extends Dom {
 
     /**

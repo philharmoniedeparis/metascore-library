@@ -4,6 +4,8 @@ import Locale from '../../core/Locale';
 import {pad} from '../../core/utils/String';
 import {isNumeric} from '../../core/utils/Var';
 
+import '../../../css/editor/field/Time.less';
+
 /**
  * Fired when the field's value changes
  *

@@ -4,6 +4,8 @@ import Button from '../../core/ui/Button';
 import Locale from '../../core/Locale';
 import NumberField from '../field/Number';
 
+import '../../../css/editor/overlay/BorderRadius.less';
+
 /**
  * Fired when the submit button is clicked
  *

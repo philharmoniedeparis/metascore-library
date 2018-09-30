@@ -3,6 +3,8 @@ import Dom from '../../core/Dom';
 import {isNumeric} from '../../core/utils/Var';
 import {getDecimalPlaces} from '../../core/utils/Number';
 
+import '../../../css/editor/field/Number.less';
+
 /**
  * Fired when the field's value changes
  *

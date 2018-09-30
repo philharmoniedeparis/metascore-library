@@ -6,6 +6,8 @@ import CheckboxField from '../field/Checkbox';
 import TextField from '../field/Text';
 import TextareaField from '../field/Textarea';
 
+import '../../../css/editor/overlay/Share.less';
+
 export default class Share extends Overlay {
 
     /**

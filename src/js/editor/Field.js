@@ -1,6 +1,8 @@
 import Dom from '../core/Dom';
 import {uuid} from '../core/utils/String';
 
+import '../../css/editor/Field.less';
+
 /**
  * Fired when the field's value changes
  *

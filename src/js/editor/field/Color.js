@@ -4,6 +4,8 @@ import Locale from '../../core/Locale';
 import {toRGBA} from '../../core/utils/Color';
 import ColorSelector from '../overlay/ColorSelector';
 
+import '../../../css/editor/field/Color.less';
+
 /**
  * Fired when the field's value changes
  *

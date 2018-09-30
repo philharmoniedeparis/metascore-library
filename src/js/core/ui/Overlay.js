@@ -1,6 +1,8 @@
 import Dom from '../Dom';
 import Toolbar from './overlay/Toolbar';
 
+import '../../../css/core/ui/Overlay.less';
+
 /**
  * Fired when the overlay is shown
  *

@@ -1,0 +1,55 @@
+.field.numberfield{
+    .input-wrapper{
+        input{
+            padding-right: 2em;
+        }
+
+        .buttons{
+            width: 2em;
+            flex-direction: column-reverse;
+            justify-content: center;
+
+            &.flip{
+                transform: rotate(180deg);
+            }
+
+            button{
+                width: auto;
+                margin: 0;
+                background-size: contain;
+
+                &[data-action="spin-down"]{
+                    background-image: url('../../../img/editor/field/number/spinner-down.svg');
+                }
+
+                &[data-action="spin-up"]{
+                    background-image: url('../../../img/editor/field/number/spinner-up.svg');
+                }
+            }
+        }
+    }
+
+    &.vertical{
+        .input-wrapper{
+            .buttons{
+                flex-direction: row;
+
+                button{
+                    &[data-action="spin-down"]{
+                        background-image: url('../../../img/editor/field/number/spinner-left.svg');
+                    }
+
+                    &[data-action="spin-up"]{
+                        background-image: url('../../../img/editor/field/number/spinner-right.svg');
+                    }
+                }
+            }
+        }
+    }
+
+    &:hover{
+        .buttons{
+            display: flex;
+        }
+    }
+}

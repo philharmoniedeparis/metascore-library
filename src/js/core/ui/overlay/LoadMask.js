@@ -2,6 +2,8 @@ import Overlay from '../Overlay';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 
+import '../../../../css/core/ui/overlay/LoadMask.less';
+
 export default class LoadMask extends Overlay{
 
     /**

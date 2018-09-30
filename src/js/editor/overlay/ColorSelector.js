@@ -4,6 +4,8 @@ import Button from '../../core/ui/Button';
 import {isObject} from '../../core/utils/Var';
 import {toRGBA, rgb2hsv} from '../../core/utils/Color';
 
+import '../../../css/editor/overlay/ColorSelector.less';
+
 /**
  * Fired when the submit button is clicked
  *
