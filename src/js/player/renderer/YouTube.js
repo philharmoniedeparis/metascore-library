@@ -1,5 +1,6 @@
 import HTML5 from './HTML5';
 import Dom from '../../core/Dom';
+import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 
 /**
  * Fired when the renderer is ready
@@ -104,6 +105,10 @@ export default class YouTube extends HTML5 {
         return this;
     }
 
+    getWaveformData(callback){
+        callback(null);
+    }
+
     onStateChange(evt){
         switch (evt.data) {
             case window.YT.PlayerState.PLAYING:
@@ -174,7 +179,7 @@ export default class YouTube extends HTML5 {
      * @chainable
      */
     setTime(time) {
-        this.dom.seekTo(time);
+        this.dom.seekTo(toSeconds(time));
 
         if(!this.isPlaying()){
             this.triggerTimeUpdate(false);
@@ -190,7 +195,7 @@ export default class YouTube extends HTML5 {
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return this.dom.getCurrentTime();
+        return toCentiseconds(this.dom.getCurrentTime());
     }
 
     /**
@@ -200,7 +205,7 @@ export default class YouTube extends HTML5 {
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return this.dom.getDuration();
+        return toCentiseconds(this.dom.getDuration());
     }
 
 }

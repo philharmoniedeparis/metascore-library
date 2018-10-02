@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "classlist-polyfill": "^1.2.0"
+    "classlist-polyfill": "^1.2.0",
+    "waveform-data": "^2.0.2"
   }
 }

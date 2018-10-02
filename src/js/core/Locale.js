@@ -7,9 +7,9 @@ export default class Locale{
 
     static load(file, callback) {
         Ajax.GET(file, {
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': (evt) => {
-                translations = JSON.parse(evt.target.getResponse());
+                translations = evt.target.getResponse();
                 callback(null, translations);
             },
             'onError': (evt) => {

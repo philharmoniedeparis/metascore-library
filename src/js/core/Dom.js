@@ -303,7 +303,7 @@ export default class Dom {
     /**
      * Add an event listener that only executes once on an element
      *
-     * @method addListenerOnce
+     * @method addOneTimeListener
      * @static
      * @param {HTMLElement} element The element
      * @param {String} type The event type

@@ -142,4 +142,8 @@ export default class Dash extends HTML5 {
        return this;
    }
 
+    getWaveformData(callback){
+        callback(null);
+    }
+
 }

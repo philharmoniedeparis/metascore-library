@@ -2,7 +2,7 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
 import Locale from '../../core/Locale';
-import {pad} from '../../core/utils/String';
+import {formatTime} from '../../core/utils/Media';
 
 /**
  * A controller component
@@ -148,11 +148,7 @@ export default class Controller extends Component{
      * @chainable
      */
     updateTime(time){
-        const centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left');
-        const seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left');
-        const minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
-
-        this.timer.text(`${minutes}:${seconds}.${centiseconds}`);
+        this.timer.text(formatTime(time));
 
         return this;
     }

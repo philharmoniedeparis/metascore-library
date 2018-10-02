@@ -1,7 +1,6 @@
 import Component from '../Component';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
-import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
@@ -213,11 +212,11 @@ export default class Media extends Component{
         const renderer = this.constructor.getRendererForMime(source.mime);
         if(renderer){
             this.renderer = new renderer({'type': this.configs.type})
+                .appendTo(this)
                 .addListener('ready', (evt) => {
                     evt.detail.renderer.setSource(source, supressEvent);
                 })
-                .init()
-                .appendTo(this);
+                .init();
         }
 
         return this;
@@ -288,7 +287,7 @@ export default class Media extends Component{
      * @chainable
      */
     setTime(time) {
-        this.getRenderer().setTime(toSeconds(time));
+        this.getRenderer().setTime(time);
 
         return this;
     }
@@ -303,7 +302,7 @@ export default class Media extends Component{
         const renderer = this.getRenderer();
 
         if(renderer){
-            return toCentiseconds(renderer.getTime());
+            return renderer.getTime();
         }
 
         return null;
@@ -319,7 +318,7 @@ export default class Media extends Component{
         const renderer = this.getRenderer();
 
         if(renderer){
-            return toCentiseconds(renderer.getDuration());
+            return renderer.getDuration();
         }
 
         return null;

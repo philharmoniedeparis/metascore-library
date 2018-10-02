@@ -1,3 +1,5 @@
+import {pad} from './String';
+
 /**
  * Get an image's metadata (name, width, and height)
  *
@@ -95,4 +97,19 @@ export function toCentiseconds(time){
 export function toSeconds(time){
     const multiplier = 0.01;
     return parseFloat(time) * multiplier;
+}
+
+/**
+ * Formats a time to a string represetation
+ *
+ * @method formatTime
+ * @param {Number} time The time in centiseconds
+ * @return {String} The string represetation
+ */
+export function formatTime(time){
+    const centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left');
+    const seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left');
+    const minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
+
+    return `${minutes}:${seconds}.${centiseconds}`;
 }

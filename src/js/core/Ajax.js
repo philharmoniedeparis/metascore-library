@@ -1,4 +1,5 @@
 import EventEmitter from './EventEmitter';
+import {isObject} from './utils/Var';
 
 /**
  * Fired when the operation is complete (the request's readyState is 4)
@@ -51,6 +52,8 @@ export default class Ajax extends EventEmitter {
 
         this.xhr = new XMLHttpRequest();
 
+        this.xhr.responseType = this.configs.responseType;
+
         if(this.configs.method === 'GET' && this.configs.data){
             const params = [];
 
@@ -102,7 +105,7 @@ export default class Ajax extends EventEmitter {
             'headers': {},
             'async': true,
             'data': null,
-            'dataType': 'json', // xml, json, script, text or html
+            'responseType': 'json',
             'withCredentials': false,
             'timeout': null,
             'autoSend': true,
@@ -224,7 +227,19 @@ export default class Ajax extends EventEmitter {
     }
 
     getResponse(){
-        return this.xhr.response;
+        let response = this.xhr.response;
+
+        // workaround for IE11 and Edge, which don't support XHR.responseType = json
+        if(this.configs.responseType === 'json' && !isObject(response)) {
+            try{
+                response = JSON.parse(response);
+            }
+            catch(e){
+                console.error(e);
+            }
+        }
+
+        return response;
     }
 
     addUploadListener(type, listener){
