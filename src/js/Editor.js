@@ -1423,14 +1423,14 @@ export default class Editor extends Dom {
 
         if(evt.detail.new && element.instanceOf('Cursor')){
             const media = this.getPlayer().getMedia();
-            const block = page.getBlock();
 
             if(!isNumber(element.getPropertyValue('start-time'))){
-                element.setPropertyValue('start-time', block.getPropertyValue('synched') ? page.getPropertyValue('start-time') : media.getTime());
+                element.setPropertyValue('start-time', media.getTime());
 
             }
 
             if(!isNumber(element.getPropertyValue('end-time'))){
+                const block = page.getBlock();
                 element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
             }
         }
