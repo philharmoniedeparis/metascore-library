@@ -164,7 +164,19 @@ export default class Component extends Dom {
             const prop = this.getProperty(name);
 
             if('getter' in prop){
-                return prop.getter.call(this);
+                const selected = this.hasClass('selected');
+
+                if(selected){
+                    this.removeClass('selected');
+                }
+
+                const value = prop.getter.call(this);
+
+                if(selected){
+                    this.addClass('selected');
+                }
+
+                return value;
             }
         }
     }
@@ -177,20 +189,27 @@ export default class Component extends Dom {
      * @return {Object} The values of the properties as name/value pairs
      */
     getPropertyValues(skipDefaults){
-        let values = {},
-            value;
+        const values = {};
+        const _skipDefaults = (typeof skipDefaults === "undefined") ? true : skipDefaults;
+        const selected = this.hasClass('selected');
 
-        skipDefaults = skipDefaults === undefined ? true : skipDefaults;
+        if(selected){
+            this.removeClass('selected');
+        }
 
 		Object.entries(this.getProperties()).forEach(([name, prop]) => {
             if('getter' in prop){
-                value = prop.getter.call(this, skipDefaults);
+                const value = prop.getter.call(this, _skipDefaults);
 
                 if(value !== null){
                     values[name] = value;
                 }
             }
         });
+
+        if(selected){
+            this.addClass('selected');
+        }
 
         return values;
     }
