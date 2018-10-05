@@ -538,12 +538,12 @@ export default class Editor extends Dom {
         this.getPlayer().getMedia().setTime(time);
     }
     /**
-     * Controller playheadclick event callback
+     * Controller playheadupdate event callback
      *
-     * @method onControllerPlayheadClick
+     * @method onControllerPlayheadUpdate
      * @private
      */
-    onControllerPlayheadClick(evt){
+    onControllerPlayheadUpdate(evt){
         const time = evt.detail.time;
 
         this.getPlayer().getMedia().setTime(time);
@@ -1706,7 +1706,7 @@ export default class Editor extends Dom {
         this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
 
         this.controller = new Controller()
-            .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
+            .addListener('playheadupdate', this.onControllerPlayheadUpdate.bind(this))
             .appendTo(left);
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
