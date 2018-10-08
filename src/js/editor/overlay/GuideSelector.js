@@ -215,6 +215,8 @@ export default class GuideSelector extends Overlay {
             });
         }
 
+        let appended = 0;
+
         if(!data.page){
             this.results.empty();
 
@@ -222,12 +224,14 @@ export default class GuideSelector extends Overlay {
                 this.results.text(this.configs.empty_text);
             }
             else{
-                this.appendResults(data.items);
+                appended = this.appendResults(data.items);
             }
         }
         else{
-            this.appendResults(data.items);
+            appended = this.appendResults(data.items);
         }
+
+        delete this.load_request;
 
         if(data.count > (data.page + 1) * data.page_size){
             this.load_more_params.page = data.page + 1;
@@ -237,6 +241,11 @@ export default class GuideSelector extends Overlay {
                     .addClass('has-more')
                     .addListener('scroll', this.onScroll);
             }
+
+            const el = this.getContents().get(0);
+            if(appended === 0 || el.clientHeight === el.scrollHeight){
+                this.loadMore();
+            }
         }
         else{
             delete this.load_more_params;
@@ -245,9 +254,6 @@ export default class GuideSelector extends Overlay {
                 .removeClass('has-more')
                 .removeListener('scroll', this.onScroll);
         }
-
-
-        delete this.load_request;
     }
 
     /**
@@ -330,10 +336,10 @@ export default class GuideSelector extends Overlay {
      *
      * @method setupResults
      * @private
-     * @chainable
      */
     appendResults(guides){
-        let row,
+        let count = 0,
+            row,
             revision_wrapper, revision_field,
             groups, button;
 
@@ -413,9 +419,11 @@ export default class GuideSelector extends Overlay {
                 .append(new Dom('<p/>', {'class': 'author', 'text': Locale.t('editor.overlay.GuideSelector.authorText', 'created by <em>!author</em>', {'!author': guide.author})}))
                 .append(revision_wrapper)
                 .appendTo(row);
+
+            count++;
         });
 
-        return this;
+        return count;
     }
 
     /**
