@@ -1,18 +1,13 @@
 import Dom from '../../core/Dom';
-import {toCentiseconds, toSeconds, formatTime} from '../utils/Media';
-
-import '../../../css/editor/waveform/Overview.less';
+import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 
 /**
  * Fired when the playhead is clicked
  *
  * @event playheadclick
- * @param {Object} waveform The Waveform instance
- * @param {Number} x The relative x position of the click
- * @param {Number} y The relative y position of the click
- * @param {Number} time The time in centiseconds corresponding to the x position
+ * @param {Number} time The time in centiseconds corresponding to click position
  */
-const EVT_PLAYHEADUPDATE = 'playheadupdate';
+const EVT_PLAYHEADCLICK = 'playheadclick';
 
 
 export default class Overview extends Dom {
@@ -22,8 +17,6 @@ export default class Overview extends Dom {
         super('<div/>', {'class': 'view overview'});
 
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
-
-        this.time = 0;
 
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
@@ -37,44 +30,61 @@ export default class Overview extends Dom {
         this.playhead_layer = new Dom('<canvas/>', {'class': 'layer playhead'})
             .appendTo(layers);
 
+        this.onMousemove = this.onMousemove.bind(this);
+        this.onMouseup = this.onMouseup.bind(this);
+
+        layers.addListener('mousedown', this.onMousedown.bind(this));
         layers.addListener('click', this.onClick.bind(this));
     }
 
     static getDefaults(){
         return {
-            'waveColor': '#0000fe',
-            'waveMargin': 20,
+            'waveColor': '#999',
+            'highlightColor': '#0000fe',
+            'highlightOpacity': 0.25,
             'playheadWidth': 1,
-            'playheadColor': '#000',
-            'highlightColor': '#000',
-            'highlightOpacity': 0.25
+            'playheadColor': '#000'
         };
+    }
+
+    updateSize(){
+        this.width = this.get(0).clientWidth;
+        this.height = this.get(0).clientHeight;
+
+        this.find('canvas').forEach((canvas) => {
+            canvas.width = this.width;
+            canvas.height = this.height;
+        });
+
+        return this;
     }
 
     setData(waveformdata){
         this.waveformdata = waveformdata;
+
+        this.updateWave();
+        this.updatePlayhead();
+
+        return this;
     }
 
     updateWave(){
         const adapter = this.waveformdata.adapter;
-        const layer = this.wave_layer;
-        const canvas = layer.get(0);
-        const width = canvas.width;
-        const height = canvas.height - (this.configs.waveMargin * 2);
+        const canvas = this.wave_layer.get(0);
         const context = canvas.getContext('2d');
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, this.width, this.height);
 
         context.beginPath();
 
-        for (let x = 0; x < width; x++) {
+        for(let x = 0; x < this.width; x++) {
             const val = adapter.at(2 * x);
-            context.lineTo(x + 0.5, this.scaleY(val, height) + this.configs.waveMargin + 0.5);
+            context.lineTo(x + 0.5, this.scaleY(val, this.height) + 0.5);
         }
 
-        for (let x = width - 1; x >= 0; x--) {
+        for(let x = this.width - 1; x >= 0; x--) {
             const val = adapter.at(2 * x + 1);
-            context.lineTo(x + 0.5, this.scaleY(val, height) + this.configs.waveMargin + 0.5);
+            context.lineTo(x + 0.5, this.scaleY(val, this.height) + 0.5);
         }
 
         context.closePath();
@@ -83,50 +93,73 @@ export default class Overview extends Dom {
     }
 
     updatePlayhead(){
-        const layer = this.playhead_layer;
-        const canvas = layer.get(0);
-        const height = canvas.height;
+        const canvas = this.playhead_layer.get(0);
         const context = canvas.getContext('2d');
-        const x = this.getPositionAt(this.time);
+        const x = this.getPositionAt(this.time) + 0.5;
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, this.width, this.height);
 
         context.beginPath();
         context.moveTo(x, 0);
-        context.lineTo(x, height);
+        context.lineTo(x, this.height);
         context.lineWidth = this.configs.playheadWidth;
         context.strokeStyle = this.configs.playheadColor;
         context.stroke();
+    }
 
-        if(!this._dragging){
-            const offset = 50;
-            const dom = this.get(0);
+    onMousedown(){
+        this
+            .addListener('mousemove', this.onMousemove)
+            .addListener('mouseup', this.onMouseup);
+    }
 
-            if((dom.scrollLeft > x - offset) || (dom.scrollLeft - x + dom.offsetWidth < offset)){
-                dom.scrollLeft = Math.max(0, x - offset);
-            }
-        }
+    onMousemove(evt){
+        const offset = evt.target.getBoundingClientRect();
+        const x = evt.pageX - offset.left;
+        const time = toCentiseconds(this.getTimeAt(x));
+
+        this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
+    }
+
+    onMouseup(){
+        this
+            .removeListener('mousemove', this.onMousemove)
+            .removeListener('mouseup', this.onMouseup);
     }
 
     onClick(evt){
         const offset = evt.target.getBoundingClientRect();
         const x = evt.pageX - offset.left;
-        const time = this.getTimeAt(x);
+        const time = toCentiseconds(this.getTimeAt(x));
 
-        this.triggerEvent(EVT_PLAYHEADUPDATE, {'waveform': this, 'time': time});
+        this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
     }
 
     setTime(time){
         this.time = toSeconds(time);
+
         this.updatePlayhead();
     }
 
+    setHighlight(start, end){
+        const canvas = this.highlight_layer.get(0);
+        const context = canvas.getContext('2d');
+        const x = this.getPositionAt(start);
+        const width = this.getPositionAt(end) - x;
+
+        context.clearRect(0, 0, this.width, this.height);
+
+        context.globalAlpha = this.configs.highlightOpacity;
+        context.fillStyle = this.configs.highlightColor;
+        context.fillRect(x, 0, width, this.height);
+    }
+
     getTimeAt(x){
-        return toCentiseconds(this.waveformdata.time(x));
+        return this.waveformdata.time(x);
     }
 
     getPositionAt(time){
-        return this.waveformdata.at_time(time) + 0.5;
+        return this.waveformdata.at_time(time);
     }
 
     scaleY(amplitude, height) {

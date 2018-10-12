@@ -484,17 +484,36 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Mainmenu time field valuechange event callback
+     * Controller time field valuechange event callback
      *
-     * @method onMainmenuTimeFieldChange
+     * @method onControllerTimeFieldChange
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
      */
-    onMainmenuTimeFieldChange(evt){
+    onControllerTimeFieldChange(evt){
         const field = evt.target._metaScore;
         const time = field.getValue();
 
         this.getPlayer().getMedia().setTime(time);
+    }
+
+    /**
+     * Controller button click event callback
+     *
+     * @method onControllerButtonClick
+     * @private
+     * @param {MouseEvent} evt The event object.
+     */
+    onControllerButtonClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'rewind':
+                this.getPlayer().getMedia().reset();
+                break;
+            default:
+                this.getPlayer().togglePlay();
+        }
     }
 
     /**
@@ -538,12 +557,12 @@ export default class Editor extends Dom {
         this.getPlayer().getMedia().setTime(time);
     }
     /**
-     * Controller playheadupdate event callback
+     * Controller timeset event callback
      *
-     * @method onControllerPlayheadUpdate
+     * @method onControllerTimeSet
      * @private
      */
-    onControllerPlayheadUpdate(evt){
+    onControllerTimeSet(evt){
         const time = evt.detail.time;
 
         this.getPlayer().getMedia().setTime(time);
@@ -1035,7 +1054,7 @@ export default class Editor extends Dom {
     onPlayerLoadedMetadata(evt){
         const renderer = evt.detail.renderer;
 
-        this.mainmenu.timefield.setMax(this.getPlayer().getMedia().getDuration());
+        this.controller.timefield.setMax(this.getPlayer().getMedia().getDuration());
 
         renderer.getWaveformData(this.onWaveformData.bind(this));
     }
@@ -1048,8 +1067,6 @@ export default class Editor extends Dom {
      */
     onPlayerTimeUpdate(evt){
         const time = evt.detail.time;
-
-        this.mainmenu.timefield.setValue(time, true);
 
         this.controller.setTime(time);
     }
@@ -1234,6 +1251,8 @@ export default class Editor extends Dom {
             .addListener('rindex', this.onPlayerReadingIndex.bind(this))
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
+            .addListener('play', this.onPlayerPlay.bind(this))
+            .addListener('pause', this.onPlayerPause.bind(this))
             .addClass('in-editor');
 
             this.player.contextmenu
@@ -1303,6 +1322,26 @@ export default class Editor extends Dom {
         this.panels.block.unsetComponents();
 
         evt.stopPropagation();
+    }
+
+    /**
+     * Player playing event callback
+     *
+     * @method onPlayerPlay
+     * @private
+     */
+    onPlayerPlay(){
+        this.addClass('playing');
+    }
+
+    /**
+     * Player pause event callback
+     *
+     * @method onPlayerPause
+     * @private
+     */
+    onPlayerPause(){
+        this.removeClass('playing');
     }
 
     /**
@@ -1542,7 +1581,7 @@ export default class Editor extends Dom {
                 player.updateData(data);
                 overlay.hide();
 
-                this.mainmenu.timefield.setMax(new_duration);
+                this.controller.timefield.setMax(new_duration);
 
                 this.setDirty(true)
                     .updateMainmenu();
@@ -1693,7 +1732,6 @@ export default class Editor extends Dom {
             .toggleButton('account', this.configs.account_url ? true : false)
             .toggleButton('logout', this.configs.logout_url ? true : false)
             .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
             .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
         const center =  new Dom('<div/>', {'id': 'center'}).appendTo(this);
@@ -1705,9 +1743,13 @@ export default class Editor extends Dom {
         this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
         this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
 
+        const bottom =  new Dom('<div/>', {'id': 'bottom'}).appendTo(left);
+
         this.controller = new Controller()
-            .addListener('playheadupdate', this.onControllerPlayheadUpdate.bind(this))
-            .appendTo(left);
+            .addListener('timeset', this.onControllerTimeSet.bind(this))
+            .addDelegate('.timefield', 'valuechange', this.onControllerTimeFieldChange.bind(this))
+            .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
+            .appendTo(bottom);
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))

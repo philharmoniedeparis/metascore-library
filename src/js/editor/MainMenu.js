@@ -1,7 +1,6 @@
 import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
 import Locale from '../core/Locale';
-import TimeField from './field/Time';
 import NumberField from './field/Number';
 
 import '../../css/editor/MainMenu.less';
@@ -104,13 +103,6 @@ export default class MainMenu extends Dom {
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
-        this.timefield = new TimeField()
-            .attr({
-                'title': Locale.t('editor.MainMenu.time', 'Time')
-            })
-            .addClass('time')
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'separator'})

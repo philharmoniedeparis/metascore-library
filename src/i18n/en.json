@@ -16,7 +16,6 @@
 	"editor.MainMenu.save": "Save as draft",
 	"editor.MainMenu.settings": "Settings",
 	"editor.MainMenu.share": "Share",
-	"editor.MainMenu.time": "Time",
 	"editor.MainMenu.undo": "Undo",
 	"editor.addPlayerComponents.page.time.msg": "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>",
 	"editor.addPlayerComponents.page.time.ok": "OK",

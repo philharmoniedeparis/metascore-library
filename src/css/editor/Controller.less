@@ -1,18 +1,110 @@
-#waveform{
-    border-top: 2px solid #ccc;
+.controller{
+    display: flex;
+    flex-direction: row;
 
-    .overview{
-        overflow-x: hidden;
-        border-bottom: 1px solid #ccc;
+    .controls{
+        display: flex;
+        flex-direction: column;
+        width: 100px;
+        background: #ccc;
 
-        .layers{
-            height: 20px;
+        .timefield{
+            background: #0000fe;
+
+            input{
+                height: 20px;
+                padding: 0;
+                text-align: center;
+                width: 100%;
+                color: #fff;
+            }
+        }
+
+        .buttons{
+            flex-grow: 1;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+
+            button{
+                border: none;
+                outline: none;
+                background-color: transparent;
+                background-repeat: no-repeat;
+
+                &[data-action="rewind"]{
+                    flex: 0 0 14%;
+                    margin-right: 5%;
+                    padding: 7%; /* 50% of flex-basis for 1:1 ratio*/
+                    background-size: contain;
+                    background-image: url('../../img/editor/controller/rewind.svg');
+                }
+
+                &[data-action="play"]{
+                    flex: 0 0 40%;
+                    margin-right: 14%;
+                    padding: 20%; /* 50% of flex-basis for 1:1 ratio*/
+                    background-image: url('../../img/editor/controller/play.svg');
+                    background-size: 30%;
+                    border-radius: 50%;
+                    border: 5px solid #fff;
+                }
+            }
+        }
+
+        &:after{
+            content: "";
+            flex: 0 0 20px;
+            background-image: url('../../img/logo-metaScore.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+            opacity: 0.75;
         }
     }
 
-    .zoom{
-        .layers{
-            height: 100px;
+    .waveform{
+        flex-grow: 1;
+
+        .view{
+            .layers{
+                overflow: hidden;
+                position: relative;
+
+                .layer{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+            }
+
+            &.overview{
+                border-bottom: 1px solid #ccc;
+
+                .layers{
+                    height: 20px;
+                }
+            }
+
+            &.zoom{
+                .layers{
+                    height: 100px;
+                }
+            }
+        }
+    }
+}
+
+
+.playing{
+    .controller{
+        .controls{
+            .buttons{
+                button[data-action="play"]{
+                    background-image: url('../../img/editor/controller/pause.svg');
+                }
+            }
         }
     }
 }
