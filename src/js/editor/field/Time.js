@@ -351,6 +351,8 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeydown(evt){
+        console.error('onKeydown');
+
         switch (evt.key) {
             case "ArrowLeft":
             case "ArrowRight": {

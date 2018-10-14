@@ -66,6 +66,18 @@ export default class Controller extends Dom {
             .appendTo(waveform);
     }
 
+    setDuration(duration){
+        this.timefield.setMax(duration);
+
+        this.overview
+            .updateSize()
+            .setDuration(duration);
+
+        this.zoom
+            .updateSize()
+            .setDuration(duration);
+    }
+
     setWaveformData(data){
         this.overview
             .updateSize()

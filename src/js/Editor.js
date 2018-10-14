@@ -1075,7 +1075,7 @@ export default class Editor extends Dom {
 
         this.getPlayer().getMedia().reset();
 
-        this.controller.timefield.setMax(this.getPlayer().getMedia().getDuration());
+        this.controller.setDuration(this.getPlayer().getMedia().getDuration());
 
         renderer.getWaveformData(this.onWaveformData.bind(this));
     }

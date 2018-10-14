@@ -94,6 +94,17 @@ module.exports = {
     module: {
       rules: [
         {
+          test: /\.worker\.js$/,
+          use: [
+            {
+              loader: 'worker-loader',
+              options: {
+                inline: true
+              }
+            }
+          ]
+        },
+        {
            // Lint JS files
           test: /\.js$/,
           exclude: /node_modules/,
@@ -171,7 +182,7 @@ module.exports = {
             },
           ],
         }
-      ],
+      ]
     },
     plugins: [
       new CleanWebpackPlugin(DIST),

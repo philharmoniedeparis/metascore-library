@@ -108,6 +108,10 @@ export default class Zoom extends Dom {
         return this;
     }
 
+    setDuration(duration){
+        this.duration = toSeconds(duration);
+    }
+
     setData(waveformdata){
         const scale = this.configs.zoomLevels[this.zoom_level].scale;
 
@@ -120,6 +124,7 @@ export default class Zoom extends Dom {
     }
 
     clear(){
+        delete this.duration;
         delete this.original_waveformdata;
         delete this.waveformdata;
 
@@ -182,36 +187,39 @@ export default class Zoom extends Dom {
 
         for(let time = startTime; time < endTime; time+=step){
             const x = this.getPositionAt(time) + 0.5;
+            const text = formatTime(toCentiseconds(time));
 
             context.moveTo(x, 0);
             context.lineTo(x, this.configs.axisTickHeight);
             context.stroke();
-
             context.moveTo(x, this.height);
             context.lineTo(x, this.height - this.configs.axisTickHeight);
             context.stroke();
-
-            const text = formatTime(toCentiseconds(time));
             context.fillText(text, x, this.height - this.configs.axisTickHeight);
         }
     }
 
     updatePlayhead(update_offset){
         const canvas = this.playhead_layer.get(0);
-        const x = this.getPositionAt(this.time) + 0.5;
+        const context = canvas.getContext('2d');
+        let x = 0;
 
-        if(update_offset === true){
-            if(x < 0 || x > this.width - 10){
-                this.setOffset(this.offset + x - 10);
-                return;
+        if(this.waveformdata){
+            x = this.getPositionAt(this.time) + 0.5;
+
+            if(update_offset === true && !this._dragging){
+                if(x < 0 || x > this.width - 10){
+                    this.setOffset(this.offset + x - 10);
+                    return;
+                }
             }
         }
-
-        const context = canvas.getContext('2d');
+        else if(this.duration){
+            x = Math.round(this.time / this.duration * this.width) + 0.5;
+        }
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
-
         context.moveTo(x, 0);
         context.lineTo(x, this.height);
         context.lineWidth = this.configs.playheadWidth;
@@ -297,7 +305,7 @@ export default class Zoom extends Dom {
     setTime(time){
         this.time = toSeconds(time);
 
-        if(this.waveformdata){
+        if(this.duration || this.waveformdata){
             this.updatePlayhead(true);
         }
     }

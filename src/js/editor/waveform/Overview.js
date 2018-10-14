@@ -59,6 +59,10 @@ export default class Overview extends Dom {
         return this;
     }
 
+    setDuration(duration){
+        this.duration = toSeconds(duration);
+    }
+
     setData(waveformdata){
         this.waveformdata = waveformdata;
 
@@ -69,6 +73,7 @@ export default class Overview extends Dom {
     }
 
     clear(){
+        delete this.duration;
         delete this.waveformdata;
 
         this.find('canvas').forEach((canvas) => {
@@ -85,7 +90,6 @@ export default class Overview extends Dom {
         const context = canvas.getContext('2d');
 
         context.clearRect(0, 0, this.width, this.height);
-
         context.beginPath();
 
         for(let x = 0; x < this.width; x++) {
@@ -106,10 +110,16 @@ export default class Overview extends Dom {
     updatePlayhead(){
         const canvas = this.playhead_layer.get(0);
         const context = canvas.getContext('2d');
-        const x = this.getPositionAt(this.time) + 0.5;
+        let x = 0;
+
+        if(this.waveformdata){
+            x = this.getPositionAt(this.time) + 0.5;
+        }
+        else if(this.duration){
+            x = Math.round(this.time / this.duration * this.width) + 0.5;
+        }
 
         context.clearRect(0, 0, this.width, this.height);
-
         context.beginPath();
         context.moveTo(x, 0);
         context.lineTo(x, this.height);
@@ -156,7 +166,7 @@ export default class Overview extends Dom {
     setTime(time){
         this.time = toSeconds(time);
 
-        if(this.waveformdata){
+        if(this.duration || this.waveformdata){
             this.updatePlayhead();
         }
     }
