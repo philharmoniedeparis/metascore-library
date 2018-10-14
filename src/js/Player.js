@@ -686,6 +686,8 @@ export default class Player extends Dom {
         }, this.configs.xhr);
 
         Ajax.GET(this.configs.url, options);
+
+        return this;
     }
 
     /**

@@ -68,6 +68,17 @@ export default class Overview extends Dom {
         return this;
     }
 
+    clear(){
+        delete this.waveformdata;
+
+        this.find('canvas').forEach((canvas) => {
+            const context = canvas.getContext('2d');
+            context.clearRect(0, 0, this.width, this.height);
+        });
+
+        return this;
+    }
+
     updateWave(){
         const adapter = this.waveformdata.adapter;
         const canvas = this.wave_layer.get(0);
@@ -118,6 +129,8 @@ export default class Overview extends Dom {
         const x = evt.pageX - offset.left;
         const time = toCentiseconds(this.getTimeAt(x));
 
+        this._dragging = true;
+
         this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
     }
 
@@ -128,17 +141,24 @@ export default class Overview extends Dom {
     }
 
     onClick(evt){
-        const offset = evt.target.getBoundingClientRect();
-        const x = evt.pageX - offset.left;
-        const time = toCentiseconds(this.getTimeAt(x));
+        if(!this._dragging){
+            const offset = evt.target.getBoundingClientRect();
+            const x = evt.pageX - offset.left;
+            const time = toCentiseconds(this.getTimeAt(x));
 
-        this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
+            this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
+        }
+        else{
+            delete this._dragging;
+        }
     }
 
     setTime(time){
         this.time = toSeconds(time);
 
-        this.updatePlayhead();
+        if(this.waveformdata){
+            this.updatePlayhead();
+        }
     }
 
     setHighlight(start, end){

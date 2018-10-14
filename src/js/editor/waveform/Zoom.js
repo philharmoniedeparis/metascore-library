@@ -29,6 +29,7 @@ export default class Zoom extends Dom {
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.time = 0;
+        this.zoom_level = 0;
 
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
@@ -42,6 +43,20 @@ export default class Zoom extends Dom {
         this.playhead_layer = new Dom('<canvas/>', {'class': 'layer playhead'})
             .appendTo(layers);
 
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
+            .appendTo(this);
+
+        new Dom('<button/>', {'text': '+'})
+            .data('action', 'zoom-in')
+            .addListener('click', this.onZoomClick.bind(this))
+            .appendTo(buttons);
+
+        new Dom('<button/>', {'text': '-'})
+            .data('action', 'zoom-out')
+            .addListener('click', this.onZoomClick.bind(this))
+            .appendTo(buttons);
+
+
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
 
@@ -53,7 +68,6 @@ export default class Zoom extends Dom {
         return {
             'waveColor': '#0000fe',
             'waveMargin': 20,
-            'axisStep': 1,
             'axisTickWidth': 1,
             'axisTickHeight': 6,
             'axisTickColor': '#333',
@@ -61,6 +75,24 @@ export default class Zoom extends Dom {
             'axisFont': '11px sans-serif',
             'playheadWidth': 1,
             'playheadColor': '#000',
+            'zoomLevels': [
+                {
+                    'scale': 4096,
+                    'axisStep': 10
+                },
+                {
+                    'scale': 2048,
+                    'axisStep': 5
+                },
+                {
+                    'scale': 1024,
+                    'axisStep': 2
+                },
+                {
+                    'scale': 512,
+                    'axisStep': 1
+                }
+            ]
         };
     }
 
@@ -77,9 +109,24 @@ export default class Zoom extends Dom {
     }
 
     setData(waveformdata){
-        this.waveformdata = waveformdata;
+        const scale = this.configs.zoomLevels[this.zoom_level].scale;
 
-        this.setOffset(0);
+        this.original_waveformdata = waveformdata;
+        this.waveformdata = this.original_waveformdata.resample({'scale': scale});
+
+        this.setOffset(0, true);
+
+        return this;
+    }
+
+    clear(){
+        delete this.original_waveformdata;
+        delete this.waveformdata;
+
+        this.find('canvas').forEach((canvas) => {
+            const context = canvas.getContext('2d');
+            context.clearRect(0, 0, this.width, this.height);
+        });
 
         return this;
     }
@@ -115,7 +162,7 @@ export default class Zoom extends Dom {
     updateAxis(){
         const canvas = this.axis_layer.get(0);
         const context = canvas.getContext('2d');
-        const step = 1;
+        const step = this.configs.zoomLevels[this.zoom_level].axisStep;
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
@@ -172,6 +219,41 @@ export default class Zoom extends Dom {
         context.stroke();
     }
 
+    setZoom(level){
+        if(level === this.zoom_level){
+            return;
+        }
+
+        this.zoom_level = level;
+
+        const scale = this.configs.zoomLevels[this.zoom_level].scale;
+
+        this.waveformdata = this.original_waveformdata.resample({'scale': scale});
+
+        const offset = this.waveformdata.at_time(this.time) - this.width/2;
+
+        this.setOffset(offset, true);
+    }
+
+    onZoomClick(evt){
+        const action = Dom.data(evt.target, 'action');
+        let level = this.zoom_level;
+
+        switch(action){
+            case 'zoom-in':
+                level = Math.min(this.configs.zoomLevels.length - 1, level+1);
+                break;
+
+            case 'zoom-out':
+                level = Math.max(0, level-1);
+                break;
+        }
+
+        this.setZoom(level);
+
+        evt.stopPropagation();
+    }
+
     onMousedown(evt){
         this._mousedown_x = evt.clientX;
 
@@ -215,17 +297,19 @@ export default class Zoom extends Dom {
     setTime(time){
         this.time = toSeconds(time);
 
-        this.updatePlayhead(true);
+        if(this.waveformdata){
+            this.updatePlayhead(true);
+        }
     }
 
-    setOffset(offset, supressEvent){
+    setOffset(offset, forceRedraw, supressEvent){
         let new_offset = offset;
 
         new_offset = Math.max(0, new_offset);
         new_offset = Math.min(this.waveformdata.adapter.length - this.width, new_offset);
         new_offset = Math.round(new_offset);
 
-        if(new_offset === this.offset){
+        if(!forceRedraw && new_offset === this.offset){
             return;
         }
 
@@ -246,7 +330,7 @@ export default class Zoom extends Dom {
     centerOffsetToTime(time, supressEvent){
         const offset = this.waveformdata.at_time(toSeconds(time)) - this.width/2;
 
-        this.setOffset(offset, supressEvent);
+        this.setOffset(offset, false, supressEvent);
     }
 
     getTimeAt(x){

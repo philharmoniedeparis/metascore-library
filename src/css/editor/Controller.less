@@ -1,3 +1,12 @@
+@keyframes controller-loading {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .controller{
     display: flex;
     flex-direction: row;
@@ -12,7 +21,7 @@
             background: #0000fe;
 
             input{
-                height: 20px;
+                height: 25px;
                 padding: 0;
                 text-align: center;
                 width: 100%;
@@ -32,6 +41,7 @@
                 outline: none;
                 background-color: transparent;
                 background-repeat: no-repeat;
+                opacity: 0.25;
 
                 &[data-action="rewind"]{
                     flex: 0 0 14%;
@@ -42,13 +52,42 @@
                 }
 
                 &[data-action="play"]{
+                    position: relative;
                     flex: 0 0 40%;
                     margin-right: 14%;
                     padding: 20%; /* 50% of flex-basis for 1:1 ratio*/
-                    background-image: url('../../img/editor/controller/play.svg');
-                    background-size: 30%;
+                    background-color: #f7f7f7;
+                    background-image: linear-gradient(to bottom, #f7f7f7 0%, #e7e7e7 100%);
                     border-radius: 50%;
                     border: 5px solid #fff;
+                    box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
+
+                    &::before{
+                        content: "";
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: url('../../img/editor/controller/play.svg') 50% 50% no-repeat;
+                        background-size: 30%;
+                    }
+
+                    &::after{
+                        display: none;
+                        content: "";
+                        position: absolute;
+                        top: -5px;
+                        left: -5px;
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 50%;
+                        border-width: 5px;
+                        border-style: solid;
+                        border-color: #0000fe;
+                        border-right-color: transparent;
+                        animation: controller-loading 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                    }
                 }
             }
         }
@@ -83,26 +122,85 @@
                 border-bottom: 1px solid #ccc;
 
                 .layers{
-                    height: 20px;
+                    height: 25px;
                 }
             }
 
             &.zoom{
+                position: relative;
+
                 .layers{
                     height: 100px;
+                }
+
+                .buttons{
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    user-select: none;
+
+                    button{
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        background-color: #f7f7f7;
+                        background-image: linear-gradient(to bottom, #f7f7f7 0%, #e7e7e7 100%);
+                        outline: none;
+                    }
                 }
             }
         }
     }
 }
 
-
-.playing{
+.has-player{
     .controller{
         .controls{
             .buttons{
                 button[data-action="play"]{
-                    background-image: url('../../img/editor/controller/pause.svg');
+                    &::before{
+                        opacity: 0.25;
+                    }
+                    &::after{
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+
+    &.metadata-loaded{
+        .controller{
+            .controls{
+                .buttons{
+                    button{
+                        opacity: 1;
+
+                        &:hover{
+                            opacity: 0.5;
+                        }
+
+                        &[data-action="play"]{
+                            &::before{
+                                opacity: 1;
+                            }
+                            &::after{
+                                display: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &.playing{
+        .controller{
+            .controls{
+                .buttons{
+                    button[data-action="play"]::before{
+                        background-image: url('../../img/editor/controller/pause.svg');
+                    }
                 }
             }
         }

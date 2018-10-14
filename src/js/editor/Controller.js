@@ -76,6 +76,11 @@ export default class Controller extends Dom {
             .setData(data);
     }
 
+    clearWaveform(){
+        this.overview.clear();
+        this.zoom.clear();
+    }
+
     setTime(time){
         this.timefield.setValue(time, true);
         this.overview.setTime(time);

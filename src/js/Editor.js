@@ -1046,6 +1046,23 @@ export default class Editor extends Dom {
     }
 
     /**
+     * Player sourceset event callback
+     *
+     * @method onPlayerSourceSet
+     * @private
+     */
+    onPlayerSourceSet(){
+        const loadmask = new LoadMask({
+            'parent': this,
+            'autoShow': true
+        });
+
+        this.getPlayer().addListener('loadedmetadata', () => {
+            loadmask.hide();
+        });
+    }
+
+    /**
      * Player loadedmetadata event callback
      *
      * @method onPlayerLoadedMetadata
@@ -1053,6 +1070,10 @@ export default class Editor extends Dom {
      */
     onPlayerLoadedMetadata(evt){
         const renderer = evt.detail.renderer;
+
+        this.addClass('metadata-loaded');
+
+        this.getPlayer().getMedia().reset();
 
         this.controller.timefield.setMax(this.getPlayer().getMedia().getDuration());
 
@@ -1196,13 +1217,16 @@ export default class Editor extends Dom {
         const player = this.player_frame.get(0).contentWindow.player;
 
         if(player){
-            player
+            this.player = player
                 .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
                 .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
                 .addListener('idset', this.onPlayerIdSet.bind(this))
                 .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
+                .addListener('sourceset', this.onPlayerSourceSet.bind(this))
                 .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
                 .load();
+
+            this.addClass('has-player');
         }
     }
 
@@ -1232,8 +1256,8 @@ export default class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
-    onPlayerLoadSuccess(loadmask, evt){
-        this.player = evt.detail.player
+    onPlayerLoadSuccess(loadmask){
+        this.player
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
@@ -2466,6 +2490,8 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
+        this.removeClass('has-player');
+
         this.player_contextmenu.disable();
 
         if(this.player_frame){
@@ -2473,6 +2499,7 @@ export default class Editor extends Dom {
             delete this.player_frame;
         }
 
+        this.controller.clearWaveform();
         this.panels.block.unsetComponents();
         this.history.clear();
         this.setDirty(false)
