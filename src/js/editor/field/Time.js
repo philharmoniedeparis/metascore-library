@@ -427,6 +427,8 @@ export default class Time extends Field {
             else{
                 this.setFocusedSegment(focused_segment);
             }
+
+            evt.preventDefault();
         }
         else if(evt.key !== "Enter"){
             evt.preventDefault();
