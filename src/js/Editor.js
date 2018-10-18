@@ -1057,7 +1057,9 @@ export default class Editor extends Dom {
             'autoShow': true
         });
 
-        this.getPlayer().addListener('loadedmetadata', () => {
+        this.controller.clearWaveform();
+
+        this.getPlayer().addOneTimeListener('loadedmetadata', () => {
             loadmask.hide();
         });
     }

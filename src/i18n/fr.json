@@ -1,4 +1,6 @@
 {
+	"editor.Controller.zoom.loading": "Chargement de la forme d'onde ...",
+	"editor.Controller.zoom.noWaveform": "Aucune donnée de forme d'onde disponible.",
 	"editor.MainMenu.account": "Mon Compte",
 	"editor.MainMenu.clone": "Enregistrer en tant que copie",
 	"editor.MainMenu.delete": "Supprimer",

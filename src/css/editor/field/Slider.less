@@ -1,0 +1,50 @@
+.sliderfield{
+    .input-wrapper{
+        input[type="range"]{
+            -webkit-appearance: none;
+            height: 2px;
+            background-color: #666;
+            vertical-align: middle;
+            cursor: pointer;
+
+            &:focus{
+                border: 0 !important;
+                outline: none !important;
+            }
+
+            &:hover{
+                background-color: #0000fe;
+            }
+
+            &::-webkit-slider-thumb{
+                -webkit-appearance: none;
+                width: 1em;
+                height: 1em;
+                border-radius: 50%;
+                background: #fff;
+                border: 2px solid #666;
+
+                &:hover{
+                    border-color: #0000fe;
+                }
+            }
+        }
+    }
+
+    &.reversed{
+        .input-wrapper{
+            input{
+                direction: rtl;
+            }
+        }
+    }
+
+    &.vertical{
+        .input-wrapper{
+            input{
+                transform-origin: 50%;
+                transform: rotate(-90deg);
+            }
+        }
+    }
+}

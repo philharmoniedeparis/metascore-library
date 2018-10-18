@@ -2,6 +2,7 @@ import Dom from '../core/Dom';
 import WaveformOverview from './waveform/Overview';
 import WaveformZoom from './waveform/Zoom';
 import TimeField from './field/Time';
+import Locale from '../core/Locale';
 
 import '../../css/editor/Controller.less';
 
@@ -69,23 +70,19 @@ export default class Controller extends Dom {
     setDuration(duration){
         this.timefield.setMax(duration);
 
-        this.overview
-            .updateSize()
-            .setDuration(duration);
-
-        this.zoom
-            .updateSize()
-            .setDuration(duration);
+        this.overview.updateSize().setDuration(duration);
+        this.zoom.updateSize().setDuration(duration).setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'));
     }
 
     setWaveformData(data){
-        this.overview
-            .updateSize()
-            .setData(data.resample({'width': this.overview.get(0).clientWidth}));
+        if(!data){
+            this.zoom.setMessage(Locale.t('editor.Controller.zoom.noWaveform', 'No waveform data available'));
+            return;
+        }
 
-        this.zoom
-            .updateSize()
-            .setData(data);
+        this.overview.updateSize().setData(data);
+        this.zoom.updateSize().setData(data).setMessage(null);
+
     }
 
     clearWaveform(){

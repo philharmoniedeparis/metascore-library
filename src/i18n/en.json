@@ -1,4 +1,6 @@
 {
+	"editor.Controller.zoom.loading": "Loading waveform...",
+	"editor.Controller.zoom.noWaveform": "No waveform data available.",
 	"editor.MainMenu.account": "My Account",
 	"editor.MainMenu.clone": "Save as copy",
 	"editor.MainMenu.delete": "Delete",

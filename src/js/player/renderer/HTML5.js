@@ -2,6 +2,7 @@ import Dom from '../../core/Dom';
 import {isFunction} from '../../core/utils/Var';
 import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 import Ajax from '../../core/Ajax';
+import WaveformData from 'waveform-data/waveform-data';
 import WebAudioBuilder from 'waveform-data/webaudio';
 
 /**
@@ -146,7 +147,7 @@ export default class HTML5 extends Dom {
     * @chainable
     */
     setSource(source, supressEvent){
-        const source_tags = `<source src="${source.url}" type="${source.mime}"></source>`;
+        this.source = source;
 
         delete this.waveformdata;
         if(this.waveformdata_ajax){
@@ -154,6 +155,7 @@ export default class HTML5 extends Dom {
             delete this.waveformdata_ajax;
         }
 
+        const source_tags = `<source src="${this.source.url}" type="${this.source.mime}"></source>`;
         this.el.text(source_tags);
 
         this.dom.load();
@@ -166,11 +168,7 @@ export default class HTML5 extends Dom {
     }
 
     getSource(){
-        if(this.dom){
-            return this.dom.currentSrc;
-        }
-
-        return null;
+        return this.source;
     }
 
     getWaveformData(callback){
@@ -180,20 +178,36 @@ export default class HTML5 extends Dom {
         }
 
         if(!this.waveformdata_ajax){
-            const src = this.getSource();
+            const source = this.getSource();
 
-            if(src){
-                this.waveformdata_ajax = Ajax.GET(src, {
+            if(source){
+                const from_web_audio = !('audiowaveform' in source);
+
+                this.waveformdata_ajax = Ajax.GET(from_web_audio ? source.url : source.audiowaveform, {
                     'responseType': 'arraybuffer',
                     'onSuccess': (evt) => {
-                        const context = new AudioContext();
                         const response = evt.target.getResponse();
 
-                        WebAudioBuilder(context, response, (err, waveform) => {
-                            this.waveformdata = err ? null : waveform;
+                        if(!response){
+                            this.waveformdata = null;
                             this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
                             delete this.waveformdata_ajax;
-                        });
+                            return;
+                        }
+
+                        if(from_web_audio){
+                            const context = new AudioContext();
+                            WebAudioBuilder(context, response, (err, waveform) => {
+                                this.waveformdata = err ? null : waveform;
+                                this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                                delete this.waveformdata_ajax;
+                            });
+                        }
+                        else{
+                            this.waveformdata = WaveformData.create(response);
+                            this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                            delete this.waveformdata_ajax;
+                        }
                     },
                     'onError': (evt) => {
                         console.error(evt.target.getStatusText());

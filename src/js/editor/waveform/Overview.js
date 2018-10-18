@@ -61,13 +61,16 @@ export default class Overview extends Dom {
 
     setDuration(duration){
         this.duration = toSeconds(duration);
+
+        return this;
     }
 
     setData(waveformdata){
-        this.waveformdata = waveformdata;
+        this.waveformdata = waveformdata.resample({'width': this.width});
 
-        this.updateWave();
-        this.updatePlayhead();
+        this.update();
+
+        this.addClass('has-data');
 
         return this;
     }
@@ -80,6 +83,8 @@ export default class Overview extends Dom {
             const context = canvas.getContext('2d');
             context.clearRect(0, 0, this.width, this.height);
         });
+
+        this.removeClass('has-data');
 
         return this;
     }
@@ -128,10 +133,16 @@ export default class Overview extends Dom {
         context.stroke();
     }
 
+    update(){
+        this.updateWave();
+        this.updatePlayhead();
+    }
+
     onMousedown(){
-        this
+        new Dom(this.get(0).ownerDocument)
             .addListener('mousemove', this.onMousemove)
-            .addListener('mouseup', this.onMouseup);
+            .addListener('mouseup', this.onMouseup)
+            .addListener('blur', this.onMouseup);
     }
 
     onMousemove(evt){
@@ -145,9 +156,10 @@ export default class Overview extends Dom {
     }
 
     onMouseup(){
-        this
+        new Dom(this.get(0).ownerDocument)
             .removeListener('mousemove', this.onMousemove)
-            .removeListener('mouseup', this.onMouseup);
+            .removeListener('mouseup', this.onMouseup)
+            .removeListener('blur', this.onMouseup);
     }
 
     onClick(evt){

@@ -1,4 +1,5 @@
 import Dom from '../../core/Dom';
+import SliderField from '../field/Slider';
 import {toCentiseconds, toSeconds, formatTime} from '../../core/utils/Media';
 
 /**
@@ -29,7 +30,9 @@ export default class Zoom extends Dom {
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.time = 0;
-        this.zoom_level = 0;
+
+        this.message = new Dom('<div/>', {'class': 'message'})
+            .appendTo(this);
 
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
@@ -43,25 +46,55 @@ export default class Zoom extends Dom {
         this.playhead_layer = new Dom('<canvas/>', {'class': 'layer playhead'})
             .appendTo(layers);
 
-        const buttons = new Dom('<div/>', {'class': 'buttons'})
+        const controls = new Dom('<div/>', {'class': 'controls'})
             .appendTo(this);
 
-        new Dom('<button/>', {'text': '+'})
-            .data('action', 'zoom-in')
-            .addListener('click', this.onZoomClick.bind(this))
-            .appendTo(buttons);
-
-        new Dom('<button/>', {'text': '-'})
+        this.zoom_out_btn = new Dom('<button/>', {'text': '&minus;'})
             .data('action', 'zoom-out')
-            .addListener('click', this.onZoomClick.bind(this))
-            .appendTo(buttons);
+            .addListener('mousedown', () => {
+                this.zoom_interval = setInterval(() => {
+                    this.zoomOut();
+                }, this.configs.zoomButtonInterval);
+            })
+            .addListener('mouseup', () => {
+                clearInterval(this.zoom_interval);
+                delete this.zoom_interval;
+            })
+            .addListener('click', (evt) => {
+                evt.stopPropagation();
+            })
+            .appendTo(controls);
+
+        this.zoom_slider = new SliderField({'reversed': true, 'triggerChangeOnDrag': true})
+            .addListener('valuechange', (evt) => {
+                this.setZoom(evt.detail.value);
+            })
+            .appendTo(controls);
+
+        this.zoom_in_btn = new Dom('<button/>', {'text': '&plus;'})
+            .data('action', 'zoom-in')
+            .addListener('mousedown', () => {
+                this.zoom_interval = setInterval(() => {
+                    this.zoomIn();
+                }, this.configs.zoomButtonInterval);
+            })
+            .addListener('mouseup', () => {
+                clearInterval(this.zoom_interval);
+                delete this.zoom_interval;
+            })
+            .addListener('click', (evt) => {
+                evt.stopPropagation();
+            })
+            .appendTo(controls);
 
 
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
 
-        layers.addListener('mousedown', this.onMousedown.bind(this));
-        layers.addListener('click', this.onClick.bind(this));
+        layers
+            .addListener('mousedown', this.onMousedown.bind(this))
+            .addListener('click', this.onClick.bind(this));
     }
 
     static getDefaults(){
@@ -75,24 +108,8 @@ export default class Zoom extends Dom {
             'axisFont': '11px sans-serif',
             'playheadWidth': 1,
             'playheadColor': '#000',
-            'zoomLevels': [
-                {
-                    'scale': 4096,
-                    'axisStep': 10
-                },
-                {
-                    'scale': 2048,
-                    'axisStep': 5
-                },
-                {
-                    'scale': 1024,
-                    'axisStep': 2
-                },
-                {
-                    'scale': 512,
-                    'axisStep': 1
-                }
-            ]
+            'zoomStep': 32,
+            'zoomButtonInterval': 50
         };
     }
 
@@ -108,44 +125,75 @@ export default class Zoom extends Dom {
         return this;
     }
 
+    setMessage(text){
+        this.message.text(text);
+
+        return this;
+    }
+
     setDuration(duration){
         this.duration = toSeconds(duration);
+        this.updateAxis();
+
+        return this;
     }
 
     setData(waveformdata){
-        const scale = this.configs.zoomLevels[this.zoom_level].scale;
+        this.waveformdata = waveformdata;
+        this.resampled_data = this.waveformdata.resample({'width': this.width});
 
-        this.original_waveformdata = waveformdata;
-        this.waveformdata = this.original_waveformdata.resample({'scale': scale});
+        this.max_scale = this.resampled_data.adapter.scale;
+
+        this.zoom_slider
+            .setMin(this.waveformdata.adapter.scale)
+            .setMax(this.max_scale)
+            .setStep(2)
+            .setValue(this.max_scale, true);
 
         this.setOffset(0, true);
+
+        this
+            .addListener('mousewheel', this.onMouseWheel)
+            .addListener('DOMMouseScroll', this.onMouseWheel)
+            .addClass('has-data');
 
         return this;
     }
 
     clear(){
         delete this.duration;
-        delete this.original_waveformdata;
         delete this.waveformdata;
+        delete this.resampled_data;
 
         this.find('canvas').forEach((canvas) => {
             const context = canvas.getContext('2d');
             context.clearRect(0, 0, this.width, this.height);
         });
 
+        this
+            .removeListener('mousewheel', this.onMouseWheel)
+            .removeListener('DOMMouseScroll', this.onMouseWheel)
+            .removeClass('has-data');
+
+        this.update();
+
         return this;
     }
 
     updateWave(){
-        const adapter = this.waveformdata.adapter;
         const canvas = this.wave_layer.get(0);
         const context = canvas.getContext('2d');
-        const margin = this.configs.waveMargin;
-        const height = this.height - (margin * 2);
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
 
+        if(!this.resampled_data){
+            return;
+        }
+
+        const adapter = this.resampled_data.adapter;
+        const margin = this.configs.waveMargin;
+        const height = this.height - (margin * 2);
         const startX = this.offset;
         const endX = startX + this.width;
 
@@ -167,10 +215,14 @@ export default class Zoom extends Dom {
     updateAxis(){
         const canvas = this.axis_layer.get(0);
         const context = canvas.getContext('2d');
-        const step = this.configs.zoomLevels[this.zoom_level].axisStep;
+        const step = this.getAxisStep();
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
+
+        if(step === null){
+            return;
+        }
 
         context.strokeStyle = this.configs.axisTickColor;
         context.lineWidth = this.configs.axisTickWidth;
@@ -202,20 +254,15 @@ export default class Zoom extends Dom {
     updatePlayhead(update_offset){
         const canvas = this.playhead_layer.get(0);
         const context = canvas.getContext('2d');
-        let x = 0;
+        const x = this.getPositionAt(this.time) + 0.5;
 
-        if(this.waveformdata){
-            x = this.getPositionAt(this.time) + 0.5;
-
+        if(this.resampled_data){
             if(update_offset === true && !this._dragging){
                 if(x < 0 || x > this.width - 10){
                     this.setOffset(this.offset + x - 10);
                     return;
                 }
             }
-        }
-        else if(this.duration){
-            x = Math.round(this.time / this.duration * this.width) + 0.5;
         }
 
         context.clearRect(0, 0, this.width, this.height);
@@ -227,66 +274,128 @@ export default class Zoom extends Dom {
         context.stroke();
     }
 
-    setZoom(level){
-        if(level === this.zoom_level){
+    update(){
+        this.updateWave();
+        this.updateAxis();
+        this.updatePlayhead();
+    }
+
+    /**
+     * Returns number of seconds for each axis tick, appropriate for the
+     * current zoom level, ensuring that ticks are not too close together
+     * and that ticks are placed at intuitive time intervals (i.e., every 1,
+     * 2, 5, 10, 20, 30 seconds, then every 1, 2, 5, 10, 20, 30 minutes, then
+     * every 1, 2, 5, 10, 20, 30 hours).
+     *
+     * Credit: peaks.js (see src/main/waveform/waveform.axis.js:getAxisLabelScale)
+     *
+     * @returns {Number} The number of seconds for each axis tick
+     */
+    getAxisStep() {
+        const min_spacing = 60;
+        const steps = [1, 2, 5, 10, 20, 30];
+        let index = 0;
+        let base_secs = 1;
+        let step = base_secs;
+
+        for (;;) {
+            step = base_secs * steps[index];
+            const pixels = this.timeToPixels(step);
+
+            if(pixels === null){
+                return null;
+            }
+
+            if (pixels < min_spacing) {
+                if (++index === steps.length) {
+                    base_secs *= 60; // seconds -> minutes -> hours
+                    index = 0;
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        return step;
+    }
+
+    zoomIn(){
+        const adapter = this.resampled_data.adapter;
+        this.setZoom(adapter.scale - this.configs.zoomStep);
+    }
+
+    zoomOut(){
+        const adapter = this.resampled_data.adapter;
+        this.setZoom(adapter.scale + this.configs.zoomStep);
+    }
+
+    setZoom(scale){
+        const min = this.waveformdata.adapter.scale;
+        const max = this.max_scale;
+
+        let clamped = parseInt(scale, 10);
+        clamped = Math.min(Math.max(scale, min), max);
+
+        if(clamped === this.resampled_data.adapter.scale){
             return;
         }
 
-        this.zoom_level = level;
+        this.resampled_data = this.waveformdata.resample({'scale': clamped});
 
-        const scale = this.configs.zoomLevels[this.zoom_level].scale;
+        this.zoom_out_btn.toggleClass('disabled', clamped >= max);
+        this.zoom_in_btn.toggleClass('disabled', clamped <= min);
+        this.zoom_slider.setValue(scale, true);
 
-        this.waveformdata = this.original_waveformdata.resample({'scale': scale});
-
-        const offset = this.waveformdata.at_time(this.time) - this.width/2;
-
+        const offset = this.resampled_data.at_time(this.time) - this.width/2;
         this.setOffset(offset, true);
-    }
-
-    onZoomClick(evt){
-        const action = Dom.data(evt.target, 'action');
-        let level = this.zoom_level;
-
-        switch(action){
-            case 'zoom-in':
-                level = Math.min(this.configs.zoomLevels.length - 1, level+1);
-                break;
-
-            case 'zoom-out':
-                level = Math.max(0, level-1);
-                break;
-        }
-
-        this.setZoom(level);
-
-        evt.stopPropagation();
     }
 
     onMousedown(evt){
         this._mousedown_x = evt.clientX;
 
-        this
+        new Dom(this.get(0).ownerDocument)
             .addListener('mousemove', this.onMousemove)
-            .addListener('mouseup', this.onMouseup);
+            .addListener('mouseup', this.onMouseup)
+            .addListener('blur', this.onMouseup);
     }
 
     onMousemove(evt){
-        if(evt.clientX === this._mousedown_x){
+        if(evt.clientX === this._mousedown_x || !this.resampled_data){
             return;
         }
 
         this._dragging = true;
 
         this.setOffset(this.offset + this._mousedown_x - evt.clientX);
-
         this._mousedown_x = evt.clientX;
-
     }
 
     onMouseup(){
-        this
+        new Dom(this.get(0).ownerDocument)
             .removeListener('mousemove', this.onMousemove)
-            .removeListener('mouseup', this.onMouseup);
+            .removeListener('mouseup', this.onMouseup)
+            .removeListener('blur', this.onMouseup);
+    }
+
+    /**
+     * The mousewheel event handler
+     *
+     * @method onMouseWheel
+     * @private
+     * @param {Event} evt The event object
+     */
+    onMouseWheel(evt){
+        const delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
+
+        if(delta > 0){
+            this.zoomIn();
+        }
+        else{
+            this.zoomOut();
+        }
+
+        evt.preventDefault();
     }
 
     onClick(evt){
@@ -305,7 +414,7 @@ export default class Zoom extends Dom {
     setTime(time){
         this.time = toSeconds(time);
 
-        if(this.duration || this.waveformdata){
+        if(this.duration || this.resampled_data){
             this.updatePlayhead(true);
         }
     }
@@ -314,7 +423,7 @@ export default class Zoom extends Dom {
         let new_offset = offset;
 
         new_offset = Math.max(0, new_offset);
-        new_offset = Math.min(this.waveformdata.adapter.length - this.width, new_offset);
+        new_offset = Math.min(this.resampled_data.adapter.length - this.width, new_offset);
         new_offset = Math.round(new_offset);
 
         if(!forceRedraw && new_offset === this.offset){
@@ -323,9 +432,7 @@ export default class Zoom extends Dom {
 
         this.offset = new_offset;
 
-        this.updateWave();
-        this.updateAxis();
-        this.updatePlayhead();
+        this.update();
 
         const start = this.getTimeAt(0);
         const end = this.getTimeAt(this.width);
@@ -336,17 +443,43 @@ export default class Zoom extends Dom {
     }
 
     centerOffsetToTime(time, supressEvent){
-        const offset = this.waveformdata.at_time(toSeconds(time)) - this.width/2;
+        const offset = this.resampled_data.at_time(toSeconds(time)) - this.width/2;
 
         this.setOffset(offset, false, supressEvent);
     }
 
     getTimeAt(x){
-        return this.waveformdata.time(x + this.offset);
+        if(this.resampled_data){
+            return this.resampled_data.time(x + this.offset);
+        }
+        else if(this.duration){
+            return x * this.duration / this.width;
+        }
+
+        return null;
     }
 
     getPositionAt(time){
-        return this.waveformdata.at_time(time) - this.offset;
+        if(this.resampled_data){
+            return this.resampled_data.at_time(time) - this.offset;
+        }
+        else if(this.duration){
+            return Math.round(time / this.duration * this.width);
+        }
+
+        return null;
+    }
+
+    timeToPixels(time){
+        if(this.resampled_data){
+            const adapter = this.resampled_data.adapter;
+            return Math.floor(time * adapter.sample_rate / adapter.scale);
+        }
+        else if(this.duration){
+            return Math.round(time / this.duration * this.width);
+        }
+
+        return null;
     }
 
     scaleY(amplitude, height) {
