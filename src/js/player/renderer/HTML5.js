@@ -1,5 +1,9 @@
 import Dom from '../../core/Dom';
 import {isFunction} from '../../core/utils/Var';
+import {toCentiseconds, toSeconds} from '../../core/utils/Media';
+import Ajax from '../../core/Ajax';
+import WaveformData from 'waveform-data/waveform-data';
+import WebAudioBuilder from 'waveform-data/webaudio';
 
 /**
  * Fired when the renderer is ready
@@ -65,7 +69,16 @@ const EVT_SEEKED = 'seeked';
  */
 const EVT_TIMEUPDATE = 'timeupdate';
 
-export default class Renderer extends Dom {
+/**
+ * Fired when the waveform data has finished loading
+ *
+ * @event waveformdataloaded
+ * @param {Object} renderer The renderer instance
+ * @param {Mixed} data The waveformdata instance, or null
+ */
+const EVT_WAVEFORMDATALOADED = 'waveformdataloaded';
+
+export default class HTML5 extends Dom {
 
     /**
      * A media renderer
@@ -133,19 +146,88 @@ export default class Renderer extends Dom {
     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
     * @chainable
     */
-   setSource(source, supressEvent){
-       const source_tags = `<source src="${source.url}" type="${source.mime}"></source>`;
+    setSource(source, supressEvent){
+        this.source = source;
 
-       this.el.text(source_tags);
+        delete this.waveformdata;
+        if(this.waveformdata_ajax){
+            this.waveformdata_ajax.abort();
+            delete this.waveformdata_ajax;
+        }
 
-       this.dom.load();
+        const source_tags = `<source src="${this.source.url}" type="${this.source.mime}"></source>`;
+        this.el.text(source_tags);
 
-       if(supressEvent !== true){
-           this.triggerEvent(EVT_SOURCESET, {'renderer': this});
-       }
+        this.dom.load();
 
-       return this;
-   }
+        if(supressEvent !== true){
+            this.triggerEvent(EVT_SOURCESET, {'renderer': this});
+        }
+
+        return this;
+    }
+
+    getSource(){
+        return this.source;
+    }
+
+    getWaveformData(callback){
+        if(this.waveformdata){
+            callback(this.waveformdata);
+            return;
+        }
+
+        if(!this.waveformdata_ajax){
+            const source = this.getSource();
+
+            if(source){
+                const from_web_audio = !('audiowaveform' in source);
+
+                this.waveformdata_ajax = Ajax.GET(from_web_audio ? source.url : source.audiowaveform, {
+                    'responseType': 'arraybuffer',
+                    'onSuccess': (evt) => {
+                        const response = evt.target.getResponse();
+
+                        if(!response){
+                            this.waveformdata = null;
+                            this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                            delete this.waveformdata_ajax;
+                            return;
+                        }
+
+                        if(from_web_audio){
+                            const context = new AudioContext();
+                            WebAudioBuilder(context, response, (err, waveform) => {
+                                this.waveformdata = err ? null : waveform;
+                                this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                                delete this.waveformdata_ajax;
+                            });
+                        }
+                        else{
+                            this.waveformdata = WaveformData.create(response);
+                            this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                            delete this.waveformdata_ajax;
+                        }
+                    },
+                    'onError': (evt) => {
+                        console.error(evt.target.getStatusText());
+                        this.waveformdata = null;
+                        this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                        delete this.waveformdata_ajax;
+                    }
+                });
+            }
+        }
+
+        if(this.waveformdata_ajax){
+            this.addOneTimeListener(EVT_WAVEFORMDATALOADED, (evt) => {
+                callback(evt.detail.data);
+            });
+        }
+        else{
+            callback(null);
+        }
+    }
 
     /**
      * The loadedmetadata event handler
@@ -283,7 +365,7 @@ export default class Renderer extends Dom {
      * @chainable
      */
     setTime(time) {
-        this.dom.currentTime = time;
+        this.dom.currentTime = toSeconds(time);
 
         if(!this.isPlaying()){
             this.triggerTimeUpdate(false);
@@ -299,7 +381,7 @@ export default class Renderer extends Dom {
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return this.dom.currentTime;
+        return toCentiseconds(this.dom.currentTime);
     }
 
     /**
@@ -309,7 +391,7 @@ export default class Renderer extends Dom {
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return this.dom.duration;
+        return toCentiseconds(this.dom.duration);
     }
 
     remove(){

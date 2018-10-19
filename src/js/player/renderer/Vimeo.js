@@ -1,6 +1,7 @@
 import HTML5 from './HTML5';
 import Dom from '../../core/Dom';
 import Ajax from '../../core/Ajax';
+import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 
 /**
  * Fired when the renderer is ready
@@ -49,12 +50,13 @@ export default class Vimeo extends HTML5 {
         const video_id = this.getVideoIDFromURL(url);
 
         Ajax.GET(`https://api.vimeo.com/videos/${video_id}`, {
+            'responseType': 'json',
+            'onSuccess': (evt) => {
+                const data = evt.target.getResponse();
+                callback(null, data.duration);
+            },
             'onError': () => {
                 callback(new Error(`An error occured while fetching video data from vimeo for: ${video_id}`));
-            },
-            'onSuccess': (evt) => {
-                const data = JSON.parse(evt.target.getResponse());
-                callback(null, data.duration);
             }
         });
     }
@@ -117,6 +119,10 @@ export default class Vimeo extends HTML5 {
         return this;
     }
 
+    getWaveformData(callback){
+        callback(null);
+    }
+
     onLoadedMetadata(...args){
         this.dom.getDuration().then((duration) => {
             this.duration = duration;
@@ -143,7 +149,7 @@ export default class Vimeo extends HTML5 {
      * @chainable
      */
     setTime(time) {
-        this.dom.setCurrentTime(time);
+        this.dom.setCurrentTime(toSeconds(time));
 
         if(!this.isPlaying()){
             this.triggerTimeUpdate(false);
@@ -159,7 +165,7 @@ export default class Vimeo extends HTML5 {
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return this.current_time;
+        return toCentiseconds(this.current_time);
     }
 
     /**
@@ -169,7 +175,7 @@ export default class Vimeo extends HTML5 {
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return this.duration;
+        return toCentiseconds(this.duration);
     }
 
     /**

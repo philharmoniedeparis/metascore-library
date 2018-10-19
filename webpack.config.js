@@ -171,7 +171,7 @@ module.exports = {
             },
           ],
         }
-      ],
+      ]
     },
     plugins: [
       new CleanWebpackPlugin(DIST),

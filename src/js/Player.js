@@ -336,16 +336,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media loadedmetadata event callback
-     *
-     * @method onMediaLoadedMetadata
-     * @private
-     */
-    onMediaLoadedMetadata(){
-        //this.getMedia().reset();
-    }
-
-    /**
      * Media waiting event callback
      *
      * @method onMediaWaiting
@@ -603,7 +593,7 @@ export default class Player extends Dom {
      * @param {Event} evt The event object
      */
     onLoadSuccess(evt){
-        this.json = JSON.parse(evt.target.getResponse());
+        this.json = evt.target.getResponse();
 
         this.setId(this.json.id)
             .setRevision(this.json.vid);
@@ -690,11 +680,14 @@ export default class Player extends Dom {
         this.addClass('loading');
 
         const options = Object.assign({}, {
+            'responseType': 'json',
             'onSuccess': this.onLoadSuccess.bind(this),
             'onError': this.onLoadError.bind(this)
         }, this.configs.xhr);
 
         Ajax.GET(this.configs.url, options);
+
+        return this;
     }
 
     /**
@@ -850,7 +843,6 @@ export default class Player extends Dom {
 
         if(!(media instanceof Media)){
             media = new Media(configs)
-                .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))

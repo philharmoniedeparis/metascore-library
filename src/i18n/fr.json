@@ -1,4 +1,6 @@
 {
+	"editor.Controller.zoom.loading": "Chargement de la forme d'onde ...",
+	"editor.Controller.zoom.noWaveform": "Aucune donnée de forme d'onde disponible.",
 	"editor.MainMenu.account": "Mon Compte",
 	"editor.MainMenu.clone": "Enregistrer en tant que copie",
 	"editor.MainMenu.delete": "Supprimer",
@@ -16,7 +18,6 @@
 	"editor.MainMenu.save": "Enregistrer un brouillon",
 	"editor.MainMenu.settings": "Paramètres",
 	"editor.MainMenu.share": "Partager",
-	"editor.MainMenu.time": "Temps",
 	"editor.MainMenu.undo": "Défaire",
 	"editor.addPlayerComponents.page.time.msg": "Dans un bloc synchronisé, une page ne peut pas être insérée au début (@start_time) ou à la fin (@duration) du média.<br/><b>Veuillez vous déplacer dans le média avant d'insérer une nouvelle page.</b>",
 	"editor.addPlayerComponents.page.time.ok": "OK",

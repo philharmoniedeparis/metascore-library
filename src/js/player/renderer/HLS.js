@@ -158,4 +158,8 @@ export default class HLS extends HTML5 {
        return this;
    }
 
+   getWaveformData(callback){
+       callback(null);
+   }
+
 }

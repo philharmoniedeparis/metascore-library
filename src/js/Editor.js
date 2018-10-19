@@ -18,6 +18,7 @@ import GuideDetails from './editor/overlay/GuideDetails';
 import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
 import TimeField from './editor/field/Time';
+import Controller from './editor/Controller';
 
 
 import '../css/Editor.less';
@@ -127,7 +128,7 @@ export default class Editor extends Dom {
      */
     onGuideSaveSuccess(loadmask, evt){
         const player = this.getPlayer();
-        const data = JSON.parse(evt.target.getResponse());
+        const data = evt.target.getResponse();
 
         loadmask.hide();
 
@@ -160,7 +161,7 @@ export default class Editor extends Dom {
         });
 
         const options = Object.assign({}, {
-            'dataType': 'json',
+            'responseType': 'json',
             'method': 'DELETE',
             'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask)
@@ -483,17 +484,36 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Mainmenu time field valuechange event callback
+     * Controller time field valuechange event callback
      *
-     * @method onMainmenuTimeFieldChange
+     * @method onControllerTimeFieldChange
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
      */
-    onMainmenuTimeFieldChange(evt){
+    onControllerTimeFieldChange(evt){
         const field = evt.target._metaScore;
         const time = field.getValue();
 
         this.getPlayer().getMedia().setTime(time);
+    }
+
+    /**
+     * Controller button click event callback
+     *
+     * @method onControllerButtonClick
+     * @private
+     * @param {MouseEvent} evt The event object.
+     */
+    onControllerButtonClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'rewind':
+                this.getPlayer().getMedia().reset();
+                break;
+            default:
+                this.getPlayer().togglePlay();
+        }
     }
 
     /**
@@ -533,6 +553,17 @@ export default class Editor extends Dom {
      */
     onTimeFieldOut(evt){
         const time = evt.detail.value;
+
+        this.getPlayer().getMedia().setTime(time);
+    }
+    /**
+     * Controller timeset event callback
+     *
+     * @method onControllerTimeSet
+     * @private
+     */
+    onControllerTimeSet(evt){
+        const time = evt.detail.time;
 
         this.getPlayer().getMedia().setTime(time);
     }
@@ -984,6 +1015,10 @@ export default class Editor extends Dom {
         }
     }
 
+    onWaveformData(data){
+        this.controller.setWaveformData(data);
+    }
+
     /**
      * Player idset event callback
      *
@@ -1011,13 +1046,40 @@ export default class Editor extends Dom {
     }
 
     /**
+     * Player sourceset event callback
+     *
+     * @method onPlayerSourceSet
+     * @private
+     */
+    onPlayerSourceSet(){
+        const loadmask = new LoadMask({
+            'parent': this,
+            'autoShow': true
+        });
+
+        this.controller.clearWaveform();
+
+        this.getPlayer().addOneTimeListener('loadedmetadata', () => {
+            loadmask.hide();
+        });
+    }
+
+    /**
      * Player loadedmetadata event callback
      *
      * @method onPlayerLoadedMetadata
      * @private
      */
-    onPlayerLoadedMetadata(){
-        this.mainmenu.timefield.setMax(this.getPlayer().getMedia().getDuration());
+    onPlayerLoadedMetadata(evt){
+        const renderer = evt.detail.renderer;
+
+        this.addClass('metadata-loaded');
+
+        this.getPlayer().getMedia().reset();
+
+        this.controller.setDuration(this.getPlayer().getMedia().getDuration());
+
+        renderer.getWaveformData(this.onWaveformData.bind(this));
     }
 
     /**
@@ -1026,10 +1088,10 @@ export default class Editor extends Dom {
      * @method onPlayerTimeUpdate
      * @private
      */
-    onPlayerTimeUpdate(){
-        const time = this.getPlayer().getMedia().getTime();
+    onPlayerTimeUpdate(evt){
+        const time = evt.detail.time;
 
-        this.mainmenu.timefield.setValue(time, true);
+        this.controller.setTime(time);
     }
 
     /**
@@ -1157,13 +1219,16 @@ export default class Editor extends Dom {
         const player = this.player_frame.get(0).contentWindow.player;
 
         if(player){
-            player
+            this.player = player
                 .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
                 .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
                 .addListener('idset', this.onPlayerIdSet.bind(this))
                 .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
+                .addListener('sourceset', this.onPlayerSourceSet.bind(this))
                 .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
                 .load();
+
+            this.addClass('has-player');
         }
     }
 
@@ -1193,8 +1258,8 @@ export default class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
      */
-    onPlayerLoadSuccess(loadmask, evt){
-        this.player = evt.detail.player
+    onPlayerLoadSuccess(loadmask){
+        this.player
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
@@ -1212,6 +1277,8 @@ export default class Editor extends Dom {
             .addListener('rindex', this.onPlayerReadingIndex.bind(this))
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
+            .addListener('play', this.onPlayerPlay.bind(this))
+            .addListener('pause', this.onPlayerPause.bind(this))
             .addClass('in-editor');
 
             this.player.contextmenu
@@ -1281,6 +1348,26 @@ export default class Editor extends Dom {
         this.panels.block.unsetComponents();
 
         evt.stopPropagation();
+    }
+
+    /**
+     * Player playing event callback
+     *
+     * @method onPlayerPlay
+     * @private
+     */
+    onPlayerPlay(){
+        this.addClass('playing');
+    }
+
+    /**
+     * Player pause event callback
+     *
+     * @method onPlayerPause
+     * @private
+     */
+    onPlayerPause(){
+        this.removeClass('playing');
     }
 
     /**
@@ -1520,7 +1607,7 @@ export default class Editor extends Dom {
                 player.updateData(data);
                 overlay.hide();
 
-                this.mainmenu.timefield.setMax(new_duration);
+                this.controller.timefield.setMax(new_duration);
 
                 this.setDirty(true)
                     .updateMainmenu();
@@ -1671,25 +1758,34 @@ export default class Editor extends Dom {
             .toggleButton('account', this.configs.account_url ? true : false)
             .toggleButton('logout', this.configs.logout_url ? true : false)
             .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
             .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
         const center =  new Dom('<div/>', {'id': 'center'}).appendTo(this);
 
-        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(center);
+        const left =  new Dom('<div/>', {'id': 'left'}).appendTo(center);
+
+        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(left);
 
         this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
         this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
 
-        this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(center)
+        const bottom =  new Dom('<div/>', {'id': 'bottom'}).appendTo(left);
+
+        this.controller = new Controller()
+            .addListener('timeset', this.onControllerTimeSet.bind(this))
+            .addDelegate('.timefield', 'valuechange', this.onControllerTimeFieldChange.bind(this))
+            .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
+            .appendTo(bottom);
+
+        const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
             .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
 
-        this.sidebar_resizer = new Resizable({target: this.sidebar_wrapper, directions: ['left']});
+        this.sidebar_resizer = new Resizable({target: right, directions: ['left']});
         this.sidebar_resizer.getHandle('left')
             .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
 
-        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
+        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(right);
 
         this.panels = {};
 
@@ -2396,6 +2492,8 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
+        this.removeClass('has-player');
+
         this.player_contextmenu.disable();
 
         if(this.player_frame){
@@ -2403,6 +2501,7 @@ export default class Editor extends Dom {
             delete this.player_frame;
         }
 
+        this.controller.clearWaveform();
         this.panels.block.unsetComponents();
         this.history.clear();
         this.setDirty(false)
@@ -2863,7 +2962,7 @@ export default class Editor extends Dom {
         // prepare the Ajax options object
         const options = Object.assign({
             'data': data,
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': (evt) => {
                 overlay.hide();
                 this.onGuideSaveSuccess(loadmask, evt);
@@ -2929,7 +3028,7 @@ export default class Editor extends Dom {
         // prepare the Ajax options object
         const options = Object.assign({
             'data': data,
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false

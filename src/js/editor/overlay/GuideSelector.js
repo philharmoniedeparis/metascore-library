@@ -204,7 +204,7 @@ export default class GuideSelector extends Overlay {
      * @param {Event} evt The event object
      */
     onLoadSuccess(evt){
-        const data = JSON.parse(evt.target.getResponse());
+        const data = evt.target.getResponse();
 
         if('filters' in data){
 			Object.entries(data.filters).forEach(([field, values]) => {
@@ -441,7 +441,7 @@ export default class GuideSelector extends Overlay {
 
         const options = Object.assign({}, {
             'data': params,
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': (evt) => {
                 this.onLoadSuccess(evt);
                 loadmask.hide();
@@ -463,7 +463,7 @@ export default class GuideSelector extends Overlay {
         if(!this.load_request){
             const options = Object.assign({}, {
                 'data': this.load_more_params,
-                'dataType': 'json',
+                'responseType': 'json',
                 'onSuccess': this.onLoadSuccess.bind(this),
                 'onError': this.onLoadError.bind(this),
                 'onAbort': this.onLoadAbort.bind(this)
