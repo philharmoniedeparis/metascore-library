@@ -33,8 +33,9 @@ export default class Overview extends Dom {
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
 
-        layers.addListener('mousedown', this.onMousedown.bind(this));
-        layers.addListener('click', this.onClick.bind(this));
+        layers
+            .addListener('mousedown', this.onMousedown.bind(this))
+            .addListener('click', this.onClick.bind(this));
     }
 
     static getDefaults(){
@@ -56,6 +57,10 @@ export default class Overview extends Dom {
             canvas.height = this.height;
         });
 
+        if(this.waveformdata){
+            this.resampled_data = this.waveformdata.resample({'width': this.width});
+        }
+
         return this;
     }
 
@@ -66,7 +71,8 @@ export default class Overview extends Dom {
     }
 
     setData(waveformdata){
-        this.waveformdata = waveformdata.resample({'width': this.width});
+        this.waveformdata = waveformdata;
+        this.resampled_data = this.waveformdata.resample({'width': this.width});
 
         this.update();
 
@@ -78,6 +84,7 @@ export default class Overview extends Dom {
     clear(){
         delete this.duration;
         delete this.waveformdata;
+        delete this.resampled_data;
 
         this.find('canvas').forEach((canvas) => {
             const context = canvas.getContext('2d');
@@ -90,12 +97,17 @@ export default class Overview extends Dom {
     }
 
     updateWave(){
-        const adapter = this.waveformdata.adapter;
         const canvas = this.wave_layer.get(0);
         const context = canvas.getContext('2d');
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
+
+        if(!this.resampled_data){
+            return;
+        }
+
+        const adapter = this.resampled_data.adapter;
 
         for(let x = 0; x < this.width; x++) {
             const val = adapter.at(2 * x);
@@ -117,7 +129,7 @@ export default class Overview extends Dom {
         const context = canvas.getContext('2d');
         let x = 0;
 
-        if(this.waveformdata){
+        if(this.resampled_data){
             x = this.getPositionAt(this.time) + 0.5;
         }
         else if(this.duration){
@@ -136,6 +148,8 @@ export default class Overview extends Dom {
     update(){
         this.updateWave();
         this.updatePlayhead();
+
+        return this;
     }
 
     onMousedown(){
@@ -163,6 +177,10 @@ export default class Overview extends Dom {
     }
 
     onClick(evt){
+        if(!this.duration && !this.resampled_data){
+            return;
+        }
+
         if(!this._dragging){
             const offset = evt.target.getBoundingClientRect();
             const x = evt.pageX - offset.left;
@@ -178,7 +196,7 @@ export default class Overview extends Dom {
     setTime(time){
         this.time = toSeconds(time);
 
-        if(this.duration || this.waveformdata){
+        if(this.duration || this.resampled_data){
             this.updatePlayhead();
         }
     }
@@ -197,11 +215,11 @@ export default class Overview extends Dom {
     }
 
     getTimeAt(x){
-        return this.waveformdata.time(x);
+        return this.resampled_data.time(x);
     }
 
     getPositionAt(time){
-        return this.waveformdata.at_time(time);
+        return this.resampled_data.at_time(time);
     }
 
     scaleY(amplitude, height) {

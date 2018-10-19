@@ -278,6 +278,8 @@ export default class Zoom extends Dom {
         this.updateWave();
         this.updateAxis();
         this.updatePlayhead();
+
+        return this;
     }
 
     /**
@@ -399,6 +401,10 @@ export default class Zoom extends Dom {
     }
 
     onClick(evt){
+        if(!this.duration && !this.resampled_data){
+            return;
+        }
+
         if(!this._dragging){
             const offset = evt.target.getBoundingClientRect();
             const x = evt.pageX - offset.left;

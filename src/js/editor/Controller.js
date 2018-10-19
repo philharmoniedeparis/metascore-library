@@ -3,6 +3,7 @@ import WaveformOverview from './waveform/Overview';
 import WaveformZoom from './waveform/Zoom';
 import TimeField from './field/Time';
 import Locale from '../core/Locale';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import '../../css/editor/Controller.less';
 
@@ -65,13 +66,24 @@ export default class Controller extends Dom {
         this.zoom = new WaveformZoom()
             .addListener('offsetupdate', this.onZoomOffsetUpodate.bind(this))
             .appendTo(waveform);
+
+        const resize_observer = new ResizeObserver(this.onWaveformResize.bind(this));
+        resize_observer.observe(waveform.get(0));
     }
 
     setDuration(duration){
         this.timefield.setMax(duration);
 
-        this.overview.updateSize().setDuration(duration);
-        this.zoom.updateSize().setDuration(duration).setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'));
+        this.overview
+            .updateSize()
+            .setDuration(duration)
+            .update();
+
+        this.zoom
+            .updateSize()
+            .setDuration(duration)
+            .update()
+            .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'));
     }
 
     setWaveformData(data){
@@ -111,6 +123,11 @@ export default class Controller extends Dom {
         const end = evt.detail.end;
 
         this.overview.setHighlight(start, end, true);
+    }
+
+    onWaveformResize() {
+        this.overview.updateSize().update();
+        this.zoom.updateSize().update();
     }
 
 }
