@@ -29,30 +29,46 @@ const EVT_STOP = 'stop';
  */
 const EVT_SEEKOUT = 'seekout';
 
+/**
+ * A class for managing media cuepoints to execute actions at specific media times
+ */
 export default class CuePoint extends EventEmitter{
 
     /**
-     * A class for managing media cuepoints to execute actions at specific media times
+     * Instantiate
      *
-     * @class CuePoint
-     * @namepsace player
-     * @extends EventEmitter
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {player.component.Media} configs.media The media component to which the cuepoint is attached
-     * @param {Number} [configs.inTime] The time at which the cuepoint starts
-     * @param {Number} [configs.outTime] The time at which the cuepoint stops
-     * @param {Boolean} [configs.considerError] Whether to estimate and use the error margin in timed events
+     * @property {Media} media The media component to which the cuepoint is attached
+     * @property {Number} [inTime] The time at which the cuepoint starts
+     * @property {Number} [outTime] The time at which the cuepoint stops
+     * @property {Boolean} [considerError] Whether to estimate and use the error margin in timed events
      */
     constructor(configs) {
         // call parent constructor
         super();
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The cuepoint's unique id
+         * @type {String}
+         */
         this.id = uuid();
 
+        /**
+         * Whether the cuepoint is currently running
+         * @type {Boolean}
+         */
         this.running = false;
+
+        /**
+         * The current max error margin in timed events
+         * @type {Number}
+         */
         this.max_error = 0;
 
         this.start = this.start.bind(this);
@@ -62,6 +78,11 @@ export default class CuePoint extends EventEmitter{
         this.onMediaSeeked = this.onMediaSeeked.bind(this);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'media': null,
@@ -109,6 +130,11 @@ export default class CuePoint extends EventEmitter{
         if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
             this.max_error = 0;
+
+            /**
+             * The previous media time
+             * @type {Number}
+             */
             this.previous_time = cur_time;
         }
 

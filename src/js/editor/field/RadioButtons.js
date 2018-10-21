@@ -13,17 +13,16 @@ import '../../../css/editor/field/RadioButtons.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A select list field based on an HTML select element
+ */
 export default class RadioButtons extends Field {
 
     /**
-     * A select list field based on an HTML select element
+     * Instantiate
      *
-     * @class RadioButtonsField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options=[]] A list of select options as objects with 'value' and 'text' keys
+     * @property {Object} [options=[]] A list of select options as objects with 'value' and 'text' keys
      */
     constructor(configs) {
         // call parent constructor
@@ -32,6 +31,11 @@ export default class RadioButtons extends Field {
         this.addClass('radiobuttonsfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': [],
@@ -47,10 +51,18 @@ export default class RadioButtons extends Field {
      */
     setupUI() {
         if(this.configs.label){
+            /**
+             * A potential <label> element
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
 
+        /**
+         * The input-wrapper container
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -85,6 +97,10 @@ export default class RadioButtons extends Field {
             return;
         }
 
+        /**
+         * The current value
+         * @type {String}
+         */
         this.value = null;
 
         const radiobutton = this.input_wrapper.find('input:checked');
@@ -185,9 +201,7 @@ export default class RadioButtons extends Field {
      * @chainable
      */
     disable() {
-        this.disabled = true;
-
-        this.addClass('disabled');
+        super.disable();
 
         this.input_wrapper.find('input').attr('disabled', 'disabled');
 
@@ -201,9 +215,7 @@ export default class RadioButtons extends Field {
      * @chainable
      */
     enable() {
-        this.disabled = false;
-
-        this.removeClass('disabled');
+        super.enable();
 
         this.input_wrapper.find('input').attr('disabled', null);
 

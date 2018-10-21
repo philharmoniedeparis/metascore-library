@@ -15,17 +15,16 @@ import '../../../css/editor/field/Color.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A color selection field
+ */
 export default class Color extends Field {
 
     /**
-     * A color selection field
+     * Instantiate
      *
-     * @class ColorField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @property {Mixed} [value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
      */
     constructor(configs) {
         // call parent constructor
@@ -34,6 +33,11 @@ export default class Color extends Field {
         this.addClass('colorfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             value: {
@@ -65,6 +69,10 @@ export default class Color extends Field {
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 
+        /**
+         * The overlay
+         * @type {ColorSelector}
+         */
         this.overlay = new ColorSelector()
             .addListener('submit', this.onOverlaySubmit.bind(this));
     }
@@ -78,6 +86,10 @@ export default class Color extends Field {
      * @chainable
      */
     setValue(value, supressEvent){
+        /**
+         * The current value
+         * @type {Object}
+         */
         this.value = value ? toRGBA(value) : null;
 
         const rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;

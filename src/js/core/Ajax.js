@@ -29,16 +29,14 @@ const EVT_ERROR = 'error';
  */
 const EVT_ABORT = 'abort';
 
-// relevant HTTP status codes
-const MIN_OK_STATUS = 200;
-const MAX_OK_STATUS = 300;
-const NOT_MODIFIED_STATUS = 304
-
 /**
  * A class to handle AJAX requests
  */
 export default class Ajax extends EventEmitter {
 
+    /**
+     * Instantiate
+     */
     constructor(url, configs) {
         // call parent constructor
         super();
@@ -48,8 +46,16 @@ export default class Ajax extends EventEmitter {
         // bind the readystatechange handler
         this.onReadyStateChange = this.onReadyStateChange.bind(this);
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The XMLHttpRequest instance
+         * @type {XMLHttpRequest}
+         */
         this.xhr = new XMLHttpRequest();
 
         this.xhr.responseType = this.configs.responseType;
@@ -57,7 +63,7 @@ export default class Ajax extends EventEmitter {
         if(this.configs.method === 'GET' && this.configs.data){
             const params = [];
 
-			Object.entries(this.configs.data).forEach(([key, value]) => {
+            Object.entries(this.configs.data).forEach(([key, value]) => {
                 params.push(`${key}=${encodeURIComponent(value)}`);
             });
 
@@ -99,6 +105,11 @@ export default class Ajax extends EventEmitter {
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'method': 'GET',
@@ -118,10 +129,8 @@ export default class Ajax extends EventEmitter {
     /**
      * Send an XMLHttp GET request
      *
-     * @method GET
-     * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} configs to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @param {Object} configs Custom configs to override defaults
      * @return {Ajax} The Ajax instance
      */
     static GET(url, configs) {
@@ -133,10 +142,8 @@ export default class Ajax extends EventEmitter {
     /**
      * Send an XMLHttp POST request
      *
-     * @method POST
-     * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @param {Object} configs Custom configs to override defaults
      * @return {Ajax} The Ajax instance
      */
     static POST(url, configs) {
@@ -148,10 +155,8 @@ export default class Ajax extends EventEmitter {
     /**
      * Send an XMLHttp PUT request
      *
-     * @method PUT
-     * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @param {Object} configs Custom configs to override defaults
      * @return {Ajax} The Ajax instance
      */
     static PUT(url, configs) {
@@ -160,12 +165,21 @@ export default class Ajax extends EventEmitter {
 
     }
 
+    /**
+    * readystatechange event callback
+    *
+    * @private
+    */
     onReadyStateChange(){
         switch(this.xhr.readyState){
             case XMLHttpRequest.DONE: {
                 let success = false;
 
-                if(this.xhr.status >= MIN_OK_STATUS && this.xhr.status < MAX_OK_STATUS || this.xhr.status === NOT_MODIFIED_STATUS){
+                const min_ok_status = 200;
+                const max_ok_status = 300;
+                const not_modified_status = 304
+
+                if(this.xhr.status >= min_ok_status && this.xhr.status < max_ok_status || this.xhr.status === not_modified_status){
                     success = true;
                 }
                 // local requests can return a status of 0 even if no error occurs
@@ -187,6 +201,11 @@ export default class Ajax extends EventEmitter {
         }
     }
 
+    /**
+    * abort event callback
+    *
+    * @private
+    */
     onAbort(){
         this.triggerEvent(EVT_ABORT);
 
@@ -194,11 +213,21 @@ export default class Ajax extends EventEmitter {
         this.xhr.addEventListener('readystatechange', this.onReadyStateChange);
     }
 
+    /**
+    * Send the XHR request
+    *
+    * @return {Ajax} this
+    */
     send(){
         this.xhr.send(this.configs.method !== 'GET' ? this.configs.data : null);
         return this;
     }
 
+    /**
+    * Abort the XHR request
+    *
+    * @return {Ajax} this
+    */
     abort(){
         // detach the readystatechange handler to prevent the success callback from being falsly called
         this.xhr.removeEventListener('readystatechange', this.onReadyStateChange);
@@ -207,6 +236,12 @@ export default class Ajax extends EventEmitter {
         return this;
     }
 
+    /**
+    * Set request headers
+    *
+    * @param {Object} headers The list of headers as header/value to set
+    * @return {Ajax} this
+    */
     setHeaders(headers){
         Object.entries(headers).forEach(([key, value]) => {
             this.xhr.setRequestHeader(key, value);
@@ -214,18 +249,38 @@ export default class Ajax extends EventEmitter {
         return this;
     }
 
+    /**
+    * Get the XMLHttpRequest instance
+    *
+    * @return {XMLHttpRequest} The request instance
+    */
     getXHR(){
         return this.xhr;
     }
 
+    /**
+    * Get the XMLHttpRequest status
+    *
+    * @return {Number} The numerical status code of the response
+    */
     getStatus(){
         return this.xhr.status;
     }
 
+    /**
+    * Get the XMLHttpRequest statusText
+    *
+    * @return {DOMString} The response's status message
+    */
     getStatusText(){
         return this.xhr.statusText;
     }
 
+    /**
+    * Get the XMLHttpRequest response
+    *
+    * @return {*} The response's body content
+    */
     getResponse(){
         let response = this.xhr.response;
 
@@ -242,11 +297,25 @@ export default class Ajax extends EventEmitter {
         return response;
     }
 
+    /**
+    * Add an upload listener
+    *
+    * @param {String} type The event type to listen to
+    * @param {Function} listener The callback function
+    * @return {Ajax} this
+    */
     addUploadListener(type, listener){
         this.xhr.upload.addEventListener(type, listener);
         return this;
     }
 
+    /**
+    * Remove an upload listener
+    *
+    * @param {String} type The event type to stop listening to
+    * @param {Function} listener The callback function
+    * @return {Ajax} this
+    */
     removeUploadListener(type, listener){
         this.xhr.upload.removeEventListener(type, listener);
         return this;

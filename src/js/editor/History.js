@@ -31,29 +31,51 @@ const EVT_REDO = 'redo';
  */
 const EVT_CLEAR = 'clear';
 
+/**
+ * An undo/redo manager
+ */
 export default class History extends EventEmitter {
 
     /**
-     * An undo/redo manager
+     * Instantiate
      *
-     * @class History
-     * @namespace editor
-     * @extends EventEmitter
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Integer} [configs.max_commands=30] The max number of commands to store
+     * @property {Integer} [max_commands=30] The max number of commands to store
      */
     constructor(configs) {
         // call parent constructor
         super();
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The list of available undo/redo commands
+         * @type {Array}
+         */
         this.commands = [];
+
+        /**
+         * The current comamnd index
+         * @type {Number}
+         */
         this.index = -1;
+
+        /**
+         * Whether a command is being executed
+         * @type {Boolean}
+         */
         this.executing = false;
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults() {
         return {
             'max_commands': 20
@@ -86,7 +108,7 @@ export default class History extends EventEmitter {
      * @param {Object} command The command object. It should contain an 'undo' and a 'redo' function
      * @chainable
      */
-    add (command){
+    add(command){
         if (this.executing) {
             return this;
         }

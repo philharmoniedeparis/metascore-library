@@ -4,33 +4,48 @@ import {isEmpty} from '../../core/utils/Var';
 import SelectField from '../field/Select';
 import DropDownMenu from './DropDownMenu';
 
+/**
+ * A title toolbar for panel's
+ */
 export default class Toolbar extends Dom{
 
     /**
-     * A title toolbar for panel's
+     * Instantiate
      *
-     * @class Toolbar
-     * @namespace editor.panel
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.title=''] The text to display as a title
-     * @param {Array} [configs.buttons=['previous', 'next']] The buttons to display
-     * @param {Object} [configs.menuItems={}}] A list of dropdown menu items to display
+     * @property {String} [title=''] The text to display as a title
+     * @property {Array} [buttons=['previous', 'next']] The buttons to display
+     * @property {Object} [menuItems={}}] A list of dropdown menu items to display
      */
     constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': 'toolbar clearfix'});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The title container
+         * @type {Dom}
+         */
         this.title = new Dom('<div/>', {'class': 'title', 'text': this.configs.title})
             .appendTo(this);
 
+        /**
+         * The selector
+         * @type {SelectField}
+         */
         this.selector = new SelectField({'multiple': this.configs.multiSelection})
             .addClass('selector')
             .appendTo(this);
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
 
@@ -39,6 +54,10 @@ export default class Toolbar extends Dom{
         });
 
         if(!isEmpty(this.configs.menuItems)){
+            /**
+             * An eventual dropdown menu
+             * @type {DropDownMenu}
+             */
             this.menu = new DropDownMenu();
 
 			Object.entries(this.configs.menuItems).forEach(([action, label]) => {
@@ -46,11 +65,16 @@ export default class Toolbar extends Dom{
             });
 
             new Dom('<div/>', {'class': 'menu'})
-                .appendTo(this.buttons)
-                .append(this.menu);
+                .append(this.menu)
+                .appendTo(this.buttons);
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'title': '',

@@ -17,6 +17,11 @@ const EVT_TIME = 'time';
  */
 export default class Cursor extends Element {
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         const defaults = super.getDefaults();
 
@@ -133,6 +138,11 @@ export default class Cursor extends Element {
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Cursor';
     }
@@ -147,6 +157,10 @@ export default class Cursor extends Element {
         // call parent function
         super.setupUI();
 
+        /**
+         * The cursor's line
+         * @type {Dom}
+         */
         this.cursor = new Dom('<div/>', {'class': 'cursor'})
             .appendTo(this.contents);
 

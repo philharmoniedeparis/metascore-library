@@ -20,14 +20,14 @@ const EVT_BEFORESHOW = 'beforeshow';
  */
 const EVT_TASKCLICK = 'taskclick';
 
+/**
+ * A class for creating context menus
+ */
 export default class ContextMenu extends Dom {
 
     /**
-     * A class for creating context menus
+     * Instantiate
      *
-     * @class ContextMenu
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Mixed} [configs.target='body'] The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
      * @param {Mixed} [configs.items={}] The list of items and subitems
@@ -36,8 +36,16 @@ export default class ContextMenu extends Dom {
         // call parent constructor
         super('<div/>', {'class': 'contextmenu'});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The list of tasks
+         * @type {Object}
+         */
         this.tasks = {};
 
         // fix event handlers scope
@@ -67,6 +75,11 @@ export default class ContextMenu extends Dom {
             .enable();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'target': 'body',
@@ -202,7 +215,7 @@ export default class ContextMenu extends Dom {
     }
 
     /**
-     * Sets the target element
+     * Set the element on which the context menu is attached
      *
      * @method setTarget
      * @param {Mixed} target The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
@@ -211,11 +224,11 @@ export default class ContextMenu extends Dom {
     setTarget(target){
         this.disable();
 
-        this.target = target;
-
-        if(!(this.target instanceof Dom)){
-            this.target = new Dom(this.target);
-        }
+        /**
+         * The target element
+         * @type {Dom}
+         */
+        this.target = target instanceof Dom ? target : new Dom(target);
 
         return this;
     }
@@ -301,6 +314,10 @@ export default class ContextMenu extends Dom {
         let _x = x;
         let _y = y;
 
+        /**
+         * The element that triggered the context menu
+         * @type {Dom}
+         */
         this.context = new Dom(el);
 
         if(this.tasks){
@@ -381,6 +398,10 @@ export default class ContextMenu extends Dom {
      */
     enable() {
         if(this.target){
+            /**
+             * Whether the context menu is enabled
+             * @type {Boolean}
+             */
             this.enabled = true;
 
             this.target.addListener('contextmenu', this.onTargetContextmenu);

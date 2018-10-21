@@ -5,15 +5,13 @@ import NumberField from './field/Number';
 
 import '../../css/editor/MainMenu.less';
 
+/**
+ * The editor's main menu
+ */
 export default class MainMenu extends Dom {
 
     /**
-     * The editor's main menu
-     *
-     * @class MainMenu
-     * @namespace editor
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call parent constructor
@@ -108,6 +106,10 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
+        /**
+         * The r-index field
+         * @type {NumberField}
+         */
         this.rindexfield = new NumberField({
                 'min': 0,
                 'max': 999

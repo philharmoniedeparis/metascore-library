@@ -8,12 +8,6 @@ import CursorElement from './element/Cursor';
 import ImageElement from './element/Image';
 import TextElement from './element/Text';
 
-const ELEMENT_TYPES = {
-    'Cursor': CursorElement,
-    'Image': ImageElement,
-    'Text': TextElement,
-};
-
 /**
  * Fired when an element is added
  *
@@ -38,10 +32,25 @@ const EVT_CUEPOINTSTART = 'cuepointstart';
 const EVT_CUEPOINTSTOP = 'cuepointstop';
 
 /**
+ * The list of available element types
+ * @type {Object}
+ */
+const ELEMENT_TYPES = {
+    'Cursor': CursorElement,
+    'Image': ImageElement,
+    'Text': TextElement,
+};
+
+/**
  * A page component
  */
 export default class Page extends Component {
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -131,6 +140,11 @@ export default class Page extends Component {
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Page';
     }
@@ -151,11 +165,12 @@ export default class Page extends Component {
     }
 
     /**
-     * Add an new element component to this page
+     * Add an element
      *
      * @method addElement
-     * @param {Object} configs Configs to use for the element (see {{#crossLink "player.component.Element}"}}{{/crossLink}})
-     * @return {player.component.Element} The element
+     * @param {Object|Element} configs Element configs or an existing Element instance
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @return {Element} The element
      */
     addElement(configs, supressEvent){
         let element = configs;

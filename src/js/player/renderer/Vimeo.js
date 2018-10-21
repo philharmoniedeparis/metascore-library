@@ -32,6 +32,12 @@ const EVT_TIMEUPDATE = 'timeupdate';
  */
 export default class Vimeo extends HTML5 {
 
+    /**
+     * Check whether the renderer supports a given mime type
+     *
+     * @param {String} mime The mime type
+     * @return {Boolean} Whether the renderer supports the given mime type
+     */
     static canPlayType(mime){
         const supported = [
             'video/vimeo'
@@ -40,12 +46,24 @@ export default class Vimeo extends HTML5 {
         return supported.includes(mime.toLowerCase());
     }
 
+    /**
+     * Get the Vimeo ID from a URL
+     *
+     * @param {String} url The video's URL
+     * @return {String} The parsed Vimeo ID
+     */
     static getVideoIDFromURL(url){
         const parsed = url.match(/https?:\/\/(?:[\w]+\.)*vimeo\.com(?:[/\w]*\/?)?\/([0-9]+)[^\s]*/);
 
         return parsed[1];
     }
 
+    /**
+     * Get the duration of a media file from its URI
+     *
+     * @param {String} url The file's URL
+     * @param {Function} callback The callback to invoke with a potential error and the duration
+     */
     static getDurationFromURI(url, callback){
         const video_id = this.getVideoIDFromURL(url);
 
@@ -61,6 +79,9 @@ export default class Vimeo extends HTML5 {
         });
     }
 
+    /**
+     * Initialize
+     */
     init(){
         this.addClass('vimeo');
 
@@ -69,7 +90,6 @@ export default class Vimeo extends HTML5 {
 
         script.addEventListener('load', () => {
             script.remove();
-            this.ready = true;
             this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
         });
 
@@ -89,7 +109,9 @@ export default class Vimeo extends HTML5 {
     * Set the media source
     *
     * @method setSource
-    * @param {Array} sources The list of sources as objects with 'url' and 'mime' keys
+    * @param {Object} source The source to set
+    * @property {String} url The source's url
+    * @property {String} mime The source's mime type
     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
     * @chainable
     */
@@ -97,6 +119,10 @@ export default class Vimeo extends HTML5 {
         const wrapper = new Dom('<div/>', {'class': 'iframe-wrapper'})
             .appendTo(this);
 
+        /**
+         * The Vimeo player instance
+         * @type {Vimeo.Player}
+         */
         this.dom = new window.Vimeo.Player(wrapper.get(0), {
             'url': source.url,
             'width': '100%',
@@ -119,12 +145,27 @@ export default class Vimeo extends HTML5 {
         return this;
     }
 
+   /**
+   * Get the WaveformData assiciated with the media file
+   *
+   * @param {Function} callback The callback to invoke
+   */
     getWaveformData(callback){
         callback(null);
     }
 
+    /**
+     * The loadedmetadata event handler
+     *
+     * @method onLoadedMetadata
+     * @private
+     */
     onLoadedMetadata(...args){
         this.dom.getDuration().then((duration) => {
+            /**
+             * The video's duration in seconds
+             * @type {Number}
+             */
             this.duration = duration;
         });
 
@@ -194,6 +235,10 @@ export default class Vimeo extends HTML5 {
                 this.triggerTimeUpdate(loop);
             }
 
+            /**
+             * The video's current time in seconds
+             * @type {Number}
+             */
             this.current_time = seconds;
             this.triggerEvent(EVT_TIMEUPDATE, {'renderer': this, 'time': this.getTime()});
         });

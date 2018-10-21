@@ -1,17 +1,21 @@
 import EventEmitter from './EventEmitter';
 
+/**
+ * A class to handle clipboard data
+ */
 export default class Clipboard extends EventEmitter {
 
     /**
-     * A class to handle clipboard data
-     *
-     * @class Clipboard
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call parent constructor
         super();
 
+        /**
+         * The copied/cut data
+         * @type {Object}
+         */
         this.data = null;
     }
 

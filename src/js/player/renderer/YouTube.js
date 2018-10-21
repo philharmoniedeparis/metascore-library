@@ -23,6 +23,12 @@ const EVT_SOURCESET = 'sourceset';
  */
 export default class YouTube extends HTML5 {
 
+    /**
+     * Check whether the renderer supports a given mime type
+     *
+     * @param {String} mime The mime type
+     * @return {Boolean} Whether the renderer supports the given mime type
+     */
     static canPlayType(mime){
         const supported = [
             'video/youtube'
@@ -31,6 +37,12 @@ export default class YouTube extends HTML5 {
         return supported.includes(mime.toLowerCase());
     }
 
+    /**
+     * Get the YouTube ID from a URL
+     *
+     * @param {String} url The video's URL
+     * @return {String} The parsed YouTube ID
+     */
     static getVideoIDFromURL(url){
         const parsed = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
 
@@ -41,6 +53,9 @@ export default class YouTube extends HTML5 {
         return parsed[0];
     }
 
+    /**
+     * Initialize
+     */
     init(){
         this.addClass('youtube');
 
@@ -49,7 +64,6 @@ export default class YouTube extends HTML5 {
 
         window.onYouTubeIframeAPIReady = () => {
             delete window.onYouTubeIframeAPIReady;
-            this.ready = true;
             this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
         };
 
@@ -69,16 +83,33 @@ export default class YouTube extends HTML5 {
         return this;
     }
 
+    /**
+    * Set the media source
+    *
+    * @method setSource
+    * @param {Object} source The source to set
+    * @property {String} url The source's url
+    * @property {String} mime The source's mime type
+    * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
+    * @chainable
+    */
     setSource(source, supressEvent){
         const video_id = this.constructor.getVideoIDFromURL(source.url);
         const wrapper = new Dom('<div/>', {'class': 'iframe-wrapper'})
             .appendTo(this);
 
-        // add a poster to hide the large red play button
+        /**
+         * A poster to hide the large red play button
+         * @type {Dom}
+         */
         this.poster = new Dom('<div/>', {'class': 'poster'})
             .css('background-image', `url('//img.youtube.com/vi/${video_id}/sddefault.jpg')`)
             .appendTo(this);
 
+        /**
+         * The YouTube player instance
+         * @type {YT.Player}
+         */
         this.dom = new window.YT.Player(wrapper.get(0), {
             'videoId': video_id,
             'width': '100%',
@@ -105,10 +136,21 @@ export default class YouTube extends HTML5 {
         return this;
     }
 
+   /**
+   * Get the WaveformData assiciated with the media file
+   *
+   * @param {Function} callback The callback to invoke
+   */
     getWaveformData(callback){
         callback(null);
     }
 
+    /**
+     * The statechange event handler
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
     onStateChange(evt){
         switch (evt.data) {
             case window.YT.PlayerState.PLAYING:

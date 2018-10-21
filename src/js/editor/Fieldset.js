@@ -1,32 +1,39 @@
 import Dom from '../core/Dom';
 import {uuid} from '../core/utils/String';
 
+/**
+ * A collapsible fieldset
+ * @todo replace with the HTML5 details tag when support reaches IE
+ */
 export default class Fieldset extends Dom {
 
     /**
-     * A collapsible fieldset
+     * Instantiate
      *
-     * @todo replace with the HTML5 details tag when support reaches IE
-     *
-     * @class Fieldset
-     * @namespace editor
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.legend_text=null] The text to use for the fieldset's legend
-     * @param {Boolean} [configs.collapsible=false] Whether or not the fieldset can be collapsed
-     * @param {Boolean} [configs.collapsed=false] Whether or not the fieldset is collapsed by default
+     * @property {String} [legend_text=null] The text to use for the fieldset's legend
+     * @property {Boolean} [collapsible=false] Whether or not the fieldset can be collapsed
+     * @property {Boolean} [collapsed=false] Whether or not the fieldset is collapsed by default
      */
     constructor(configs) {
         // call the super constructor.
         super('<fieldset/>');
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.setupUI();
 
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults() {
         return {
             'legend_text': null,
@@ -46,9 +53,17 @@ export default class Fieldset extends Dom {
 
         this.attr('id', uid);
 
+        /**
+         * The <legend> element
+         * @type {Dom}
+         */
         this.legend = new Dom('<legend/>', {'text': this.configs.legend_text})
             .appendTo(this);
 
+        /**
+         * The contents container
+         * @type {Dom}
+         */
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
 

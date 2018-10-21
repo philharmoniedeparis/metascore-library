@@ -19,7 +19,8 @@ const EVT_BUTTONCLICK = 'buttonclick';
 export default class Alert extends Overlay{
 
     /**
-     * Create an alert
+     * Instantiate
+     *
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.text=''] The message's text
      * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
@@ -30,6 +31,11 @@ export default class Alert extends Overlay{
         this.addClass('alert');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'text': '',
@@ -45,16 +51,24 @@ export default class Alert extends Overlay{
         // call parent method
         super.setupUI();
 
+        /**
+         * The text container
+         * @type {Dom}
+         */
         this.text = new Dom('<div/>', {'class': 'text'})
-            .appendTo(this.contents);
+            .appendTo(this.getContents());
 
         if(this.configs.text){
             this.setText(this.configs.text);
         }
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .addDelegate('button', 'click', this.onButtonClick.bind(this))
-            .appendTo(this.contents);
+            .appendTo(this.getContents());
 
         if(this.configs.buttons){
 			Object.entries(this.configs.buttons).forEach(([action, label]) => {

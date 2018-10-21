@@ -18,6 +18,10 @@ import {getImageMetadata} from '../core/utils/Media';
 
 import '../../css/editor/Panel.less';
 
+/**
+ * The list of possible field types
+ * @type {Object}
+ */
 const FIELD_TYPES = {
     'BorderRadius': BorderRadiusField,
     'Buttons': ButtonsField,
@@ -59,24 +63,32 @@ const EVT_COMPONENTUNSET = 'componentunset';
  */
 const EVT_VALUESCHANGE = 'valueschange';
 
+/**
+ * A generic panel class
+ */
 export default class Panel extends Dom {
 
     /**
-     * A generic panel class
+     * Instantiate
      *
-     * @class Panel
-     * @namespace editor
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @property {Boolean} [allowMultiple=true] Whether multiple selection is allowed
+     * @property {Object} [configs.toolbarConfigs={}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': 'panel'});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The list of selected components
+         * @type {Array}
+         */
         this.components = [];
 
         // fix event handlers scope
@@ -88,6 +100,10 @@ export default class Panel extends Dom {
         this.onComponentResize = this.onComponentResize.bind(this);
         this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
 
+        /**
+         * The top toolbar
+         * @type {Toolbar}
+         */
         this.toolbar = new Toolbar(Object.assign({}, this.configs.toolbarConfigs, {'multiSelection': this.configs.allowMultiple}))
             .addDelegate('.buttons [data-action]', 'click', this.onToolbarButtonClick.bind(this))
             .appendTo(this);
@@ -95,6 +111,10 @@ export default class Panel extends Dom {
         this.toolbar.getTitle()
             .addListener('click', this.toggleState.bind(this));
 
+        /**
+         * The contents container
+         * @type {Dom}
+         */
         this.contents = new Dom('<div/>', {'class': 'fields'})
             .appendTo(this);
 
@@ -104,6 +124,11 @@ export default class Panel extends Dom {
             .updateUI();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults() {
         return {
             'allowMultiple': true,
@@ -121,6 +146,10 @@ export default class Panel extends Dom {
     updateUI(){
         const has_componenets = this.components.length > 0;
 
+        /**
+         * The list of fields
+         * @type {Object}
+         */
         this.fields = {};
 
         this.contents.empty();
@@ -343,9 +372,9 @@ export default class Panel extends Dom {
     }
 
     /**
-     * Unset the associated components
+     * Unset an associated component
      *
-     * @method unsetComponents
+     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
@@ -480,10 +509,15 @@ export default class Panel extends Dom {
      * @private
      */
     onComponentDragStart(){
-        this._beforeDragValues = [];
+
+        /**
+        * Values of x and y when dragging starts
+        * @type {Array}
+        */
+        this._before_drag_values = [];
 
         this.components.forEach((component) => {
-            this._beforeDragValues.push({
+            this._before_drag_values.push({
                 'x': component.getPropertyValue('x'),
                 'y': component.getPropertyValue('y')
             });
@@ -546,13 +580,13 @@ export default class Panel extends Dom {
             return {
                 component: component,
                 new_values: new_values,
-                old_values: this._beforeDragValues[index],
+                old_values: this._before_drag_values[index],
             };
         });
 
         this.triggerEvent(EVT_VALUESCHANGE, values, false);
 
-        delete this._beforeDragValues;
+        delete this._before_drag_values;
     }
 
     /**
@@ -564,7 +598,11 @@ export default class Panel extends Dom {
     onComponentResizeStart(evt){
         const component = evt.target._metaScore;
 
-        this._beforeResizeValues = {
+        /**
+        * Values of x, y, width and height when resizing starts
+        * @type {Array}
+        */
+        this._before_resize_values = {
             'x': component.getPropertyValue('x'),
             'y': component.getPropertyValue('y'),
             'width': component.getPropertyValue('width'),
@@ -599,9 +637,9 @@ export default class Panel extends Dom {
             new_values[field] = component.getPropertyValue(field)
         });
 
-        this.triggerEvent(EVT_VALUESCHANGE, [{'component': component, 'old_values': this._beforeResizeValues, 'new_values': new_values}], false);
+        this.triggerEvent(EVT_VALUESCHANGE, [{'component': component, 'old_values': this._before_resize_values, 'new_values': new_values}], false);
 
-        delete this._beforeResizeValues;
+        delete this._before_resize_values;
     }
 
     /**
@@ -684,11 +722,9 @@ export default class Panel extends Dom {
     }
 
     /**
-     * Update a field's value
+     * Refresh a field's value to match the corresponding component(s) propoerty
      *
-     * @method refreshFieldValue
      * @param {String} name The field's name
-     * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
@@ -727,10 +763,10 @@ export default class Panel extends Dom {
     }
 
     /**
-     * Update fields' values
+     * Refresh fields' values to match the corresponding component(s) propoerties
      *
      * @method refreshFieldValues
-     * @param {Array} fields A list of field names
+     * @param {Array} names A list of field names
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
@@ -789,9 +825,18 @@ export default class Panel extends Dom {
         return this;
     }
 
+    /**
+     * Toggle the multivalue warning on a field
+     *
+     * @param {Field} field The field to toggle the warning for
+     * @param {Boolean} toggle Whether the warning is to be shown or hidden
+     * @chainable
+     */
     toggleMultival(field, toggle){
         field.toggleClass('warning', toggle)
             .label.attr('title', toggle ? Locale.t('editor.panel.multivalWarning', 'The value corresponds to that of the first selected component') : null);
+
+        return this;
     }
 
 }

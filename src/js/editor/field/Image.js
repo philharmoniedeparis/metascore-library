@@ -22,18 +22,17 @@ const EVT_FILEBROWSER = 'filebrowser';
  */
 const EVT_RESIZE = 'resize';
 
+/**
+ * An image field wich depends on an external file browser to function
+ */
 export default class Image extends Field {
 
     /**
-     * An image field wich depends on an external file browser to function
+     * Instantiate
      *
-     * @class ImageField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.placeholder="Browse..."] A placeholder text
-     * @param {Boolean} [configs.resizeButton=false] Whether to show the resize button
+     * @property {String} [placeholder="Browse..."] A placeholder text
+     * @property {Boolean} [resizeButton=false] Whether to show the resize button
      */
     constructor(configs) {
         // call parent constructor
@@ -42,6 +41,11 @@ export default class Image extends Field {
         this.addClass('imagefield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'placeholder': Locale.t('editor.field.Image.placeholder', 'Browse...')
@@ -66,6 +70,10 @@ export default class Image extends Field {
             .appendTo(this.input_wrapper);
 
         if(this.configs.resizeButton){
+            /**
+             * The resize button
+             * @type {Dom}
+             */
             this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': Locale.t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
                 .addListener('click', this.onResizeClick.bind(this))
                 .appendTo(buttons);
@@ -109,6 +117,10 @@ export default class Image extends Field {
         this.triggerEvent(EVT_FILEBROWSER, details, true, false);
 
         if('url' in details){
+            /**
+             * The file browser
+             * @type {iFrame}
+             */
             this.browser = new iFrame({
                 'parent': '.metaScore-editor',
                 'title': Locale.t('editor.field.Image.browser.title', 'Select file'),
@@ -161,6 +173,10 @@ export default class Image extends Field {
      * @chainable
      */
     readonly(readonly){
+        /**
+         * Whether the field is in a readonly state
+         * @type {Boolean}
+         */
         this.is_readonly = readonly === true;
 
         this.toggleClass('readonly', this.is_readonly);

@@ -20,26 +20,29 @@ const EVT_VALUECHANGE = 'valuechange';
  */
 const EVT_RESET = 'reset';
 
+/**
+ * A generic field based on an HTML input element
+ */
 export default class Field extends Dom{
 
     /**
-     * A generic field based on an HTML input element
+     * Instantiate
      *
-     * @class Field
-     * @namespace editor
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.value=null] The default value
-     * @param {Boolean} [configs.required=false] Whether the field is required
-     * @param {Boolean} [configs.disabled=false] Whether the field is disabled by default
-     * @param {Boolean} [configs.readonly=false] Whether the field is readonly by default
-     * @param {String} [configs.description=''] A description to add to the field
+     * @property {Mixed} [value=null] The default value
+     * @property {Boolean} [required=false] Whether the field is required
+     * @property {Boolean} [disabled=false] Whether the field is disabled by default
+     * @property {Boolean} [readonly=false] Whether the field is readonly by default
+     * @property {String} [description=''] A description to add to the field
      */
     constructor(configs) {
         // call the super constructor.
         super('<div/>', {'class': 'field', 'tabindex': -1});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.setupUI();
@@ -68,6 +71,11 @@ export default class Field extends Dom{
         this.reset(true);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'value': null,
@@ -88,13 +96,25 @@ export default class Field extends Dom{
         const uid = `field-${uuid(5)}`;
 
         if(this.configs.label){
+            /**
+             * A potential <label> element
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
                 .appendTo(this);
         }
 
+        /**
+         * The input-wrapper container
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
+        /**
+         * The <input> element
+         * @type {Dom}
+         */
         this.input = new Dom('<input/>', {'id': uid})
             .addListener('change', this.onChange.bind(this))
             .addListener('keypress', this.onKeypress.bind(this))
@@ -110,6 +130,10 @@ export default class Field extends Dom{
      */
     setDescription(description){
         if(!('description' in this)){
+            /**
+             * A potential description container
+             * @type {Dom}
+             */
             this.description = new Dom('<div/>', {'class': 'description'})
                 .appendTo(this.input_wrapper);
         }
@@ -126,6 +150,10 @@ export default class Field extends Dom{
      * @private
      */
     onChange(){
+        /**
+         * The current value
+         * @type {String}
+         */
         this.value = this.input.val();
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
@@ -136,6 +164,7 @@ export default class Field extends Dom{
      *
      * @method onKeypress
      * @private
+     * @param {Event} evt The event object
      */
     onKeypress(evt){
         if(evt.key === "Enter") {
@@ -179,6 +208,10 @@ export default class Field extends Dom{
      * @chainable
      */
     disable() {
+        /**
+         * Whether the field is disabled
+         * @type {Boolean}
+         */
         this.disabled = true;
 
         this.addClass('disabled');
@@ -216,6 +249,10 @@ export default class Field extends Dom{
      * @chainable
      */
     readonly(readonly){
+        /**
+         * Whether the field is in a readonly state
+         * @type {Boolean}
+         */
         this.is_readonly = readonly === true;
 
         this.toggleClass('readonly', this.is_readonly);

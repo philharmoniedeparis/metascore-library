@@ -21,23 +21,35 @@ const EVT_RESIZE = 'resize';
  */
 const EVT_RESIZEEND = 'resizeend';
 
+/**
+ * A class for adding resizable behaviors
+ */
 export default class Resizable {
 
     /**
-     * A class for adding resizable behaviors
+     * Instantiate
      *
-     * @class Resizable
-     * @extends Class
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Dom} configs.target The Dom object to add the behavior to
      * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
      */
     constructor(configs) {
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The target's owner document
+         * @type {Dom}
+         */
         this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
+        /**
+         * A list of resize handles
+         * @type {Object}
+         */
         this.handles = {};
 
         // fix event handlers scope
@@ -56,6 +68,11 @@ export default class Resizable {
         this.enable();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'target': null,
@@ -84,6 +101,10 @@ export default class Resizable {
             return;
         }
 
+        /**
+         * The state at which the target was on mouse down
+         * @type {Object}
+         */
         this._start_state = {
             'handle': evt.target,
             'x': evt.clientX,
@@ -162,6 +183,10 @@ export default class Resizable {
             this.configs.target.css('left', `${new_state.left}px`);
         }
 
+        /**
+         * Whether the target is being resized
+         * @type {Boolean}
+         */
         this._resized = true;
 
         this.configs.target
@@ -199,6 +224,12 @@ export default class Resizable {
         evt.stopPropagation();
     }
 
+    /**
+    * The click event handler
+    *
+    * @private
+    * @param {Event} evt The event object
+    */
     onClick(evt){
         evt.stopPropagation();
         evt.preventDefault();
@@ -223,6 +254,10 @@ export default class Resizable {
     enable() {
         this.configs.target.addClass('resizable');
 
+        /**
+         * Whether the behavior is enabled
+         * @type {Boolean}
+         */
         this.enabled = true;
 
         return this;

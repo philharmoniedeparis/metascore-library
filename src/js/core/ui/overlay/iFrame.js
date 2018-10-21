@@ -3,16 +3,14 @@ import Overlay from '../Overlay';
 
 import '../../../../css/core/ui/overlay/iFrame.less';
 
+/**
+ * An iframe overlay
+ */
 export default class iFrame extends Overlay{
 
-
     /**
-     * An iframe overlay
+     * Instantiate
      *
-     * @class iFrame
-     * @namespace overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
      * @param {String} [configs.url=null] The iframe's url
@@ -24,6 +22,11 @@ export default class iFrame extends Overlay{
         this.addClass('iframe');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbar': true,
@@ -41,8 +44,12 @@ export default class iFrame extends Overlay{
         // call parent method
         super.setupUI();
 
+        /**
+         * The <iframe> element
+         * @type {Dom}
+         */
         this.frame = new Dom('<iframe/>', {'src': this.configs.url})
-            .appendTo(this.contents);
+            .appendTo(this.getContents());
     }
 
 }

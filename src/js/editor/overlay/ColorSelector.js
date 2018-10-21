@@ -15,17 +15,16 @@ import '../../../css/editor/overlay/ColorSelector.less';
  */
 const EVT_SUBMIT = 'submit';
 
+/**
+ * An overlay to select an RGBA color
+ */
 export default class ColorSelector extends Overlay {
 
     /**
-     * An overlay to select an RGBA color
+     * Instantiate
      *
-     * @class ColorSelector
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @param {property} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
      */
     constructor(configs) {
         // call parent constructor
@@ -38,6 +37,11 @@ export default class ColorSelector extends Overlay {
         this.addClass('color-selector');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor'
@@ -54,7 +58,11 @@ export default class ColorSelector extends Overlay {
         // call parent method
         super.setupUI();
 
-        this.gradient = new Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
+        /**
+         * The gradient container
+         * @type {Dom}
+         */
+        this.gradient = new Dom('<div/>', {'class': 'gradient'}).appendTo(this.getContents());
 
         this.gradient.canvas = new Dom('<canvas/>', {'width': '255', 'height': '255'})
             .addListener('click', this.onGradientClick.bind(this))
@@ -64,7 +72,11 @@ export default class ColorSelector extends Overlay {
 
         this.gradient.position = new Dom('<div/>', {'class': 'position'}).appendTo(this.gradient);
 
-        this.alpha = new Dom('<div/>', {'class': 'alpha'}).appendTo(this.contents);
+        /**
+         * The alpha container
+         * @type {Dom}
+         */
+        this.alpha = new Dom('<div/>', {'class': 'alpha'}).appendTo(this.getContents());
 
         this.alpha.canvas = new Dom('<canvas/>', {'width': '20', 'height': '255'})
             .addListener('click', this.onAlphaClick.bind(this))
@@ -74,7 +86,11 @@ export default class ColorSelector extends Overlay {
 
         this.alpha.position = new Dom('<div/>', {'class': 'position'}).appendTo(this.alpha);
 
-        this.controls = new Dom('<div/>', {'class': 'controls'}).appendTo(this.contents);
+        /**
+         * The controls container
+         * @type {Dom}
+         */
+        this.controls = new Dom('<div/>', {'class': 'controls'}).appendTo(this.getContents());
 
         this.controls.r = new Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
             .addListener('input', this.onControlInput.bind(this));
@@ -144,6 +160,10 @@ export default class ColorSelector extends Overlay {
     setValue(val){
         this.updateValue(val);
 
+        /**
+         * The previous value
+         * @type {Object}
+         */
         this.previous_value = this.value;
 
         this.fillPrevious();
@@ -166,6 +186,10 @@ export default class ColorSelector extends Overlay {
         const rgb = isObject(val) ? val : toRGBA(val);
         const range = 255;
 
+        /**
+         * The current value
+         * @type {Object}
+         */
         this.value = this.value || {};
 
         if('r' in rgb){

@@ -29,6 +29,10 @@ const EVT_VALUEIN = 'valuein';
  */
 const EVT_VALUEOUT = 'valueout';
 
+/**
+ * Time parts configurations
+ * @type {Array}
+ */
 const PARTS = [
     {
         "name": "hours",
@@ -64,28 +68,35 @@ const PARTS = [
     }
 ];
 
+/**
+ * A time part's placeholder
+ * @type {String}
+ */
 const PART_PLACEHOLDER = "––";
 
+/**
+ * A regular expression used to retrieve the values of each part
+ * @type {RegExp}
+ */
 const GLOBAL_REGEX = new RegExp(`^${PARTS.reduce((accumulator, value) => {
-        return `${accumulator + value.prefix}(${value.regex})${value.suffix}`;
+    return `${accumulator + value.prefix}(${value.regex})${value.suffix}`;
 }, "")}$`);
 
+/**
+ * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
+ */
 export default class Time extends Field {
 
     /**
-     * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
+     * Instantiate
      *
-     * @class TimeField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Number} [configs.value=0] The default value
-     * @param {Number} [configs.min=0] The minimum allowed value
-     * @param {Number} [configs.max=null] The maximum allowed value
-     * @param {Boolean} [configs.clearButton=false] Whether to show the clear button
-     * @param {Boolean} [configs.inButton=false] Whether to show the in button
-     * @param {Boolean} [configs.outButton=false] Whether to show the out button
+     * @property {Number} [value=0] The default value
+     * @property {Number} [min=0] The minimum allowed value
+     * @property {Number} [max=null] The maximum allowed value
+     * @property {Boolean} [clearButton=false] Whether to show the clear button
+     * @property {Boolean} [inButton=false] Whether to show the in button
+     * @property {Boolean} [outButton=false] Whether to show the out button
      */
     constructor(configs) {
         // call parent constructor
@@ -101,6 +112,11 @@ export default class Time extends Field {
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'value': null,
@@ -175,6 +191,10 @@ export default class Time extends Field {
     setupUI() {
         super.setupUI();
 
+        /**
+         * The <input> element
+         * @type {Element}
+         */
         this.input_el = this.input.get(0);
 
         this.input
@@ -193,19 +213,31 @@ export default class Time extends Field {
                 .appendTo(this.input_wrapper);
 
             if(this.configs.clearButton){
-                this.clearButton = new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Time.clear.tooltip', 'Clear value')})
+                /**
+                 * The potential clear button
+                 * @type {Dom}
+                 */
+                this.clear_button = new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Time.clear.tooltip', 'Clear value')})
                     .addListener('click', this.onClearClick.bind(this))
                     .appendTo(buttons);
             }
 
             if(this.configs.inButton){
-                this.inButton = new Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
+                /**
+                 * The potential time-in button
+                 * @type {Dom}
+                 */
+                this.in_button = new Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': Locale.t('editor.field.Time.in.tooltip', 'Set field value to current time')})
                     .addListener('click', this.onInClick.bind(this))
                     .appendTo(buttons);
             }
 
             if(this.configs.outButton){
-                this.outButton = new Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
+                /**
+                 * The potential time-out button
+                 * @type {Dom}
+                 */
+                this.out_button = new Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': Locale.t('editor.field.Time.out.tooltip', 'Set current time to field value')})
                     .addListener('click', this.onOutClick.bind(this))
                     .appendTo(buttons);
             }
@@ -237,7 +269,11 @@ export default class Time extends Field {
      * @private
      */
     onMouseDown(){
-        this.skipFocus = true;
+        /**
+         * Whether to skip setting the focused segment on focus
+         * @type {Boolean}
+         */
+        this.skip_focus = true;
     }
 
     /**
@@ -275,7 +311,7 @@ export default class Time extends Field {
 
         this.setFocusedSegment(Math.floor(caretPosition / 3));
 
-        delete this.skipFocus;
+        delete this.skip_focus;
     }
 
     /**
@@ -285,9 +321,13 @@ export default class Time extends Field {
      * @private
      */
     onFocus(){
+        /**
+         * The count of pressed keys, used for automatic segment changes
+         * @type {Number}
+         */
         this.keys_pressed = 0;
 
-        if(!this.skipFocus){
+        if(!this.skip_focus){
             this.setFocusedSegment(0);
         }
     }
@@ -351,8 +391,6 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeydown(evt){
-        console.error('onKeydown');
-
         switch (evt.key) {
             case "ArrowLeft":
             case "ArrowRight": {
@@ -523,6 +561,10 @@ export default class Time extends Field {
         this.input_el.setSelectionRange(0, 0);
         this.input_el.setSelectionRange(start, end, 'forward');
 
+        /**
+         * The index of the currenty focused segment
+         * @type {Number}
+         */
         this.focused_segment = segment;
     }
 
@@ -549,11 +591,9 @@ export default class Time extends Field {
     /**
      * Helper function to set the value of a segmnet
      *
-     * @method setSegmentValue
      * @private
      * @param {Number} segment The segment's index
      * @param {String} value The segment's value
-     * @param {Boolean} supressEvent Whether to prevent the change event from firing
      */
     setSegmentValue(segment, value){
         let textual_value = this.input.val();
@@ -571,6 +611,10 @@ export default class Time extends Field {
 
             this.input.val(textual_value);
 
+            /**
+             * Whether an input occured but the current value has not yet been updated
+             * @type {Boolean}
+             */
             this.dirty = true;
         }
     }
@@ -624,8 +668,7 @@ export default class Time extends Field {
     /**
      * Set the field's value
      *
-     * @method setValue
-     * @param {Number} centiseconds The new value in centiseconds
+     * @param {Number} value The new value in centiseconds
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
@@ -646,6 +689,10 @@ export default class Time extends Field {
 
         this.input.val(this.constructor.getTextualValue(_value));
 
+        /**
+         * The current value
+         * @type {String}
+         */
         this.value = _value;
 
         if(supressEvent !== true){
@@ -665,6 +712,10 @@ export default class Time extends Field {
     setMin(min){
         const value = this.getValue();
 
+        /**
+         * The minimum allowed value
+         * @type {Number}
+         */
         this.min = min;
 
         if(this.min !== null && value !== null && value < this.min){
@@ -684,6 +735,10 @@ export default class Time extends Field {
     setMax(max){
         const value = this.getValue();
 
+        /**
+         * The maximum allowed value
+         * @type {Number}
+         */
         this.max = max;
 
         if(this.max !== null && value !== null && value > this.max){
@@ -702,15 +757,15 @@ export default class Time extends Field {
     disable() {
         super.disable();
 
-        if(this.clearButton){
-            this.clearButton.attr('disabled', 'disabled');
+        if(this.clear_button){
+            this.clear_button.attr('disabled', 'disabled');
         }
 
-        if(this.inButton){
-            this.inButton.attr('disabled', 'disabled');
+        if(this.in_button){
+            this.in_button.attr('disabled', 'disabled');
         }
-        if(this.outButton){
-            this.outButton.attr('disabled', 'disabled');
+        if(this.out_button){
+            this.out_button.attr('disabled', 'disabled');
         }
 
         return this;
@@ -725,15 +780,15 @@ export default class Time extends Field {
     enable() {
         super.enable();
 
-        if(this.clearButton){
-            this.clearButton.attr('disabled', null);
+        if(this.clear_button){
+            this.clear_button.attr('disabled', null);
         }
 
-        if(this.inButton){
-            this.inButton.attr('disabled', null);
+        if(this.in_button){
+            this.in_button.attr('disabled', null);
         }
-        if(this.outButton){
-            this.outButton.attr('disabled', null);
+        if(this.out_button){
+            this.out_button.attr('disabled', null);
         }
 
         return this;
@@ -751,12 +806,12 @@ export default class Time extends Field {
 
         const readonly_attr = this.is_readonly ? "readonly" : null;
 
-        if(this.clearButton){
-            this.clearButton.attr('readonly', readonly_attr);
+        if(this.clear_button){
+            this.clear_button.attr('readonly', readonly_attr);
         }
 
-        if(this.inButton){
-            this.inButton.attr('readonly', readonly_attr);
+        if(this.in_button){
+            this.in_button.attr('readonly', readonly_attr);
         }
 
         return this;

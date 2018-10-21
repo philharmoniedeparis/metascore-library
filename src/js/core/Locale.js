@@ -1,10 +1,23 @@
 import {replaceAll} from './utils/String';
 import Ajax from './Ajax';
 
+/**
+ * Stores the loaded string translations
+ * @type {Object}
+ */
 let translations = {};
 
+/**
+ * A class to handle string translations
+ */
 export default class Locale{
 
+    /**
+    * Load translations
+    *
+    * @param {String} file The url to load
+    * @param {Function} callback The callback to invoke once loading ends
+    */
     static load(file, callback) {
         Ajax.GET(file, {
             'responseType': 'json',

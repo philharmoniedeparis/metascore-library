@@ -11,6 +11,11 @@ import {isString} from '../../core/utils/Var';
  */
 export default class Element extends Component{
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -248,6 +253,11 @@ export default class Element extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Element';
     }
@@ -266,6 +276,10 @@ export default class Element extends Component{
             .addClass('element')
             .addClass(this.constructor.getType());
 
+        /**
+         * The contents container
+         * @type {Dom}
+         */
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
 
@@ -317,6 +331,10 @@ export default class Element extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this
@@ -344,6 +362,10 @@ export default class Element extends Component{
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });

@@ -13,24 +13,27 @@ import CuePoint from './CuePoint';
  */
 const EVT_PROPCHANGE = 'propchange';
 
+/**
+ * A generic component class
+ */
 export default class Component extends Dom {
 
     /**
-     * A generic component class
+     * Instantiate
      *
-     * @class Component
-     * @namespace player
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.container=null The Dom instance to which the component should be appended
-     * @param {Integer} [configs.index=null The index position at which the component should be appended
-     * @param {Object} [configs.properties={}} A list of the component properties as name/descriptor pairs
+     * @property {String} [container=null] The Dom instance to which the component should be appended
+     * @property {Integer} [index=null] The index position at which the component should be appended
+     * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component', 'id': `component-${uuid(5)}`});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         // keep a reference to this class instance in the DOM node
@@ -56,6 +59,11 @@ export default class Component extends Dom {
         this.setPropertyValues(this.configs);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'container': null,
@@ -64,10 +72,21 @@ export default class Component extends Dom {
         };
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Component';
     }
 
+    /**
+    * Check if the component is an instance of a component type
+    *
+    * @param {String} type The type to check for
+    * @return {Boolean} Whether the component is of the specified type or a sub-type
+    */
     static instanceOf(type){
         if(type === this.getType()){
             return true;
@@ -294,6 +313,10 @@ export default class Component extends Dom {
         }
 
         if(inTime !== null || outTime !== null){
+            /**
+             * A cuepoint associated with the component
+             * @type {CuePoint}
+             */
             this.cuepoint = new CuePoint(Object.assign({}, configs, {
                 'inTime': inTime,
                 'outTime': outTime

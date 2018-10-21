@@ -18,17 +18,16 @@ const EVT_TEXTLOCK = 'textlock';
  */
 const EVT_TEXTUNLOCK = 'textunlock';
 
+/**
+ * A panel for Element components
+ */
 export default class Element extends Panel {
 
     /**
-     * A panel for {{#crossLink "player.component.Element"}}{{/crossLink}} components
+     * Instantiate
      *
-     * @class Element
-     * @namespace editor.panel
-     * @extends editor.Panel
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={title:'Element', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @property {Object} [toolbarConfigs={title:'Element', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
      */
     constructor(configs) {
         // call parent constructor
@@ -45,6 +44,11 @@ export default class Element extends Panel {
             .addListener('componentunset', this.onComponentUnset.bind(this));
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbarConfigs': {
@@ -276,9 +280,9 @@ export default class Element extends Panel {
     }
 
     /**
-     * Lock the component's text
+     * Lock a component's text
      *
-     * @method lockText
+     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */
@@ -311,9 +315,9 @@ export default class Element extends Panel {
     }
 
     /**
-     * Unlock the component's text
+     * Unlock a component's text
      *
-     * @method unlockText
+     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @chainable
      */

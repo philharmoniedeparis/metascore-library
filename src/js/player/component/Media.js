@@ -8,23 +8,26 @@ import HTML5 from '../renderer/HTML5';
 import HLS from '../renderer/HLS';
 import Dash from '../renderer/Dash';
 
+/**
+ * The list of renderers to use in order of priority
+ * @type {Array}
+ */
 const RENDERERS = [
     HTML5,
     HLS,
     Dash
 ];
 
+/**
+ * A media component
+ */
 export default class Media extends Component{
 
     /**
-     * A media component
+     * Instantiate
      *
-     * @class Controller
-     * @namespace player.component
-     * @extends player.Component
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
+     * @property {Object} [properties={...}] A list of the component properties as name/descriptor pairs
      */
     constructor(configs){
         // call parent constructor
@@ -35,6 +38,11 @@ export default class Media extends Component{
             .addClass(this.configs.type);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'type': 'audio',
@@ -176,10 +184,21 @@ export default class Media extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Media';
     }
 
+    /**
+    * Get a renderer class from a mime type
+    *
+    * @param {String} mime The mime type
+    * @return {Class} The matched renderer class, or null
+    */
     static getRendererForMime(mime){
         const index = RENDERERS.findIndex((renderer) => {
             return renderer.canPlayType(mime);
@@ -192,6 +211,11 @@ export default class Media extends Component{
         return null;
     }
 
+    /**
+     * Get the renderer
+     *
+     * @return {Dom} The renderer
+     */
     getRenderer(){
         return this.renderer;
     }
@@ -211,6 +235,10 @@ export default class Media extends Component{
 
         const renderer = this.constructor.getRendererForMime(source.mime);
         if(renderer){
+            /**
+             * The renderer
+             * @type {Dom}
+             */
             this.renderer = new renderer({'type': this.configs.type})
                 .appendTo(this)
                 .addListener('ready', (evt) => {
@@ -337,6 +365,10 @@ export default class Media extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this
@@ -364,6 +396,10 @@ export default class Media extends Component{
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });
@@ -377,12 +413,17 @@ export default class Media extends Component{
 
     }
 
+    /**
+     * Remove from dom
+     *
+     * @chainable
+     */
     remove() {
         if(this.renderer){
             this.renderer.remove();
         }
 
-        super.remove();
+        return super.remove();
     }
 
 }

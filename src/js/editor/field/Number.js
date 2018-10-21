@@ -14,26 +14,25 @@ import '../../../css/editor/field/Number.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A number field based on an HTML input[type=number] element
+ */
 export default class Number extends Field {
 
     /**
-     * A number field based on an HTML input[type=number] element
+     * Instantiate
      *
-     * @class NumberField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Number} [configs.value=0] The default value
-     * @param {Number} [configs.min=null] The minimum allowed value
-     * @param {Number} [configs.max=null] The maximum allowed value
-     * @param {Number} [configs.step=1] The spin up/down step amount
-     * @param {Boolean} [configs.spinButtons=true] Whether to show the spin buttons
-     * @param {Integer} [configs.initSpinDelay=200] The initial delay between each increment/decrement of the spin buttons
-     * @param {Integer} [configs.minSpinDelay=5] The min delay of the spin buttons
-     * @param {Float} [configs.spinDelayMultiplier=0.95] The value to multiply the delay of the spin buttons with
-     * @param {String} [configs.spinDirection='horizontal'] The direction of the spin buttons
-     * @param {Boolean} [configs.flipSpinButtons=false] Whether to flip the spin buttons
+     * @property {Number} [value=0] The default value
+     * @property {Number} [min=null] The minimum allowed value
+     * @property {Number} [max=null] The maximum allowed value
+     * @property {Number} [step=1] The spin up/down step amount
+     * @property {Boolean} [spinButtons=true] Whether to show the spin buttons
+     * @property {Integer} [initSpinDelay=200] The initial delay between each increment/decrement of the spin buttons
+     * @property {Integer} [minSpinDelay=5] The min delay of the spin buttons
+     * @property {Float} [spinDelayMultiplier=0.95] The value to multiply the delay of the spin buttons with
+     * @property {String} [spinDirection='horizontal'] The direction of the spin buttons
+     * @property {Boolean} [flipSpinButtons=false] Whether to flip the spin buttons
      */
     constructor(configs) {
         // call parent constructor
@@ -45,6 +44,11 @@ export default class Number extends Field {
         this.addClass('numberfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'value': 0,
@@ -83,12 +87,20 @@ export default class Number extends Field {
                 buttons.addClass('flip');
             }
 
+            /**
+             * The spin down button
+             * @type {Dom}
+             */
             this.spindown_btn = new Dom('<button/>', {'text': '-', 'data-action': 'spin-down'})
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
                 .appendTo(buttons);
 
+            /**
+             * The spin up button
+             * @type {Dom}
+             */
             this.spinup_btn = new Dom('<button/>', {'text': '+', 'data-action': 'spin-up'})
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
@@ -117,11 +129,13 @@ export default class Number extends Field {
     /**
      * The input event handler
      *
-     * @method onInput
      * @private
-     * @param {Event} evt The event object
      */
     onInput(){
+        /**
+         * Whether an input occured but the current value has not yet been updated
+         * @type {Boolean}
+         */
         this.dirty = true;
     }
 
@@ -195,7 +209,11 @@ export default class Number extends Field {
             return;
         }
 
-        this.spinDelay = this.configs.initSpinDelay;
+        /**
+         * The current spin button delay
+         * @type {Number}
+         */
+        this.spin_delay = this.configs.initSpinDelay;
 
         switch(Dom.data(evt.target, 'action')){
             case 'spin-down':
@@ -214,7 +232,7 @@ export default class Number extends Field {
      * @private
      */
     onSpinBtnMouseUp(){
-        delete this.spinDelay;
+        delete this.spin_delay;
         clearTimeout(this.timeout);
     }
 
@@ -225,7 +243,7 @@ export default class Number extends Field {
      * @private
      */
     onSpinBtnMouseOut(){
-        delete this.spinDelay;
+        delete this.spin_delay;
         clearTimeout(this.timeout);
     }
 
@@ -245,10 +263,15 @@ export default class Number extends Field {
         this.setValue(value);
 
         if(loop !== false){
-            if(this.spinDelay > this.configs.minSpinDelay){
-                this.spinDelay *= this.configs.spinDelayMultiplier;
+            if(this.spin_delay > this.configs.minSpinDelay){
+                this.spin_delay *= this.configs.spinDelayMultiplier;
             }
-            this.timeout = setTimeout(this.spinDown, this.spinDelay);
+
+            /**
+             * The spin timer id
+             * @type {Number}
+             */
+            this.timeout = setTimeout(this.spinDown, this.spin_delay);
         }
     }
 
@@ -268,10 +291,10 @@ export default class Number extends Field {
         this.setValue(value);
 
         if(loop !== false){
-            if(this.spinDelay > this.configs.minSpinDelay){
-                this.spinDelay *= this.configs.spinDelayMultiplier;
+            if(this.spin_delay > this.configs.minSpinDelay){
+                this.spin_delay *= this.configs.spinDelayMultiplier;
             }
-            this.timeout = setTimeout(this.spinUp, this.spinDelay);
+            this.timeout = setTimeout(this.spinUp, this.spin_delay);
         }
     }
 
@@ -310,6 +333,10 @@ export default class Number extends Field {
      * @chainable
      */
     setMin(value){
+        /**
+         * The minimum allowed value
+         * @type {Number}
+         */
         this.min = value;
 
         return this;
@@ -323,6 +350,10 @@ export default class Number extends Field {
      * @chainable
      */
     setMax(value){
+        /**
+         * The maximum allowed value
+         * @type {Number}
+         */
         this.max = value;
 
         return this;

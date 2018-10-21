@@ -15,15 +15,14 @@ import '../../../css/editor/field/File.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A file field based on an HTML input[type=file] element
+ */
 export default class File extends Field {
 
     /**
-     * A file field based on an HTML input[type=file] element
+     * Instantiate
      *
-     * @class FileField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      */
     constructor(configs) {
@@ -33,6 +32,11 @@ export default class File extends Field {
         this.addClass('filefield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'sources': {
@@ -56,19 +60,39 @@ export default class File extends Field {
     setupUI() {
         const uid = `field-${uuid(5)}`;
 
+        /**
+         * The current value for each source type
+         * @type {Object}
+         */
         this.values = {};
 
         if(this.configs.label){
+            /**
+             * A potential <label> element
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
                 .appendTo(this);
         }
 
+        /**
+         * The input-wrapper container
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
+        /**
+         * The source-selector container
+         * @type {Dom}
+         */
         this.sources_selector = new Dom('<div/>', {'class': 'sources-selector'})
             .appendTo(this.input_wrapper);
 
+        /**
+         * The inputs container
+         * @type {Dom}
+         */
         this.inputs = new Dom('<div/>', {'class': 'inputs'})
             .appendTo(this.input_wrapper);
 
@@ -125,6 +149,12 @@ export default class File extends Field {
         }
     }
 
+    /**
+     * The inputs change event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onInputChange(evt){
         const input = new Dom(evt.target);
         const parent = input.parents();
@@ -215,10 +245,12 @@ export default class File extends Field {
      * Set the field's value
      *
      * @method setValue
-     * @param {Object} [value] The new value
-     * @param {String} value.name The file's name
-     * @param {String} [value.url] The file's url
-     * @chainable
+     * @param {Object} value The new value
+     * @property {String} name The file's name
+     * @property {String} url The file's url
+     * @property {String} source The file's source type
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @return {File} this
      */
     setValue(value, supressEvent){
         const active_source = value && 'source' in value ? value.source : 'upload';
@@ -283,6 +315,12 @@ export default class File extends Field {
         return this;
     }
 
+    /**
+     * Set the active source type
+     *
+     * @param {String} [source] The source type to activate
+     * @return {File} this
+     */
     setActiveSource(source){
         const inputs = this.inputs.children('.input');
 
@@ -292,14 +330,20 @@ export default class File extends Field {
         inputs.filter(`[data-source="${source}"`).show()
             .children('input').attr('disabled', null);
 
+        /**
+         * The current value
+         * @type {String}
+         */
         this.value = source in this.values ? this.values[source] : null;
+
+        return this;
     }
 
     /**
      * Disable the field
      *
      * @method disable
-     * @chainable
+     * @return {File} this
      */
     disable() {
         super.disable();
@@ -313,7 +357,7 @@ export default class File extends Field {
      * Enable the field
      *
      * @method enable
-     * @chainable
+     * @return {File} this
      */
     enable() {
         super.enable();
@@ -328,7 +372,7 @@ export default class File extends Field {
      *
      * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {File} this
      */
     readonly(readonly){
         super.readonly(readonly);

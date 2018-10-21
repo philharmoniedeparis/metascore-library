@@ -10,6 +10,11 @@ import {toCSS} from '../../core/utils/Color';
  */
 export default class BlockToggler extends Component{
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -162,6 +167,11 @@ export default class BlockToggler extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'BlockToggler';
     }
@@ -178,6 +188,10 @@ export default class BlockToggler extends Component{
 
         this.addClass('block-toggler');
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.btn_wrapper = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
 
@@ -188,7 +202,7 @@ export default class BlockToggler extends Component{
      * Update the displayed time
      *
      * @method update
-     * @param {Dom} blocks A Dom instance containing the components to control
+     * @param {Dom} components A Dom instance containing the components to control
      * @chainable
      */
     update(components){
@@ -246,6 +260,11 @@ export default class BlockToggler extends Component{
         return this;
     }
 
+    /**
+     * The toggler button click event callback
+     *
+     * @param {Component} component The associated component
+     */
     onTogglerClick(component){
         component.toggleVisibility();
     }
@@ -263,6 +282,10 @@ export default class BlockToggler extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this,
@@ -294,6 +317,10 @@ export default class BlockToggler extends Component{
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });

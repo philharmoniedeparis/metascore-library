@@ -33,17 +33,15 @@ const EVT_PLAY = 'play';
  */
 const EVT_BLOCK_VISIBILITY = 'block_visibility';
 
+/**
+ * A text element
+ */
 export default class Text extends Element {
 
     /**
-     * A text element
+     *Instantiate
      *
-     * @class Cursor
-     * @namespace player.component.element
-     * @extends player.component.Element
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
         // call parent constructor
@@ -52,6 +50,11 @@ export default class Text extends Element {
         this.addDelegate('a, a *', 'click', this.onLinkClick.bind(this));
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         const defaults = super.getDefaults();
 
@@ -76,6 +79,11 @@ export default class Text extends Element {
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Text';
     }

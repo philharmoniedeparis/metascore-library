@@ -1,15 +1,14 @@
 import Dom from '../../Dom';
 import Button from '../Button';
 
+/**
+ * A title toolbar for overlay's
+ */
 export default class Toolbar extends Dom{
 
     /**
-     * A title toolbar for overlay's
+     * Instantiate
      *
-     * @class Toolbar
-     * @namespace overlay
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.title=null] The text to display as a title
      */
@@ -17,11 +16,23 @@ export default class Toolbar extends Dom{
         // call parent constructor
         super('<div/>', {'class': 'toolbar clearfix'});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The title container
+         * @type {Dom}
+         */
         this.title = new Dom('<div/>', {'class': 'title'})
             .appendTo(this);
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
 
@@ -30,6 +41,11 @@ export default class Toolbar extends Dom{
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'title': null

@@ -42,6 +42,11 @@ const EVT_PAGEACTIVATE = 'pageactivate';
  */
 export default class Block extends Component {
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -260,6 +265,11 @@ export default class Block extends Component {
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Block';
     }
@@ -276,10 +286,18 @@ export default class Block extends Component {
 
         this.addClass('block');
 
+        /**
+         * The pages container
+         * @type {Dom}
+         */
         this.page_wrapper = new Dom('<div/>', {'class': 'pages'})
             .addDelegate('.page', 'cuepointstart', this.onPageCuePointStart.bind(this))
             .appendTo(this);
 
+        /**
+         * The pager
+         * @type {Pager}
+         */
         this.pager = new Pager()
             .addDelegate('.button', 'click', this.onPagerClick.bind(this))
             .appendTo(this);
@@ -348,7 +366,7 @@ export default class Block extends Component {
      *
      * @method getPage
      * @param {Integer} index The page's index
-     * @return {player.component.Page} The page
+     * @return {Page} The page
      */
     getPage(index){
         const page = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
@@ -360,10 +378,10 @@ export default class Block extends Component {
      * Add a page
      *
      * @method addPage
-     * @params {Mixed} configs Page configs or a player.component.Page instance
-     * @params {Integer} [index] The new page's index, page is appended if not given
+     * @param {Object|Page} configs Page configs or an existing Page instance
+     * @param {Integer} [index] The new page's index, page is appended if not given
      * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
-     * @return {player.component.Page} The added page
+     * @return {Page} The added page
      */
     addPage(configs, index, supressEvent){
         const existing = configs instanceof Page;
@@ -399,9 +417,9 @@ export default class Block extends Component {
      * Remove a page
      *
      * @method removePage
-     * @params {player.component.Page} page The page to remove
+     * @param {Page} page The page to remove
      * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
-     * @return {player.component.Page} The removed page
+     * @return {Page} The removed page
      */
     removePage(page, supressEvent){
         page.remove();
@@ -429,7 +447,7 @@ export default class Block extends Component {
      * Get the index of a page
      *
      * @method getPageIndex
-     * @param {player.component.Page} page The page
+     * @param {Page} page The page
      * @return {Integer} The page's index
      */
     getPageIndex(page){
@@ -440,7 +458,7 @@ export default class Block extends Component {
      * Get the currently active page
      *
      * @method getActivePage
-     * @return {player.component.Page} The page
+     * @return {Page} The page
      */
     getActivePage() {
         return this.getPage(this.getActivePageIndex());
@@ -530,6 +548,10 @@ export default class Block extends Component {
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this.child('.pager'),
@@ -561,6 +583,10 @@ export default class Block extends Component {
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });

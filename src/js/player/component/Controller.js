@@ -9,6 +9,11 @@ import {formatTime} from '../../core/utils/Media';
  */
 export default class Controller extends Component{
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -97,6 +102,11 @@ export default class Controller extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Controller';
     }
@@ -113,12 +123,24 @@ export default class Controller extends Component{
 
         this.addClass('controller');
 
+        /**
+         * The timer container
+         * @type {Dom}
+         */
         this.timer = new Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
             .appendTo(this);
 
+        /**
+         * The rewind <button> element
+         * @type {Dom}
+         */
         this.rewind_btn = new Dom('<button/>')
             .data('action', 'rewind');
 
+        /**
+         * The play <button> element
+         * @type {Dom}
+         */
         this.play_btn = new Dom('<button/>')
             .data('action', 'play');
 
@@ -166,6 +188,10 @@ export default class Controller extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this.child('.timer')

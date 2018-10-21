@@ -4,15 +4,14 @@ import BorderRadiusOverlay from '../overlay/BorderRadius';
 
 import '../../../css/editor/field/BorderRadius.less';
 
+/**
+ * A complex field for defining CSS border radius values
+ */
 export default class BorderRadius extends Field{
 
     /**
-     * A complex field for defining CSS border radius values
+     * Instantiate
      *
-     * @class BorderRadius
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      */
     constructor(configs) {
@@ -38,10 +37,18 @@ export default class BorderRadius extends Field{
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
+        /**
+         * The clear button
+         * @type {Dom}
+         */
         this.clear = new Dom('<button/>', {'text': '.', 'data-action': 'clear'})
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 
+        /**
+         * The overlay
+         * @type {BorderRadiusOverlay}
+         */
         this.overlay = new BorderRadiusOverlay()
             .addListener('submit', this.onOverlaySubmit.bind(this));
     }

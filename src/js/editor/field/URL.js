@@ -1,17 +1,17 @@
 
 import Field from '../Field';
 
+
+/**
+ * A single-line text field based on an HTML input[type=text] element
+ */
 export default class URL extends Field {
 
     /**
-     * A single-line text field based on an HTML input[type=text] element
+     * Instantiate
      *
-     * @class URLField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.value=''] The default value
+     * @property {String} [value=''] The default value
      */
     constructor(configs) {
         // call parent constructor
@@ -20,6 +20,11 @@ export default class URL extends Field {
         this.addClass('urlfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'value': ''

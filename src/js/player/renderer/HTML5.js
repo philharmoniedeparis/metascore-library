@@ -78,34 +78,62 @@ const EVT_TIMEUPDATE = 'timeupdate';
  */
 const EVT_WAVEFORMDATALOADED = 'waveformdataloaded';
 
+/**
+ * An HTML5 media renderer
+ */
 export default class HTML5 extends Dom {
 
     /**
-     * A media renderer
+     * Instantiate
      *
-     * @class Renderer
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.properties={...}} A list of the component properties as name/descriptor pairs
+     * @property {String} [type='audio'] The media type (audio or video)
      */
     constructor(configs){
         // call parent constructor
         super('<div/>', {'class': 'metaScore-renderer'});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * Whether the renderer is playing
+         * @type {Boolean}
+         */
         this.playing = false;
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
-        return {};
+        return {
+            'type': 'audio'
+        };
     }
 
+    /**
+     * Check whether the renderer supports a given mime type
+     *
+     * @param {String} mime The mime type
+     * @return {Boolean} Whether the renderer supports the given mime type
+     */
     static canPlayType(mime){
         const audio = new Audio();
         return audio.canPlayType(mime);
     }
 
+    /**
+     * Get the duration of a media file from its URI
+     *
+     * @param {String} url The file's URL
+     * @param {Function} callback The callback to invoke with a potential error and the duration
+     */
     static getDurationFromURI(url, callback){
         const audio = new Audio();
 
@@ -120,9 +148,16 @@ export default class HTML5 extends Dom {
         audio.src = url;
     }
 
+    /**
+     * Initialize
+     */
     init(){
         this.addClass('html5');
 
+        /**
+         * The <video> or <audio> element
+         * @type {Dom}
+         */
         this.el = new Dom(`<${this.configs.type}></${this.configs.type}/>`, {'preload': 'auto'})
             .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
             .addListener('play', this.onPlay.bind(this))
@@ -131,6 +166,10 @@ export default class HTML5 extends Dom {
             .addListener('seeked', this.onSeeked.bind(this))
             .appendTo(this);
 
+        /**
+         * The HTMLVideoElement or HTMLAudioElement
+         * @type {HTMLVideoElement|HTMLAudioElement}
+         */
         this.dom = this.el.get(0);
 
         this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
@@ -142,17 +181,23 @@ export default class HTML5 extends Dom {
     * Set the media source
     *
     * @method setSource
-    * @param {Array} sources The list of sources as objects with 'url' and 'mime' keys
+    * @param {Object} source The source to set
+    * @property {String} url The source's url
+    * @property {String} mime The source's mime type
     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
     * @chainable
     */
     setSource(source, supressEvent){
+        /**
+         * The current source
+         * @type {Object}
+         */
         this.source = source;
 
         delete this.waveformdata;
-        if(this.waveformdata_ajax){
-            this.waveformdata_ajax.abort();
-            delete this.waveformdata_ajax;
+        if(this._waveformdata_ajax){
+            this._waveformdata_ajax.abort();
+            delete this._waveformdata_ajax;
         }
 
         const source_tags = `<source src="${this.source.url}" type="${this.source.mime}"></source>`;
@@ -167,31 +212,49 @@ export default class HTML5 extends Dom {
         return this;
     }
 
+    /**
+    * Get the media source
+    *
+    * @return {Object} The source
+    */
     getSource(){
         return this.source;
     }
 
+   /**
+   * Get the WaveformData assiciated with the media file
+   *
+   * @param {Function} callback The callback to invoke
+   */
     getWaveformData(callback){
         if(this.waveformdata){
             callback(this.waveformdata);
             return;
         }
 
-        if(!this.waveformdata_ajax){
+        if(!this._waveformdata_ajax){
             const source = this.getSource();
 
             if(source){
                 const from_web_audio = !('audiowaveform' in source);
 
-                this.waveformdata_ajax = Ajax.GET(from_web_audio ? source.url : source.audiowaveform, {
+                /**
+                 * The ajax instance used to load the waveform data
+                 * @type {Ajax}
+                 */
+                this._waveformdata_ajax = Ajax.GET(from_web_audio ? source.url : source.audiowaveform, {
                     'responseType': 'arraybuffer',
                     'onSuccess': (evt) => {
                         const response = evt.target.getResponse();
 
                         if(!response){
+                            /**
+                             * The associated waveform data
+                             * @type {WaveformData}
+                             */
                             this.waveformdata = null;
                             this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
-                            delete this.waveformdata_ajax;
+                            delete this._waveformdata_ajax;
                             return;
                         }
 
@@ -200,26 +263,26 @@ export default class HTML5 extends Dom {
                             WebAudioBuilder(context, response, (err, waveform) => {
                                 this.waveformdata = err ? null : waveform;
                                 this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
-                                delete this.waveformdata_ajax;
+                                delete this._waveformdata_ajax;
                             });
                         }
                         else{
                             this.waveformdata = WaveformData.create(response);
                             this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
-                            delete this.waveformdata_ajax;
+                            delete this._waveformdata_ajax;
                         }
                     },
                     'onError': (evt) => {
                         console.error(evt.target.getStatusText());
                         this.waveformdata = null;
                         this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
-                        delete this.waveformdata_ajax;
+                        delete this._waveformdata_ajax;
                     }
                 });
             }
         }
 
-        if(this.waveformdata_ajax){
+        if(this._waveformdata_ajax){
             this.addOneTimeListener(EVT_WAVEFORMDATALOADED, (evt) => {
                 callback(evt.detail.data);
             });
@@ -392,10 +455,6 @@ export default class HTML5 extends Dom {
      */
     getDuration() {
         return toCentiseconds(this.dom.duration);
-    }
-
-    remove(){
-        super.remove();
     }
 
 }

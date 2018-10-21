@@ -15,19 +15,18 @@ import '../../../css/editor/overlay/BorderRadius.less';
  */
 const EVT_SUBMIT = 'submit';
 
+/**
+ * An overlay that simplifies the creation of a CSS border-radius value
+ */
 export default class BorderRadius extends Overlay {
 
     /**
-     * An overlay that simplifies the creation of a CSS border-radius value
+     * Instantiate
      *
-     * @class BorderRadius
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.title='Border Radius'] The overlay's title
+     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
+     * @property {String} [title='Border Radius'] The overlay's title
      */
     constructor(configs) {
         // call parent constructor
@@ -36,6 +35,11 @@ export default class BorderRadius extends Overlay {
         this.addClass('border-radius');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
@@ -56,11 +60,18 @@ export default class BorderRadius extends Overlay {
 
         const contents = this.getContents();
 
-        this.fields = {};
-        this.buttons = {};
-
+        /**
+         * The preview container
+         * @type {Dom}
+         */
         this.preview = new Dom('<div/>', {'class': 'preview'})
             .appendTo(contents);
+
+        /**
+         * The list of fields
+         * @type {Object}
+         */
+        this.fields = {};
 
         this.fields.tlw = new NumberField({'min': 0})
             .addClass('tlw')
@@ -102,7 +113,12 @@ export default class BorderRadius extends Overlay {
             .addClass('blh')
             .appendTo(this.preview);
 
-        // Buttons
+        /**
+         * The list of buttons
+         * @type {Object}
+         */
+        this.buttons = {};
+
         this.buttons.apply = new Button({'label': 'Apply'})
             .addClass('submit')
             .addListener('click', this.onApplyClick.bind(this))
@@ -118,9 +134,7 @@ export default class BorderRadius extends Overlay {
     /**
      * The valuechange event handler
      *
-     * @method onValueChange
      * @private
-     * @param {Event} evt The event object
      */
     onValueChange() {
         let radius    = '';

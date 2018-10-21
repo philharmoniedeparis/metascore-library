@@ -37,14 +37,23 @@ const EVT_DRAGEND = 'dragend';
 export default class Draggable {
 
     /**
-     * Create a Draggable behaviour
+     * Instantiate
+     *
      * @param {Object} configs Custom configs to override defaults
      * @param {Dom} configs.target The Dom object to add the behavior to
      * @param {Dom} configs.handle The Dom object to use as a dragging handle
      */
     constructor(configs) {
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The target's owner document
+         * @type {Dom}
+         */
         this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
@@ -58,6 +67,11 @@ export default class Draggable {
         this.enable();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'target': null,
@@ -81,6 +95,10 @@ export default class Draggable {
             return;
         }
 
+        /**
+         * The state at which the target was on mouse down
+         * @type {Object}
+         */
         this._start_state = {
             'x': evt.clientX,
             'y': evt.clientY
@@ -111,6 +129,11 @@ export default class Draggable {
 
         this._start_state.x = evt.clientX;
         this._start_state.y = evt.clientY;
+
+        /**
+         * Whether the target is being dragged
+         * @type {Boolean}
+         */
         this._dragged = true;
 
         this.configs.target.triggerEvent(EVT_DRAG, {'offsetX': offsetX, 'offsetY': offsetY}, false, true);
@@ -147,6 +170,12 @@ export default class Draggable {
         evt.preventDefault();
     }
 
+    /**
+    * The click event handler
+    *
+    * @private
+    * @param {Event} evt The event object
+    */
     onClick(evt){
         evt.stopPropagation();
         evt.preventDefault();
@@ -163,6 +192,10 @@ export default class Draggable {
 
         this.configs.handle.addClass('drag-handle');
 
+        /**
+         * Whether the behavior is enabled
+         * @type {Boolean}
+         */
         this.enabled = true;
 
         return this;

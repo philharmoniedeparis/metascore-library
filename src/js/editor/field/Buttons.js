@@ -10,17 +10,16 @@ import Dom from '../../core/Dom';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A simple buttons field based on HTML button elements
+ */
 export default class Buttons extends Field{
 
     /**
-     * A simple buttons field based on HTML button elements
+     * Instantiate
      *
-     * @class ButtonsField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.buttons={}}] The list of buttons as name/attributes pairs
+     * @property {Object} [buttons={}}] The list of buttons as name/attributes pairs
      */
     constructor(configs) {
         // call parent constructor
@@ -29,6 +28,11 @@ export default class Buttons extends Field{
         this.addClass('buttonsfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'buttons': {}
@@ -44,13 +48,24 @@ export default class Buttons extends Field{
     setupUI() {
         const field = this;
 
+        /**
+         * The list of buttons
+         * @type {Object}
+         */
         this.buttons = {};
 
         if(this.configs.label){
+            /**
+             * A potential label
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
-
+        /**
+         * The input-wrapper element
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 

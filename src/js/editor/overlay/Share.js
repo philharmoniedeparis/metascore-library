@@ -8,21 +8,20 @@ import TextareaField from '../field/Textarea';
 
 import '../../../css/editor/overlay/Share.less';
 
+/**
+ * An overlay to share a guide
+ */
 export default class Share extends Overlay {
 
     /**
-     * An overlay to share a guide
+     * Instantiate
      *
-     * @class Share
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.title='Guide Info'] The overlay's title
-     * @param {String} [configs.url=''] The player's url
-     * @param {String} [configs.api_help_url=''] The player's api help url
+     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
+     * @property {String} [title='Guide Info'] The overlay's title
+     * @property {String} [url=''] The player's url
+     * @property {String} [api_help_url=''] The player's api help url
      */
     constructor(configs) {
         // call parent constructor
@@ -34,6 +33,11 @@ export default class Share extends Overlay {
         this.getField('embed').setValue(this.getEmbedCode());
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
@@ -62,6 +66,10 @@ export default class Share extends Overlay {
 
         const contents = this.getContents();
 
+        /**
+         * The list of fields
+         * @type {Object}
+         */
         this.fields = {};
 
         // Link

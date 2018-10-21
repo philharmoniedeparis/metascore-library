@@ -1,14 +1,12 @@
 import Dom from '../../core/Dom';
 
+/**
+ * A dropdown menu based on an HTML ul element
+ */
 export default class DropDownMenu extends Dom{
 
     /**
-     * A dropdown menu based on an HTML ul element
-     *
-     * @class DropDownMenu
-     * @namespace editor
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call the super constructor.

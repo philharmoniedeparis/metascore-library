@@ -1,18 +1,21 @@
 import Dom from './Dom';
 
+/**
+ * A class for CSS style sheet manipulation
+ */
 export default class StyleSheet extends Dom {
 
     /**
-     * A class for CSS style sheet manipulation
-     *
-     * @class StyleSheet
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call the super constructor.
         super('<style/>', {'type': 'text/css'});
 
+        /**
+         * The <style> element
+         * @type {Element}
+         */
         this.el = this.get(0);
 
         // WebKit hack
@@ -26,7 +29,7 @@ export default class StyleSheet extends Dom {
      * @param {String} selector The CSS selector for the rule
      * @param {String} rule The style definitions for the rule
      * @param {Integer} [index] The index position of the rule
-     * @chainable
+     * @return {StyleSheet} this
      */
     addRule(selector, rule, index) {
         let _index = index;
@@ -50,8 +53,8 @@ export default class StyleSheet extends Dom {
      * Remove a CSS rule from the style sheet
      *
      * @method removeRule
-     * @param {Integer} The index position of the rule to remove
-     * @chainable
+     * @param {Integer} index The index position of the rule to remove
+     * @return {StyleSheet} this
      */
     removeRule(index) {
         const sheet = this.el.sheet;
@@ -71,7 +74,7 @@ export default class StyleSheet extends Dom {
      *
      * @method removeRulesBySelector
      * @param {String} selector The CSS selector of the rule to remove
-     * @chainable
+     * @return {StyleSheet} this
      */
     removeRulesBySelector(selector) {
         const sheet = this.el.sheet;
@@ -92,7 +95,7 @@ export default class StyleSheet extends Dom {
      * Remove all CSS rule from the style sheet
      *
      * @method removeRules
-     * @chainable
+     * @return {StyleSheet} this
      */
     removeRules() {
         const sheet = this.el.sheet;
@@ -110,7 +113,7 @@ export default class StyleSheet extends Dom {
      *
      * @method setInternalValue
      * @param {String} value The CSS rules
-     * @chainable
+     * @return {StyleSheet} this
      */
     setInternalValue(value) {
         if(this.el.styleSheet){

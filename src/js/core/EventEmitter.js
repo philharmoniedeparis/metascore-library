@@ -1,12 +1,16 @@
+/**
+ * A base class for event handling
+ */
 export default class EventEmitter{
 
     /**
-     * A base class for event handling
-     *
-     * @class EventEmitter
-     * @constructor
+     * Instantiate
      */
     constructor() {
+        /**
+         * Stores the list of callbacks
+         * @type {Object}
+         */
         this.listeners = {};
     }
 

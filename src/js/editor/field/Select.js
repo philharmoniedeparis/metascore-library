@@ -17,18 +17,17 @@ import '../../../css/editor/field/Select.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A select list field based on an HTML select element
+ */
 export default class Select extends Field {
 
     /**
-     * A select list field based on an HTML select element
+     * Instantiate
      *
-     * @class SelectField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options=[]] A list of select options as objects with 'value' and 'text' keys
-     * @param {Boolean} [configs.multiple=false] Whether multiple options can be selected at once
+     * @property {Object} [options=[]] A list of select options as objects with 'value' and 'text' keys
+     * @property {Boolean} [multiple=false] Whether multiple options can be selected at once
      */
     constructor(configs) {
         // call parent constructor
@@ -37,6 +36,11 @@ export default class Select extends Field {
         this.addClass('selectfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': [],
@@ -60,6 +64,10 @@ export default class Select extends Field {
             .attr('readonly', true)
             .addListener('click', this.onInputClick.bind(this));
 
+        /**
+         * The top <ul> element
+         * @type {Dom}
+         */
         this.menu = new Dom('<ul/>', {'class': 'menu', 'tabindex': 1})
             .addDelegate('li', 'click', this.onItemClick.bind(this))
             .addListener('blur', this.onBlur.bind(this), true)
@@ -70,24 +78,51 @@ export default class Select extends Field {
         });
 
         if(this.configs.multiple){
-            this.addClass('multiple');
+            /**
+             * The current value
+             * @type {Array}
+             */
             this.value = [];
+
+            this.addClass('multiple');
         }
     }
 
+    /**
+     * The wrapper click event handler
+     *
+     * @private
+     */
     onWrapperClick(){
         this.close();
     }
 
+    /**
+     * The input click event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onInputClick(evt){
         this.open();
         evt.stopPropagation();
     }
 
+    /**
+     * The blur event handler
+     *
+     * @private
+     */
     onBlur(){
         this.close();
     }
 
+    /**
+     * The item click event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onItemClick(evt){
         const li = new Dom(evt.target);
 
@@ -110,6 +145,12 @@ export default class Select extends Field {
         this.close();
     }
 
+    /**
+     * Add a value to the selected ones
+     *
+     * @param {String} value The value to add
+     * @param {Boolean} [supressEvent=false] Whether to supress the valuechange event
+     */
     addValue(value, supressEvent){
         const options = this.menu.find(`.option[data-value="${value}"]`);
 
@@ -119,6 +160,12 @@ export default class Select extends Field {
         }
     }
 
+    /**
+     * Remove a value to the selected ones
+     *
+     * @param {String} value The value to add
+     * @param {Boolean} [supressEvent=false] Whether to supress the valuechange event
+     */
     removeValue(value, supressEvent){
         const options = this.menu.find(`.option[data-value="${value}"]`);
 
@@ -133,7 +180,7 @@ export default class Select extends Field {
      *
      * @method setValue
      * @param {Mixed} value The new value
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @param {Boolean} [supressEvent=false] Whether to supress the valuechange event
      * @chainable
      */
     setValue(value, supressEvent){
@@ -161,6 +208,12 @@ export default class Select extends Field {
         return this;
     }
 
+    /**
+     * Update the field's value
+     *
+     * @param {Boolean} [supressEvent=false] Whether to supress the valuechange event
+     * @chainable
+     */
     updateValue(supressEvent){
         const options = this.menu.find('.option.selected');
         const count = options.count();
@@ -224,7 +277,8 @@ export default class Select extends Field {
      *
      * @method addGroup
      * @param {String} label The group's text label
-     * @return {Dom} The created Dom object
+     * @param {Dom} [parent] A parent group to append the group to, it will be appended to the root list if not specified
+     * @return {Dom} The new group
      */
     addGroup(label, parent){
         return new Dom('<li/>', {'text': label, 'title': label, 'class': 'group'})
@@ -239,7 +293,7 @@ export default class Select extends Field {
      * @param {String} value The option's value
      * @param {String} label The option's label
      * @param {Dom} [parent] A group to append the option to, it will be appended to the root list if not specified
-     * @return {Dom} The created Dom object
+     * @return {Dom} The new option
      */
     addOption(value, label, parent){
         return new Dom('<li/>', {'text': label, 'title': label, 'class': 'option'})
@@ -247,10 +301,22 @@ export default class Select extends Field {
             .appendTo(parent ? parent.child('ul') : this.menu);
     }
 
+    /**
+     * Get an option by value
+     *
+     * @param {String} value The option's value
+     * @return {Dom} The corresponding option
+     */
     getOption(value){
         return this.menu.find(`li.option[data-value="${value}"]`);
     }
 
+    /**
+     * Get options from the root list or a sub-list
+     *
+     * @param {Dom} [parent=this.menu] The parent list
+     * @return {Dom} The options
+     */
     getOptions(parent){
         return (parent ? parent : this.menu).find('li.option');
     }
@@ -286,12 +352,18 @@ export default class Select extends Field {
         return option;
     }
 
+    /**
+     * Show the options menu
+     */
     open(){
         this.addClass('open');
         this.menu.focus(false);
         return this;
     }
 
+    /**
+     * Hide the options menu
+     */
     close(){
         this.removeClass('open');
         return this;
@@ -317,6 +389,10 @@ export default class Select extends Field {
      * @chainable
      */
     readonly(readonly){
+        /**
+         * Whether the field is in a readonly state
+         * @type {Boolean}
+         */
         this.is_readonly = readonly === true;
 
         this.toggleClass('readonly', this.is_readonly);

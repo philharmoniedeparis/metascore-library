@@ -1,23 +1,29 @@
 import Dom from '../core/Dom';
 import Locale from '../core/Locale';
 
+/**
+ * A pager for block components
+ */
 export default class Pager extends Dom{
 
     /**
-     * A pager for block components
-     *
-     * @class Pager
-     * @namespace player
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call parent constructor
         super('<div/>', {'class': 'pager'});
 
+        /**
+         * The count container
+         * @type {Dom}
+         */
         this.count = new Dom('<div/>', {'class': 'count'})
             .appendTo(this);
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .addListener('mousedown', (evt) => {
                 evt.stopPropagation();
@@ -26,8 +32,10 @@ export default class Pager extends Dom{
 
         this.buttons.first = new Dom('<div/>', {'class': 'button', 'data-action': 'first'})
             .appendTo(this.buttons);
+
         this.buttons.previous = new Dom('<div/>', {'class': 'button', 'data-action': 'previous'})
             .appendTo(this.buttons);
+
         this.buttons.next = new Dom('<div/>', {'class': 'button', 'data-action': 'next'})
             .appendTo(this.buttons);
     }

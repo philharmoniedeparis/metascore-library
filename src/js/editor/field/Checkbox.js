@@ -11,19 +11,18 @@ import '../../../css/editor/field/Checkbox.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A checkbox field based on an HTML input[type=checkbox] element
+ */
 export default class Checkbox extends Field{
 
     /**
-     * A checkbox field based on an HTML input[type=checkbox] element
+     * Instantiate
      *
-     * @class Checkbox
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.checked=false] Whether the field is checked by default
-     * @param {Boolean} [configs.checked_value=true] The value when checked
-     * @param {Boolean} [configs.unchecked_value=false] The value when unchecked
+     * @property {Boolean} [checked=false] Whether the field is checked by default
+     * @property {Boolean} [checked_value=true] The value when checked
+     * @property {Boolean} [unchecked_value=false] The value when unchecked
      */
     constructor(configs) {
         // call parent constructor
@@ -34,6 +33,11 @@ export default class Checkbox extends Field{
         this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'checked': false,
@@ -83,6 +87,10 @@ export default class Checkbox extends Field{
         }
 
         if(this.input.is(":checked")){
+            /**
+             * The current value
+             * @type {String}
+             */
             this.value = this.configs.checked_value;
             this.addClass('checked');
         }

@@ -2,26 +2,25 @@ import Field from '../Field';
 
 import '../../../css/editor/field/Slider.less';
 
+/**
+ * A number field based on an HTML input[type=number] element
+ */
 export default class Number extends Field {
 
     /**
-     * A number field based on an HTML input[type=number] element
+     * Instantiate
      *
-     * @class NumberField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Number} [configs.value=0] The default value
-     * @param {Number} [configs.min=null] The minimum allowed value
-     * @param {Number} [configs.max=null] The maximum allowed value
-     * @param {Number} [configs.step=1] The spin up/down step amount
-     * @param {Boolean} [configs.spinButtons=true] Whether to show the spin buttons
-     * @param {Integer} [configs.initSpinDelay=200] The initial delay between each increment/decrement of the spin buttons
-     * @param {Integer} [configs.minSpinDelay=5] The min delay of the spin buttons
-     * @param {Float} [configs.spinDelayMultiplier=0.95] The value to multiply the delay of the spin buttons with
-     * @param {String} [configs.spinDirection='horizontal'] The direction of the spin buttons
-     * @param {Boolean} [configs.flipSpinButtons=false] Whether to flip the spin buttons
+     * @property {Number} [value=0] The default value
+     * @property {Number} [min=null] The minimum allowed value
+     * @property {Number} [max=null] The maximum allowed value
+     * @property {Number} [step=1] The spin up/down step amount
+     * @property {Boolean} [spinButtons=true] Whether to show the spin buttons
+     * @property {Integer} [initSpinDelay=200] The initial delay between each increment/decrement of the spin buttons
+     * @property {Integer} [minSpinDelay=5] The min delay of the spin buttons
+     * @property {Float} [spinDelayMultiplier=0.95] The value to multiply the delay of the spin buttons with
+     * @property {String} [spinDirection='horizontal'] The direction of the spin buttons
+     * @property {Boolean} [flipSpinButtons=false] Whether to flip the spin buttons
      */
     constructor(configs) {
         // call parent constructor
@@ -30,6 +29,11 @@ export default class Number extends Field {
         this.addClass('sliderfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'value': 0,

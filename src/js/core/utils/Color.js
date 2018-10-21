@@ -1,7 +1,10 @@
 import {isString, isObject} from './Var';
 
-// http://www.w3.org/TR/css3-color/
-/*eslint-disable */
+/**
+ * A list of CSS color names and their corresponding rgba values
+ * see http://www.w3.org/TR/css3-color/
+ * @type {Object}
+ */
 const COLOR_NAMES = {
     "transparent": [0,0,0,0],
     "aliceblue": [240,248,255,1],
@@ -153,13 +156,10 @@ const COLOR_NAMES = {
     "yellow": [255,255,0,1],
     "yellowgreen": [154,205,50,1]
 };
-/*eslint-enable */
 
 /**
  * Convert an RGB value to HSV
  *
- * @method rgb2hsv
- * @static
  * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys with values contained in the set [0, 255]
  * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys with values contained in the set [0, 1]
  */
@@ -204,8 +204,6 @@ export function rgb2hsv(rgb){
 /**
  * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
  *
- * @method parse
- * @static
  * @param {Mixed} color The CSS value to parse
  * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
  */
@@ -283,6 +281,12 @@ export function toRGBA(color){
     return null;
 }
 
+/**
+ * Parse a CSS color value into an rgba CSS string
+ *
+ * @param {Mixed} color The CSS value to parse
+ * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
+ */
 export function toCSS(color){
     const rgba = toRGBA(color);
     return rgba ? `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})` : null;

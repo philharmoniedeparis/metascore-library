@@ -1,13 +1,13 @@
 import Dom from '../Dom';
 
+/**
+ * A simple button based on an HTML button element
+ */
 export default class Button extends Dom {
 
     /**
-     * A simple button based on an HTML button element
+     * Instantiate
      *
-     * @class Button
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
      * @param {String} [configs.label=null] A text to add as a label
      */
@@ -15,8 +15,16 @@ export default class Button extends Dom {
         // call the super constructor.
         super('<button/>');
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * Whether the button is disabled
+         * @type {Boolean}
+         */
         this.disabled = false;
 
         if(this.configs.label){
@@ -26,6 +34,11 @@ export default class Button extends Dom {
         this.addListener('click', this.onClick.bind(this));
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'label': null
@@ -54,6 +67,10 @@ export default class Button extends Dom {
      */
     setLabel(text){
         if(typeof this.label === "undefined"){
+            /**
+             * An eventual label
+             * @type {Dom}
+             */
             this.label = new Dom('<span/>', {'class': 'label'})
                 .appendTo(this);
         }

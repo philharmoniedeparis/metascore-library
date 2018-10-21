@@ -14,17 +14,16 @@ import '../../../css/editor/field/Checkboxes.less';
  */
 const EVT_VALUECHANGE = 'valuechange';
 
+/**
+ * A select list field based on an HTML select element
+ */
 export default class Checkboxes extends Field {
 
     /**
-     * A select list field based on an HTML select element
+     * Instantiate
      *
-     * @class CheckboxesField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options=[]] A list of select options as objects with 'value' and 'text' keys
+     * @property {Object} [options=[]] A list of select options as objects with 'value' and 'text' keys
      */
     constructor(configs) {
         // call parent constructor
@@ -33,6 +32,11 @@ export default class Checkboxes extends Field {
         this.addClass('checkboxesfield');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': []
@@ -47,10 +51,18 @@ export default class Checkboxes extends Field {
      */
     setupUI() {
         if(this.configs.label){
+            /**
+             * A potential <label> element
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
 
+        /**
+         * The input-wrapper container
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -85,6 +97,10 @@ export default class Checkboxes extends Field {
             return;
         }
 
+        /**
+         * The current value
+         * @type {Array}
+         */
         this.value = [];
 
         this.input_wrapper.find('input').forEach((checkbox_el) => {
@@ -185,6 +201,10 @@ export default class Checkboxes extends Field {
      * @chainable
      */
     disable() {
+        /**
+         * Whether the field is disabled
+         * @type {Boolean}
+         */
         this.disabled = true;
 
         this.addClass('disabled');

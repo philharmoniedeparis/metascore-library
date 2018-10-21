@@ -41,21 +41,26 @@ const bubbleEvents = {
     'transitionend': true
 };
 
+/**
+ * A class for Dom manipulation
+ *
+ * @example
+ *     var div = new Dom('<div/>', {'class': 'my-class'});
+ *     var body = new Dom('body');
+ */
 export default class Dom {
 
     /**
-     * A class for Dom manipulation
+     * Instantiate
      *
-     * @class Dom
-     * @extends Class
-     * @constructor
      * @param {Mixed} [...args] An HTML string and an optional list of attributes to apply, or a CSS selector with an optional parent and an optional list of attributes to apply
-     *
-     * @example
-     *     var div = new Dom('<div/>', {'class': 'my-class'});
-     *     var body = new Dom('body');
      */
     constructor(...args) {
+
+        /**
+         * The list of elements
+         * @type {Array}
+         */
         this.elements = [];
 
         if(args.length > 0){
@@ -97,8 +102,6 @@ export default class Dom {
     /**
      * Normalize a string to Camel Case
      *
-     * @method camel
-     * @static
      * @private
      * @param {String} str The string to normalize
      * @return {String} The normalized string
@@ -110,9 +113,7 @@ export default class Dom {
     /**
      * Select a single element by CSS selecor and optional parent
      *
-     * @method selectElement
-     * @static
-     * @param {String} The CSS selector
+     * @param {String} selector The CSS selector
      * @param {HTMLElement} [parent=document] The HTML Element in which to search
      * @return {HTMLElement} The found element if any
      */
@@ -138,7 +139,7 @@ export default class Dom {
      *
      * @method selectElements
      * @static
-     * @param {String} The CSS selector
+     * @param {String} selector The CSS selector
      * @param {HTMLElement} [parent=document] The HTML Element in which to search
      * @return {Mixed} An HTML NodeList or an array of found elements if any
      */
@@ -865,7 +866,7 @@ export default class Dom {
      *
      * @method addClass
      * @param {String} className The CSS class
-     * @chainable
+     * @return {Dom} this
      */
     addClass(className) {
         this.forEach((element) => {
@@ -880,7 +881,7 @@ export default class Dom {
      *
      * @method removeClass
      * @param {String} className The CSS class
-     * @chainable
+     * @return {Dom} this
      */
     removeClass(className) {
         this.forEach((element) => {
@@ -896,7 +897,7 @@ export default class Dom {
      * @method toggleClass
      * @param {String} className The CSS class
      * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
-     * @chainable
+     * @return {Dom} this
      */
     toggleClass(className, force) {
         this.forEach((element) => {
@@ -915,7 +916,7 @@ export default class Dom {
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The event
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {Dom} this
      */
     addListener(type, callback, useCapture) {
 		this.forEach((element) => {
@@ -934,7 +935,7 @@ export default class Dom {
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The event
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {Dom} this
      */
     addOneTimeListener(type, callback, useCapture) {
 		this.forEach((element) => {
@@ -954,7 +955,7 @@ export default class Dom {
      * @param {Event} callback.event The original event
      * @param {Mixed} [scope] The value to use as this when executing the callback function
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {Dom} this
      */
     addDelegate(selector, type, callback, scope, useCapture) {
         this.addListener(type, (evt) => {
@@ -975,7 +976,7 @@ export default class Dom {
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The event
      * @param {Boolean} useCapture Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {Dom} this
      */
     removeListener(type, callback, useCapture) {
         this.forEach((element) => {
@@ -1009,7 +1010,7 @@ export default class Dom {
      * Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element
      *
      * @method text
-     * @param {String} [html] The value to set
+     * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the innerHTML of the first element if used as a getter
      */
     text(value) {
@@ -1045,7 +1046,7 @@ export default class Dom {
      * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
      *
      * @method attr
-     * @param {HTMLElement} element The element
+     * @param {String} name The name of the attribute to set or get
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
@@ -1064,7 +1065,7 @@ export default class Dom {
      * Set a property of all the elements managed by the Dom object, or get the value of a property of the first element
      *
      * @method prop
-     * @param {HTMLElement} element The element
+     * @param {String} name The name of the property to set or get
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
@@ -1123,7 +1124,7 @@ export default class Dom {
      *
      * @method append
      * @param {Mixed} children An array of elemets or a single element to append
-     * @chainable
+     * @return {Dom} this
      */
     append(children){
         const _children = children instanceof Dom ? children.elements : children;
@@ -1138,7 +1139,7 @@ export default class Dom {
      *
      * @method appendTo
      * @param {Mixed} parent A Dom object or an Element to append the elements to
-     * @chainable
+     * @return {Dom} this
      */
     appendTo(parent){
         let _parent = parent instanceof Dom ? parent : new Dom(parent);
@@ -1157,7 +1158,7 @@ export default class Dom {
      * @method insertAt
      * @param {Mixed} parent A Dom object or an Element to append the elements to
      * @param {Integer} index The index position to append at
-     * @chainable
+     * @return {Dom} this
      */
     insertAt(parent, index){
         const _parent = parent instanceof Dom ? parent : new Dom(parent);
@@ -1177,7 +1178,7 @@ export default class Dom {
      * Remove all children of each element managed by the Dom object
      *
      * @method empty
-     * @chainable
+     * @return {Dom} this
      */
     empty() {
         this.forEach((element) => {
@@ -1191,7 +1192,7 @@ export default class Dom {
      * Make all the elements managed by the Dom object visible
      *
      * @method show
-     * @chainable
+     * @return {Dom} this
      */
     show() {
         this.css('display', '');
@@ -1203,7 +1204,7 @@ export default class Dom {
      * Make all the elements managed by the Dom object invisible
      *
      * @method hide
-     * @chainable
+     * @return {Dom} this
      */
     hide() {
         this.css('display', 'none');
@@ -1215,7 +1216,7 @@ export default class Dom {
      * Set focus on the first element managed by the Dom object
      *
      * @method focus
-     * @chainable
+     * @return {Dom} this
      */
     focus() {
         this.get(0).focus();
@@ -1227,7 +1228,7 @@ export default class Dom {
      * Remove focus from the first element managed by the Dom object
      *
      * @method blur
-     * @chainable
+     * @return {Dom} this
      */
     blur() {
         this.get(0).blur();
@@ -1249,7 +1250,7 @@ export default class Dom {
      * Remove all the elements managed by the Dom object from the DOM
      *
      * @method remove
-     * @chainable
+     * @return {Dom} this
      */
     remove() {
         if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
