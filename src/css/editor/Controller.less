@@ -1,4 +1,4 @@
-.controller{
+:local(.className){
     display: flex;
     flex-direction: row;
 
@@ -8,7 +8,7 @@
         width: 100px;
         background: #ccc;
 
-        .timefield{
+        .time.field{
             background: #0000fe;
 
             .input-wrapper{
@@ -185,7 +185,7 @@
                         }
                     }
 
-                    .sliderfield{
+                    .slider.field{
                         display: inline-block;
                         vertical-align: middle;
                     }
@@ -207,7 +207,7 @@
 
 .has-player{
     &.metadata-loaded{
-        .controller{
+        :local(.className){
             > .controls{
                 .buttons{
                     button{
@@ -220,7 +220,7 @@
     }
 
     &.playing{
-        .controller{
+        :local(.className){
             > .controls{
                 .buttons{
                     button[data-action="play"]::after{

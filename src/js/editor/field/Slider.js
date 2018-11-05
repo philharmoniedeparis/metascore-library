@@ -1,6 +1,6 @@
 import Field from '../Field';
 
-import '../../../css/editor/field/Slider.less';
+import {className} from '../../../css/editor/field/Slider.less';
 
 /**
  * A number field based on an HTML input[type=number] element
@@ -26,7 +26,7 @@ export default class Number extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('sliderfield');
+        this.addClass(`slider ${className}`);
     }
 
     /**

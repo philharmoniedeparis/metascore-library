@@ -16,7 +16,7 @@ export default class Text extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('textfield');
+        this.addClass('text');
     }
 
     /**

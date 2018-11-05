@@ -20,8 +20,7 @@ import Share from './editor/overlay/Share';
 import TimeField from './editor/field/Time';
 import Controller from './editor/Controller';
 
-
-import '../css/Editor.less';
+import {className} from '../css/Editor.less';
 
 /**
  * Fired when the editor is fully setup
@@ -55,7 +54,7 @@ export default class Editor extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-editor', 'tabindex': 0});
+        super('<div/>', {'class': `metaScore-editor ${className}`, 'tabindex': 0});
 
         /**
          * The configuration values

@@ -1,7 +1,7 @@
 import Dom from '../../Dom';
 import Overlay from '../Overlay';
 
-import '../../../../css/core/ui/overlay/iFrame.less';
+import {className} from '../../../../css/core/ui/overlay/iFrame.less';
 
 /**
  * An iframe overlay
@@ -19,7 +19,7 @@ export default class iFrame extends Overlay{
         // call parent constructor
         super(configs);
 
-        this.addClass('iframe');
+        this.addClass(`iframe ${className}`);
     }
 
     /**

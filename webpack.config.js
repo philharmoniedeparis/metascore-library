@@ -134,7 +134,9 @@ module.exports = {
               {
                 loader: 'css-loader',
                 options: {
-                  importLoaders: 1
+                  importLoaders: 1,
+                  context: './src/css',
+                  localIdentName: '[path][name]--[hash:base64:5]'
                 }
               },
               {

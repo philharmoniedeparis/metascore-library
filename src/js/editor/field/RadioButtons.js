@@ -2,7 +2,7 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 import {uuid} from '../../core/utils/String';
 
-import '../../../css/editor/field/RadioButtons.less';
+import {className} from '../../../css/editor/field/RadioButtons.less';
 
 /**
  * Fired when the field's value changes
@@ -28,7 +28,7 @@ export default class RadioButtons extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('radiobuttonsfield');
+        this.addClass(`radiobuttons ${className}`);
     }
 
     /**

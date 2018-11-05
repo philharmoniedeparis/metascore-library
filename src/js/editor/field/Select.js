@@ -4,7 +4,7 @@ import Locale from '../../core/Locale';
 import {decodeHTML} from '../../core/utils/String';
 import {isArray} from '../../core/utils/Var';
 
-import '../../../css/editor/field/Select.less';
+import {className} from '../../../css/editor/field/Select.less';
 
 /**
  * Fired when the field's value changes
@@ -33,7 +33,7 @@ export default class Select extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('selectfield');
+        this.addClass(`select ${className}`);
     }
 
     /**

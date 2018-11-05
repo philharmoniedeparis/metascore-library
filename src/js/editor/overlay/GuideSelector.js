@@ -10,7 +10,7 @@ import Fieldset from '../Fieldset';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
 
-import '../../../css/editor/overlay/GuideSelector.less';
+import {className} from '../../../css/editor/overlay/GuideSelector.less';
 
 /**
  * Fired when a guide's select button is clicked
@@ -45,7 +45,7 @@ export default class GuideSelector extends Overlay {
 
         this.onScroll = this.onScroll.bind(this);
 
-        this.addClass('guide-selector');
+        this.addClass(`guide-selector ${className}`);
     }
 
     /**

@@ -2,7 +2,7 @@ import Overlay from '../Overlay';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 
-import '../../../../css/core/ui/overlay/LoadMask.less';
+import {className} from '../../../../css/core/ui/overlay/LoadMask.less';
 
 /**
  * A loading mask
@@ -19,7 +19,7 @@ export default class LoadMask extends Overlay{
         // call parent constructor
         super(configs);
 
-        this.addClass('loadmask');
+        this.addClass(`loadmask ${className}`);
 
         /**
          * The text container

@@ -16,7 +16,7 @@ import TextareaField from './field/Textarea';
 import TimeField from './field/Time';
 import {getImageMetadata} from '../core/utils/Media';
 
-import '../../css/editor/Panel.less';
+import {className} from '../../css/editor/Panel.less';
 
 /**
  * The list of possible field types
@@ -77,7 +77,7 @@ export default class Panel extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'panel'});
+        super('<div/>', {'class': `panel ${className}`});
 
         /**
          * The configuration values

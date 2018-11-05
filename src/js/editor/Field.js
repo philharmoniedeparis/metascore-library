@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import {uuid} from '../core/utils/String';
 
-import '../../css/editor/Field.less';
+import {className} from '../../css/editor/Field.less';
 
 /**
  * Fired when the field's value changes
@@ -37,7 +37,7 @@ export default class Field extends Dom{
      */
     constructor(configs) {
         // call the super constructor.
-        super('<div/>', {'class': 'field', 'tabindex': -1});
+        super('<div/>', {'class': `field ${className}`, 'tabindex': -1});
 
         /**
          * The configuration values

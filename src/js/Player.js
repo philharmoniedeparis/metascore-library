@@ -11,7 +11,7 @@ import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
 import {toCentiseconds, toSeconds} from './core/utils/Media';
 
-import '../css/Player.less';
+import {className} from '../css/Player.less';
 
 /**
  * Fired when the player finished initializing
@@ -120,7 +120,7 @@ export default class Player extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-player', 'tabindex': 0});
+        super('<div/>', {'class': `metaScore-player ${className}`, 'tabindex': 0});
 
         /**
          * The configuration values

@@ -3,7 +3,7 @@ import Dom from '../../core/Dom';
 import {uuid} from '../../core/utils/String';
 import {isArray} from '../../core/utils/Var';
 
-import '../../../css/editor/field/Checkboxes.less';
+import {className} from '../../../css/editor/field/Checkboxes.less';
 
 /**
  * Fired when the field's value changes
@@ -29,7 +29,7 @@ export default class Checkboxes extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('checkboxesfield');
+        this.addClass(`checkboxes ${className}`);
     }
 
     /**

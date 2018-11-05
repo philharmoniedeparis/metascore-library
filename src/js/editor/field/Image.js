@@ -3,7 +3,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import iFrame from '../../core/ui/overlay/iFrame';
 
-import '../../../css/editor/field/Image.less';
+import {className} from '../../../css/editor/field/Image.less';
 
 /**
  * Fired when the external filebrowser should be opened
@@ -38,7 +38,7 @@ export default class Image extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('imagefield');
+        this.addClass(`image ${className}`);
     }
 
     /**

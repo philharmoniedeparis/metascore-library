@@ -4,7 +4,7 @@ import Locale from '../../core/Locale';
 import {pad} from '../../core/utils/String';
 import {isNumeric} from '../../core/utils/Var';
 
-import '../../../css/editor/field/Time.less';
+import {className} from '../../../css/editor/field/Time.less';
 
 /**
  * Fired when the field's value changes
@@ -102,7 +102,7 @@ export default class Time extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('timefield');
+        this.addClass(`time ${className}`);
 
         if(this.configs.min !== null){
             this.setMin(this.configs.min);

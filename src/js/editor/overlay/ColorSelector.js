@@ -4,7 +4,7 @@ import Button from '../../core/ui/Button';
 import {isObject} from '../../core/utils/Var';
 import {toRGBA, rgb2hsv} from '../../core/utils/Color';
 
-import '../../../css/editor/overlay/ColorSelector.less';
+import {className} from '../../../css/editor/overlay/ColorSelector.less';
 
 /**
  * Fired when the submit button is clicked
@@ -34,7 +34,7 @@ export default class ColorSelector extends Overlay {
         this.onGradientClick = this.onGradientClick.bind(this);
         this.onAlphaClick = this.onAlphaClick.bind(this);
 
-        this.addClass('color-selector');
+        this.addClass(`color-selector ${className}`);
     }
 
     /**

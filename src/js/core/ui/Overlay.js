@@ -1,7 +1,7 @@
 import Dom from '../Dom';
 import Toolbar from './overlay/Toolbar';
 
-import '../../../css/core/ui/Overlay.less';
+import {className} from '../../../css/core/ui/Overlay.less';
 
 /**
  * Fired when the overlay is shown
@@ -36,7 +36,7 @@ export default class Overlay extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'overlay clearfix'});
+        super('<div/>', {'class': `overlay ${className}`});
 
         /**
          * The configuration values

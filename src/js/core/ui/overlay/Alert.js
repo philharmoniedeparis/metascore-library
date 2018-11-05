@@ -2,7 +2,7 @@ import Dom from '../../Dom';
 import Button from '../Button';
 import Overlay from '../Overlay';
 
-import '../../../../css/core/ui/overlay/Alert.less';
+import {className} from '../../../../css/core/ui/overlay/Alert.less';
 
 /**
  * Fired when a button is clicked
@@ -28,7 +28,7 @@ export default class Alert extends Overlay{
     constructor(configs){
         super(configs);
 
-        this.addClass('alert');
+        this.addClass(`alert ${className}`);
     }
 
     /**

@@ -4,7 +4,7 @@ import Button from '../../core/ui/Button';
 import Locale from '../../core/Locale';
 import NumberField from '../field/Number';
 
-import '../../../css/editor/overlay/BorderRadius.less';
+import {className} from '../../../css/editor/overlay/BorderRadius.less';
 
 /**
  * Fired when the submit button is clicked
@@ -32,7 +32,7 @@ export default class BorderRadius extends Overlay {
         // call parent constructor
         super(configs);
 
-        this.addClass('border-radius');
+        this.addClass(`border-radius ${className}`);
     }
 
     /**

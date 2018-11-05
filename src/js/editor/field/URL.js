@@ -17,7 +17,7 @@ export default class URL extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('urlfield');
+        this.addClass('url');
     }
 
     /**

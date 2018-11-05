@@ -1,6 +1,6 @@
 import Dom from '../Dom';
 
-import '../../../css/core/ui/Draggable.less';
+import {className} from '../../../css/core/ui/Draggable.less';
 
 /**
  * Fired before the dragging starts
@@ -188,7 +188,7 @@ export default class Draggable {
      * @chainable
      */
     enable() {
-        this.configs.target.addClass('draggable');
+        this.configs.target.addClass(`draggable ${className}`);
 
         this.configs.handle.addClass('drag-handle');
 
@@ -208,7 +208,7 @@ export default class Draggable {
      * @chainable
      */
     disable() {
-        this.configs.target.removeClass('draggable');
+        this.configs.target.removeClass(`draggable ${className}`);
 
         this.configs.handle.removeClass('drag-handle');
 

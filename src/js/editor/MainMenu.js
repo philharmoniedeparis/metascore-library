@@ -3,7 +3,7 @@ import Button from '../core/ui/Button';
 import Locale from '../core/Locale';
 import NumberField from './field/Number';
 
-import '../../css/editor/MainMenu.less';
+import {className} from '../../css/editor/MainMenu.less';
 
 /**
  * The editor's main menu
@@ -15,7 +15,7 @@ export default class MainMenu extends Dom {
      */
     constructor() {
         // call parent constructor
-        super('<div/>', {'class': 'main-menu clearfix'});
+        super('<div/>', {'class': `main-menu ${className}`});
 
         this.setupUI();
     }

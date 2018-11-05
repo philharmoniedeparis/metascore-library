@@ -17,7 +17,7 @@ export default class Textarea extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('textareafield');
+        this.addClass('textarea');
     }
 
     /**

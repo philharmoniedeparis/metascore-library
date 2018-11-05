@@ -3,7 +3,7 @@ import Dom from '../../core/Dom';
 import {isNumeric} from '../../core/utils/Var';
 import {getDecimalPlaces} from '../../core/utils/Number';
 
-import '../../../css/editor/field/Number.less';
+import {className} from '../../../css/editor/field/Number.less';
 
 /**
  * Fired when the field's value changes
@@ -41,7 +41,7 @@ export default class Number extends Field {
         this.spinDown = this.spinDown.bind(this);
         this.spinUp = this.spinUp.bind(this);
 
-        this.addClass('numberfield');
+        this.addClass(`number ${className}`);
     }
 
     /**

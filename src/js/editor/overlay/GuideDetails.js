@@ -11,7 +11,7 @@ import TextareaField from '../field/Textarea';
 import FileField from '../field/File';
 import CheckboxesField from '../field/Checkboxes';
 
-import '../../../css/editor/overlay/GuideDetails.less';
+import {className} from '../../../css/editor/overlay/GuideDetails.less';
 
 /**
  * Fired when the submit button is clicked
@@ -53,7 +53,7 @@ export default class GuideDetails extends Overlay {
          */
         this.previous_values = null;
 
-        this.addClass('guide-details');
+        this.addClass(`guide-details ${className}`);
     }
 
     /**

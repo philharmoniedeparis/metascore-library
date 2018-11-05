@@ -1,4 +1,4 @@
-.overlay.guide-details{
+:local(.className){
     > .inner{
         > .contents{
             min-width: 500px;
@@ -10,11 +10,6 @@
                 padding-left: 0.5em;
                 border-left: 2px solid #ddd;
 
-                textarea{
-                    width: 100%;
-                    min-height: 5em;
-                }
-
                 > label{
                     display: block;
                     font-weight: bold;
@@ -24,20 +19,22 @@
                     border-left-color: #0000fe;
                 }
 
-                &.textfield{
+                &.text{
                     input{
                         width: 100%;
                         box-sizing: border-box;
                     }
                 }
 
-                &.textareafield{
+                &.textarea{
                     textarea{
+                        width: 100%;
+                        min-height: 5em;
                         box-sizing: border-box;
                     }
                 }
 
-                &.checkboxesfield{
+                &.checkboxes{
                     .checkbox-wrapper{
                         label{
                             display: inline-block;

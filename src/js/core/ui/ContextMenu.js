@@ -1,7 +1,7 @@
 import {isFunction} from '../utils/Var';
 import Dom from '../Dom';
 
-import '../../../css/core/ui/ContextMenu.less';
+import {className} from '../../../css/core/ui/ContextMenu.less';
 
 /**
  * Fired before the menu is shows
@@ -34,7 +34,7 @@ export default class ContextMenu extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'contextmenu'});
+        super('<div/>', {'class': `contextmenu ${className}`});
 
         /**
          * The configuration values

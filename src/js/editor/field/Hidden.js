@@ -16,7 +16,7 @@ export default class Hidden extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('hiddenfield');
+        this.addClass('hidden');
     }
 
     /**

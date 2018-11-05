@@ -5,7 +5,7 @@ import TimeField from './field/Time';
 import Locale from '../core/Locale';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import '../../css/editor/Controller.less';
+import {className} from '../../css/editor/Controller.less';
 
 /**
  * Fired when the time is set
@@ -26,7 +26,7 @@ export default class Controller extends Dom {
      */
     constructor() {
         // call parent constructor
-        super('<div/>', {'class': 'controller'});
+        super('<div/>', {'class': `controller ${className}`});
 
         this.setupUI();
     }

@@ -1,6 +1,6 @@
 import Field from '../Field';
 
-import '../../../css/editor/field/Checkbox.less';
+import {className} from '../../../css/editor/field/Checkbox.less';
 
 /**
  * Fired when the field's value changes
@@ -28,7 +28,7 @@ export default class Checkbox extends Field{
         // call parent constructor
         super(configs);
 
-        this.addClass('checkboxfield');
+        this.addClass(`checkbox ${className}`);
 
         this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
     }

@@ -6,7 +6,7 @@ import CheckboxField from '../field/Checkbox';
 import TextField from '../field/Text';
 import TextareaField from '../field/Textarea';
 
-import '../../../css/editor/overlay/Share.less';
+import {className} from '../../../css/editor/overlay/Share.less';
 
 /**
  * An overlay to share a guide
@@ -27,7 +27,7 @@ export default class Share extends Overlay {
         // call parent constructor
         super(configs);
 
-        this.addClass('share');
+        this.addClass(`share ${className}`);
 
         this.getField('link').setValue(this.configs.url);
         this.getField('embed').setValue(this.getEmbedCode());

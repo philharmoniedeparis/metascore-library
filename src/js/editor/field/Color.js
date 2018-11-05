@@ -4,7 +4,7 @@ import Locale from '../../core/Locale';
 import {toRGBA} from '../../core/utils/Color';
 import ColorSelector from '../overlay/ColorSelector';
 
-import '../../../css/editor/field/Color.less';
+import {className} from '../../../css/editor/field/Color.less';
 
 /**
  * Fired when the field's value changes
@@ -30,7 +30,7 @@ export default class Color extends Field {
         // call parent constructor
         super(configs);
 
-        this.addClass('colorfield');
+        this.addClass(`color ${className}`);
     }
 
     /**

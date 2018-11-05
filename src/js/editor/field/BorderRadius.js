@@ -2,7 +2,7 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 import BorderRadiusOverlay from '../overlay/BorderRadius';
 
-import '../../../css/editor/field/BorderRadius.less';
+import {className} from '../../../css/editor/field/BorderRadius.less';
 
 /**
  * A complex field for defining CSS border radius values
@@ -18,7 +18,7 @@ export default class BorderRadius extends Field{
         // call parent constructor
         super(configs);
 
-        this.addClass('borderradiusrfield');
+        this.addClass(`borderradius ${className}`);
     }
 
     /**

@@ -25,7 +25,7 @@ export default class Buttons extends Field{
         // call parent constructor
         super(configs);
 
-        this.addClass('buttonsfield');
+        this.addClass('buttons');
     }
 
     /**
