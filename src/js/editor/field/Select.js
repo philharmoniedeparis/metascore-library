@@ -60,9 +60,7 @@ export default class Select extends Field {
 
         this.input_wrapper.addListener('click', this.onWrapperClick.bind(this));
 
-        this.input
-            .attr('readonly', true)
-            .addListener('click', this.onInputClick.bind(this));
+        this.input.addListener('keypress', this.onInputKeypress.bind(this));
 
         /**
          * The top <ul> element
@@ -94,18 +92,17 @@ export default class Select extends Field {
      * @private
      */
     onWrapperClick(){
-        this.close();
+        this.open();
     }
 
     /**
-     * The input click event handler
+     * The input keypress event handler
      *
      * @private
      * @param {Event} evt The event object
      */
-    onInputClick(evt){
-        this.open();
-        evt.stopPropagation();
+    onInputKeypress(evt){
+        evt.preventDefault();
     }
 
     /**
@@ -143,6 +140,8 @@ export default class Select extends Field {
         this.updateValue();
 
         this.close();
+
+        evt.stopPropagation();
     }
 
     /**
@@ -356,8 +355,11 @@ export default class Select extends Field {
      * Show the options menu
      */
     open(){
-        this.addClass('open');
-        this.menu.focus(false);
+        if(!this.is_readonly){
+            this.addClass('open');
+            this.menu.focus(false);
+        }
+
         return this;
     }
 
@@ -394,6 +396,8 @@ export default class Select extends Field {
          * @type {Boolean}
          */
         this.is_readonly = readonly === true;
+
+        this.input.attr('readonly', this.is_readonly ? true : null);
 
         this.toggleClass('readonly', this.is_readonly);
 
