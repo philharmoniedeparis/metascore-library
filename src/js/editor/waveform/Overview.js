@@ -73,7 +73,7 @@ export default class Overview extends Dom {
      */
     static getDefaults(){
         return {
-            'waveColor': '#999',
+            'waveColor': '#777',
             'highlightColor': '#0000fe',
             'highlightOpacity': 0.25,
             'playheadWidth': 1,
@@ -111,6 +111,8 @@ export default class Overview extends Dom {
              */
             this.resampled_data = this.waveformdata.resample({'width': this.width});
         }
+
+        this.update();
 
         return this;
     }
@@ -183,10 +185,11 @@ export default class Overview extends Dom {
         const context = canvas.getContext('2d');
 
         context.clearRect(0, 0, this.width, this.height);
-        context.beginPath();
 
         if(this.resampled_data){
             const adapter = this.resampled_data.adapter;
+
+            context.beginPath();
 
             for(let x = 0; x < this.width; x++) {
                 const val = adapter.at(2 * x);

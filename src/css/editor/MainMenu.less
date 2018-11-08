@@ -10,6 +10,10 @@
 
     > .separator{
         flex: 1;
+
+        &:last-of-type{
+            flex: 20;
+        }
     }
 
     &::before{
@@ -24,6 +28,7 @@
     }
 
     > button,
+    > .checkbox.field,
     .button-group button{
         width: 1.75em;
         height: 1.6em;
@@ -67,9 +72,6 @@
         }
         &[data-action="redo"]{
             background-image: url('../../img/editor/main-menu/redo.png');
-        }
-        &[data-action="edit-toggle"]{
-            background-image: url('../../img/editor/main-menu/edit-toggle.png');
         }
         &[data-action="settings"]{
             background-image: url('../../img/editor/main-menu/settings.png');
@@ -140,22 +142,7 @@
         }
     }
 
-    .time{
-        flex: 0 0 auto;
-        margin: 0 10px;
-        white-space: nowrap;
-        vertical-align: middle;
-        padding-left: 1.75em;
-        background: transparent url('../../img/editor/main-menu/time.png') no-repeat left center;
-        background-size: contain;
-
-        input,
-        .separator{
-            color: #505050;
-        }
-    }
-
-    .r-index{
+    .field[data-action="r-index"]{
         flex: 0 0 auto;
         margin: 0 10px;
         white-space: nowrap;
@@ -179,6 +166,34 @@
 
             .buttons{
                 width: 1em;
+            }
+        }
+    }
+
+    .field[data-action="edit-toggle"]{
+        .input-wrapper{
+            height: 100%;
+
+            input{
+                + label{
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                    opacity: 1;
+                    background: url('../../img/editor/main-menu/edit-toggle.png') no-repeat 50%;
+                    border-radius: 0;
+                    transition: none;
+
+                    &::after{
+                        display: none;
+                    }
+                }
+
+                &:checked{
+                    + label{
+                        opacity: 0.5;
+                    }
+                }
             }
         }
     }

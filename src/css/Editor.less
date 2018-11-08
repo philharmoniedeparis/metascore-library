@@ -130,7 +130,7 @@ body{
         &:active{
             opacity: 0.5;
         }
-        &.disabled{
+        &[disabled]{
             opacity: 0.25;
             cursor: default;
         }
@@ -209,7 +209,7 @@ body{
         }
 
         #right{
-            display: flex;
+            display: none;
             flex-direction: row;
             width: 300px;
             min-width: 300px;
@@ -220,7 +220,8 @@ body{
     }
 
     #bottom{
-        background: #f2f2f2;
+        background-color: #dadada;
+        background-image: linear-gradient(to bottom, #dadada 0%, #c8c8c8 100%);
         border-top: 1px solid #b2b2b2;
     }
 
@@ -299,22 +300,22 @@ body{
         }
     }
 
-    &:not(.editing),
     &.sidebar-hidden{
-        .sidebar-wrapper{
+        #right{
             width: 9px !important;
             min-width: 9px !important;
-            max-width: 9px !important;
+
+            .sidebar{
+                display: none;
+            }
         }
     }
 
     &.editing{
-        .main-menu{
-             button{
-                &[data-action="edit-toggle"]{
-                    opacity: 0.5;
-                }
-             }
+        #center{
+            #right{
+                display: flex;
+            }
         }
 
         .workspace{

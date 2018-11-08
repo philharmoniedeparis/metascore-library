@@ -5,10 +5,10 @@
     > .controls{
         display: flex;
         flex-direction: column;
-        width: 100px;
-        background: #ccc;
+        border-right: 1px solid #7b7b7b;
 
         .time.field{
+            width: 100px;
             background: #0000fe;
 
             .input-wrapper{
@@ -34,8 +34,6 @@
                 outline: none;
                 background-color: transparent;
                 background-repeat: no-repeat;
-                opacity: 0.25;
-                pointer-events: none;
 
                 &[data-action="rewind"]{
                     flex: 0 0 14%;
@@ -51,7 +49,6 @@
                     margin-right: 14%;
                     padding: 25%; /* 50% of flex-basis for 1:1 ratio*/
                     background: #fff;
-                    border-top: 2px solid #ddd;
                     border-radius: 50%;
                     box-shadow: inset 0px 8px 48px #ddd;
 
@@ -99,9 +96,10 @@
             }
         }
 
-        &:after{
+        &::after{
             content: "";
             flex: 0 0 20px;
+            margin-bottom: 5px;
             background-image: url('../../img/logo-metaScore.png');
             background-repeat: no-repeat;
             background-size: contain;
@@ -203,31 +201,74 @@
             }
         }
     }
-}
 
-.has-player{
-    &.metadata-loaded{
-        :local(.className){
-            > .controls{
-                .buttons{
-                    button{
-                        opacity: 1;
-                        pointer-events: all;
+    &.minimized{
+        .waveform{
+            .view{
+                &.overview{
+                    border-bottom: none;
+
+                    .layers{
+                        .layer.highlight{
+                            display: none;
+                        }
                     }
                 }
+
+                &.zoom{
+                    display: none;
+                }
+            }
+        }
+
+        > .controls{
+            flex-direction: row-reverse;
+
+            .buttons{
+                width: 25px;
+                display: block;
+                border-right: none;
+
+                button[data-action="rewind"]{
+                    display: none;
+                }
+
+                button[data-action="play"]{
+                    width: 100%;
+                    height: 100%;
+                    margin: 0;
+                    border-radius: 0;
+                    box-shadow: none;
+                    background: none;
+
+                    &:hover{
+                        background: #fff;
+                    }
+
+                    &::before{
+                        display: none;
+                    }
+                }
+            }
+
+            &::after{
+                display: none;
             }
         }
     }
 
     &.playing{
-        :local(.className){
-            > .controls{
-                .buttons{
-                    button[data-action="play"]::after{
-                        background-image: url('../../img/editor/controller/pause.svg');
-                    }
+        > .controls{
+            .buttons{
+                button[data-action="play"]::after{
+                    background-image: url('../../img/editor/controller/pause.svg');
                 }
             }
         }
+    }
+
+    &.disabled{
+        opacity: 0.5;
+        pointer-events: none;
     }
 }

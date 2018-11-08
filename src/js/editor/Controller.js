@@ -192,8 +192,48 @@ export default class Controller extends Dom {
      * @private
      */
     onWaveformResize() {
-        this.overview.updateSize().update();
-        this.zoom.updateSize().update();
+        this.overview.updateSize();
+        this.zoom.updateSize();
+    }
+
+    /**
+     * Minimize the contoller
+     *
+     * @return {Controller} this
+     */
+    minimize(){
+        this.addClass('minimized');
+        return this;
+    }
+
+    /**
+     * Maximize the contoller
+     *
+     * @return {Controller} this
+     */
+    maximize(){
+        this.removeClass('minimized');
+        return this;
+    }
+
+    /**
+     * Enable the controller
+     *
+     * @return {Controller} this
+     */
+    enable(){
+        this.removeClass('disabled');
+        return this;
+    }
+
+    /**
+     * Disable the controller
+     *
+     * @return {Controller} this
+     */
+    disable(){
+        this.addClass('disabled');
+        return this;
     }
 
 }

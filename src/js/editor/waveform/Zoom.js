@@ -198,6 +198,12 @@ export default class Zoom extends Dom {
             canvas.height = this.height;
         });
 
+        if(!this.resampled_data){
+            this.resampleData();
+        }
+
+        this.setOffset(this.offset, true)
+
         return this;
     }
 
@@ -244,30 +250,39 @@ export default class Zoom extends Dom {
          */
         this.waveformdata = waveformdata;
 
-        /**
-         * The resampled waveform data
-         * @type {WaveformData}
-         */
-        this.resampled_data = this.waveformdata.resample({'width': this.width});
+        this.zoom_slider.setStep(2);
 
-        /**
-         * The maximum zoom scale
-         * @type {Number}
-         */
-        this.max_scale = this.resampled_data.adapter.scale;
-
-        this.zoom_slider
-            .setMin(this.waveformdata.adapter.scale)
-            .setMax(this.max_scale)
-            .setStep(2)
-            .setValue(this.max_scale, true);
-
-        this.setOffset(0, true);
+        this.resampleData();
 
         this
             .addListener('mousewheel', this.onMouseWheel)
             .addListener('DOMMouseScroll', this.onMouseWheel)
             .addClass('has-data');
+
+        return this;
+    }
+
+    resampleData(){
+        if(this.waveformdata && this.width > 0 && this.height > 0){
+            /**
+             * The resampled waveform data
+             * @type {WaveformData}
+             */
+            this.resampled_data = this.waveformdata.resample({'width': this.width});
+
+            /**
+             * The maximum zoom scale
+             * @type {Number}
+             */
+            this.max_scale = this.resampled_data.adapter.scale;
+
+            this.zoom_slider
+                .setMin(this.waveformdata.adapter.scale)
+                .setMax(this.max_scale)
+                .setValue(this.max_scale, true);
+
+            this.setOffset(0, true);
+        }
 
         return this;
     }
@@ -303,32 +318,34 @@ export default class Zoom extends Dom {
      * @return {Zoom} this
      */
     updateWave(){
-        const canvas = this.wave_layer.get(0);
-        const context = canvas.getContext('2d');
+        if(this.width > 0 && this.height > 0){
+            const canvas = this.wave_layer.get(0);
+            const context = canvas.getContext('2d');
 
-        context.clearRect(0, 0, this.width, this.height);
-        context.beginPath();
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
 
-        if(this.resampled_data){
-            const adapter = this.resampled_data.adapter;
-            const margin = this.configs.waveMargin;
-            const height = this.height - (margin * 2);
-            const startX = this.offset;
-            const endX = startX + this.width;
+            if(this.resampled_data){
+                const adapter = this.resampled_data.adapter;
+                const margin = this.configs.waveMargin;
+                const height = this.height - (margin * 2);
+                const startX = this.offset;
+                const endX = startX + this.width;
 
-            for(let x = startX; x < endX; x++) {
-                const val = adapter.at(2 * x);
-                context.lineTo(x - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
+                for(let x = startX; x < endX; x++) {
+                    const val = adapter.at(2 * x);
+                    context.lineTo(x - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
+                }
+
+                for(let x = endX - 1; x >= startX; x--) {
+                    const val = adapter.at(2 * x + 1);
+                    context.lineTo(x - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
+                }
+
+                context.closePath();
+                context.fillStyle = this.configs.waveColor;
+                context.fill();
             }
-
-            for(let x = endX - 1; x >= startX; x--) {
-                const val = adapter.at(2 * x + 1);
-                context.lineTo(x - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
-            }
-
-            context.closePath();
-            context.fillStyle = this.configs.waveColor;
-            context.fill();
         }
 
         return this;
@@ -340,38 +357,40 @@ export default class Zoom extends Dom {
      * @return {Zoom} this
      */
     updateAxis(){
-        const canvas = this.axis_layer.get(0);
-        const context = canvas.getContext('2d');
-        const step = this.getAxisStep();
+        if(this.width > 0 && this.height > 0){
+            const canvas = this.axis_layer.get(0);
+            const context = canvas.getContext('2d');
+            const step = this.getAxisStep();
 
-        context.clearRect(0, 0, this.width, this.height);
-        context.beginPath();
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
 
-        if(step !== null){
-            context.strokeStyle = this.configs.axisTickColor;
-            context.lineWidth = this.configs.axisTickWidth;
-            context.font = this.configs.axisFont;
-            context.fillStyle = this.configs.axisTextColor;
-            context.textAlign = 'center';
-            context.textBaseline = 'bottom';
+            if(step !== null){
+                context.strokeStyle = this.configs.axisTickColor;
+                context.lineWidth = this.configs.axisTickWidth;
+                context.font = this.configs.axisFont;
+                context.fillStyle = this.configs.axisTextColor;
+                context.textAlign = 'center';
+                context.textBaseline = 'bottom';
 
-            let startTime = this.getTimeAt(0) + step;
-            startTime -= startTime % step;
+                let startTime = this.getTimeAt(0) + step;
+                startTime -= startTime % step;
 
-            let endTime = this.getTimeAt(this.width);
-            endTime += endTime % step;
+                let endTime = this.getTimeAt(this.width);
+                endTime += endTime % step;
 
-            for(let time = startTime; time < endTime; time+=step){
-                const x = this.getPositionAt(time) + 0.5;
-                const text = formatTime(toCentiseconds(time));
+                for(let time = startTime; time < endTime; time+=step){
+                    const x = this.getPositionAt(time) + 0.5;
+                    const text = formatTime(toCentiseconds(time));
 
-                context.moveTo(x, 0);
-                context.lineTo(x, this.configs.axisTickHeight);
-                context.stroke();
-                context.moveTo(x, this.height);
-                context.lineTo(x, this.height - this.configs.axisTickHeight);
-                context.stroke();
-                context.fillText(text, x, this.height - this.configs.axisTickHeight);
+                    context.moveTo(x, 0);
+                    context.lineTo(x, this.configs.axisTickHeight);
+                    context.stroke();
+                    context.moveTo(x, this.height);
+                    context.lineTo(x, this.height - this.configs.axisTickHeight);
+                    context.stroke();
+                    context.fillText(text, x, this.height - this.configs.axisTickHeight);
+                }
             }
         }
 
@@ -385,26 +404,28 @@ export default class Zoom extends Dom {
      * @return {Zoom} this
      */
     updatePlayhead(update_offset){
-        const canvas = this.playhead_layer.get(0);
-        const context = canvas.getContext('2d');
-        const x = this.getPositionAt(this.time) + 0.5;
+        if(this.width > 0 && this.height > 0){
+            const canvas = this.playhead_layer.get(0);
+            const context = canvas.getContext('2d');
+            const x = this.getPositionAt(this.time) + 0.5;
 
-        if(this.resampled_data){
-            if(update_offset === true && !this._dragging){
-                if(x < 0 || x > this.width - 10){
-                    this.setOffset(this.offset + x - 10);
-                    return this;
+            if(this.resampled_data){
+                if(update_offset === true && !this._dragging){
+                    if(x < 0 || x > this.width - 10){
+                        this.setOffset(this.offset + x - 10);
+                        return this;
+                    }
                 }
             }
-        }
 
-        context.clearRect(0, 0, this.width, this.height);
-        context.beginPath();
-        context.moveTo(x, 0);
-        context.lineTo(x, this.height);
-        context.lineWidth = this.configs.playheadWidth;
-        context.strokeStyle = this.configs.playheadColor;
-        context.stroke();
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.moveTo(x, 0);
+            context.lineTo(x, this.height);
+            context.lineWidth = this.configs.playheadWidth;
+            context.strokeStyle = this.configs.playheadColor;
+            context.stroke();
+        }
 
         return this;
     }
@@ -468,8 +489,10 @@ export default class Zoom extends Dom {
      * @return {Zoom} this
      */
     zoomIn(){
-        const adapter = this.resampled_data.adapter;
-        this.setZoom(adapter.scale - this.configs.zoomStep);
+        if(this.resampled_data){
+            const adapter = this.resampled_data.adapter;
+            this.setZoom(adapter.scale - this.configs.zoomStep);
+        }
 
         return this;
     }
@@ -480,8 +503,10 @@ export default class Zoom extends Dom {
      * @return {Zoom} this
      */
     zoomOut(){
-        const adapter = this.resampled_data.adapter;
-        this.setZoom(adapter.scale + this.configs.zoomStep);
+        if(this.resampled_data){
+            const adapter = this.resampled_data.adapter;
+            this.setZoom(adapter.scale + this.configs.zoomStep);
+        }
 
         return this;
     }
@@ -493,21 +518,23 @@ export default class Zoom extends Dom {
      * @return {Zoom} this
      */
     setZoom(scale){
-        const min = this.waveformdata.adapter.scale;
-        const max = this.max_scale;
+        if(this.resampled_data){
+            const min = this.waveformdata.adapter.scale;
+            const max = this.max_scale;
 
-        let clamped = parseInt(scale, 10);
-        clamped = Math.min(Math.max(scale, min), max);
+            let clamped = parseInt(scale, 10);
+            clamped = Math.min(Math.max(scale, min), max);
 
-        if(clamped !== this.resampled_data.adapter.scale){
-            this.resampled_data = this.waveformdata.resample({'scale': clamped});
+            if(clamped !== this.resampled_data.adapter.scale){
+                this.resampled_data = this.waveformdata.resample({'scale': clamped});
 
-            this.zoom_out_btn.toggleClass('disabled', clamped >= max);
-            this.zoom_in_btn.toggleClass('disabled', clamped <= min);
-            this.zoom_slider.setValue(scale, true);
+                this.zoom_out_btn.toggleClass('disabled', clamped >= max);
+                this.zoom_in_btn.toggleClass('disabled', clamped <= min);
+                this.zoom_slider.setValue(scale, true);
 
-            const offset = this.resampled_data.at_time(this.time) - this.width/2;
-            this.setOffset(offset, true);
+                const offset = this.resampled_data.at_time(this.time) - this.width/2;
+                this.setOffset(offset, true);
+            }
         }
 
         return this;
@@ -634,26 +661,28 @@ export default class Zoom extends Dom {
      * @return {Overview} this
      */
     setOffset(offset, forceRedraw, supressEvent){
-        let new_offset = offset;
+        if(this.resampled_data && this.width > 0){
+            let new_offset = offset;
 
-        new_offset = Math.max(0, new_offset);
-        new_offset = Math.min(this.resampled_data.adapter.length - this.width, new_offset);
-        new_offset = Math.round(new_offset);
+            new_offset = Math.max(0, new_offset);
+            new_offset = Math.min(this.resampled_data.adapter.length - this.width, new_offset);
+            new_offset = Math.round(new_offset);
 
-        if(forceRedraw || new_offset !== this.offset){
-            /**
-             * The wave's offset left position
-             * @type {Number}
-             */
-            this.offset = new_offset;
+            if(forceRedraw || new_offset !== this.offset){
+                /**
+                 * The wave's offset left position
+                 * @type {Number}
+                 */
+                this.offset = new_offset;
 
-            this.update();
+                this.update();
 
-            const start = this.getTimeAt(0);
-            const end = this.getTimeAt(this.width);
+                const start = this.getTimeAt(0);
+                const end = this.getTimeAt(this.width);
 
-            if(supressEvent !== true){
-                this.triggerEvent(EVT_OFFSETUPDATE, {'start': start, 'end': end});
+                if(supressEvent !== true){
+                    this.triggerEvent(EVT_OFFSETUPDATE, {'start': start, 'end': end});
+                }
             }
         }
 
@@ -668,9 +697,10 @@ export default class Zoom extends Dom {
      * @return {Overview} this
      */
     centerToTime(time, supressEvent){
-        const offset = this.resampled_data.at_time(toSeconds(time)) - this.width/2;
-
-        this.setOffset(offset, false, supressEvent);
+        if(this.resampled_data && this.width > 0){
+            const offset = this.resampled_data.at_time(toSeconds(time)) - this.width/2;
+            this.setOffset(offset, false, supressEvent);
+        }
 
         return this;
     }

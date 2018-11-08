@@ -127,14 +127,14 @@ module.exports = {
         },
         {
            // compiles Less to CSS
-          test: /\.(css|less)$/,
+          test: /\.less$/,
           use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
             use: [
               {
                 loader: 'css-loader',
                 options: {
-                  importLoaders: 1,
+                  importLoaders: 2,
                   context: './src/css',
                   localIdentName: '[path][name]--[hash:base64:5]'
                 }

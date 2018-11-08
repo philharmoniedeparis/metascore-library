@@ -1,5 +1,16 @@
 {
     // The default end of line character. Use \n for LF and \r\n for CRLF.
     "files.eol": "\n",
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "files.exclude": {
+        "**/.vscode": true,
+        "**/design": true,
+        "**/dist": true,
+        "**/docs": true,
+        "**/node_modules": true
+    },
+    "search.exclude": {
+        "**/bower_components": false,
+        "**/node_modules": false
+    }
 }

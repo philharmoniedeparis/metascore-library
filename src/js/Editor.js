@@ -125,11 +125,12 @@ export default class Editor extends Dom {
          * @type {MainMenu}
          */
         this.mainmenu = new MainMenu().appendTo(top)
-            .toggleButton('help', this.configs.help_url ? true : false)
-            .toggleButton('account', this.configs.account_url ? true : false)
-            .toggleButton('logout', this.configs.logout_url ? true : false)
-            .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
+            .toggleItem('help', this.configs.help_url ? true : false)
+            .toggleItem('account', this.configs.account_url ? true : false)
+            .toggleItem('logout', this.configs.logout_url ? true : false)
+            .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
+            .addDelegate('.checkbox.field[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
+            .addDelegate('.number.field[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
         const center =  new Dom('<div/>', {'id': 'center'}).appendTo(this);
 
@@ -163,6 +164,7 @@ export default class Editor extends Dom {
             .addListener('timeset', this.onControllerTimeSet.bind(this))
             .addDelegate('.timefield', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
+            .disable()
             .appendTo(bottom);
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
@@ -992,10 +994,6 @@ export default class Editor extends Dom {
                 this.history.redo();
                 break;
 
-            case 'edit-toggle':
-                this.setEditing(!this.editing);
-                break;
-
             case 'settings':
                 break;
 
@@ -1011,6 +1009,32 @@ export default class Editor extends Dom {
                 window.location.href = this.configs.logout_url;
                 break;
         }
+    }
+
+    /**
+     * Mainmenu edit toggle field valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onMainmenuEditToggleFieldChange(evt){
+        const field = evt.target._metaScore;
+        const value = field.getValue();
+
+        this.setEditing(value);
+    }
+
+    /**
+     * Mainmenu reading index field valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onMainmenuRindexFieldChange(evt){
+        const field = evt.target._metaScore;
+        const value = field.getValue();
+
+        this.getPlayer().setReadingIndex(value, true);
     }
 
     /**
@@ -1042,19 +1066,6 @@ export default class Editor extends Dom {
             default:
                 this.getPlayer().togglePlay();
         }
-    }
-
-    /**
-     * Mainmenu reading index field valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Number/valuechange:event"}}Number.valuechange{{/crossLink}}
-     */
-    onMainmenuRindexFieldChange(evt){
-        const field = evt.target._metaScore;
-        const value = field.getValue();
-
-        this.getPlayer().setReadingIndex(value, true);
     }
 
     /**
@@ -1567,7 +1578,9 @@ export default class Editor extends Dom {
             'autoShow': true
         });
 
-        this.controller.clearWaveform();
+        this.removeClass('metadata-loaded');
+
+        this.controller.disable().clearWaveform();
 
         this.getPlayer().addOneTimeListener('loadedmetadata', () => {
             loadmask.hide();
@@ -1586,7 +1599,9 @@ export default class Editor extends Dom {
 
         this.getPlayer().getMedia().reset();
 
-        this.controller.setDuration(this.getPlayer().getMedia().getDuration());
+        this.controller
+            .enable()
+            .setDuration(this.getPlayer().getMedia().getDuration());
 
         renderer.getWaveformData(this.onRendererWaveformData.bind(this));
     }
@@ -1606,12 +1621,13 @@ export default class Editor extends Dom {
      * Player rindex event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/rindex:event"}}Player.rindex{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPlayerReadingIndex(evt){
         const rindex = evt.detail.value;
+        const field = this.mainmenu.getItem('r-index');
 
-        this.mainmenu.rindexfield.setValue(rindex, true);
+        field.setValue(rindex, true);
     }
 
     /**
@@ -1812,12 +1828,12 @@ export default class Editor extends Dom {
 
             const data = this.player.getData();
             this.mainmenu
-                .toggleButton('save', data.permissions.update)
-                .toggleButton('clone', data.permissions.clone)
-                .toggleButton('publish', data.permissions.update)
-                .toggleButton('delete', data.permissions.delete);
+                .toggleItem('save', data.permissions.update)
+                .toggleItem('clone', data.permissions.clone)
+                .toggleItem('publish', data.permissions.update)
+                .toggleItem('delete', data.permissions.delete);
 
-            this.mainmenu.rindexfield.setValue(0, true);
+            this.mainmenu.getItem('r-index').setValue(0, true);
 
             loadmask.hide();
     }
@@ -1866,6 +1882,7 @@ export default class Editor extends Dom {
      */
     onPlayerPlay(){
         this.addClass('playing');
+        this.controller.addClass('playing');
     }
 
     /**
@@ -1875,6 +1892,7 @@ export default class Editor extends Dom {
      */
     onPlayerPause(){
         this.removeClass('playing');
+        this.controller.removeClass('playing');
     }
 
     /**
@@ -2273,6 +2291,9 @@ export default class Editor extends Dom {
 
         this.toggleClass('editing', this.editing);
 
+        this.mainmenu.getItem('edit-toggle').setValue(this.editing, true);
+        this.controller[this.editing ? 'maximize' : 'minimize']();
+
         if(player){
             player.toggleClass('editing', this.editing);
         }
@@ -2326,18 +2347,18 @@ export default class Editor extends Dom {
         const player = this.getPlayer();
         const hasPlayer = player ? true : false;
 
-        this.mainmenu.toggleButton('edit', hasPlayer);
-        this.mainmenu.toggleButton('save', hasPlayer);
-        this.mainmenu.toggleButton('clone', hasPlayer);
-        this.mainmenu.toggleButton('publish', hasPlayer);
-        this.mainmenu.toggleButton('delete', hasPlayer);
-        this.mainmenu.toggleButton('share', hasPlayer && player.getData('published'));
-        this.mainmenu.toggleButton('download', hasPlayer);
-        this.mainmenu.toggleButton('edit-toggle', hasPlayer);
-
-        this.mainmenu.toggleButton('undo', this.history.hasUndo());
-        this.mainmenu.toggleButton('redo', this.history.hasRedo());
-        this.mainmenu.toggleButton('revert', this.isDirty());
+        this.mainmenu
+            .toggleItem('edit', hasPlayer)
+            .toggleItem('save', hasPlayer)
+            .toggleItem('clone', hasPlayer)
+            .toggleItem('publish', hasPlayer)
+            .toggleItem('delete', hasPlayer)
+            .toggleItem('share', hasPlayer && player.getData('published'))
+            .toggleItem('download', hasPlayer)
+            .toggleItem('edit-toggle', hasPlayer)
+            .toggleItem('undo', this.history.hasUndo())
+            .toggleItem('redo', this.history.hasRedo())
+            .toggleItem('revert', this.isDirty());
 
         return this;
     }
@@ -2536,7 +2557,11 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
-        this.removeClass('has-player');
+        this
+            .removeClass('has-player')
+            .removeClass('metadata-loaded');
+
+        this.controller.disable();
 
         this.player_contextmenu.disable();
 

@@ -1,3 +1,4 @@
+import Dom from '../../core/Dom';
 import Field from '../Field';
 
 import {className} from '../../../css/editor/field/Checkbox.less';
@@ -58,6 +59,9 @@ export default class Checkbox extends Field{
         this.input
             .attr('type', 'checkbox')
             .addListener('click', this.onClick.bind(this));
+
+        new Dom('<label/>', {'for': this.input.attr('id')})
+            .appendTo(this.input_wrapper);
     }
 
     /**

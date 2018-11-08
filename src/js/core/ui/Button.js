@@ -21,17 +21,9 @@ export default class Button extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        /**
-         * Whether the button is disabled
-         * @type {Boolean}
-         */
-        this.disabled = false;
-
         if(this.configs.label){
             this.setLabel(this.configs.label);
         }
-
-        this.addListener('click', this.onClick.bind(this));
     }
 
     /**
@@ -43,19 +35,6 @@ export default class Button extends Dom {
         return {
             'label': null
         };
-    }
-
-    /**
-     * The click event handler
-     *
-     * @method onClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    onClick(evt){
-        if(this.disabled){
-            evt.stopPropagation();
-        }
     }
 
     /**
@@ -87,9 +66,7 @@ export default class Button extends Dom {
      * @chainable
      */
     disable() {
-        this.disabled = true;
-
-        this.addClass('disabled');
+        this.attr('disabled', '');
 
         return this;
     }
@@ -101,9 +78,7 @@ export default class Button extends Dom {
      * @chainable
      */
     enable() {
-        this.disabled = false;
-
-        this.removeClass('disabled');
+        this.attr('disabled', null);
 
         return this;
     }
