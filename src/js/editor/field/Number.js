@@ -120,7 +120,7 @@ export default class Number extends Field {
     onChange(){
         if(this.dirty){
             delete this.dirty;
-            this.setValue(this.input.val());
+            this.setValue(this.input.val(), true);
         }
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
@@ -169,6 +169,7 @@ export default class Number extends Field {
      */
     onKeypress(evt){
         if(isNumeric(evt.key) || ((evt.key === '.') && this.configs.step < 1) || (evt.key === "Enter")){
+            // do nothing, to allow the triggering of the input event
             return;
         }
 

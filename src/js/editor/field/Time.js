@@ -202,6 +202,7 @@ export default class Time extends Field {
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('click', this.onClick.bind(this))
             .addListener('focus', this.onFocus.bind(this))
+            .addListener('blur', this.onBlur.bind(this))
             .addListener('dragstart', this.onDragstart.bind(this))
             .addListener('drop', this.onDrop.bind(this))
             .addListener('cut', this.onCut.bind(this))
@@ -251,12 +252,12 @@ export default class Time extends Field {
      * @private
      */
     onChange(){
-        delete this.keys_pressed;
+        this.keys_pressed = 0;
         delete this.focused_segment;
 
         if(this.dirty){
             delete this.dirty;
-            this.setValue(this.constructor.getNumericalValue(this.input.val()));
+            this.setValue(this.constructor.getNumericalValue(this.input.val()), true);
         }
 
         this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
@@ -329,6 +330,18 @@ export default class Time extends Field {
 
         if(!this.skip_focus){
             this.setFocusedSegment(0);
+        }
+    }
+
+    /**
+     * The blur event handler
+     *
+     * @method onBlur
+     * @private
+     */
+    onBlur(){
+        if(this.dirty){
+            this.input.triggerEvent('change');
         }
     }
 
@@ -446,36 +459,39 @@ export default class Time extends Field {
      * @param {Event} evt The event object
      */
     onKeypress(evt){
-        const focused_segment = this.getFocusedSegment();
+        if(isNumeric(evt.key)){
+            const focused_segment = this.getFocusedSegment();
 
-        // Numeric key
-        if(isNumeric(evt.key) && focused_segment < PARTS.length){
-            let segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
+            // Numeric key
+            if(focused_segment < PARTS.length){
+                let segment_value = parseInt(this.getSegmentValue(focused_segment), 10);
 
-            if(this.keys_pressed === 0 || isNaN(segment_value)){
-                segment_value = 0;
+                if(this.keys_pressed === 0 || isNaN(segment_value)){
+                    segment_value = 0;
+                }
+
+                segment_value += evt.key;
+
+                segment_value = pad(Math.min(PARTS[focused_segment].max_value, parseInt(segment_value, 10)), 2, "0", "left");
+
+                this.setSegmentValue(focused_segment, segment_value);
+
+                if(++this.keys_pressed === 2){
+                    this.keys_pressed = 0;
+                    this.setFocusedSegment(focused_segment + 1);
+                }
+                else{
+                    this.setFocusedSegment(focused_segment);
+                }
             }
-
-            segment_value += evt.key;
-
-            segment_value = pad(Math.min(PARTS[focused_segment].max_value, parseInt(segment_value, 10)), 2, "0", "left");
-
-            this.setSegmentValue(focused_segment, segment_value);
-
-            if(++this.keys_pressed === 2){
-                this.keys_pressed = 0;
-                this.setFocusedSegment(focused_segment + 1);
-            }
-            else{
-                this.setFocusedSegment(focused_segment);
-            }
-
-            evt.preventDefault();
         }
-        else if(evt.key !== "Enter"){
-            evt.preventDefault();
+        else if(evt.key === "Enter"){
+            if(this.dirty){
+                this.input.triggerEvent('change');
+            }
         }
 
+        evt.preventDefault();
     }
 
     /**
