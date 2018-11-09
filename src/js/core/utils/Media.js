@@ -66,6 +66,7 @@ export function getFileMime(url){
         'ogv': 'video/ogg',
         'webm': 'video/webm',
         'webmv': 'video/webmv',
+        'm4a': 'audio/mp4',
         'mp3': 'audio/mp3',
         'oga': 'audio/ogg',
         'm3u8': 'application/x-mpegURL',
