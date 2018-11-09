@@ -162,7 +162,7 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .addDelegate('.timefield', 'valuechange', this.onControllerTimeFieldChange.bind(this))
+            .addDelegate('.time.field', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
             .disable()
             .appendTo(bottom);
@@ -259,8 +259,8 @@ export default class Editor extends Dom {
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addDelegate('.timefield', 'valuein', this.onTimeFieldIn.bind(this))
-            .addDelegate('.timefield', 'valueout', this.onTimeFieldOut.bind(this))
+            .addDelegate('.time.field', 'valuein', this.onTimeFieldIn.bind(this))
+            .addDelegate('.time.field', 'valueout', this.onTimeFieldOut.bind(this))
             .setDirty(false)
             .setEditing(false)
             .updateMainmenu()
@@ -1018,8 +1018,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onMainmenuEditToggleFieldChange(evt){
-        const field = evt.target._metaScore;
-        const value = field.getValue();
+        const value = evt.detail.value;
 
         this.setEditing(value);
     }
@@ -1031,8 +1030,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onMainmenuRindexFieldChange(evt){
-        const field = evt.target._metaScore;
-        const value = field.getValue();
+        const value = evt.detail.value;
 
         this.getPlayer().setReadingIndex(value, true);
     }
@@ -1044,10 +1042,10 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onControllerTimeFieldChange(evt){
-        const field = evt.target._metaScore;
-        const time = field.getValue();
+        console.log(evt);
+        const value = evt.detail.value;
 
-        this.getPlayer().getMedia().setTime(time);
+        this.getPlayer().getMedia().setTime(value);
     }
 
     /**

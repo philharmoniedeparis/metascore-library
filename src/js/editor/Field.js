@@ -45,10 +45,10 @@ export default class Field extends Dom{
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        this.setupUI();
-
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
+
+        this.setupUI();
 
         if(this.input){
             if(this.configs.name){

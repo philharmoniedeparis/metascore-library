@@ -120,7 +120,7 @@ export default class Panel extends Dom {
 
         this
             .addDelegate('.fields .field', 'valuechange', this.onFieldValueChange.bind(this))
-            .addDelegate('.fields .imagefield', 'resize', this.onImageFieldResize.bind(this))
+            .addDelegate('.fields .image.field', 'resize', this.onImageFieldResize.bind(this))
             .updateUI();
     }
 
