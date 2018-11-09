@@ -58,8 +58,6 @@ export default class Ajax extends EventEmitter {
          */
         this.xhr = new XMLHttpRequest();
 
-        this.xhr.responseType = this.configs.responseType;
-
         if(this.configs.method === 'GET' && this.configs.data){
             const params = [];
 
@@ -71,6 +69,8 @@ export default class Ajax extends EventEmitter {
         }
 
         this.xhr.open(this.configs.method, _url, this.configs.async);
+
+        this.xhr.responseType = this.configs.responseType;
 
         if(this.configs.headers){
             this.setHeaders(this.configs.headers);
