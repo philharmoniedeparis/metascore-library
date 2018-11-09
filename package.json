@@ -9,7 +9,7 @@
   },
   "scripts": {
     "pack": "webpack -p",
-    "dev": "webpack -d --watch",
+    "dev": "webpack -d -w",
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",
     "i18n": "node ./bin/i18n-extract.js",

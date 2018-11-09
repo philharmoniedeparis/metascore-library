@@ -46,6 +46,17 @@ class ShellPlugin{
       });
     }
 
+    if('onBuildExit' in this.options){
+      compiler.hooks.done.tap('ShellPlugin', (compilation) => {
+        this.options.onBuildExit.forEach((script) => {
+          exec(script, (err, stdout, stderr) => {
+            if (stdout) process.stdout.write(stdout);
+            if (stderr) process.stderr.write(stderr);
+          });
+        });
+      });
+    }
+
     if('onBuildEnd' in this.options){
       compiler.hooks.afterEmit.tap('ShellPlugin', (compilation) => {
         this.options.onBuildEnd.forEach((script) => {
@@ -58,21 +69,11 @@ class ShellPlugin{
         this.options.onBuildEnd = [];
       });
     }
-
-    if('onBuildExit' in this.options){
-      compiler.hooks.done.tap('ShellPlugin', (compilation) => {
-        this.options.onBuildExit.forEach((script) => {
-          exec(script, (err, stdout, stderr) => {
-            if (stdout) process.stdout.write(stdout);
-            if (stderr) process.stderr.write(stderr);
-          });
-        });
-      });
-    }
   }
 }
 
-module.exports = {
+module.exports = (env, argv) => {
+  const configs = {
     mode: 'production',
     bail: true,
     entry: {
@@ -94,7 +95,7 @@ module.exports = {
     module: {
       rules: [
         {
-           // Lint JS files
+          // Lint JS files
           test: /\.js$/,
           exclude: /node_modules/,
           use: [
@@ -126,7 +127,7 @@ module.exports = {
           ],
         },
         {
-           // compiles Less to CSS
+          // compiles Less to CSS
           test: /\.less$/,
           use: ExtractTextPlugin.extract({
             fallback: 'style-loader',
@@ -180,16 +181,30 @@ module.exports = {
       new ExtractTextPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
-      new ShellPlugin({
-        //onBuildEnd: [],
-        onBuildExit: [
-          'echo "Extracting i18n" && npm run i18n && echo "Copying files to Drupal" && npm run drupal'
-        ]
-      }),
       new CopyWebpackPlugin([{
         from: './src/i18n/',
         to: './i18n/'
       }]),
-      new BeepPlugin()
+      new BeepPlugin(),
+      new ShellPlugin({
+        onBuildExit: [
+          'echo "Extracting i18n" && npm run i18n'
+        ]
+      })
     ]
   };
+
+  switch(argv.mode){
+    case 'development':
+      configs.plugins.push(
+        new ShellPlugin({
+          onBuildExit: [
+            'echo "Copying files to Drupal" && npm run drupal'
+          ]
+        })
+      );
+      break;
+  }
+
+  return configs;
+};
