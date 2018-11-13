@@ -5,7 +5,7 @@ const git = require('git-rev-sync');
 const beep = require('beepbeep');
 const pckg = require('./package.json');
 
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -92,6 +92,18 @@ module.exports = (env, argv) => {
     watchOptions: {
       ignored: /src\/i18n/
     },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          styles: {
+            name: 'styles',
+            test: /\.css$/,
+            chunks: 'all',
+            enforce: true
+          }
+        }
+      }
+    },
     module: {
       rules: [
         {
@@ -129,9 +141,8 @@ module.exports = (env, argv) => {
         {
           // compiles Less to CSS
           test: /\.less$/,
-          use: ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [
+          use: [
+              MiniCssExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
@@ -151,8 +162,7 @@ module.exports = (env, argv) => {
                 }
               },
               'less-loader'
-            ],
-          })
+            ]
         },
         {
           // pack images
@@ -177,10 +187,10 @@ module.exports = (env, argv) => {
       ]
     },
     plugins: [
-      new CleanWebpackPlugin(DIST),
-      new ExtractTextPlugin({
+      new MiniCssExtractPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
+      new CleanWebpackPlugin(DIST),
       new CopyWebpackPlugin([{
         from: './src/i18n/',
         to: './i18n/'
