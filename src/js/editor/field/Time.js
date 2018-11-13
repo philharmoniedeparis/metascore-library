@@ -7,29 +7,6 @@ import {isNumeric} from '../../core/utils/Var';
 import {className} from '../../../css/editor/field/Time.less';
 
 /**
- * Fired when the field's value changes
- *
- * @event valuechange
- * @param {Object} field The field instance
- * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * Fired when the in button is clicked
- *
- * @event valuein
- */
-const EVT_VALUEIN = 'valuein';
-
-/**
- * Fired when the out button is clicked
- *
- * @event valueout
- */
-const EVT_VALUEOUT = 'valueout';
-
-/**
  * Time parts configurations
  * @type {Array}
  */
@@ -84,6 +61,12 @@ const GLOBAL_REGEX = new RegExp(`^${PARTS.reduce((accumulator, value) => {
 
 /**
  * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
+ *
+ * @emits {valuechange} Fired when the field's value changes
+ * @param {Object} field The field instance
+ * @param {Mixed} value The new value
+ * @emits {valuein} Fired when the in button is clicked
+ * @emits {valueout} Fired when the out button is clicked
  */
 export default class Time extends Field {
 
@@ -131,7 +114,6 @@ export default class Time extends Field {
     /**
      * Helper function to convert a textual value to a numerical one
      *
-     * @method getNumericalValue
      * @private
      * @param {String} textual_value The textual value
      * @return {Number} The numercial value
@@ -158,7 +140,6 @@ export default class Time extends Field {
     /**
      * Helper function to convert a numerical value to a textual one
      *
-     * @method getTextualValue
      * @private
      * @param {Number} value The numercial value
      * @return {String} The textual value
@@ -185,7 +166,6 @@ export default class Time extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -248,7 +228,6 @@ export default class Time extends Field {
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      */
     onChange(){
@@ -260,13 +239,12 @@ export default class Time extends Field {
             this.setValue(this.constructor.getNumericalValue(this.input.val()), true);
         }
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * The mousedown event handler
      *
-     * @method onMouseDown
      * @private
      */
     onMouseDown(){
@@ -280,7 +258,6 @@ export default class Time extends Field {
     /**
      * The mousewheel event handler
      *
-     * @method onMouseWheel
      * @private
      * @param {Event} evt The event object
      */
@@ -304,7 +281,6 @@ export default class Time extends Field {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      */
     onClick(){
@@ -318,7 +294,6 @@ export default class Time extends Field {
     /**
      * The focus event handler
      *
-     * @method onFocus
      * @private
      */
     onFocus(){
@@ -336,7 +311,6 @@ export default class Time extends Field {
     /**
      * The blur event handler
      *
-     * @method onBlur
      * @private
      */
     onBlur(){
@@ -348,7 +322,6 @@ export default class Time extends Field {
     /**
      * The dragstart event handler
      *
-     * @method onDragstart
      * @private
      * @param {Event} evt The event object
      */
@@ -359,7 +332,6 @@ export default class Time extends Field {
     /**
      * The drop event handler
      *
-     * @method onDrop
      * @private
      * @param {Event} evt The event object
      */
@@ -370,7 +342,6 @@ export default class Time extends Field {
     /**
      * The cut event handler
      *
-     * @method onCut
      * @private
      * @param {Event} evt The event object
      */
@@ -381,7 +352,6 @@ export default class Time extends Field {
     /**
      * The paste event handler
      *
-     * @method onPaste
      * @private
      * @param {Event} evt The event object
      */
@@ -399,7 +369,6 @@ export default class Time extends Field {
     /**
      * The keydown event handler
      *
-     * @method onKeydown
      * @private
      * @param {Event} evt The event object
      */
@@ -454,7 +423,6 @@ export default class Time extends Field {
     /**
      * The keypress event handler
      *
-     * @method onKeypress
      * @private
      * @param {Event} evt The event object
      */
@@ -497,7 +465,6 @@ export default class Time extends Field {
     /**
      * The clear button click event handler
      *
-     * @method onClearClick
      * @private
      */
     onClearClick(){
@@ -507,27 +474,24 @@ export default class Time extends Field {
     /**
      * The in button's click event handler
      *
-     * @method onInClick
      * @private
      */
     onInClick(){
-        this.triggerEvent(EVT_VALUEIN, {'field': this});
+        this.triggerEvent('valuein', {'field': this});
     }
 
     /**
      * The out button's click event handler
      *
-     * @method onOutClick
      * @private
      */
     onOutClick(){
-        this.triggerEvent(EVT_VALUEOUT, {'field': this, 'value': this.getValue()});
+        this.triggerEvent('valueout', {'field': this, 'value': this.getValue()});
     }
 
     /**
      * Helper function to check if a certain value is a valid textual value
      *
-     * @method isValid
      * @private
      * @param {String} value The value to check
      */
@@ -538,7 +502,6 @@ export default class Time extends Field {
     /**
      * Helper function to retreive the input's current caret position
      *
-     * @method getCaretPosition
      * @private
      * @return {Number} The caret position
      */
@@ -555,7 +518,6 @@ export default class Time extends Field {
     /**
      * Helper function to retreive the index of the focused segmnet
      *
-     * @method getFocusedSegment
      * @private
      * @return {Number} The focus segment's index
      */
@@ -566,7 +528,6 @@ export default class Time extends Field {
     /**
      * Helper function to set the focused segmnet
      *
-     * @method setFocusedSegment
      * @private
      * @param {Number} segment The focus segment's index
      */
@@ -587,7 +548,6 @@ export default class Time extends Field {
     /**
      * Helper function to retreive the value of a segmnet
      *
-     * @method getSegmentValue
      * @private
      * @param {Number} segment The segment's index
      * @return {String} The segment's value
@@ -638,10 +598,9 @@ export default class Time extends Field {
     /**
      * Helper function to increment a segment's value
      *
-     * @method incrementSegmentValue
      * @private
      * @param {Number} segment The segment's index
-     * @chainable
+     * @return {this}
      */
     incrementSegmentValue(segment){
         let value = this.getValue();
@@ -659,10 +618,9 @@ export default class Time extends Field {
     /**
      * Helper function to decrement a segment's value
      *
-     * @method decrementSegmentValue
      * @private
      * @param {Number} segment The segment's index
-     * @chainable
+     * @return {this}
      */
     decrementSegmentValue(segment){
         let value = this.getValue();
@@ -686,7 +644,7 @@ export default class Time extends Field {
      *
      * @param {Number} value The new value in centiseconds
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         let _value = value;
@@ -721,9 +679,8 @@ export default class Time extends Field {
     /**
      * Set the minimum allowed value
      *
-     * @method setMin
      * @param {Number} min The minimum allowed value
-     * @chainable
+     * @return {this}
      */
     setMin(min){
         const value = this.getValue();
@@ -744,9 +701,8 @@ export default class Time extends Field {
     /**
      * Set the maximum allowed value
      *
-     * @method setMax
      * @param {Number} max The maximum allowed value
-     * @chainable
+     * @return {this}
      */
     setMax(max){
         const value = this.getValue();
@@ -767,8 +723,7 @@ export default class Time extends Field {
     /**
      * Disable the field
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         super.disable();
@@ -790,8 +745,7 @@ export default class Time extends Field {
     /**
      * Enable the field
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         super.enable();
@@ -813,9 +767,8 @@ export default class Time extends Field {
     /**
      * Toggle the field's readonly state
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         super.readonly(readonly);
@@ -836,9 +789,8 @@ export default class Time extends Field {
     /**
      * Reset the field's configs
      *
-     * @method reset
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     reset(supressEvent){
         this

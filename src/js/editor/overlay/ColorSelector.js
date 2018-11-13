@@ -7,16 +7,11 @@ import {toRGBA, rgb2hsv} from '../../core/utils/Color';
 import {className} from '../../../css/editor/overlay/ColorSelector.less';
 
 /**
- * Fired when the submit button is clicked
+ * An overlay to select an RGBA color
  *
- * @event submit
+ * @emits {submit} Fired when the submit button is clicked
  * @param {Object} overlay The overlay instance
  * @param {Object} value The color value in rgba format
- */
-const EVT_SUBMIT = 'submit';
-
-/**
- * An overlay to select an RGBA color
  */
 export default class ColorSelector extends Overlay {
 
@@ -51,7 +46,6 @@ export default class ColorSelector extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -153,9 +147,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Set the current value
      *
-     * @method setValue
-     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
-     * @chainable
+     * @param {Mixed} val The value in a format accepted by {@link toRGBA}
+     * @return {this}
      */
     setValue(val){
         this.updateValue(val);
@@ -174,13 +167,12 @@ export default class ColorSelector extends Overlay {
     /**
      * Update the selected value
      *
-     * @method updateValue
      * @private
-     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
+     * @param {Mixed} val The value in a format accepted by {@link toRGBA}
      * @param {Boolean} refillAlpha Whether to refill the alpha indicator canvas
      * @param {Boolean} updatePositions Whether to update the cursor positions
      * @param {Boolean} updateInputs Whether to update the input values
-     * @chainable
+     * @return {this}
      */
     updateValue(val, refillAlpha, updatePositions, updateInputs){
         const rgb = isObject(val) ? val : toRGBA(val);
@@ -234,9 +226,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the gradient's canvas
      *
-     * @method fillGradient
      * @private
-     * @chainable
+     * @return {this}
      */
     fillGradient() {
         const context = this.gradient.canvas.get(0).getContext('2d');
@@ -272,9 +263,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the previous color indicator canvas
      *
-     * @method fillPrevious
      * @private
-     * @chainable
+     * @return {this}
      */
     fillPrevious() {
         const context = this.controls.previous.get(0).getContext('2d');
@@ -289,9 +279,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the current color indicator canvas
      *
-     * @method fillCurrent
      * @private
-     * @chainable
+     * @return {this}
      */
     fillCurrent() {
         const context = this.controls.current.get(0).getContext('2d');
@@ -306,9 +295,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the alpha indicator canvas
      *
-     * @method fillAlpha
      * @private
-     * @chainable
+     * @return {this}
      */
     fillAlpha() {
         const context = this.alpha.canvas.get(0).getContext('2d');
@@ -329,7 +317,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The controls input event handler
      *
-     * @method onControlInput
      * @private
      */
     onControlInput(){
@@ -344,7 +331,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The gradient mousedown event handler
      *
-     * @method onGradientMousedown
      * @private
      * @param {Event} evt The event object
      */
@@ -357,7 +343,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The gradient mouseup event handler
      *
-     * @method onGradientMouseup
      * @private
      * @param {Event} evt The event object
      */
@@ -370,7 +355,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The gradient click event handler
      *
-     * @method onGradientClick
      * @private
      * @param {Event} evt The event object
      */
@@ -404,7 +388,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The alpha mousedown event handler
      *
-     * @method onAlphaMousedown
      * @private
      * @param {Event} evt The event object
      */
@@ -417,7 +400,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The alpha mouseup event handler
      *
-     * @method onAlphaMouseup
      * @private
      * @param {Event} evt The event object
      */
@@ -430,7 +412,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The alpha click event handler
      *
-     * @method onAlphaClick
      * @private
      * @param {Event} evt The event object
      */
@@ -453,11 +434,10 @@ export default class ColorSelector extends Overlay {
     /**
      * The apply button click event handler
      *
-     * @method onApplyClick
      * @private
      */
     onApplyClick(){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.value}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'value': this.value}, true, false);
 
         this.hide();
     }
@@ -465,7 +445,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The cancel button click event handler
      *
-     * @method onCancelClick
      * @private
      */
     onCancelClick(){

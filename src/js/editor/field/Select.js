@@ -7,18 +7,13 @@ import {isArray} from '../../core/utils/Var';
 import {className} from '../../../css/editor/field/Select.less';
 
 /**
- * Fired when the field's value changes
+ * A select list field based on an HTML select element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  * @param {Mixed[]} [added] Newly added values
  * @param {Mixed[]} [removed] Removed values
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A select list field based on an HTML select element
  */
 export default class Select extends Field {
 
@@ -52,7 +47,6 @@ export default class Select extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -177,10 +171,9 @@ export default class Select extends Field {
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} [supressEvent=false] Whether to supress the valuechange event
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         const options = this.menu.find('.option');
@@ -211,7 +204,7 @@ export default class Select extends Field {
      * Update the field's value
      *
      * @param {Boolean} [supressEvent=false] Whether to supress the valuechange event
-     * @chainable
+     * @return {this}
      */
     updateValue(supressEvent){
         const options = this.menu.find('.option.selected');
@@ -250,7 +243,7 @@ export default class Select extends Field {
                 }
 
                 if(supressEvent !== true){
-                    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value, 'added': added, 'removed': removed}, true, false);
+                    this.triggerEvent('valuechange', {'field': this, 'value': this.value, 'added': added, 'removed': removed}, true, false);
                 }
             }
 
@@ -263,7 +256,7 @@ export default class Select extends Field {
                 this.input.val(count > 0 ? decodeHTML(options.text()) : '');
 
                 if(supressEvent !== true){
-                    this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+                    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
                 }
             }
         }
@@ -274,7 +267,6 @@ export default class Select extends Field {
     /**
      * Adds an option group to the select list
      *
-     * @method addGroup
      * @param {String} label The group's text label
      * @param {Dom} [parent] A parent group to append the group to, it will be appended to the root list if not specified
      * @return {Dom} The new group
@@ -288,7 +280,6 @@ export default class Select extends Field {
     /**
      * Add an option to the select list
      *
-     * @method addOption
      * @param {String} value The option's value
      * @param {String} label The option's label
      * @param {Dom} [parent] A group to append the option to, it will be appended to the root list if not specified
@@ -323,7 +314,6 @@ export default class Select extends Field {
     /**
      * Update an option's label by value
      *
-     * @method updateOption
      * @param {String} value The value of the option to update
      * @param {String} text The new label's text
      * @return {Dom} The option's Dom object
@@ -339,7 +329,6 @@ export default class Select extends Field {
     /**
      * Remove an option by value
      *
-     * @method removeOption
      * @param {String} value The value of the option to remove
      * @return {Dom} The option's Dom object
      */
@@ -374,8 +363,7 @@ export default class Select extends Field {
     /**
      * Remove all groups and options
      *
-     * @method clear
-     * @chainable
+     * @return {this}
      */
     clear() {
         this.menu.empty();
@@ -386,9 +374,8 @@ export default class Select extends Field {
     /**
      * Toggle the readonly attribute of the field
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         /**

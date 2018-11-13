@@ -4,16 +4,11 @@ import Field from '../Field';
 import {className} from '../../../css/editor/field/Checkbox.less';
 
 /**
- * Fired when the field's value changes
+ * A checkbox field based on an HTML input[type=checkbox] element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A checkbox field based on an HTML input[type=checkbox] element
  */
 export default class Checkbox extends Field{
 
@@ -50,7 +45,6 @@ export default class Checkbox extends Field{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -67,7 +61,6 @@ export default class Checkbox extends Field{
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      * @param {Event} evt The event object
      */
@@ -80,7 +73,6 @@ export default class Checkbox extends Field{
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      * @param {Event} evt The event object
      */
@@ -103,16 +95,15 @@ export default class Checkbox extends Field{
             this.removeClass('checked');
         }
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         this.input.get(0).checked = value === this.configs.checked_value;

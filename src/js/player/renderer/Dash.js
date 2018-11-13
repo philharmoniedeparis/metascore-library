@@ -2,22 +2,6 @@ import HTML5 from './HTML5';
 import Dom from '../../core/Dom';
 
 /**
- * Fired when the renderer is ready
- *
- * @event ready
- * @param {Object} renderer The renderer instance
- */
-const EVT_READY = 'ready';
-
-/**
-* Fired when the source is set
-*
-* @event sourceset
-* @param {Object} renderer The renderer instance
-*/
-const EVT_SOURCESET = 'sourceset';
-
-/**
 * The dash.js CDN URL
 * @type {String}}
 */
@@ -25,6 +9,11 @@ const LIB_URL = '//cdn.dashjs.org/latest/dash.all.min.js';
 
 /**
  * Dash renderer
+ *
+ * @emits {ready} Fired when the renderer is ready
+ * @param {Object} renderer The renderer instance
+ * @emits {sourceset} Fired when the source is set
+ * @param {Object} renderer The renderer instance
  */
 export default class Dash extends HTML5 {
 
@@ -163,7 +152,7 @@ export default class Dash extends HTML5 {
 
         this.constructor.loadLib((error) => {
             if(!error){
-                this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
+                this.triggerEvent('ready', {'renderer': this}, false, false);
             }
         });
 
@@ -173,19 +162,18 @@ export default class Dash extends HTML5 {
     /**
     * Set the media source
     *
-    * @method setSource
     * @param {Object} source The source to set
     * @property {String} url The source's url
     * @property {String} mime The source's mime type
     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
-    * @chainable
+    * @return {this}
     */
     setSource(source, supressEvent){
         const dash = window.dashjs.MediaPlayer().create();
         dash.initialize(this.dom, source.url, false);
 
        if(supressEvent !== true){
-           this.triggerEvent(EVT_SOURCESET, {'renderer': this});
+           this.triggerEvent('sourceset', {'renderer': this});
        }
 
        return this;

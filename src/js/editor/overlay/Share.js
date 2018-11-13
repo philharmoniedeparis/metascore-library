@@ -57,7 +57,6 @@ export default class Share extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -149,7 +148,6 @@ export default class Share extends Overlay {
     /**
      * Get a field by name
      *
-     * @method getField
      * @param {String} name The field's name
      * @return {editor.Field} The field object
      */
@@ -166,7 +164,6 @@ export default class Share extends Overlay {
     /**
      * The fields change event handler
      *
-     * @method onFieldValueChange
      * @private
      */
     onFieldValueChange(){
@@ -176,7 +173,6 @@ export default class Share extends Overlay {
     /**
      * Construct and retur the embed code
      *
-     * @method getEmbedCode
      * @private
      * @return {String} The embed code
      */

@@ -22,10 +22,9 @@ export default class Clipboard extends EventEmitter {
     /**
     * Set the stored data
     *
-    * @method setData
     * @param {String} type The data type
     * @param {Mixed} data The data
-    * @chainable
+    * @return {this}
     */
     setData(type, data){
         this.data = {
@@ -39,7 +38,6 @@ export default class Clipboard extends EventEmitter {
     /**
     * Get the stored data
     *
-    * @method getData
     * @return {Mixed} The data
     */
     getData() {
@@ -49,7 +47,6 @@ export default class Clipboard extends EventEmitter {
     /**
     * Get the stored data type
     *
-    * @method getData
     * @return {String} The data type
     */
     getDataType() {
@@ -59,8 +56,7 @@ export default class Clipboard extends EventEmitter {
     /**
     * Clear the stored data
     *
-    * @method clearData
-    * @chainable
+    * @return {this}
     */
     clearData() {
         this.data = null;

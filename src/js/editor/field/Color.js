@@ -7,16 +7,11 @@ import ColorSelector from '../overlay/ColorSelector';
 import {className} from '../../../css/editor/field/Color.less';
 
 /**
- * Fired when the field's value changes
+ * A color selection field
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A color selection field
  */
 export default class Color extends Field {
 
@@ -24,7 +19,7 @@ export default class Color extends Field {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Mixed} [value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @property {Mixed} [value={r:255, g:255, b:255, a:1}}] The default value (see {@link toRGBA} for valid values)
      */
     constructor(configs) {
         // call parent constructor
@@ -52,7 +47,6 @@ export default class Color extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -80,10 +74,9 @@ export default class Color extends Field {
     /**
      * Set the field'S value
      *
-     * @method setValue
-     * @param {Mixed} value The new color's value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @param {Mixed} value The new color's value (see {@link toRGBA} for valid values)
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         /**
@@ -99,7 +92,7 @@ export default class Color extends Field {
             .css('background-color', rgba);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+            this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
         }
 
         return this;
@@ -109,7 +102,6 @@ export default class Color extends Field {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      */
     onClick(){
@@ -125,7 +117,6 @@ export default class Color extends Field {
     /**
      * The overlay's submit event handler
      *
-     * @method onOverlaySubmit
      * @private
      * @param {Event} evt The event object
      */
@@ -136,7 +127,6 @@ export default class Color extends Field {
     /**
      * The clear button click event handler
      *
-     * @method onClearClick
      * @private
      */
     onClearClick(){

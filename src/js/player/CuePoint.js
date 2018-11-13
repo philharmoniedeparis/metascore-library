@@ -2,35 +2,12 @@ import EventEmitter from '../core/EventEmitter';
 import {uuid} from '../core/utils/String';
 
 /**
- * Fired when the cuepoint starts
- *
- * @event start
- */
-const EVT_START = 'start';
-
-/**
- * Fired when the cuepoint is active (between the start and end times) and the media time is updated
- *
- * @event update
- */
-const EVT_UPDATE = 'update';
-
-/**
- * Fired when the cuepoint stops
- *
- * @event stop
- */
-const EVT_STOP = 'stop';
-
-/**
- * Fired when the media is seeked outside of the cuepoint's time
- *
- * @event seekout
- */
-const EVT_SEEKOUT = 'seekout';
-
-/**
  * A class for managing media cuepoints to execute actions at specific media times
+ *
+ * @emits {start} Fired when the cuepoint starts
+ * @emits {update} Fired when the cuepoint is active (between the start and end times) and the media time is updated
+ * @emits {stop} Fired when the cuepoint stops
+ * @emits {seekout} Fired when the media is seeked outside of the cuepoint's time
  */
 export default class CuePoint extends EventEmitter{
 
@@ -95,7 +72,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * The media's timeupdate event handler
      *
-     * @method onMediaTimeUpdate
      * @private
      */
     onMediaTimeUpdate(){
@@ -105,7 +81,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * The media's seeked event handler
      *
-     * @method onMediaSeeked
      * @private
      */
     onMediaSeeking(){
@@ -117,7 +92,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * The media's seeked event handler
      *
-     * @method onMediaSeeked
      * @private
      */
     onMediaSeeked(){
@@ -139,7 +113,7 @@ export default class CuePoint extends EventEmitter{
         }
 
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
-            this.triggerEvent(EVT_SEEKOUT);
+            this.triggerEvent('seekout');
             this.stop();
         }
         else{
@@ -150,7 +124,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Get the media component on which this cuepoint is attached
      *
-     * @method getMedia
      * @return {player.component.Media} The media component
      */
     getMedia() {
@@ -160,8 +133,7 @@ export default class CuePoint extends EventEmitter{
     /**
      * Init the cuepoint
      *
-     * @method init
-     * @chainable
+     * @return {this}
      */
     init() {
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
@@ -175,7 +147,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Start executing the cuepoint
      *
-     * @method start
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
@@ -185,19 +156,18 @@ export default class CuePoint extends EventEmitter{
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_START);
+            this.triggerEvent('start');
         }
 
         this.running = true;
         this.getMedia().addListener('seeking', this.onMediaSeeking);
 
-        this.triggerEvent(EVT_UPDATE);
+        this.triggerEvent('update');
     }
 
     /**
      * Update the cuepoint
      *
-     * @method update
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
@@ -219,7 +189,7 @@ export default class CuePoint extends EventEmitter{
             }
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_UPDATE);
+                this.triggerEvent('update');
             }
 
             if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
@@ -231,7 +201,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Stop executing the cuepoint
      *
-     * @method stop
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
@@ -243,7 +212,7 @@ export default class CuePoint extends EventEmitter{
         this.getMedia().removeListener('seeking', this.onMediaSeeking);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_STOP);
+            this.triggerEvent('stop');
         }
 
         if(this.configs.considerError){
@@ -257,7 +226,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Destroy the cuepoint
      *
-     * @method destroy
      */
     destroy() {
         this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);

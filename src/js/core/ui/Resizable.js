@@ -1,28 +1,11 @@
 import Dom from '../Dom';
 
 /**
- * Fired when a resize started
- *
- * @event resizestart
- */
-const EVT_RESIZESTART = 'resizestart';
-
-/**
- * Fired when a resize occured
- *
- * @event resize
- */
-const EVT_RESIZE = 'resize';
-
-/**
- * Fired when a resize ended
- *
- * @event resizeend
- */
-const EVT_RESIZEEND = 'resizeend';
-
-/**
  * A class for adding resizable behaviors
+ *
+ * @emits {resizestart} Fired when a resize started
+ * @emits {resize} Fired when a resize occured
+ * @emits {resizeend} Fired when a resize ended
  */
 export default class Resizable {
 
@@ -30,8 +13,8 @@ export default class Resizable {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {Dom} configs.target The Dom object to add the behavior to
-     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
+     * @property {Dom} target The Dom object to add the behavior to
+     * @property {Object} [directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
      */
     constructor(configs) {
         /**
@@ -92,7 +75,6 @@ export default class Resizable {
     /**
      * The mousedown event handler
      *
-     * @method onMouseDown
      * @private
      * @param {Event} evt The event object
      */
@@ -123,7 +105,7 @@ export default class Resizable {
         this.configs.target
             .addListener('click', this.onTargetClick, this)
             .addClass('resizing')
-            .triggerEvent(EVT_RESIZESTART, null, false, true);
+            .triggerEvent('resizestart', null, false, true);
 
         evt.stopPropagation();
     }
@@ -131,7 +113,6 @@ export default class Resizable {
     /**
      * The mousemove event handler
      *
-     * @method onMouseMove
      * @private
      * @param {Event} evt The event object
      */
@@ -192,7 +173,7 @@ export default class Resizable {
         this.configs.target
             .css('width', `${new_state.w}px`)
             .css('height', `${new_state.h}px`)
-            .triggerEvent(EVT_RESIZE, null, false, true);
+            .triggerEvent('resize', null, false, true);
 
         evt.stopPropagation();
     }
@@ -200,7 +181,6 @@ export default class Resizable {
     /**
      * The mouseup event handler
      *
-     * @method onMouseUp
      * @private
      * @param {Event} evt The event object
      */
@@ -217,7 +197,7 @@ export default class Resizable {
 
         this.configs.target
             .removeClass('resizing')
-            .triggerEvent(EVT_RESIZEEND, null, false, true);
+            .triggerEvent('resizeend', null, false, true);
 
         delete this._start_state;
 
@@ -237,7 +217,6 @@ export default class Resizable {
 
     /**
      * Get a handle
-     * @method getHandle
      * @param {String} direction The direction of the handle to get
      * @return {Dom} The handle
      */
@@ -248,8 +227,7 @@ export default class Resizable {
     /**
      * Enable the behavior
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.configs.target.addClass('resizable');
@@ -266,8 +244,7 @@ export default class Resizable {
     /**
      * Disable the behavior
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         this.configs.target.removeClass('resizable');
@@ -280,8 +257,7 @@ export default class Resizable {
     /**
      * Destroy the behavior
      *
-     * @method destroy
-     * @chainable
+     * @return {this}
      */
     destroy() {
         this.disable();

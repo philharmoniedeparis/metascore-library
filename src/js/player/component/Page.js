@@ -9,29 +9,6 @@ import ImageElement from './element/Image';
 import TextElement from './element/Text';
 
 /**
- * Fired when an element is added
- *
- * @event elementadd
- * @param {Object} page The page instance
- * @param {Object} element The element instance
- */
-const EVT_ELEMENTADD = 'elementadd';
-
-/**
- * Fired when a cuepoint started
- *
- * @event cuepointstart
- */
-const EVT_CUEPOINTSTART = 'cuepointstart';
-
-/**
- * Fired when a cuepoint stops
- *
- * @event cuepointstop
- */
-const EVT_CUEPOINTSTOP = 'cuepointstop';
-
-/**
  * The list of available element types
  * @type {Object}
  */
@@ -43,6 +20,12 @@ const ELEMENT_TYPES = {
 
 /**
  * A page component
+ *
+ * @emits {elementadd} Fired when an element is added
+ * @param {Object} page The page instance
+ * @param {Object} element The element instance
+ * @emits {cuepointstart} Fired when a cuepoint started
+ * @emits {cuepointstop} Fired when a cuepoint stops
  */
 export default class Page extends Component {
 
@@ -152,7 +135,6 @@ export default class Page extends Component {
     /**
      * Setup the page's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -167,7 +149,6 @@ export default class Page extends Component {
     /**
      * Add an element
      *
-     * @method addElement
      * @param {Object|Element} configs Element configs or an existing Element instance
      * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
      * @return {Element} The element
@@ -186,7 +167,7 @@ export default class Page extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element, 'new': !existing});
+            this.triggerEvent('elementadd', {'page': this, 'element': element, 'new': !existing});
         }
 
         return element;
@@ -195,7 +176,6 @@ export default class Page extends Component {
     /**
      * Get the block component this page belongs to
      *
-     * @method getBlock
      * @return {player.component.Block}
      */
     getBlock() {
@@ -207,7 +187,6 @@ export default class Page extends Component {
     /**
      * Get the element components that belong to this page
      *
-     * @method getElements
      * @return {Array} The list of elements
      */
     getElements() {
@@ -223,21 +202,19 @@ export default class Page extends Component {
     /**
      * The cuepoint start event handler
      *
-     * @method onCuePointStart
      * @private
      */
     onCuePointStart(){
-        this.triggerEvent(EVT_CUEPOINTSTART);
+        this.triggerEvent('cuepointstart');
     }
 
     /**
      * The cuepoint stop event handler
      *
-     * @method onCuePointStop
      * @private
      */
     onCuePointStop(){
-        this.triggerEvent(EVT_CUEPOINTSTOP);
+        this.triggerEvent('cuepointstop');
     }
 
 }

@@ -4,17 +4,12 @@ import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
 
 /**
- * Fired when a property changed
+ * A generic component class
  *
- * @event propchange
+ * @emits {propchange} Fired when a property changed
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
- */
-const EVT_PROPCHANGE = 'propchange';
-
-/**
- * A generic component class
  */
 export default class Component extends Dom {
 
@@ -103,7 +98,6 @@ export default class Component extends Dom {
     /**
      * Setup the component's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -113,7 +107,6 @@ export default class Component extends Dom {
     /**
      * Get the component's id
      *
-     * @method getId
      * @return {String} The id
      */
     getId() {
@@ -123,7 +116,6 @@ export default class Component extends Dom {
     /**
      * Get the value of the component's name property
      *
-     * @method getName
      * @return {String} The name
      */
     getName() {
@@ -133,7 +125,6 @@ export default class Component extends Dom {
     /**
      * Check if the component is of a given type
      *
-     * @method instanceOf
      * @param {String} type The type to check for
      * @return {Boolean} Whether the component is of the given type
      */
@@ -144,7 +135,6 @@ export default class Component extends Dom {
     /**
      * Check if the component has a given property
      *
-     * @method hasProperty
      * @param {String} name The property's name
      * @return {Boolean} Whether the component has the given property
      */
@@ -155,7 +145,6 @@ export default class Component extends Dom {
     /**
      * Get a given property
      *
-     * @method getProperty
      * @param {String} name The name of the property
      * @return {Mixed} The property
      */
@@ -166,7 +155,6 @@ export default class Component extends Dom {
     /**
      * Get all properties
      *
-     * @method getProperties
      * @return {Object[]} The properties
      */
     getProperties(){
@@ -176,7 +164,6 @@ export default class Component extends Dom {
     /**
      * Get the value of a given property
      *
-     * @method getProperty
      * @param {String} name The name of the property
      * @return {Mixed} The value of the property
      */
@@ -207,7 +194,6 @@ export default class Component extends Dom {
     /**
      * Get the values of all properties
      *
-     * @method getPropertyValues
      * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
      * @return {Object} The values of the properties as name/value pairs
      */
@@ -240,18 +226,17 @@ export default class Component extends Dom {
     /**
      * Set the value of a given property
      *
-     * @method setProperty
      * @param {String} name The name of the property
      * @param {Mixed} value The value to set
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
-     * @chainable
+     * @return {this}
      */
     setPropertyValue(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
             this.configs.properties[name].setter.call(this, value);
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_PROPCHANGE, {'component': this, 'property': name, 'value': value});
+                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
             }
         }
 
@@ -261,10 +246,9 @@ export default class Component extends Dom {
     /**
      * Set property values
      *
-     * @method setPropertyValues
      * @param {Object} properties The list of properties to set as name/value pairs
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
-     * @chainable
+     * @return {this}
      */
     setPropertyValues(properties, supressEvent){
 		Object.entries(properties).forEach(([key, value]) => {
@@ -277,9 +261,8 @@ export default class Component extends Dom {
     /**
      * Show/hide
      *
-     * @method toggleVisibility
      * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggle
-     * @chainable
+     * @return {this}
      */
     toggleVisibility(show){
 
@@ -300,7 +283,6 @@ export default class Component extends Dom {
     /**
      * Set a cuepoint on the component
      *
-     * @method setCuePoint
      * @param {Object} configs Custom configs to override defaults
      * @return {player.CuePoint} The created cuepoint
      */
@@ -343,7 +325,6 @@ export default class Component extends Dom {
     /**
      * Get the cuepoint of the component
      *
-     * @method getCuePoint
      * @return {player.CuePoint} The cuepoint
      */
     getCuePoint() {

@@ -2,16 +2,11 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 
 /**
- * Fired when a value is selected though a button click
+ * A simple buttons field based on HTML button elements
  *
- * @event valuechange
+ * @emits {valuechange} Fired when a value is selected though a button click
  * @param {Object} field The field instance
  * @param {Mixed} value The clicked button's key
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A simple buttons field based on HTML button elements
  */
 export default class Buttons extends Field{
 
@@ -42,7 +37,6 @@ export default class Buttons extends Field{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -73,7 +67,7 @@ export default class Buttons extends Field{
             Object.entries(this.configs.buttons).forEach(([name, attr]) => {
                 this.buttons[name] = new Dom('<button/>', attr)
                     .addListener('click', () => {
-                        field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
+                        field.triggerEvent('valuechange', {'field': field, 'value': name}, true, false);
                     })
                     .appendTo(this.input_wrapper);
             });
@@ -83,8 +77,7 @@ export default class Buttons extends Field{
     /**
      * Set the field's value
      *
-     * @method setValue
-     * @chainable
+     * @return {this}
      */
     setValue() {
         return this;
@@ -93,7 +86,6 @@ export default class Buttons extends Field{
     /**
      * Get the list of buttons
      *
-     * @method getButtons
      * @return {Object} The list of buttons as a name/Dom pair
      */
     getButtons() {
@@ -103,7 +95,6 @@ export default class Buttons extends Field{
     /**
      * Get a button by name
      *
-     * @method getButton
      * @param {String} name The button's name
      * @return {Dom} The button's Dom object
      */

@@ -265,7 +265,6 @@ export default class Element extends Component{
     /**
      * Setup the element's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -289,7 +288,6 @@ export default class Element extends Component{
     /**
      * Get the page component this element belongs to
      *
-     * @method getPage
      * @return {player.component.Page} The page
      */
     getPage() {
@@ -301,7 +299,6 @@ export default class Element extends Component{
     /**
      * The cuepoint start event handler
      *
-     * @method onCuePointStart
      * @private
      */
     onCuePointStart(){
@@ -311,7 +308,6 @@ export default class Element extends Component{
     /**
      * The cuepoint stop event handler
      *
-     * @method onCuePointStop
      * @private
      */
     onCuePointStop(){
@@ -321,7 +317,6 @@ export default class Element extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -352,7 +347,6 @@ export default class Element extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setResizable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */

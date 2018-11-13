@@ -55,8 +55,6 @@ export function isObject(value){
 /**
  * Check if a variable is empty
  *
- * @method isEmpty
- * @static
  * @param {Mixed} value The variable
  * @return {Boolean} Whether the variable is empty
  */

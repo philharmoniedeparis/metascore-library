@@ -34,7 +34,6 @@ export default class Textarea extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {

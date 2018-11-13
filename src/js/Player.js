@@ -14,95 +14,36 @@ import {toCentiseconds, toSeconds} from './core/utils/Media';
 import {className} from '../css/Player.less';
 
 /**
- * Fired when the player finished initializing
+ * Provides the main Player class
  *
- * @event ready
+ * @emits {ready} Fired when the player finished initializing
  * @param {Object} player The player instance
- */
-const EVT_READY = 'ready';
-
-/**
- * Fired when the guide's loading finished successfully
- *
- * @event load
+ * @emits {load} Fired when the guide's loading finished successfully
  * @param {Object} player The player instance
  * @param {Object} data The json data loaded
- */
-const EVT_LOAD = 'load';
-
-/**
- * Fired when the guide's loading failed
- *
- * @event loaderror
+ * @emits {loaderror} Fired when the guide's loading failed
  * @param {Object} player The player instance
- */
-const EVT_ERROR = 'error';
-
-/**
- * Fired when the id is set
- *
- * @event idset
+ * @emits {idset} Fired when the id is set
  * @param {Object} player The player instance
  * @param {String} id The guide's id
- */
-const EVT_IDSET = 'idset';
-
-/**
- * Fired when the vid is set
- *
- * @event revisionset
+ * @emits {revisionset} Fired when the vid is set
  * @param {Object} player The player instance
  * @param {Integer} vid The guide's vid
- */
-const EVT_REVISIONSET = 'revisionset';
-
-/**
- * Fired when the media is added
- *
- * @event mediaadd
+ * @emits {mediaadd} Fired when the media is added
  * @param {Object} player The player instance
  * @param {Object} media The media instance
- */
-const EVT_MEDIAADD = 'mediaadd';
-
-/**
- * Fired when the controller is added
- *
- * @event controlleradd
+ * @emits {controlleradd} Fired when the controller is added
  * @param {Object} player The player instance
  * @param {Object} controller The controller instance
- */
-const EVT_CONTROLLERADD = 'controlleradd';
-
-/**
- * Fired when a block toggler is added
- *
- * @event blocktoggleradd
+ * @emits {blocktoggleradd} Fired when a block toggler is added
  * @param {Object} player The player instance
  * @param {Object} blocktoggler The blocktoggler instance
- */
-const EVT_BLOCKTOGGLERADD = 'blocktoggleradd';
-
-/**
- * Fired when a block is added
- *
- * @event blockadd
+ * @emits {blockadd} Fired when a block is added
  * @param {Object} player The player instance
  * @param {Object} block The block instance
- */
-const EVT_BLOCKADD = 'blockadd';
-
-/**
- * Fired when the reading index is set
- *
- * @event rindex
+ * @emits {rindex} Fired when the reading index is set
  * @param {Object} player The player instance
  * @param {Object} value The reading index value
- */
-const EVT_RINDEX = 'rindex';
-
-/**
- * Provides the main Player class
  */
 export default class Player extends Dom {
 
@@ -110,13 +51,13 @@ export default class Player extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.url=''] The URL of the guide's JSON data to load
-     * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
-     * @param {Object} [configs.xhr={}] Custom options to send with each XHR request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
-     * @param {Boolean} [configs.autoload=true] Whether to automatically call the load function
-     * @param {Boolean} [configs.keyboard=true] Whether to activate keyboard shortcuts or not
-     * @param {Boolean} [configs.api=false] Whether to allow API access or not
-     * @param {String} [configs.lang] The language to use for i18n
+     * @property {String} [url=''] The URL of the guide's JSON data to load
+     * @property {Mixed} [container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
+     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Boolean} [autoload=true] Whether to automatically call the load function
+     * @property {Boolean} [keyboard=true] Whether to activate keyboard shortcuts or not
+     * @property {Boolean} [api=false] Whether to allow API access or not
+     * @property {String} [lang] The language to use for i18n
      */
     constructor(configs) {
         // call parent constructor
@@ -202,7 +143,7 @@ export default class Player extends Dom {
 
         this.appendTo(this.configs.container);
 
-        this.triggerEvent(EVT_READY, {'player': this}, false, false);
+        this.triggerEvent('ready', {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
             this.load();
@@ -694,7 +635,7 @@ export default class Player extends Dom {
 
         this.loaded = true;
 
-        this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
+        this.triggerEvent('load', {'player': this, 'data': this.json}, true, false);
     }
 
     /**
@@ -705,7 +646,7 @@ export default class Player extends Dom {
     onLoadError(){
         this.removeClass('loading');
 
-        this.triggerEvent(EVT_ERROR, {'player': this}, true, false);
+        this.triggerEvent('error', {'player': this}, true, false);
     }
 
     /**
@@ -741,13 +682,13 @@ export default class Player extends Dom {
      *
      * @param {String} id The id
      * @param {Boolean} [supressEvent=false] Whether to supress the idset event
-     * @return {Player} this
+     * @return {this}
      */
     setId(id, supressEvent){
         this.data('id', id);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_IDSET, {'player': this, 'id': id}, true, false);
+            this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
         }
 
         return this;
@@ -767,13 +708,13 @@ export default class Player extends Dom {
      *
      * @param {String} vid The revision id
      * @param {Boolean} [supressEvent=false] Whether to supress the revisionset event
-     * @return {Player} this
+     * @return {this}
      */
     setRevision(vid, supressEvent){
         this.data('vid', vid);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_REVISIONSET, {'player': this, 'vid': vid}, true, false);
+            this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
         }
 
         return this;
@@ -807,7 +748,7 @@ export default class Player extends Dom {
      *
      * @param {Object} data The data key, value pairs to update
      * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
-     * @return {Player} this
+     * @return {this}
      */
     updateData(data, skipInternalUpdates){
         Object.assign(this.json, data);
@@ -885,7 +826,7 @@ export default class Player extends Dom {
         media.appendTo(this);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
+            this.triggerEvent('mediaadd', {'player': this, 'media': media}, true, false);
         }
 
         return media;
@@ -909,7 +850,7 @@ export default class Player extends Dom {
         controller.appendTo(this);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
+            this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
         }
 
         return controller;
@@ -932,7 +873,7 @@ export default class Player extends Dom {
         toggler.appendTo(this);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_BLOCKTOGGLERADD, {'player': this, 'blocktoggler': toggler}, true, false);
+            this.triggerEvent('blocktoggleradd', {'player': this, 'blocktoggler': toggler}, true, false);
         }
 
         return toggler;
@@ -966,7 +907,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_BLOCKADD, {'player': this, 'block': block}, true, false);
+            this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
         }
 
         return block;
@@ -976,7 +917,7 @@ export default class Player extends Dom {
      * Update the custom CSS
      *
      * @param {String} value The custom CSS value
-     * @return {Player} this
+     * @return {this}
      */
     updateCSS(value){
         this.css.setInternalValue(value);
@@ -987,7 +928,7 @@ export default class Player extends Dom {
     /**
      * Toggles the media playing state
      *
-     * @return {Player} this
+     * @return {this}
      */
     togglePlay() {
         const media = this.getMedia();
@@ -1008,7 +949,7 @@ export default class Player extends Dom {
      * @param {String} [inTime] The time at which the media should start playing
      * @param {String} [outTime] The time at which the media should stop playing
      * @param {String} [rIndex] A reading index to go to while playing
-     * @return {Player} this
+     * @return {this}
      */
     play(inTime, outTime, rIndex){
         const player = this;
@@ -1071,7 +1012,7 @@ export default class Player extends Dom {
      *
      * @param {Integer} index The reading index
      * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
-     * @return {Player} this
+     * @return {this}
      */
     setReadingIndex(index, supressEvent){
         if(index !== this.getReadingIndex()){
@@ -1091,7 +1032,7 @@ export default class Player extends Dom {
             }
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
+                this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
             }
         }
 
@@ -1101,7 +1042,7 @@ export default class Player extends Dom {
     /**
     * Update all block togglers
     *
-    * @return {Player} this
+    * @return {this}
     */
     updateBlockTogglers() {
         const block_togglers = this.getComponents('.block-toggler');

@@ -4,16 +4,11 @@ import Locale from '../../../core/Locale';
 import {toCSS} from '../../../core/utils/Color';
 
 /**
- * Fired when a cursor is clicked, requesting a time update
+ * A cursor element
  *
- * @event time
+ * @emits {time} Fired when a cursor is clicked, requesting a time update
  * @param {Object} element The element instance
  * @param {Number} time The time value according to the click position
- */
-const EVT_TIME = 'time';
-
-/**
- * A cursor element
  */
 export default class Cursor extends Element {
 
@@ -150,7 +145,6 @@ export default class Cursor extends Element {
     /**
      * Setup the cursor's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI(){
@@ -172,7 +166,6 @@ export default class Cursor extends Element {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      * @param {Event} evt The event object
      */
@@ -205,13 +198,12 @@ export default class Cursor extends Element {
 
         const time = inTime + ((outTime - inTime) * pos);
 
-        this.triggerEvent(EVT_TIME, {'element': this, 'value': time});
+        this.triggerEvent('time', {'element': this, 'value': time});
     }
 
     /**
      * The cuepoint update event handler
      *
-     * @method onCuePointUpdate
      * @private
      * @param {Event} evt The event object
      */

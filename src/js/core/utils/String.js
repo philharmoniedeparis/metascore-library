@@ -1,7 +1,6 @@
 /**
  * Capitalize a string
  *
- * @method capitalize
  * @param {String} str The string to capitalize
  * @return {String} The capitalized string
  */
@@ -12,7 +11,6 @@ export function capitalize(str){
 /**
  * Generate a random uuid
  *
- * @method uuid
  * @author Broofa <robert@broofa.com> (http://www.broofa.com/2008/09/javascript-uuid-function/)
  * @param {Integer} [len] The desired number of characters
  * @param {Integer} [radix] The number of allowable values for each character
@@ -65,7 +63,6 @@ export function uuid(len, radix) {
 /**
  * Pad a string with another string
  *
- * @method pad
  * @param {String} str The string to pad
  * @param {Integer} len The desired final string length
  * @param {String} [padstr=" "] The string to pad with
@@ -117,7 +114,6 @@ export function pad(str, len = 0, padstr = ' ', dir = 'right') {
 /**
  * Replace all occurences of a sub-string in a string
  *
- * @method replaceAll
  * @param {String} str The string being searched and replaced on
  * @param {String} search The value being searched for
  * @param {String} replacement The value that replaces found search values
@@ -149,9 +145,7 @@ export function decodeHTML(str) {
 /**
  * A natural comparision function
  *
- * @method naturalCompare
  * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7
- * @static
  * @param {String} a The original string
  * @param {String} b The string to compare with
  * @param {Boolean} [insensitive=false] Whether the sort should not be case-sensitive

@@ -114,7 +114,6 @@ export default class Controller extends Component{
     /**
      * Setup the controller's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -155,7 +154,6 @@ export default class Controller extends Component{
     /**
      * Get the value of the controller's name property
      *
-     * @method getName
      * @return {String} The name
      */
     getName() {
@@ -165,9 +163,8 @@ export default class Controller extends Component{
     /**
      * Update the displayed time
      *
-     * @method updateTime
      * @param {Integer} time The time value in centiseconds
-     * @chainable
+     * @return {this}
      */
     updateTime(time){
         this.timer.text(formatTime(time));
@@ -178,7 +175,6 @@ export default class Controller extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */

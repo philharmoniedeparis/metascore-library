@@ -45,7 +45,6 @@ export default class Fieldset extends Dom {
     /**
      * Setup the fieldset's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -81,7 +80,6 @@ export default class Fieldset extends Dom {
     /**
      * The legend's click handler
      *
-     * @method onLegendClick
      * @private
      */
     onLegendClick(){
@@ -91,9 +89,8 @@ export default class Fieldset extends Dom {
     /**
      * Toggle the fieldset's collapsed state
      *
-     * @method toggle
      * @param {Boolean} [collapse] Whether to collapse or expand the fieldset. The state is toggled if not specified
-     * @chainable
+     * @return {this}
      */
     toggle(collapse){
         this.toggleClass('collapsed', collapse);
@@ -104,7 +101,6 @@ export default class Fieldset extends Dom {
     /**
      * Get the fieldset's contents
      *
-     * @method getContents
      * @return {Dom} The contents
      */
     getContents() {

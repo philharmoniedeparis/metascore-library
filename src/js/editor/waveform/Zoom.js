@@ -3,25 +3,14 @@ import SliderField from '../field/Slider';
 import {toCentiseconds, toSeconds, formatTime} from '../../core/utils/Media';
 
 /**
- * Fired when the playhead is clicked
+ * A waveform zoomable view
  *
- * @event playheadclick
+ * @emits {playheadclick} Fired when the playhead is clicked
  * @param {Number} time The time in centiseconds corresponding to the click position
- */
-const EVT_PLAYHEADCLICK = 'playheadclick';
-
-/**
- * Fired when the offset is updated
- *
- * @event offsetupdate
+ * @emits {offsetupdate} Fired when the offset is updated
  * @param {Object} waveform The Waveform instance
  * @param {Number} start The start time of the offset in seconds
  * @param {Number} end The end time of the offset in seconds
- */
-const EVT_OFFSETUPDATE = 'offsetupdate';
-
-/**
- * A waveform zoomable view
  */
 export default class Zoom extends Dom {
 
@@ -178,7 +167,7 @@ export default class Zoom extends Dom {
     /**
      * Update the <canvas> sizes
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     updateSize(){
         /**
@@ -211,7 +200,7 @@ export default class Zoom extends Dom {
      * Set the text message
      *
      * @param {String} text The text to display
-     * @return {Zoom} this
+     * @return {this}
      */
     setMessage(text){
         this.message.text(text);
@@ -223,7 +212,7 @@ export default class Zoom extends Dom {
      * Set the media's duration
      *
      * @param {Number} duration The media's duration in centiseconds
-     * @return {Zoom} this
+     * @return {this}
      */
     setDuration(duration){
         /**
@@ -241,7 +230,7 @@ export default class Zoom extends Dom {
      * Set the waveform data
      *
      * @param {WaveformData} waveformdata The waveform data
-     * @return {Zoom} this
+     * @return {this}
      */
     setData(waveformdata){
         /**
@@ -290,7 +279,7 @@ export default class Zoom extends Dom {
     /**
      * Clear all <canvas> elements and remove the associated waveform data
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     clear(){
         delete this.duration;
@@ -315,7 +304,7 @@ export default class Zoom extends Dom {
     /**
      * Update the wave layer
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     updateWave(){
         if(this.width > 0 && this.height > 0){
@@ -354,7 +343,7 @@ export default class Zoom extends Dom {
     /**
      * Update the axis layer
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     updateAxis(){
         if(this.width > 0 && this.height > 0){
@@ -401,7 +390,7 @@ export default class Zoom extends Dom {
      * Update the playhead layer
      *
      * @param {Boolean} update_offset Whether to update the offset if needed
-     * @return {Zoom} this
+     * @return {this}
      */
     updatePlayhead(update_offset){
         if(this.width > 0 && this.height > 0){
@@ -433,7 +422,7 @@ export default class Zoom extends Dom {
     /**
      * Update all layers
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     update(){
         this.updateWave();
@@ -486,7 +475,7 @@ export default class Zoom extends Dom {
     /**
      * Zoom in
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     zoomIn(){
         if(this.resampled_data){
@@ -500,7 +489,7 @@ export default class Zoom extends Dom {
     /**
      * Zoom out
      *
-     * @return {Zoom} this
+     * @return {this}
      */
     zoomOut(){
         if(this.resampled_data){
@@ -515,7 +504,7 @@ export default class Zoom extends Dom {
      * Set the current zoom
      *
      * @param {Number} scale The zoom scale to set
-     * @return {Zoom} this
+     * @return {this}
      */
     setZoom(scale){
         if(this.resampled_data){
@@ -627,7 +616,7 @@ export default class Zoom extends Dom {
             const x = evt.pageX - offset.left;
             const time = toCentiseconds(this.getTimeAt(x));
 
-            this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
+            this.triggerEvent('playheadclick', {'time': time});
         }
         else{
             delete this._dragging;
@@ -638,7 +627,7 @@ export default class Zoom extends Dom {
      * Set the current media's time
      *
      * @param {Number} time The media's time in centiseconds
-     * @return {Overview} this
+     * @return {this}
      */
     setTime(time){
         /**
@@ -658,7 +647,7 @@ export default class Zoom extends Dom {
      * @param {Number} offset The wave's offset left position
      * @param {Boolean} forceRedraw Whether to force layers update
      * @param {Boolean} [supressEvent=false] Whether to supress the offsetupdate event
-     * @return {Overview} this
+     * @return {this}
      */
     setOffset(offset, forceRedraw, supressEvent){
         if(this.resampled_data && this.width > 0){
@@ -681,7 +670,7 @@ export default class Zoom extends Dom {
                 const end = this.getTimeAt(this.width);
 
                 if(supressEvent !== true){
-                    this.triggerEvent(EVT_OFFSETUPDATE, {'start': start, 'end': end});
+                    this.triggerEvent('offsetupdate', {'start': start, 'end': end});
                 }
             }
         }
@@ -694,7 +683,7 @@ export default class Zoom extends Dom {
      *
      * @param {Number} time The time in centiseconds to center to
      * @param {Boolean} [supressEvent=false] Whether to supress the offsetupdate event
-     * @return {Overview} this
+     * @return {this}
      */
     centerToTime(time, supressEvent){
         if(this.resampled_data && this.width > 0){

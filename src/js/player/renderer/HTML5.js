@@ -6,80 +6,27 @@ import WaveformData from 'waveform-data/waveform-data';
 import WebAudioBuilder from 'waveform-data/webaudio';
 
 /**
- * Fired when the renderer is ready
+ * An HTML5 media renderer
  *
- * @event ready
+ * @emits {ready} Fired when the renderer is ready
  * @param {Object} renderer The renderer instance
- */
-const EVT_READY = 'ready';
-
-/**
-* Fired when the source is set
-*
-* @event sourceset
-* @param {Object} renderer The renderer instance
-*/
-const EVT_SOURCESET = 'sourceset';
-
-/**
- * Fired when the metadata has loaded
- *
- * @event loadedmetadata
+ * @emits {sourceset} Fired when the source is set
  * @param {Object} renderer The renderer instance
- */
-const EVT_LOADEDMETADATA = 'loadedmetadata';
-
-/**
- * Fired when the renderer starts playing
- *
- * @event play
+ * @emits {loadedmetadata} Fired when the metadata has loaded
  * @param {Object} renderer The renderer instance
- */
-const EVT_PLAY = 'play';
-
-/**
- * Fired when the renderer is paused
- *
- * @event pause
+ * @emits {play} Fired when the renderer starts playing
  * @param {Object} renderer The renderer instance
- */
-const EVT_PAUSE = 'pause';
-
-/**
- * Fired when a seek operation begins
- *
- * @event seeking
+ * @emits {pause} Fired when the renderer is paused
  * @param {Object} renderer The renderer instance
- */
-const EVT_SEEKING = 'seeking';
-
-/**
- * Fired when a seek operation completes
- *
- * @event seeked
+ * @emits {seeking} Fired when a seek operation begins
  * @param {Object} renderer The renderer instance
- */
-const EVT_SEEKED = 'seeked';
-
-/**
- * Fired when the renderer's time changed
- *
- * @event timeupdate
+ * @emits {seeked} Fired when a seek operation completes
  * @param {Object} renderer The renderer instance
- */
-const EVT_TIMEUPDATE = 'timeupdate';
-
-/**
- * Fired when the waveform data has finished loading
- *
- * @event waveformdataloaded
+ * @emits {timeupdate} Fired when the renderer's time changed
+ * @param {Object} renderer The renderer instance
+ * @emits {waveformdataloaded} Fired when the waveform data has finished loading
  * @param {Object} renderer The renderer instance
  * @param {Mixed} data The waveformdata instance, or null
- */
-const EVT_WAVEFORMDATALOADED = 'waveformdataloaded';
-
-/**
- * An HTML5 media renderer
  */
 export default class HTML5 extends Dom {
 
@@ -172,7 +119,7 @@ export default class HTML5 extends Dom {
          */
         this.dom = this.el.get(0);
 
-        this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
+        this.triggerEvent('ready', {'renderer': this}, false, false);
 
         return this;
     }
@@ -180,12 +127,11 @@ export default class HTML5 extends Dom {
     /**
     * Set the media source
     *
-    * @method setSource
     * @param {Object} source The source to set
     * @property {String} url The source's url
     * @property {String} mime The source's mime type
     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
-    * @chainable
+    * @return {this}
     */
     setSource(source, supressEvent){
         /**
@@ -206,7 +152,7 @@ export default class HTML5 extends Dom {
         this.dom.load();
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_SOURCESET, {'renderer': this});
+            this.triggerEvent('sourceset', {'renderer': this});
         }
 
         return this;
@@ -253,7 +199,7 @@ export default class HTML5 extends Dom {
                              * @type {WaveformData}
                              */
                             this.waveformdata = null;
-                            this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                            this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                             delete this._waveformdata_ajax;
                             return;
                         }
@@ -262,20 +208,20 @@ export default class HTML5 extends Dom {
                             const context = new AudioContext();
                             WebAudioBuilder(context, response, (err, waveform) => {
                                 this.waveformdata = err ? null : waveform;
-                                this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                                this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                                 delete this._waveformdata_ajax;
                             });
                         }
                         else{
                             this.waveformdata = WaveformData.create(response);
-                            this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                            this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                             delete this._waveformdata_ajax;
                         }
                     },
                     'onError': (evt) => {
                         console.error(evt.target.getStatusText());
                         this.waveformdata = null;
-                        this.triggerEvent(EVT_WAVEFORMDATALOADED, {'renderer': this, 'data': this.waveformdata});
+                        this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                         delete this._waveformdata_ajax;
                     }
                 });
@@ -283,7 +229,7 @@ export default class HTML5 extends Dom {
         }
 
         if(this._waveformdata_ajax){
-            this.addOneTimeListener(EVT_WAVEFORMDATALOADED, (evt) => {
+            this.addOneTimeListener('waveformdataloaded', (evt) => {
                 callback(evt.detail.data);
             });
         }
@@ -295,11 +241,10 @@ export default class HTML5 extends Dom {
     /**
      * The loadedmetadata event handler
      *
-     * @method onLoadedMetadata
      * @private
      */
     onLoadedMetadata(evt) {
-        this.triggerEvent(EVT_LOADEDMETADATA, {'renderer': this});
+        this.triggerEvent('loadedmetadata', {'renderer': this});
 
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
@@ -309,13 +254,12 @@ export default class HTML5 extends Dom {
     /**
      * The play event handler
      *
-     * @method onPlay
      * @private
      */
     onPlay(evt) {
         this.playing = true;
 
-        this.triggerEvent(EVT_PLAY, {'renderer': this});
+        this.triggerEvent('play', {'renderer': this});
 
         this.triggerTimeUpdate();
 
@@ -327,13 +271,12 @@ export default class HTML5 extends Dom {
     /**
      * The pause event handler
      *
-     * @method onPause
      * @private
      */
     onPause(evt) {
         this.playing = false;
 
-        this.triggerEvent(EVT_PAUSE, {'renderer': this});
+        this.triggerEvent('pause', {'renderer': this});
 
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
@@ -343,11 +286,10 @@ export default class HTML5 extends Dom {
     /**
      * The seeking event handler
      *
-     * @method onSeeking
      * @private
      */
     onSeeking(evt){
-        this.triggerEvent(EVT_SEEKING, {'renderer': this});
+        this.triggerEvent('seeking', {'renderer': this});
 
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
@@ -357,11 +299,10 @@ export default class HTML5 extends Dom {
     /**
      * The seeked event handler
      *
-     * @method onSeeked
      * @private
      */
     onSeeked(evt){
-        this.triggerEvent(EVT_SEEKED, {'renderer': this});
+        this.triggerEvent('seeked', {'renderer': this});
 
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
@@ -371,7 +312,6 @@ export default class HTML5 extends Dom {
     /**
      * Check whether the media is playing
      *
-     * @method isPlaying
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
@@ -381,8 +321,7 @@ export default class HTML5 extends Dom {
     /**
      * Play the media
      *
-     * @method play
-     * @chainable
+     * @return {this}
      */
     play() {
         this.dom.play();
@@ -393,8 +332,7 @@ export default class HTML5 extends Dom {
     /**
      * Pause the media
      *
-     * @method pause
-     * @chainable
+     * @return {this}
      */
     pause() {
         this.dom.pause();
@@ -405,17 +343,16 @@ export default class HTML5 extends Dom {
     /**
      * Trigger the timeupdate event
      *
-     * @method triggerTimeUpdate
      * @private
      * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
-     * @chainable
+     * @return {this}
      */
     triggerTimeUpdate(loop) {
         if(loop !== false && this.isPlaying()){
             window.requestAnimationFrame(this.triggerTimeUpdate.bind(this));
         }
 
-        this.triggerEvent(EVT_TIMEUPDATE, {'renderer': this, 'time': this.getTime()});
+        this.triggerEvent('timeupdate', {'renderer': this, 'time': this.getTime()});
 
         return this;
     }
@@ -423,9 +360,8 @@ export default class HTML5 extends Dom {
     /**
      * Set the media time
      *
-     * @method setTime
      * @param {Number} time The time in centiseconds
-     * @chainable
+     * @return {this}
      */
     setTime(time) {
         this.dom.currentTime = toSeconds(time);
@@ -440,7 +376,6 @@ export default class HTML5 extends Dom {
     /**
      * Get the current media time
      *
-     * @method getTime
      * @return {Number} The time in centiseconds
      */
     getTime() {
@@ -450,7 +385,6 @@ export default class HTML5 extends Dom {
     /**
      * Get the media's duration
      *
-     * @method getDuration
      * @return {Number} The duration in centiseconds
      */
     getDuration() {

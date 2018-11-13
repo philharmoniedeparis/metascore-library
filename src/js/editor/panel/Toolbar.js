@@ -87,7 +87,6 @@ export default class Toolbar extends Dom{
     /**
      * Get the title's Dom object
      *
-     * @method getTitle
      * @return {Dom} The Dom object
      */
     getTitle() {
@@ -97,7 +96,6 @@ export default class Toolbar extends Dom{
     /**
      * Get the selector field
      *
-     * @method getSelector
      * @return {editor.field.Select} The selector field
      */
     getSelector() {
@@ -107,7 +105,6 @@ export default class Toolbar extends Dom{
     /**
      * Get the dropdown menu
      *
-     * @method getMenu
      * @return {editor.DropDownMenu} The dropdown menu
      */
     getMenu() {
@@ -117,7 +114,6 @@ export default class Toolbar extends Dom{
     /**
      * Add a button
      *
-     * @method addButton
      * @param {String} action The button's associated action
      * @return {Button} The created button
      */
@@ -131,7 +127,6 @@ export default class Toolbar extends Dom{
     /**
      * Get a button by associated action
      *
-     * @method getButton
      * @param {String} action The button's associated action
      * @return {Dom} The button's Dom object
      */
@@ -142,10 +137,9 @@ export default class Toolbar extends Dom{
     /**
      * Toggle the enabled state of a menu item
      *
-     * @method toggleMenuItem
      * @param {String} action The item's associated action
      * @param {Boolean} state The enabled state to set
-     * @chainable
+     * @return {this}
      */
     toggleMenuItem(action, state){
         const menu = this.getMenu();

@@ -10,7 +10,7 @@ export default class Block extends Panel {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Object} [toolbarConfigs={title:'Block', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @property {Object} [toolbarConfigs={title:'Block', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {@link Toolbar})
      */
     constructor(configs) {
         // call parent constructor
@@ -60,7 +60,6 @@ export default class Block extends Panel {
     /**
      * Get the currently associated component's label
      *
-     * @method getSelectorLabel
      * @return {String} The component's label for use in the selector
      */
     getSelectorLabel(component){

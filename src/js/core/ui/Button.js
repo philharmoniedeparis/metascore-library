@@ -9,7 +9,7 @@ export default class Button extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.label=null] A text to add as a label
+     * @property {String} [label=null] A text to add as a label
      */
     constructor(configs) {
         // call the super constructor.
@@ -40,9 +40,8 @@ export default class Button extends Dom {
     /**
      * Set the button's text
      *
-     * @method setLabel
      * @param {String} text The text to use as the label
-     * @chainable
+     * @return {this}
      */
     setLabel(text){
         if(typeof this.label === "undefined"){
@@ -62,8 +61,7 @@ export default class Button extends Dom {
     /**
      * Disable the button
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         this.attr('disabled', '');
@@ -74,8 +72,7 @@ export default class Button extends Dom {
     /**
      * Enable the button
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.attr('disabled', null);

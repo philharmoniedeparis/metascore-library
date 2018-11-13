@@ -8,16 +8,11 @@ import ResizeObserver from 'resize-observer-polyfill';
 import {className} from '../../css/editor/Controller.less';
 
 /**
- * Fired when the time is set
+ * A controller with a play/pause button, a waveform, etc
  *
- * @event timeset
+ * @emits {timeset} Fired when the time is set
  * @param {Object} controller The Controller instance
  * @param {Number} time The time in centiseconds
- */
-const EVT_TIMESET = 'timeset';
-
-/**
- * A controller with a play/pause button, a waveform, etc
  */
 export default class Controller extends Dom {
 
@@ -34,7 +29,6 @@ export default class Controller extends Dom {
     /**
      * Setup the menu's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -94,7 +88,7 @@ export default class Controller extends Dom {
      * Set the media's duration
      *
      * @param {Number} duration The media's duration in centiseconds
-     * @return {Controller} this
+     * @return {this}
      */
     setDuration(duration){
         this.timefield.setMax(duration);
@@ -117,7 +111,7 @@ export default class Controller extends Dom {
      * Set the waveform data
      *
      * @param {WaveformData} data The waveform data, or null if none could be retreived
-     * @return {Controller} this
+     * @return {this}
      */
     setWaveformData(data){
         if(data){
@@ -134,7 +128,7 @@ export default class Controller extends Dom {
     /**
      * Clear the waveform
      *
-     * @return {Controller} this
+     * @return {this}
      */
     clearWaveform(){
         this.overview.clear();
@@ -147,7 +141,7 @@ export default class Controller extends Dom {
      * Set the current media's time
      *
      * @param {Number} time The media's time in centiseconds
-     * @return {Controller} this
+     * @return {this}
      */
     setTime(time){
         this.timefield.setValue(time, true);
@@ -170,7 +164,7 @@ export default class Controller extends Dom {
             this.zoom.centerToTime(time);
         }
 
-        this.triggerEvent(EVT_TIMESET, {'time': time});
+        this.triggerEvent('timeset', {'time': time});
     }
 
     /**
@@ -199,7 +193,7 @@ export default class Controller extends Dom {
     /**
      * Minimize the contoller
      *
-     * @return {Controller} this
+     * @return {this}
      */
     minimize(){
         this.addClass('minimized');
@@ -209,7 +203,7 @@ export default class Controller extends Dom {
     /**
      * Maximize the contoller
      *
-     * @return {Controller} this
+     * @return {this}
      */
     maximize(){
         this.removeClass('minimized');
@@ -219,7 +213,7 @@ export default class Controller extends Dom {
     /**
      * Enable the controller
      *
-     * @return {Controller} this
+     * @return {this}
      */
     enable(){
         this.removeClass('disabled');
@@ -229,7 +223,7 @@ export default class Controller extends Dom {
     /**
      * Disable the controller
      *
-     * @return {Controller} this
+     * @return {this}
      */
     disable(){
         this.addClass('disabled');

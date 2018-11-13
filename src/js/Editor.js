@@ -23,15 +23,10 @@ import Controller from './editor/Controller';
 import {className} from '../css/Editor.less';
 
 /**
- * Fired when the editor is fully setup
- *
- * @event ready
- * @param {Object} editor The editor instance
- */
-const EVT_READY = 'ready';
-
-/**
  * Provides the main Editor class
+ *
+ * @emits {ready} Fired when the editor is fully setup
+ * @param {Object} editor The editor instance
  */
 export default class Editor extends Dom {
 
@@ -39,18 +34,18 @@ export default class Editor extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
-     * @param {String} [configs.player_url=''] The base URL of players
-     * @param {String} [configs.api_url=''] The base URL of the RESTful API
-     * @param {String} [configs.help_url=''] The base URL of the RESTful API
-     * @param {String} [configs.player_api_help_url=''] The URL of the player API help page
-     * @param {String} [configs.account_url=''] The URL of the user account page
-     * @param {String} [configs.logout_url=''] The URL of the user logout page
-     * @param {String} [configs.user_groups={}] The list of groups the current user belongs to
-     * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
-     * @param {String} [configs.lang='en'] The language to use for i18n
-     * @param {Object} [configs.xhr={}] Custom options to send with each XHR request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
-     * @param {Object} [configs.guide_details={}] Configs to send to the GuideDetails overlay
+     * @property {Mixed} [container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
+     * @property {String} [player_url=''] The base URL of players
+     * @property {String} [api_url=''] The base URL of the RESTful API
+     * @property {String} [help_url=''] The base URL of the RESTful API
+     * @property {String} [player_api_help_url=''] The URL of the player API help page
+     * @property {String} [account_url=''] The URL of the user account page
+     * @property {String} [logout_url=''] The URL of the user logout page
+     * @property {String} [user_groups={}] The list of groups the current user belongs to
+     * @property {Boolean} [reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
+     * @property {String} [lang='en'] The language to use for i18n
+     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Object} [guide_details={}] Configs to send to the GuideDetails overlay
      */
     constructor(configs) {
         // call parent constructor
@@ -267,14 +262,14 @@ export default class Editor extends Dom {
             .setupContextMenus()
             .loadPlayerFromHash();
 
-        this.triggerEvent(EVT_READY, {'editor': this}, false, false);
+        this.triggerEvent('ready', {'editor': this}, false, false);
 
     }
 
     /**
      * Setup the context menus
      *
-     * @return {Editor} this
+     * @return {this}
      */
     setupContextMenus(){
 
@@ -734,7 +729,7 @@ export default class Editor extends Dom {
     /**
      * GuideSelector submit callback
      *
-     * @param {CustomEvent} evt The event object. See {{#crossLink "GuideSelector/submit:event"}}GuideSelector.submit{{/crossLink}}
+     * @param {CustomEvent} evt The event object. See {@link GuideSelector}
      */
     onGuideSelectorSubmit(evt){
         this.loadPlayer(evt.detail.guide.id, evt.detail.vid);
@@ -1070,7 +1065,7 @@ export default class Editor extends Dom {
      * Time field valuein event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
+     * @param {CustomEvent} evt
      */
     onTimeFieldIn(evt){
         const field = evt.detail.field;
@@ -1083,7 +1078,7 @@ export default class Editor extends Dom {
      * Time field valueout event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valueout:event"}}Time.valueout{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onTimeFieldOut(evt){
         const time = evt.detail.value;
@@ -1134,7 +1129,7 @@ export default class Editor extends Dom {
      * Block panel componentset event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onBlockSet(evt){
         const block = evt.detail.component;
@@ -1171,7 +1166,7 @@ export default class Editor extends Dom {
      * Block panel valuechange event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onBlockPanelValueChange(evt){
         const sets = evt.detail;
@@ -1244,7 +1239,7 @@ export default class Editor extends Dom {
      * Block panel toolbar selector valuechange event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onBlockPanelSelectorChange(evt){
         if(evt.detail.added.length > 0){
@@ -1266,7 +1261,7 @@ export default class Editor extends Dom {
      * Page panel componentset event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPageSet(evt){
         this.panels.element
@@ -1333,7 +1328,7 @@ export default class Editor extends Dom {
      * Page panel valuechange event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPagePanelValueChange(evt){
         const sets = evt.detail;
@@ -1411,7 +1406,7 @@ export default class Editor extends Dom {
      * Page panel toolbar selector valuechange event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPagePanelSelectorChange(evt){
         if(evt.detail.added.length > 0){
@@ -1434,7 +1429,7 @@ export default class Editor extends Dom {
      * Element panel componentset event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onElementSet(evt){
         const element = evt.detail.component;
@@ -1449,7 +1444,7 @@ export default class Editor extends Dom {
      * Element panel valuechange event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onElementPanelValueChange(evt){
         const sets = evt.detail;
@@ -1513,7 +1508,7 @@ export default class Editor extends Dom {
      * Element panel toolbar selector valuechange event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onElementPanelSelectorChange(evt){
         if(evt.detail.added.length > 0){
@@ -1545,7 +1540,7 @@ export default class Editor extends Dom {
      * Player idset event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/idset:event"}}Player.idset{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPlayerIdSet(evt){
         const player = evt.detail.player;
@@ -1557,7 +1552,7 @@ export default class Editor extends Dom {
      * Player revisionset event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/revisionset:event"}}Player.revisionset{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPlayerRevisionSet(evt){
         const player = evt.detail.player;
@@ -1663,7 +1658,7 @@ export default class Editor extends Dom {
      * Player blocktaggleradd event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/blocktaggleradd:event"}}Player.blockadd{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPlayerBlockTogglerAdd(evt){
         this.updateBlockSelector();
@@ -1990,7 +1985,7 @@ export default class Editor extends Dom {
      * Block pageadd event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageadd:event"}}Block.pageadd{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onBlockPageAdd(evt){
         const block = evt.detail.block;
@@ -2006,7 +2001,7 @@ export default class Editor extends Dom {
      * Block pageactivate event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageactivate:event"}}Block.pageactivate{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onBlockPageActivate(evt){
         const page = evt.detail.current;
@@ -2020,7 +2015,7 @@ export default class Editor extends Dom {
      * Page elementadd event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onPageElementAdd(evt){
         const element = evt.detail.element;
@@ -2092,7 +2087,7 @@ export default class Editor extends Dom {
      * GuideDetails submit event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
+     * @param {CustomEvent} evt The event object
      */
     onDetailsOverlaySubmit(evt){
         const overlay = evt.detail.overlay;
@@ -2267,7 +2262,7 @@ export default class Editor extends Dom {
      * Updates the editing state
      *
      * @param {Boolean} editing The new state
-     * @return {Editor} this
+     * @return {this}
      */
     setEditing(editing){
         const player = this.getPlayer();
@@ -2305,7 +2300,7 @@ export default class Editor extends Dom {
      * Toggles the activation of the sidebar resizer
      *
      * @private
-     * @return {Editor} this
+     * @return {this}
      */
     toggleSidebarResizer() {
         if(!this.hasClass('editing') || this.hasClass('sidebar-hidden')){
@@ -2322,7 +2317,7 @@ export default class Editor extends Dom {
      * Loads a player from the location hash
      *
      * @private
-     * @return {Editor} this
+     * @return {this}
      */
     loadPlayerFromHash() {
         const hash = window.location.hash;
@@ -2339,7 +2334,7 @@ export default class Editor extends Dom {
      * Updates the states of the mainmenu buttons
      *
      * @private
-     * @return {Editor} this
+     * @return {this}
      */
     updateMainmenu() {
         const player = this.getPlayer();
@@ -2365,7 +2360,7 @@ export default class Editor extends Dom {
      * Updates the selector of the block panel
      *
      * @private
-     * @return {Editor} this
+     * @return {this}
      */
     updateBlockSelector() {
         const panel = this.panels.block;
@@ -2387,7 +2382,7 @@ export default class Editor extends Dom {
      * Updates the selector of the page panel
      *
      * @private
-     * @return {Editor} this
+     * @return {this}
      */
     updatePageSelector() {
         const selector = this.panels.page.getToolbar().getSelector();
@@ -2423,7 +2418,7 @@ export default class Editor extends Dom {
      * Updates the selector of the element panel
      *
      * @private
-     * @return {Editor} this
+     * @return {this}
      */
     updateElementSelector() {
         const panel = this.panels.element;
@@ -2484,7 +2479,7 @@ export default class Editor extends Dom {
      * Set whether the guide is dirty
      *
      * @param {Boolean} dirty Whether the guide is dirty
-     * @return {Editor} this
+     * @return {this}
      */
     setDirty(dirty){
         /**
@@ -2519,7 +2514,7 @@ export default class Editor extends Dom {
      *
      * @param {String} id The guide's id
      * @param {Integer} vid The guide's revision id
-     * @return {Editor} this
+     * @return {this}
      */
     loadPlayer(id, vid){
         let url = `${this.configs.player_url + id}?autoload=0&keyboard=0`;
@@ -2549,7 +2544,7 @@ export default class Editor extends Dom {
     /**
      * Unload the player
      *
-     * @return {Editor} this
+     * @return {this}
      */
     unloadPlayer() {
         delete this.player;
@@ -2587,7 +2582,7 @@ export default class Editor extends Dom {
      * @param {String} type The components' type
      * @param {Array} configs An array of configs to use when creating the components
      * @param {Mixed} parent The components' parent
-     * @return {Editor} this
+     * @return {this}
      */
     addPlayerComponents(type, configs, parent){
         const _configs = isArray(configs) ? configs : [configs];
@@ -2759,7 +2754,7 @@ export default class Editor extends Dom {
      * @param {String} type The components' type
      * @param {Array} components The components
      * @param {Boolean} confirm Whether to display a confirmation dialog
-     * @return {Editor} this
+     * @return {this}
      */
     deletePlayerComponents(type, components, confirm){
         if(confirm !== false){
@@ -2992,7 +2987,7 @@ export default class Editor extends Dom {
     /**
      * Opens the guide selector
      *
-     * @return {Editor} this
+     * @return {this}
      */
     openGuideSelector() {
         new GuideSelector({
@@ -3011,7 +3006,7 @@ export default class Editor extends Dom {
      * @private
      * @param {Object} details The guide's data
      * @param {GuideDetails} overlay The overlay instance used to create the guide
-     * @return {Editor} this
+     * @return {this}
      */
     createGuide(details, overlay){
         const data = this.prepareFormData(details);
@@ -3060,7 +3055,7 @@ export default class Editor extends Dom {
      *
      * @param {String} action The action to perform when saving ('update' or 'clone')
      * @param {Boolean} publish Whether to published the new revision
-     * @return {Editor} this
+     * @return {this}
      */
     saveGuide(action, publish){
         const player = this.getPlayer();

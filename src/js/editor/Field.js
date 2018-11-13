@@ -4,24 +4,13 @@ import {uuid} from '../core/utils/String';
 import {className} from '../../css/editor/Field.less';
 
 /**
- * Fired when the field's value changes
+ * A generic field based on an HTML input element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * Fired when the field is reset
- *
- * @event reset
+ * @emits {reset} Fired when the field is reset
  * @param {Object} field The field instance
- */
-const EVT_RESET = 'reset';
-
-/**
- * A generic field based on an HTML input element
  */
 export default class Field extends Dom{
 
@@ -89,7 +78,6 @@ export default class Field extends Dom{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -124,9 +112,8 @@ export default class Field extends Dom{
     /**
      * Set the description text
      *
-     * @method setDescription
      * @param {String} description The description text
-     * @chainable
+     * @return {this}
      */
     setDescription(description){
         if(!('description' in this)){
@@ -146,7 +133,6 @@ export default class Field extends Dom{
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      */
     onChange(){
@@ -156,13 +142,12 @@ export default class Field extends Dom{
          */
         this.value = this.input.val();
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * The keypress event handler
      *
-     * @method onKeypress
      * @private
      * @param {Event} evt The event object
      */
@@ -175,10 +160,9 @@ export default class Field extends Dom{
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         this.input.val(value);
@@ -194,7 +178,6 @@ export default class Field extends Dom{
     /**
      * Get the field's current value
      *
-     * @method getValue
      * @return {Mixed} The value
      */
     getValue() {
@@ -204,8 +187,7 @@ export default class Field extends Dom{
     /**
      * Disable the field
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         /**
@@ -226,8 +208,7 @@ export default class Field extends Dom{
     /**
      * Enable the field
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.disabled = false;
@@ -244,9 +225,8 @@ export default class Field extends Dom{
     /**
      * Toggle the field's readonly state
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         /**
@@ -267,9 +247,8 @@ export default class Field extends Dom{
     /**
      * Reset the field's configs
      *
-     * @method reset
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     reset(supressEvent){
         this.setValue(this.configs.value);
@@ -284,7 +263,7 @@ export default class Field extends Dom{
         this.readonly(this.configs.readonly);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_RESET, {'field': this}, true, false);
+            this.triggerEvent('reset', {'field': this}, true, false);
         }
 
         return this;

@@ -6,16 +6,11 @@ import {getDecimalPlaces} from '../../core/utils/Number';
 import {className} from '../../../css/editor/field/Number.less';
 
 /**
- * Fired when the field's value changes
+ * A number field based on an HTML input[type=number] element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A number field based on an HTML input[type=number] element
  */
 export default class Number extends Field {
 
@@ -67,7 +62,6 @@ export default class Number extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -114,7 +108,6 @@ export default class Number extends Field {
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      */
     onChange(){
@@ -123,7 +116,7 @@ export default class Number extends Field {
             this.setValue(this.input.val(), true);
         }
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
@@ -142,7 +135,6 @@ export default class Number extends Field {
     /**
      * The keydown event handler
      *
-     * @method onKeyDown
      * @private
      * @param {Event} evt The event object
      */
@@ -163,7 +155,6 @@ export default class Number extends Field {
     /**
      * The keypress event handler
      *
-     * @method onKeypress
      * @private
      * @param {Event} evt The event object
      */
@@ -179,7 +170,6 @@ export default class Number extends Field {
     /**
      * The mousewheel event handler
      *
-     * @method onMouseWheel
      * @private
      * @param {Event} evt The event object
      */
@@ -201,7 +191,6 @@ export default class Number extends Field {
     /**
      * The spin button's mousedown event handler
      *
-     * @method onSpinBtnMouseDown
      * @private
      * @param {Event} evt The event object
      */
@@ -229,7 +218,6 @@ export default class Number extends Field {
     /**
      * The spin button's mouseup event handler
      *
-     * @method onSpinBtnMouseUp
      * @private
      */
     onSpinBtnMouseUp(){
@@ -240,7 +228,6 @@ export default class Number extends Field {
     /**
      * The spin button's mouseout event handler
      *
-     * @method onSpinBtnMouseOut
      * @private
      */
     onSpinBtnMouseOut(){
@@ -251,7 +238,6 @@ export default class Number extends Field {
     /**
      * Decrement the value by one step
      *
-     * @method spinDown
      * @private
      */
     spinDown(loop) {
@@ -279,7 +265,6 @@ export default class Number extends Field {
     /**
      * Increment the value by one step
      *
-     * @method spinUp
      * @private
      */
     spinUp(loop) {
@@ -302,10 +287,9 @@ export default class Number extends Field {
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Number} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         let val = parseFloat(value);
@@ -329,9 +313,8 @@ export default class Number extends Field {
     /**
      * Set the minimum allowed value
      *
-     * @method setMin
      * @param {Number} value The minimum allowed value
-     * @chainable
+     * @return {this}
      */
     setMin(value){
         /**
@@ -346,9 +329,8 @@ export default class Number extends Field {
     /**
      * Set the maximum allowed value
      *
-     * @method setMax
      * @param {Number} value The maximum allowed value
-     * @chainable
+     * @return {this}
      */
     setMax(value){
         /**
@@ -363,9 +345,8 @@ export default class Number extends Field {
     /**
      * Reset the field's configs
      *
-     * @method reset
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     reset(supressEvent){
         this

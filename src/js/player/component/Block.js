@@ -9,36 +9,19 @@ import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
 /**
- * Fired when a page is added
+ * A block component
  *
- * @event pageadd
+ * @emits {pageadd} Fired when a page is added
  * @param {Block} block The block instance
  * @param {Page} page The page instance
- */
-const EVT_PAGEADD = 'pageadd';
-
-/**
- * Fired when a page is removed
- *
- * @event pageremove
+ * @emits {pageremove} Fired when a page is removed
  * @param {Block} block The block instance
  * @param {Page} page The page instance
- */
-const EVT_PAGEREMOVE = 'pageremove';
-
-/**
- * Fired when the active page is set
- *
- * @event pageactivate
+ * @emits {pageactivate} Fired when the active page is set
  * @param {Block} block The block instance
  * @param {Page} current The currently active page instance
  * @param {Page} previous The previously active page instance
  * @param {String} basis The reason behind this action
- */
-const EVT_PAGEACTIVATE = 'pageactivate';
-
-/**
- * A block component
  */
 export default class Block extends Component {
 
@@ -277,7 +260,6 @@ export default class Block extends Component {
     /**
      * Setup the block's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -308,7 +290,6 @@ export default class Block extends Component {
     /**
      * Page cuepointstart event handler
      *
-     * @method onPageCuePointStart
      * @private
      * @param {Event} evt The event object
      */
@@ -319,7 +300,6 @@ export default class Block extends Component {
     /**
      * Pager click event handler
      *
-     * @method onPagerClick
      * @private
      * @param {Event} evt The event object
      */
@@ -348,7 +328,6 @@ export default class Block extends Component {
     /**
      * Get the block's pages
      *
-     * @method getPages
      * @return {Array} List of pages
      */
     getPages() {
@@ -364,7 +343,6 @@ export default class Block extends Component {
     /**
      * Get a page by index
      *
-     * @method getPage
      * @param {Integer} index The page's index
      * @return {Page} The page
      */
@@ -377,7 +355,6 @@ export default class Block extends Component {
     /**
      * Add a page
      *
-     * @method addPage
      * @param {Object|Page} configs Page configs or an existing Page instance
      * @param {Integer} [index] The new page's index, page is appended if not given
      * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
@@ -405,7 +382,7 @@ export default class Block extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page, 'new': !existing});
+            this.triggerEvent('pageadd', {'block': this, 'page': page, 'new': !existing});
         }
 
         this.setActivePage(page);
@@ -416,7 +393,6 @@ export default class Block extends Component {
     /**
      * Remove a page
      *
-     * @method removePage
      * @param {Page} page The page to remove
      * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
      * @return {Page} The removed page
@@ -425,7 +401,7 @@ export default class Block extends Component {
         page.remove();
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});
+            this.triggerEvent('pageremove', {'block': this, 'page': page});
         }
 
         return page;
@@ -434,8 +410,7 @@ export default class Block extends Component {
     /**
      * Remove all pages
      *
-     * @method removeAllPages
-     * @chainable
+     * @return {this}
      */
     removeAllPages() {
         this.page_wrapper.children('.page').remove();
@@ -446,7 +421,6 @@ export default class Block extends Component {
     /**
      * Get the index of a page
      *
-     * @method getPageIndex
      * @param {Page} page The page
      * @return {Integer} The page's index
      */
@@ -457,7 +431,6 @@ export default class Block extends Component {
     /**
      * Get the currently active page
      *
-     * @method getActivePage
      * @return {Page} The page
      */
     getActivePage() {
@@ -467,7 +440,6 @@ export default class Block extends Component {
     /**
      * Get the index of the currently active page
      *
-     * @method getActivePageIndex
      * @return {Integer} The index
      */
     getActivePageIndex() {
@@ -477,7 +449,6 @@ export default class Block extends Component {
     /**
      * Get the page count
      *
-     * @method getPageCount
      * @return {Integer} The number of pages
      */
     getPageCount() {
@@ -487,10 +458,9 @@ export default class Block extends Component {
     /**
      * Set the active page
      *
-     * @method setActivePage
      * @param {Mixed} page The page to activate or its index
      * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
-     * @chainable
+     * @return {this}
      */
     setActivePage(page, supressEvent){
         const previous = this.getActivePage();
@@ -510,7 +480,7 @@ export default class Block extends Component {
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': _page, 'previous': previous});
+                this.triggerEvent('pageactivate', {'block': this, 'current': _page, 'previous': previous});
             }
         }
 
@@ -520,9 +490,8 @@ export default class Block extends Component {
     /**
      * Update the pager
      *
-     * @method updatePager
      * @private
-     * @chainable
+     * @return {this}
      */
     updatePager() {
         const index = this.getActivePageIndex();
@@ -538,7 +507,6 @@ export default class Block extends Component {
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -573,7 +541,6 @@ export default class Block extends Component {
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */

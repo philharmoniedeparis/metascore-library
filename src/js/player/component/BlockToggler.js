@@ -179,7 +179,6 @@ export default class BlockToggler extends Component{
     /**
      * Setup the block's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -201,9 +200,8 @@ export default class BlockToggler extends Component{
     /**
      * Update the displayed time
      *
-     * @method update
      * @param {Dom} components A Dom instance containing the components to control
-     * @chainable
+     * @return {this}
      */
     update(components){
         const boxes = [];
@@ -272,7 +270,6 @@ export default class BlockToggler extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -307,7 +304,6 @@ export default class BlockToggler extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */

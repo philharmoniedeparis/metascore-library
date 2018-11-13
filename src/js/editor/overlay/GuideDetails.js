@@ -14,16 +14,11 @@ import CheckboxesField from '../field/Checkboxes';
 import {className} from '../../../css/editor/overlay/GuideDetails.less';
 
 /**
- * Fired when the submit button is clicked
+ * An overlay to update a guide's details (title, description, thumbnail, etc)
  *
- * @event submit
+ * @emits {submit} Fired when the submit button is clicked
  * @param {Object} overlay The overlay instance
  * @param {Object} values The field values
- */
-const EVT_SUBMIT = 'submit';
-
-/**
- * An overlay to update a guide's details (title, description, thumbnail, etc)
  */
 export default class GuideDetails extends Overlay {
 
@@ -78,7 +73,6 @@ export default class GuideDetails extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -232,7 +226,6 @@ export default class GuideDetails extends Overlay {
     /**
      * Get a field by name
      *
-     * @method getField
      * @param {String} name The field's name
      * @return {editor.Field} The field object
      */
@@ -249,10 +242,9 @@ export default class GuideDetails extends Overlay {
     /**
      * Set the field values
      *
-     * @method setValues
      * @param {Object} values A list of field values in name/value pairs
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValues(values, supressEvent){
 		Object.entries(values).forEach(([name, value]) => {
@@ -281,9 +273,8 @@ export default class GuideDetails extends Overlay {
     /**
      * Clears all field values
      *
-     * @method clearValues
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     clearValues(supressEvent){
 		Object.entries(this.fields).forEach(([, field]) => {
@@ -296,7 +287,6 @@ export default class GuideDetails extends Overlay {
     /**
      * Get all changed field values
      *
-     * @method getValues
      * @return {Object} The values of changed fields in name/value pairs
      */
     getValues() {
@@ -306,7 +296,6 @@ export default class GuideDetails extends Overlay {
     /**
      * The fields change event handler
      *
-     * @method onFieldValueChange
      * @private
      * @param {Event} evt The event object
      */
@@ -320,12 +309,11 @@ export default class GuideDetails extends Overlay {
     /**
      * The form submit event handler
      *
-     * @method onFormSubmit
      * @private
      * @param {Event} evt The event object
      */
     onFormSubmit(evt){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'values': this.getValues()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
 
         evt.preventDefault();
         evt.stopPropagation();
@@ -334,7 +322,6 @@ export default class GuideDetails extends Overlay {
     /**
      * The close button click event handler
      *
-     * @method onCloseClick
      * @private
      * @param {Event} evt The event object
      */

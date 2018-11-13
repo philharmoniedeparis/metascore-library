@@ -5,16 +5,11 @@ import {uuid} from '../../core/utils/String';
 import {className} from '../../../css/editor/field/RadioButtons.less';
 
 /**
- * Fired when the field's value changes
+ * A select list field based on an HTML select element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A select list field based on an HTML select element
  */
 export default class RadioButtons extends Field {
 
@@ -46,7 +41,6 @@ export default class RadioButtons extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -74,7 +68,6 @@ export default class RadioButtons extends Field {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      * @param {Event} evt The event object
      */
@@ -87,7 +80,6 @@ export default class RadioButtons extends Field {
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      * @param {Event} evt The event object
      */
@@ -108,16 +100,15 @@ export default class RadioButtons extends Field {
             this.value = radiobutton.val();
         }
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Array} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         this.value = null;
@@ -135,7 +126,7 @@ export default class RadioButtons extends Field {
         });
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+            this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
         }
 
         return this;
@@ -144,7 +135,6 @@ export default class RadioButtons extends Field {
     /**
      * Add a radio button
      *
-     * @method addRadioButton
      * @param {String} value The option's value
      * @param {String} text The option's label
      * @return {Dom} The created Dom object
@@ -170,7 +160,6 @@ export default class RadioButtons extends Field {
     /**
      * Remove a checkbox by value
      *
-     * @method removeCheckbox
      * @param {String} value The value of the option to remove
      * @return {Dom} The checkbox's Dom object
      */
@@ -185,8 +174,7 @@ export default class RadioButtons extends Field {
     /**
      * Remove all groups and options
      *
-     * @method clear
-     * @chainable
+     * @return {this}
      */
     clear() {
         this.input_wrapper.empty();
@@ -197,8 +185,7 @@ export default class RadioButtons extends Field {
     /**
      * Disable the field
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         super.disable();
@@ -211,8 +198,7 @@ export default class RadioButtons extends Field {
     /**
      * Enable the field
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         super.enable();
@@ -225,9 +211,8 @@ export default class RadioButtons extends Field {
     /**
      * Toggle the readonly attribute of the field
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         super.readonly(readonly);

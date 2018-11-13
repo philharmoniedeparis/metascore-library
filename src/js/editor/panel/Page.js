@@ -10,7 +10,7 @@ export default class Page extends Panel {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Object} [toolbarConfigs={title:'Page', menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @property {Object} [toolbarConfigs={title:'Page', menuItems: {...}}] Configs to pass to the toolbar (see {@link Toolbar})
      */
     constructor(configs) {
         // call parent constructor

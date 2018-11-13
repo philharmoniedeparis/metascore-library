@@ -10,7 +10,7 @@ export default class Toolbar extends Dom{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.title=null] The text to display as a title
+     * @property {String} [title=null] The text to display as a title
      */
     constructor(configs) {
         // call parent constructor
@@ -55,7 +55,6 @@ export default class Toolbar extends Dom{
     /**
      * Get the title's Dom
      *
-     * @method getTitle
      * @return {Dom} The Dom object
      */
     getTitle() {
@@ -65,7 +64,6 @@ export default class Toolbar extends Dom{
     /**
      * Add a button
      *
-     * @method addButton
      * @param {String} action The action associated with the button
      * @return {Button} The created button
      */
@@ -79,7 +77,6 @@ export default class Toolbar extends Dom{
     /**
      * Get a button by associated action
      *
-     * @method getButton
      * @param {String} action The action associated with the button
      * @return {Dom} The button
      */

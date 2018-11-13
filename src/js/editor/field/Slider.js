@@ -49,7 +49,6 @@ export default class Number extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -69,9 +68,8 @@ export default class Number extends Field {
     /**
      * Set the minimum allowed value
      *
-     * @method setMin
      * @param {Number} value The minimum allowed value
-     * @chainable
+     * @return {this}
      */
     setMin(value){
         this.input.attr('min', value);
@@ -82,9 +80,8 @@ export default class Number extends Field {
     /**
      * Set the maximum allowed value
      *
-     * @method setMax
      * @param {Number} value The maximum allowed value
-     * @chainable
+     * @return {this}
      */
     setMax(value){
         this.input.attr('max', value);
@@ -95,9 +92,8 @@ export default class Number extends Field {
     /**
      * Set the granularity of the slider
      *
-     * @method setStep
      * @param {Number} value The step's value
-     * @chainable
+     * @return {this}
      */
     setStep(value){
         this.input.attr('step', value);
@@ -108,9 +104,8 @@ export default class Number extends Field {
     /**
      * Reset the field's configs
      *
-     * @method reset
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     reset(supressEvent){
         this

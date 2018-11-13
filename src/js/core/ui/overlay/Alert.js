@@ -5,16 +5,11 @@ import Overlay from '../Overlay';
 import {className} from '../../../../css/core/ui/overlay/Alert.less';
 
 /**
- * Fired when a button is clicked
+ * An alert overlay to show a simple message with buttons
  *
- * @event buttonclick
+ * @emits {buttonclick} Fired when a button is clicked
  * @param {Object} alert The alert instance
  * @param {String} action The buttons's action
- */
-const EVT_BUTTONCLICK = 'buttonclick';
-
-/**
- * An alert overlay to show a simple message with buttons
  */
 export default class Alert extends Overlay{
 
@@ -22,8 +17,8 @@ export default class Alert extends Overlay{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.text=''] The message's text
-     * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
+     * @property {String} [text=''] The message's text
+     * @property {Array} [buttons={}] The list of buttons as action/label pairs
      */
     constructor(configs){
         super(configs);
@@ -81,7 +76,7 @@ export default class Alert extends Overlay{
     /**
      * Set the message's text
      * @param {String} str The message's text
-     * @chainable
+     * @return {this}
      */
     setText(str){
         this.text.text(str);
@@ -114,7 +109,7 @@ export default class Alert extends Overlay{
 
         this.hide();
 
-        this.triggerEvent(EVT_BUTTONCLICK, {'alert': this, 'action': action}, false);
+        this.triggerEvent('buttonclick', {'alert': this, 'action': action}, false);
 
         evt.stopPropagation();
     }

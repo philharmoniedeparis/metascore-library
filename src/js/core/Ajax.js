@@ -2,35 +2,11 @@ import EventEmitter from './EventEmitter';
 import {isObject} from './utils/Var';
 
 /**
- * Fired when the operation is complete (the request's readyState is 4)
- *
- * @event complete
- */
-const EVT_COMPLETE = 'complete';
-
-/**
- * Fired when the operation is complete and the status is greater or equal to 200 and less than 300 or equal to 304
- *
- * @event success
- */
-const EVT_SUCCESS = 'success';
-
-/**
- * Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
- *
- * @event error
- */
-const EVT_ERROR = 'error';
-
-/**
- * Fired when the operation is aborted
- *
- * @event abort
- */
-const EVT_ABORT = 'abort';
-
-/**
  * A class to handle AJAX requests
+ *
+ * @emits {complete} Fired when the operation is complete (the request's readyState is 4)
+ * @emits {success} Fired when the operation is complete and the status is greater or equal to 200 and less than 300 or equal to 304
+ * @emits {error} Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
  */
 export default class Ajax extends EventEmitter {
 
@@ -88,16 +64,16 @@ export default class Ajax extends EventEmitter {
         this.xhr.addEventListener('abort', this.onAbort.bind(this));
 
         if(this.configs.onComplete){
-            this.addListener(EVT_COMPLETE, this.configs.onComplete);
+            this.addListener('complete', this.configs.onComplete);
         }
         if(this.configs.onSuccess){
-            this.addListener(EVT_SUCCESS, this.configs.onSuccess);
+            this.addListener('success', this.configs.onSuccess);
         }
         if(this.configs.onError){
-            this.addListener(EVT_ERROR, this.configs.onError);
+            this.addListener('error', this.configs.onError);
         }
         if(this.configs.onAbort){
-            this.addListener(EVT_ABORT, this.configs.onAbort);
+            this.addListener('abort', this.configs.onAbort);
         }
 
         if(this.configs.autoSend){
@@ -187,13 +163,13 @@ export default class Ajax extends EventEmitter {
                     success = true;
                 }
 
-                this.triggerEvent(EVT_COMPLETE);
+                this.triggerEvent('complete');
 
                 if(success){
-                    this.triggerEvent(EVT_SUCCESS);
+                    this.triggerEvent('success');
                 }
                 else{
-                    this.triggerEvent(EVT_ERROR);
+                    this.triggerEvent('error');
                 }
 
                 break;
@@ -205,9 +181,10 @@ export default class Ajax extends EventEmitter {
     * abort event callback
     *
     * @private
+    * @emits {abort} Fired when the operation is aborted
     */
     onAbort(){
-        this.triggerEvent(EVT_ABORT);
+        this.triggerEvent('abort');
 
         // reattach the readystatechange handler in case the request is sent again
         this.xhr.addEventListener('readystatechange', this.onReadyStateChange);
@@ -216,7 +193,7 @@ export default class Ajax extends EventEmitter {
     /**
     * Send the XHR request
     *
-    * @return {Ajax} this
+    * @return {this}
     */
     send(){
         this.xhr.send(this.configs.method !== 'GET' ? this.configs.data : null);
@@ -226,7 +203,7 @@ export default class Ajax extends EventEmitter {
     /**
     * Abort the XHR request
     *
-    * @return {Ajax} this
+    * @return {this}
     */
     abort(){
         // detach the readystatechange handler to prevent the success callback from being falsly called
@@ -240,7 +217,7 @@ export default class Ajax extends EventEmitter {
     * Set request headers
     *
     * @param {Object} headers The list of headers as header/value to set
-    * @return {Ajax} this
+    * @return {this}
     */
     setHeaders(headers){
         Object.entries(headers).forEach(([key, value]) => {
@@ -302,7 +279,7 @@ export default class Ajax extends EventEmitter {
     *
     * @param {String} type The event type to listen to
     * @param {Function} listener The callback function
-    * @return {Ajax} this
+    * @return {this}
     */
     addUploadListener(type, listener){
         this.xhr.upload.addEventListener(type, listener);
@@ -314,7 +291,7 @@ export default class Ajax extends EventEmitter {
     *
     * @param {String} type The event type to stop listening to
     * @param {Function} listener The callback function
-    * @return {Ajax} this
+    * @return {this}
     */
     removeUploadListener(type, listener){
         this.xhr.upload.removeEventListener(type, listener);

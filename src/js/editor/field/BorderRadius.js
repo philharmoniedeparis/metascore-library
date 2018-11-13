@@ -24,7 +24,6 @@ export default class BorderRadius extends Field{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -56,10 +55,9 @@ export default class BorderRadius extends Field{
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         super.setValue(value, supressEvent);
@@ -72,7 +70,6 @@ export default class BorderRadius extends Field{
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      */
     onClick(){
@@ -88,7 +85,6 @@ export default class BorderRadius extends Field{
     /**
      * The overlay's submit event handler
      *
-     * @method onOverlaySubmit
      * @private
      * @param {Event} evt The event object
      */
@@ -99,7 +95,6 @@ export default class BorderRadius extends Field{
     /**
      * The clear button's click event handler
      *
-     * @method onClearClick
      * @private
      */
     onClearClick(){

@@ -4,31 +4,14 @@ import Ajax from '../../core/Ajax';
 import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 
 /**
- * Fired when the renderer is ready
- *
- * @event ready
- * @param {Object} renderer The renderer instance
- */
-const EVT_READY = 'ready';
-
-/**
-* Fired when the source is set
-*
-* @event sourceset
-* @param {Object} renderer The renderer instance
-*/
-const EVT_SOURCESET = 'sourceset';
-
-/**
- * Fired when the renderer's time changed
- *
- * @event timeupdate
- * @param {Object} renderer The renderer instance
- */
-const EVT_TIMEUPDATE = 'timeupdate';
-
-/**
  * Vimeo renderer
+ *
+ * @emits {ready} Fired when the renderer is ready
+ * @param {Object} renderer The renderer instance
+ * @emits {sourceset} Fired when the source is set
+ * @param {Object} renderer The renderer instance
+ * @emits {timeupdate} Fired when the renderer's time changed
+ * @param {Object} renderer The renderer instance
  */
 export default class Vimeo extends HTML5 {
 
@@ -90,7 +73,7 @@ export default class Vimeo extends HTML5 {
 
         script.addEventListener('load', () => {
             script.remove();
-            this.triggerEvent(EVT_READY, {'renderer': this}, false, false);
+            this.triggerEvent('ready', {'renderer': this}, false, false);
         });
 
         script.addEventListener('error', () => {
@@ -108,12 +91,11 @@ export default class Vimeo extends HTML5 {
     /**
     * Set the media source
     *
-    * @method setSource
     * @param {Object} source The source to set
     * @property {String} url The source's url
     * @property {String} mime The source's mime type
     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
-    * @chainable
+    * @return {this}
     */
     setSource(source, supressEvent){
         const wrapper = new Dom('<div/>', {'class': 'iframe-wrapper'})
@@ -139,7 +121,7 @@ export default class Vimeo extends HTML5 {
         this.dom.on('seeked', this.onSeeked.bind(this));
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_SOURCESET, {'renderer': this});
+            this.triggerEvent('sourceset', {'renderer': this});
         }
 
         return this;
@@ -157,7 +139,6 @@ export default class Vimeo extends HTML5 {
     /**
      * The loadedmetadata event handler
      *
-     * @method onLoadedMetadata
      * @private
      */
     onLoadedMetadata(...args){
@@ -175,7 +156,6 @@ export default class Vimeo extends HTML5 {
     /**
      * Check whether the media is playing
      *
-     * @method isPlaying
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
@@ -185,9 +165,8 @@ export default class Vimeo extends HTML5 {
     /**
      * Set the media time
      *
-     * @method setTime
      * @param {Number} time The time in centiseconds
-     * @chainable
+     * @return {this}
      */
     setTime(time) {
         this.dom.setCurrentTime(toSeconds(time));
@@ -202,7 +181,6 @@ export default class Vimeo extends HTML5 {
     /**
      * Get the current media time
      *
-     * @method getTime
      * @return {Number} The time in centiseconds
      */
     getTime() {
@@ -212,7 +190,6 @@ export default class Vimeo extends HTML5 {
     /**
      * Get the media's duration
      *
-     * @method getDuration
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
@@ -222,10 +199,9 @@ export default class Vimeo extends HTML5 {
     /**
      * Trigger the timeupdate event
      *
-     * @method triggerTimeUpdate
      * @private
      * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
-     * @chainable
+     * @return {this}
      */
     triggerTimeUpdate(loop) {
         this.dom.getCurrentTime().then((seconds) => {
@@ -240,7 +216,7 @@ export default class Vimeo extends HTML5 {
              * @type {Number}
              */
             this.current_time = seconds;
-            this.triggerEvent(EVT_TIMEUPDATE, {'renderer': this, 'time': this.getTime()});
+            this.triggerEvent('timeupdate', {'renderer': this, 'time': this.getTime()});
         });
 
         return this;

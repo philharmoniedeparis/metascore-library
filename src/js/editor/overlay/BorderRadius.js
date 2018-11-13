@@ -7,16 +7,11 @@ import NumberField from '../field/Number';
 import {className} from '../../../css/editor/overlay/BorderRadius.less';
 
 /**
- * Fired when the submit button is clicked
+ * An overlay that simplifies the creation of a CSS border-radius value
  *
- * @event submit
+ * @emits {submit} Fired when the submit button is clicked
  * @param {Object} overlay The overlay instance
  * @param {String} value The border radius value in CSS format
- */
-const EVT_SUBMIT = 'submit';
-
-/**
- * An overlay that simplifies the creation of a CSS border-radius value
  */
 export default class BorderRadius extends Overlay {
 
@@ -51,7 +46,6 @@ export default class BorderRadius extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -155,9 +149,8 @@ export default class BorderRadius extends Overlay {
     /**
      * Set the current value
      *
-     * @method setValue
      * @param {String} val The value in CSS border-radius format
-     * @chainable
+     * @return {this}
      */
     setValue(val){
         const values = {
@@ -223,7 +216,6 @@ export default class BorderRadius extends Overlay {
     /**
      * Get the current value
      *
-     * @method getValue
      * @return {String} The value in CSS border-radius format
      */
     getValue() {
@@ -233,11 +225,10 @@ export default class BorderRadius extends Overlay {
     /**
      * The apply button's click event handler
      *
-     * @method onApplyClick
      * @private
      */
     onApplyClick(){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
         this.hide();
     }
 

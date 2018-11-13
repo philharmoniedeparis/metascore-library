@@ -2,15 +2,10 @@ import Dom from '../../core/Dom';
 import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 
 /**
- * Fired when the playhead is clicked
- *
- * @event playheadclick
- * @param {Number} time The time in centiseconds corresponding to click position
- */
-const EVT_PLAYHEADCLICK = 'playheadclick';
-
-/**
  * A waveform overview
+ *
+ * @emits {playheadclick} Fired when the playhead is clicked
+ * @param {Number} time The time in centiseconds corresponding to click position
  */
 export default class Overview extends Dom {
 
@@ -84,7 +79,7 @@ export default class Overview extends Dom {
     /**
      * Update the <canvas> sizes
      *
-     * @return {Overview} this
+     * @return {this}
      */
     updateSize(){
         /**
@@ -121,7 +116,7 @@ export default class Overview extends Dom {
      * Set the media's duration
      *
      * @param {Number} duration The media's duration in centiseconds
-     * @return {Overview} this
+     * @return {this}
      */
     setDuration(duration){
         /**
@@ -137,7 +132,7 @@ export default class Overview extends Dom {
      * Set the waveform data
      *
      * @param {WaveformData} waveformdata The waveform data
-     * @return {Overview} this
+     * @return {this}
      */
     setData(waveformdata){
         /**
@@ -158,7 +153,7 @@ export default class Overview extends Dom {
     /**
      * Clear all <canvas> elements and remove the associated waveform data
      *
-     * @return {Overview} this
+     * @return {this}
      */
     clear(){
         delete this.duration;
@@ -178,7 +173,7 @@ export default class Overview extends Dom {
     /**
      * Update the wave layer
      *
-     * @return {Overview} this
+     * @return {this}
      */
     updateWave(){
         const canvas = this.wave_layer.get(0);
@@ -212,7 +207,7 @@ export default class Overview extends Dom {
     /**
      * Update the playhead layer
      *
-     * @return {Overview} this
+     * @return {this}
      */
     updatePlayhead(){
         const canvas = this.playhead_layer.get(0);
@@ -240,7 +235,7 @@ export default class Overview extends Dom {
     /**
      * Update all layers
      *
-     * @return {Overview} this
+     * @return {this}
      */
     update(){
         this.updateWave();
@@ -275,7 +270,7 @@ export default class Overview extends Dom {
         const x = evt.pageX - offset.left;
         const time = toCentiseconds(this.getTimeAt(x));
 
-        this.triggerEvent(EVT_PLAYHEADCLICK, {'time': time});
+        this.triggerEvent('playheadclick', {'time': time});
     }
 
     /**
@@ -304,7 +299,7 @@ export default class Overview extends Dom {
      * Set the current media's time
      *
      * @param {Number} time The media's time in centiseconds
-     * @return {Overview} this
+     * @return {this}
      */
     setTime(time){
         /**
@@ -325,7 +320,7 @@ export default class Overview extends Dom {
      *
      * @param {Number} start The start time in seconds
      * @param {Number} end The end time in seconds
-     * @return {Overview} this
+     * @return {this}
      */
     setHighlight(start, end){
         const canvas = this.highlight_layer.get(0);

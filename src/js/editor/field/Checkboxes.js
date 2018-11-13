@@ -6,16 +6,11 @@ import {isArray} from '../../core/utils/Var';
 import {className} from '../../../css/editor/field/Checkboxes.less';
 
 /**
- * Fired when the field's value changes
+ * A select list field based on an HTML select element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A select list field based on an HTML select element
  */
 export default class Checkboxes extends Field {
 
@@ -46,7 +41,6 @@ export default class Checkboxes extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -74,7 +68,6 @@ export default class Checkboxes extends Field {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      * @param {Event} evt The event object
      */
@@ -87,7 +80,6 @@ export default class Checkboxes extends Field {
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      * @param {Event} evt The event object
      */
@@ -111,16 +103,15 @@ export default class Checkboxes extends Field {
             }
         });
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Array} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         const arr_value = isArray(value) ? value : [value];
@@ -141,7 +132,6 @@ export default class Checkboxes extends Field {
     /**
      * Add a checkbox to the list of checkboxes
      *
-     * @method addCheckbox
      * @param {String} value The option's value
      * @param {String} text The option's label
      * @return {Dom} The created Dom object
@@ -170,7 +160,6 @@ export default class Checkboxes extends Field {
     /**
      * Remove a checkbox by value
      *
-     * @method removeCheckbox
      * @param {String} value The value of the option to remove
      * @return {Dom} The checkbox's Dom object
      */
@@ -185,8 +174,7 @@ export default class Checkboxes extends Field {
     /**
      * Remove all groups and options
      *
-     * @method clear
-     * @chainable
+     * @return {this}
      */
     clear() {
         this.input_wrapper.empty();
@@ -197,8 +185,7 @@ export default class Checkboxes extends Field {
     /**
      * Disable the field
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         /**
@@ -217,8 +204,7 @@ export default class Checkboxes extends Field {
     /**
      * Enable the field
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.disabled = false;
@@ -233,9 +219,8 @@ export default class Checkboxes extends Field {
     /**
      * Toggle the readonly attribute of the field
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         super.readonly(readonly);

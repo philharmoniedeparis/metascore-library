@@ -24,7 +24,6 @@ export default class MainMenu extends Dom {
     /**
      * Setup the menu's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -182,7 +181,6 @@ export default class MainMenu extends Dom {
     /**
      * Get the item associated to an action
      *
-     * @method getItem
      * @param {String} action The item's associated action
      * @return {Dom} The item
      */
@@ -193,10 +191,9 @@ export default class MainMenu extends Dom {
     /**
      * Toogle an item's enabled state
      *
-     * @method toggleItem
      * @param {String} action The item's associated action
      * @param {Boolean} state The state to set the item to
-     * @chainable
+     * @return {this}
      */
     toggleItem(action, state){
         const item = this.getItem(action);

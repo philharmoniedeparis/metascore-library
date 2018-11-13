@@ -13,7 +13,7 @@ export default class LoadMask extends Overlay{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.text='Loading...'] The text to display
+     * @property {String} [text='Loading...'] The text to display
      */
     constructor(configs) {
         // call parent constructor
@@ -73,7 +73,7 @@ export default class LoadMask extends Overlay{
     * Set the progress value
     *
     * @param {Number} value The progress value, between 0 and 100
-    * @return {LoadMask} this
+    * @return {this}
     */
     setProgress(value){
         this.text.text(Locale.formatString(this.configs.text, {'!percent': value}));

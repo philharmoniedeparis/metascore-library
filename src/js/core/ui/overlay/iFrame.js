@@ -12,8 +12,8 @@ export default class iFrame extends Overlay{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.url=null] The iframe's url
+     * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
+     * @property {String} [url=null] The iframe's url
      */
     constructor(configs) {
         // call parent constructor
@@ -37,7 +37,6 @@ export default class iFrame extends Overlay{
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {

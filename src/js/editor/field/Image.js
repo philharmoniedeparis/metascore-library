@@ -6,24 +6,13 @@ import iFrame from '../../core/ui/overlay/iFrame';
 import {className} from '../../../css/editor/field/Image.less';
 
 /**
- * Fired when the external filebrowser should be opened
+ * An image field wich depends on an external file browser to function
  *
- * @event filebrowser
+ * @emits {filebrowser} Fired when the external filebrowser should be opened
  * @param {Function} callback The callback to invoke once a file is selected throught the external file browser
- */
-const EVT_FILEBROWSER = 'filebrowser';
-
-/**
- * Fired when the resize button is clicked
- *
- * @event resize
+ * @emits {resize} Fired when the resize button is clicked
  * @param {Object} field The field instance
  * @param {Mixed} value The field value
- */
-const EVT_RESIZE = 'resize';
-
-/**
- * An image field wich depends on an external file browser to function
  */
 export default class Image extends Field {
 
@@ -55,7 +44,6 @@ export default class Image extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -87,10 +75,9 @@ export default class Image extends Field {
     /**
      * Set the field'S value
      *
-     * @method setValue
      * @param {String} value The image file's url
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         super.setValue(value, supressEvent);
@@ -104,7 +91,6 @@ export default class Image extends Field {
      * The click event handler
      * If a url is assigned to the event's details object, an iFrame overlay is opened with that URL
      *
-     * @method onClick
      * @private
      */
     onClick(){
@@ -114,7 +100,7 @@ export default class Image extends Field {
 
         const details = {'callback': this.onFileSelect.bind(this)};
 
-        this.triggerEvent(EVT_FILEBROWSER, details, true, false);
+        this.triggerEvent('filebrowser', details, true, false);
 
         if('url' in details){
             /**
@@ -133,17 +119,15 @@ export default class Image extends Field {
     /**
      * The resize button click event handler
      *
-     * @method onResizeClick
      * @private
      */
     onResizeClick(){
-        this.triggerEvent(EVT_RESIZE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('resize', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * The clear button click event handler
      *
-     * @method onClearClick
      * @private
      */
     onClearClick(){
@@ -153,7 +137,6 @@ export default class Image extends Field {
     /**
      * The file select event handler
      *
-     * @method onFileSelect
      * @private
      * @param {String} url The image file's url
      */
@@ -168,9 +151,8 @@ export default class Image extends Field {
     /**
      * Toggle the readonly attribute of the field
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         /**

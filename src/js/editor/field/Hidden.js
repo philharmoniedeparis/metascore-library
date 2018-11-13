@@ -22,7 +22,6 @@ export default class Hidden extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {

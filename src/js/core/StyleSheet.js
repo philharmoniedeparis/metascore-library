@@ -25,11 +25,10 @@ export default class StyleSheet extends Dom {
     /**
      * Add a CSS rule to the style sheet
      *
-     * @method addRule
      * @param {String} selector The CSS selector for the rule
      * @param {String} rule The style definitions for the rule
      * @param {Integer} [index] The index position of the rule
-     * @return {StyleSheet} this
+     * @return {this}
      */
     addRule(selector, rule, index) {
         let _index = index;
@@ -52,9 +51,8 @@ export default class StyleSheet extends Dom {
     /**
      * Remove a CSS rule from the style sheet
      *
-     * @method removeRule
      * @param {Integer} index The index position of the rule to remove
-     * @return {StyleSheet} this
+     * @return {this}
      */
     removeRule(index) {
         const sheet = this.el.sheet;
@@ -72,9 +70,8 @@ export default class StyleSheet extends Dom {
     /**
      * Remove the first CSS rule that matches a selector
      *
-     * @method removeRulesBySelector
      * @param {String} selector The CSS selector of the rule to remove
-     * @return {StyleSheet} this
+     * @return {this}
      */
     removeRulesBySelector(selector) {
         const sheet = this.el.sheet;
@@ -94,8 +91,7 @@ export default class StyleSheet extends Dom {
     /**
      * Remove all CSS rule from the style sheet
      *
-     * @method removeRules
-     * @return {StyleSheet} this
+     * @return {this}
      */
     removeRules() {
         const sheet = this.el.sheet;
@@ -111,9 +107,8 @@ export default class StyleSheet extends Dom {
     /**
      * Set the internal text value of the style sheet
      *
-     * @method setInternalValue
      * @param {String} value The CSS rules
-     * @return {StyleSheet} this
+     * @return {this}
      */
     setInternalValue(value) {
         if(this.el.styleSheet){

@@ -43,10 +43,9 @@ export default class Pager extends Dom{
     /**
      * Update the page counter
      *
-     * @method updateCount
      * @param {Integer} index The index of the block's active page
      * @param {Integer} count The number of pages
-     * @chainable
+     * @return {this}
      */
     updateCount(index, count){
         this.count.text(Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));

@@ -3,7 +3,6 @@ import {pad} from './String';
 /**
  * Get an image's metadata (name, width, and height)
  *
- * @method getImageMetadata
  * @param {String} url The image's url
  * @param {Function} callback The callback to call with the retreived metadata
  */
@@ -34,7 +33,6 @@ export function getImageMetadata(url, callback){
 /**
  * Get a file's extention from its URL
  *
- * @method getFileExtension
  * @param {String} url The file's URL
  * @return {String} The file's extention
  */
@@ -45,7 +43,6 @@ export function getFileExtension(url){
 /**
  * Get a file's mimetype from its URL
  *
- * @method getFileMime
  * @param {String} url The file's URL
  * @return {String} The file's mimetype if supported, null otherwise
  */
@@ -79,7 +76,6 @@ export function getFileMime(url){
 /**
  * Converts a given time from seconds to centiseconds
  *
- * @method toCentiseconds
  * @param {Number} time The time in seconds
  * @return {Number} The time in centiseconds
  */
@@ -91,7 +87,6 @@ export function toCentiseconds(time){
 /**
  * Converts a given time from centiseconds to seconds
  *
- * @method toSeconds
  * @param {Number} time The time in centiseconds
  * @return {Number} The time in seconds
  */
@@ -103,7 +98,6 @@ export function toSeconds(time){
 /**
  * Formats a time to a string represetation
  *
- * @method formatTime
  * @param {Number} time The time in centiseconds
  * @return {String} The string represetation
  */

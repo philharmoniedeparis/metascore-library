@@ -13,17 +13,12 @@ import TextField from '../field/Text';
 import {className} from '../../../css/editor/overlay/GuideSelector.less';
 
 /**
- * Fired when a guide's select button is clicked
+ * A guide selector overlay
  *
- * @event submit
+ * @emits {submit} Fired when a guide's select button is clicked
  * @param {Object} overlay The overlay instance
  * @param {Object} guide The guide's data
  * @param {Integer} vid The selected vid of the guide
- */
-const EVT_SUBMIT = 'submit';
-
-/**
- * A guide selector overlay
  */
 export default class GuideSelector extends Overlay {
 
@@ -36,7 +31,7 @@ export default class GuideSelector extends Overlay {
      * @property {String} [title='Select a guide'] The overlay's title
      * @property {String} [empty_text='No guides available'] A text to show when no guides are available
      * @property {String} [url=''] The url from which to retreive the list of guides
-     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Integer} [loadMoreDistance=40] The distance at which more guides are loaded
      */
     constructor(configs) {
@@ -346,7 +341,7 @@ export default class GuideSelector extends Overlay {
      * @param {Event} evt The event object
      */
     onGuideSelect(guide, revision_field, evt){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
         this.hide();
 
@@ -448,7 +443,7 @@ export default class GuideSelector extends Overlay {
      * Load guides
      *
      * @private
-     * @return {GuideSelector} this
+     * @return {this}
      */
     load(params){
         const loadmask = new LoadMask({
@@ -483,7 +478,7 @@ export default class GuideSelector extends Overlay {
     /**
      * Load more guides
      *
-     * @return {GuideSelector} this
+     * @return {this}
      */
     loadMore(){
         if(!this.load_request){
@@ -519,7 +514,7 @@ export default class GuideSelector extends Overlay {
     /**
      * Show the overlay
      *
-     * @return {GuideSelector} this
+     * @return {this}
      */
     show() {
         super.show();
@@ -535,7 +530,7 @@ export default class GuideSelector extends Overlay {
     /**
      * Hide the overlay
      *
-     * @return {GuideSelector} this
+     * @return {this}
      */
     hide(){
         if(this.load_request){

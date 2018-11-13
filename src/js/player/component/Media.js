@@ -223,10 +223,9 @@ export default class Media extends Component{
     /**
      * Set the media source
      *
-     * @method setSource
      * @param {Object} source The source as objects with 'url' and 'mime' keys
      * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
-     * @chainable
+     * @return {this}
      */
     setSource(source, supressEvent){
         if(this.renderer){
@@ -254,7 +253,6 @@ export default class Media extends Component{
     /**
      * Get the value of the media's name property
      *
-     * @method getName
      * @return {String} The name
      */
     getName() {
@@ -264,7 +262,6 @@ export default class Media extends Component{
     /**
      * Check whether the media is playing
      *
-     * @method isPlaying
      * @return {Boolean} Whether the media is playing
      */
     isPlaying() {
@@ -274,8 +271,7 @@ export default class Media extends Component{
     /**
      * Reset the media time
      *
-     * @method reset
-     * @chainable
+     * @return {this}
      */
     reset() {
         this.setTime(0);
@@ -286,8 +282,7 @@ export default class Media extends Component{
     /**
      * Play the media
      *
-     * @method play
-     * @chainable
+     * @return {this}
      */
     play() {
         this.getRenderer().play();
@@ -298,8 +293,7 @@ export default class Media extends Component{
     /**
      * Pause the media
      *
-     * @method pause
-     * @chainable
+     * @return {this}
      */
     pause() {
         this.getRenderer().pause();
@@ -310,9 +304,8 @@ export default class Media extends Component{
     /**
      * Set the media time
      *
-     * @method setTime
      * @param {Number} time The time in centiseconds
-     * @chainable
+     * @return {this}
      */
     setTime(time) {
         this.getRenderer().setTime(time);
@@ -323,7 +316,6 @@ export default class Media extends Component{
     /**
      * Get the current media time
      *
-     * @method getTime
      * @return {Number} The time in centiseconds
      */
     getTime() {
@@ -339,7 +331,6 @@ export default class Media extends Component{
     /**
      * Get the media's duration
      *
-     * @method getDuration
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
@@ -355,7 +346,6 @@ export default class Media extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -386,7 +376,6 @@ export default class Media extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setResizable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */
@@ -416,7 +405,7 @@ export default class Media extends Component{
     /**
      * Remove from dom
      *
-     * @chainable
+     * @return {this}
      */
     remove() {
         if(this.renderer){

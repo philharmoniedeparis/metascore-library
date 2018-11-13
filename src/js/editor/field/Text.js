@@ -33,7 +33,6 @@ export default class Text extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {

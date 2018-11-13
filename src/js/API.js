@@ -74,7 +74,7 @@ export default class API{
      *
      * @param {String} method The API method to invoke
      * @param {Mixed} params The parameter(s) to send along
-     * @return {API} this
+     * @return {this}
      */
     postMessage(method, params){
         if (!this.target.contentWindow.postMessage) {
@@ -136,7 +136,7 @@ export default class API{
      *
      * @param {String} type The type of message to listen to
      * @param {Function} callback A callback to invoke when a matched message is received
-     * @return {API} this
+     * @return {this}
      */
     on(type, callback){
         const callback_id = new Date().valueOf().toString() + Math.random();
@@ -155,7 +155,7 @@ export default class API{
      * @param {String} [inTime] The time at which the player should start playing
      * @param {String} [outTime] The time at which the player should stop playing
      * @param {String} [rIndex] A reading index to go to while playing
-     * @return {API} this
+     * @return {this}
      */
     play(inTime, outTime, rIndex){
         this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'rIndex': rIndex});
@@ -167,7 +167,7 @@ export default class API{
      * Sends a 'pause' message to the player
      * Used to pause the player's media playback
      *
-     * @return {API} this
+     * @return {this}
      */
     pause() {
         this.postMessage('pause');
@@ -180,7 +180,7 @@ export default class API{
      * Used to seek the player's media to a specific time
      *
      * @param {Number} seconds The time in seconds to seek to
-     * @return {API} this
+     * @return {this}
      */
     seek(seconds){
         this.postMessage('seek', {'seconds': parseFloat(seconds)});
@@ -194,7 +194,7 @@ export default class API{
      *
      * @param {String} block The page's block name
      * @param {Integer} index The page's index
-     * @return {API} this
+     * @return {this}
      */
     page(block, index){
         this.postMessage('page', {'block': block, 'index': parseInt(index, 10)-1});
@@ -207,7 +207,7 @@ export default class API{
      * Used to hide a given block in the player
      *
      * @param {String} name The block's name
-     * @return {API} this
+     * @return {this}
      */
     hideBlock(name){
         this.postMessage('hideBlock', {'name': name});
@@ -220,7 +220,7 @@ export default class API{
      * Used to hide a given block in the player
      *
      * @param {String} name The block's name
-     * @return {API} this
+     * @return {this}
      */
     showBlock(name){
         this.postMessage('showBlock', {'name': name});
@@ -233,7 +233,7 @@ export default class API{
      * Used to toggle the visibility of a block in the player
      *
      * @param {String} name The block's name
-     * @return {API} this
+     * @return {this}
      */
     toggleBlock(name){
         this.postMessage('toggleBlock', {'name': name});
@@ -246,7 +246,7 @@ export default class API{
      * Used to set the reading index of the player
      *
      * @param {Integer} index The reading index to set
-     * @return {API} this
+     * @return {this}
      */
     rindex(index){
         this.postMessage('rindex', {'index': parseInt(index, 10)});
@@ -260,7 +260,7 @@ export default class API{
      *
      * @param {Function} callback The callback called when the response is received
      * @param {Boolean} callback.value The state of the player (true if playing, false otherwise)
-     * @return {API} this
+     * @return {this}
      */
     playing(callback){
         const callback_id = new Date().valueOf().toString() + Math.random();
@@ -278,7 +278,7 @@ export default class API{
      *
      * @param {Function} callback The callback called when the response is received
      * @param {Number} callback.value The current time of the media in seconds
-     * @return {API} this
+     * @return {this}
      */
     time(callback){
         const callback_id = new Date().valueOf().toString() + Math.random();

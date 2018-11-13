@@ -7,16 +7,11 @@ import {getFileMime} from '../../core/utils/Media';
 import {className} from '../../../css/editor/field/File.less';
 
 /**
- * Fired when the field's value changes
+ * A file field based on an HTML input[type=file] element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * A file field based on an HTML input[type=file] element
  */
 export default class File extends Field {
 
@@ -54,7 +49,6 @@ export default class File extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -206,13 +200,12 @@ export default class File extends Field {
 
         this.setActiveSource(source);
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * The click event handler
      *
-     * @method onSourceSelectorClick
      * @private
      * @param {Event} evt The event object
      */
@@ -225,7 +218,6 @@ export default class File extends Field {
     /**
      * The change event handler
      *
-     * @method onSourceSelectorChange
      * @private
      * @param {Event} evt The event object
      */
@@ -244,13 +236,12 @@ export default class File extends Field {
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Object} value The new value
      * @property {String} name The file's name
      * @property {String} url The file's url
      * @property {String} source The file's source type
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @return {File} this
+     * @return {this}
      */
     setValue(value, supressEvent){
         const active_source = value && 'source' in value ? value.source : 'upload';
@@ -319,7 +310,7 @@ export default class File extends Field {
      * Set the active source type
      *
      * @param {String} [source] The source type to activate
-     * @return {File} this
+     * @return {this}
      */
     setActiveSource(source){
         const inputs = this.inputs.children('.input');
@@ -342,8 +333,7 @@ export default class File extends Field {
     /**
      * Disable the field
      *
-     * @method disable
-     * @return {File} this
+     * @return {this}
      */
     disable() {
         super.disable();
@@ -356,8 +346,7 @@ export default class File extends Field {
     /**
      * Enable the field
      *
-     * @method enable
-     * @return {File} this
+     * @return {this}
      */
     enable() {
         super.enable();
@@ -370,9 +359,8 @@ export default class File extends Field {
     /**
      * Toggle the field's readonly state
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @return {File} this
+     * @return {this}
      */
     readonly(readonly){
         super.readonly(readonly);

@@ -3,38 +3,21 @@ import Dom from '../../../core/Dom';
 import Locale from '../../../core/Locale';
 
 /**
- * Fired when a page link is clicked
+ * A text element
  *
- * @event page
+ * @emits {page} Fired when a page link is clicked
  * @param {Object} element The element instance
  * @param {String} block The block's name
  * @param {Integer} index The page index
- */
-const EVT_PAGE = 'page';
-
-/**
- * Fired when a play link is clicked
- *
- * @event play
+ * @emits {play} Fired when a play link is clicked
  * @param {Object} element The element instance
  * @param {Number} inTime The start time
  * @param {Number} outTime The end time
  * @param {Integer} rIndex The reading index
- */
-const EVT_PLAY = 'play';
-
-/**
- * Fired when a block visibility link is clicked
- *
- * @event block_visibility
+ * @emits {block_visibility} Fired when a block visibility link is clicked
  * @param {Object} element The element instance
  * @param {String} block The block's name
  * @param {String} action The action to perform
- */
-const EVT_BLOCK_VISIBILITY = 'block_visibility';
-
-/**
- * A text element
  */
 export default class Text extends Element {
 
@@ -91,7 +74,6 @@ export default class Text extends Element {
     /**
      * The link click event handler
      *
-     * @method onLinkClick
      * @private
      * @param {Event} evt The event object
      */
@@ -109,19 +91,19 @@ export default class Text extends Element {
 
             let matches = link.hash.match(/^#page=([^,]*),(\d+)$/);
             if(matches){
-                this.triggerEvent(EVT_PAGE, {'element': this, 'block': decodeURIComponent(matches[1]), 'index': parseInt(matches[2], 10)-1});
+                this.triggerEvent('page', {'element': this, 'block': decodeURIComponent(matches[1]), 'index': parseInt(matches[2], 10)-1});
                 return;
             }
 
             matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(\d+)$/);
             if(matches){
-                this.triggerEvent(EVT_PLAY, {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3], 10)});
+                this.triggerEvent('play', {'element': this, 'inTime': parseFloat(matches[1]), 'outTime': parseFloat(matches[2]) - 1, 'rIndex': parseInt(matches[3], 10)});
                 return;
             }
 
             matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/);
             if(matches){
-                this.triggerEvent(EVT_BLOCK_VISIBILITY, {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
+                this.triggerEvent('block_visibility', {'element': this, 'block': decodeURIComponent(matches[2]), 'action': matches[1]});
             }
         }
         else{

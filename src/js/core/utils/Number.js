@@ -1,7 +1,6 @@
 /**
  * Get the number of decimal places
  *
- * @method getDecimalPlaces
  * @param {Number} value The number to check against
  * @return {Number} The number of decimal places
  */
@@ -22,7 +21,6 @@ export function getDecimalPlaces(value){
 /**
  * Format a file size in bytes to a human-readable format
  *
- * @method formatFileSize
  * @param {Number} bytes The file size in bytes
  * @return {String} The file size in a human-readable format
  */
