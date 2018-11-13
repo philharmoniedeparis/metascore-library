@@ -3,43 +3,38 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import iFrame from '../../core/ui/overlay/iFrame';
 
-/**
- * Fired when the external filebrowser should be opened
- *
- * @event filebrowser
- * @param {Function} callback The callback to invoke once a file is selected throught the external file browser
- */
-const EVT_FILEBROWSER = 'filebrowser';
+import {className} from '../../../css/editor/field/Image.less';
 
 /**
- * Fired when the resize button is clicked
+ * An image field wich depends on an external file browser to function
  *
- * @event resize
+ * @emits {filebrowser} Fired when the external filebrowser should be opened
+ * @param {Function} callback The callback to invoke once a file is selected throught the external file browser
+ * @emits {resize} Fired when the resize button is clicked
  * @param {Object} field The field instance
  * @param {Mixed} value The field value
  */
-const EVT_RESIZE = 'resize';
-
 export default class Image extends Field {
 
     /**
-     * An image field wich depends on an external file browser to function
+     * Instantiate
      *
-     * @class ImageField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.placeholder="Browse..."] A placeholder text
-     * @param {Boolean} [configs.resizeButton=false] Whether to show the resize button
+     * @property {String} [placeholder="Browse..."] A placeholder text
+     * @property {Boolean} [resizeButton=false] Whether to show the resize button
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('imagefield');
+        this.addClass(`image ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'placeholder': Locale.t('editor.field.Image.placeholder', 'Browse...')
@@ -49,12 +44,9 @@ export default class Image extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input
@@ -62,10 +54,14 @@ export default class Image extends Field {
             .attr('placeholder', this.configs.placeholder)
             .addListener('click', this.onClick.bind(this));
 
-        buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
         if(this.configs.resizeButton){
+            /**
+             * The resize button
+             * @type {Dom}
+             */
             this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': Locale.t('editor.field.Image.resize.tooltip', 'Adapt container size to image')})
                 .addListener('click', this.onResizeClick.bind(this))
                 .appendTo(buttons);
@@ -79,10 +75,9 @@ export default class Image extends Field {
     /**
      * Set the field'S value
      *
-     * @method setValue
      * @param {String} value The image file's url
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         super.setValue(value, supressEvent);
@@ -96,7 +91,6 @@ export default class Image extends Field {
      * The click event handler
      * If a url is assigned to the event's details object, an iFrame overlay is opened with that URL
      *
-     * @method onClick
      * @private
      */
     onClick(){
@@ -104,11 +98,15 @@ export default class Image extends Field {
             return;
         }
 
-        let details = {'callback': this.onFileSelect.bind(this)};
+        const details = {'callback': this.onFileSelect.bind(this)};
 
-        this.triggerEvent(EVT_FILEBROWSER, details, true, false);
+        this.triggerEvent('filebrowser', details, true, false);
 
         if('url' in details){
+            /**
+             * The file browser
+             * @type {iFrame}
+             */
             this.browser = new iFrame({
                 'parent': '.metaScore-editor',
                 'title': Locale.t('editor.field.Image.browser.title', 'Select file'),
@@ -121,17 +119,15 @@ export default class Image extends Field {
     /**
      * The resize button click event handler
      *
-     * @method onResizeClick
      * @private
      */
     onResizeClick(){
-        this.triggerEvent(EVT_RESIZE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('resize', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * The clear button click event handler
      *
-     * @method onClearClick
      * @private
      */
     onClearClick(){
@@ -141,7 +137,6 @@ export default class Image extends Field {
     /**
      * The file select event handler
      *
-     * @method onFileSelect
      * @private
      * @param {String} url The image file's url
      */
@@ -156,11 +151,14 @@ export default class Image extends Field {
     /**
      * Toggle the readonly attribute of the field
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
+        /**
+         * Whether the field is in a readonly state
+         * @type {Boolean}
+         */
         this.is_readonly = readonly === true;
 
         this.toggleClass('readonly', this.is_readonly);

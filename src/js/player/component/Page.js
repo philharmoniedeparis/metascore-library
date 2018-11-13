@@ -8,6 +8,10 @@ import CursorElement from './element/Cursor';
 import ImageElement from './element/Image';
 import TextElement from './element/Text';
 
+/**
+ * The list of available element types
+ * @type {Object}
+ */
 const ELEMENT_TYPES = {
     'Cursor': CursorElement,
     'Image': ImageElement,
@@ -15,33 +19,21 @@ const ELEMENT_TYPES = {
 };
 
 /**
- * Fired when an element is added
+ * A page component
  *
- * @event elementadd
+ * @emits {elementadd} Fired when an element is added
  * @param {Object} page The page instance
  * @param {Object} element The element instance
- */
-const EVT_ELEMENTADD = 'elementadd';
-
-/**
- * Fired when a cuepoint started
- *
- * @event cuepointstart
- */
-const EVT_CUEPOINTSTART = 'cuepointstart';
-
-/**
- * Fired when a cuepoint stops
- *
- * @event cuepointstop
- */
-const EVT_CUEPOINTSTOP = 'cuepointstop';
-
-/**
- * A page component
+ * @emits {cuepointstart} Fired when a cuepoint started
+ * @emits {cuepointstop} Fired when a cuepoint stops
  */
 export default class Page extends Component {
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -51,7 +43,7 @@ export default class Page extends Component {
                         'label': Locale.t('player.component.Page.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('background-color', undefined, skipDefault);
+                        return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('background-color', toCSS(value));
@@ -63,7 +55,7 @@ export default class Page extends Component {
                         'label': Locale.t('player.component.Page.background-image', 'Background image')
                     },
                     'getter': function(skipDefault){
-                        let value = this.css('background-image', undefined, skipDefault);
+                        let value = this.css('background-image', void 0, skipDefault);
 
                         if(value === 'none' || !isString(value)){
                             return null;
@@ -76,8 +68,8 @@ export default class Page extends Component {
                         return value;
                     },
                     'setter': function(value){
-                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.css('background-image', value);
+                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.css('background-image', css_value);
                     }
                 },
                 'start-time': {
@@ -131,6 +123,11 @@ export default class Page extends Component {
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Page';
     }
@@ -138,7 +135,6 @@ export default class Page extends Component {
     /**
      * Setup the page's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -146,14 +142,16 @@ export default class Page extends Component {
         super.setupUI();
 
         this.addClass('page');
+
+        return this;
     }
 
     /**
-     * Add an new element component to this page
+     * Add an element
      *
-     * @method addElement
-     * @param {Object} configs Configs to use for the element (see {{#crossLink "player.component.Element}"}}{{/crossLink}})
-     * @return {player.component.Element} The element
+     * @param {Object|Element} configs Element configs or an existing Element instance
+     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @return {Element} The element
      */
     addElement(configs, supressEvent){
         let element = configs;
@@ -169,7 +167,7 @@ export default class Page extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_ELEMENTADD, {'page': this, 'element': element, 'new': !existing});
+            this.triggerEvent('elementadd', {'page': this, 'element': element, 'new': !existing});
         }
 
         return element;
@@ -178,7 +176,6 @@ export default class Page extends Component {
     /**
      * Get the block component this page belongs to
      *
-     * @method getBlock
      * @return {player.component.Block}
      */
     getBlock() {
@@ -190,7 +187,6 @@ export default class Page extends Component {
     /**
      * Get the element components that belong to this page
      *
-     * @method getElements
      * @return {Array} The list of elements
      */
     getElements() {
@@ -206,21 +202,19 @@ export default class Page extends Component {
     /**
      * The cuepoint start event handler
      *
-     * @method onCuePointStart
      * @private
      */
     onCuePointStart(){
-        this.triggerEvent(EVT_CUEPOINTSTART);
+        this.triggerEvent('cuepointstart');
     }
 
     /**
      * The cuepoint stop event handler
      *
-     * @method onCuePointStop
      * @private
      */
     onCuePointStop(){
-        this.triggerEvent(EVT_CUEPOINTSTOP);
+        this.triggerEvent('cuepointstop');
     }
 
 }

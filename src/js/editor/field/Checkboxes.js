@@ -3,34 +3,35 @@ import Dom from '../../core/Dom';
 import {uuid} from '../../core/utils/String';
 import {isArray} from '../../core/utils/Var';
 
+import {className} from '../../../css/editor/field/Checkboxes.less';
+
 /**
- * Fired when the field's value changes
+ * A select list field based on an HTML select element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-const EVT_VALUECHANGE = 'valuechange';
-
 export default class Checkboxes extends Field {
 
     /**
-     * A select list field based on an HTML select element
+     * Instantiate
      *
-     * @class CheckboxesField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.options=[]] A list of select options as objects with 'value' and 'text' keys
+     * @property {Object} [options=[]] A list of select options as objects with 'value' and 'text' keys
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('checkboxesfield');
+        this.addClass(`checkboxes ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': []
@@ -40,20 +41,24 @@ export default class Checkboxes extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
         if(this.configs.label){
+            /**
+             * A potential <label> element
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
 
+        /**
+         * The input-wrapper container
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
-
-        this.checkboxes_wrapper = new Dom('<div/>', {'class': 'checkboxes-wrapper'})
-            .appendTo(this.input_wrapper);
 
         this.configs.options.forEach((option) => {
             this.addCheckbox(option.value, option.text);
@@ -63,7 +68,6 @@ export default class Checkboxes extends Field {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      * @param {Event} evt The event object
      */
@@ -76,7 +80,6 @@ export default class Checkboxes extends Field {
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      * @param {Event} evt The event object
      */
@@ -86,9 +89,13 @@ export default class Checkboxes extends Field {
             return;
         }
 
+        /**
+         * The current value
+         * @type {Array}
+         */
         this.value = [];
 
-        this.checkboxes_wrapper.find('input').forEach((checkbox_el) => {
+        this.input_wrapper.find('input').forEach((checkbox_el) => {
             const checkbox = new Dom(checkbox_el);
 
             if(checkbox.is(":checked")){
@@ -96,21 +103,20 @@ export default class Checkboxes extends Field {
             }
         });
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Array} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         const arr_value = isArray(value) ? value : [value];
 
-        this.checkboxes_wrapper.find('input').forEach((checkbox_el) => {
+        this.input_wrapper.find('input').forEach((checkbox_el) => {
             const checkbox = new Dom(checkbox_el);
 
             checkbox_el.checked = arr_value.includes(checkbox.attr('value'));
@@ -126,20 +132,17 @@ export default class Checkboxes extends Field {
     /**
      * Add a checkbox to the list of checkboxes
      *
-     * @method addCheckbox
      * @param {String} value The option's value
      * @param {String} text The option's label
      * @return {Dom} The created Dom object
      */
     addCheckbox(value, text){
-        let uid, checkbox_wrapper, checkbox;
+        const uid = `checkbox-${uuid(5)}`;
 
-        uid = `checkbox-${uuid(5)}`;
+        const checkbox_wrapper = new Dom('<div/>', {'class': 'checkbox-wrapper'})
+            .appendTo(this.input_wrapper);
 
-        checkbox_wrapper = new Dom('<div/>', {'class': 'checkbox-wrapper'})
-            .appendTo(this.checkboxes_wrapper);
-
-        checkbox = new Dom('<input/>', {'id': uid, 'type': 'checkbox', 'value': value})
+        const checkbox = new Dom('<input/>', {'id': uid, 'type': 'checkbox', 'value': value})
             .addListener('click', this.onClick.bind(this))
             .addListener('change', this.onChange.bind(this))
             .appendTo(checkbox_wrapper);
@@ -157,12 +160,11 @@ export default class Checkboxes extends Field {
     /**
      * Remove a checkbox by value
      *
-     * @method removeCheckbox
      * @param {String} value The value of the option to remove
      * @return {Dom} The checkbox's Dom object
      */
     removeCheckbox(value){
-        const checkbox = this.checkboxes_wrapper.find(`input[value="${value}"]`);
+        const checkbox = this.input_wrapper.find(`input[value="${value}"]`);
 
         checkbox.parents().remove();
 
@@ -172,11 +174,10 @@ export default class Checkboxes extends Field {
     /**
      * Remove all groups and options
      *
-     * @method clear
-     * @chainable
+     * @return {this}
      */
     clear() {
-        this.checkboxes_wrapper.empty();
+        this.input_wrapper.empty();
 
         return this;
     }
@@ -184,15 +185,18 @@ export default class Checkboxes extends Field {
     /**
      * Disable the field
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
+        /**
+         * Whether the field is disabled
+         * @type {Boolean}
+         */
         this.disabled = true;
 
         this.addClass('disabled');
 
-        this.checkboxes_wrapper.find('input').attr('disabled', 'disabled');
+        this.input_wrapper.find('input').attr('disabled', 'disabled');
 
         return this;
     }
@@ -200,15 +204,14 @@ export default class Checkboxes extends Field {
     /**
      * Enable the field
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.disabled = false;
 
         this.removeClass('disabled');
 
-        this.checkboxes_wrapper.find('input').attr('disabled', null);
+        this.input_wrapper.find('input').attr('disabled', null);
 
         return this;
     }
@@ -216,14 +219,13 @@ export default class Checkboxes extends Field {
     /**
      * Toggle the readonly attribute of the field
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
         super.readonly(readonly);
 
-        this.checkboxes_wrapper.find('input').attr('disabled', this.is_readonly ? "disabled" : null);
+        this.input_wrapper.find('input').attr('disabled', this.is_readonly ? "disabled" : null);
 
         return this;
     }

@@ -2,33 +2,32 @@ import Field from '../Field';
 import Dom from '../../core/Dom';
 
 /**
- * Fired when a value is selected though a button click
+ * A simple buttons field based on HTML button elements
  *
- * @event valuechange
+ * @emits {valuechange} Fired when a value is selected though a button click
  * @param {Object} field The field instance
  * @param {Mixed} value The clicked button's key
  */
-const EVT_VALUECHANGE = 'valuechange';
-
 export default class Buttons extends Field{
 
     /**
-     * A simple buttons field based on HTML button elements
+     * Instantiate
      *
-     * @class ButtonsField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.buttons={}}] The list of buttons as name/attributes pairs
+     * @property {Object} [buttons={}}] The list of buttons as name/attributes pairs
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('buttonsfield');
+        this.addClass('buttons');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'buttons': {}
@@ -38,19 +37,29 @@ export default class Buttons extends Field{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
         const field = this;
 
+        /**
+         * The list of buttons
+         * @type {Object}
+         */
         this.buttons = {};
 
         if(this.configs.label){
+            /**
+             * A potential label
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'text': this.configs.label})
                 .appendTo(this);
         }
-
+        /**
+         * The input-wrapper element
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
@@ -58,7 +67,7 @@ export default class Buttons extends Field{
             Object.entries(this.configs.buttons).forEach(([name, attr]) => {
                 this.buttons[name] = new Dom('<button/>', attr)
                     .addListener('click', () => {
-                        field.triggerEvent(EVT_VALUECHANGE, {'field': field, 'value': name}, true, false);
+                        field.triggerEvent('valuechange', {'field': field, 'value': name}, true, false);
                     })
                     .appendTo(this.input_wrapper);
             });
@@ -68,8 +77,7 @@ export default class Buttons extends Field{
     /**
      * Set the field's value
      *
-     * @method setValue
-     * @chainable
+     * @return {this}
      */
     setValue() {
         return this;
@@ -78,7 +86,6 @@ export default class Buttons extends Field{
     /**
      * Get the list of buttons
      *
-     * @method getButtons
      * @return {Object} The list of buttons as a name/Dom pair
      */
     getButtons() {
@@ -88,7 +95,6 @@ export default class Buttons extends Field{
     /**
      * Get a button by name
      *
-     * @method getButton
      * @param {String} name The button's name
      * @return {Dom} The button's Dom object
      */

@@ -85,7 +85,7 @@
     "no-labels":                    ["error"],                                                       // disallow labeled statements
     "no-lone-blocks":               ["error"],                                                       // disallow unnecessary nested blocks
     "no-loop-func":                 ["error"],                                                       // disallow function declarations and expressions inside loop statements
-    "no-magic-numbers":             ["warn", { "ignore": [-1, 0, 1], "ignoreArrayIndexes": true }],  // disallow magic numbers
+    //"no-magic-numbers":             ["warn", { "ignore": [-1, 0, 1], "ignoreArrayIndexes": true }],  // disallow magic numbers
     "no-multi-spaces":              ["off"],                                                         // disallow multiple spaces
     "no-multi-str":                 ["error"],                                                       // disallow multiline strings
     //"no-new":                       ["warn"],                                                        // disallow new operators outside of assignments or comparisons
@@ -111,7 +111,7 @@
     "no-useless-concat":            ["error"],                                                       // disallow unnecessary concatenation of literals or template literals
     "no-useless-escape":            ["error"],                                                       // disallow unnecessary escape characters
     "no-useless-return":            ["error"],                                                       // disallow redundant return statements
-    "no-void":                      ["error"],                                                       // disallow void operators
+    //"no-void":                      ["error"],                                                       // disallow void operators
     "no-warning-comments":          ["warn"],                                                        // disallow specified warning terms in comments
     "no-with":                      ["error"],                                                       // disallow with statements
     "prefer-promise-reject-errors": ["error"],                                                       // require using Error objects as Promise rejection reasons

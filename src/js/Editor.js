@@ -1,7 +1,7 @@
 import Dom from './core/Dom';
 import {naturalCompare} from './core/utils/String';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {isArray, isNumber} from './core/utils/Var';
+import {isArray, isNumber, isObject} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -18,42 +18,43 @@ import GuideDetails from './editor/overlay/GuideDetails';
 import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
 import TimeField from './editor/field/Time';
+import Controller from './editor/Controller';
 
-import '../css/metaScore.editor.less';
+import {className} from '../css/Editor.less';
 
 /**
- * Fired when the editor is fully setup
+ * Provides the main Editor class
  *
- * @event ready
+ * @emits {ready} Fired when the editor is fully setup
  * @param {Object} editor The editor instance
  */
-const EVT_READY = 'ready';
-
 export default class Editor extends Dom {
 
     /**
-     * Provides the main Editor class
+     * Instantiate
      *
-     * @class Editor
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
-     * @param {String} [configs.player_url=''] The base URL of players
-     * @param {String} [configs.api_url=''] The base URL of the RESTful API
-     * @param {String} [configs.help_url=''] The base URL of the RESTful API
-     * @param {String} [configs.player_api_help_url=''] The URL of the player API help page
-     * @param {String} [configs.account_url=''] The URL of the user account page
-     * @param {String} [configs.logout_url=''] The URL of the user logout page
-     * @param {Object} [configs.user_groups={}] The groups the user belongs to
-     * @param {Boolean} [configs.reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
-     * @param {String} [configs.locale] The locale file to load
-     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
+     * @property {Mixed} [container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
+     * @property {String} [player_url=''] The base URL of players
+     * @property {String} [api_url=''] The base URL of the RESTful API
+     * @property {String} [help_url=''] The base URL of the RESTful API
+     * @property {String} [player_api_help_url=''] The URL of the player API help page
+     * @property {String} [account_url=''] The URL of the user account page
+     * @property {String} [logout_url=''] The URL of the user logout page
+     * @property {String} [user_groups={}] The list of groups the current user belongs to
+     * @property {Boolean} [reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
+     * @property {String} [lang='en'] The language to use for i18n
+     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Object} [guide_details={}] Configs to send to the GuideDetails overlay
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-editor', 'tabindex': 0});
+        super('<div/>', {'class': `metaScore-editor ${className}`, 'tabindex': 0});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         if(this.configs.container){
@@ -68,6 +69,11 @@ export default class Editor extends Dom {
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'container': 'body',
@@ -80,1610 +86,104 @@ export default class Editor extends Dom {
             'user_groups': {},
             'reload_player_on_save': false,
             'lang': 'en',
-            'ajax': {}
+            'xhr': {},
+            'guide_details': {}
         };
     }
 
+    /**
+    * Get the version number
+    *
+    * @return {String} The version number
+    */
     static getVersion(){
         return "[[VERSION]]";
     }
 
+    /**
+    * Get the revirsion number
+    *
+    * @return {String} The revirsion number
+    */
     static getRevision(){
         return "[[REVISION]]";
     }
 
-    onLocaleLoad(){
-        this.init();
-    }
-
     /**
-     * XHR error callback
-     *
-     * @method onXHRError
-     * @private
-     * @param {XMLHttpRequest} xhr The XHR request
-     */
-    onXHRError(loadmask, evt){
-        loadmask.hide();
-
-        new Alert({
-            'parent': this,
-            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
-            'buttons': {
-                'ok': Locale.t('editor.onXHRError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
-    }
-
-    /**
-     * Guide saving success callback
-     *
-     * @method onGuideSaveSuccess
-     * @private
-     * @param {Event} evt The event object
-     */
-    onGuideSaveSuccess(loadmask, evt){
-        const player = this.getPlayer();
-        const data = JSON.parse(evt.target.getResponse());
-
-        loadmask.hide();
-
-        if(!player || (data.id !== player.getId()) || this.configs.reload_player_on_save){
-            this.loadPlayer(data.id, data.vid);
-        }
-        else{
-            player.updateData(data, true)
-                  .setRevision(data.vid);
-
-            delete this.dirty_data;
-
-            this.setDirty(false)
-                .updateMainmenu();
-        }
-    }
-
-    /**
-     * Guide deletion confirm callback
-     *
-     * @method onGuideDeleteConfirm
-     * @private
-     */
-    onGuideDeleteConfirm() {
-        const id = this.getPlayer().getId();
-
-        const loadmask = new LoadMask({
-            'parent': this,
-            'autoShow': true
-        });
-
-        const options = Object.assign({}, {
-            'dataType': 'json',
-            'method': 'DELETE',
-            'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
-            'onError': this.onXHRError.bind(this, loadmask)
-        }, this.configs.ajax);
-
-        new Ajax(`${this.configs.api_url}guide/${id}.json`, options);
-    }
-
-    /**
-     * Guide deletion success callback
-     *
-     * @method onGuideDeleteSuccess
-     * @private
-     */
-    onGuideDeleteSuccess(loadmask){
-        this.unloadPlayer();
-
-        loadmask.hide();
-    }
-
-    /**
-     * Guide revert confirm callback
-     *
-     * @method onGuideRevertConfirm
-     * @private
-     */
-    onGuideRevertConfirm() {
-        const player = this.getPlayer();
-
-        this.loadPlayer(player.getId(), player.getRevision());
-    }
-
-    /**
-     * GuideSelector submit callback
-     *
-     * @method onGuideSelectorSubmit
-     * @param {CustomEvent} evt The event object. See {{#crossLink "GuideSelector/submit:event"}}GuideSelector.submit{{/crossLink}}
-     */
-    onGuideSelectorSubmit(evt){
-        this.loadPlayer(evt.detail.guide.id, evt.detail.vid);
-    }
-
-    /**
-     * Keydown event callback
-     *
-     * @method onKeydown
-     * @private
-     * @param {KeyboardEvent} evt The event object
-     */
-    onKeydown(evt){
-        if(Dom.is(evt.target, 'input')){
-            return;
-        }
-
-        switch(evt.key){
-            case "Alt":
-                if(!evt.repeat){
-                    this.setEditing(!this.persistentEditing, false);
-                    evt.preventDefault();
-                }
-                break;
-
-            case " ":
-                if(!evt.repeat){
-                    const player = this.getPlayer();
-                    if(player){
-                        player.togglePlay();
-                    }
-                }
-                break;
-
-            case "h":
-                if(evt.ctrlKey && !evt.repeat){
-                    const player = this.getPlayer();
-                    if(player){
-                        player.addClass('show-contents');
-                    }
-                    evt.preventDefault();
-                }
-                break;
-
-            case "z":
-                if(evt.ctrlKey){
-                    this.history.undo();
-                    evt.preventDefault();
-                }
-                break;
-
-            case "y":
-                if(evt.ctrlKey){
-                    this.history.redo();
-                    evt.preventDefault();
-                }
-                break;
-        }
-    }
-
-    /**
-     * Keyup event callback
-     *
-     * @method onKeyup
-     * @private
-     * @param {KeyboardEvent} evt The event object
-     */
-    onKeyup(evt){
-        if(Dom.is(evt.target, 'input')){
-            return;
-        }
-
-        switch(evt.key){
-            case "Alt":
-                this.setEditing(this.persistentEditing, false);
-                evt.preventDefault();
-                break;
-
-            case "h":
-                if(evt.ctrlKey){
-                    const player = this.getPlayer();
-                    if(player){
-                        player.removeClass('show-contents');
-                    }
-                    evt.preventDefault();
-                }
-                break;
-        }
-    }
-
-    /**
-     * Mousedown event callback
-     *
-     * @method onMousedown
-     * @private
-     */
-    onMousedown(){
-        if(this.player_contextmenu){
-            this.player_contextmenu.hide();
-        }
-    }
-
-    /**
-     * Mainmenu click event callback
-     *
-     * @method onMainmenuClick
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onMainmenuClick(evt){
-        switch(Dom.data(evt.target, 'action')){
-            case 'new':{
-                const callback = () => {
-                    this.detailsOverlay.getField('type').readonly(false);
-                    this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
-                    this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
-                    this.detailsOverlay
-                        .clearValues(true)
-                        .setValues({'action': 'new'}, true)
-                        .show();
-                };
-
-                if(this.isDirty()){
-                    new Alert({
-                            'parent': this,
-                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
-                            'buttons': {
-                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
-                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
-                            },
-                            'autoShow': true
-                        })
-                        .addListener('buttonclick', (click_evt) => {
-                            if(click_evt.detail.action === 'confirm'){
-                                callback();
-                            }
-                        });
-                }
-                else{
-                    callback();
-                }
-                break;
-            }
-
-            case 'open':{
-                const callback = this.openGuideSelector.bind(this);
-
-                if(this.isDirty()){
-                    new Alert({
-                            'parent': this,
-                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
-                            'buttons': {
-                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
-                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
-                            },
-                            'autoShow': true
-                        })
-                        .addListener('buttonclick', (click_evt) => {
-                            if(click_evt.detail.action === 'confirm'){
-                                callback();
-                            }
-                        });
-                }
-                else{
-                    callback();
-                }
-                break;
-            }
-
-            case 'edit':
-                this.detailsOverlay.getField('type').readonly(true);
-                this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.edit.info', 'The guide needs to be saved in order for applied changes to become permanent'));
-                this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.edit.submitText', 'Apply'));
-                this.detailsOverlay
-                    .clearValues(true)
-                    .setValues(Object.assign({'action': 'edit'}, this.getPlayer().getData()), true)
-                    .show();
-                break;
-
-            case 'save':
-                this.saveGuide('update');
-                break;
-
-            case 'clone':
-                this.saveGuide('clone');
-                break;
-
-            case 'publish':{
-                const callback = () => {
-                    this.saveGuide('update', true);
-                };
-
-                new Alert({
-                        'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
-                        'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.publish.no', 'No')
-                        },
-                        'autoShow': true
-                    })
-                    .addListener('buttonclick', (click_evt) => {
-                        if(click_evt.detail.action === 'confirm'){
-                            callback();
-                        }
-                    });
-                break;
-            }
-
-            case 'share':
-                new Share({
-                    'url': this.configs.player_url + this.getPlayer().getId(),
-                    'api_help_url': this.configs.player_api_help_url,
-                    'autoShow': true
-                });
-                break;
-
-            case 'download':
-                break;
-
-            case 'delete':
-                new Alert({
-                        'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
-                        'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.delete.no', 'No')
-                        },
-                        'autoShow': true
-                    })
-                    .addClass('delete-guide')
-                    .addListener('buttonclick', (click_evt) => {
-                        if(click_evt.detail.action === 'confirm'){
-                            this.onGuideDeleteConfirm();
-                        }
-                    });
-                break;
-
-            case 'revert':
-                new Alert({
-                        'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
-                        'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
-                        },
-                        'autoShow': true
-                    })
-                    .addListener('buttonclick', (click_evt) => {
-                        if(click_evt.detail.action === 'confirm'){
-                            this.onGuideRevertConfirm();
-                        }
-                    });
-                break;
-
-            case 'undo':
-                this.history.undo();
-                break;
-
-            case 'redo':
-                this.history.redo();
-                break;
-
-            case 'edit-toggle':
-                this.setEditing(!this.editing);
-                break;
-
-            case 'settings':
-                break;
-
-            case 'help':
-                window.open(this.configs.help_url, '_blank');
-                break;
-
-            case 'account':
-                window.location.href = this.configs.account_url;
-                break;
-
-            case 'logout':
-                window.location.href = this.configs.logout_url;
-                break;
-        }
-    }
-
-    /**
-     * Mainmenu time field valuechange event callback
-     *
-     * @method onMainmenuTimeFieldChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuechange:event"}}Time.valuechange{{/crossLink}}
-     */
-    onMainmenuTimeFieldChange(evt){
-        const field = evt.target._metaScore;
-        const time = field.getValue();
-
-        this.getPlayer().getMedia().setTime(time);
-    }
-
-    /**
-     * Mainmenu reading index field valuechange event callback
-     *
-     * @method onMainmenuRindexFieldChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Number/valuechange:event"}}Number.valuechange{{/crossLink}}
-     */
-    onMainmenuRindexFieldChange(evt){
-        const field = evt.target._metaScore;
-        const value = field.getValue();
-
-        this.getPlayer().setReadingIndex(value, true);
-    }
-
-    /**
-     * Time field valuein event callback
-     *
-     * @method onTimeFieldIn
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valuein:event"}}Time.valuein{{/crossLink}}
-     */
-    onTimeFieldIn(evt){
-        const field = evt.detail.field;
-        const time = this.getPlayer().getMedia().getTime();
-
-        field.setValue(time);
-    }
-
-    /**
-     * Time field valueout event callback
-     *
-     * @method onTimeFieldOut
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Time/valueout:event"}}Time.valueout{{/crossLink}}
-     */
-    onTimeFieldOut(evt){
-        const time = evt.detail.value;
-
-        this.getPlayer().getMedia().setTime(time);
-    }
-
-    /**
-     * Sidebar resizestart event callback
-     *
-     * @method onSidebarResizeStart
-     * @private
-     */
-    onSidebarResizeStart(){
-        this.addClass('sidebar-resizing');
-    }
-
-    /**
-     * Sidebar resize event callback
-     *
-     * @method onSidebarResize
-     * @private
-     */
-    onSidebarResize(){
-        const width = parseInt(this.sidebar_wrapper.css('width'), 10);
-
-        this.workspace.css('right', `${width}px`);
-    }
-
-    /**
-     * Sidebar resizeend event callback
-     *
-     * @method onSidebarResizeEnd
-     * @private
-     */
-    onSidebarResizeEnd(){
-        this.removeClass('sidebar-resizing');
-    }
-
-    /**
-     * Sidebar resize handle dblclick event callback
-     *
-     * @method onSidebarResizeDblclick
-     * @private
-     */
-    onSidebarResizeDblclick(){
-        this.toggleClass('sidebar-hidden');
-
-        this.toggleSidebarResizer();
-    }
-
-    /**
-     * Block panel componentset event callback
-     *
-     * @method onBlockSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
-     */
-    onBlockSet(evt){
-        const block = evt.detail.component;
-
-        if(block.instanceOf('Block')){
-            this.panels.page.getToolbar().toggleMenuItem('new', true);
-        }
-
-        this.updatePageSelector();
-    }
-
-    /**
-     * Block panel componentunset event callback
-     *
-     * @method onBlockUnset
-     * @private
-     */
-    onBlockUnset(evt){
-        const block = evt.detail.component;
-
-        if(block.instanceOf('Block')){
-            block.getPages().forEach((page) => {
-                this.panels.page.unsetComponent(page);
-            });
-
-            const toggle = this.panels.block.getComponents().length > 0;
-            this.panels.page.getToolbar().toggleMenuItem('new', toggle);
-        }
-
-        this.updatePageSelector();
-        this.updateElementSelector();
-    }
-
-    /**
-     * Block panel valuechange event callback
-     *
-     * @method onBlockPanelValueChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
-     */
-    onBlockPanelValueChange(evt){
-        const sets = evt.detail;
-
-        const update = (key) => {
-            const doUpdateBlockTogglers = sets.some((set) => {
-                return (
-                    ('x' in set[key]) ||
-                    ('y' in set[key]) ||
-                    ('width' in set[key]) ||
-                    ('height' in set[key])
-                );
-            });
-
-            if(doUpdateBlockTogglers){
-                this.getPlayer().updateBlockTogglers();
-            }
-        };
-
-        this.history.add({
-            'undo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.old_values);
-                });
-
-                update('old_values');
-            },
-            'redo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.new_values);
-                });
-
-                update('new_values');
-            }
-        });
-
-        update('new_values');
-    }
-
-    /**
-     * Block panel toolbar click event callback
-     *
-     * @method onBlockPanelToolbarClick
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onBlockPanelToolbarClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'synched':
-            case 'non-synched':
-                this.addPlayerComponents('block', {'type': 'Block', 'synched': action === 'synched'}, this.getPlayer());
-                break;
-
-            case 'block-toggler':
-                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
-                break;
-
-            case 'delete': {
-                const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
-                this.deletePlayerComponents('block', blocks);
-                break;
-            }
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Block panel toolbar selector valuechange event callback
-     *
-     * @method onBlockPanelSelectorChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
-     */
-    onBlockPanelSelectorChange(evt){
-        if(evt.detail.added.length > 0){
-            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
-            added.forEach((component) => {
-                this.panels.block.setComponent(component, true);
-            });
-        }
-
-        if(evt.detail.removed.length > 0){
-            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
-            removed.forEach((component) => {
-                this.panels.block.unsetComponent(component);
-            });
-        }
-    }
-
-    /**
-     * Page panel componentset event callback
-     *
-     * @method onPageSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
-     */
-    onPageSet(evt){
-        this.panels.element
-            .getToolbar()
-                .toggleMenuItem('Cursor', true)
-                .toggleMenuItem('Image', true)
-                .toggleMenuItem('Text', true);
-
-        const block = evt.detail.component.getBlock();
-        const start_time_field = this.panels.page.getField('start-time');
-        const end_time_field = this.panels.page.getField('end-time');
-
-        if(block.getPropertyValue('synched')){
-            const index = block.getActivePageIndex();
-            const previous_page = block.getPage(index-1);
-            const next_page = block.getPage(index+1);
-
-            if(previous_page){
-                start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
-            }
-            else{
-                start_time_field.readonly(true).enable();
-            }
-
-            if(next_page){
-                end_time_field.readonly(false).enable().setMax(next_page.getPropertyValue('end-time'));
-            }
-            else{
-                end_time_field.readonly(true).enable();
-            }
-        }
-        else{
-            start_time_field.disable();
-            end_time_field.disable();
-        }
-
-        this.updateElementSelector();
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Page panel componentunset event callback
-     *
-     * @method onPageUnset
-     * @private
-     */
-    onPageUnset(evt){
-        const page = evt.detail.component;
-
-        page.getElements().forEach((element) => {
-            this.panels.element.unsetComponent(element);
-        });
-
-        const toggle = this.panels.page.getComponents().length > 0;
-        this.panels.element.getToolbar()
-            .toggleMenuItem('Cursor', toggle)
-            .toggleMenuItem('Image', toggle)
-            .toggleMenuItem('Text', toggle);
-
-        this.updateElementSelector();
-    }
-
-    /**
-     * Page panel valuechange event callback
-     *
-     * @method onPagePanelValueChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
-     */
-    onPagePanelValueChange(evt){
-        const sets = evt.detail;
-
-        const update = (key) => {
-            sets.forEach((set) => {
-                if(('start-time' in set[key]) || ('end-time' in set[key])){
-                    const page = set.component;
-                    const block = page.getBlock();
-
-                    if(block.getPropertyValue('synched')){
-                        const index = block.getPageIndex(page);
-                        const previous_page = block.getPage(index - 1);
-                        const next_page = block.getPage(index + 1);
-
-                        if(('start-time' in set[key]) && previous_page){
-                            previous_page.setPropertyValue('end-time', set[key]['start-time']);
-                        }
-
-                        if(('end-time' in set[key]) && next_page){
-                            next_page.setPropertyValue('start-time', set[key]['end-time']);
-                        }
-                    }
-                }
-            });
-        };
-
-        this.history.add({
-            'undo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.old_values);
-                });
-
-                update('old_values');
-            },
-            'redo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.new_values);
-                });
-
-                update('new_values');
-            }
-        });
-
-        update('new_values');
-    }
-
-    /**
-     * Page panel toolbar click event callback
-     *
-     * @method onPagePanelToolbarClick
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onPagePanelToolbarClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'new': {
-                const block = this.panels.block.getComponent();
-                this.addPlayerComponents('page', {}, block);
-                break;
-            }
-
-            case 'delete': {
-                const pages = this.panels.page.getComponents();
-                this.deletePlayerComponents('page', pages);
-                break;
-            }
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Page panel toolbar selector valuechange event callback
-     *
-     * @method onPagePanelSelectorChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
-     */
-    onPagePanelSelectorChange(evt){
-        if(evt.detail.added.length > 0){
-            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
-            added.forEach((component) => {
-                this.panels.page.setComponent(component, true);
-                component.getBlock().setActivePage(component, true);
-            });
-        }
-
-        if(evt.detail.removed.length > 0){
-            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
-            removed.forEach((component) => {
-                this.panels.page.unsetComponent(component);
-            });
-        }
-    }
-
-    /**
-     * Element panel componentset event callback
-     *
-     * @method onElementSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/componentset:event"}}Panel.componentset{{/crossLink}}
-     */
-    onElementSet(evt){
-        const element = evt.detail.component;
-        const player = this.getPlayer();
-
-        player.setReadingIndex(element.getPropertyValue('r-index') || 0);
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Element panel valuechange event callback
-     *
-     * @method onElementPanelValueChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Panel/valueschange:event"}}Panel.valueschange{{/crossLink}}
-     */
-    onElementPanelValueChange(evt){
-        const sets = evt.detail;
-
-        const update = (key) => {
-            const doUpdateElementSelector = sets.some((set) => {
-                return ('r-index' in set[key]);
-            });
-            if(doUpdateElementSelector){
-                this.updateElementSelector();
-            }
-        };
-
-        this.history.add({
-            'undo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.old_values);
-                });
-
-                update('old_values');
-            },
-            'redo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.new_values);
-                });
-
-                update('new_values');
-            }
-        });
-
-        update('new_values');
-    }
-
-    /**
-     * Element panel toolbar click event callback
-     *
-     * @method onElementPanelToolbarClick
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onElementPanelToolbarClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'Cursor':
-            case 'Image':
-            case 'Text': {
-                const page = this.panels.page.getComponent();
-                this.addPlayerComponents('element', {'type': action}, page);
-                break;
-            }
-
-            case 'delete': {
-                const elements = this.panels.element.getComponents();
-                this.deletePlayerComponents('element', elements);
-                break;
-            }
-        }
-    }
-
-    /**
-     * Element panel toolbar selector valuechange event callback
-     *
-     * @method onElementPanelSelectorChange
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Select/valueschange:event"}}Select.valueschange{{/crossLink}}
-     */
-    onElementPanelSelectorChange(evt){
-        if(evt.detail.added.length > 0){
-            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
-            added.forEach((component) => {
-                this.panels.element.setComponent(component, true);
-            });
-        }
-
-        if(evt.detail.removed.length > 0){
-            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
-            removed.forEach((component) => {
-                this.panels.element.unsetComponent(component);
-            });
-        }
-    }
-
-    /**
-     * Player idset event callback
-     *
-     * @method onPlayerIdSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/idset:event"}}Player.idset{{/crossLink}}
-     */
-    onPlayerIdSet(evt){
-        const player = evt.detail.player;
-
-        window.history.replaceState(null, null, `#guide=${player.getId()}:${player.getRevision()}`);
-    }
-
-    /**
-     * Player revisionset event callback
-     *
-     * @method onPlayerRevisionSet
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/revisionset:event"}}Player.revisionset{{/crossLink}}
-     */
-    onPlayerRevisionSet(evt){
-        const player = evt.detail.player;
-
-        window.history.replaceState(null, null, `#guide=${player.getId()}:${player.getRevision()}`);
-    }
-
-    /**
-     * Player loadedmetadata event callback
-     *
-     * @method onPlayerLoadedMetadata
-     * @private
-     */
-    onPlayerLoadedMetadata(){
-        this.mainmenu.timefield.setMax(this.player.getMedia().getDuration());
-    }
-
-    /**
-     * Media timeupdate event callback
-     *
-     * @method onPlayerTimeUpdate
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Media/timeupdate:event"}}Media.timeupdate{{/crossLink}}
-     */
-    onPlayerTimeUpdate(evt){
-        const time = evt.detail.media.getTime();
-
-        this.mainmenu.timefield.setValue(time, true);
-    }
-
-    /**
-     * Player rindex event callback
-     *
-     * @method onPlayerReadingIndex
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/rindex:event"}}Player.rindex{{/crossLink}}
-     */
-    onPlayerReadingIndex(evt){
-        const rindex = evt.detail.value;
-
-        this.mainmenu.rindexfield.setValue(rindex, true);
-    }
-
-    /**
-     * Player mousedown event callback
-     *
-     * @method onPlayerMousedown
-     * @private
-      */
-    onPlayerMousedown(){
-        this.contextmenu.hide();
-    }
-
-    /**
-     * Player mediaadd event callback
-     *
-     * @method onPlayerMediaAdd
-     * @private
-     */
-    onPlayerMediaAdd(){
-        this.updateBlockSelector();
-
-        this.getPlayer().updateBlockTogglers();
-    }
-
-    /**
-     * Player controlleradd event callback
-     *
-     * @method onPlayerControllerAdd
-     * @private
-     */
-    onPlayerControllerAdd(){
-        this.updateBlockSelector();
-
-        this.getPlayer().updateBlockTogglers();
-    }
-
-    /**
-     * Player blocktaggleradd event callback
-     *
-     * @method onPlayerBlockTogglerAdd
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/blocktaggleradd:event"}}Player.blockadd{{/crossLink}}
-     */
-    onPlayerBlockTogglerAdd(evt){
-        this.updateBlockSelector();
-
-        const blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
-        evt.detail.blocktoggler.update(blocks);
-    }
-
-    /**
-     * Player blockadd event callback
-     *
-     * @method onPlayerBlockAdd
-     * @private
-     */
-    onPlayerBlockAdd(){
-        this.updateBlockSelector();
-
-        this.getPlayer().updateBlockTogglers();
-    }
-
-    onComponentBeforeRemove(evt){
-        const component = evt.target._metaScore;
-
-        if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
-            this.panels.block.unsetComponent(component, true);
-        }
-        else if(component.instanceOf('Page')){
-            this.panels.page.unsetComponent(component, true);
-        }
-        else if(component.instanceOf('Element')){
-            this.panels.page.unsetComponent(component, true);
-        }
-    }
-
-    /**
-     * Player childremove event callback
-     *
-     * @method onPlayerChildRemove
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Dom/childremove:event"}}Dom.childremove{{/crossLink}}
-     */
-    onPlayerChildRemove(evt){
-        const child = evt.detail.child;
-        const component = child._metaScore;
-
-        if(component){
-            if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
-                this.updateBlockSelector();
-
-                if(!component.instanceOf('BlockToggler')){
-                    this.getPlayer().updateBlockTogglers();
-                }
-            }
-            else if(component.instanceOf('Page')){
-                this.updatePageSelector();
-            }
-            else if(component.instanceOf('Element')){
-                this.updateElementSelector();
-            }
-        }
-    }
-
-    /**
-     * Player frame load event callback
-     *
-     * @method onPlayerFrameLoadSuccess
-     * @private
-     */
-    onPlayerFrameLoadSuccess(loadmask){
-        const player = this.player_frame.get(0).contentWindow.player;
-
-        if(player){
-            player
-                .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
-                .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
-                .addListener('idset', this.onPlayerIdSet.bind(this))
-                .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
-                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
-                .load();
-        }
-    }
-
-    /**
-     * Player frame error event callback
-     *
-     * @method onPlayerFrameLoadError
-     * @private
-     */
-    onPlayerFrameLoadError(loadmask){
-        loadmask.hide();
-
-        new Alert({
-            'parent': this,
-            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
-            'buttons': {
-                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
-    }
-
-    /**
-     * Player load event callback
-     *
-     * @method onPlayerLoadSuccess
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Player/load:event"}}Player.load{{/crossLink}}
-     */
-    onPlayerLoadSuccess(loadmask, evt){
-        this.player = evt.detail.player
-            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
-            .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
-            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
-            .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
-            .addListener('mousedown', this.onPlayerMousedown.bind(this))
-            .addListener('mediaadd', this.onPlayerMediaAdd.bind(this))
-            .addListener('controlleradd', this.onPlayerControllerAdd.bind(this))
-            .addListener('blocktoggleradd', this.onPlayerBlockTogglerAdd.bind(this))
-            .addListener('blockadd', this.onPlayerBlockAdd.bind(this))
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keyup', this.onKeyup.bind(this))
-            .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
-            .addListener('rindex', this.onPlayerReadingIndex.bind(this))
-            .addListener('childremove', this.onPlayerChildRemove.bind(this))
-            .addListener('click', this.onPlayerClick.bind(this))
-            .addClass('in-editor');
-
-            this.player.contextmenu
-                .disable();
-
-            const player_body = this.player_frame.get(0).contentWindow.document.body;
-            this.player_contextmenu
-                .setTarget(player_body)
-                .enable();
-
-            new Dom(player_body)
-                .addListener('keydown', this.onKeydown.bind(this))
-                .addListener('keyup', this.onKeyup.bind(this));
-
-            this
-                .setEditing(true)
-                .updateMainmenu()
-                .updateBlockSelector()
-                .updatePageSelector()
-                .updateElementSelector();
-
-            const data = this.player.getData();
-            this.mainmenu
-                .toggleButton('save', data.permissions.update)
-                .toggleButton('clone', data.permissions.clone)
-                .toggleButton('publish', data.permissions.update)
-                .toggleButton('delete', data.permissions.delete);
-
-            this.mainmenu.rindexfield.setValue(0, true);
-
-            loadmask.hide();
-    }
-
-    /**
-     * Player error event callback
-     *
-     * @method onPlayerLoadError
-     * @private
-     */
-    onPlayerLoadError(loadmask){
-        loadmask.hide();
-
-        new Alert({
-            'parent': this,
-            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
-            'buttons': {
-                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
-    }
-
-    /**
-     * Player click event callback
-     *
-     * @method onPlayerClick
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onPlayerClick(evt){
-        if(this.editing !== true){
-            return;
-        }
-
-        this.panels.element.unsetComponents();
-        this.panels.page.unsetComponents();
-        this.panels.block.unsetComponents();
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Component beforedrag event callback
-     *
-     * @method onComponentBeforeDrag
-     * @private
-     * @param {Event} evt The event object
-     */
-    onComponentBeforeDrag(evt){
-        if(this.editing !== true){
-            evt.preventDefault();
-        }
-    }
-
-    /**
-     * Component click event callback
-     *
-     * @method onComponentClick
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onComponentClick(evt){
-        let component = null;
-
-        if(this.editing !== true){
-            return;
-        }
-
-        if(!Dom.is(evt.target, '.metaScore-component')){
-            component = Dom.closest(evt.target, '.metaScore-component')._metaScore;
-        }
-        else{
-            component = evt.target._metaScore;
-        }
-
-        if(component.instanceOf('Element')){
-            if(evt.shiftKey && this.panels.element.getComponents().includes(component)){
-                this.panels.element.unsetComponent(component);
-            }
-            else{
-                const page = component.getPage();
-                const block = page.getBlock();
-
-                this.panels.block.setComponent(block, evt.shiftKey);
-                this.panels.page.setComponent(page, evt.shiftKey);
-                this.panels.element.setComponent(component, evt.shiftKey);
-            }
-        }
-        else if(component.instanceOf('Page')){
-            const block = component.getBlock();
-
-            if(evt.shiftKey && this.panels.page.getComponents().includes(component)){
-                this.panels.block.unsetComponent(block);
-
-                const elements = component.getElements();
-                elements.forEach((element) => {
-                    this.panels.element.unsetComponent(element);
-                });
-            }
-            else{
-                this.panels.block.setComponent(block, evt.shiftKey);
-                this.panels.page.setComponent(component, evt.shiftKey);
-
-                if(!evt.shiftKey){
-                    this.panels.element.unsetComponents();
-                }
-            }
-        }
-        else{
-            if(evt.shiftKey && this.panels.block.getComponents().includes(component)){
-                this.panels.block.unsetComponent(component);
-
-                if(component.instanceOf('Block')){
-                    const pages = component.getPages();
-                    pages.forEach((page) => {
-                        this.panels.page.unsetComponent(page);
-                    });
-                }
-            }
-            else{
-                this.panels.block.setComponent(component, evt.shiftKey);
-
-                if(!evt.shiftKey){
-                    this.panels.page.unsetComponents();
-                    this.panels.element.unsetComponents();
-                }
-
-                if(component.instanceOf('Block')){
-                    this.panels.page.setComponent(component.getActivePage(), evt.shiftKey);
-                }
-            }
-        }
-
-        evt.stopImmediatePropagation();
-    }
-
-    /**
-     * Block pageadd event callback
-     *
-     * @method onBlockPageAdd
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageadd:event"}}Block.pageadd{{/crossLink}}
-     */
-    onBlockPageAdd(evt){
-        const block = evt.detail.block;
-
-        if(block === this.panels.block.getComponent()){
-            this.updatePageSelector();
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Block pageactivate event callback
-     *
-     * @method onBlockPageActivate
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Block/pageactivate:event"}}Block.pageactivate{{/crossLink}}
-     */
-    onBlockPageActivate(evt){
-        const page = evt.detail.current;
-
-        if(page.getBlock() === this.panels.block.getComponent()){
-            this.panels.page.setComponent(page);
-        }
-    }
-
-    /**
-     * Page elementadd event callback
-     *
-     * @method onPageElementAdd
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "Page/elementadd:event"}}Page.elementadd{{/crossLink}}
-     */
-    onPageElementAdd(evt){
-        const element = evt.detail.element;
-        const page = evt.detail.page;
-
-        if(evt.detail.new && element.instanceOf('Cursor')){
-            const media = this.getPlayer().getMedia();
-
-            if(!isNumber(element.getPropertyValue('start-time'))){
-                element.setPropertyValue('start-time', media.getTime());
-
-            }
-
-            if(!isNumber(element.getPropertyValue('end-time'))){
-                const block = page.getBlock();
-                element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
-            }
-        }
-
-        if(page === this.panels.page.getComponent()){
-            this.updateElementSelector();
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * History add event callback
-     *
-     * @method onHistoryAdd
-     * @private
-     */
-    onHistoryAdd(){
-        this.setDirty(true)
-            .updateMainmenu();
-    }
-
-    /**
-     * History undo event callback
-     *
-     * @method onHistoryUndo
-     * @private
-     */
-    onHistoryUndo(){
-        this.updateMainmenu();
-    }
-
-    /**
-     * History redo event callback
-     *
-     * @method onHistoryRedo
-     * @private
-     */
-    onHistoryRedo(){
-        this.updateMainmenu();
-    }
-
-    /**
-     * GuideDetails show event callback
-     *
-     * @method onDetailsOverlayShow
-     * @private
-     */
-    onDetailsOverlayShow(){
-        const player = this.getPlayer();
-
-        if(player){
-            player.getMedia().pause();
-        }
-    }
-
-    /**
-     * GuideDetails submit event callback
-     *
-     * @method onDetailsOverlaySubmit
-     * @private
-     * @param {CustomEvent} evt The event object. See {{#crossLink "GuideDetails/submit:event"}}GuideDetails.submit{{/crossLink}}
-     */
-    onDetailsOverlaySubmit(evt){
-        const overlay = evt.detail.overlay;
-        const data = evt.detail.values;
-        const action = overlay.getField('action').getValue();
-        const player = this.getPlayer();
-
-        if(action === 'new'){
-            this.createGuide(data, overlay);
-        }
-        else{
-            const callback = (new_duration) => {
-                if(new_duration){
-                    player.getComponents('.block').forEach((block) => {
-                        if(block.getPropertyValue('synched')){
-                            const page = block.getPage(block.getPageCount()-1);
-                            if(page){
-                                page.setPropertyValue('end-time', new_duration);
-                            }
-                        }
-                    });
-                }
-
-                this.dirty_data = data;
-                player.updateData(data);
-                overlay.hide();
-
-                this.mainmenu.timefield.setMax(new_duration);
-
-                this.setDirty(true)
-                    .updateMainmenu();
-            };
-
-            if('media' in data){
-                this.getMediaFileDuration(data.media.url, (new_duration) => {
-                    const old_duration = player.getMedia().getDuration();
-
-                    if(new_duration !== old_duration){
-                        const formatted_old_duration = TimeField.getTextualValue(old_duration);
-                        const formatted_new_duration = TimeField.getTextualValue(new_duration);
-                        const blocks = [];
-
-                        if(new_duration < old_duration){
-                            player.getComponents('.block').forEach((block) => {
-                                if(block.getPropertyValue('synched')){
-                                    block.getPages().some((page) => {
-                                        if(page.getPropertyValue('start-time') > new_duration){
-                                            blocks.push(block.getPropertyValue('name'));
-                                            return true;
-                                        }
-
-                                        return false;
-                                    });
-                                }
-                            });
-                        }
-
-                        if(blocks.length > 0){
-                            new Alert({
-                                'parent': this,
-                                'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
-                                'buttons': {
-                                    'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
-                                },
-                                'autoShow': true
-                            });
-                        }
-                        else{
-                            let msg = '';
-                            if(new_duration < old_duration){
-                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                            }
-                            else{
-                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                            }
-
-                            new Alert({
-                                'parent': this,
-                                'text': msg,
-                                'buttons': {
-                                    'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
-                                    'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
-                                },
-                                'autoShow': true
-                            })
-                            .addListener('buttonclick', (click_evt) => {
-                                if(click_evt.detail.action === 'confirm'){
-                                    callback(new_duration);
-                                }
-                            });
-                        }
-                    }
-                    else{
-                        callback();
-                    }
-                });
-            }
-            else{
-                callback();
-            }
-        }
-    }
-
-    /**
-     * Window hashchange event callback
-     *
-     * @method onWindowHashChange
-     * @private
-     * @param {HashChangeEvent} evt The event object
-     */
-    onWindowHashChange(evt){
-        const callback = this.loadPlayerFromHash.bind(this);
-        const oldURL = evt.oldURL;
-
-        if(this.isDirty()){
-            new Alert({
-                    'parent': this,
-                    'text': Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
-                    'buttons': {
-                        'confirm': Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
-                        'cancel': Locale.t('editor.onWindowHashChange.alert.no', 'No')
-                    },
-                    'autoShow': true
-                })
-                .addListener('buttonclick', (click_evt) => {
-                    if(click_evt.detail.action === 'confirm'){
-                        callback();
-                    }
-                    else{
-                        window.history.replaceState(null, null, oldURL);
-                    }
-                });
-        }
-        else{
-            callback();
-        }
-
-        evt.preventDefault();
-    }
-
-    /**
-     * Window beforeunload event callback
-     *
-     * @method onWindowBeforeUnload
-     * @private
-     * @param {Event} evt The event object
-     */
-    onWindowBeforeUnload(evt){
-        if(this.isDirty()){
-            evt.returnValue = Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
-        }
-    }
-
+    * Initialize
+    */
     init(){
-        // add components
+        const top =  new Dom('<div/>', {'id': 'top'}).appendTo(this);
 
-        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this);
-        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this);
+        /**
+         * The top menu
+         * @type {MainMenu}
+         */
+        this.mainmenu = new MainMenu().appendTo(top)
+            .toggleItem('help', this.configs.help_url ? true : false)
+            .toggleItem('account', this.configs.account_url ? true : false)
+            .toggleItem('logout', this.configs.logout_url ? true : false)
+            .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
+            .addDelegate('.checkbox.field[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
+            .addDelegate('.number.field[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
-        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(this);
+        const center =  new Dom('<div/>', {'id': 'center'}).appendTo(this);
 
-        this.mainmenu = new MainMenu().appendTo(this)
-            .toggleButton('help', this.configs.help_url ? true : false)
-            .toggleButton('account', this.configs.account_url ? true : false)
-            .toggleButton('logout', this.configs.logout_url ? true : false)
-            .addDelegate('button[data-action]:not(.disabled)', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.time', 'valuechange', this.onMainmenuTimeFieldChange.bind(this))
-            .addDelegate('.r-index', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
+        const left =  new Dom('<div/>', {'id': 'left'}).appendTo(center);
 
-        this.sidebar_wrapper = new Dom('<div/>', {'class': 'sidebar-wrapper'}).appendTo(this)
+        /**
+         * The workspace
+         * @type {Dom}
+         */
+        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(left);
+
+        /**
+         * The horizontal ruler
+         * @type {Dom}
+         */
+        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
+
+        /**
+         * The vertical ruler
+         * @type {Dom}
+         */
+        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
+
+        const bottom =  new Dom('<div/>', {'id': 'bottom'}).appendTo(left);
+
+        /**
+         * The controller
+         * @type {Dom}
+         */
+        this.controller = new Controller()
+            .addListener('timeset', this.onControllerTimeSet.bind(this))
+            .addDelegate('.time.field', 'valuechange', this.onControllerTimeFieldChange.bind(this))
+            .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
+            .disable()
+            .appendTo(bottom);
+
+        const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
-            .addListener('resize', this.onSidebarResize.bind(this))
             .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
 
-        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(this.sidebar_wrapper);
-
-        this.sidebar_resizer = new Resizable({target: this.sidebar_wrapper, directions: ['left']});
+        /**
+         * The sidebar resizer
+         * @type {Resizable}
+         */
+        this.sidebar_resizer = new Resizable({target: right, directions: ['left']});
         this.sidebar_resizer.getHandle('left')
             .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
 
+        /**
+         * The sidebar
+         * @type {Dom}
+         */
+        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(right);
+
+        /**
+         * The list of panels
+         * @type {Object}
+         */
         this.panels = {};
 
         this.panels.block = new BlockPanel().appendTo(this.sidebar)
@@ -1712,13 +212,25 @@ export default class Editor extends Dom {
             .addDelegate('.selector', 'valuechange', this.onElementPanelSelectorChange.bind(this))
             .addDelegate('.buttons [data-action]', 'click', this.onElementPanelToolbarClick.bind(this));
 
+        /**
+         * The grid
+         * @type {Dom}
+         */
         this.grid = new Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
 
+        /**
+         * The undo/redo handler
+         * @type {History}
+         */
         this.history = new History()
             .addListener('add', this.onHistoryAdd.bind(this))
             .addListener('undo', this.onHistoryUndo.bind(this))
             .addListener('redo', this.onHistoryRedo.bind(this));
 
+        /**
+         * The clipboard handler
+         * @type {Clipboard}
+         */
         this.clipboard = new Clipboard();
 
         // prevent the custom contextmenu from overriding the native one in inputs
@@ -1727,9 +239,11 @@ export default class Editor extends Dom {
             evt.stopPropagation();
         });
 
-        this.detailsOverlay = new GuideDetails({
-                'groups': this.configs.user_groups
-            })
+        /**
+         * The guide details overlay
+         * @type {GuideDetails}
+         */
+        this.detailsOverlay = new GuideDetails(this.configs.guide_details)
             .addListener('show', this.onDetailsOverlayShow.bind(this))
             .addListener('submit', this.onDetailsOverlaySubmit.bind(this));
 
@@ -1740,19 +254,29 @@ export default class Editor extends Dom {
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addDelegate('.timefield', 'valuein', this.onTimeFieldIn.bind(this))
-            .addDelegate('.timefield', 'valueout', this.onTimeFieldOut.bind(this))
+            .addDelegate('.time.field', 'valuein', this.onTimeFieldIn.bind(this))
+            .addDelegate('.time.field', 'valueout', this.onTimeFieldOut.bind(this))
             .setDirty(false)
             .setEditing(false)
             .updateMainmenu()
             .setupContextMenus()
             .loadPlayerFromHash();
 
-        this.triggerEvent(EVT_READY, {'editor': this}, true, false);
+        this.triggerEvent('ready', {'editor': this}, false, false);
 
     }
 
+    /**
+     * Setup the context menus
+     *
+     * @return {this}
+     */
     setupContextMenus(){
+
+        /**
+         * The editor's context menu
+         * @type {ContextMenu}
+         */
         this.contextmenu = new ContextMenu({'target': this, 'items': {
             'about': {
                 'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
@@ -1760,6 +284,10 @@ export default class Editor extends Dom {
         }})
         .appendTo(this);
 
+        /**
+         * The player's context menu
+         * @type {ContextMenu}
+         */
         this.player_contextmenu = new ContextMenu({'target': null, 'items': {
                 'add-element': {
                     'text': Locale.t('editor.contextmenu.add-element', 'Add an element'),
@@ -2098,21 +626,1652 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Updates the editing state
+    * Local load callback
+    *
+    * @private
+    */
+    onLocaleLoad(){
+        this.init();
+    }
+
+    /**
+     * XHR error callback
      *
-     * @method setEditing
-     * @param {Boolean} editing The new state
-     * @param {Boolean} sticky Whether the new state is persistent or temporary
-     * @chainable
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     * @param {Event} evt The event object
      */
-    setEditing(editing, sticky){
+    onXHRError(loadmask, evt){
+        loadmask.hide();
+
+        new Alert({
+            'parent': this,
+            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
+            'buttons': {
+                'ok': Locale.t('editor.onXHRError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
+    }
+
+    /**
+     * Guide saving success callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     * @param {Event} evt The event object
+     */
+    onGuideSaveSuccess(loadmask, evt){
+        const player = this.getPlayer();
+        const data = evt.target.getResponse();
+
+        loadmask.hide();
+
+        if(!player || (data.id !== player.getId()) || this.configs.reload_player_on_save){
+            this.loadPlayer(data.id, data.vid);
+        }
+        else{
+            player.updateData(data, true)
+                  .setRevision(data.vid);
+
+            delete this.dirty_data;
+
+            this.setDirty(false)
+                .updateMainmenu();
+        }
+    }
+
+    /**
+     * Guide deletion confirm callback
+     *
+     * @private
+     */
+    onGuideDeleteConfirm() {
+        const id = this.getPlayer().getId();
+
+        const loadmask = new LoadMask({
+            'parent': this,
+            'autoShow': true
+        });
+
+        const options = Object.assign({}, {
+            'responseType': 'json',
+            'method': 'DELETE',
+            'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
+            'onError': this.onXHRError.bind(this, loadmask)
+        }, this.configs.xhr);
+
+        new Ajax(`${this.configs.api_url}guide/${id}.json`, options);
+    }
+
+    /**
+     * Guide deletion success callback
+     *
+     * @private
+     */
+    onGuideDeleteSuccess(loadmask){
+        this.unloadPlayer();
+
+        loadmask.hide();
+    }
+
+    /**
+     * Guide revert confirm callback
+     *
+     * @private
+     */
+    onGuideRevertConfirm() {
         const player = this.getPlayer();
 
-        this.editing = editing !== false;
+        this.loadPlayer(player.getId(), player.getRevision());
+    }
 
-        if(sticky !== false){
-            this.persistentEditing = this.editing;
+    /**
+     * GuideSelector submit callback
+     *
+     * @param {CustomEvent} evt The event object. See {@link GuideSelector}
+     */
+    onGuideSelectorSubmit(evt){
+        this.loadPlayer(evt.detail.guide.id, evt.detail.vid);
+    }
+
+    /**
+     * Keydown event callback
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
+    onKeydown(evt){
+        if(Dom.is(evt.target, 'input')){
+            return;
         }
+
+        switch(evt.key){
+            case "Alt":
+                if(!evt.repeat){
+                    this.setEditing(!this.editing);
+                    evt.preventDefault();
+                }
+                break;
+
+            case " ":
+                if(!evt.repeat){
+                    const player = this.getPlayer();
+                    if(player){
+                        player.togglePlay();
+                    }
+                }
+                break;
+
+            case "h":
+                if(evt.ctrlKey && !evt.repeat){
+                    const player = this.getPlayer();
+                    if(player){
+                        player.addClass('show-contents');
+                    }
+                    evt.preventDefault();
+                }
+                break;
+
+            case "z":
+                if(evt.ctrlKey){
+                    this.history.undo();
+                    evt.preventDefault();
+                }
+                break;
+
+            case "y":
+                if(evt.ctrlKey){
+                    this.history.redo();
+                    evt.preventDefault();
+                }
+                break;
+        }
+    }
+
+    /**
+     * Keyup event callback
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
+    onKeyup(evt){
+        if(Dom.is(evt.target, 'input')){
+            return;
+        }
+
+        switch(evt.key){
+            case "Alt":
+                this.setEditing(!this.editing);
+                evt.preventDefault();
+                break;
+
+            case "h":
+                if(evt.ctrlKey){
+                    const player = this.getPlayer();
+                    if(player){
+                        player.removeClass('show-contents');
+                    }
+                    evt.preventDefault();
+                }
+                break;
+        }
+    }
+
+    /**
+     * Mousedown event callback
+     *
+     * @private
+     */
+    onMousedown(){
+        if(this.player_contextmenu){
+            this.player_contextmenu.hide();
+        }
+    }
+
+    /**
+     * Mainmenu click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onMainmenuClick(evt){
+        switch(Dom.data(evt.target, 'action')){
+            case 'new':{
+                const callback = () => {
+                    this.detailsOverlay.getField('type').readonly(false);
+                    this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
+                    this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
+                    this.detailsOverlay
+                        .clearValues(true)
+                        .setValues({'action': 'new'}, true)
+                        .show();
+                };
+
+                if(this.isDirty()){
+                    new Alert({
+                            'parent': this,
+                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'buttons': {
+                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
+                            },
+                            'autoShow': true
+                        })
+                        .addListener('buttonclick', (click_evt) => {
+                            if(click_evt.detail.action === 'confirm'){
+                                callback();
+                            }
+                        });
+                }
+                else{
+                    callback();
+                }
+                break;
+            }
+
+            case 'open':{
+                const callback = this.openGuideSelector.bind(this);
+
+                if(this.isDirty()){
+                    new Alert({
+                            'parent': this,
+                            'text': Locale.t('editor.onMainmenuClick.open.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                            'buttons': {
+                                'confirm': Locale.t('editor.onMainmenuClick.open.yes', 'Yes'),
+                                'cancel': Locale.t('editor.onMainmenuClick.open.no', 'No')
+                            },
+                            'autoShow': true
+                        })
+                        .addListener('buttonclick', (click_evt) => {
+                            if(click_evt.detail.action === 'confirm'){
+                                callback();
+                            }
+                        });
+                }
+                else{
+                    callback();
+                }
+                break;
+            }
+
+            case 'edit':
+                this.detailsOverlay.getField('type').readonly(true);
+                this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.edit.info', 'The guide needs to be saved in order for applied changes to become permanent'));
+                this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.edit.submitText', 'Apply'));
+                this.detailsOverlay
+                    .clearValues(true)
+                    .setValues(Object.assign({'action': 'edit'}, this.getPlayer().getData()), true)
+                    .show();
+                break;
+
+            case 'save':
+                this.saveGuide('update');
+                break;
+
+            case 'clone':
+                this.saveGuide('clone');
+                break;
+
+            case 'publish':{
+                const callback = () => {
+                    this.saveGuide('update', true);
+                };
+
+                new Alert({
+                        'parent': this,
+                        'text': Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
+                        'buttons': {
+                            'confirm': Locale.t('editor.onMainmenuClick.publish.yes', 'Yes'),
+                            'cancel': Locale.t('editor.onMainmenuClick.publish.no', 'No')
+                        },
+                        'autoShow': true
+                    })
+                    .addListener('buttonclick', (click_evt) => {
+                        if(click_evt.detail.action === 'confirm'){
+                            callback();
+                        }
+                    });
+                break;
+            }
+
+            case 'share':
+                new Share({
+                    'url': this.configs.player_url + this.getPlayer().getId(),
+                    'api_help_url': this.configs.player_api_help_url,
+                    'autoShow': true
+                });
+                break;
+
+            case 'download':
+                break;
+
+            case 'delete':
+                new Alert({
+                        'parent': this,
+                        'text': Locale.t('editor.onMainmenuClick.delete.msg', 'Are you sure you want to delete this guide?<br/><b style="color: #F00;">This action cannot be undone.</b>'),
+                        'buttons': {
+                            'confirm': Locale.t('editor.onMainmenuClick.delete.yes', 'Yes'),
+                            'cancel': Locale.t('editor.onMainmenuClick.delete.no', 'No')
+                        },
+                        'autoShow': true
+                    })
+                    .addClass('delete-guide')
+                    .addListener('buttonclick', (click_evt) => {
+                        if(click_evt.detail.action === 'confirm'){
+                            this.onGuideDeleteConfirm();
+                        }
+                    });
+                break;
+
+            case 'revert':
+                new Alert({
+                        'parent': this,
+                        'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
+                        'buttons': {
+                            'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
+                            'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
+                        },
+                        'autoShow': true
+                    })
+                    .addListener('buttonclick', (click_evt) => {
+                        if(click_evt.detail.action === 'confirm'){
+                            this.onGuideRevertConfirm();
+                        }
+                    });
+                break;
+
+            case 'undo':
+                this.history.undo();
+                break;
+
+            case 'redo':
+                this.history.redo();
+                break;
+
+            case 'settings':
+                break;
+
+            case 'help':
+                window.open(this.configs.help_url, '_blank');
+                break;
+
+            case 'account':
+                window.location.href = this.configs.account_url;
+                break;
+
+            case 'logout':
+                window.location.href = this.configs.logout_url;
+                break;
+        }
+    }
+
+    /**
+     * Mainmenu edit toggle field valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onMainmenuEditToggleFieldChange(evt){
+        const value = evt.detail.value;
+
+        this.setEditing(value);
+    }
+
+    /**
+     * Mainmenu reading index field valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onMainmenuRindexFieldChange(evt){
+        const value = evt.detail.value;
+
+        this.getPlayer().setReadingIndex(value, true);
+    }
+
+    /**
+     * Controller time field valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onControllerTimeFieldChange(evt){
+        console.log(evt);
+        const value = evt.detail.value;
+
+        this.getPlayer().getMedia().setTime(value);
+    }
+
+    /**
+     * Controller button click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object.
+     */
+    onControllerButtonClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'rewind':
+                this.getPlayer().getMedia().reset();
+                break;
+            default:
+                this.getPlayer().togglePlay();
+        }
+    }
+
+    /**
+     * Time field valuein event callback
+     *
+     * @private
+     * @param {CustomEvent} evt
+     */
+    onTimeFieldIn(evt){
+        const field = evt.detail.field;
+        const time = this.getPlayer().getMedia().getTime();
+
+        field.setValue(time);
+    }
+
+    /**
+     * Time field valueout event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTimeFieldOut(evt){
+        const time = evt.detail.value;
+
+        this.getPlayer().getMedia().setTime(time);
+    }
+    /**
+     * Controller timeset event callback
+     *
+     * @private
+     */
+    onControllerTimeSet(evt){
+        const time = evt.detail.time;
+
+        this.getPlayer().getMedia().setTime(time);
+    }
+
+    /**
+     * Sidebar resizestart event callback
+     *
+     * @private
+     */
+    onSidebarResizeStart(){
+        this.addClass('sidebar-resizing');
+    }
+
+    /**
+     * Sidebar resizeend event callback
+     *
+     * @private
+     */
+    onSidebarResizeEnd(){
+        this.removeClass('sidebar-resizing');
+    }
+
+    /**
+     * Sidebar resize handle dblclick event callback
+     *
+     * @private
+     */
+    onSidebarResizeDblclick(){
+        this.toggleClass('sidebar-hidden');
+
+        this.toggleSidebarResizer();
+    }
+
+    /**
+     * Block panel componentset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockSet(evt){
+        const block = evt.detail.component;
+
+        if(block.instanceOf('Block')){
+            this.panels.page.getToolbar().toggleMenuItem('new', true);
+        }
+
+        this.updatePageSelector();
+    }
+
+    /**
+     * Block panel componentunset event callback
+     *
+     * @private
+     */
+    onBlockUnset(evt){
+        const block = evt.detail.component;
+
+        if(block.instanceOf('Block')){
+            block.getPages().forEach((page) => {
+                this.panels.page.unsetComponent(page);
+            });
+
+            const toggle = this.panels.block.getComponents().length > 0;
+            this.panels.page.getToolbar().toggleMenuItem('new', toggle);
+        }
+
+        this.updatePageSelector();
+        this.updateElementSelector();
+    }
+
+    /**
+     * Block panel valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockPanelValueChange(evt){
+        const sets = evt.detail;
+
+        const update = (key) => {
+            const doUpdateBlockTogglers = sets.some((set) => {
+                return (
+                    ('x' in set[key]) ||
+                    ('y' in set[key]) ||
+                    ('width' in set[key]) ||
+                    ('height' in set[key])
+                );
+            });
+
+            if(doUpdateBlockTogglers){
+                this.getPlayer().updateBlockTogglers();
+            }
+        };
+
+        this.history.add({
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
+
+                update('old_values');
+            },
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
+
+                update('new_values');
+            }
+        });
+
+        update('new_values');
+    }
+
+    /**
+     * Block panel toolbar click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onBlockPanelToolbarClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'synched':
+            case 'non-synched':
+                this.addPlayerComponents('block', {'type': 'Block', 'synched': action === 'synched'}, this.getPlayer());
+                break;
+
+            case 'block-toggler':
+                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
+                break;
+
+            case 'delete': {
+                const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
+                this.deletePlayerComponents('block', blocks);
+                break;
+            }
+        }
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Block panel toolbar selector valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockPanelSelectorChange(evt){
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.block.setComponent(component, true);
+            });
+        }
+
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.block.unsetComponent(component);
+            });
+        }
+    }
+
+    /**
+     * Page panel componentset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPageSet(evt){
+        this.panels.element
+            .getToolbar()
+                .toggleMenuItem('Cursor', true)
+                .toggleMenuItem('Image', true)
+                .toggleMenuItem('Text', true);
+
+        const block = evt.detail.component.getBlock();
+        const start_time_field = this.panels.page.getField('start-time');
+        const end_time_field = this.panels.page.getField('end-time');
+
+        if(block.getPropertyValue('synched')){
+            const index = block.getActivePageIndex();
+            const previous_page = block.getPage(index-1);
+            const next_page = block.getPage(index+1);
+
+            if(previous_page){
+                start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
+            }
+            else{
+                start_time_field.readonly(true).enable();
+            }
+
+            if(next_page){
+                end_time_field.readonly(false).enable().setMax(next_page.getPropertyValue('end-time'));
+            }
+            else{
+                end_time_field.readonly(true).enable();
+            }
+        }
+        else{
+            start_time_field.disable();
+            end_time_field.disable();
+        }
+
+        this.updateElementSelector();
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Page panel componentunset event callback
+     *
+     * @private
+     */
+    onPageUnset(evt){
+        const page = evt.detail.component;
+
+        page.getElements().forEach((element) => {
+            this.panels.element.unsetComponent(element);
+        });
+
+        const toggle = this.panels.page.getComponents().length > 0;
+        this.panels.element.getToolbar()
+            .toggleMenuItem('Cursor', toggle)
+            .toggleMenuItem('Image', toggle)
+            .toggleMenuItem('Text', toggle);
+
+        this.updateElementSelector();
+    }
+
+    /**
+     * Page panel valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPagePanelValueChange(evt){
+        const sets = evt.detail;
+
+        const update = (key) => {
+            sets.forEach((set) => {
+                if(('start-time' in set[key]) || ('end-time' in set[key])){
+                    const page = set.component;
+                    const block = page.getBlock();
+
+                    if(block.getPropertyValue('synched')){
+                        const index = block.getPageIndex(page);
+                        const previous_page = block.getPage(index - 1);
+                        const next_page = block.getPage(index + 1);
+
+                        if(('start-time' in set[key]) && previous_page){
+                            previous_page.setPropertyValue('end-time', set[key]['start-time']);
+                        }
+
+                        if(('end-time' in set[key]) && next_page){
+                            next_page.setPropertyValue('start-time', set[key]['end-time']);
+                        }
+                    }
+                }
+            });
+        };
+
+        this.history.add({
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
+
+                update('old_values');
+            },
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
+
+                update('new_values');
+            }
+        });
+
+        update('new_values');
+    }
+
+    /**
+     * Page panel toolbar click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onPagePanelToolbarClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'new': {
+                const block = this.panels.block.getComponent();
+                this.addPlayerComponents('page', {}, block);
+                break;
+            }
+
+            case 'delete': {
+                const pages = this.panels.page.getComponents();
+                this.deletePlayerComponents('page', pages);
+                break;
+            }
+        }
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Page panel toolbar selector valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPagePanelSelectorChange(evt){
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.page.setComponent(component, true);
+                component.getBlock().setActivePage(component, true);
+            });
+        }
+
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.page.unsetComponent(component);
+            });
+        }
+    }
+
+    /**
+     * Element panel componentset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onElementSet(evt){
+        const element = evt.detail.component;
+        const player = this.getPlayer();
+
+        player.setReadingIndex(element.getPropertyValue('r-index') || 0);
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Element panel valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onElementPanelValueChange(evt){
+        const sets = evt.detail;
+
+        const update = (key) => {
+            const doUpdateElementSelector = sets.some((set) => {
+                return ('r-index' in set[key]);
+            });
+            if(doUpdateElementSelector){
+                this.updateElementSelector();
+            }
+        };
+
+        this.history.add({
+            'undo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.old_values);
+                });
+
+                update('old_values');
+            },
+            'redo': () => {
+                sets.forEach((set) => {
+                    set.component.setPropertyValues(set.new_values);
+                });
+
+                update('new_values');
+            }
+        });
+
+        update('new_values');
+    }
+
+    /**
+     * Element panel toolbar click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onElementPanelToolbarClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'Cursor':
+            case 'Image':
+            case 'Text': {
+                const page = this.panels.page.getComponent();
+                this.addPlayerComponents('element', {'type': action}, page);
+                break;
+            }
+
+            case 'delete': {
+                const elements = this.panels.element.getComponents();
+                this.deletePlayerComponents('element', elements);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Element panel toolbar selector valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onElementPanelSelectorChange(evt){
+        if(evt.detail.added.length > 0){
+            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
+            added.forEach((component) => {
+                this.panels.element.setComponent(component, true);
+            });
+        }
+
+        if(evt.detail.removed.length > 0){
+            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
+            removed.forEach((component) => {
+                this.panels.element.unsetComponent(component);
+            });
+        }
+    }
+
+    /**
+    * Renderer getWaveformData callback
+    *
+    * @private
+    * @param {WaveformData} data The waveform data, or null if none could be retreived
+    */
+    onRendererWaveformData(data){
+        this.controller.setWaveformData(data);
+    }
+
+    /**
+     * Player idset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPlayerIdSet(evt){
+        const player = evt.detail.player;
+
+        window.history.replaceState(null, null, `#guide=${player.getId()}:${player.getRevision()}`);
+    }
+
+    /**
+     * Player revisionset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPlayerRevisionSet(evt){
+        const player = evt.detail.player;
+
+        window.history.replaceState(null, null, `#guide=${player.getId()}:${player.getRevision()}`);
+    }
+
+    /**
+     * Player sourceset event callback
+     *
+     * @private
+     */
+    onPlayerSourceSet(){
+        const loadmask = new LoadMask({
+            'parent': this,
+            'autoShow': true
+        });
+
+        this.removeClass('metadata-loaded');
+
+        this.controller.disable().clearWaveform();
+
+        this.getPlayer().addOneTimeListener('loadedmetadata', () => {
+            loadmask.hide();
+        });
+    }
+
+    /**
+     * Player loadedmetadata event callback
+     *
+     * @private
+     */
+    onPlayerLoadedMetadata(evt){
+        const renderer = evt.detail.renderer;
+
+        this.addClass('metadata-loaded');
+
+        this.getPlayer().getMedia().reset();
+
+        this.controller
+            .enable()
+            .setDuration(this.getPlayer().getMedia().getDuration());
+
+        renderer.getWaveformData(this.onRendererWaveformData.bind(this));
+    }
+
+    /**
+     * Media timeupdate event callback
+     *
+     * @private
+     */
+    onPlayerTimeUpdate(evt){
+        const time = evt.detail.time;
+
+        this.controller.setTime(time);
+    }
+
+    /**
+     * Player rindex event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPlayerReadingIndex(evt){
+        const rindex = evt.detail.value;
+        const field = this.mainmenu.getItem('r-index');
+
+        field.setValue(rindex, true);
+    }
+
+    /**
+     * Player mousedown event callback
+     *
+     * @private
+      */
+    onPlayerMousedown(){
+        this.contextmenu.hide();
+    }
+
+    /**
+     * Player mediaadd event callback
+     *
+     * @private
+     */
+    onPlayerMediaAdd(){
+        this.updateBlockSelector();
+
+        this.getPlayer().updateBlockTogglers();
+    }
+
+    /**
+     * Player controlleradd event callback
+     *
+     * @private
+     */
+    onPlayerControllerAdd(){
+        this.updateBlockSelector();
+
+        this.getPlayer().updateBlockTogglers();
+    }
+
+    /**
+     * Player blocktaggleradd event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPlayerBlockTogglerAdd(evt){
+        this.updateBlockSelector();
+
+        const blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
+        evt.detail.blocktoggler.update(blocks);
+    }
+
+    /**
+     * Player blockadd event callback
+     *
+     * @private
+     */
+    onPlayerBlockAdd(){
+        this.updateBlockSelector();
+
+        this.getPlayer().updateBlockTogglers();
+    }
+
+    /**
+    * Player componenet beforeremove event callback
+    *
+    * @private
+    * @param {CustomEvent} evt The event object
+    */
+    onComponentBeforeRemove(evt){
+        const component = evt.target._metaScore;
+
+        if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
+            this.panels.block.unsetComponent(component, true);
+        }
+        else if(component.instanceOf('Page')){
+            this.panels.page.unsetComponent(component, true);
+        }
+        else if(component.instanceOf('Element')){
+            this.panels.page.unsetComponent(component, true);
+        }
+    }
+
+    /**
+     * Player childremove event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPlayerChildRemove(evt){
+        const child = evt.detail.child;
+        const component = child._metaScore;
+
+        if(component){
+            if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
+                this.updateBlockSelector();
+
+                if(!component.instanceOf('BlockToggler')){
+                    this.getPlayer().updateBlockTogglers();
+                }
+            }
+            else if(component.instanceOf('Page')){
+                this.updatePageSelector();
+            }
+            else if(component.instanceOf('Element')){
+                this.updateElementSelector();
+            }
+        }
+    }
+
+    /**
+     * Player frame load event callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     */
+    onPlayerFrameLoadSuccess(loadmask){
+        const player = this.player_frame.get(0).contentWindow.player;
+
+        if(player){
+            /**
+             * The player instance
+             * @type {Player}
+             */
+            this.player = player
+                .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
+                .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
+                .addListener('idset', this.onPlayerIdSet.bind(this))
+                .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
+                .addListener('sourceset', this.onPlayerSourceSet.bind(this))
+                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
+                .load();
+
+            this.addClass('has-player');
+        }
+    }
+
+    /**
+     * Player frame error event callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     */
+    onPlayerFrameLoadError(loadmask){
+        loadmask.hide();
+
+        new Alert({
+            'parent': this,
+            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'buttons': {
+                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
+    }
+
+    /**
+     * Player load event callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     */
+    onPlayerLoadSuccess(loadmask){
+        this.player
+            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
+            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
+            .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
+            .addListener('mousedown', this.onPlayerMousedown.bind(this))
+            .addListener('mediaadd', this.onPlayerMediaAdd.bind(this))
+            .addListener('controlleradd', this.onPlayerControllerAdd.bind(this))
+            .addListener('blocktoggleradd', this.onPlayerBlockTogglerAdd.bind(this))
+            .addListener('blockadd', this.onPlayerBlockAdd.bind(this))
+            .addListener('keydown', this.onKeydown.bind(this))
+            .addListener('keyup', this.onKeyup.bind(this))
+            .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
+            .addListener('rindex', this.onPlayerReadingIndex.bind(this))
+            .addListener('childremove', this.onPlayerChildRemove.bind(this))
+            .addListener('click', this.onPlayerClick.bind(this))
+            .addListener('play', this.onPlayerPlay.bind(this))
+            .addListener('pause', this.onPlayerPause.bind(this))
+            .addClass('in-editor');
+
+            this.player.contextmenu
+                .disable();
+
+            const player_body = this.player_frame.get(0).contentWindow.document.body;
+            this.player_contextmenu
+                .setTarget(player_body)
+                .enable();
+
+            new Dom(player_body)
+                .addListener('keydown', this.onKeydown.bind(this))
+                .addListener('keyup', this.onKeyup.bind(this));
+
+            this
+                .setEditing(true)
+                .updateMainmenu()
+                .updateBlockSelector()
+                .updatePageSelector()
+                .updateElementSelector();
+
+            const data = this.player.getData();
+            this.mainmenu
+                .toggleItem('save', data.permissions.update)
+                .toggleItem('clone', data.permissions.clone)
+                .toggleItem('publish', data.permissions.update)
+                .toggleItem('delete', data.permissions.delete);
+
+            this.mainmenu.getItem('r-index').setValue(0, true);
+
+            loadmask.hide();
+    }
+
+    /**
+     * Player error event callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     */
+    onPlayerLoadError(loadmask){
+        loadmask.hide();
+
+        new Alert({
+            'parent': this,
+            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'buttons': {
+                'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
+    }
+
+    /**
+     * Player click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onPlayerClick(evt){
+        if(this.editing !== true){
+            return;
+        }
+
+        this.panels.element.unsetComponents();
+        this.panels.page.unsetComponents();
+        this.panels.block.unsetComponents();
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Player playing event callback
+     *
+     * @private
+     */
+    onPlayerPlay(){
+        this.addClass('playing');
+        this.controller.addClass('playing');
+    }
+
+    /**
+     * Player pause event callback
+     *
+     * @private
+     */
+    onPlayerPause(){
+        this.removeClass('playing');
+        this.controller.removeClass('playing');
+    }
+
+    /**
+     * Component beforedrag event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentBeforeDrag(evt){
+        if(this.editing !== true){
+            evt.preventDefault();
+        }
+    }
+
+    /**
+     * Component click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onComponentClick(evt){
+        let component = null;
+
+        if(this.editing !== true){
+            return;
+        }
+
+        if(!Dom.is(evt.target, '.metaScore-component')){
+            component = Dom.closest(evt.target, '.metaScore-component')._metaScore;
+        }
+        else{
+            component = evt.target._metaScore;
+        }
+
+        if(component.instanceOf('Element')){
+            if(evt.shiftKey && this.panels.element.getComponents().includes(component)){
+                this.panels.element.unsetComponent(component);
+            }
+            else{
+                const page = component.getPage();
+                const block = page.getBlock();
+
+                this.panels.block.setComponent(block, evt.shiftKey);
+                this.panels.page.setComponent(page, evt.shiftKey);
+                this.panels.element.setComponent(component, evt.shiftKey);
+            }
+        }
+        else if(component.instanceOf('Page')){
+            const block = component.getBlock();
+
+            if(evt.shiftKey && this.panels.page.getComponents().includes(component)){
+                this.panels.block.unsetComponent(block);
+
+                const elements = component.getElements();
+                elements.forEach((element) => {
+                    this.panels.element.unsetComponent(element);
+                });
+            }
+            else{
+                this.panels.block.setComponent(block, evt.shiftKey);
+                this.panels.page.setComponent(component, evt.shiftKey);
+
+                if(!evt.shiftKey){
+                    this.panels.element.unsetComponents();
+                }
+            }
+        }
+        else{
+            if(evt.shiftKey && this.panels.block.getComponents().includes(component)){
+                this.panels.block.unsetComponent(component);
+
+                if(component.instanceOf('Block')){
+                    const pages = component.getPages();
+                    pages.forEach((page) => {
+                        this.panels.page.unsetComponent(page);
+                    });
+                }
+            }
+            else{
+                this.panels.block.setComponent(component, evt.shiftKey);
+
+                if(!evt.shiftKey){
+                    this.panels.page.unsetComponents();
+                    this.panels.element.unsetComponents();
+                }
+
+                if(component.instanceOf('Block')){
+                    this.panels.page.setComponent(component.getActivePage(), evt.shiftKey);
+                }
+            }
+        }
+
+        evt.stopImmediatePropagation();
+    }
+
+    /**
+     * Block pageadd event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockPageAdd(evt){
+        const block = evt.detail.block;
+
+        if(block === this.panels.block.getComponent()){
+            this.updatePageSelector();
+        }
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Block pageactivate event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockPageActivate(evt){
+        const page = evt.detail.current;
+
+        if(page.getBlock() === this.panels.block.getComponent()){
+            this.panels.page.setComponent(page);
+        }
+    }
+
+    /**
+     * Page elementadd event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPageElementAdd(evt){
+        const element = evt.detail.element;
+        const page = evt.detail.page;
+
+        if(evt.detail.new && element.instanceOf('Cursor')){
+            const media = this.getPlayer().getMedia();
+
+            if(!isNumber(element.getPropertyValue('start-time'))){
+                element.setPropertyValue('start-time', media.getTime());
+
+            }
+
+            if(!isNumber(element.getPropertyValue('end-time'))){
+                const block = page.getBlock();
+                element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+            }
+        }
+
+        if(page === this.panels.page.getComponent()){
+            this.updateElementSelector();
+        }
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * History add event callback
+     *
+     * @private
+     */
+    onHistoryAdd(){
+        this.setDirty(true)
+            .updateMainmenu();
+    }
+
+    /**
+     * History undo event callback
+     *
+     * @private
+     */
+    onHistoryUndo(){
+        this.updateMainmenu();
+    }
+
+    /**
+     * History redo event callback
+     *
+     * @private
+     */
+    onHistoryRedo(){
+        this.updateMainmenu();
+    }
+
+    /**
+     * GuideDetails show event callback
+     *
+     * @private
+     */
+    onDetailsOverlayShow(){
+        const player = this.getPlayer();
+
+        if(player){
+            player.getMedia().pause();
+        }
+    }
+
+    /**
+     * GuideDetails submit event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onDetailsOverlaySubmit(evt){
+        const overlay = evt.detail.overlay;
+        const data = evt.detail.values;
+        const action = overlay.getField('action').getValue();
+        const player = this.getPlayer();
+
+        if(action === 'new'){
+            this.createGuide(data, overlay);
+        }
+        else{
+            const callback = (new_duration) => {
+                if(new_duration){
+                    player.getComponents('.block').forEach((block) => {
+                        if(block.getPropertyValue('synched')){
+                            const page = block.getPage(block.getPageCount()-1);
+                            if(page){
+                                page.setPropertyValue('end-time', new_duration);
+                            }
+                        }
+                    });
+                }
+
+                /**
+                 * The unsaved data
+                 * @type {Object}
+                 */
+                this.dirty_data = data;
+                player.updateData(data);
+                overlay.hide();
+
+                this.controller.timefield.setMax(new_duration);
+
+                this.setDirty(true)
+                    .updateMainmenu();
+            };
+
+            if('media' in data){
+                const loadmask = new LoadMask({
+                    'parent': this,
+                    'autoShow': true
+                });
+
+                this.getMediaFileDuration(data.media, (error, new_duration) => {
+                    if(error){
+                        console.error(error);
+                        return;
+                    }
+
+                    const old_duration = player.getMedia().getDuration();
+
+                    if(new_duration !== old_duration){
+                        const formatted_old_duration = TimeField.getTextualValue(old_duration);
+                        const formatted_new_duration = TimeField.getTextualValue(new_duration);
+                        const blocks = [];
+
+                        if(new_duration < old_duration){
+                            player.getComponents('.block').forEach((block) => {
+                                if(block.getPropertyValue('synched')){
+                                    block.getPages().some((page) => {
+                                        if(page.getPropertyValue('start-time') > new_duration){
+                                            blocks.push(block.getPropertyValue('name'));
+                                            return true;
+                                        }
+
+                                        return false;
+                                    });
+                                }
+                            });
+                        }
+
+                        if(blocks.length > 0){
+                            loadmask.hide();
+
+                            new Alert({
+                                'parent': this,
+                                'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
+                                'buttons': {
+                                    'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
+                                },
+                                'autoShow': true
+                            });
+                        }
+                        else{
+                            let msg = '';
+                            if(new_duration < old_duration){
+                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                            }
+                            else{
+                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                            }
+
+                            new Alert({
+                                'parent': this,
+                                'text': msg,
+                                'buttons': {
+                                    'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
+                                    'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
+                                },
+                                'autoShow': true
+                            })
+                            .addListener('buttonclick', (click_evt) => {
+                                loadmask.hide();
+
+                                if(click_evt.detail.action === 'confirm'){
+                                    callback(new_duration);
+                                }
+                            });
+                        }
+                    }
+                    else{
+                        callback();
+                        loadmask.hide();
+                    }
+                });
+            }
+            else{
+                callback();
+            }
+        }
+    }
+
+    /**
+     * Window hashchange event callback
+     *
+     * @private
+     * @param {HashChangeEvent} evt The event object
+     */
+    onWindowHashChange(evt){
+        const callback = this.loadPlayerFromHash.bind(this);
+        const oldURL = evt.oldURL;
+
+        if(this.isDirty()){
+            new Alert({
+                    'parent': this,
+                    'text': Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
+                    'buttons': {
+                        'confirm': Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
+                        'cancel': Locale.t('editor.onWindowHashChange.alert.no', 'No')
+                    },
+                    'autoShow': true
+                })
+                .addListener('buttonclick', (click_evt) => {
+                    if(click_evt.detail.action === 'confirm'){
+                        callback();
+                    }
+                    else{
+                        window.history.replaceState(null, null, oldURL);
+                    }
+                });
+        }
+        else{
+            callback();
+        }
+
+        evt.preventDefault();
+    }
+
+    /**
+     * Window beforeunload event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onWindowBeforeUnload(evt){
+        if(this.isDirty()){
+            evt.returnValue = Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
+        }
+    }
+
+    /**
+     * Updates the editing state
+     *
+     * @param {Boolean} editing The new state
+     * @return {this}
+     */
+    setEditing(editing){
+        const player = this.getPlayer();
+
+        /**
+         * Whether in editing mode
+         * @type {Boolean}
+         */
+        this.editing = editing !== false;
 
 		Object.entries(this.panels).forEach(([, panel]) => {
             if(this.editing){
@@ -2124,6 +2283,9 @@ export default class Editor extends Dom {
         });
 
         this.toggleClass('editing', this.editing);
+
+        this.mainmenu.getItem('edit-toggle').setValue(this.editing, true);
+        this.controller[this.editing ? 'maximize' : 'minimize']();
 
         if(player){
             player.toggleClass('editing', this.editing);
@@ -2137,9 +2299,8 @@ export default class Editor extends Dom {
     /**
      * Toggles the activation of the sidebar resizer
      *
-     * @method toggleSidebarResizer
      * @private
-     * @chainable
+     * @return {this}
      */
     toggleSidebarResizer() {
         if(!this.hasClass('editing') || this.hasClass('sidebar-hidden')){
@@ -2155,9 +2316,8 @@ export default class Editor extends Dom {
     /**
      * Loads a player from the location hash
      *
-     * @method loadPlayerFromHash
      * @private
-     * @chainable
+     * @return {this}
      */
     loadPlayerFromHash() {
         const hash = window.location.hash;
@@ -2173,26 +2333,25 @@ export default class Editor extends Dom {
     /**
      * Updates the states of the mainmenu buttons
      *
-     * @method updateMainmenu
      * @private
-     * @chainable
+     * @return {this}
      */
     updateMainmenu() {
         const player = this.getPlayer();
         const hasPlayer = player ? true : false;
 
-        this.mainmenu.toggleButton('edit', hasPlayer);
-        this.mainmenu.toggleButton('save', hasPlayer);
-        this.mainmenu.toggleButton('clone', hasPlayer);
-        this.mainmenu.toggleButton('publish', hasPlayer);
-        this.mainmenu.toggleButton('delete', hasPlayer);
-        this.mainmenu.toggleButton('share', hasPlayer && player.getData('published'));
-        this.mainmenu.toggleButton('download', hasPlayer);
-        this.mainmenu.toggleButton('edit-toggle', hasPlayer);
-
-        this.mainmenu.toggleButton('undo', this.history.hasUndo());
-        this.mainmenu.toggleButton('redo', this.history.hasRedo());
-        this.mainmenu.toggleButton('revert', this.isDirty());
+        this.mainmenu
+            .toggleItem('edit', hasPlayer)
+            .toggleItem('save', hasPlayer)
+            .toggleItem('clone', hasPlayer)
+            .toggleItem('publish', hasPlayer)
+            .toggleItem('delete', hasPlayer)
+            .toggleItem('share', hasPlayer && player.getData('published'))
+            .toggleItem('download', hasPlayer)
+            .toggleItem('edit-toggle', hasPlayer)
+            .toggleItem('undo', this.history.hasUndo())
+            .toggleItem('redo', this.history.hasRedo())
+            .toggleItem('revert', this.isDirty());
 
         return this;
     }
@@ -2200,9 +2359,8 @@ export default class Editor extends Dom {
     /**
      * Updates the selector of the block panel
      *
-     * @method updateBlockSelector
      * @private
-     * @chainable
+     * @return {this}
      */
     updateBlockSelector() {
         const panel = this.panels.block;
@@ -2223,9 +2381,8 @@ export default class Editor extends Dom {
     /**
      * Updates the selector of the page panel
      *
-     * @method updatePageSelector
      * @private
-     * @chainable
+     * @return {this}
      */
     updatePageSelector() {
         const selector = this.panels.page.getToolbar().getSelector();
@@ -2260,9 +2417,8 @@ export default class Editor extends Dom {
     /**
      * Updates the selector of the element panel
      *
-     * @method updateElementSelector
      * @private
-     * @chainable
+     * @return {this}
      */
     updateElementSelector() {
         const panel = this.panels.element;
@@ -2322,11 +2478,14 @@ export default class Editor extends Dom {
     /**
      * Set whether the guide is dirty
      *
-     * @method setDirty
      * @param {Boolean} dirty Whether the guide is dirty
-     * @chainable
+     * @return {this}
      */
     setDirty(dirty){
+        /**
+         * Whether the guide has unsaved data
+         * @type {Boolean}
+         */
         this.dirty = dirty;
 
         return this;
@@ -2335,7 +2494,6 @@ export default class Editor extends Dom {
     /**
      * Check whether the guide is dirty
      *
-     * @method isDirty
      * @return {Boolean} Whether the guide is dirty
      */
     isDirty() {
@@ -2345,7 +2503,6 @@ export default class Editor extends Dom {
     /**
      * Get the player instance if any
      *
-     * @method getPlayer
      * @return {Player} The player instance
      */
     getPlayer() {
@@ -2355,10 +2512,9 @@ export default class Editor extends Dom {
     /**
      * Loads a player by guide id and vid
      *
-     * @method loadPlayer
      * @param {String} id The guide's id
      * @param {Integer} vid The guide's revision id
-     * @chainable
+     * @return {this}
      */
     loadPlayer(id, vid){
         let url = `${this.configs.player_url + id}?autoload=0&keyboard=0`;
@@ -2374,6 +2530,10 @@ export default class Editor extends Dom {
 
         this.unloadPlayer();
 
+        /**
+         * The player's iframe
+         * @type {Dom}
+         */
         this.player_frame = new Dom('<iframe/>', {'src': url, 'class': 'player-frame'}).appendTo(this.workspace)
             .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
             .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
@@ -2384,12 +2544,17 @@ export default class Editor extends Dom {
     /**
      * Unload the player
      *
-     * @method unloadPlayer
-     * @chainable
+     * @return {this}
      */
     unloadPlayer() {
         delete this.player;
         delete this.dirty_data;
+
+        this
+            .removeClass('has-player')
+            .removeClass('metadata-loaded');
+
+        this.controller.disable();
 
         this.player_contextmenu.disable();
 
@@ -2398,6 +2563,7 @@ export default class Editor extends Dom {
             delete this.player_frame;
         }
 
+        this.controller.clearWaveform();
         this.panels.block.unsetComponents();
         this.history.clear();
         this.setDirty(false)
@@ -2412,17 +2578,14 @@ export default class Editor extends Dom {
     /**
      * Add components to the player
      *
-     * @method addPlayerComponents
      * @private
      * @param {String} type The components' type
      * @param {Array} configs An array of configs to use when creating the components
      * @param {Mixed} parent The components' parent
-     * @chainable
+     * @return {this}
      */
     addPlayerComponents(type, configs, parent){
-        if(!isArray(configs)){
-            configs = [configs];
-        }
+        const _configs = isArray(configs) ? configs : [configs];
 
         switch(type){
             case 'element': {
@@ -2433,7 +2596,7 @@ export default class Editor extends Dom {
                 this.panels.block.setComponent(page.getBlock());
                 this.panels.page.setComponent(page);
 
-                configs.forEach((config, index) => {
+                _configs.forEach((config, index) => {
                     let name = '';
                     const el_index = page.children(`.element.${config.type}`).count() + 1;
 
@@ -2475,7 +2638,7 @@ export default class Editor extends Dom {
             case 'page': {
                 const block = parent;
                 const panel = this.panels.page;
-                const config = configs[0]; // only one page can be added at a time !
+                const config = _configs[0]; // only one page can be added at a time !
                 const index = block.getActivePageIndex();
                 let current_time = null;
 
@@ -2536,7 +2699,7 @@ export default class Editor extends Dom {
                 const panel = this.panels.block;
                 const components = [];
 
-                configs.forEach((config, index) => {
+                _configs.forEach((config, index) => {
                     let component = null;
 
                     switch(config.type){
@@ -2587,10 +2750,11 @@ export default class Editor extends Dom {
     /**
      * Remove components from the player
      *
-     * @method deletePlayerComponents
      * @private
+     * @param {String} type The components' type
      * @param {Array} components The components
-     * @chainable
+     * @param {Boolean} confirm Whether to display a confirmation dialog
+     * @return {this}
      */
     deletePlayerComponents(type, components, confirm){
         if(confirm !== false){
@@ -2823,13 +2987,13 @@ export default class Editor extends Dom {
     /**
      * Opens the guide selector
      *
-     * @method openGuideSelector
-     * @chainable
+     * @return {this}
      */
     openGuideSelector() {
         new GuideSelector({
                 'url': `${this.configs.api_url}guide.json`,
-                'autoShow': true
+                'autoShow': true,
+                'xhr': this.configs.xhr
             })
             .addListener('submit', this.onGuideSelectorSubmit.bind(this));
 
@@ -2839,24 +3003,13 @@ export default class Editor extends Dom {
     /**
      * Creates a new guide
      *
-     * @method createGuide
      * @private
      * @param {Object} details The guide's data
      * @param {GuideDetails} overlay The overlay instance used to create the guide
-     * @chainable
+     * @return {this}
      */
     createGuide(details, overlay){
-        const data = new FormData();
-
-        // append values from the details overlay
-		Object.entries(details).forEach(([key, value]) => {
-            if(key === 'thumbnail' || key === 'media'){
-                data.append(`files[${key}]`, value.object);
-            }
-            else{
-                data.append(key, value);
-            }
-        });
+        const data = this.prepareFormData(details);
 
         // add a loading mask
         const loadmask = new LoadMask({
@@ -2869,27 +3022,28 @@ export default class Editor extends Dom {
         // prepare the Ajax options object
         const options = Object.assign({
             'data': data,
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': (evt) => {
                 overlay.hide();
                 this.onGuideSaveSuccess(loadmask, evt);
             },
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
+        const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide.json`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
             .addUploadListener('progress', (evt) => {
                 if (evt.lengthComputable) {
-                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
                     loadmask.setProgress(percent);
                 }
             })
             .addUploadListener('loadend', () => {
-                loadmask.setProgress(100);
+                loadmask.setProgress(hundred);
             })
             .send();
 
@@ -2899,37 +3053,22 @@ export default class Editor extends Dom {
     /**
      * Saves the loaded guide
      *
-     * @method saveGuide
      * @param {String} action The action to perform when saving ('update' or 'clone')
      * @param {Boolean} publish Whether to published the new revision
-     * @chainable
+     * @return {this}
      */
     saveGuide(action, publish){
         const player = this.getPlayer();
         const id = player.getId();
         const vid = player.getRevision();
         const components = player.getComponents('.media, .controller, .block, .block-toggler');
-        const data = new FormData();
+
+        // prepare the formdata from the dirty data
+        const data = this.prepareFormData(this.dirty_data);
 
         // append the publish flag if true
         if(publish === true){
             data.append('publish', true);
-        }
-
-        // append values from the dirty data
-        if(this.dirty_data){
-            Object.entries(this.dirty_data).forEach(([key, value]) => {
-                if(key === 'blocks'){
-                    return;
-                }
-
-                if(key === 'thumbnail' || key === 'media'){
-                    data.append(`files[${key}]`, value.object);
-                }
-                else{
-                    data.append(key, value);
-                }
-            });
         }
 
         // append blocks data
@@ -2948,24 +3087,25 @@ export default class Editor extends Dom {
         // prepare the Ajax options object
         const options = Object.assign({
             'data': data,
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
+        const hundred = 100;
         Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
             .addUploadListener('progress', (evt) => {
                 if (evt.lengthComputable) {
-                    let percent = Math.floor((evt.loaded / evt.total) * 100);
+                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
                     loadmask.setProgress(percent);
                 }
             })
             .addUploadListener('loadend', () => {
-                loadmask.setProgress(100);
+                loadmask.setProgress(hundred);
             })
             .send();
 
@@ -2973,22 +3113,65 @@ export default class Editor extends Dom {
     }
 
     /**
+    * Create a FormData from a key/value object
+    *
+    * @param {Object} data The data to prepare
+    * @return {FormData} The form data
+    */
+    prepareFormData(data){
+        const formdata = new FormData();
+
+        if(data){
+            Object.entries(data).forEach(([key, value]) => {
+                if(key === 'blocks'){
+                    return;
+                }
+
+                if((key === 'thumbnail' || key === 'media') && value.source === 'upload'){
+                    formdata.append(`files[${key}]`, value.object);
+                }
+                else if(isArray(value)){
+                    value.forEach((val) => {
+                        formdata.append(`${key}[]`, isObject(val) ? JSON.stringify(val) : val);
+                    });
+                }
+                else if(isObject(value)){
+                    formdata.append(key, JSON.stringify(value));
+                }
+                else{
+                    formdata.append(key, value);
+                }
+            });
+        }
+
+        return formdata;
+    }
+
+    /**
      * Get a media file's duration in centiseconds
      *
-     * @method getMediaFileDuration
      * @private
-     * @param {String} url The file's url
-     * @param {Function} callback A callback function to call with the duration
+     * @param {Object} file The file's url
+     * @property {String} mime The file's mime type
+     * @property {String} url The file's url
+     * @param {Function} callback A callback function to call with an eventual error and the duration
      */
-    getMediaFileDuration(url, callback){
-        const media = new Dom('<audio/>')
-            .addListener('loadedmetadata', () => {
-                const duration = Math.round(parseFloat(media.get(0).duration) * 100);
-                media.remove();
-                callback(duration);
-            })
-            .attr('src', url)
-            .appendTo(this);
+    getMediaFileDuration(file, callback){
+        const renderer = this.getPlayer().getMedia().constructor.getRendererForMime(file.mime);
+        if(renderer){
+            renderer.getDurationFromURI(file.url, (error, duration) => {
+                if(error){
+                    callback(error);
+                    return;
+                }
+
+                const centiseconds_multiplier = 100;
+                callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
+            });
+        }
+        else{
+            callback(new Error(`No compatible renderer found for ${file.mine}`));
+        }
     }
 
 }

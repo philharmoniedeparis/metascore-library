@@ -1,41 +1,40 @@
 import {isFunction} from '../utils/Var';
 import Dom from '../Dom';
 
-/**
- * Fired before the menu is shows
- *
- * @event beforeshow
- * @param {Object} original_event The original contextmenu event
- */
-const EVT_BEFORESHOW = 'beforeshow';
+import {className} from '../../../css/core/ui/ContextMenu.less';
 
 /**
- * Fired when a task is clicked
+ * A class for creating context menus
  *
- * @event taskclick
+ * @emits {beforeshow} Fired before the menu is shows
+ * @param {Object} original_event The original contextmenu event
+ * @emits {taskclick} Fired when a task is clicked
  * @param {Object} action The task's action
  * @param {Object} context The task's context
  */
-const EVT_TASKCLICK = 'taskclick';
-
 export default class ContextMenu extends Dom {
 
     /**
-     * A class for creating context menus
+     * Instantiate
      *
-     * @class ContextMenu
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.target='body'] The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
-     * @param {Mixed} [configs.items={}] The list of items and subitems
+     * @property {Mixed} [target='body'] The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
+     * @property {Mixed} [items={}] The list of items and subitems
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'contextmenu'});
+        super('<div/>', {'class': `contextmenu ${className}`});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The list of tasks
+         * @type {Object}
+         */
         this.tasks = {};
 
         // fix event handlers scope
@@ -65,6 +64,11 @@ export default class ContextMenu extends Dom {
             .enable();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'target': 'body',
@@ -75,7 +79,6 @@ export default class ContextMenu extends Dom {
     /**
      * Mousedown event handler
      *
-     * @method onMousedown
      * @private
      * @param {Event} evt The event object
      */
@@ -90,7 +93,6 @@ export default class ContextMenu extends Dom {
     /**
      * Mousedown event handler
      *
-     * @method onMousedown
      * @private
      * @param {Event} evt The event object
      */
@@ -101,7 +103,6 @@ export default class ContextMenu extends Dom {
     /**
      * Task mouseover event handler
      *
-     * @method onItemMouseover
      * @private
      * @param {Event} evt The event object
      */
@@ -125,7 +126,6 @@ export default class ContextMenu extends Dom {
     /**
      * Target's contextmenu event handler
      *
-     * @method onTargetContextmenu
      * @private
      * @param {Event} evt The event object
      */
@@ -133,7 +133,7 @@ export default class ContextMenu extends Dom {
         let x = 0;
         let y = 0;
 
-        if(this.triggerEvent(EVT_BEFORESHOW, {'original_event': evt}) === false){
+        if(this.triggerEvent('beforeshow', {'original_event': evt}) === false){
             return;
         }
 
@@ -158,7 +158,6 @@ export default class ContextMenu extends Dom {
     /**
      * Target's mousedown event handler
      *
-     * @method onTargetMousedown
      * @private
      */
     onTargetMousedown(){
@@ -168,7 +167,6 @@ export default class ContextMenu extends Dom {
     /**
      * Window's keyup event handler
      *
-     * @method onWindowKeyup
      * @private
      */
     onWindowKeyup(evt){
@@ -180,7 +178,6 @@ export default class ContextMenu extends Dom {
     /**
      * Task's click event handler
      *
-     * @method onTaskClick
      * @private
      * @param {Event} evt The event object
      */
@@ -193,27 +190,26 @@ export default class ContextMenu extends Dom {
                 this.hide();
             }
 
-            this.triggerEvent(EVT_TASKCLICK, {'action': action, 'context': this.context}, true, false);
+            this.triggerEvent('taskclick', {'action': action, 'context': this.context}, true, false);
         }
 
         evt.stopPropagation();
     }
 
     /**
-     * Sets the target element
+     * Set the element on which the context menu is attached
      *
-     * @method setTarget
      * @param {Mixed} target The HTMLElement, Dom instance, or CSS selector to which the context menu is attached
-     * @chainable
+     * @return {this}
      */
     setTarget(target){
         this.disable();
 
-        this.target = target;
-
-        if(!(this.target instanceof Dom)){
-            this.target = new Dom(this.target);
-        }
+        /**
+         * The target element
+         * @type {Dom}
+         */
+        this.target = target instanceof Dom ? target : new Dom(target);
 
         return this;
     }
@@ -221,13 +217,12 @@ export default class ContextMenu extends Dom {
     /**
      * Add a task
      *
-     * @method addTask
      * @param {String} action The task's associated action
      * @param {Object} configs The task's configs
-     * @param {String} [configs.text] The task's text
-     * @param {Mixed} [configs.toggler=true] A boolean or a callback function used to determine if the task is active
+     * @property {String} [text] The task's text
+     * @property {Mixed} [toggler=true] A boolean or a callback function used to determine if the task is active
      * @param {Mixed} [parent] The parent element to append the task to
-     * @chainable
+     * @return {this}
      */
     addTask(action, configs, parent){
         const task = new Dom('<li/>', {'data-action': action})
@@ -276,8 +271,7 @@ export default class ContextMenu extends Dom {
     /**
      * Add a separator
      *
-     * @method addSeparator
-     * @chainable
+     * @return {this}
      */
     addSeparator() {
         new Dom('<li/>', {'class': 'separator'})
@@ -289,13 +283,19 @@ export default class ContextMenu extends Dom {
     /**
      * Show the menu
      *
-     * @method show
      * @param {HTMLElement} el The element on which the contextmenu event was triggered
      * @param {Number} x The horizontal position at which the menu should be shown
      * @param {Number} y The vertical position at which the menu should be shown
-     * @chainable
+     * @return {this}
      */
     show(el, x, y){
+        let _x = x;
+        let _y = y;
+
+        /**
+         * The element that triggered the context menu
+         * @type {Dom}
+         */
         this.context = new Dom(el);
 
         if(this.tasks){
@@ -329,17 +329,17 @@ export default class ContextMenu extends Dom {
         const menu_width = menu_el.offsetWidth;
         const menu_height = menu_el.offsetHeight;
 
-        if((menu_width + x) > window_width){
-            x = window_width - menu_width;
+        if((menu_width + _x) > window_width){
+            _x = window_width - menu_width;
         }
 
-        if((menu_height + y) > window_height){
-            y = window_height - menu_height;
+        if((menu_height + _y) > window_height){
+            _y = window_height - menu_height;
         }
 
         this
-            .css('left', `${x}px`)
-            .css('top', `${y}px`);
+            .css('left', `${_x}px`)
+            .css('top', `${_y}px`);
 
         return this;
     }
@@ -347,8 +347,7 @@ export default class ContextMenu extends Dom {
     /**
      * Hide the menu
      *
-     * @method hide
-     * @chainable
+     * @return {this}
      */
     hide() {
         if(this.target){
@@ -371,11 +370,14 @@ export default class ContextMenu extends Dom {
     /**
      * Enable the menu
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         if(this.target){
+            /**
+             * Whether the context menu is enabled
+             * @type {Boolean}
+             */
             this.enabled = true;
 
             this.target.addListener('contextmenu', this.onTargetContextmenu);
@@ -387,8 +389,7 @@ export default class ContextMenu extends Dom {
     /**
      * Disable the menu
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         if(this.target){

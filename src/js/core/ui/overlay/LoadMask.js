@@ -2,43 +2,65 @@ import Overlay from '../Overlay';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 
+import {className} from '../../../../css/core/ui/overlay/LoadMask.less';
+
+/**
+ * A loading mask
+ */
 export default class LoadMask extends Overlay{
 
     /**
-     * A loading mask
+     * Instantiate
      *
-     * @class LoadMask
-     * @namespace overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.text='Loading...'] The text to display
+     * @property {String} [text='Loading...'] The text to display
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('loadmask');
+        this.addClass(`loadmask ${className}`);
 
+        /**
+         * The text container
+         * @type {Dom}
+         */
         this.text = new Dom('<div/>', {'class': 'text', 'text': this.configs.text})
-            .appendTo(this.contents);
+            .appendTo(this.getContents());
 
         if(this.configs.bar){
             this.addClass('with-bar');
 
+            /**
+             * The load bar
+             * @type {Dom}
+             */
             this.bar = new Dom('<div/>', {'class': 'bar'})
-                .appendTo(this.contents);
+                .appendTo(this.getContents());
 
-            this.barProgress = new Dom('<div/>', {'class': 'progress'})
+            /**
+             * The load bar's progress
+             * @type {Dom}
+             */
+            this.bar_progress = new Dom('<div/>', {'class': 'progress'})
                 .appendTo(this.bar);
 
-            this.barText = new Dom('<span/>', {'class': 'text'})
+            /**
+             * The load bar's text container
+             * @type {Dom}
+             */
+            this.bar_text = new Dom('<span/>', {'class': 'text'})
                 .appendTo(this.bar);
         }
 
         this.setProgress(0);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'text': Locale.t('overlay.LoadMask.text', 'Loading...'),
@@ -47,13 +69,21 @@ export default class LoadMask extends Overlay{
         });
     }
 
+    /**
+    * Set the progress value
+    *
+    * @param {Number} value The progress value, between 0 and 100
+    * @return {this}
+    */
     setProgress(value){
         this.text.text(Locale.formatString(this.configs.text, {'!percent': value}));
 
         if(this.bar){
-            this.barProgress.css('width', value + '%');
-            this.barText.text(Locale.formatString(this.configs.barText, {'!percent': value}));
+            this.bar_progress.css('width', `${value}%`);
+            this.bar_text.text(Locale.formatString(this.configs.barText, {'!percent': value}));
         }
+
+        return this;
     }
 
 }

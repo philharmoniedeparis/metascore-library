@@ -1,48 +1,35 @@
 import Dom from '../Dom';
 
-/**
- * Fired before the dragging starts
- * The dragging can be canceled by invoking preventDefault on the event
- *
- * @event beforedrag
- */
-const EVT_BEFOREDRAG = 'beforedrag';
-
-/**
- * Fired when the dragging started
- *
- * @event dragstart
- */
-const EVT_DRAGSTART = 'dragstart';
-
-/**
- * Fired when a drag occured
- *
- * @event drag
- */
-const EVT_DRAG = 'drag';
-
-/**
- * Fired when the dragging ended
- *
- * @event dragend
- */
-const EVT_DRAGEND = 'dragend';
+import {className} from '../../../css/core/ui/Draggable.less';
 
 /**
  * A class for adding draggable behaviors
+ *
+ * @emits {beforedrag} Fired before the dragging starts. The dragging can be canceled by invoking preventDefault on the event
+ * @emits {dragstart} Fired when the dragging started
+ * @emits {drag} Fired when a drag occured
+ * @emits {dragend} Fired when the dragging ended
  */
 export default class Draggable {
 
     /**
-     * Create a Draggable behaviour
+     * Instantiate
+     *
      * @param {Object} configs Custom configs to override defaults
-     * @param {Dom} configs.target The Dom object to add the behavior to
-     * @param {Dom} configs.handle The Dom object to use as a dragging handle
+     * @property {Dom} target The Dom object to add the behavior to
+     * @property {Dom} handle The Dom object to use as a dragging handle
      */
     constructor(configs) {
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The target's owner document
+         * @type {Dom}
+         */
         this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
@@ -56,6 +43,11 @@ export default class Draggable {
         this.enable();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'target': null,
@@ -66,7 +58,6 @@ export default class Draggable {
     /**
      * The mousedown event handler
      *
-     * @method onMouseDown
      * @private
      * @param {Event} evt The event object
      */
@@ -75,10 +66,14 @@ export default class Draggable {
             return;
         }
 
-        if(!this.configs.target.triggerEvent(EVT_BEFOREDRAG, null, true, true)){
+        if(!this.configs.target.triggerEvent('beforedrag', null, true, true)){
             return;
         }
 
+        /**
+         * The state at which the target was on mouse down
+         * @type {Object}
+         */
         this._start_state = {
             'x': evt.clientX,
             'y': evt.clientY
@@ -90,7 +85,7 @@ export default class Draggable {
 
         this.configs.target
             .addClass('dragging')
-            .triggerEvent(EVT_DRAGSTART, null, false, true);
+            .triggerEvent('dragstart', null, false, true);
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -99,19 +94,23 @@ export default class Draggable {
     /**
      * The mousemove event handler
      *
-     * @method onMouseMove
      * @private
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        let offsetX = evt.clientX - this._start_state.x;
-        let offsetY = evt.clientY - this._start_state.y;
+        const offsetX = evt.clientX - this._start_state.x;
+        const offsetY = evt.clientY - this._start_state.y;
 
         this._start_state.x = evt.clientX;
         this._start_state.y = evt.clientY;
+
+        /**
+         * Whether the target is being dragged
+         * @type {Boolean}
+         */
         this._dragged = true;
 
-        this.configs.target.triggerEvent(EVT_DRAG, {'offsetX': offsetX, 'offsetY': offsetY}, false, true);
+        this.configs.target.triggerEvent('drag', {'offsetX': offsetX, 'offsetY': offsetY}, false, true);
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -120,7 +119,6 @@ export default class Draggable {
     /**
      * The mouseup event handler
      *
-     * @method onMouseUp
      * @private
      * @param {Event} evt The event object
      */
@@ -137,7 +135,7 @@ export default class Draggable {
 
         this.configs.target
             .removeClass('dragging')
-            .triggerEvent(EVT_DRAGEND, null, false, true);
+            .triggerEvent('dragend', null, false, true);
 
         delete this._start_state;
 
@@ -145,6 +143,12 @@ export default class Draggable {
         evt.preventDefault();
     }
 
+    /**
+    * The click event handler
+    *
+    * @private
+    * @param {Event} evt The event object
+    */
     onClick(evt){
         evt.stopPropagation();
         evt.preventDefault();
@@ -153,14 +157,17 @@ export default class Draggable {
     /**
      * Enable the behavior
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
-        this.configs.target.addClass('draggable');
+        this.configs.target.addClass(`draggable ${className}`);
 
         this.configs.handle.addClass('drag-handle');
 
+        /**
+         * Whether the behavior is enabled
+         * @type {Boolean}
+         */
         this.enabled = true;
 
         return this;
@@ -169,11 +176,10 @@ export default class Draggable {
     /**
      * Disable the behavior
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
-        this.configs.target.removeClass('draggable');
+        this.configs.target.removeClass(`draggable ${className}`);
 
         this.configs.handle.removeClass('drag-handle');
 
@@ -185,8 +191,7 @@ export default class Draggable {
     /**
      * Destroy the behavior
      *
-     * @method destroy
-     * @chainable
+     * @return {this}
      */
     destroy() {
         this.disable();

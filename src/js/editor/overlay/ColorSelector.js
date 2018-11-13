@@ -4,26 +4,22 @@ import Button from '../../core/ui/Button';
 import {isObject} from '../../core/utils/Var';
 import {toRGBA, rgb2hsv} from '../../core/utils/Color';
 
+import {className} from '../../../css/editor/overlay/ColorSelector.less';
+
 /**
- * Fired when the submit button is clicked
+ * An overlay to select an RGBA color
  *
- * @event submit
+ * @emits {submit} Fired when the submit button is clicked
  * @param {Object} overlay The overlay instance
  * @param {Object} value The color value in rgba format
  */
-const EVT_SUBMIT = 'submit';
-
 export default class ColorSelector extends Overlay {
 
     /**
-     * An overlay to select an RGBA color
+     * Instantiate
      *
-     * @class ColorSelector
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @param {property} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
      */
     constructor(configs) {
         // call parent constructor
@@ -33,9 +29,14 @@ export default class ColorSelector extends Overlay {
         this.onGradientClick = this.onGradientClick.bind(this);
         this.onAlphaClick = this.onAlphaClick.bind(this);
 
-        this.addClass('color-selector');
+        this.addClass(`color-selector ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor'
@@ -45,14 +46,17 @@ export default class ColorSelector extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
         // call parent method
         super.setupUI();
 
-        this.gradient = new Dom('<div/>', {'class': 'gradient'}).appendTo(this.contents);
+        /**
+         * The gradient container
+         * @type {Dom}
+         */
+        this.gradient = new Dom('<div/>', {'class': 'gradient'}).appendTo(this.getContents());
 
         this.gradient.canvas = new Dom('<canvas/>', {'width': '255', 'height': '255'})
             .addListener('click', this.onGradientClick.bind(this))
@@ -62,7 +66,11 @@ export default class ColorSelector extends Overlay {
 
         this.gradient.position = new Dom('<div/>', {'class': 'position'}).appendTo(this.gradient);
 
-        this.alpha = new Dom('<div/>', {'class': 'alpha'}).appendTo(this.contents);
+        /**
+         * The alpha container
+         * @type {Dom}
+         */
+        this.alpha = new Dom('<div/>', {'class': 'alpha'}).appendTo(this.getContents());
 
         this.alpha.canvas = new Dom('<canvas/>', {'width': '20', 'height': '255'})
             .addListener('click', this.onAlphaClick.bind(this))
@@ -72,7 +80,11 @@ export default class ColorSelector extends Overlay {
 
         this.alpha.position = new Dom('<div/>', {'class': 'position'}).appendTo(this.alpha);
 
-        this.controls = new Dom('<div/>', {'class': 'controls'}).appendTo(this.contents);
+        /**
+         * The controls container
+         * @type {Dom}
+         */
+        this.controls = new Dom('<div/>', {'class': 'controls'}).appendTo(this.getContents());
 
         this.controls.r = new Dom('<input/>', {'type': 'number', 'min': '0', 'max': '255', 'name': 'r'})
             .addListener('input', this.onControlInput.bind(this));
@@ -135,13 +147,16 @@ export default class ColorSelector extends Overlay {
     /**
      * Set the current value
      *
-     * @method setValue
-     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
-     * @chainable
+     * @param {Mixed} val The value in a format accepted by {@link toRGBA}
+     * @return {this}
      */
     setValue(val){
         this.updateValue(val);
 
+        /**
+         * The previous value
+         * @type {Object}
+         */
         this.previous_value = this.value;
 
         this.fillPrevious();
@@ -152,35 +167,34 @@ export default class ColorSelector extends Overlay {
     /**
      * Update the selected value
      *
-     * @method updateValue
      * @private
-     * @param {Mixed} val The value in a format accepted by {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}}
+     * @param {Mixed} val The value in a format accepted by {@link toRGBA}
      * @param {Boolean} refillAlpha Whether to refill the alpha indicator canvas
      * @param {Boolean} updatePositions Whether to update the cursor positions
      * @param {Boolean} updateInputs Whether to update the input values
-     * @chainable
+     * @return {this}
      */
     updateValue(val, refillAlpha, updatePositions, updateInputs){
+        const rgb = isObject(val) ? val : toRGBA(val);
+        const range = 255;
 
-        let hsv;
-
+        /**
+         * The current value
+         * @type {Object}
+         */
         this.value = this.value || {};
 
-        if(!isObject(val)){
-            val = toRGBA(val);
+        if('r' in rgb){
+            this.value.r = parseInt(rgb.r, 10);
         }
-
-        if('r' in val){
-            this.value.r = parseInt(val.r, 10);
+        if('g' in rgb){
+            this.value.g = parseInt(rgb.g, 10);
         }
-        if('g' in val){
-            this.value.g = parseInt(val.g, 10);
+        if('b' in rgb){
+            this.value.b = parseInt(rgb.b, 10);
         }
-        if('b' in val){
-            this.value.b = parseInt(val.b, 10);
-        }
-        if('a' in val){
-            this.value.a = parseFloat(val.a);
+        if('a' in rgb){
+            this.value.a = parseFloat(rgb.a);
         }
 
         if(refillAlpha !== false){
@@ -195,12 +209,12 @@ export default class ColorSelector extends Overlay {
         }
 
         if(updatePositions !== false){
-            hsv = rgb2hsv(this.value);
+            const hsv = rgb2hsv(this.value);
 
-            this.gradient.position.css('left', `${(1 - hsv.h) * 255}px`);
-            this.gradient.position.css('top', `${(hsv.s * (255 / 2)) + ((1 - (hsv.v/255)) * (255/2))}px`);
+            this.gradient.position.css('left', `${(1 - hsv.h) * range}px`);
+            this.gradient.position.css('top', `${(hsv.s * (range / 2)) + ((1 - (hsv.v/range)) * (range/2))}px`);
 
-            this.alpha.position.css('top', `${(1 - this.value.a) * 255}px`);
+            this.alpha.position.css('top', `${(1 - this.value.a) * range}px`);
         }
 
         this.fillCurrent();
@@ -212,37 +226,35 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the gradient's canvas
      *
-     * @method fillGradient
      * @private
-     * @chainable
+     * @return {this}
      */
     fillGradient() {
-        let context = this.gradient.canvas.get(0).getContext('2d'),
-            fill;
+        const context = this.gradient.canvas.get(0).getContext('2d');
 
         // Create color gradient
-        fill = context.createLinearGradient(0, 0, context.canvas.width, 0);
-        fill.addColorStop(0, "rgb(255, 0, 0)");
-        fill.addColorStop(0.15, "rgb(255, 0, 255)");
-        fill.addColorStop(0.33, "rgb(0, 0, 255)");
-        fill.addColorStop(0.49, "rgb(0, 255, 255)");
-        fill.addColorStop(0.67, "rgb(0, 255, 0)");
-        fill.addColorStop(0.84, "rgb(255, 255, 0)");
-        fill.addColorStop(1, "rgb(255, 0, 0)");
+        const colors = context.createLinearGradient(0, 0, context.canvas.width, 0);
+        colors.addColorStop(0, "rgb(255, 0, 0)");
+        colors.addColorStop(0.15, "rgb(255, 0, 255)");
+        colors.addColorStop(0.33, "rgb(0, 0, 255)");
+        colors.addColorStop(0.49, "rgb(0, 255, 255)");
+        colors.addColorStop(0.67, "rgb(0, 255, 0)");
+        colors.addColorStop(0.84, "rgb(255, 255, 0)");
+        colors.addColorStop(1, "rgb(255, 0, 0)");
 
         // Apply gradient to canvas
-        context.fillStyle = fill;
+        context.fillStyle = colors;
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
         // Create semi transparent gradient (white -> trans. -> black)
-        fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
-        fill.addColorStop(0, "rgba(255, 255, 255, 1)");
-        fill.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-        fill.addColorStop(0.5, "rgba(0, 0, 0, 0)");
-        fill.addColorStop(1, "rgba(0, 0, 0, 1)");
+        const white2black = context.createLinearGradient(0, 0, 0, context.canvas.height);
+        white2black.addColorStop(0, "rgba(255, 255, 255, 1)");
+        white2black.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+        white2black.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+        white2black.addColorStop(1, "rgba(0, 0, 0, 1)");
 
         // Apply gradient to canvas
-        context.fillStyle = fill;
+        context.fillStyle = white2black;
         context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
         return this;
@@ -251,9 +263,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the previous color indicator canvas
      *
-     * @method fillPrevious
      * @private
-     * @chainable
+     * @return {this}
      */
     fillPrevious() {
         const context = this.controls.previous.get(0).getContext('2d');
@@ -268,9 +279,8 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the current color indicator canvas
      *
-     * @method fillCurrent
      * @private
-     * @chainable
+     * @return {this}
      */
     fillCurrent() {
         const context = this.controls.current.get(0).getContext('2d');
@@ -285,16 +295,14 @@ export default class ColorSelector extends Overlay {
     /**
      * Fill the alpha indicator canvas
      *
-     * @method fillAlpha
      * @private
-     * @chainable
+     * @return {this}
      */
     fillAlpha() {
-        let context = this.alpha.canvas.get(0).getContext('2d'),
-            fill;
+        const context = this.alpha.canvas.get(0).getContext('2d');
 
         // Create color gradient
-        fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
+        const fill = context.createLinearGradient(0, 0, 0, context.canvas.height);
         fill.addColorStop(0, `rgb(${this.value.r},${this.value.g},${this.value.b})`);
         fill.addColorStop(1, "transparent");
 
@@ -309,7 +317,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The controls input event handler
      *
-     * @method onControlInput
      * @private
      */
     onControlInput(){
@@ -324,7 +331,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The gradient mousedown event handler
      *
-     * @method onGradientMousedown
      * @private
      * @param {Event} evt The event object
      */
@@ -337,7 +343,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The gradient mouseup event handler
      *
-     * @method onGradientMouseup
      * @private
      * @param {Event} evt The event object
      */
@@ -350,17 +355,16 @@ export default class ColorSelector extends Overlay {
     /**
      * The gradient click event handler
      *
-     * @method onGradientClick
      * @private
      * @param {Event} evt The event object
      */
     onGradientClick(evt){
-        let offset = evt.target.getBoundingClientRect(),
-            colorX = evt.pageX - offset.left,
-            colorY = evt.pageY - offset.top,
-            context = this.gradient.canvas.get(0).getContext('2d'),
-            imageData = context.getImageData(colorX, colorY, 1, 1),
-            value = this.value;
+        const offset = evt.target.getBoundingClientRect();
+        const colorX = evt.pageX - offset.left;
+        const colorY = evt.pageY - offset.top;
+        const context = this.gradient.canvas.get(0).getContext('2d');
+        const imageData = context.getImageData(colorX, colorY, 1, 1);
+        const value = this.value;
 
         this.gradient.position.css('left', `${colorX}px`);
         this.gradient.position.css('top', `${colorY}px`);
@@ -384,7 +388,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The alpha mousedown event handler
      *
-     * @method onAlphaMousedown
      * @private
      * @param {Event} evt The event object
      */
@@ -397,7 +400,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The alpha mouseup event handler
      *
-     * @method onAlphaMouseup
      * @private
      * @param {Event} evt The event object
      */
@@ -410,16 +412,15 @@ export default class ColorSelector extends Overlay {
     /**
      * The alpha click event handler
      *
-     * @method onAlphaClick
      * @private
      * @param {Event} evt The event object
      */
     onAlphaClick(evt){
-        let offset = evt.target.getBoundingClientRect(),
-            colorY = evt.pageY - offset.top,
-            context = this.alpha.canvas.get(0).getContext('2d'),
-            imageData = context.getImageData(0, colorY, 1, 1),
-            value = this.value;
+        const offset = evt.target.getBoundingClientRect();
+        const colorY = evt.pageY - offset.top;
+        const context = this.alpha.canvas.get(0).getContext('2d');
+        const imageData = context.getImageData(0, colorY, 1, 1);
+        const value = this.value;
 
         this.alpha.position.css('top', `${colorY}px`);
 
@@ -433,11 +434,10 @@ export default class ColorSelector extends Overlay {
     /**
      * The apply button click event handler
      *
-     * @method onApplyClick
      * @private
      */
     onApplyClick(){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.value}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'value': this.value}, true, false);
 
         this.hide();
     }
@@ -445,7 +445,6 @@ export default class ColorSelector extends Overlay {
     /**
      * The cancel button click event handler
      *
-     * @method onCancelClick
      * @private
      */
     onCancelClick(){

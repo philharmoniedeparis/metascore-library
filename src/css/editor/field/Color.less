@@ -1,0 +1,29 @@
+:local(.className){
+    .input-wrapper{
+        position: relative;
+        background: url('../../../img/editor/transparency-grid.png') repeat left top;
+
+        input{
+            width: 100%;
+            padding-right: 17px !important;
+            box-sizing: border-box;
+
+            background-image: url('../../../img/editor/field/color/picker.png');
+            background-repeat: no-repeat;
+            background-position: left center;
+            background-size: contain;
+
+            &:hover{
+                opacity: 1;
+            }
+        }
+    }
+
+    &.disabled{
+        .input-wrapper{
+            button{
+                cursor: default;
+            }
+        }
+    }
+}

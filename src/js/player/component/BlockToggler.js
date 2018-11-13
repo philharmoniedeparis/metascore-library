@@ -10,6 +10,11 @@ import {toCSS} from '../../core/utils/Color';
  */
 export default class BlockToggler extends Component{
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -101,7 +106,7 @@ export default class BlockToggler extends Component{
                         'label': Locale.t('player.component.BlockToggler.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -114,7 +119,7 @@ export default class BlockToggler extends Component{
                         'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('background-color', undefined, skipDefault);
+                        return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('background-color', toCSS(value));
@@ -127,7 +132,7 @@ export default class BlockToggler extends Component{
                         'min': 0
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -140,7 +145,7 @@ export default class BlockToggler extends Component{
                         'label': Locale.t('player.component.BlockToggler.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-color', undefined, skipDefault);
+                        return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-color', toCSS(value));
@@ -152,7 +157,7 @@ export default class BlockToggler extends Component{
                         'label': Locale.t('player.component.BlockToggler.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-radius', undefined, skipDefault);
+                        return this.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-radius', value);
@@ -162,6 +167,11 @@ export default class BlockToggler extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'BlockToggler';
     }
@@ -169,7 +179,6 @@ export default class BlockToggler extends Component{
     /**
      * Setup the block's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -178,29 +187,34 @@ export default class BlockToggler extends Component{
 
         this.addClass('block-toggler');
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.btn_wrapper = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
+
+        return this;
     }
 
     /**
      * Update the displayed time
      *
-     * @method update
-     * @param {Dom} blocks A Dom instance containing the components to control
-     * @chainable
+     * @param {Dom} components A Dom instance containing the components to control
+     * @return {this}
      */
     update(components){
-        let componenets_width = 0,
-            componenets_height = 0,
-            boxes = [];
+        const boxes = [];
+        let componenets_width = 0;
+        let componenets_height = 0;
 
         this.btn_wrapper.empty();
 
         components.forEach((component) => {
-            let x = component.getPropertyValue('x') || 0,
-                y = component.getPropertyValue('y') || 0,
-                width = component.getPropertyValue('width') || 0,
-                height = component.getPropertyValue('height') || 0;
+            const x = component.getPropertyValue('x') || 0;
+            const y = component.getPropertyValue('y') || 0;
+            const width = component.getPropertyValue('width') || 0;
+            const height = component.getPropertyValue('height') || 0;
 
             boxes.push({
                 'component': component,
@@ -215,25 +229,22 @@ export default class BlockToggler extends Component{
         });
 
         boxes.forEach((box, index) => {
-            let button, svg;
-
-            button = new Dom('<div/>', {'class': 'button'})
+            const button = new Dom('<div/>', {'class': 'button'})
                 .addListener('click', this.onTogglerClick.bind(this, box.component))
                 .appendTo(this.btn_wrapper);
 
-            svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svg.setAttributeNS(null, "preserveAspectRatio", "xMidYMidmeet");
             svg.setAttributeNS(null, "viewBox", `0 0 ${componenets_width} ${componenets_height}`);
             button.get(0).appendChild(svg);
 
             boxes.forEach((box2, index2) => {
-                let x = box2.x,
-                    y = box2.y,
-                    width = box2.width,
-                    height = box2.height,
-                    rect;
+                const x = box2.x;
+                const y = box2.y;
+                const width = box2.width;
+                const height = box2.height;
 
-                rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                 rect.setAttributeNS(null, "fill", index2 === index ? "#666666" : "#CECECE");
                 rect.setAttributeNS(null, "width", width);
                 rect.setAttributeNS(null, "height", height);
@@ -247,6 +258,11 @@ export default class BlockToggler extends Component{
         return this;
     }
 
+    /**
+     * The toggler button click event callback
+     *
+     * @param {Component} component The associated component
+     */
     onTogglerClick(component){
         component.toggleVisibility();
     }
@@ -254,7 +270,6 @@ export default class BlockToggler extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -264,6 +279,10 @@ export default class BlockToggler extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this,
@@ -285,7 +304,6 @@ export default class BlockToggler extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */
@@ -295,6 +313,10 @@ export default class BlockToggler extends Component{
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });

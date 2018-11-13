@@ -9,39 +9,27 @@ import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 
 /**
- * Fired when a page is added
+ * A block component
  *
- * @event pageadd
+ * @emits {pageadd} Fired when a page is added
  * @param {Block} block The block instance
  * @param {Page} page The page instance
- */
-const EVT_PAGEADD = 'pageadd';
-
-/**
- * Fired when a page is removed
- *
- * @event pageremove
+ * @emits {pageremove} Fired when a page is removed
  * @param {Block} block The block instance
  * @param {Page} page The page instance
- */
-const EVT_PAGEREMOVE = 'pageremove';
-
-/**
- * Fired when the active page is set
- *
- * @event pageactivate
+ * @emits {pageactivate} Fired when the active page is set
  * @param {Block} block The block instance
  * @param {Page} current The currently active page instance
  * @param {Page} previous The previously active page instance
  * @param {String} basis The reason behind this action
  */
-const EVT_PAGEACTIVATE = 'pageactivate';
-
-/**
- * A block component
- */
 export default class Block extends Component {
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -145,7 +133,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -158,7 +146,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('background-color', undefined, skipDefault);
+                        return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('background-color', toCSS(value));
@@ -171,7 +159,7 @@ export default class Block extends Component {
                         'resizeButton': true
                     },
                     'getter': function(skipDefault){
-                        let value = this.css('background-image', undefined, skipDefault);
+                        let value = this.css('background-image', void 0, skipDefault);
 
                         if(value === 'none' || !isString(value)){
                             return null;
@@ -184,8 +172,8 @@ export default class Block extends Component {
                         return value;
                     },
                     'setter': function(value){
-                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.css('background-image', value);
+                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.css('background-image', css_value);
                     }
                 },
                 'border-width': {
@@ -195,7 +183,7 @@ export default class Block extends Component {
                         'min': 0
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -208,7 +196,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Block.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-color', undefined, skipDefault);
+                        return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-color', toCSS(value));
@@ -220,7 +208,7 @@ export default class Block extends Component {
                         'label': Locale.t('player.component.Block.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-radius', undefined, skipDefault);
+                        return this.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-radius', value);
@@ -260,6 +248,11 @@ export default class Block extends Component {
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Block';
     }
@@ -267,7 +260,6 @@ export default class Block extends Component {
     /**
      * Setup the block's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -276,19 +268,28 @@ export default class Block extends Component {
 
         this.addClass('block');
 
+        /**
+         * The pages container
+         * @type {Dom}
+         */
         this.page_wrapper = new Dom('<div/>', {'class': 'pages'})
             .addDelegate('.page', 'cuepointstart', this.onPageCuePointStart.bind(this))
             .appendTo(this);
 
+        /**
+         * The pager
+         * @type {Pager}
+         */
         this.pager = new Pager()
             .addDelegate('.button', 'click', this.onPagerClick.bind(this))
             .appendTo(this);
+
+        return this;
     }
 
     /**
      * Page cuepointstart event handler
      *
-     * @method onPageCuePointStart
      * @private
      * @param {Event} evt The event object
      */
@@ -299,7 +300,6 @@ export default class Block extends Component {
     /**
      * Pager click event handler
      *
-     * @method onPagerClick
      * @private
      * @param {Event} evt The event object
      */
@@ -328,7 +328,6 @@ export default class Block extends Component {
     /**
      * Get the block's pages
      *
-     * @method getPages
      * @return {Array} List of pages
      */
     getPages() {
@@ -344,9 +343,8 @@ export default class Block extends Component {
     /**
      * Get a page by index
      *
-     * @method getPage
      * @param {Integer} index The page's index
-     * @return {player.component.Page} The page
+     * @return {Page} The page
      */
     getPage(index){
         const page = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
@@ -357,11 +355,10 @@ export default class Block extends Component {
     /**
      * Add a page
      *
-     * @method addPage
-     * @params {Mixed} configs Page configs or a player.component.Page instance
-     * @params {Integer} [index] The new page's index, page is appended if not given
+     * @param {Object|Page} configs Page configs or an existing Page instance
+     * @param {Integer} [index] The new page's index, page is appended if not given
      * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
-     * @return {player.component.Page} The added page
+     * @return {Page} The added page
      */
     addPage(configs, index, supressEvent){
         const existing = configs instanceof Page;
@@ -385,7 +382,7 @@ export default class Block extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_PAGEADD, {'block': this, 'page': page, 'new': !existing});
+            this.triggerEvent('pageadd', {'block': this, 'page': page, 'new': !existing});
         }
 
         this.setActivePage(page);
@@ -396,16 +393,15 @@ export default class Block extends Component {
     /**
      * Remove a page
      *
-     * @method removePage
-     * @params {player.component.Page} page The page to remove
+     * @param {Page} page The page to remove
      * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
-     * @return {player.component.Page} The removed page
+     * @return {Page} The removed page
      */
     removePage(page, supressEvent){
         page.remove();
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_PAGEREMOVE, {'block': this, 'page': page});
+            this.triggerEvent('pageremove', {'block': this, 'page': page});
         }
 
         return page;
@@ -414,8 +410,7 @@ export default class Block extends Component {
     /**
      * Remove all pages
      *
-     * @method removeAllPages
-     * @chainable
+     * @return {this}
      */
     removeAllPages() {
         this.page_wrapper.children('.page').remove();
@@ -426,8 +421,7 @@ export default class Block extends Component {
     /**
      * Get the index of a page
      *
-     * @method getPageIndex
-     * @param {player.component.Page} page The page
+     * @param {Page} page The page
      * @return {Integer} The page's index
      */
     getPageIndex(page){
@@ -437,8 +431,7 @@ export default class Block extends Component {
     /**
      * Get the currently active page
      *
-     * @method getActivePage
-     * @return {player.component.Page} The page
+     * @return {Page} The page
      */
     getActivePage() {
         return this.getPage(this.getActivePageIndex());
@@ -447,7 +440,6 @@ export default class Block extends Component {
     /**
      * Get the index of the currently active page
      *
-     * @method getActivePageIndex
      * @return {Integer} The index
      */
     getActivePageIndex() {
@@ -457,7 +449,6 @@ export default class Block extends Component {
     /**
      * Get the page count
      *
-     * @method getPageCount
      * @return {Integer} The number of pages
      */
     getPageCount() {
@@ -467,29 +458,29 @@ export default class Block extends Component {
     /**
      * Set the active page
      *
-     * @method setActivePage
      * @param {Mixed} page The page to activate or its index
      * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
-     * @chainable
+     * @return {this}
      */
     setActivePage(page, supressEvent){
         const previous = this.getActivePage();
+        let _page = page;
 
         if(isNumber(page)){
-            page = this.getPage(page);
+            _page = this.getPage(page);
         }
 
-        if(page instanceof Page){
+        if(_page instanceof Page){
 			this.getPages().forEach((other_page) => {
                 other_page.removeClass('active');
             });
 
-            page.addClass('active');
+            _page.addClass('active');
 
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_PAGEACTIVATE, {'block': this, 'current': page, 'previous': previous});
+                this.triggerEvent('pageactivate', {'block': this, 'current': _page, 'previous': previous});
             }
         }
 
@@ -499,9 +490,8 @@ export default class Block extends Component {
     /**
      * Update the pager
      *
-     * @method updatePager
      * @private
-     * @chainable
+     * @return {this}
      */
     updatePager() {
         const index = this.getActivePageIndex();
@@ -517,7 +507,6 @@ export default class Block extends Component {
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -527,6 +516,10 @@ export default class Block extends Component {
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this.child('.pager'),
@@ -548,7 +541,6 @@ export default class Block extends Component {
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */
@@ -558,6 +550,10 @@ export default class Block extends Component {
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });

@@ -1,37 +1,39 @@
+import Dom from '../../core/Dom';
 import Field from '../Field';
 
+import {className} from '../../../css/editor/field/Checkbox.less';
+
 /**
- * Fired when the field's value changes
+ * A checkbox field based on an HTML input[type=checkbox] element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-const EVT_VALUECHANGE = 'valuechange';
-
 export default class Checkbox extends Field{
 
     /**
-     * A checkbox field based on an HTML input[type=checkbox] element
+     * Instantiate
      *
-     * @class Checkbox
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Boolean} [configs.checked=false] Whether the field is checked by default
-     * @param {Boolean} [configs.checked_value=true] The value when checked
-     * @param {Boolean} [configs.unchecked_value=false] The value when unchecked
+     * @property {Boolean} [checked=false] Whether the field is checked by default
+     * @property {Boolean} [checked_value=true] The value when checked
+     * @property {Boolean} [unchecked_value=false] The value when unchecked
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('checkboxfield');
+        this.addClass(`checkbox ${className}`);
 
         this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'checked': false,
@@ -43,7 +45,6 @@ export default class Checkbox extends Field{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -52,12 +53,14 @@ export default class Checkbox extends Field{
         this.input
             .attr('type', 'checkbox')
             .addListener('click', this.onClick.bind(this));
+
+        new Dom('<label/>', {'for': this.input.attr('id')})
+            .appendTo(this.input_wrapper);
     }
 
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      * @param {Event} evt The event object
      */
@@ -70,7 +73,6 @@ export default class Checkbox extends Field{
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      * @param {Event} evt The event object
      */
@@ -81,6 +83,10 @@ export default class Checkbox extends Field{
         }
 
         if(this.input.is(":checked")){
+            /**
+             * The current value
+             * @type {String}
+             */
             this.value = this.configs.checked_value;
             this.addClass('checked');
         }
@@ -89,16 +95,15 @@ export default class Checkbox extends Field{
             this.removeClass('checked');
         }
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         this.input.get(0).checked = value === this.configs.checked_value;

@@ -2,13 +2,18 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
 import Locale from '../../core/Locale';
-import {pad} from '../../core/utils/String';
+import {formatTime} from '../../core/utils/Media';
 
 /**
  * A controller component
  */
 export default class Controller extends Component{
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -74,7 +79,7 @@ export default class Controller extends Component{
                         'label': Locale.t('player.component.Controller.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -87,7 +92,7 @@ export default class Controller extends Component{
                         'label': Locale.t('player.component.Controller.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.css('border-radius', undefined, skipDefault);
+                        return this.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.css('border-radius', value);
@@ -97,6 +102,11 @@ export default class Controller extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Controller';
     }
@@ -104,7 +114,6 @@ export default class Controller extends Component{
     /**
      * Setup the controller's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -113,12 +122,24 @@ export default class Controller extends Component{
 
         this.addClass('controller');
 
+        /**
+         * The timer container
+         * @type {Dom}
+         */
         this.timer = new Dom('<div/>', {'class': 'timer', 'text': '00:00.00'})
             .appendTo(this);
 
+        /**
+         * The rewind <button> element
+         * @type {Dom}
+         */
         this.rewind_btn = new Dom('<button/>')
             .data('action', 'rewind');
 
+        /**
+         * The play <button> element
+         * @type {Dom}
+         */
         this.play_btn = new Dom('<button/>')
             .data('action', 'play');
 
@@ -126,12 +147,13 @@ export default class Controller extends Component{
             .append(this.rewind_btn)
             .append(this.play_btn)
             .appendTo(this);
+
+        return this;
     }
 
     /**
      * Get the value of the controller's name property
      *
-     * @method getName
      * @return {String} The name
      */
     getName() {
@@ -141,16 +163,11 @@ export default class Controller extends Component{
     /**
      * Update the displayed time
      *
-     * @method updateTime
      * @param {Integer} time The time value in centiseconds
-     * @chainable
+     * @return {this}
      */
     updateTime(time){
-        let centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left'),
-            seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left'),
-            minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
-
-        this.timer.text(`${minutes}:${seconds}.${centiseconds}`);
+        this.timer.text(formatTime(time));
 
         return this;
     }
@@ -158,7 +175,6 @@ export default class Controller extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -168,6 +184,10 @@ export default class Controller extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this.child('.timer')

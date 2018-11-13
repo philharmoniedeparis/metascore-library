@@ -1,31 +1,36 @@
 import Dom from '../Dom';
 
+/**
+ * A simple button based on an HTML button element
+ */
 export default class Button extends Dom {
 
     /**
-     * A simple button based on an HTML button element
+     * Instantiate
      *
-     * @class Button
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.label=null] A text to add as a label
+     * @property {String} [label=null] A text to add as a label
      */
     constructor(configs) {
         // call the super constructor.
         super('<button/>');
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
-
-        this.disabled = false;
 
         if(this.configs.label){
             this.setLabel(this.configs.label);
         }
-
-        this.addListener('click', this.onClick.bind(this));
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'label': null
@@ -33,27 +38,17 @@ export default class Button extends Dom {
     }
 
     /**
-     * The click event handler
-     *
-     * @method onClick
-     * @private
-     * @param {Event} evt The event object
-     */
-    onClick(evt){
-        if(this.disabled){
-            evt.stopPropagation();
-        }
-    }
-
-    /**
      * Set the button's text
      *
-     * @method setLabel
      * @param {String} text The text to use as the label
-     * @chainable
+     * @return {this}
      */
     setLabel(text){
-        if(this.label === undefined){
+        if(typeof this.label === "undefined"){
+            /**
+             * An eventual label
+             * @type {Dom}
+             */
             this.label = new Dom('<span/>', {'class': 'label'})
                 .appendTo(this);
         }
@@ -66,13 +61,10 @@ export default class Button extends Dom {
     /**
      * Disable the button
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
-        this.disabled = true;
-
-        this.addClass('disabled');
+        this.attr('disabled', '');
 
         return this;
     }
@@ -80,13 +72,10 @@ export default class Button extends Dom {
     /**
      * Enable the button
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
-        this.disabled = false;
-
-        this.removeClass('disabled');
+        this.attr('disabled', null);
 
         return this;
     }

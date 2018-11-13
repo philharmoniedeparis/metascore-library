@@ -1,21 +1,6 @@
 import {isArray, isString, isObject} from './utils/Var';
 
 /**
- * Fired before an element is removed
- *
- * @event beforeremove
- */
-const EVT_BEFOREREMOVE = 'beforeremove';
-
-/**
- * Fired when a child element is removed
- *
- * @event childremove
- * @param {Object} child The removed child
- */
-const EVT_CHILDREMOVE = 'childremove';
-
-/**
  * Regular expression that matches dashed string for camelizing
  *
  * @property camelRe
@@ -27,7 +12,6 @@ const camelRe = /-([\da-z])/gi;
  * List of common events that should generaly bubble up
  *
  * @property bubbleEvents
- * @static
  * @private
  */
 const bubbleEvents = {
@@ -41,34 +25,38 @@ const bubbleEvents = {
     'transitionend': true
 };
 
+/**
+ * A class for Dom manipulation
+ *
+ * @emits {beforeremove} Fired before an element is removed
+ * @emits {childremove} Fired when a child element is removed
+ * @param {Object} child The removed child
+ * @example
+ *     var div = new Dom('<div/>', {'class': 'my-class'});
+ *     var body = new Dom('body');
+ */
 export default class Dom {
 
-    //TODO: improve by using a NodeList for the list of elements
-
     /**
-     * A class for Dom manipulation
+     * Instantiate
      *
-     * @class Dom
-     * @extends Class
-     * @constructor
      * @param {Mixed} [...args] An HTML string and an optional list of attributes to apply, or a CSS selector with an optional parent and an optional list of attributes to apply
-     *
-     * @example
-     *     var div = new Dom('<div/>', {'class': 'my-class'});
-     *     var body = new Dom('body');
      */
     constructor(...args) {
-        let elements;
 
+        /**
+         * The list of elements
+         * @type {Array}
+         */
         this.elements = [];
 
-        if(arguments.length > 0){
-            elements = Dom.elementsFromString(...args);
+        if(args.length > 0){
+            let elements = Dom.elementsFromString(...args);
             if(elements){
                 this.add(elements);
 
-                if(arguments.length > 1){
-                    this.attr(arguments[1]);
+                if(args.length > 1){
+                    this.attr(args[1]);
                 }
             }
             else{
@@ -76,8 +64,8 @@ export default class Dom {
                 if(elements){
                     this.add(elements);
 
-                    if(arguments.length > 2){
-                        this.attr(arguments[2]);
+                    if(args.length > 2){
+                        this.attr(args[2]);
                     }
                 }
             }
@@ -87,8 +75,6 @@ export default class Dom {
     /**
      * Helper function used by the camel function
      *
-     * @method camelReplaceFn
-     * @static
      * @private
      * @param {The matched substring} match
      * @param {The submatched letter} letter
@@ -101,8 +87,6 @@ export default class Dom {
     /**
      * Normalize a string to Camel Case
      *
-     * @method camel
-     * @static
      * @private
      * @param {String} str The string to normalize
      * @return {String} The normalized string
@@ -114,21 +98,16 @@ export default class Dom {
     /**
      * Select a single element by CSS selecor and optional parent
      *
-     * @method selectElement
-     * @static
-     * @param {String} The CSS selector
+     * @param {String} selector The CSS selector
      * @param {HTMLElement} [parent=document] The HTML Element in which to search
      * @return {HTMLElement} The found element if any
      */
     static selectElement(selector, parent) {
-        let element;
-
-        if(!parent){
-            parent = document;
-        }
+        const _parent = parent || document;
+        let element = null;
 
         if (isString(selector)) {
-            element = parent.querySelector(selector);
+            element = _parent.querySelector(selector);
         }
         else if (selector.length) {
             element = selector[0];
@@ -143,25 +122,22 @@ export default class Dom {
     /**
      * Select multiple elements by CSS selecor and optional parent
      *
-     * @method selectElements
-     * @static
-     * @param {String} The CSS selector
+     * @param {String} selector The CSS selector
      * @param {HTMLElement} [parent=document] The HTML Element in which to search
      * @return {Mixed} An HTML NodeList or an array of found elements if any
      */
     static selectElements(selector, parent) {
-        let elements;
+        let elements = [];
 
-        if(selector !== undefined){
-            if(!parent){
-                parent = document;
-            }
-            else if(parent instanceof Dom){
-                parent = parent.get(0);
+        if(typeof selector !== "undefined"){
+            let _parent = parent || document;
+
+            if(_parent instanceof Dom){
+                _parent = _parent.get(0);
             }
 
             if(isString(selector)) {
-                elements = parent.querySelectorAll(selector);
+                elements = _parent.querySelectorAll(selector);
             }
             else if('length' in selector) {
                 elements = selector;
@@ -177,8 +153,6 @@ export default class Dom {
     /**
      * Creates elements from an HTML string
      *
-     * @method elementsFromString
-     * @static
      * @param {String} html The HTML string
      * @return {HTML NodeList} A NodeList of the created elements, or null on error
      */
@@ -198,8 +172,6 @@ export default class Dom {
     /**
      * Get the document containing an element
      *
-     * @method getElementDocument
-     * @static
      * @param {HTMLElement} element The element
      * @return {HTML Document } The document
      */
@@ -210,8 +182,6 @@ export default class Dom {
     /**
      * Get the window containing an element
      *
-     * @method getElementWindow
-     * @static
      * @param {HTMLElement} element The element
      * @return {HTML Window} The window
      */
@@ -224,8 +194,6 @@ export default class Dom {
     /**
      * Check if an element has a given CSS lass
      *
-     * @method hasClass
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} className The CSS class
      * @return {Boolean} Whether the element has the specified CSS class
@@ -237,54 +205,37 @@ export default class Dom {
     /**
      * Add a CSS class to an element
      *
-     * @method addClass
-     * @static
      * @param {HTMLElement} element The element
-     * @param {String} className The CSS class
+     * @param {String} className The CSS class(es)
      */
     static addClass(element, className){
-        let classNames = className.split(" "),
-            i = 0, l = classNames.length;
-
-        for(; i<l; i++){
-            element.classList.add(classNames[i]);
-        }
+        const classes = className.split(" ");
+        element.classList.add(...classes);
     }
 
     /**
      * Remove a CSS class from an element
      *
-     * @method removeClass
-     * @static
      * @param {HTMLElement} element The element
-     * @param {String} className The CSS class
+     * @param {String} className The CSS class(es)
      */
     static removeClass(element, className){
-        let classNames = className.split(" "),
-            i = 0, l = classNames.length;
-
-        for(; i<l; i++){
-            element.classList.remove(classNames[i]);
-        }
+        const classes = className.split(" ");
+        element.classList.remove(...classes);
     }
 
     /**
      * Toggle a CSS class on an element
      *
-     * @method toggleClass
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} className The CSS class
      * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
      */
     static toggleClass(element, className, force){
-        let classNames = className.split(" "),
-            i = 0, l = classNames.length;
-
-        if(force === undefined){
-            for(; i<l; i++){
-                element.classList.toggle(classNames[i]);
-            }
+        if(typeof force === "undefined"){
+            className.split(" ").forEach((cls) => {
+                element.classList.toggle(cls);
+            });
         }
         // avoid using classList.toggle with a second argument due to a bug in IE 11
         else if(force){
@@ -298,8 +249,6 @@ export default class Dom {
     /**
      * Add an event listener on an element
      *
-     * @method addListener
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
@@ -308,11 +257,13 @@ export default class Dom {
      * @return {HTMLElement} The element
      */
     static addListener(element, type, callback, useCapture){
-        if(useCapture === undefined){
-            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        let _useCapture = useCapture;
+
+        if(typeof _useCapture === "undefined"){
+            _useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
         }
 
-        element.addEventListener(type, callback, useCapture);
+        element.addEventListener(type, callback, _useCapture);
 
         return element;
     }
@@ -320,8 +271,6 @@ export default class Dom {
     /**
      * Add an event listener that only executes once on an element
      *
-     * @method addListenerOnce
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
@@ -330,16 +279,18 @@ export default class Dom {
      * @return {HTMLElement} The element
      */
     static addOneTimeListener(element, type, callback, useCapture){
-        if(useCapture === undefined){
-            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        let _useCapture = useCapture;
+
+        if(typeof _useCapture === "undefined"){
+            _useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
         }
 
         const handler = function(evt){
-            element.removeEventListener(type, handler, useCapture);
+            element.removeEventListener(type, handler, _useCapture);
             return callback(evt);
         };
 
-        element.addEventListener(type, handler, useCapture);
+        element.addEventListener(type, handler, _useCapture);
 
         return element;
     }
@@ -347,8 +298,6 @@ export default class Dom {
     /**
      * Remove an event listener from an element
      *
-     * @method removeListener
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
@@ -357,11 +306,13 @@ export default class Dom {
      * @return {HTMLElement} The element
      */
     static removeListener(element, type, callback, useCapture){
-        if(useCapture === undefined){
-            useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
+        let _useCapture = useCapture;
+
+        if(typeof _useCapture === "undefined"){
+            _useCapture = ('type' in bubbleEvents) ? bubbleEvents[type] : false;
         }
 
-        element.removeEventListener(type, callback, useCapture);
+        element.removeEventListener(type, callback, _useCapture);
 
         return element;
     }
@@ -369,8 +320,6 @@ export default class Dom {
     /**
      * Trigger an event from an element
      *
-     * @method triggerEvent
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} type The event type
      * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
@@ -393,14 +342,12 @@ export default class Dom {
     /**
      * Set or get the innerHTML of an element
      *
-     * @method text
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} [html] The value to set
      * @return {String} The innerHTML of the element
      */
     static text(element, html){
-        if(html !== undefined){
+        if(typeof html !== "undefined"){
             element.innerHTML = html;
         }
 
@@ -410,33 +357,23 @@ export default class Dom {
     /**
      * Set or get the value of an element
      *
-     * @method val
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} [value] The value to set
      * @return {String} The value of the element
      */
     static val(element, value){
-        let options, values;
-
-        // if this is a multiselect element
+        // if this is a multi-select element
         if(this.is(element, 'select[multiple]')){
+            const values = [];
+
             if(value){
-                if(!isArray(value)){
-                    value = [value];
-                }
-
-                options = this.selectElements('option', element);
-
-                options.forEach((option) => {
-                    this.prop(option, 'selected', value.includes(this.val(option)));
+                const _value = isArray(value) ? value : [value];
+                this.selectElements('option', element).forEach((option) => {
+                    this.prop(option, 'selected', _value.includes(this.val(option)));
                 });
             }
 
-            options = this.selectElements('option:checked', element);
-            values = [];
-
-            options.forEach((option) => {
+            this.selectElements('option:checked', element).forEach((option) => {
                 values.push(this.val(option));
             });
 
@@ -444,7 +381,7 @@ export default class Dom {
         }
 
         // otherwise
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             element.value = value;
         }
         return element.value;
@@ -453,8 +390,6 @@ export default class Dom {
     /**
      * Set or get an attribute on an element
      *
-     * @method attr
-     * @static
      * @param {HTMLElement} element The element
      * @param {Mixed} name The attribute's name, or a list of name/value pairs
      * @param {Mixed} [value] The attribute's value
@@ -480,7 +415,7 @@ export default class Dom {
                         element.removeAttribute(name);
                     }
                     else{
-                        if(value !== undefined){
+                        if(typeof value !== "undefined"){
                             element.setAttribute(name, value);
                         }
 
@@ -490,17 +425,17 @@ export default class Dom {
             }
         }
 
+        return null;
     }
 
     /**
      * Set or get a property on an element
      *
-     * @method prop
-     * @static
      * @param {HTMLElement} element The element
      * @param {Mixed} name The attribute's name, or a list of name/value pairs
      * @param {Mixed} [value] The attribute's value
      * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
+     * @todo Handle errors
      */
     static prop(element, name, value){
         if(isObject(name)){
@@ -511,28 +446,28 @@ export default class Dom {
         else{
             if(value === null){
                 try {
-                    element[name] = undefined;
+                    element[name] = void 0;
                     delete element[name];
                 }
                 catch(e){
-                    // TODO
+                    //
                 }
             }
             else{
-                if(value !== undefined){
+                if(typeof value !== "undefined"){
                     element[name] = value;
                 }
 
                 return element[name];
             }
         }
+
+        return null;
     }
 
     /**
      * Set or get a CSS style property of an element
      *
-     * @method css
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} name The CSS property's name
      * @param {String} value The CSS property's value
@@ -540,60 +475,51 @@ export default class Dom {
      * @return {String} The CSS style value of the property
      */
     static css(element, name, value, inline){
-        let camel, style;
+        const camel = this.camel(name);
 
-        camel = this.camel(name);
-
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             element.style[camel] = value;
         }
 
-        style = inline === true ? element.style : window.getComputedStyle(element);
+        const style = inline === true ? element.style : window.getComputedStyle(element);
+        const new_value = style.getPropertyValue(name);
 
-        value = style.getPropertyValue(name);
-
-        return value !== "" ? value : null;
+        return new_value !== "" ? new_value : null;
     }
 
     /**
      * Set or get a custom data attribute of an element
      *
-     * @method data
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} name The name of the data attribute
      * @param {String} value The value of the data attribute
      * @return {String} The value of the data attribute
      */
     static data(element, name, value){
-        name = this.camel(name);
+        const camel = this.camel(name);
 
         if(value === null){
-            if(element.dataset[name]){
-                delete element.dataset[name];
+            if(element.dataset[camel]){
+                delete element.dataset[camel];
             }
         }
-        else if(value !== undefined){
-            element.dataset[name] = value;
+        else if(typeof value !== "undefined"){
+            element.dataset[camel] = value;
         }
 
-        return element.dataset[name];
+        return element.dataset[camel];
     }
 
     /**
      * Append children to an element
      *
-     * @method append
-     * @static
      * @param {HTMLElement} element The element
      * @param {Mixed} children An array of elemets or a single element to append
      */
     static append(element, children){
-        if (!isArray(children)) {
-            children = [children];
-        }
+        const _children = isArray(children) ? children : [children];
 
-        children.forEach((child) => {
+        _children.forEach((child) => {
             element.appendChild(child);
         });
     }
@@ -601,34 +527,26 @@ export default class Dom {
     /**
      * Insert siblings before an element
      *
-     * @method before
-     * @static
      * @param {HTMLElement} element The element
      * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     static before(element, siblings){
-        if (!isArray(siblings)) {
-            siblings = [siblings];
-        }
+        const _siblings = isArray(siblings) ? siblings : [siblings];
 
-        siblings.forEach((sibling) => {
+        _siblings.forEach((sibling) => {
             element.parentElement.insertBefore(sibling, element);
         });
     }
 
     /**
      * Insert siblings after an element
-     * @method after
-     * @static
      * @param {HTMLElement} element The element
      * @param {Mixed} siblings An array of elemets or a single element to insert
      */
     static after(element, siblings){
-        if (!isArray(siblings)) {
-            siblings = [siblings];
-        }
+        const _siblings = isArray(siblings) ? siblings : [siblings];
 
-        siblings.forEach((sibling) => {
+        _siblings.forEach((sibling) => {
             element.parentElement.insertBefore(sibling, element.nextSibling);
         });
     }
@@ -636,8 +554,6 @@ export default class Dom {
     /**
      * Remove all element children
      *
-     * @method empty
-     * @static
      * @param {HTMLElement} element The element
      */
     static empty(element){
@@ -649,8 +565,6 @@ export default class Dom {
     /**
      * Remove an element from the DOM
      *
-     * @method remove
-     * @static
      * @param {HTMLElement} element The element
      */
     static remove(element){
@@ -662,8 +576,6 @@ export default class Dom {
     /**
      * Check if an element matches a CSS selector
      *
-     * @method is
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} selector The CSS selector
      * @return {Boolean} Whether the element matches the CSS selector
@@ -675,20 +587,16 @@ export default class Dom {
     /**
      * Get the closest ancestor of an element which matches a given CSS selector
      *
-     * @method closest
-     * @static
      * @param {HTMLElement} element The element
      * @param {String} selector The CSS selector
      * @return {Element} The matched element
      */
     static closest(element, selector){
-        let win;
-
         if(element instanceof Element){
             return Element.prototype.closest.call(element, selector);
         }
 
-        win = this.getElementWindow(element);
+        const win = this.getElementWindow(element);
         if(win){
             if(element instanceof win.Element){
                 return Element.prototype.closest.call(element, selector);
@@ -701,20 +609,20 @@ export default class Dom {
     /**
      * Get the top and left offset of an element
      *
-     * @method offset
-     * @static
      * @param {HTMLElement} element The element
      * @return {Object} The top and left offset
      */
     static offset(element){
-        let left = 0,
-            top = 0;
+        let el = element;
+        let left = 0;
+        let top = 0;
 
-        if(element.offsetParent){
+        if(el.offsetParent){
             do{
-                left += element.offsetLeft;
-                top += element.offsetTop;
-            }while ((element = element.offsetParent));
+                left += el.offsetLeft;
+                top += el.offsetTop;
+            }
+            while ((el = el.offsetParent));
         }
 
         return {'left': left, 'top': top};
@@ -723,7 +631,6 @@ export default class Dom {
     /**
      * Add an element to the set of elements managed by the Dom object
      *
-     * @method add
      * @private
      * @param {Mixed} elements An array of elements or a single element to add
      */
@@ -741,7 +648,6 @@ export default class Dom {
     /**
      * Get the number of elements managed by the Dom object
      *
-     * @method count
      * @return {Integer} The number of elements
      */
     count() {
@@ -751,7 +657,6 @@ export default class Dom {
     /**
      * Get an element by index from the set of elements managed by the Dom object
      *
-     * @method get
      * @param {Integer} index The index of the elements to retreive
      * @return {Element} The element
      */
@@ -762,7 +667,6 @@ export default class Dom {
     /**
      * Return a new Dom object with the elements filtered by a CSS selector
      *
-     * @method filter
      * @param {String} selector The CSS selector
      * @return {Dom} The new Dom object
      */
@@ -781,7 +685,6 @@ export default class Dom {
     /**
      * Get the index of the first element that matched the given CSS selector
      *
-     * @method index
      * @param {String} selector The CSS selector
      * @return {Integer} The index of the first matched element, or -1 if none
      */
@@ -794,7 +697,6 @@ export default class Dom {
     /**
      * Find all descendents that match a given CSS selector
      *
-     * @method find
      * @param {String} selector The CSS selector
      * @return {Dom} A Dom object of all matched descendents
      */
@@ -811,7 +713,6 @@ export default class Dom {
     /**
      * Get all children, optionally filtered by a given CSS selector
      *
-     * @method children
      * @param {String} [selector] The CSS selector
      * @return {Dom} A Dom object of all matched children
      */
@@ -832,7 +733,6 @@ export default class Dom {
     /**
      * Get the first child , optionally filtered by a given CSS selector
      *
-     * @method child
      * @param {String} [selector] The CSS selector
      * @return {Dom} A Dom object of the matched child
      */
@@ -843,7 +743,6 @@ export default class Dom {
     /**
      * Get all parents, optionally filtered by a given CSS selector
      *
-     * @method parents
      * @param {String} [selector] The CSS selector
      * @return {Dom} A Dom object of all matched parents
      */
@@ -864,7 +763,6 @@ export default class Dom {
     /**
      * Interate over all the elements managed by the Dom object
      *
-     * @method forEach
      * @param {Function} callback The function that will be executed on every element
      * @param {Element} callback.element The element that is currently being processed
      * @param {Integer} callback.index The index of the current element being processed
@@ -876,7 +774,6 @@ export default class Dom {
     /**
      * Check if an element in the set of elements managed by the Dom object has a given CSS class
      *
-     * @method hasClass
      * @param {String} className The CSS class
      * @return {Boolean} Whether a match was found
      */
@@ -889,9 +786,8 @@ export default class Dom {
     /**
      * Add a CSS class to all the elements managed by the Dom object
      *
-     * @method addClass
      * @param {String} className The CSS class
-     * @chainable
+     * @return {this}
      */
     addClass(className) {
         this.forEach((element) => {
@@ -904,9 +800,8 @@ export default class Dom {
     /**
      * Remove a CSS class from all the elements managed by the Dom object
      *
-     * @method removeClass
      * @param {String} className The CSS class
-     * @chainable
+     * @return {this}
      */
     removeClass(className) {
         this.forEach((element) => {
@@ -919,10 +814,9 @@ export default class Dom {
     /**
      * Toggle a CSS class for all the elements managed by the Dom object
      *
-     * @method toggleClass
      * @param {String} className The CSS class
      * @param {Boolean} [force] Whether to add or remove the class. The class is toggled if not specified
-     * @chainable
+     * @return {this}
      */
     toggleClass(className, force) {
         this.forEach((element) => {
@@ -935,13 +829,11 @@ export default class Dom {
     /**
      * Add an event listener on all the elements managed by the Dom object
      *
-     * @method addListener
-     * @static
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The event
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {this}
      */
     addListener(type, callback, useCapture) {
 		this.forEach((element) => {
@@ -954,13 +846,11 @@ export default class Dom {
     /**
      * Add an event listener that only executes once on all the elements managed by the Dom object
      *
-     * @method addOneTimeListener
-     * @static
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The event
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {this}
      */
     addOneTimeListener(type, callback, useCapture) {
 		this.forEach((element) => {
@@ -973,14 +863,13 @@ export default class Dom {
     /**
      * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
      *
-     * @method addDelegate
      * @param {String} selector The CSS selector to filter descendents by
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The original event
      * @param {Mixed} [scope] The value to use as this when executing the callback function
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {this}
      */
     addDelegate(selector, type, callback, scope, useCapture) {
         this.addListener(type, (evt) => {
@@ -995,13 +884,11 @@ export default class Dom {
     /**
      * Remove an event listener from all the elements managed by the Dom object
      *
-     * @method removeListener
-     * @static
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The event
      * @param {Boolean} useCapture Whether the event should be executed in the capturing or in the bubbling phase
-     * @chainable
+     * @return {this}
      */
     removeListener(type, callback, useCapture) {
         this.forEach((element) => {
@@ -1014,7 +901,6 @@ export default class Dom {
     /**
      * Trigger an event from all the elements managed by the Dom object
      *
-     * @method triggerEvent
      * @param {String} type The event type
      * @param {Object} [data] Custom data to send with the event. The data is accessible through the event.detail property
      * @param {Boolean} [bubbles=true] Whether the event bubbles up through the DOM or not
@@ -1034,12 +920,11 @@ export default class Dom {
     /**
      * Set the innerHTML of all the elements managed by the Dom object, or get the innerHTML of the first element
      *
-     * @method text
-     * @param {String} [html] The value to set
+     * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the innerHTML of the first element if used as a getter
      */
     text(value) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.text(element, value);
             });
@@ -1052,12 +937,11 @@ export default class Dom {
     /**
      * Set the value of all the elements managed by the Dom object, or get the value of the first element
      *
-     * @method val
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     val(value) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.val(element, value);
             });
@@ -1070,13 +954,12 @@ export default class Dom {
     /**
      * Set an attribute of all the elements managed by the Dom object, or get the value of an attribute of the first element
      *
-     * @method attr
-     * @param {HTMLElement} element The element
+     * @param {String} name The name of the attribute to set or get
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     attr(name, value) {
-        if(value !== undefined || isObject(name)){
+        if((typeof value !== "undefined") || isObject(name)){
             this.forEach((element) => {
                 Dom.attr(element, name, value);
             });
@@ -1089,13 +972,12 @@ export default class Dom {
     /**
      * Set a property of all the elements managed by the Dom object, or get the value of a property of the first element
      *
-     * @method prop
-     * @param {HTMLElement} element The element
+     * @param {String} name The name of the property to set or get
      * @param {String} [value] The value to set
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
     prop(name, value) {
-        if(value !== undefined || isObject(name)){
+        if((typeof value !== "undefined") || isObject(name)){
             this.forEach((element) => {
                 Dom.prop(element, name, value);
             });
@@ -1108,14 +990,13 @@ export default class Dom {
     /**
      * Set CSS style property of all the elements managed by the Dom object, or get the value of a CSS style property of the first element
      *
-     * @method css
      * @param {String} name The CSS property's name
      * @param {String} value The CSS property's value
      * @param {Boolean} [inline=false] Whether to return the inline or computed style value
      * @return {Mixed} The Dom object if used as a setter, the CSS style value of the property of the first element if used as a getter
      */
     css(name, value, inline) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.css(element, name, value, inline);
             });
@@ -1128,13 +1009,12 @@ export default class Dom {
     /**
      * Set a custom data attribute on all the elements managed by the Dom object, or get the value of a custom data attribute of the first element
      *
-     * @method data
      * @param {String} name The name of the data attribute
      * @param {String} value The value of the data attribute
      * @return {Mixed} The Dom object if used as a setter, the value of the data attribute of the first element if used as a getter
      */
     data(name, value) {
-        if(value !== undefined){
+        if(typeof value !== "undefined"){
             this.forEach((element) => {
                 Dom.data(element, name, value);
             });
@@ -1147,16 +1027,13 @@ export default class Dom {
     /**
      * Append children to the first element managed by the Dom object
      *
-     * @method append
      * @param {Mixed} children An array of elemets or a single element to append
-     * @chainable
+     * @return {this}
      */
     append(children){
-        if(children instanceof Dom){
-            children = children.elements;
-        }
+        const _children = children instanceof Dom ? children.elements : children;
 
-        Dom.append(this.get(0), children);
+        Dom.append(this.get(0), _children);
 
         return this;
     }
@@ -1164,19 +1041,15 @@ export default class Dom {
     /**
      * Append each of the elements managed by the Dom object into a given element
      *
-     * @method appendTo
      * @param {Mixed} parent A Dom object or an Element to append the elements to
-     * @chainable
+     * @return {this}
      */
     appendTo(parent){
-        if(!(parent instanceof Dom)){
-            parent = new Dom(parent);
-        }
-
-        parent = parent.get(0);
+        let _parent = parent instanceof Dom ? parent : new Dom(parent);
+        _parent = _parent.get(0);
 
         this.forEach((element) => {
-            Dom.append(parent, element);
+            Dom.append(_parent, element);
         });
 
         return this;
@@ -1185,25 +1058,19 @@ export default class Dom {
     /**
      * Append each of the elements managed by the Dom object into a given element at a given position
      *
-     * @method insertAt
      * @param {Mixed} parent A Dom object or an Element to append the elements to
      * @param {Integer} index The index position to append at
-     * @chainable
+     * @return {this}
      */
     insertAt(parent, index){
-        let element;
-
-        if(!(parent instanceof Dom)){
-            parent = new Dom(parent);
-        }
-
-        element = parent.children().get(index);
+        const _parent = parent instanceof Dom ? parent : new Dom(parent);
+        const element = _parent.children().get(index);
 
         if(element){
             Dom.before(element, this.elements);
         }
         else{
-            this.appendTo(parent);
+            this.appendTo(_parent);
         }
 
         return this;
@@ -1212,8 +1079,7 @@ export default class Dom {
     /**
      * Remove all children of each element managed by the Dom object
      *
-     * @method empty
-     * @chainable
+     * @return {this}
      */
     empty() {
         this.forEach((element) => {
@@ -1226,8 +1092,7 @@ export default class Dom {
     /**
      * Make all the elements managed by the Dom object visible
      *
-     * @method show
-     * @chainable
+     * @return {this}
      */
     show() {
         this.css('display', '');
@@ -1238,8 +1103,7 @@ export default class Dom {
     /**
      * Make all the elements managed by the Dom object invisible
      *
-     * @method hide
-     * @chainable
+     * @return {this}
      */
     hide() {
         this.css('display', 'none');
@@ -1250,8 +1114,7 @@ export default class Dom {
     /**
      * Set focus on the first element managed by the Dom object
      *
-     * @method focus
-     * @chainable
+     * @return {this}
      */
     focus() {
         this.get(0).focus();
@@ -1262,8 +1125,7 @@ export default class Dom {
     /**
      * Remove focus from the first element managed by the Dom object
      *
-     * @method blur
-     * @chainable
+     * @return {this}
      */
     blur() {
         this.get(0).blur();
@@ -1274,7 +1136,6 @@ export default class Dom {
     /**
      * Get the top and left offset of the first element managed by the Dom object
      *
-     * @method offset
      * @return {Object} offset The top and left offset
      */
     offset() {
@@ -1284,15 +1145,14 @@ export default class Dom {
     /**
      * Remove all the elements managed by the Dom object from the DOM
      *
-     * @method remove
-     * @chainable
+     * @return {this}
      */
     remove() {
-        if(this.triggerEvent(EVT_BEFOREREMOVE) !== false){
+        if(this.triggerEvent('beforeremove') !== false){
             this.forEach((element) => {
                 const parent = element.parentElement;
                 Dom.remove(element);
-                Dom.triggerEvent(parent, EVT_CHILDREMOVE, {'child': element});
+                Dom.triggerEvent(parent, 'childremove', {'child': element});
             });
         }
 
@@ -1302,7 +1162,6 @@ export default class Dom {
     /**
      * Check if an element from the elements managed by the Dom object matches a CSS selector
      *
-     * @method is
      * @param {String} selector The CSS selector
      * @return {Boolean} Whether an element matches the CSS selector
      */
@@ -1315,7 +1174,6 @@ export default class Dom {
     /**
      * Get the first closest ancestor of the elements managed by the Dom object which matches a given CSS selector
      *
-     * @method closest
      * @param {String} selector The CSS selector
      * @return {Element} The matched element
      */

@@ -1,0 +1,83 @@
+:local(.className){
+    position: absolute;
+    z-index: 999999;
+
+    ul{
+        min-width: 150px;
+        margin: 0 !important;
+        padding: 0.25em 0 !important;
+        list-style: none !important;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
+
+        li{
+            position: relative;
+            padding: 0.25em 1em !important;
+            white-space: nowrap;
+            color: #000;
+            cursor: pointer;
+
+            &:hover{
+                color: #fff;
+                background: #0000fe;
+            }
+
+            &.no-callback{
+                cursor: default;
+            }
+
+            &.disabled{
+                display: none;
+            }
+
+            &.separator{
+                height: 1px;
+                margin: 0.5em 0;
+                padding: 0 !important;
+                background: rgba(0, 0, 0, 0.1);
+                pointer-events: none;
+            }
+
+            &.has-subitems{
+                &::after {
+                    position: absolute;
+                    top: 50%;
+                    right: 1em;
+                    width: 0;
+                    height: 0;
+                    margin-top: -0.1em;
+                    content: '';
+                    border-color: transparent transparent transparent #2f2f2f;
+                    border-style: solid;
+                    border-width: 0.4em 0 0.4em 0.4em;
+                    transform: translateY(-50%);
+                    z-index: 0;
+                }
+
+                ul{
+                    display: none;
+                    position: absolute;
+                    top: 0;
+                    left: 99%;
+                    z-index: 1;
+                }
+
+                &:hover{
+                    &::after {
+                        border-color: transparent transparent transparent #fff;
+                    }
+
+                    > ul{
+                        display: block;
+
+                        &.left{
+                            left: auto;
+                            right: 99%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

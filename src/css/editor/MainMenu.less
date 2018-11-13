@@ -1,0 +1,200 @@
+:local(.className){
+    display: flex;
+    padding: 0 20px;
+    align-content: space-between;
+    align-items: center;
+    z-index: 9999;
+    background-color: #dadada;
+    background-image: linear-gradient(to bottom, #dadada 0%, #c8c8c8 100%);
+    border-bottom: 2px solid #b2b2b2;
+
+    > .separator{
+        flex: 1;
+
+        &:last-of-type{
+            flex: 20;
+        }
+    }
+
+    &::before{
+        content: '';
+        width: 102px;
+        height: 40px;
+        flex: 0 0 auto;
+        margin-right: 1em;
+        vertical-align: middle;
+        background: transparent url('../../img/logo-philharmonie.png') left center no-repeat;
+        background-size: contain;
+    }
+
+    > button,
+    > .checkbox.field,
+    .button-group button{
+        width: 1.75em;
+        height: 1.6em;
+        flex: 0 0 auto;
+        margin: 0 0.75em;
+        vertical-align: middle;
+
+        &[data-action="new"]{
+            background-image: url('../../img/editor/main-menu/new.png');
+        }
+        &[data-action="open"]{
+            background-image: url('../../img/editor/main-menu/open.png');
+        }
+        &[data-action="edit"]{
+            background-image: url('../../img/editor/main-menu/edit.png');
+        }
+        &[data-action="save"]{
+            background-image: url('../../img/editor/main-menu/save.png');
+        }
+        &[data-action="clone"]{
+            background-image: url('../../img/editor/main-menu/clone.png');
+        }
+        &[data-action="publish"]{
+            background-image: url('../../img/editor/main-menu/publish.png');
+        }
+        &[data-action="delete"]{
+            background-image: url('../../img/editor/main-menu/delete.png');
+        }
+        &[data-action="share"]{
+            background-image: url('../../img/editor/main-menu/share.png');
+        }
+        &[data-action="download"]{
+            display: none;
+            background-image: url('../../img/editor/main-menu/download.png');
+        }
+        &[data-action="revert"]{
+            background-image: url('../../img/editor/main-menu/revert.png');
+        }
+        &[data-action="undo"]{
+            background-image: url('../../img/editor/main-menu/undo.png');
+        }
+        &[data-action="redo"]{
+            background-image: url('../../img/editor/main-menu/redo.png');
+        }
+        &[data-action="settings"]{
+            background-image: url('../../img/editor/main-menu/settings.png');
+        }
+        &[data-action="help"]{
+            background-image: url('../../img/editor/main-menu/help.png');
+        }
+        &[data-action="account"]{
+            background-image: url('../../img/editor/main-menu/account.png');
+        }
+        &[data-action="logout"]{
+            margin-right: 0;
+            background-image: url('../../img/editor/main-menu/logout.png');
+        }
+    }
+
+    .button-group{
+        position: relative;
+
+        &::before {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            width: 8px;
+            content: "";
+            background: url('../../img/editor/main-menu/sub-menu.png') no-repeat center center;
+        }
+
+        .sub-menu{
+            position: absolute;
+            display: none;
+            top: 100%;
+            margin: 0;
+            padding: 5px 0;
+            list-style: none;
+            background: #c8c8c8;
+            border: 1px solid #b2b2b2;
+            border-top-width: 0;
+            box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.25);
+
+            button{
+                width: 40px;
+                margin: 5px 0;
+            }
+        }
+
+        &:hover{
+            &::before {
+                opacity: 0.75;
+            }
+
+            .sub-menu{
+                display: block;
+            }
+        }
+
+        &.save{
+            button{
+                position: relative;
+            }
+
+            .sub-menu{
+                top: -0.75em;
+                padding-top: 3em;
+                border-top-width: 1px;
+            }
+        }
+    }
+
+    .field[data-action="r-index"]{
+        flex: 0 0 auto;
+        margin: 0 10px;
+        white-space: nowrap;
+        vertical-align: middle;
+        padding-left: 2em;
+        background: transparent url('../../img/editor/main-menu/r-index.png') no-repeat left center;
+        background-size: contain;
+
+        .input-wrapper{
+            input{
+                width: 2em;
+                height: 100%;
+                padding-right: 1em;
+                color: #505050;
+                border: none;
+                background: none;
+                text-align: left;
+                vertical-align: top;
+                font-family: Tahoma, Geneva, sans-serif;
+            }
+
+            .buttons{
+                width: 1em;
+            }
+        }
+    }
+
+    .field[data-action="edit-toggle"]{
+        .input-wrapper{
+            height: 100%;
+
+            input{
+                + label{
+                    width: 100%;
+                    height: 100%;
+                    padding: 0;
+                    opacity: 1;
+                    background: url('../../img/editor/main-menu/edit-toggle.png') no-repeat 50%;
+                    border-radius: 0;
+                    transition: none;
+
+                    &::after{
+                        display: none;
+                    }
+                }
+
+                &:checked{
+                    + label{
+                        opacity: 0.5;
+                    }
+                }
+            }
+        }
+    }
+}

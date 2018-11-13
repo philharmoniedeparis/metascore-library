@@ -2,32 +2,35 @@ import Dom from '../../Dom';
 import Button from '../Button';
 import Overlay from '../Overlay';
 
-/**
- * Fired when a button is clicked
- *
- * @event buttonclick
- * @param {Object} alert The alert instance
- * @param {String} action The buttons's action
- */
-const EVT_BUTTONCLICK = 'buttonclick';
+import {className} from '../../../../css/core/ui/overlay/Alert.less';
 
 /**
  * An alert overlay to show a simple message with buttons
+ *
+ * @emits {buttonclick} Fired when a button is clicked
+ * @param {Object} alert The alert instance
+ * @param {String} action The buttons's action
  */
 export default class Alert extends Overlay{
 
     /**
-     * Create an alert
+     * Instantiate
+     *
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.text=''] The message's text
-     * @param {Array} [configs.buttons={}] The list of buttons as action/label pairs
+     * @property {String} [text=''] The message's text
+     * @property {Array} [buttons={}] The list of buttons as action/label pairs
      */
     constructor(configs){
         super(configs);
 
-        this.addClass('alert');
+        this.addClass(`alert ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'text': '',
@@ -43,16 +46,24 @@ export default class Alert extends Overlay{
         // call parent method
         super.setupUI();
 
+        /**
+         * The text container
+         * @type {Dom}
+         */
         this.text = new Dom('<div/>', {'class': 'text'})
-            .appendTo(this.contents);
+            .appendTo(this.getContents());
 
         if(this.configs.text){
             this.setText(this.configs.text);
         }
 
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
             .addDelegate('button', 'click', this.onButtonClick.bind(this))
-            .appendTo(this.contents);
+            .appendTo(this.getContents());
 
         if(this.configs.buttons){
 			Object.entries(this.configs.buttons).forEach(([action, label]) => {
@@ -65,7 +76,7 @@ export default class Alert extends Overlay{
     /**
      * Set the message's text
      * @param {String} str The message's text
-     * @chainable
+     * @return {this}
      */
     setText(str){
         this.text.text(str);
@@ -98,7 +109,7 @@ export default class Alert extends Overlay{
 
         this.hide();
 
-        this.triggerEvent(EVT_BUTTONCLICK, {'alert': this, 'action': action}, false);
+        this.triggerEvent('buttonclick', {'alert': this, 'action': action}, false);
 
         evt.stopPropagation();
     }

@@ -1,18 +1,21 @@
 import Dom from './Dom';
 
+/**
+ * A class for CSS style sheet manipulation
+ */
 export default class StyleSheet extends Dom {
 
     /**
-     * A class for CSS style sheet manipulation
-     *
-     * @class StyleSheet
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call the super constructor.
         super('<style/>', {'type': 'text/css'});
 
+        /**
+         * The <style> element
+         * @type {Element}
+         */
         this.el = this.get(0);
 
         // WebKit hack
@@ -22,24 +25,24 @@ export default class StyleSheet extends Dom {
     /**
      * Add a CSS rule to the style sheet
      *
-     * @method addRule
      * @param {String} selector The CSS selector for the rule
      * @param {String} rule The style definitions for the rule
      * @param {Integer} [index] The index position of the rule
-     * @chainable
+     * @return {this}
      */
     addRule(selector, rule, index) {
+        let _index = index;
         const sheet = this.el.sheet;
 
-        if(index === undefined){
-            index = sheet.cssRules.length;
+        if(typeof _index === "undefined"){
+            _index = sheet.cssRules.length;
         }
 
         if("insertRule" in sheet) {
-            sheet.insertRule(`${selector}{${rule}}`, index);
+            sheet.insertRule(`${selector}{${rule}}`, _index);
         }
         else if("addRule" in sheet) {
-            sheet.addRule(selector, rule, index);
+            sheet.addRule(selector, rule, _index);
         }
 
         return this;
@@ -48,9 +51,8 @@ export default class StyleSheet extends Dom {
     /**
      * Remove a CSS rule from the style sheet
      *
-     * @method removeRule
-     * @param {Integer} The index position of the rule to remove
-     * @chainable
+     * @param {Integer} index The index position of the rule to remove
+     * @return {this}
      */
     removeRule(index) {
         const sheet = this.el.sheet;
@@ -68,18 +70,16 @@ export default class StyleSheet extends Dom {
     /**
      * Remove the first CSS rule that matches a selector
      *
-     * @method removeRulesBySelector
      * @param {String} selector The CSS selector of the rule to remove
-     * @chainable
+     * @return {this}
      */
     removeRulesBySelector(selector) {
-        let sheet = this.el.sheet,
-            rules = sheet.cssRules || sheet.rules;
-
-        selector = selector.toLowerCase();
+        const sheet = this.el.sheet;
+        const rules = sheet.cssRules || sheet.rules;
+        const _selector = selector.toLowerCase();
 
         for (let i=0; i<rules.length; i++){
-            if(rules[i].selectorText.toLowerCase() === selector){
+            if(rules[i].selectorText.toLowerCase() === _selector){
                 this.removeRule(i);
                 break;
             }
@@ -91,12 +91,11 @@ export default class StyleSheet extends Dom {
     /**
      * Remove all CSS rule from the style sheet
      *
-     * @method removeRules
-     * @chainable
+     * @return {this}
      */
     removeRules() {
-        let sheet = this.el.sheet,
-            rules = sheet.cssRules || sheet.rules;
+        const sheet = this.el.sheet;
+        const rules = sheet.cssRules || sheet.rules;
 
         while(rules.length > 0){
             this.removeRule(0);
@@ -108,9 +107,8 @@ export default class StyleSheet extends Dom {
     /**
      * Set the internal text value of the style sheet
      *
-     * @method setInternalValue
      * @param {String} value The CSS rules
-     * @chainable
+     * @return {this}
      */
     setInternalValue(value) {
         if(this.el.styleSheet){

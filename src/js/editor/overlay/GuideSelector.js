@@ -10,31 +10,29 @@ import Fieldset from '../Fieldset';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
 
+import {className} from '../../../css/editor/overlay/GuideSelector.less';
+
 /**
- * Fired when a guide's select button is clicked
+ * A guide selector overlay
  *
- * @event submit
+ * @emits {submit} Fired when a guide's select button is clicked
  * @param {Object} overlay The overlay instance
  * @param {Object} guide The guide's data
  * @param {Integer} vid The selected vid of the guide
  */
-const EVT_SUBMIT = 'submit';
-
 export default class GuideSelector extends Overlay {
 
     /**
-     * A guide selector overlay
+     * Instantiate
      *
-     * @class GuideSelector
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.title='Select a guide'] The overlay's title
-     * @param {String} [configs.empty_text='No guides available'] A text to show when no guides are available
-     * @param {String} [configs.url=''] The url from which to retreive the list of guides
+     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
+     * @property {String} [title='Select a guide'] The overlay's title
+     * @property {String} [empty_text='No guides available'] A text to show when no guides are available
+     * @property {String} [url=''] The url from which to retreive the list of guides
+     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Integer} [loadMoreDistance=40] The distance at which more guides are loaded
      */
     constructor(configs) {
         // call parent constructor
@@ -42,9 +40,14 @@ export default class GuideSelector extends Overlay {
 
         this.onScroll = this.onScroll.bind(this);
 
-        this.addClass('guide-selector');
+        this.addClass(`guide-selector ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
@@ -52,6 +55,7 @@ export default class GuideSelector extends Overlay {
             'title': Locale.t('editor.overlay.GuideSelector.title', 'Select a guide'),
             'empty_text': Locale.t('editor.overlay.GuideSelector.emptyText', 'No guides available'),
             'url': null,
+            'xhr': {},
             'loadMoreDistance': 40
         });
     }
@@ -59,21 +63,22 @@ export default class GuideSelector extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
-        let contents, fieldset, buttons;
-
         super.setupUI();
 
-        contents = this.getContents();
+        const contents = this.getContents();
 
+        /**
+         * The filters <form> element
+         * @type {Dom}
+         */
         this.filters_form = new Dom('<form/>', {'class': 'filters', 'method': 'GET'})
             .addListener('submit', this.onFilterFormSubmit.bind(this))
             .appendTo(contents);
 
-        fieldset = new Fieldset({
+        const fieldset = new Fieldset({
                 'legend_text': Locale.t('editor.overlay.GuideSelector.filters.fieldset.legend', 'Search'),
                 'collapsible': true,
                 'collapsed': true
@@ -81,6 +86,10 @@ export default class GuideSelector extends Overlay {
             .appendTo(this.filters_form)
             .getContents();
 
+        /**
+         * The list of filter fields
+         * @type {Object}
+         */
         this.filter_fields = {};
 
         this.filter_fields.fulltext = new TextField({
@@ -170,7 +179,7 @@ export default class GuideSelector extends Overlay {
             .data('name', 'sort_order')
             .appendTo(fieldset);
 
-        buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(fieldset);
 
         new Button({'label': Locale.t('editor.overlay.GuideSelector.filters.submit.label', 'Submit')})
@@ -182,10 +191,20 @@ export default class GuideSelector extends Overlay {
             .addListener('click', this.onFiltersResetClick.bind(this))
             .appendTo(buttons);
 
+        /**
+         * The results <table> element
+         * @type {Dom}
+         */
         this.results = new Dom('<table/>', {'class': 'results'})
             .appendTo(contents);
     }
 
+    /**
+     * The scroll event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onScroll(evt) {
         const el = evt.target;
         if (el.scrollTop + el.clientHeight >= el.scrollHeight - this.configs.loadMoreDistance) {
@@ -196,12 +215,11 @@ export default class GuideSelector extends Overlay {
     /**
      * The onload success event handler
      *
-     * @method onLoadSuccess
      * @private
      * @param {Event} evt The event object
      */
     onLoadSuccess(evt){
-        const data = JSON.parse(evt.target.getResponse());
+        const data = evt.target.getResponse();
 
         if('filters' in data){
 			Object.entries(data.filters).forEach(([field, values]) => {
@@ -259,7 +277,6 @@ export default class GuideSelector extends Overlay {
     /**
      * The load error event handler
      *
-     * @method onLoadError
      * @private
      * @param {Event} evt The event object
      */
@@ -279,9 +296,7 @@ export default class GuideSelector extends Overlay {
     /**
      * The load abort event handler
      *
-     * @method onLoadAbort
      * @private
-     * @param {Event} evt The event object
      */
     onLoadAbort(){
         delete this.load_request;
@@ -290,12 +305,16 @@ export default class GuideSelector extends Overlay {
     /**
      * The filter form submit event handler
      *
-     * @method onFilterFormSubmit
      * @private
      * @param {Event} evt The event object
      */
     onFilterFormSubmit(evt){
+        /**
+         * The parameters to send with each load request
+         * @type {Object}
+         */
         this.load_more_params = this.getFilters();
+
         this.load(Object.assign({}, this.load_more_params));
 
         evt.preventDefault();
@@ -305,7 +324,6 @@ export default class GuideSelector extends Overlay {
     /**
      * The filters reset button click event handler
      *
-     * @method onFiltersResetClick
      * @private
      */
     onFiltersResetClick(){
@@ -317,14 +335,13 @@ export default class GuideSelector extends Overlay {
     /**
      * The submit event handler
      *
-     * @method onGuideSelect
      * @private
      * @param {Object} guide The selected guide
      * @param {SelectField} revision_field The revision selection field
      * @param {Event} evt The event object
      */
     onGuideSelect(guide, revision_field, evt){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
 
         this.hide();
 
@@ -334,37 +351,34 @@ export default class GuideSelector extends Overlay {
     /**
      * Setup the results
      *
-     * @method setupResults
      * @private
      */
     appendResults(guides){
-        let count = 0,
-            row,
-            revision_wrapper, revision_field,
-            groups, button;
+        let count = 0;
 
         guides.forEach((guide) => {
             if(!(guide.permissions.update || guide.permissions.clone)){
                 return;
             }
 
-            row = new Dom('<tr/>', {'class': `guide-${guide.id}`})
+            const row = new Dom('<tr/>', {'class': `guide-${guide.id}`})
                 .appendTo(this.results);
 
             new Dom('<td/>', {'class': 'thumbnail'})
                 .append(new Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
                 .appendTo(row);
 
-            revision_field = new SelectField({
+            const revision_field = new SelectField({
                     'label': Locale.t('editor.overlay.GuideSelector.revisionLabel', 'Version')
                 })
                 .addClass('revisions');
 
             if('revisions' in guide){
-                groups = {};
+                const groups = {};
 
                 Object.entries(guide.revisions).forEach(([vid, revision]) => {
-                    let group_id, group_label, group, text;
+                    let group_id = null;
+                    let group_label = null;
 
                     switch(revision.state){
                         case 0: // archives
@@ -387,9 +401,8 @@ export default class GuideSelector extends Overlay {
                         groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
                     }
 
-                    group = groups[group_id];
-
-                    text = Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
+                    const group = groups[group_id];
+                    const text = Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': vid});
 
                     revision_field.addOption(vid, text, group);
                 });
@@ -402,13 +415,13 @@ export default class GuideSelector extends Overlay {
                 revision_field.disable();
             }
 
-            button = new Button()
+            const button = new Button()
                 .addClass('submit')
                 .setLabel(Locale.t('editor.overlay.GuideSelector.button', 'Select'))
                 .addListener('click', this.onGuideSelect.bind(this, guide, revision_field))
                 .data('action', 'select');
 
-            revision_wrapper = new Dom('<div/>', {'class': 'revision-wrapper'})
+            const revision_wrapper = new Dom('<div/>', {'class': 'revision-wrapper'})
                 .append(revision_field)
                 .append(button);
 
@@ -429,9 +442,8 @@ export default class GuideSelector extends Overlay {
     /**
      * Load guides
      *
-     * @method load
      * @private
-     * @chainable
+     * @return {this}
      */
     load(params){
         const loadmask = new LoadMask({
@@ -439,9 +451,9 @@ export default class GuideSelector extends Overlay {
             'autoShow': true
         });
 
-        this.load_request = Ajax.GET(this.configs.url, {
+        const options = Object.assign({}, {
             'data': params,
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': (evt) => {
                 this.onLoadSuccess(evt);
                 loadmask.hide();
@@ -454,21 +466,41 @@ export default class GuideSelector extends Overlay {
                 this.onLoadAbort(evt);
                 loadmask.hide();
             }
-        });
+        }, this.configs.xhr);
+
+        /**
+         * The load request
+         * @type {Ajax}
+         */
+        this.load_request = Ajax.GET(this.configs.url, options);
     }
 
+    /**
+     * Load more guides
+     *
+     * @return {this}
+     */
     loadMore(){
         if(!this.load_request){
-            this.load_request = Ajax.GET(this.configs.url, {
+            const options = Object.assign({}, {
                 'data': this.load_more_params,
-                'dataType': 'json',
+                'responseType': 'json',
                 'onSuccess': this.onLoadSuccess.bind(this),
                 'onError': this.onLoadError.bind(this),
                 'onAbort': this.onLoadAbort.bind(this)
-            });
+            }, this.configs.xhr);
+
+            this.load_request = Ajax.GET(this.configs.url, options);
         }
+
+        return this;
     }
 
+    /**
+     * Get the values of the filter fields
+     *
+     * @return {Object} The values
+     */
     getFilters(){
         const data = {};
 
@@ -482,8 +514,7 @@ export default class GuideSelector extends Overlay {
     /**
      * Show the overlay
      *
-     * @method show
-     * @chainable
+     * @return {this}
      */
     show() {
         super.show();
@@ -496,12 +527,19 @@ export default class GuideSelector extends Overlay {
         return this;
     }
 
+    /**
+     * Hide the overlay
+     *
+     * @return {this}
+     */
     hide(){
         if(this.load_request){
             this.load_request.abort();
         }
 
         super.hide();
+
+        return this;
     }
 
 }

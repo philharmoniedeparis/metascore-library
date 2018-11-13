@@ -3,6 +3,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
+import {formatFileSize} from '../../core/utils/Number';
 import HiddenField from '../field/Hidden';
 import SelectField from '../field/Select';
 import TextField from '../field/Text';
@@ -10,46 +11,60 @@ import TextareaField from '../field/Textarea';
 import FileField from '../field/File';
 import CheckboxesField from '../field/Checkboxes';
 
+import {className} from '../../../css/editor/overlay/GuideDetails.less';
+
 /**
- * Fired when the submit button is clicked
+ * An overlay to update a guide's details (title, description, thumbnail, etc)
  *
- * @event submit
+ * @emits {submit} Fired when the submit button is clicked
  * @param {Object} overlay The overlay instance
  * @param {Object} values The field values
  */
-const EVT_SUBMIT = 'submit';
-
 export default class GuideDetails extends Overlay {
 
     /**
-     * An overlay to update a guide's details (title, description, thumbnail, etc)
+     * Instantiate
      *
-     * @class GuideDetails
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.title='Guide Info'] The overlay's title
-     * @param {Object} [configs.groups={}] The groups the user belongs to
-     * @param {String} [configs.submit_text='Save'] The overlay's submit button label
+     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
+     * @property {String} [title='Guide Info'] The overlay's title
+     * @property {Object} [groups={}] The groups the user belongs to
+     * @property {String} [submit_text='Save'] The overlay's submit button label
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
+        /**
+         * The changed values
+         * @type {Object}
+         */
         this.changed = {};
+
+        /**
+         * The previous values
+         * @type {Object}
+         */
         this.previous_values = null;
 
-        this.addClass('guide-details');
+        this.addClass(`guide-details ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
             'toolbar': true,
             'title': Locale.t('editor.overlay.GuideDetails.title', 'Guide Info'),
+            'thumbnail_upload_extensions': ['png', 'jpeg', 'gif'],
+            'thumbnail_upload_max_filesize': 0,
+            'media_upload_extensions': ['mp4', 'mp3'],
+            'media_upload_max_filesize': 0,
             'groups': {},
             'submit_text': Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
         });
@@ -58,20 +73,21 @@ export default class GuideDetails extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
-        let contents, form;
-
         // call parent method
         super.setupUI();
 
-        contents = this.getContents();
+        const contents = this.getContents();
 
+        /**
+         * The list of fields
+         * @type {Object}
+         */
         this.fields = {};
 
-        form = new Dom('<form>')
+        const form = new Dom('<form>')
             .addListener('submit', this.onFormSubmit.bind(this))
             .appendTo(contents);
 
@@ -121,19 +137,34 @@ export default class GuideDetails extends Overlay {
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
+        const thumbnail_upload_extensions = `.${this.configs.thumbnail_upload_extensions.join(`, .`)}`;
         this.fields.thumbnail = new FileField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
-                'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Allowed file types: !types', {'!dimentions': '155x123', '!types': 'png gif jpg jpeg'}),
-                'accept': '.png,.gif,.jpg,.jpeg'
+                'sources': {
+                    'upload': {
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Files must be less than: !size<br/>Supported file types: !types', {'!dimentions': '155x123', '!size': formatFileSize(this.configs.thumbnail_upload_max_filesize), '!types': thumbnail_upload_extensions}),
+                        'accept': thumbnail_upload_extensions
+                    }
+                }
             })
             .data('name', 'thumbnail')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
+        const media_upload_extensions = `.${this.configs.media_upload_extensions.join(`, .`)}`;
         this.fields.media = new FileField({
                 'label': Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
-                'description': Locale.t('editor.overlay.GuideDetails.fields.media.description', 'Allowed file types: !types', {'!types': 'mp4 m4v m4a mp3'}),
-                'accept': '.mp4,.m4v,.m4a,.mp3',
+                'sources': {
+                    'upload': {
+                        'label': Locale.t('overlay.GuideDetails.fields.media.sources.upload.label', 'Upload'),
+                        'accept': media_upload_extensions,
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.upload.description', 'Files must be less than: !size<br/>Supported file types: !types', {'!size': formatFileSize(this.configs.media_upload_max_filesize),'!types': media_upload_extensions}),
+                    },
+                    'url': {
+                        'label': Locale.t('overlay.GuideDetails.fields.media.sources.url.label', 'URL'),
+                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.url.description', 'Supported file types: !types', {'!types': `${media_upload_extensions}, .m3u8 (HLS), .mpd (MPEG-Dash)`}),
+                    }
+                },
                 'required': true
             })
             .data('name', 'media')
@@ -170,7 +201,10 @@ export default class GuideDetails extends Overlay {
             });
         }
 
-        // Buttons
+        /**
+         * The list of buttons
+         * @type {Object}
+         */
         this.buttons = {};
         this.buttons.submit = new Button({'label': this.configs.submit_text})
             .addClass('submit')
@@ -181,7 +215,10 @@ export default class GuideDetails extends Overlay {
             .addListener('click', this.onCloseClick.bind(this))
             .appendTo(form);
 
-        // Information
+        /**
+         * The information container
+         * @type {Dom}
+         */
         this.info = new Dom('<div/>', {'class': 'info'})
             .appendTo(form);
     }
@@ -189,7 +226,6 @@ export default class GuideDetails extends Overlay {
     /**
      * Get a field by name
      *
-     * @method getField
      * @param {String} name The field's name
      * @return {editor.Field} The field object
      */
@@ -206,23 +242,20 @@ export default class GuideDetails extends Overlay {
     /**
      * Set the field values
      *
-     * @method setValues
      * @param {Object} values A list of field values in name/value pairs
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValues(values, supressEvent){
 		Object.entries(values).forEach(([name, value]) => {
-            let field;
+            const field = this.getField(name);
 
-            if(name in this.fields){
-                field = this.fields[name];
-
+            if(field){
                 if(name === 'shared_with'){
                     field.clear();
 
                     if(values.available_groups){
-						Object.entries(values.available_groups).forEach(([gid, group_name]) => {
+                        Object.entries(values.available_groups).forEach(([gid, group_name]) => {
                             field.addOption(gid, group_name);
                         });
                     }
@@ -240,9 +273,8 @@ export default class GuideDetails extends Overlay {
     /**
      * Clears all field values
      *
-     * @method clearValues
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     clearValues(supressEvent){
 		Object.entries(this.fields).forEach(([, field]) => {
@@ -255,7 +287,6 @@ export default class GuideDetails extends Overlay {
     /**
      * Get all changed field values
      *
-     * @method getValues
      * @return {Object} The values of changed fields in name/value pairs
      */
     getValues() {
@@ -265,45 +296,24 @@ export default class GuideDetails extends Overlay {
     /**
      * The fields change event handler
      *
-     * @method onFieldValueChange
      * @private
      * @param {Event} evt The event object
      */
     onFieldValueChange(evt){
-        let field = evt.detail.field,
-            value = evt.detail.value,
-            name = field.data('name'),
-            file;
+        const name = evt.detail.field.data('name');
+        const value = evt.detail.value;
 
-        if(field instanceof FileField){
-            file = field.getFile(0);
-
-            if(file){
-                this.changed[name] = {
-                    'name': file.name,
-                    'url': URL.createObjectURL(file),
-                    'mime': file.type,
-                    'object': file
-                };
-            }
-            else{
-                delete this.changed[name];
-            }
-        }
-        else{
-            this.changed[name] = value;
-        }
+        this.changed[name] = value;
     }
 
     /**
      * The form submit event handler
      *
-     * @method onFormSubmit
      * @private
      * @param {Event} evt The event object
      */
     onFormSubmit(evt){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'values': this.getValues()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'values': this.getValues()}, true, false);
 
         evt.preventDefault();
         evt.stopPropagation();
@@ -312,7 +322,6 @@ export default class GuideDetails extends Overlay {
     /**
      * The close button click event handler
      *
-     * @method onCloseClick
      * @private
      * @param {Event} evt The event object
      */

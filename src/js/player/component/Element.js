@@ -11,6 +11,11 @@ import {isString} from '../../core/utils/Var';
  */
 export default class Element extends Component{
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'properties': {
@@ -116,7 +121,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', undefined, skipDefault), 10);
+                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -129,7 +134,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('background-color', undefined, skipDefault);
+                        return this.contents.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('background-color', toCSS(value));
@@ -142,7 +147,7 @@ export default class Element extends Component{
                         'resizeButton': true
                     },
                     'getter': function(skipDefault){
-                        let value = this.contents.css('background-image', undefined, skipDefault);
+                        let value = this.contents.css('background-image', void 0, skipDefault);
 
                         if(value === 'none' || !isString(value)){
                             return null;
@@ -155,8 +160,8 @@ export default class Element extends Component{
                         return value;
                     },
                     'setter': function(value){
-                        value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.contents.css('background-image', value);
+                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                        this.contents.css('background-image', css_value);
                     }
                 },
                 'border-width': {
@@ -166,7 +171,7 @@ export default class Element extends Component{
                         'min': 0
                     },
                     'getter': function(skipDefault){
-                        const value = parseInt(this.contents.css('border-width', undefined, skipDefault), 10);
+                        const value = parseInt(this.contents.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
@@ -179,7 +184,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('border-color', undefined, skipDefault);
+                        return this.contents.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('border-color', toCSS(value));
@@ -191,7 +196,7 @@ export default class Element extends Component{
                         'label': Locale.t('player.component.Element.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('border-radius', undefined, skipDefault);
+                        return this.contents.css('border-radius', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('border-radius', value);
@@ -206,7 +211,7 @@ export default class Element extends Component{
                         'step': 0.1
                     },
                     'getter': function(skipDefault){
-                        return this.contents.css('opacity', undefined, skipDefault);
+                        return this.contents.css('opacity', void 0, skipDefault);
                     },
                     'setter': function(value){
                         this.contents.css('opacity', value);
@@ -248,6 +253,11 @@ export default class Element extends Component{
         });
     }
 
+    /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
     static getType(){
         return 'Element';
     }
@@ -255,7 +265,6 @@ export default class Element extends Component{
     /**
      * Setup the element's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
@@ -266,14 +275,19 @@ export default class Element extends Component{
             .addClass('element')
             .addClass(this.constructor.getType());
 
+        /**
+         * The contents container
+         * @type {Dom}
+         */
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
+
+        return this;
     }
 
     /**
      * Get the page component this element belongs to
      *
-     * @method getPage
      * @return {player.component.Page} The page
      */
     getPage() {
@@ -285,7 +299,6 @@ export default class Element extends Component{
     /**
      * The cuepoint start event handler
      *
-     * @method onCuePointStart
      * @private
      */
     onCuePointStart(){
@@ -295,7 +308,6 @@ export default class Element extends Component{
     /**
      * The cuepoint stop event handler
      *
-     * @method onCuePointStop
      * @private
      */
     onCuePointStop(){
@@ -305,7 +317,6 @@ export default class Element extends Component{
     /**
      * Set/Unset the draggable behaviour
      *
-     * @method setDraggable
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
      * @return {Draggable} The draggable behaviour
      */
@@ -315,6 +326,10 @@ export default class Element extends Component{
         }
 
         if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
             this._draggable = new Draggable({
                 'target': this,
                 'handle': this
@@ -332,7 +347,6 @@ export default class Element extends Component{
     /**
      * Set/Unset the resizable behaviour
      *
-     * @method setResizable
      * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
      * @return {Resizable} The resizable behaviour
      */
@@ -342,6 +356,10 @@ export default class Element extends Component{
         }
 
         if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
             this._resizable = new Resizable({
                 'target': this
             });

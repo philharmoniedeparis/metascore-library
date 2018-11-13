@@ -1,14 +1,12 @@
 import Dom from '../../core/Dom';
 
+/**
+ * A dropdown menu based on an HTML ul element
+ */
 export default class DropDownMenu extends Dom{
 
     /**
-     * A dropdown menu based on an HTML ul element
-     *
-     * @class DropDownMenu
-     * @namespace editor
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call the super constructor.
@@ -18,7 +16,6 @@ export default class DropDownMenu extends Dom{
     /**
      * Add an item
      *
-     * @method addItem
      * @param {String} action The action associated with the item
      * @param {String} label The text to display
      * @return {Dom} item The added item
@@ -33,10 +30,9 @@ export default class DropDownMenu extends Dom{
     /**
      * Toggle an item's enabled state
      *
-     * @method toggleItem
      * @param {String} action The action associated with the item
      * @param {Boolean} [state] The state to set the item to, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     toggleItem(action, state){
         this.child(`[data-action="${action}"]`).toggleClass('disabled', state === false);

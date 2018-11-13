@@ -1,43 +1,38 @@
 import Dom from '../Dom';
 
 /**
- * Fired when a resize started
+ * A class for adding resizable behaviors
  *
- * @event resizestart
+ * @emits {resizestart} Fired when a resize started
+ * @emits {resize} Fired when a resize occured
+ * @emits {resizeend} Fired when a resize ended
  */
-const EVT_RESIZESTART = 'resizestart';
-
-/**
- * Fired when a resize occured
- *
- * @event resize
- */
-const EVT_RESIZE = 'resize';
-
-/**
- * Fired when a resize ended
- *
- * @event resizeend
- */
-const EVT_RESIZEEND = 'resizeend';
-
 export default class Resizable {
 
     /**
-     * A class for adding resizable behaviors
+     * Instantiate
      *
-     * @class Resizable
-     * @extends Class
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Dom} configs.target The Dom object to add the behavior to
-     * @param {Object} [configs.directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
+     * @property {Dom} target The Dom object to add the behavior to
+     * @property {Object} [directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
      */
     constructor(configs) {
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The target's owner document
+         * @type {Dom}
+         */
         this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
+        /**
+         * A list of resize handles
+         * @type {Object}
+         */
         this.handles = {};
 
         // fix event handlers scope
@@ -56,6 +51,11 @@ export default class Resizable {
         this.enable();
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'target': null,
@@ -75,7 +75,6 @@ export default class Resizable {
     /**
      * The mousedown event handler
      *
-     * @method onMouseDown
      * @private
      * @param {Event} evt The event object
      */
@@ -84,10 +83,15 @@ export default class Resizable {
             return;
         }
 
+        /**
+         * The state at which the target was on mouse down
+         * @type {Object}
+         */
         this._start_state = {
             'handle': evt.target,
             'x': evt.clientX,
             'y': evt.clientY,
+            'position': this.configs.target.css('position'),
             'left': parseInt(this.configs.target.css('left'), 10),
             'top': parseInt(this.configs.target.css('top'), 10),
             'w': parseInt(this.configs.target.css('width'), 10),
@@ -101,7 +105,7 @@ export default class Resizable {
         this.configs.target
             .addListener('click', this.onTargetClick, this)
             .addClass('resizing')
-            .triggerEvent(EVT_RESIZESTART, null, false, true);
+            .triggerEvent('resizestart', null, false, true);
 
         evt.stopPropagation();
     }
@@ -109,64 +113,67 @@ export default class Resizable {
     /**
      * The mousemove event handler
      *
-     * @method onMouseMove
      * @private
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        let handle = new Dom(this._start_state.handle),
-            w, h, top, left;
+        const handle = new Dom(this._start_state.handle);
+        const new_state = {};
 
         switch(handle.data('direction')){
             case 'top':
-                h = this._start_state.h - evt.clientY + this._start_state.y;
-                top = this._start_state.top + evt.clientY    - this._start_state.y;
+                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
                 break;
             case 'right':
-                w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
                 break;
             case 'bottom':
-                h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
                 break;
             case 'left':
-                w = this._start_state.w - evt.clientX + this._start_state.x;
-                left = this._start_state.left + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'top-left':
-                w = this._start_state.w - evt.clientX + this._start_state.x;
-                h = this._start_state.h - evt.clientY + this._start_state.y;
-                top = this._start_state.top + evt.clientY    - this._start_state.y;
-                left = this._start_state.left + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
+                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'top-right':
-                w = this._start_state.w + evt.clientX - this._start_state.x;
-                h = this._start_state.h - evt.clientY + this._start_state.y;
-                top = this._start_state.top + evt.clientY - this._start_state.y;
+                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.top = this._start_state.top + evt.clientY - this._start_state.y;
                 break;
             case 'bottom-left':
-                w = this._start_state.w - evt.clientX + this._start_state.x;
-                h = this._start_state.h + evt.clientY - this._start_state.y;
-                left = this._start_state.left + evt.clientX - this._start_state.x;
+                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'bottom-right':
-                w = this._start_state.w + evt.clientX - this._start_state.x;
-                h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
                 break;
         }
 
-        if(top !== undefined){
-            this.configs.target.css('top', `${top}px`);
+        if('top' in new_state){
+            this.configs.target.css('top', `${new_state.top}px`);
         }
-        if(left !== undefined){
-            this.configs.target.css('left', `${left}px`);
+        if('left' in new_state){
+            this.configs.target.css('left', `${new_state.left}px`);
         }
 
+        /**
+         * Whether the target is being resized
+         * @type {Boolean}
+         */
         this._resized = true;
 
         this.configs.target
-            .css('width', `${w}px`)
-            .css('height', `${h}px`)
-            .triggerEvent(EVT_RESIZE, null, false, true);
+            .css('width', `${new_state.w}px`)
+            .css('height', `${new_state.h}px`)
+            .triggerEvent('resize', null, false, true);
 
         evt.stopPropagation();
     }
@@ -174,7 +181,6 @@ export default class Resizable {
     /**
      * The mouseup event handler
      *
-     * @method onMouseUp
      * @private
      * @param {Event} evt The event object
      */
@@ -191,13 +197,19 @@ export default class Resizable {
 
         this.configs.target
             .removeClass('resizing')
-            .triggerEvent(EVT_RESIZEEND, null, false, true);
+            .triggerEvent('resizeend', null, false, true);
 
         delete this._start_state;
 
         evt.stopPropagation();
     }
 
+    /**
+    * The click event handler
+    *
+    * @private
+    * @param {Event} evt The event object
+    */
     onClick(evt){
         evt.stopPropagation();
         evt.preventDefault();
@@ -205,7 +217,6 @@ export default class Resizable {
 
     /**
      * Get a handle
-     * @method getHandle
      * @param {String} direction The direction of the handle to get
      * @return {Dom} The handle
      */
@@ -216,12 +227,15 @@ export default class Resizable {
     /**
      * Enable the behavior
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.configs.target.addClass('resizable');
 
+        /**
+         * Whether the behavior is enabled
+         * @type {Boolean}
+         */
         this.enabled = true;
 
         return this;
@@ -230,8 +244,7 @@ export default class Resizable {
     /**
      * Disable the behavior
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
         this.configs.target.removeClass('resizable');
@@ -244,8 +257,7 @@ export default class Resizable {
     /**
      * Destroy the behavior
      *
-     * @method destroy
-     * @chainable
+     * @return {this}
      */
     destroy() {
         this.disable();

@@ -1,19 +1,32 @@
 import {replaceAll} from './utils/String';
 import Ajax from './Ajax';
 
+/**
+ * Stores the loaded string translations
+ * @type {Object}
+ */
 let translations = {};
 
+/**
+ * A class to handle string translations
+ */
 export default class Locale{
 
+    /**
+    * Load translations
+    *
+    * @param {String} file The url to load
+    * @param {Function} callback The callback to invoke once loading ends
+    */
     static load(file, callback) {
         Ajax.GET(file, {
-            'dataType': 'json',
+            'responseType': 'json',
             'onSuccess': (evt) => {
-                translations = JSON.parse(evt.target.getResponse());
-                callback(translations);
+                translations = evt.target.getResponse();
+                callback(null, translations);
             },
             'onError': (evt) => {
-                callback(null, evt.target.getStatusText());
+                callback(evt.target.getStatusText());
             }
         });
     }
@@ -21,8 +34,6 @@ export default class Locale{
     /**
      * Replace placeholders with sanitized values in a string
      *
-     * @method formatString
-     * @static
      * @param {String} str The string to process
      * @param {Object} [args] An optional object of replacements with placeholders as keys
      * @return {String} The translated string
@@ -42,8 +53,6 @@ export default class Locale{
 /**
  * Translate a string
  *
- * @method t
- * @static
  * @param {String} key The string identifier
  * @param {String} str The default string to use if no translation is found
  * @param {Object} args An object of replacements to make after translation

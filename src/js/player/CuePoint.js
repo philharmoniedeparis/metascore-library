@@ -2,57 +2,50 @@ import EventEmitter from '../core/EventEmitter';
 import {uuid} from '../core/utils/String';
 
 /**
- * Fired when the cuepoint starts
+ * A class for managing media cuepoints to execute actions at specific media times
  *
- * @event start
+ * @emits {start} Fired when the cuepoint starts
+ * @emits {update} Fired when the cuepoint is active (between the start and end times) and the media time is updated
+ * @emits {stop} Fired when the cuepoint stops
+ * @emits {seekout} Fired when the media is seeked outside of the cuepoint's time
  */
-const EVT_START = 'start';
-
-/**
- * Fired when the cuepoint is active (between the start and end times) and the media time is updated
- *
- * @event update
- */
-const EVT_UPDATE = 'update';
-
-/**
- * Fired when the cuepoint stops
- *
- * @event stop
- */
-const EVT_STOP = 'stop';
-
-/**
- * Fired when the media is seeked outside of the cuepoint's time
- *
- * @event seekout
- */
-const EVT_SEEKOUT = 'seekout';
-
 export default class CuePoint extends EventEmitter{
 
     /**
-     * A class for managing media cuepoints to execute actions at specific media times
+     * Instantiate
      *
-     * @class CuePoint
-     * @namepsace player
-     * @extends EventEmitter
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {player.component.Media} configs.media The media component to which the cuepoint is attached
-     * @param {Number} [configs.inTime] The time at which the cuepoint starts
-     * @param {Number} [configs.outTime] The time at which the cuepoint stops
-     * @param {Boolean} [configs.considerError] Whether to estimate and use the error margin in timed events
+     * @property {Media} media The media component to which the cuepoint is attached
+     * @property {Number} [inTime] The time at which the cuepoint starts
+     * @property {Number} [outTime] The time at which the cuepoint stops
+     * @property {Boolean} [considerError] Whether to estimate and use the error margin in timed events
      */
     constructor(configs) {
         // call parent constructor
         super();
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The cuepoint's unique id
+         * @type {String}
+         */
         this.id = uuid();
 
+        /**
+         * Whether the cuepoint is currently running
+         * @type {Boolean}
+         */
         this.running = false;
+
+        /**
+         * The current max error margin in timed events
+         * @type {Number}
+         */
         this.max_error = 0;
 
         this.start = this.start.bind(this);
@@ -62,6 +55,11 @@ export default class CuePoint extends EventEmitter{
         this.onMediaSeeked = this.onMediaSeeked.bind(this);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'media': null,
@@ -74,7 +72,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * The media's timeupdate event handler
      *
-     * @method onMediaTimeUpdate
      * @private
      */
     onMediaTimeUpdate(){
@@ -84,7 +81,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * The media's seeked event handler
      *
-     * @method onMediaSeeked
      * @private
      */
     onMediaSeeking(){
@@ -96,7 +92,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * The media's seeked event handler
      *
-     * @method onMediaSeeked
      * @private
      */
     onMediaSeeked(){
@@ -109,11 +104,16 @@ export default class CuePoint extends EventEmitter{
         if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
             this.max_error = 0;
+
+            /**
+             * The previous media time
+             * @type {Number}
+             */
             this.previous_time = cur_time;
         }
 
         if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
-            this.triggerEvent(EVT_SEEKOUT);
+            this.triggerEvent('seekout');
             this.stop();
         }
         else{
@@ -124,7 +124,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Get the media component on which this cuepoint is attached
      *
-     * @method getMedia
      * @return {player.component.Media} The media component
      */
     getMedia() {
@@ -134,8 +133,7 @@ export default class CuePoint extends EventEmitter{
     /**
      * Init the cuepoint
      *
-     * @method init
-     * @chainable
+     * @return {this}
      */
     init() {
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
@@ -149,7 +147,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Start executing the cuepoint
      *
-     * @method start
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
@@ -159,19 +156,18 @@ export default class CuePoint extends EventEmitter{
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_START);
+            this.triggerEvent('start');
         }
 
         this.running = true;
         this.getMedia().addListener('seeking', this.onMediaSeeking);
 
-        this.triggerEvent(EVT_UPDATE);
+        this.triggerEvent('update');
     }
 
     /**
      * Update the cuepoint
      *
-     * @method update
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
@@ -193,7 +189,7 @@ export default class CuePoint extends EventEmitter{
             }
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_UPDATE);
+                this.triggerEvent('update');
             }
 
             if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
@@ -205,7 +201,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Stop executing the cuepoint
      *
-     * @method stop
      * @private
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
@@ -217,7 +212,7 @@ export default class CuePoint extends EventEmitter{
         this.getMedia().removeListener('seeking', this.onMediaSeeking);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_STOP);
+            this.triggerEvent('stop');
         }
 
         if(this.configs.considerError){
@@ -231,7 +226,6 @@ export default class CuePoint extends EventEmitter{
     /**
      * Destroy the cuepoint
      *
-     * @method destroy
      */
     destroy() {
         this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);

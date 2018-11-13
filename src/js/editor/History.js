@@ -1,59 +1,58 @@
 import EventEmitter from '../core/EventEmitter';
 
 /**
- * Fired when a command is added
+ * An undo/redo manager
  *
- * @event add
+ * @emits {add} Fired when a command is added
  * @param {Object} command The added command
- */
-const EVT_ADD = 'add';
-
-/**
- * Fired when a command is undone
- *
- * @event undo
+ * @emits {undo} Fired when a command is undone
  * @param {Object} command The added command
- */
-const EVT_UNDO = 'undo';
-
-/**
- * Fired when a command is redone
- *
- * @event redo
+ * @emits {redo} Fired when a command is redone
  * @param {Object} command The added command
+ * @emits {clear} Fired when the command history is cleared
  */
-const EVT_REDO = 'redo';
-
-/**
- * Fired when the command history is cleared
- *
- * @event clear
- */
-const EVT_CLEAR = 'clear';
-
 export default class History extends EventEmitter {
 
     /**
-     * An undo/redo manager
+     * Instantiate
      *
-     * @class History
-     * @namespace editor
-     * @extends EventEmitter
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Integer} [configs.max_commands=30] The max number of commands to store
+     * @property {Integer} [max_commands=30] The max number of commands to store
      */
     constructor(configs) {
         // call parent constructor
         super();
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The list of available undo/redo commands
+         * @type {Array}
+         */
         this.commands = [];
+
+        /**
+         * The current comamnd index
+         * @type {Number}
+         */
         this.index = -1;
+
+        /**
+         * Whether a command is being executed
+         * @type {Boolean}
+         */
         this.executing = false;
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults() {
         return {
             'max_commands': 20
@@ -63,11 +62,10 @@ export default class History extends EventEmitter {
     /**
      * Execute a command's action
      *
-     * @method execute
      * @private
      * @param {Object} command The command object
      * @param {String} action The action ('undo' or 'redo') to execute
-     * @chainable
+     * @return {this}
      */
     execute(command, action) {
         if (command && (action in command)) {
@@ -82,11 +80,10 @@ export default class History extends EventEmitter {
     /**
      * Add a command
      *
-     * @method add
      * @param {Object} command The command object. It should contain an 'undo' and a 'redo' function
-     * @chainable
+     * @return {this}
      */
-    add (command){
+    add(command){
         if (this.executing) {
             return this;
         }
@@ -105,7 +102,7 @@ export default class History extends EventEmitter {
         // update the index
         this.index = this.commands.length - 1;
 
-        this.triggerEvent(EVT_ADD, {'command': command});
+        this.triggerEvent('add', {'command': command});
 
         return this;
     }
@@ -113,8 +110,7 @@ export default class History extends EventEmitter {
     /**
      * Execute the undo action of the current command
      *
-     * @method undo
-     * @chainable
+     * @return {this}
      */
     undo() {
         const command = this.commands[this.index];
@@ -129,7 +125,7 @@ export default class History extends EventEmitter {
         // update the index
         this.index -= 1;
 
-        this.triggerEvent(EVT_UNDO, {'command': command});
+        this.triggerEvent('undo', {'command': command});
 
         return this;
     }
@@ -137,8 +133,7 @@ export default class History extends EventEmitter {
     /**
      * Execute the redo action of the previous command
      *
-     * @method redo
-     * @chainable
+     * @return {this}
      */
     redo() {
         const command = this.commands[this.index + 1];
@@ -153,7 +148,7 @@ export default class History extends EventEmitter {
         // update the index
         this.index += 1;
 
-        this.triggerEvent(EVT_REDO, {'command': command});
+        this.triggerEvent('redo', {'command': command});
 
         return this;
     }
@@ -161,8 +156,7 @@ export default class History extends EventEmitter {
     /**
      * Remove all commands
      *
-     * @method clear
-     * @chainable
+     * @return {this}
      */
     clear () {
         const length = this.commands.length;
@@ -171,7 +165,7 @@ export default class History extends EventEmitter {
         this.index = -1;
 
         if(length > 0) {
-            this.triggerEvent(EVT_CLEAR);
+            this.triggerEvent('clear');
         }
 
         return this;
@@ -181,7 +175,6 @@ export default class History extends EventEmitter {
     /**
      * Check if an undo action is available
      *
-     * @method hasUndo
      * @return {Boolean} Whether an undo action is available
      */
     hasUndo() {
@@ -191,7 +184,6 @@ export default class History extends EventEmitter {
     /**
      * Check if a redo action is available
      *
-     * @method hasRedo
      * @return {Boolean} Whether a redo action is available
      */
     hasRedo() {

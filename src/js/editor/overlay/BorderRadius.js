@@ -4,36 +4,37 @@ import Button from '../../core/ui/Button';
 import Locale from '../../core/Locale';
 import NumberField from '../field/Number';
 
+import {className} from '../../../css/editor/overlay/BorderRadius.less';
+
 /**
- * Fired when the submit button is clicked
+ * An overlay that simplifies the creation of a CSS border-radius value
  *
- * @event submit
+ * @emits {submit} Fired when the submit button is clicked
  * @param {Object} overlay The overlay instance
  * @param {String} value The border radius value in CSS format
  */
-const EVT_SUBMIT = 'submit';
-
 export default class BorderRadius extends Overlay {
 
     /**
-     * An overlay that simplifies the creation of a CSS border-radius value
+     * Instantiate
      *
-     * @class BorderRadius
-     * @namespace editor.overlay
-     * @extends Overlay
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='.metaScore-editor'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.toolbar=true] Whether to show a toolbar with a title and close button
-     * @param {String} [configs.title='Border Radius'] The overlay's title
+     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
+     * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
+     * @property {String} [title='Border Radius'] The overlay's title
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('border-radius');
+        this.addClass(`border-radius ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
@@ -45,22 +46,26 @@ export default class BorderRadius extends Overlay {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
-        let contents;
-
         // call parent method
         super.setupUI();
 
-        contents = this.getContents();
+        const contents = this.getContents();
 
-        this.fields = {};
-        this.buttons = {};
-
+        /**
+         * The preview container
+         * @type {Dom}
+         */
         this.preview = new Dom('<div/>', {'class': 'preview'})
             .appendTo(contents);
+
+        /**
+         * The list of fields
+         * @type {Object}
+         */
+        this.fields = {};
 
         this.fields.tlw = new NumberField({'min': 0})
             .addClass('tlw')
@@ -102,7 +107,12 @@ export default class BorderRadius extends Overlay {
             .addClass('blh')
             .appendTo(this.preview);
 
-        // Buttons
+        /**
+         * The list of buttons
+         * @type {Object}
+         */
+        this.buttons = {};
+
         this.buttons.apply = new Button({'label': 'Apply'})
             .addClass('submit')
             .addListener('click', this.onApplyClick.bind(this))
@@ -118,9 +128,7 @@ export default class BorderRadius extends Overlay {
     /**
      * The valuechange event handler
      *
-     * @method onValueChange
      * @private
-     * @param {Event} evt The event object
      */
     onValueChange() {
         let radius    = '';
@@ -141,22 +149,20 @@ export default class BorderRadius extends Overlay {
     /**
      * Set the current value
      *
-     * @method setValue
      * @param {String} val The value in CSS border-radius format
-     * @chainable
+     * @return {this}
      */
     setValue(val){
-        let matches,
-            values = {
-                tlw: 0, tlh: 0,
-                trw: 0, trh: 0,
-                blw: 0, blh: 0,
-                brw: 0, brh: 0
-            };
+        const values = {
+            tlw: 0, tlh: 0,
+            trw: 0, trh: 0,
+            blw: 0, blh: 0,
+            brw: 0, brh: 0
+        };
 
         this.preview.css('border-radius', val);
 
-        matches = this.preview.css('border-top-left-radius', undefined, true).match(/(\d*)px/g);
+        let matches = this.preview.css('border-top-left-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.tlw = matches[0];
@@ -167,7 +173,7 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        matches = this.preview.css('border-top-right-radius', undefined, true).match(/(\d*)px/g);
+        matches = this.preview.css('border-top-right-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.trw = matches[0];
@@ -178,7 +184,7 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        matches = this.preview.css('border-bottom-left-radius', undefined, true).match(/(\d*)px/g);
+        matches = this.preview.css('border-bottom-left-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.blw = matches[0];
@@ -189,7 +195,7 @@ export default class BorderRadius extends Overlay {
             }
         }
 
-        matches = this.preview.css('border-bottom-right-radius', undefined, true).match(/(\d*)px/g);
+        matches = this.preview.css('border-bottom-right-radius', void 0, true).match(/(\d*)px/g);
         if(matches){
             if(matches.length > 1){
                 values.brw = matches[0];
@@ -210,7 +216,6 @@ export default class BorderRadius extends Overlay {
     /**
      * Get the current value
      *
-     * @method getValue
      * @return {String} The value in CSS border-radius format
      */
     getValue() {
@@ -220,11 +225,10 @@ export default class BorderRadius extends Overlay {
     /**
      * The apply button's click event handler
      *
-     * @method onApplyClick
      * @private
      */
     onApplyClick(){
-        this.triggerEvent(EVT_SUBMIT, {'overlay': this, 'value': this.getValue()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
         this.hide();
     }
 

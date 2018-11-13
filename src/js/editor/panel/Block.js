@@ -1,17 +1,16 @@
 import Panel from '../Panel';
 import Locale from '../../core/Locale';
 
+/**
+ * A panel for Block components
+ */
 export default class Block extends Panel {
 
     /**
-     * A panel for {{#crossLink "player.component.Block"}}{{/crossLink}} components
+     * Instantiate
      *
-     * @class Block
-     * @namespace editor.panel
-     * @extends editor.Panel
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={title:'Block', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @property {Object} [toolbarConfigs={title:'Block', multiSelection: true, menuItems: {...}}] Configs to pass to the toolbar (see {@link Toolbar})
      */
     constructor(configs) {
         // call parent constructor
@@ -20,6 +19,11 @@ export default class Block extends Panel {
         this.addClass('block');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbarConfigs': {
@@ -34,6 +38,11 @@ export default class Block extends Panel {
         });
     }
 
+    /**
+     * Setup the panel's UI
+     *
+     * @private
+     */
     updateUI(){
         super.updateUI();
 
@@ -51,7 +60,6 @@ export default class Block extends Panel {
     /**
      * Get the currently associated component's label
      *
-     * @method getSelectorLabel
      * @return {String} The component's label for use in the selector
      */
     getSelectorLabel(component){

@@ -1,49 +1,43 @@
 import Dom from '../core/Dom';
 import {uuid} from '../core/utils/String';
 
+import {className} from '../../css/editor/Field.less';
+
 /**
- * Fired when the field's value changes
+ * A generic field based on an HTML input element
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
- */
-const EVT_VALUECHANGE = 'valuechange';
-
-/**
- * Fired when the field is reset
- *
- * @event reset
+ * @emits {reset} Fired when the field is reset
  * @param {Object} field The field instance
  */
-const EVT_RESET = 'reset';
-
 export default class Field extends Dom{
 
     /**
-     * A generic field based on an HTML input element
+     * Instantiate
      *
-     * @class Field
-     * @namespace editor
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.value=null] The default value
-     * @param {Boolean} [configs.required=false] Whether the field is required
-     * @param {Boolean} [configs.disabled=false] Whether the field is disabled by default
-     * @param {Boolean} [configs.readonly=false] Whether the field is readonly by default
-     * @param {String} [configs.description=''] A description to add to the field
+     * @property {Mixed} [value=null] The default value
+     * @property {Boolean} [required=false] Whether the field is required
+     * @property {Boolean} [disabled=false] Whether the field is disabled by default
+     * @property {Boolean} [readonly=false] Whether the field is readonly by default
+     * @property {String} [description=''] A description to add to the field
      */
     constructor(configs) {
         // call the super constructor.
-        super('<div/>', {'class': 'field'});
+        super('<div/>', {'class': `field ${className}`, 'tabindex': -1});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
-
-        this.setupUI();
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
+
+        this.setupUI();
 
         if(this.input){
             if(this.configs.name){
@@ -51,9 +45,12 @@ export default class Field extends Dom{
             }
 
             if(this.configs.required){
-                this.addClass('required');
                 this.input.attr('required', '');
             }
+        }
+
+        if(this.configs.required){
+            this.addClass('required');
         }
 
         if(this.configs.description){
@@ -63,6 +60,11 @@ export default class Field extends Dom{
         this.reset(true);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'value': null,
@@ -76,20 +78,31 @@ export default class Field extends Dom{
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
         const uid = `field-${uuid(5)}`;
 
         if(this.configs.label){
+            /**
+             * A potential <label> element
+             * @type {Dom}
+             */
             this.label = new Dom('<label/>', {'for': uid, 'text': this.configs.label})
                 .appendTo(this);
         }
 
+        /**
+         * The input-wrapper container
+         * @type {Dom}
+         */
         this.input_wrapper = new Dom('<div/>', {'class': 'input-wrapper'})
             .appendTo(this);
 
+        /**
+         * The <input> element
+         * @type {Dom}
+         */
         this.input = new Dom('<input/>', {'id': uid})
             .addListener('change', this.onChange.bind(this))
             .addListener('keypress', this.onKeypress.bind(this))
@@ -99,12 +112,15 @@ export default class Field extends Dom{
     /**
      * Set the description text
      *
-     * @method setDescription
      * @param {String} description The description text
-     * @chainable
+     * @return {this}
      */
     setDescription(description){
         if(!('description' in this)){
+            /**
+             * A potential description container
+             * @type {Dom}
+             */
             this.description = new Dom('<div/>', {'class': 'description'})
                 .appendTo(this.input_wrapper);
         }
@@ -117,20 +133,23 @@ export default class Field extends Dom{
     /**
      * The change event handler
      *
-     * @method onChange
      * @private
      */
     onChange(){
+        /**
+         * The current value
+         * @type {String}
+         */
         this.value = this.input.val();
 
-        this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
     }
 
     /**
      * The keypress event handler
      *
-     * @method onKeypress
      * @private
+     * @param {Event} evt The event object
      */
     onKeypress(evt){
         if(evt.key === "Enter") {
@@ -141,10 +160,9 @@ export default class Field extends Dom{
     /**
      * Set the field's value
      *
-     * @method setValue
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
         this.input.val(value);
@@ -160,7 +178,6 @@ export default class Field extends Dom{
     /**
      * Get the field's current value
      *
-     * @method getValue
      * @return {Mixed} The value
      */
     getValue() {
@@ -170,10 +187,13 @@ export default class Field extends Dom{
     /**
      * Disable the field
      *
-     * @method disable
-     * @chainable
+     * @return {this}
      */
     disable() {
+        /**
+         * Whether the field is disabled
+         * @type {Boolean}
+         */
         this.disabled = true;
 
         this.addClass('disabled');
@@ -188,8 +208,7 @@ export default class Field extends Dom{
     /**
      * Enable the field
      *
-     * @method enable
-     * @chainable
+     * @return {this}
      */
     enable() {
         this.disabled = false;
@@ -206,11 +225,14 @@ export default class Field extends Dom{
     /**
      * Toggle the field's readonly state
      *
-     * @method readonly
      * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
-     * @chainable
+     * @return {this}
      */
     readonly(readonly){
+        /**
+         * Whether the field is in a readonly state
+         * @type {Boolean}
+         */
         this.is_readonly = readonly === true;
 
         this.toggleClass('readonly', this.is_readonly);
@@ -225,9 +247,8 @@ export default class Field extends Dom{
     /**
      * Reset the field's configs
      *
-     * @method reset
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     reset(supressEvent){
         this.setValue(this.configs.value);
@@ -242,7 +263,7 @@ export default class Field extends Dom{
         this.readonly(this.configs.readonly);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_RESET, {'field': this}, true, false);
+            this.triggerEvent('reset', {'field': this}, true, false);
         }
 
         return this;

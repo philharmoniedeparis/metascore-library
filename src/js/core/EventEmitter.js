@@ -1,22 +1,25 @@
+/**
+ * A base class for event handling
+ */
 export default class EventEmitter{
 
     /**
-     * A base class for event handling
-     *
-     * @class EventEmitter
-     * @constructor
+     * Instantiate
      */
     constructor() {
+        /**
+         * Stores the list of callbacks
+         * @type {Object}
+         */
         this.listeners = {};
     }
 
     /**
      * Add an event listener
      *
-     * @method addListener
      * @param {String} type The event type to listen to
      * @param {Function} listener The callback function to associate to this listener
-     * @chainable
+     * @return {this}
      */
     addListener(type, listener){
         if (typeof this.listeners[type] === "undefined"){
@@ -31,10 +34,9 @@ export default class EventEmitter{
     /**
      * Remove an event listener
      *
-     * @method removeListener
      * @param {String} type The event type to stop listen to
      * @param {Function} listener The callback function associated to this listener
-     * @chainable
+     * @return {this}
      */
     removeListener(type, listener){
         if(this.listeners[type] instanceof Array){
@@ -53,7 +55,6 @@ export default class EventEmitter{
     /**
      * Check if a listener is attached to a given event type
      *
-     * @method hasListener
      * @param {String} type The event type
      * @return {Boolean} Whether a listener is attached
      */
@@ -68,19 +69,18 @@ export default class EventEmitter{
     /**
      * Trigger an event
      *
-     * @method triggerEvent
      * @param {String} type The event type
      * @param {Mixed} data Data to attach to the event via the detail propoerty
      * @param {Boolean} bubbling Whether the event bubbles up through the DOM or not
      * @param {Boolean} cancelable Whether the event is cancelable or not
-     * @chainable
+     * @return {this}
      */
     triggerEvent(type, data, bubbling, cancelable){
         if (this.listeners[type] instanceof Array){
-            let listeners = this.listeners[type];
+            const listeners = this.listeners[type];
 
             if(listeners){
-                let event = {
+                const event = {
                     'target': this,
                     'type': type,
                     'detail': data,

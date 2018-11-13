@@ -1,22 +1,22 @@
 import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
 import Locale from '../core/Locale';
-import TimeField from './field/Time';
 import NumberField from './field/Number';
+import CheckboxField from './field/Checkbox';
 
+import {className} from '../../css/editor/MainMenu.less';
+
+/**
+ * The editor's main menu
+ */
 export default class MainMenu extends Dom {
 
     /**
-     * The editor's main menu
-     *
-     * @class MainMenu
-     * @namespace editor
-     * @extends Dom
-     * @constructor
+     * Instantiate
      */
     constructor() {
         // call parent constructor
-        super('<div/>', {'class': 'main-menu clearfix'});
+        super('<div/>', {'class': `main-menu ${className}`});
 
         this.setupUI();
     }
@@ -24,59 +24,60 @@ export default class MainMenu extends Dom {
     /**
      * Setup the menu's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
-        let btn_group, sub_menu;
+        this._items = {};
 
-        new Button()
+        this._items.new = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.new', 'New')
             })
             .data('action', 'new')
             .appendTo(this);
 
-        new Button()
+        this._items.open = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.open', 'Open')
             })
             .data('action', 'open')
             .appendTo(this);
 
-        new Button()
+        this._items.edit = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.edit', 'Edit')
             })
             .data('action', 'edit')
             .appendTo(this);
 
-        btn_group = new Dom('<div/>', {'class': 'button-group save'}).appendTo(this);
+        const btn_group = new Dom('<div/>', {'class': 'button-group save'})
+            .appendTo(this);
 
-        sub_menu = new Dom('<div/>', {'class': 'sub-menu'}).appendTo(btn_group);
+        const sub_menu = new Dom('<div/>', {'class': 'sub-menu'})
+            .appendTo(btn_group);
 
-        new Button()
+        this._items.save = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.save', 'Save as draft')
             })
             .data('action', 'save')
             .appendTo(btn_group);
 
-        new Button()
+        this._items.clone = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.clone', 'Save as copy')
             })
             .data('action', 'clone')
             .appendTo(sub_menu);
 
-        new Button()
+        this._items.publish = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.publish', 'Save & Publish')
             })
             .data('action', 'publish')
             .appendTo(sub_menu);
 
-        new Button()
+        this._items.delete = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.delete', 'Delete')
             })
@@ -86,14 +87,14 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new Button()
+        this._items.share = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.share', 'Share')
             })
             .data('action', 'share')
             .appendTo(this);
 
-        new Button()
+        this._items.download = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.download', 'Download')
             })
@@ -104,30 +105,23 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        this.timefield = new TimeField()
-            .attr({
-                'title': Locale.t('editor.MainMenu.time', 'Time')
-            })
-            .addClass('time')
-            .appendTo(this);
-
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        this.rindexfield = new NumberField({
+        this._items['r-index'] = new NumberField({
                 'min': 0,
                 'max': 999
             })
             .attr({
                 'title': Locale.t('editor.MainMenu.r-index', 'Reading index')
             })
-            .addClass('r-index')
+            .data('action', 'r-index')
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new Button()
+        this._items['edit-toggle'] = new CheckboxField({'label': ''})
             .attr({
                 'title': Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
             })
@@ -137,21 +131,21 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        new Button()
+        this._items.revert = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.revert', 'Revert')
             })
             .data('action', 'revert')
             .appendTo(this);
 
-        new Button()
+        this._items.undo = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.undo', 'Undo')
             })
             .data('action', 'undo')
             .appendTo(this);
 
-        new Button()
+        this._items.redo = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.redo', 'Redo')
             })
@@ -159,32 +153,23 @@ export default class MainMenu extends Dom {
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'separator'})
-            .css('flex', '20')
             .appendTo(this);
 
-        new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.settings', 'Settings')
-            })
-            .data('action', 'settings')
-            .disable()
-            .appendTo(this);
-
-        new Button()
+        this._items.help = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.help', 'Help')
             })
             .data('action', 'help')
             .appendTo(this);
 
-        new Button()
+        this._items.account = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.account', 'My Account')
             })
             .data('action', 'account')
             .appendTo(this);
 
-        new Button()
+        this._items.logout = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.logout', 'Logout')
             })
@@ -194,15 +179,33 @@ export default class MainMenu extends Dom {
     }
 
     /**
-     * Toogle a button's enabled state
+     * Get the item associated to an action
      *
-     * @method toggleButton
-     * @param {String} action The button's associated action
-     * @param {Boolean} state The state to set the button to, the current state is toggled if not provided
-     * @chainable
+     * @param {String} action The item's associated action
+     * @return {Dom} The item
      */
-    toggleButton(action, state){
-        this.find(`[data-action="${action}"]`).toggleClass('disabled', state === false);
+    getItem(action){
+        return this._items[action];
+    }
+
+    /**
+     * Toogle an item's enabled state
+     *
+     * @param {String} action The item's associated action
+     * @param {Boolean} state The state to set the item to
+     * @return {this}
+     */
+    toggleItem(action, state){
+        const item = this.getItem(action);
+
+        if(item){
+            if(state === false){
+                item.disable();
+            }
+            else{
+                item.enable();
+            }
+        }
 
         return this;
     }

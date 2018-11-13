@@ -8,11 +8,10 @@
 * @return {Function} The throttled function
 */
 export function throttle(fn, threshhold, scope){
-	let lastFn, lastRan;
+	let lastFn = null;
+	let lastRan = null;
 
-	return () => {
-		const args = arguments;
-
+	return (...args) => {
 		if (!lastRan) {
 			fn.apply(scope, args);
 			lastRan = Date.now();
@@ -20,12 +19,14 @@ export function throttle(fn, threshhold, scope){
 		else {
 			clearTimeout(lastFn);
 
-			lastFn = setTimeout(() => {
-				if((Date.now() - lastRan) >= threshhold){
-					fn.apply(scope, args);
-					lastRan = Date.now();
-				}
-			}, threshhold - (Date.now() - lastRan));
+			lastFn = setTimeout(
+				() => {
+					if((Date.now() - lastRan) >= threshhold){
+						fn.apply(scope, args);
+						lastRan = Date.now();
+					}
+				},
+				threshhold - (Date.now() - lastRan));
 		}
 	};
 }

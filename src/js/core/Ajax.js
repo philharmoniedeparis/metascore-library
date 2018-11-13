@@ -1,60 +1,52 @@
 import EventEmitter from './EventEmitter';
-
-/**
- * Fired when the operation is complete (the request's readyState is 4)
- *
- * @event complete
- */
-const EVT_COMPLETE = 'complete';
-
-/**
- * Fired when the operation is complete and the status is greater or equal to 200 and less than 300 or equal to 304
- *
- * @event success
- */
-const EVT_SUCCESS = 'success';
-
-/**
- * Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
- *
- * @event error
- */
-const EVT_ERROR = 'error';
-
-/**
- * Fired when the operation is aborted
- *
- * @event abort
- */
-const EVT_ABORT = 'abort';
+import {isObject} from './utils/Var';
 
 /**
  * A class to handle AJAX requests
+ *
+ * @emits {complete} Fired when the operation is complete (the request's readyState is 4)
+ * @emits {success} Fired when the operation is complete and the status is greater or equal to 200 and less than 300 or equal to 304
+ * @emits {error} Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
  */
 export default class Ajax extends EventEmitter {
 
+    /**
+     * Instantiate
+     */
     constructor(url, configs) {
         // call parent constructor
         super();
 
+        let _url = url;
+
         // bind the readystatechange handler
         this.onReadyStateChange = this.onReadyStateChange.bind(this);
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The XMLHttpRequest instance
+         * @type {XMLHttpRequest}
+         */
         this.xhr = new XMLHttpRequest();
 
         if(this.configs.method === 'GET' && this.configs.data){
-            let params = [];
+            const params = [];
 
-			Object.entries(this.configs.data).forEach(([key, value]) => {
+            Object.entries(this.configs.data).forEach(([key, value]) => {
                 params.push(`${key}=${encodeURIComponent(value)}`);
             });
 
-            url += `?${params.join('&')}`;
+            _url += `?${params.join('&')}`;
         }
 
-        this.xhr.open(this.configs.method, url, this.configs.async);
+        this.xhr.open(this.configs.method, _url, this.configs.async);
+
+        this.xhr.responseType = this.configs.responseType;
 
         if(this.configs.headers){
             this.setHeaders(this.configs.headers);
@@ -72,16 +64,16 @@ export default class Ajax extends EventEmitter {
         this.xhr.addEventListener('abort', this.onAbort.bind(this));
 
         if(this.configs.onComplete){
-            this.addListener(EVT_COMPLETE, this.configs.onComplete);
+            this.addListener('complete', this.configs.onComplete);
         }
         if(this.configs.onSuccess){
-            this.addListener(EVT_SUCCESS, this.configs.onSuccess);
+            this.addListener('success', this.configs.onSuccess);
         }
         if(this.configs.onError){
-            this.addListener(EVT_ERROR, this.configs.onError);
+            this.addListener('error', this.configs.onError);
         }
         if(this.configs.onAbort){
-            this.addListener(EVT_ABORT, this.configs.onAbort);
+            this.addListener('abort', this.configs.onAbort);
         }
 
         if(this.configs.autoSend){
@@ -89,13 +81,18 @@ export default class Ajax extends EventEmitter {
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'method': 'GET',
             'headers': {},
             'async': true,
             'data': null,
-            'dataType': 'json', // xml, json, script, text or html
+            'responseType': 'json',
             'withCredentials': false,
             'timeout': null,
             'autoSend': true,
@@ -108,10 +105,8 @@ export default class Ajax extends EventEmitter {
     /**
      * Send an XMLHttp GET request
      *
-     * @method GET
-     * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} configs to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @param {Object} configs Custom configs to override defaults
      * @return {Ajax} The Ajax instance
      */
     static GET(url, configs) {
@@ -123,10 +118,8 @@ export default class Ajax extends EventEmitter {
     /**
      * Send an XMLHttp POST request
      *
-     * @method POST
-     * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @param {Object} configs Custom configs to override defaults
      * @return {Ajax} The Ajax instance
      */
     static POST(url, configs) {
@@ -138,10 +131,8 @@ export default class Ajax extends EventEmitter {
     /**
      * Send an XMLHttp PUT request
      *
-     * @method PUT
-     * @static
      * @param {String} url The URL to which the request is sent
-     * @param {Object} options to set for the request. See {{#crossLink "Ajax/send:method"}}send{{/crossLink}} for available options
+     * @param {Object} configs Custom configs to override defaults
      * @return {Ajax} The Ajax instance
      */
     static PUT(url, configs) {
@@ -150,12 +141,21 @@ export default class Ajax extends EventEmitter {
 
     }
 
+    /**
+    * readystatechange event callback
+    *
+    * @private
+    */
     onReadyStateChange(){
         switch(this.xhr.readyState){
             case XMLHttpRequest.DONE: {
                 let success = false;
 
-                if(this.xhr.status === 200 && this.xhr.status < 300 || this.xhr.status === 304){
+                const min_ok_status = 200;
+                const max_ok_status = 300;
+                const not_modified_status = 304
+
+                if(this.xhr.status >= min_ok_status && this.xhr.status < max_ok_status || this.xhr.status === not_modified_status){
                     success = true;
                 }
                 // local requests can return a status of 0 even if no error occurs
@@ -163,13 +163,13 @@ export default class Ajax extends EventEmitter {
                     success = true;
                 }
 
-                this.triggerEvent(EVT_COMPLETE);
+                this.triggerEvent('complete');
 
                 if(success){
-                    this.triggerEvent(EVT_SUCCESS);
+                    this.triggerEvent('success');
                 }
                 else{
-                    this.triggerEvent(EVT_ERROR);
+                    this.triggerEvent('error');
                 }
 
                 break;
@@ -177,18 +177,34 @@ export default class Ajax extends EventEmitter {
         }
     }
 
+    /**
+    * abort event callback
+    *
+    * @private
+    * @emits {abort} Fired when the operation is aborted
+    */
     onAbort(){
-        this.triggerEvent(EVT_ABORT);
+        this.triggerEvent('abort');
 
         // reattach the readystatechange handler in case the request is sent again
         this.xhr.addEventListener('readystatechange', this.onReadyStateChange);
     }
 
+    /**
+    * Send the XHR request
+    *
+    * @return {this}
+    */
     send(){
         this.xhr.send(this.configs.method !== 'GET' ? this.configs.data : null);
         return this;
     }
 
+    /**
+    * Abort the XHR request
+    *
+    * @return {this}
+    */
     abort(){
         // detach the readystatechange handler to prevent the success callback from being falsly called
         this.xhr.removeEventListener('readystatechange', this.onReadyStateChange);
@@ -197,6 +213,12 @@ export default class Ajax extends EventEmitter {
         return this;
     }
 
+    /**
+    * Set request headers
+    *
+    * @param {Object} headers The list of headers as header/value to set
+    * @return {this}
+    */
     setHeaders(headers){
         Object.entries(headers).forEach(([key, value]) => {
             this.xhr.setRequestHeader(key, value);
@@ -204,27 +226,73 @@ export default class Ajax extends EventEmitter {
         return this;
     }
 
+    /**
+    * Get the XMLHttpRequest instance
+    *
+    * @return {XMLHttpRequest} The request instance
+    */
     getXHR(){
         return this.xhr;
     }
 
+    /**
+    * Get the XMLHttpRequest status
+    *
+    * @return {Number} The numerical status code of the response
+    */
     getStatus(){
         return this.xhr.status;
     }
 
+    /**
+    * Get the XMLHttpRequest statusText
+    *
+    * @return {DOMString} The response's status message
+    */
     getStatusText(){
         return this.xhr.statusText;
     }
 
+    /**
+    * Get the XMLHttpRequest response
+    *
+    * @return {*} The response's body content
+    */
     getResponse(){
-        return this.xhr.response;
+        let response = this.xhr.response;
+
+        // workaround for IE11 and Edge, which don't support XHR.responseType = json
+        if(this.configs.responseType === 'json' && !isObject(response)) {
+            try{
+                response = JSON.parse(response);
+            }
+            catch(e){
+                console.error(e);
+            }
+        }
+
+        return response;
     }
 
+    /**
+    * Add an upload listener
+    *
+    * @param {String} type The event type to listen to
+    * @param {Function} listener The callback function
+    * @return {this}
+    */
     addUploadListener(type, listener){
         this.xhr.upload.addEventListener(type, listener);
         return this;
     }
 
+    /**
+    * Remove an upload listener
+    *
+    * @param {String} type The event type to stop listening to
+    * @param {Function} listener The callback function
+    * @return {this}
+    */
     removeUploadListener(type, listener){
         this.xhr.upload.removeEventListener(type, listener);
         return this;

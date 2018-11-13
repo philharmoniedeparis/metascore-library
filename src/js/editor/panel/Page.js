@@ -1,17 +1,16 @@
 import Panel from '../Panel';
 import Locale from '../../core/Locale';
 
+/**
+ * A panel for Page components
+ */
 export default class Page extends Panel {
 
     /**
-     * A panel for {{#crossLink "player.component.Page"}}{{/crossLink}} components
+     * Instantiate
      *
-     * @class Page
-     * @namespace editor.panel
-     * @extends editor.Panel
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Object} [configs.toolbarConfigs={title:'Page', menuItems: {...}}] Configs to pass to the toolbar (see {{#crossLink "editor.panel.Toolbar"}}{{/crossLink}})
+     * @property {Object} [toolbarConfigs={title:'Page', menuItems: {...}}] Configs to pass to the toolbar (see {@link Toolbar})
      */
     constructor(configs) {
         // call parent constructor
@@ -20,6 +19,11 @@ export default class Page extends Panel {
         this.addClass('page');
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbarConfigs': {

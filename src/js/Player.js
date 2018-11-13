@@ -9,120 +9,70 @@ import Media from './player/component/Media';
 import Controller from './player/component/Controller';
 import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
+import {toCentiseconds, toSeconds} from './core/utils/Media';
 
-import '../css/metaScore.player.less';
+import {className} from '../css/Player.less';
 
 /**
- * Fired when the player finished initializing
+ * Provides the main Player class
  *
- * @event ready
+ * @emits {ready} Fired when the player finished initializing
  * @param {Object} player The player instance
- */
-const EVT_READY = 'ready';
-
-/**
- * Fired when the guide's loading finished successfully
- *
- * @event load
+ * @emits {load} Fired when the guide's loading finished successfully
  * @param {Object} player The player instance
  * @param {Object} data The json data loaded
- */
-const EVT_LOAD = 'load';
-
-/**
- * Fired when the guide's loading failed
- *
- * @event loaderror
+ * @emits {loaderror} Fired when the guide's loading failed
  * @param {Object} player The player instance
- */
-const EVT_ERROR = 'error';
-
-/**
- * Fired when the id is set
- *
- * @event idset
+ * @emits {idset} Fired when the id is set
  * @param {Object} player The player instance
  * @param {String} id The guide's id
- */
-const EVT_IDSET = 'idset';
-
-/**
- * Fired when the vid is set
- *
- * @event revisionset
+ * @emits {revisionset} Fired when the vid is set
  * @param {Object} player The player instance
  * @param {Integer} vid The guide's vid
- */
-const EVT_REVISIONSET = 'revisionset';
-
-/**
- * Fired when the media is added
- *
- * @event mediaadd
+ * @emits {mediaadd} Fired when the media is added
  * @param {Object} player The player instance
  * @param {Object} media The media instance
- */
-const EVT_MEDIAADD = 'mediaadd';
-
-/**
- * Fired when the controller is added
- *
- * @event controlleradd
+ * @emits {controlleradd} Fired when the controller is added
  * @param {Object} player The player instance
  * @param {Object} controller The controller instance
- */
-const EVT_CONTROLLERADD = 'controlleradd';
-
-/**
- * Fired when a block toggler is added
- *
- * @event blocktoggleradd
+ * @emits {blocktoggleradd} Fired when a block toggler is added
  * @param {Object} player The player instance
  * @param {Object} blocktoggler The blocktoggler instance
- */
-const EVT_BLOCKTOGGLERADD = 'blocktoggleradd';
-
-/**
- * Fired when a block is added
- *
- * @event blockadd
+ * @emits {blockadd} Fired when a block is added
  * @param {Object} player The player instance
  * @param {Object} block The block instance
- */
-const EVT_BLOCKADD = 'blockadd';
-
-/**
- * Fired when the reading index is set
- *
- * @event rindex
+ * @emits {rindex} Fired when the reading index is set
  * @param {Object} player The player instance
  * @param {Object} value The reading index value
  */
-const EVT_RINDEX = 'rindex';
-
 export default class Player extends Dom {
 
     /**
-     * Provides the main Player class
+     * Instantiate
      *
-     * @class Player
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.url=''] The URL of the guide's JSON data to load
-     * @param {Mixed} [configs.container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
-     * @param {Object} [configs.ajax={}] Custom options to send with each AJAX request. See {{#crossLink "Ajax/send:method"}}Ajax.send{{/crossLink}} for available options
-     * @param {Boolean} [configs.keyboard=false] Whether to activate keyboard shortcuts or not
-     * @param {Boolean} [configs.api=false] Whether to allow API access or not
-     * @param {String} [configs.locale] The locale file to load
-     * @param {Boolean} [configs.autoload=true] Whether to automatically call the load function
+     * @property {String} [url=''] The URL of the guide's JSON data to load
+     * @property {Mixed} [container='body'] The HTMLElement, Dom instance, or CSS selector to which the player should be appended
+     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Boolean} [autoload=true] Whether to automatically call the load function
+     * @property {Boolean} [keyboard=true] Whether to activate keyboard shortcuts or not
+     * @property {Boolean} [api=false] Whether to allow API access or not
+     * @property {String} [lang] The language to use for i18n
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-player', 'tabindex': 0});
+        super('<div/>', {'class': `metaScore-player ${className}`, 'tabindex': 0});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * Whether the player has finished loading
+         * @type {Boolean}
+         */
         this.loaded = false;
 
         if(this.configs.api){
@@ -137,11 +87,16 @@ export default class Player extends Dom {
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults() {
         return {
             'url': '',
             'container': 'body',
-            'ajax': {},
+            'xhr': {},
             'autoload': true,
             'keyboard': true,
             'api': false,
@@ -149,14 +104,57 @@ export default class Player extends Dom {
         };
     }
 
+    /**
+    * Get the version number
+    *
+    * @return {String} The version number
+    */
     static getVersion(){
         return "[[VERSION]]";
     }
 
+    /**
+    * Get the revirsion number
+    *
+    * @return {String} The revirsion number
+    */
     static getRevision(){
         return "[[REVISION]]";
     }
 
+    /**
+    * Initialize
+    */
+    init() {
+
+        /**
+         * The context menu
+         * @type {ContextMenu}
+         */
+        this.contextmenu = new ContextMenu({'target': this, 'items': {
+                'about': {
+                    'text': Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
+                },
+                'logo': {
+                    'class': 'logo'
+                }
+            }})
+            .appendTo(this);
+
+        this.appendTo(this.configs.container);
+
+        this.triggerEvent('ready', {'player': this}, false, false);
+
+        if(this.configs.autoload !== false){
+            this.load();
+        }
+    }
+
+    /**
+    * Local load callback
+    *
+    * @private
+    */
     onLocaleLoad(){
         this.init();
     }
@@ -164,7 +162,6 @@ export default class Player extends Dom {
     /**
      * Keydown event callback
      *
-     * @method onKeydown
      * @private
      * @param {KeyboardEvent} evt The event object
      */
@@ -193,14 +190,11 @@ export default class Player extends Dom {
     /**
      * API message event callback
      *
-     * @method onAPIMessage
      * @private
      * @param {MessageEvent} evt The event object
      */
-    onAPIMessage(evt){
-        let data,
-            source, origin,
-            method, params;
+    onAPIMessage(evt){ // eslint-disable-line complexity
+        let data = null;
 
         try {
             data = JSON.parse(evt.data);
@@ -213,10 +207,10 @@ export default class Player extends Dom {
             return;
         }
 
-        source = evt.source;
-        origin = evt.origin;
-        method = data.method;
-        params = 'params' in data ? data.params : null;
+        const source = evt.source;
+        const origin = evt.origin;
+        const method = data.method;
+        const params = 'params' in data ? data.params : null;
 
         switch(method){
             case 'play':
@@ -228,7 +222,7 @@ export default class Player extends Dom {
                 break;
 
             case 'seek':
-                this.getMedia().setTime(parseFloat(params.seconds, 10) * 100);
+                this.getMedia().setTime(toCentiseconds(params.seconds));
                 break;
 
             case 'page':
@@ -242,17 +236,8 @@ export default class Player extends Dom {
 
             case 'showBlock':
             case 'hideBlock':
-            case 'toggleBlock':
-                var show;
-
-                switch(method){
-                    case 'showBlock':
-                        show = true;
-                        break;
-                    case 'hideBlock':
-                        show = false;
-                        break;
-                }
+            case 'toggleBlock':{
+                const show = method !== 'hideBlock';
 
                 this.getComponents('.media.video, .controller, .block').forEach((block) => {
                     if(block.getName() === params.name){
@@ -260,6 +245,7 @@ export default class Player extends Dom {
                     }
                 });
                 break;
+            }
 
             case 'rindex':
                 this.setReadingIndex(!isNaN(params.index) ? params.index : 0);
@@ -275,7 +261,7 @@ export default class Player extends Dom {
             case 'time':
                 source.postMessage(JSON.stringify({
                     'callback': params.callback,
-                    'params': this.getMedia().getTime() / 100
+                    'params': toSeconds(this.getMedia().getTime())
                 }), origin);
                 break;
 
@@ -300,7 +286,7 @@ export default class Player extends Dom {
                         this.addListener(params.type, (event) => {
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback,
-                                'params': event.detail.media.getTime() / 100
+                                'params': toSeconds(event.detail.media.getTime())
                             }), origin);
                         });
                         break;
@@ -317,6 +303,9 @@ export default class Player extends Dom {
                 break;
 
             case 'removeEventListener':
+                /**
+                 * @todo add support
+                 */
                 break;
         }
     }
@@ -324,7 +313,6 @@ export default class Player extends Dom {
     /**
      * Controller button click event callback
      *
-     * @method onControllerButtonClick
      * @private
      * @param {MouseEvent} evt The event object
      */
@@ -345,19 +333,8 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media loadedmetadata event callback
-     *
-     * @method onMediaLoadedMetadata
-     * @private
-     */
-    onMediaLoadedMetadata(){
-        this.getMedia().reset();
-    }
-
-    /**
      * Media waiting event callback
      *
-     * @method onMediaWaiting
      * @private
      */
     onMediaWaiting(){
@@ -367,7 +344,6 @@ export default class Player extends Dom {
     /**
      * Media seeking event callback
      *
-     * @method onMediaSeeking
      * @private
      */
     onMediaSeeking(){
@@ -377,7 +353,6 @@ export default class Player extends Dom {
     /**
      * Media seeked event callback
      *
-     * @method onMediaSeeked
      * @private
      */
     onMediaSeeked(){
@@ -387,56 +362,57 @@ export default class Player extends Dom {
     /**
      * Media playing event callback
      *
-     * @method onMediaPlaying
      * @private
      */
     onMediaPlaying(){
         this.removeClass('media-waiting');
 
-        this.controller.addClass('playing');
+        if(this.controller){
+            this.controller.addClass('playing');
+        }
     }
 
     /**
      * Media play event callback
      *
-     * @method onMediaPlay
      * @private
      */
     onMediaPlay(){
         this.removeClass('media-waiting');
 
-        this.controller.addClass('playing');
+        if(this.controller){
+            this.controller.addClass('playing');
+        }
     }
 
     /**
      * Media pause event callback
      *
-     * @method onMediaPause
      * @private
      */
     onMediaPause(){
         this.removeClass('media-waiting');
 
-        this.controller.removeClass('playing');
+        if(this.controller){
+            this.controller.removeClass('playing');
+        }
     }
 
     /**
      * Media timeupdate event callback
      *
-     * @method onMediaTimeUpdate
      * @private
-     * @param {Event} evt The event object
      */
-    onMediaTimeUpdate(evt){
-        const currentTime = evt.detail.media.getTime();
-
-        this.controller.updateTime(currentTime);
+    onMediaTimeUpdate(){
+        if(this.controller){
+            const currentTime = this.getMedia().getTime();
+            this.controller.updateTime(currentTime);
+        }
     }
 
     /**
      * Media suspend event callback
      *
-     * @method onMediaSuspend
      * @private
      */
     onMediaSuspend(){
@@ -446,7 +422,6 @@ export default class Player extends Dom {
     /**
      * Media suspend event callback
      *
-     * @method onMediaStalled
      * @private
      */
     onMediaStalled(){
@@ -456,13 +431,12 @@ export default class Player extends Dom {
     /**
      * Media error event callback
      *
-     * @method onMediaError
      * @private
      * @param {Event} evt The event object
      */
     onMediaError(evt){
-        let error = evt.target.error,
-            text;
+        const error = evt.target.error;
+        let text = '';
 
         this.removeClass('media-waiting');
 
@@ -501,7 +475,6 @@ export default class Player extends Dom {
     /**
      * Block pageactivate event callback
      *
-     * @method onPageActivate
      * @private
      * @param {CustomEvent} evt The event object
      */
@@ -517,7 +490,6 @@ export default class Player extends Dom {
     /**
      * Element of type Cursor time event callback
      *
-     * @method onCursorElementTime
      * @private
      * @param {CustomEvent} evt The event object
      */
@@ -530,7 +502,6 @@ export default class Player extends Dom {
     /**
      * Element of type Text play event callback
      *
-     * @method onTextElementPlay
      * @private
      * @param {CustomEvent} evt The event object
      */
@@ -541,7 +512,6 @@ export default class Player extends Dom {
     /**
      * Element of type Text page event callback
      *
-     * @method onTextElementPage
      * @private
      * @param {CustomEvent} evt The event object
      */
@@ -555,21 +525,11 @@ export default class Player extends Dom {
     /**
      * Element of type Text block_visibility event callback
      *
-     * @method onTextElementBlockVisibility
      * @private
      * @param {CustomEvent} evt The event object
      */
     onTextElementBlockVisibility(evt){
-        let show;
-
-        switch(evt.detail.action){
-            case 'show':
-                show = true;
-                break;
-            case 'hide':
-                show = false;
-                break;
-        }
+        const show = evt.detail.action !== 'hide';
 
         this.getComponents('.media.video, .controller, .block').forEach((block) => {
             if(block.getName() === evt.detail.block){
@@ -581,13 +541,11 @@ export default class Player extends Dom {
     /**
      * Componenet propchange event callback
      *
-     * @method onComponenetPropChange
      * @private
      * @param {CustomEvent} evt The event object
      */
     onComponenetPropChange(evt){
-        let component = evt.detail.component,
-            cuepoint;
+        const component = evt.detail.component;
 
         switch(evt.detail.property){
             case 'start-time':
@@ -598,43 +556,63 @@ export default class Player extends Dom {
                 break;
 
             case 'direction':
-            case 'acceleration':
-                cuepoint = component.getCuePoint();
+            case 'acceleration':{
+                const cuepoint = component.getCuePoint();
                 if(cuepoint){
                     cuepoint.update();
                 }
                 break;
+            }
         }
     }
 
     /**
      * loadsuccess event callback
      *
-     * @method onLoadSuccess
      * @private
      * @param {Event} evt The event object
      */
     onLoadSuccess(evt){
-        this.json = JSON.parse(evt.target.getResponse());
+        /**
+         * The guide's JSON data
+         * @type {Object}
+         */
+        this.json = evt.target.getResponse();
 
         this.setId(this.json.id)
             .setRevision(this.json.vid);
 
+        /**
+         * A stylesheet containing the guide's custom css
+         * @type {StyleSheet}
+         */
         this.css = new StyleSheet()
             .setInternalValue(this.json.css)
             .appendTo(document.head);
 
+        /**
+         * A stylesheet for dynamic r-index manipulation
+         * @type {StyleSheet}
+         */
         this.rindex_css = new StyleSheet()
             .appendTo(document.head);
 
         this.json.blocks.forEach((block) => {
             switch(block.type){
                 case 'Media':
+                    /**
+                     * The media block
+                     * @type {Media}
+                     */
                     this.media = this.addMedia(Object.assign({}, block, {'type': this.json.type}))
-                        .setSources([this.json.media]);
+                        .setSource(this.json.media);
                     break;
 
                 case 'Controller':
+                    /**
+                     * The controller block
+                     * @type {Controller}
+                     */
                     this.controller = this.addController(block);
                     break;
 
@@ -657,64 +635,42 @@ export default class Player extends Dom {
 
         this.loaded = true;
 
-        this.triggerEvent(EVT_LOAD, {'player': this, 'data': this.json}, true, false);
+        this.triggerEvent('load', {'player': this, 'data': this.json}, true, false);
     }
 
     /**
      * loaderror event callback
      *
-     * @method onLoadError
      * @private
      */
     onLoadError(){
         this.removeClass('loading');
 
-        this.triggerEvent(EVT_ERROR, {'player': this}, true, false);
-    }
-
-    init() {
-        this.contextmenu = new ContextMenu({'target': this, 'items': {
-                'about': {
-                    'text': Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
-                },
-                'logo': {
-                    'class': 'logo'
-                }
-            }})
-            .appendTo(this);
-
-        this.appendTo(this.configs.container);
-
-        this.triggerEvent(EVT_READY, {'player': this}, true, false);
-
-        if(this.configs.autoload !== false){
-            this.load();
-        }
+        this.triggerEvent('error', {'player': this}, true, false);
     }
 
     /**
      * Load the guide
      *
-     * @method load
      * @private
      */
     load() {
-        let options;
-
         this.addClass('loading');
 
-        options = Object.assign({}, {
+        const options = Object.assign({}, {
+            'responseType': 'json',
             'onSuccess': this.onLoadSuccess.bind(this),
             'onError': this.onLoadError.bind(this)
-        }, this.configs.ajax);
+        }, this.configs.xhr);
 
         Ajax.GET(this.configs.url, options);
+
+        return this;
     }
 
     /**
      * Get the id of the loaded guide
      *
-     * @method getId
      * @return {String} The id
      */
     getId() {
@@ -724,16 +680,15 @@ export default class Player extends Dom {
     /**
      * Set the id of the loaded guide in a data attribute
      *
-     * @method setId
      * @param {String} id The id
      * @param {Boolean} [supressEvent=false] Whether to supress the idset event
-     * @chainable
+     * @return {this}
      */
     setId(id, supressEvent){
         this.data('id', id);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_IDSET, {'player': this, 'id': id}, true, false);
+            this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
         }
 
         return this;
@@ -742,7 +697,6 @@ export default class Player extends Dom {
     /**
      * Get the revision id of the loaded guide
      *
-     * @method getRevision
      * @return {String} The revision id
      */
     getRevision() {
@@ -752,16 +706,15 @@ export default class Player extends Dom {
     /**
      * Set the revision id of the loaded guide in a data attribute
      *
-     * @method setRevision
-     * @param {String} id The id
+     * @param {String} vid The revision id
      * @param {Boolean} [supressEvent=false] Whether to supress the revisionset event
-     * @chainable
+     * @return {this}
      */
     setRevision(vid, supressEvent){
         this.data('vid', vid);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_REVISIONSET, {'player': this, 'vid': vid}, true, false);
+            this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
         }
 
         return this;
@@ -770,7 +723,6 @@ export default class Player extends Dom {
     /**
      * Get the loaded JSON data
      *
-     * @method getData
      * @param {String} [key] An optional data key
      * @return {Object} The value corresponding to the key, or the entire JSON data
      */
@@ -785,7 +737,6 @@ export default class Player extends Dom {
     /**
      * Get the media instance
      *
-     * @method getMedia
      * @return {Media} The media instance
      */
     getMedia() {
@@ -795,10 +746,9 @@ export default class Player extends Dom {
     /**
      * Update the loaded JSON data
      *
-     * @method updateData
      * @param {Object} data The data key, value pairs to update
      * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
-     * @chainable
+     * @return {this}
      */
     updateData(data, skipInternalUpdates){
         Object.assign(this.json, data);
@@ -809,7 +759,7 @@ export default class Player extends Dom {
             }
 
             if('media' in data){
-                this.getMedia().setSources([data.media]);
+                this.getMedia().setSource(data.media);
             }
 
             if('vid' in data){
@@ -823,7 +773,6 @@ export default class Player extends Dom {
     /**
      * Get a component by CSS selector
      *
-     * @method getComponent
      * @param {String} selector The CSS selector
      * @return {Component} The component
      * TODO: improve
@@ -836,40 +785,32 @@ export default class Player extends Dom {
     /**
      * Get components by CSS selector
      *
-     * @method getComponents
      * @param {String} selector The CSS selector
      * @return {Dom} A Dom instance containing the selected components
      * TODO: improve
      */
     getComponents(selector){
-        let components;
-
-        components = this.find('.metaScore-component');
+        let components = this.find('.metaScore-component');
 
         if(selector){
             components = components.filter(selector);
         }
 
-        return components.elements.map(dom => dom._metaScore);
+        return components.elements.map((dom) => dom._metaScore);
     }
 
     /**
      * Create and add a Media instance
      *
-     * @method addMedia
      * @param {Object} configs The configurations to send to the Media class
      * @param {Boolean} [supressEvent=false] Whether to supress the mediadd event or not
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
-        let media;
+        let media = configs;
 
-        if(configs instanceof Media){
-            media = configs;
-        }
-        else{
+        if(!(media instanceof Media)){
             media = new Media(configs)
-                .addListener('loadedmetadata', this.onMediaLoadedMetadata.bind(this))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))
@@ -885,7 +826,7 @@ export default class Player extends Dom {
         media.appendTo(this);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_MEDIAADD, {'player': this, 'media': media}, true, false);
+            this.triggerEvent('mediaadd', {'player': this, 'media': media}, true, false);
         }
 
         return media;
@@ -894,26 +835,22 @@ export default class Player extends Dom {
     /**
      * Create and add a Controller instance
      *
-     * @method addController
      * @param {Object} configs The configurations to send to the Controller class
      * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
-        let controller;
+        let controller = configs;
 
-        if(configs instanceof Controller){
-            controller = configs;
-        }
-        else{
-            controller = new Controller(configs)
+        if(!(controller instanceof Controller)){
+            controller = new Controller(controller)
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
         }
 
         controller.appendTo(this);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_CONTROLLERADD, {'player': this, 'controller': controller}, true, false);
+            this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
         }
 
         return controller;
@@ -922,25 +859,21 @@ export default class Player extends Dom {
     /**
      * Create and add a Block Toggler instance
      *
-     * @method addBlockToggler
      * @param {Object} configs The configurations to send to the Controller class
      * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        let toggler;
+        let toggler = configs;
 
-        if(configs instanceof BlockToggler){
-            toggler = configs;
-        }
-        else{
-            toggler = new BlockToggler(configs);
+        if(!(toggler instanceof BlockToggler)){
+            toggler = new BlockToggler(toggler);
         }
 
         toggler.appendTo(this);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_BLOCKTOGGLERADD, {'player': this, 'blocktoggler': toggler}, true, false);
+            this.triggerEvent('blocktoggleradd', {'player': this, 'blocktoggler': toggler}, true, false);
         }
 
         return toggler;
@@ -949,20 +882,18 @@ export default class Player extends Dom {
     /**
      * Create and add a Block instance
      *
-     * @method addBlock
      * @param {Object} configs The configurations to send to the Block class
      * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @return {Block} The Block instance
      */
     addBlock(configs, supressEvent){
-        let block;
+        let block = configs;
 
-        if(configs instanceof Block){
-            block = configs;
+        if(block instanceof Block){
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign({}, configs, {
+            block = new Block(Object.assign({}, block, {
                     'container': this,
                     'listeners': {
                         'propchange': this.onComponenetPropChange.bind(this)
@@ -976,7 +907,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_BLOCKADD, {'player': this, 'block': block}, true, false);
+            this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
         }
 
         return block;
@@ -985,9 +916,8 @@ export default class Player extends Dom {
     /**
      * Update the custom CSS
      *
-     * @method updateCSS
      * @param {String} value The custom CSS value
-     * @chainable
+     * @return {this}
      */
     updateCSS(value){
         this.css.setInternalValue(value);
@@ -998,8 +928,7 @@ export default class Player extends Dom {
     /**
      * Toggles the media playing state
      *
-     * @method togglePlay
-     * @chainable
+     * @return {this}
      */
     togglePlay() {
         const media = this.getMedia();
@@ -1017,36 +946,39 @@ export default class Player extends Dom {
     /**
      * Start playing the media at the current position, or plays a specific extract
      *
-     * @method play
      * @param {String} [inTime] The time at which the media should start playing
      * @param {String} [outTime] The time at which the media should stop playing
      * @param {String} [rIndex] A reading index to go to while playing
-     * @chainable
+     * @return {this}
      */
     play(inTime, outTime, rIndex){
-        let player = this,
-            media = this.getMedia();
+        const player = this;
+        const media = this.getMedia();
 
         if(this.cuepoint){
             this.cuepoint.destroy();
         }
 
-        inTime = parseFloat(inTime);
-        outTime = parseFloat(outTime);
-        rIndex = parseInt(rIndex, 10);
+        const _inTime = parseFloat(inTime);
+        const _outTime = parseFloat(outTime);
+        const _rIndex = parseInt(rIndex, 10);
 
-        if(isNaN(inTime)){
+        if(isNaN(_inTime)){
             media.play();
         }
         else{
+            /**
+             * The active time link's cuepoint
+             * @type {CuePoint}
+             */
             this.cuepoint = new CuePoint({
                 'media': media,
-                'inTime': inTime,
-                'outTime': !isNaN(outTime) ? outTime : null,
+                'inTime': _inTime,
+                'outTime': !isNaN(_outTime) ? _outTime : null,
                 'considerError': true
             })
             .addListener('start', () => {
-                player.setReadingIndex(!isNaN(rIndex) ? rIndex : 0);
+                player.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
             })
             .addListener('seekout', (evt) => {
                 evt.target.destroy();
@@ -1059,7 +991,7 @@ export default class Player extends Dom {
             })
             .init();
 
-            media.setTime(inTime).play();
+            media.setTime(_inTime).play();
         }
 
         return this;
@@ -1068,7 +1000,6 @@ export default class Player extends Dom {
     /**
      * Get the current reading index
      *
-     * @method getReadingIndex
      * @return {Integer} The reading index
      */
     getReadingIndex(){
@@ -1079,10 +1010,9 @@ export default class Player extends Dom {
     /**
      * Set the current reading index
      *
-     * @method setReadingIndex
      * @param {Integer} index The reading index
      * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
-     * @chainable
+     * @return {this}
      */
     setReadingIndex(index, supressEvent){
         if(index !== this.getReadingIndex()){
@@ -1102,16 +1032,21 @@ export default class Player extends Dom {
             }
 
             if(supressEvent !== true){
-                this.triggerEvent(EVT_RINDEX, {'player': this, 'value': index}, true, false);
+                this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
             }
         }
 
         return this;
     }
 
+    /**
+    * Update all block togglers
+    *
+    * @return {this}
+    */
     updateBlockTogglers() {
-        let block_togglers = this.getComponents('.block-toggler'),
-            blocks = this.getComponents('.block, .media.video, .controller');
+        const block_togglers = this.getComponents('.block-toggler');
+        const blocks = this.getComponents('.block, .media.video, .controller');
 
         block_togglers.forEach((block_toggler) => {
             block_toggler.update(blocks);

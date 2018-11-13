@@ -1,41 +1,36 @@
 import Dom from '../Dom';
 import Toolbar from './overlay/Toolbar';
 
-/**
- * Fired when the overlay is shown
- *
- * @event show
- * @param {Object} overlay The overlay instance
- */
-const EVT_SHOW = 'show';
+import {className} from '../../../css/core/ui/Overlay.less';
 
 /**
- * Fired when the overlay is hidden
+ * A generic overlay class
  *
- * @event hide
+ * @emits {show} Fired when the overlay is shown
+ * @param {Object} overlay The overlay instance
+ * @emits {hide} Fired when the overlay is hidden
  * @param {Object} overlay The overlay instance
  */
-const EVT_HIDE = 'hide';
-
 export default class Overlay extends Dom {
 
     /**
-     * A generic overlay class
+     * Instantiate
      *
-     * @class Overlay
-     * @extends Dom
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {String} [configs.parent='body'] The parent element in which the overlay will be appended
-     * @param {Boolean} [configs.modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
-     * @param {Boolean} [configs.autoShow=true] Whether to show the overlay automatically
-     * @param {Boolean} [configs.toolbar=false] Whether to add a toolbar with title and close button
-     * @param {String} [configs.title=''] The overlay's title
+     * @property {String} [parent='body'] The parent element in which the overlay will be appended
+     * @property {Boolean} [modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
+     * @property {Boolean} [autoShow=true] Whether to show the overlay automatically
+     * @property {Boolean} [toolbar=false] Whether to add a toolbar with title and close button
+     * @property {String} [title=''] The overlay's title
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'overlay clearfix'});
+        super('<div/>', {'class': `overlay ${className}`});
 
+        /**
+         * The configuration values
+         * @type {Object}
+         */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.setupUI();
@@ -45,6 +40,11 @@ export default class Overlay extends Dom {
         }
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return {
             'parent': 'body',
@@ -58,39 +58,45 @@ export default class Overlay extends Dom {
     /**
      * Setup the overlay's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
 
         this.toggleClass('modal', this.configs.modal);
 
-        this.inner = new Dom('<div/>', {'class': 'inner'})
+        const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
 
         if(this.configs.toolbar){
+            /**
+             * The eventual top toolbar
+             * @type {Toolbar}
+             */
             this.toolbar = new Toolbar({'title': this.configs.title})
-                .appendTo(this.inner);
+                .appendTo(inner);
 
             this.toolbar.addButton('close')
                 .addListener('click', this.onCloseClick.bind(this));
         }
 
+        /**
+         * The contents container
+         * @type {Dom}
+         */
         this.contents = new Dom('<div/>', {'class': 'contents'})
-            .appendTo(this.inner);
+            .appendTo(inner);
 
     }
 
     /**
      * Show the overlay
      *
-     * @method show
-     * @chainable
+     * @return {this}
      */
     show() {
         this.appendTo(this.configs.parent);
 
-        this.triggerEvent(EVT_SHOW, {'overlay': this}, true, false);
+        this.triggerEvent('show', {'overlay': this}, true, false);
 
         return this;
     }
@@ -98,13 +104,12 @@ export default class Overlay extends Dom {
     /**
      * Hide the overlay
      *
-     * @method hide
-     * @chainable
+     * @return {this}
      */
     hide() {
         this.remove();
 
-        this.triggerEvent(EVT_HIDE, {'overlay': this}, true, false);
+        this.triggerEvent('hide', {'overlay': this}, true, false);
 
         return this;
     }
@@ -112,7 +117,6 @@ export default class Overlay extends Dom {
     /**
      * Get the overlay's toolbar
      *
-     * @method getToolbar
      * @return {editor.Toolbar} The toolbar
      */
     getToolbar() {
@@ -122,7 +126,6 @@ export default class Overlay extends Dom {
     /**
      * Get the overlay's contents
      *
-     * @method getContents
      * @return {Dom} The contents
      */
     getContents() {
@@ -132,7 +135,6 @@ export default class Overlay extends Dom {
     /**
      * The close button's click handler
      *
-     * @method onCloseClick
      * @private
      */
     onCloseClick(){

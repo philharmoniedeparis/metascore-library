@@ -14,7 +14,7 @@ body{
     font: normal 11px Verdana, Arial, Helvetica, sans-serif;
 }
 
-.metaScore-player{
+:local(.className){
     width: 100%;
     height: 100%;
 
@@ -41,6 +41,9 @@ body{
             }
 
             &.video{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 min-width: 10px;
                 min-height: 10px;
                 overflow: hidden;
@@ -48,10 +51,58 @@ body{
                 border: 0px solid rgb(0, 0, 0);
                 border-radius: 10px;
 
-                video{
-                    display: block;
+                .metaScore-renderer{
+                    position: relative;
                     width: 100%;
                     height: 100%;
+                    user-select: none;
+
+                    video,
+                    .iframe-wrapper,
+                    iframe{
+                        display: block;
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+
+                    iframe{
+                        pointer-events: none;
+                    }
+
+                    &.youtube{
+                        .poster{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+                            background-color: #000;
+                        }
+                    }
+
+                    /*&.vimeo{
+                        padding-bottom: 56.25%;
+                        height: 0;
+                        overflow: hidden;
+                        position: relative;
+
+                        .iframe-wrapper{
+                            position: relative;
+                            padding-bottom: 200%;
+                            transform: translateY(-35.95%);
+                        }
+
+                        iframe{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }*/
                 }
             }
         }
@@ -378,86 +429,8 @@ body{
     }
 
     .contextmenu{
-        position: absolute;
-        z-index: 999999;
-
         ul{
-            min-width: 150px;
-            margin: 0 !important;
-            padding: 0.25em 0 !important;
-            list-style: none !important;
-            background: #fff;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.25);
-
             li{
-                position: relative;
-                padding: 0.25em 1em !important;
-                white-space: nowrap;
-                color: #000;
-                cursor: pointer;
-
-                &:hover{
-                    color: #fff;
-                    background: #0000fe;
-                }
-
-                &.no-callback{
-                    cursor: default;
-                }
-
-                &.disabled{
-                    display: none;
-                }
-
-                &.separator{
-                    height: 1px;
-                    margin: 0.5em 0;
-                    padding: 0 !important;
-                    background: rgba(0, 0, 0, 0.1);
-                    pointer-events: none;
-                }
-
-                &.has-subitems{
-                    &::after {
-                        position: absolute;
-                        top: 50%;
-                        right: 1em;
-                        width: 0;
-                        height: 0;
-                        margin-top: -0.1em;
-                        content: '';
-                        border-color: transparent transparent transparent #2f2f2f;
-                        border-style: solid;
-                        border-width: 0.4em 0 0.4em 0.4em;
-                        transform: translateY(-50%);
-                        z-index: 0;
-                    }
-
-                    ul{
-                        display: none;
-                        position: absolute;
-                        top: 0;
-                        left: 99%;
-                        z-index: 1;
-                    }
-
-                    &:hover{
-                        &::after {
-                            border-color: transparent transparent transparent #fff;
-                        }
-
-                        > ul{
-                            display: block;
-
-                            &.left{
-                                left: auto;
-                                right: 99%;
-                            }
-                        }
-                    }
-                }
-
                 &.logo{
                     height: 36px;
                     background: transparent url('../img/logo-philharmonie.png') left center no-repeat;

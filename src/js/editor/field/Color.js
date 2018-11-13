@@ -4,34 +4,35 @@ import Locale from '../../core/Locale';
 import {toRGBA} from '../../core/utils/Color';
 import ColorSelector from '../overlay/ColorSelector';
 
+import {className} from '../../../css/editor/field/Color.less';
+
 /**
- * Fired when the field's value changes
+ * A color selection field
  *
- * @event valuechange
+ * @emits {valuechange} Fired when the field's value changes
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-const EVT_VALUECHANGE = 'valuechange';
-
 export default class Color extends Field {
 
     /**
-     * A color selection field
+     * Instantiate
      *
-     * @class ColorField
-     * @namespace editor.field
-     * @extends editor.Field
-     * @constructor
      * @param {Object} configs Custom configs to override defaults
-     * @param {Mixed} [configs.value={r:255, g:255, b:255, a:1}}] The default value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @property {Mixed} [value={r:255, g:255, b:255, a:1}}] The default value (see {@link toRGBA} for valid values)
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
 
-        this.addClass('colorfield');
+        this.addClass(`color ${className}`);
     }
 
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             value: {
@@ -46,25 +47,26 @@ export default class Color extends Field {
     /**
      * Setup the field's UI
      *
-     * @method setupUI
      * @private
      */
     setupUI() {
-        let buttons;
-
         super.setupUI();
 
         this.input
             .attr('readonly', 'readonly')
             .addListener('click', this.onClick.bind(this));
 
-        buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.input_wrapper);
 
         new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('editor.field.Color.clear.tooltip', 'Clear value')})
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 
+        /**
+         * The overlay
+         * @type {ColorSelector}
+         */
         this.overlay = new ColorSelector()
             .addListener('submit', this.onOverlaySubmit.bind(this));
     }
@@ -72,24 +74,25 @@ export default class Color extends Field {
     /**
      * Set the field'S value
      *
-     * @method setValue
-     * @param {Mixed} value The new color's value (see {{#crossLink "Color/parse:method"}}Color.parse{{/crossLink}} for valid values)
+     * @param {Mixed} value The new color's value (see {@link toRGBA} for valid values)
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @chainable
+     * @return {this}
      */
     setValue(value, supressEvent){
-        let rgba;
-
+        /**
+         * The current value
+         * @type {Object}
+         */
         this.value = value ? toRGBA(value) : null;
 
-        rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;
+        const rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;
 
         this.input
             .attr('title', rgba)
             .css('background-color', rgba);
 
         if(supressEvent !== true){
-            this.triggerEvent(EVT_VALUECHANGE, {'field': this, 'value': this.value}, true, false);
+            this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
         }
 
         return this;
@@ -99,7 +102,6 @@ export default class Color extends Field {
     /**
      * The click event handler
      *
-     * @method onClick
      * @private
      */
     onClick(){
@@ -115,7 +117,6 @@ export default class Color extends Field {
     /**
      * The overlay's submit event handler
      *
-     * @method onOverlaySubmit
      * @private
      * @param {Event} evt The event object
      */
@@ -126,7 +127,6 @@ export default class Color extends Field {
     /**
      * The clear button click event handler
      *
-     * @method onClearClick
      * @private
      */
     onClearClick(){

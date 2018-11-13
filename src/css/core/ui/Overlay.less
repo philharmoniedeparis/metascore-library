@@ -1,0 +1,57 @@
+:local(.className){
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    &.modal{
+        background: rgba(0, 0, 0, 0.5);
+        pointer-events: auto;
+    }
+
+    > .inner{
+        background: #fff;
+        position: relative;
+
+        > .toolbar{
+            padding: 10px 16px;
+            border-bottom: 2px solid #b2b2b2;
+            background-color: #dadada;
+            background-image: linear-gradient(to bottom, #dadada 0%, #c8c8c8 100%);
+
+            .title{
+                float: left;
+                font-weight: bold;
+                color: #5d5d5d;
+            }
+
+            .buttons{
+                margin-left: 16px;
+                float: right;
+
+                button{
+                    width: 16px;
+                    height: 16px;
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    vertical-align: middle;
+
+                    &[data-action="close"]{
+                        background-image: url('../../../img/editor/overlay/close.png');
+                    }
+                }
+            }
+        }
+
+        > .contents{
+            max-height: 75vh;
+            overflow: auto;
+        }
+    }
+}

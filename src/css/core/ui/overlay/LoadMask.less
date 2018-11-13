@@ -1,0 +1,40 @@
+:local(.className){
+    > .inner{
+        > .contents{
+            padding: 12px 16px 12px 45px;
+            background: #ffffff url('../../../../img/editor/loader.gif') no-repeat 16px center;
+        }
+    }
+
+    &.with-bar{
+        > .inner{
+            > .contents{
+                min-width: 10em;
+                padding-left: 16px;
+                background-image: none;
+
+                .bar{
+                    position: relative;
+                    margin-top: 0.25em;
+                    padding: 0.1em 0.5em;
+                    background: #dadada;
+
+                    .progress{
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: 100%;
+                        background: #0000fe;
+                        transition: width 500ms ease-in-out;
+                    }
+
+                    .text{
+                        position: relative;
+                        font-size: 0.9em;
+                        color: #fff;
+                    }
+                }
+            }
+        }
+    }
+}
