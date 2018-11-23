@@ -1808,10 +1808,6 @@ export default class Editor extends Dom {
                 .setTarget(player_body)
                 .enable();
 
-            new Dom(player_body)
-                .addListener('keydown', this.onKeydown.bind(this))
-                .addListener('keyup', this.onKeyup.bind(this));
-
             this
                 .setEditing(true)
                 .updateMainmenu()
