@@ -1,6 +1,6 @@
 import Field from '../Field';
 import Dom from '../../core/Dom';
-import {isNumeric} from '../../core/utils/Var';
+import {isNumeric, isFunction} from '../../core/utils/Var';
 import {getDecimalPlaces} from '../../core/utils/Number';
 
 import {className} from '../../../css/editor/field/Number.less';
@@ -23,18 +23,14 @@ export default class Number extends Field {
      * @property {Number} [max=null] The maximum allowed value
      * @property {Number} [step=1] The spin up/down step amount
      * @property {Boolean} [spinButtons=true] Whether to show the spin buttons
-     * @property {Integer} [initSpinDelay=200] The initial delay between each increment/decrement of the spin buttons
-     * @property {Integer} [minSpinDelay=5] The min delay of the spin buttons
-     * @property {Float} [spinDelayMultiplier=0.95] The value to multiply the delay of the spin buttons with
+     * @property {Integer} [spinDelay=500] The delay between each increment/decrement of the spin buttons
+     * @property {Boolean|Function} [spinIncremental=true] Defines whether the steps taken when holding down a spin button increases, and how
      * @property {String} [spinDirection='horizontal'] The direction of the spin buttons
      * @property {Boolean} [flipSpinButtons=false] Whether to flip the spin buttons
      */
     constructor(configs) {
         // call parent constructor
         super(configs);
-
-        this.spinDown = this.spinDown.bind(this);
-        this.spinUp = this.spinUp.bind(this);
 
         this.addClass(`number ${className}`);
     }
@@ -51,9 +47,8 @@ export default class Number extends Field {
             'max': null,
             'step': 1,
             'spinButtons': true,
-            'initSpinDelay': 200,
-            'minSpinDelay': 5,
-            'spinDelayMultiplier': 0.95,
+            'spinDelay': 40,
+            'spinIncremental': true,
             'spinDirection': 'horizontal',
             'flipSpinButtons': false
         });
@@ -70,6 +65,7 @@ export default class Number extends Field {
         this.input
             .addListener('input', this.onInput.bind(this))
             .addListener('keydown', this.onKeyDown.bind(this))
+            .addListener('keyup', this.onKeyUp.bind(this))
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('DOMMouseScroll', this.onMouseWheel.bind(this));
 
@@ -85,7 +81,7 @@ export default class Number extends Field {
              * The spin down button
              * @type {Dom}
              */
-            this.spindown_btn = new Dom('<button/>', {'text': '-', 'data-action': 'spin-down'})
+            this.spindown_btn = new Dom('<button/>', {'text': '-', 'data-action': 'spin', 'data-direction': 'down'})
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
@@ -95,7 +91,7 @@ export default class Number extends Field {
              * The spin up button
              * @type {Dom}
              */
-            this.spinup_btn = new Dom('<button/>', {'text': '+', 'data-action': 'spin-up'})
+            this.spinup_btn = new Dom('<button/>', {'text': '+', 'data-action': 'spin', 'data-direction': 'up'})
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
@@ -141,13 +137,28 @@ export default class Number extends Field {
     onKeyDown(evt){
         switch(evt.key){
             case "ArrowUp":
-                this.spinUp(false);
+                this.spin('up', false);
                 evt.preventDefault();
                 break;
 
             case "ArrowDown":
-                this.spinDown(false);
+                this.spin('down', false);
                 evt.preventDefault();
+                break;
+        }
+    }
+
+    /**
+     * The keyup event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onKeyUp(evt){
+        switch(evt.key){
+            case "ArrowUp":
+            case "ArrowDown":
+                delete this.spin_count;
                 break;
         }
     }
@@ -199,20 +210,8 @@ export default class Number extends Field {
             return;
         }
 
-        /**
-         * The current spin button delay
-         * @type {Number}
-         */
-        this.spin_delay = this.configs.initSpinDelay;
-
-        switch(Dom.data(evt.target, 'action')){
-            case 'spin-down':
-                this.spinDown();
-                break;
-
-            default:
-                this.spinUp();
-        }
+        const direction = Dom.data(evt.target, 'direction');
+        this.spin(direction);
     }
 
     /**
@@ -221,8 +220,9 @@ export default class Number extends Field {
      * @private
      */
     onSpinBtnMouseUp(){
-        delete this.spin_delay;
         clearTimeout(this.timeout);
+        delete this.timeout;
+        delete this.spin_count;
     }
 
     /**
@@ -231,18 +231,20 @@ export default class Number extends Field {
      * @private
      */
     onSpinBtnMouseOut(){
-        delete this.spin_delay;
         clearTimeout(this.timeout);
+        delete this.timeout;
+        delete this.spin_count;
     }
 
     /**
-     * Decrement the value by one step
+     * Increment or decrement the value by one step
      *
      * @private
      */
-    spinDown(loop) {
-        let value = this.getValue() - this.configs.step;
-        const decimals = getDecimalPlaces(this.configs.step);
+    spin(direction, loop) {
+        const step = this.configs.step * this.getSpinIncrement();
+        const decimals = getDecimalPlaces(step);
+        let value = this.getValue() + step * (direction === 'down' ? -1 : 1);
 
         // work around the well-known floating point issue
         value = parseFloat(value.toFixed(decimals));
@@ -250,38 +252,37 @@ export default class Number extends Field {
         this.setValue(value);
 
         if(loop !== false){
-            if(this.spin_delay > this.configs.minSpinDelay){
-                this.spin_delay *= this.configs.spinDelayMultiplier;
-            }
+            const delay = this.spin_count === 1 ? 500 : this.configs.spinDelay;
 
-            /**
-             * The spin timer id
-             * @type {Number}
-             */
-            this.timeout = setTimeout(this.spinDown, this.spin_delay);
+            this.timeout = setTimeout(() => {
+                this.spin(direction, loop);
+            }, delay);
         }
     }
 
-    /**
-     * Increment the value by one step
-     *
-     * @private
-     */
-    spinUp(loop) {
-        let value = this.getValue() + this.configs.step;
-        const decimals = getDecimalPlaces(this.configs.step);
+    getSpinIncrement(){
+        let increment = 1;
 
-        // work around the well-known floating point issue
-        value = parseFloat(value.toFixed(decimals));
-
-        this.setValue(value);
-
-        if(loop !== false){
-            if(this.spin_delay > this.configs.minSpinDelay){
-                this.spin_delay *= this.configs.spinDelayMultiplier;
-            }
-            this.timeout = setTimeout(this.spinUp, this.spin_delay);
+        /**
+         * The current spin count
+         * @type {Number}
+         */
+        if(!this.spin_count){
+            this.spin_count = 0;
         }
+
+        this.spin_count++;
+
+        if(this.configs.spinIncremental){
+            if(isFunction(this.configs.spinIncremental)){
+                increment = this.configs.spinIncremental(this.spin_count);
+            }
+            else{
+                increment = Math.floor(this.spin_count * 0.75);
+            }
+        }
+
+        return increment;
     }
 
     /**
