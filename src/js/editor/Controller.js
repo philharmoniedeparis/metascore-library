@@ -115,8 +115,15 @@ export default class Controller extends Dom {
      */
     setWaveformData(data){
         if(data){
-            this.overview.updateSize().setData(data);
-            this.zoom.updateSize().setData(data).setMessage(null);
+            let range = 0;
+            for(let x = 0; x < data.adapter.length; x++) {
+                const min = data.adapter.at(2 * x);
+                const max = data.adapter.at(2 * x + 1);
+                range = Math.max(range, Math.abs(min), Math.abs(max));
+            }
+
+            this.overview.updateSize().setData(data, range);
+            this.zoom.updateSize().setData(data, range).setMessage(null);
         }
         else{
             this.zoom.setMessage(Locale.t('editor.Controller.zoom.noWaveform', 'No waveform data available'));
