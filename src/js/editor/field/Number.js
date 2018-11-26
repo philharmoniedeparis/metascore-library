@@ -261,7 +261,6 @@ export default class Number extends Field {
     }
 
     getSpinIncrement(){
-        let increment = 1;
 
         /**
          * The current spin count
@@ -273,16 +272,15 @@ export default class Number extends Field {
 
         this.spin_count++;
 
-        if(this.configs.spinIncremental){
+        if(this.configs.spinIncremental && this.spin_count > 1){
             if(isFunction(this.configs.spinIncremental)){
-                increment = this.configs.spinIncremental(this.spin_count);
+                return this.configs.spinIncremental(this.spin_count);
             }
-            else{
-                increment = Math.floor(this.spin_count * 0.75);
-            }
+
+            return Math.ceil(this.spin_count * 0.4);
         }
 
-        return increment;
+        return 1;
     }
 
     /**

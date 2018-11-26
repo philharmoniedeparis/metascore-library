@@ -110,7 +110,8 @@ export default class MainMenu extends Dom {
 
         this._items['r-index'] = new NumberField({
                 'min': 0,
-                'max': 999
+                'max': 999,
+                'spinIncremental': false
             })
             .attr({
                 'title': Locale.t('editor.MainMenu.r-index', 'Reading index')
