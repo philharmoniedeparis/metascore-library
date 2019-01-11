@@ -1,4 +1,5 @@
-import {isArray, isString, isObject} from './utils/Var';
+import {isArray, isString, isObject, isFunction} from './utils/Var';
+import {capitalize} from './utils/String';
 
 /**
  * Regular expression that matches dashed string for camelizing
@@ -915,6 +916,22 @@ export default class Dom {
         });
 
         return return_value;
+    }
+
+    /**
+     * Generic event handling function
+     * Used when an instance of Dom is given as a callback for an event listener
+     * See https://developer.mozilla.org/en-US/docs/Web/API/EventListener/handleEvent
+     * The handlers forwards the event to a specific handler (if available) depending on the event type
+     *
+     * @param {Event} evt The event object
+     */
+    handleEvent(evt){
+        const handler = `on${capitalize(evt.type)}`;
+
+        if (isFunction(this[handler])) {
+            this[handler](evt);
+        }
     }
 
     /**
