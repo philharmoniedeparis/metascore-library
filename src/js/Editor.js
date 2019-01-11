@@ -1808,10 +1808,6 @@ export default class Editor extends Dom {
                 .setTarget(player_body)
                 .enable();
 
-            new Dom(player_body)
-                .addListener('keydown', this.onKeydown.bind(this))
-                .addListener('keyup', this.onKeyup.bind(this));
-
             this
                 .setEditing(true)
                 .updateMainmenu()
@@ -2550,6 +2546,10 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
+        this.panels.element.unsetComponents();
+        this.panels.page.unsetComponents();
+        this.panels.block.unsetComponents();
+
         this
             .removeClass('has-player')
             .removeClass('metadata-loaded');
@@ -2558,17 +2558,16 @@ export default class Editor extends Dom {
 
         this.player_contextmenu.disable();
 
-        if(this.player_frame){
-            this.player_frame.remove();
-            delete this.player_frame;
-        }
-
         this.controller.clearWaveform();
-        this.panels.block.unsetComponents();
         this.history.clear();
         this.setDirty(false)
             .setEditing(false)
             .updateMainmenu();
+
+        if(this.player_frame){
+            this.player_frame.remove();
+            delete this.player_frame;
+        }
 
         window.history.replaceState(null, null, '#');
 

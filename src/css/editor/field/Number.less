@@ -18,12 +18,14 @@
                 margin: 0;
                 background-size: contain;
 
-                &[data-action="spin-down"]{
-                    background-image: url('../../../img/editor/field/number/spinner-down.svg');
-                }
+                &[data-action="spin"]{
+                    &[data-direction="down"]{
+                        background-image: url('../../../img/editor/field/number/spinner-down.svg');
+                    }
 
-                &[data-action="spin-up"]{
-                    background-image: url('../../../img/editor/field/number/spinner-up.svg');
+                    &[data-direction="up"]{
+                        background-image: url('../../../img/editor/field/number/spinner-up.svg');
+                    }
                 }
             }
         }
@@ -35,12 +37,14 @@
                 flex-direction: row;
 
                 button{
-                    &[data-action="spin-down"]{
-                        background-image: url('../../../img/editor/field/number/spinner-left.svg');
-                    }
+                    &[data-action="spin"]{
+                        &[data-direction="down"]{
+                            background-image: url('../../../img/editor/field/number/spinner-left.svg');
+                        }
 
-                    &[data-action="spin-up"]{
-                        background-image: url('../../../img/editor/field/number/spinner-right.svg');
+                        &[data-direction="up"]{
+                            background-image: url('../../../img/editor/field/number/spinner-right.svg');
+                        }
                     }
                 }
             }

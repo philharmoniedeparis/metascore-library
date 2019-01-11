@@ -132,14 +132,21 @@ export default class Overview extends Dom {
      * Set the waveform data
      *
      * @param {WaveformData} waveformdata The waveform data
+     * @param {Number} range The y range of the waveform data
      * @return {this}
      */
-    setData(waveformdata){
+    setData(waveformdata, range){
         /**
          * The original waveform data
          * @type {WaveformData}
          */
         this.waveformdata = waveformdata;
+
+        /**
+         * The y range of the waveform data, used to determine the max height of the drawn form
+         * @type {Number}
+         */
+        this._wave_range = range;
 
         this.resampled_data = this.waveformdata.resample({'width': this.width});
 
@@ -365,8 +372,8 @@ export default class Overview extends Dom {
      * @return {Number} The scaled value
      */
     scaleY(amplitude, height) {
-        const range = 256;
-        const offset = 128;
+        const range = this._wave_range * 2;
+        const offset = this._wave_range;
 
         return height - ((amplitude + offset) * height) / range;
     }

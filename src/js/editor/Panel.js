@@ -74,15 +74,6 @@ export default class Panel extends Dom {
          */
         this.components = [];
 
-        // fix event handlers scope
-        this.onComponentPropChange = this.onComponentPropChange.bind(this);
-        this.onComponentDragStart = this.onComponentDragStart.bind(this);
-        this.onComponentDrag = this.onComponentDrag.bind(this);
-        this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
-        this.onComponentResizeStart = this.onComponentResizeStart.bind(this);
-        this.onComponentResize = this.onComponentResize.bind(this);
-        this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
-
         /**
          * The top toolbar
          * @type {Toolbar}
@@ -312,6 +303,17 @@ export default class Panel extends Dom {
         this.components.push(component);
 
         this.updateUI();
+
+        // fix event handlers scope
+        // for an unknown reason, Chrome 71 on Windows will not trigger those events after a player reload unless the callbacks are bound each time
+        // therefor, the bindings are done here instead of within the constructor
+        this.onComponentPropChange = this.onComponentPropChange.bind(this);
+        this.onComponentDragStart = this.onComponentDragStart.bind(this);
+        this.onComponentDrag = this.onComponentDrag.bind(this);
+        this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
+        this.onComponentResizeStart = this.onComponentResizeStart.bind(this);
+        this.onComponentResize = this.onComponentResize.bind(this);
+        this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
 
         component
             .addClass('selected')
