@@ -4,6 +4,7 @@
   "description": "metaScore",
   "homepage": "http://metascore.philharmoniedeparis.fr",
   "author": "Oussama Mubarak",
+  "license": "CECILL-2.1",
   "directories": {
     "doc": "docs"
   },
