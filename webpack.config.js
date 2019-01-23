@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+const webpack = require('webpack');
 const path = require("path");
 const git = require('git-rev-sync');
 const beep = require('beepbeep');
@@ -187,6 +188,7 @@ module.exports = (env, argv) => {
       ]
     },
     plugins: [
+      new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),
       new MiniCssExtractPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
