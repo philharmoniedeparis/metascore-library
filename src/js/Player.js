@@ -237,7 +237,8 @@ export default class Player extends Dom {
             case 'showBlock':
             case 'hideBlock':
             case 'toggleBlock':{
-                const show = method !== 'hideBlock';
+                const state = method.replace('Block', '');
+                const show = state === 'toggle' ? null : method !== 'hide';
 
                 this.getComponents('.media.video, .controller, .block').forEach((block) => {
                     if(block.getName() === params.name){
@@ -529,7 +530,8 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementBlockVisibility(evt){
-        const show = evt.detail.action !== 'hide';
+        const state = evt.detail.action;
+        const show = state === 'toggle' ? null : state !== 'hide';
 
         this.getComponents('.media.video, .controller, .block').forEach((block) => {
             if(block.getName() === evt.detail.block){

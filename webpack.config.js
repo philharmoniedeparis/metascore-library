@@ -188,7 +188,7 @@ module.exports = (env, argv) => {
       ]
     },
     plugins: [
-      new webpack.BannerPlugin(`${pckg.name} – v${pckg.version} r${git.short()}`),
+      new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),
       new MiniCssExtractPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
