@@ -1,7 +1,7 @@
 import Dom from './core/Dom';
 import {naturalCompare} from './core/utils/String';
 import {naturalSortInsensitive} from './core/utils/Array';
-import {isArray, isNumber, isObject} from './core/utils/Var';
+import {isArray, isNumber, isObject, isEmpty} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -1575,9 +1575,22 @@ export default class Editor extends Dom {
 
         this.controller.disable().clearWaveform();
 
-        this.getPlayer().addOneTimeListener('loadedmetadata', () => {
-            loadmask.hide();
-        });
+        this.getPlayer()
+            .addOneTimeListener('mediaerror', (evt) => {
+                loadmask.hide();
+
+                new Alert({
+                    'parent': this,
+                    'text': evt.detail.message,
+                    'buttons': {
+                        'ok': Locale.t('editor.onMediaError.ok', 'OK'),
+                    },
+                    'autoShow': true
+                });
+            })
+            .addOneTimeListener('loadedmetadata', () => {
+                loadmask.hide();
+            });
     }
 
     /**
@@ -1779,6 +1792,7 @@ export default class Editor extends Dom {
      */
     onPlayerLoadSuccess(loadmask){
         this.player
+            .setInEditor(true)
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
@@ -1797,8 +1811,7 @@ export default class Editor extends Dom {
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('play', this.onPlayerPlay.bind(this))
-            .addListener('pause', this.onPlayerPause.bind(this))
-            .addClass('in-editor');
+            .addListener('pause', this.onPlayerPause.bind(this));
 
             this.player.contextmenu
                 .disable();
@@ -2129,7 +2142,17 @@ export default class Editor extends Dom {
 
                 this.getMediaFileDuration(data.media, (error, new_duration) => {
                     if(error){
-                        console.error(error);
+                        loadmask.hide();
+
+                        new Alert({
+                            'parent': this,
+                            'text': error.message,
+                            'buttons': {
+                                'ok': Locale.t('editor.onMediaFileDurationError.ok', 'OK'),
+                            },
+                            'autoShow': true
+                        });
+
                         return;
                     }
 
@@ -3156,21 +3179,29 @@ export default class Editor extends Dom {
      * @param {Function} callback A callback function to call with an eventual error and the duration
      */
     getMediaFileDuration(file, callback){
-        const renderer = this.getPlayer().getMedia().constructor.getRendererForMime(file.mime);
-        if(renderer){
-            renderer.getDurationFromURI(file.url, (error, duration) => {
-                if(error){
-                    callback(error);
-                    return;
-                }
-
-                const centiseconds_multiplier = 100;
-                callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
-            });
+        if(isEmpty(file.mime)){
+            const message = Locale.t('editor.getMediaFileDuration.no-mime.error', "The file's mime type could not be determined for !url", {'!url': file.url});
+            callback(new Error(message));
         }
         else{
-            callback(new Error(`No compatible renderer found for ${file.mine}`));
+            const renderer = this.getPlayer().getMedia().constructor.getRendererForMime(file.mime);
+            if(renderer){
+                renderer.getDurationFromURI(file.url, (error, duration) => {
+                    if(error){
+                        callback(error);
+                        return;
+                    }
+
+                    const centiseconds_multiplier = 100;
+                    callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
+                });
+            }
+            else{
+                const message = Locale.t('editor.getMediaFileDuration.no-renderer.error', 'No compatible renderer found for the mime type !mime', {'!mine': file.mine});
+                callback(new Error(message));
+            }
         }
+
     }
 
 }

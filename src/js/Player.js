@@ -436,41 +436,25 @@ export default class Player extends Dom {
      * @param {Event} evt The event object
      */
     onMediaError(evt){
-        const error = evt.target.error;
-        let text = '';
+        const message = evt.detail.message;
 
         this.removeClass('media-waiting');
 
-        switch(error.code) {
-            case error.MEDIA_ERR_ABORTED:
-                text = Locale.t('player.onMediaError.Aborted.msg', 'You aborted the media playback.');
-                break;
-
-            case error.MEDIA_ERR_NETWORK:
-                text = Locale.t('player.onMediaError.Network.msg', 'A network error caused the media download to fail.');
-                break;
-
-            case error.MEDIA_ERR_DECODE:
-                text = Locale.t('player.onMediaError.Decode.msg', 'The media playback was aborted due to a format problem.');
-                break;
-
-            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                text = Locale.t('player.onMediaError.NotSupported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
-                break;
-
-            default:
-                text = Locale.t('player.onMediaError.Default.msg', 'An unknown error occurred.');
-                break;
+        // Only show an alert if not in an editor, as an alert will otherwise be shown in the editor
+        if(!this.in_editor){
+            new Alert({
+                'parent': this,
+                'text': message,
+                'buttons': {
+                    'ok': Locale.t('player.onMediaError.ok', 'OK'),
+                },
+                'autoShow': true
+            });
         }
 
-        new Alert({
-            'parent': this,
-            'text': text,
-            'buttons': {
-                'ok': Locale.t('editor.onMediaError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
+        this.triggerEvent('mediaerror', {'player': this, 'message': message});
+
+        evt.stopPropagation();
     }
 
     /**
@@ -1037,6 +1021,19 @@ export default class Player extends Dom {
                 this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
             }
         }
+
+        return this;
+    }
+
+    /**
+     * Set whether the player is embedded in an editor
+     *
+     * @param {Boolean} in_editor Whether the player is in an editor or not
+     * @return {this}
+     */
+    setInEditor(in_editor) {
+        this.in_editor = in_editor === true;
+        this.toggleClass('in-editor', this.in_editor);
 
         return this;
     }

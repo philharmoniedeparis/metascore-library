@@ -1,4 +1,5 @@
 import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
 import {isFunction} from '../../core/utils/Var';
 import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 import Ajax from '../../core/Ajax';
@@ -84,8 +85,11 @@ export default class HTML5 extends Dom {
     static getDurationFromURI(url, callback){
         const audio = new Audio();
 
+        // TODO: replace with promises to eliminate the propability of both an error and a success being called
+
         audio.addEventListener('error', () => {
-            callback(new Error(`An error occured while attempting to load the media: ${url}`));
+            const message = Locale.t('player.renderer.HTML5.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+            callback(new Error(message));
         });
 
         audio.addEventListener('loadedmetadata', () => {
@@ -99,13 +103,27 @@ export default class HTML5 extends Dom {
      * Initialize
      */
     init(){
-        this.addClass('html5');
+        this
+            .setupUI()
+            .addClass('html5')
+            .triggerEvent('ready', {'renderer': this}, false, false);
 
+        return this;
+    }
+
+    /**
+     * Setup the renderer's UI
+     *
+     * @private
+     * @return {this}
+     */
+    setupUI() {
         /**
          * The <video> or <audio> element
          * @type {Dom}
          */
         this.el = new Dom(`<${this.configs.type}></${this.configs.type}/>`, {'preload': 'auto'})
+            .addListener('error', this.onError.bind(this), true)
             .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
             .addListener('play', this.onPlay.bind(this))
             .addListener('pause', this.onPause.bind(this))
@@ -118,8 +136,6 @@ export default class HTML5 extends Dom {
          * @type {HTMLVideoElement|HTMLAudioElement}
          */
         this.dom = this.el.get(0);
-
-        this.triggerEvent('ready', {'renderer': this}, false, false);
 
         return this;
     }
@@ -146,8 +162,7 @@ export default class HTML5 extends Dom {
             delete this._waveformdata_ajax;
         }
 
-        const source_tags = `<source src="${this.source.url}" type="${this.source.mime}"></source>`;
-        this.el.text(source_tags);
+        this.el.attr('src', this.source.url);
 
         this.dom.load();
 
@@ -218,8 +233,7 @@ export default class HTML5 extends Dom {
                             delete this._waveformdata_ajax;
                         }
                     },
-                    'onError': (evt) => {
-                        console.error(evt.target.getStatusText());
+                    'onError': () => {
                         this.waveformdata = null;
                         this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                         delete this._waveformdata_ajax;
@@ -235,6 +249,44 @@ export default class HTML5 extends Dom {
         }
         else{
             callback(null);
+        }
+    }
+
+    /**
+     * The error event handler
+     *
+     * @private
+     */
+    onError(evt) {
+        const error = evt.target.error;
+        let message = '';
+
+        switch(error.code) {
+            case error.MEDIA_ERR_ABORTED:
+                message = Locale.t('player.renderer.HTML5.onError.aborted.msg', 'You aborted the media playback.');
+                break;
+
+            case error.MEDIA_ERR_NETWORK:
+                message = Locale.t('player.renderer.HTML5.onError.network.msg', 'A network error caused the media download to fail.');
+                break;
+
+            case error.MEDIA_ERR_DECODE:
+                message = Locale.t('player.renderer.HTML5.onError.decode.msg', 'The media playback was aborted due to a format problem.');
+                break;
+
+            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                message = Locale.t('player.renderer.HTML5.onError.not-supported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
+                break;
+
+            default:
+                message = Locale.t('player.renderer.HTML5.onError.default.msg', 'An unknown error occurred.');
+                break;
+        }
+
+        this.triggerEvent('error', {'renderer': this, 'message': message});
+
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
         }
     }
 

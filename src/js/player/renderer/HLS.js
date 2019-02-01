@@ -1,5 +1,5 @@
 import HTML5 from './HTML5';
-import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
 
 /**
 * The hls.js CDN URL
@@ -125,9 +125,22 @@ export default class HLS extends HTML5 {
                 return;
             }
 
-            if(window.Hls.isSupported()){
-                const hls = new window.Hls();
+            const Hls = window.Hls;
+
+            if(Hls.isSupported()){
+                const hls = new Hls();
                 const audio = new Audio();
+
+                // TODO: replace with promises to eliminate the propability of both an error and a success being called
+
+                hls.on(Hls.Events.ERROR, (evt) => {
+                    if(evt.fatal){
+                        // TODO: be more specific
+                        const message = Locale.t('player.renderer.HLS.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+                        console.error(evt.response.text);
+                        callback(new Error(message));
+                    }
+                });
 
                 audio.addEventListener('loadedmetadata', () => {
                     callback(null, audio.duration);
@@ -143,25 +156,9 @@ export default class HLS extends HTML5 {
      * Initialize
      */
     init(){
-        this.addClass('hls');
-
-        /**
-         * The <video> or <audio> element
-         * @type {Dom}
-         */
-        this.el = new Dom(`<${this.configs.type}></${this.configs.type}/>`, {'preload': 'auto'})
-            .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
-            .addListener('play', this.onPlay.bind(this))
-            .addListener('pause', this.onPause.bind(this))
-            .addListener('seeking', this.onSeeking.bind(this))
-            .addListener('seeked', this.onSeeked.bind(this))
-            .appendTo(this);
-
-        /**
-         * The HTMLVideoElement or HTMLAudioElement
-         * @type {HTMLVideoElement|HTMLAudioElement}
-         */
-        this.dom = this.el.get(0);
+        this
+            .setupUI()
+            .addClass('hls');
 
         this.constructor.loadLib((error) => {
             if(!error){
@@ -182,7 +179,10 @@ export default class HLS extends HTML5 {
     * @return {this}
     */
     setSource(source, supressEvent){
-        const hls = new window.Hls();
+        const Hls = window.Hls;
+        const hls = new Hls();
+
+        hls.on(Hls.Events.ERROR, this.onLibError.bind(this));
 
         hls.loadSource(source.url);
         hls.attachMedia(this.dom);
@@ -192,7 +192,18 @@ export default class HLS extends HTML5 {
        }
 
        return this;
-   }
+    }
+
+    onLibError(evt, data){
+        if(data.fatal){
+            const message = Locale.t('player.renderer.HLS.error', 'An error occured while attempting to read the media stream');
+            this.triggerEvent('error', {'renderer': this, 'message': message});
+            console.error('HLS.js:', data);
+        }
+        else{
+            console.warn('HLS.js:', data);
+        }
+    }
 
    /**
    * Get the WaveformData assiciated with the media file
