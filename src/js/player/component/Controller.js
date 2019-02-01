@@ -141,6 +141,7 @@ export default class Controller extends Component{
          * @type {Dom}
          */
         this.play_btn = new Dom('<button/>')
+            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .data('action', 'play');
 
         new Dom('<div/>', {'class': 'buttons'})
@@ -200,6 +201,18 @@ export default class Controller extends Component{
 
         return this._draggable;
 
+    }
+
+    /**
+     * Play button keydown event callback
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
+    onPlayBtnKeydown(evt){
+        if(evt.key === " "){
+            evt.stopPropagation();
+        }
     }
 
 }

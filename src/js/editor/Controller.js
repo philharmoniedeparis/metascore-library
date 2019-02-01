@@ -59,6 +59,7 @@ export default class Controller extends Dom {
          */
         this.play_btn = new Dom('<button/>')
             .data('action', 'play')
+            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(buttons);
 
         const waveform = new Dom('<div/>', {'class': 'waveform'})
@@ -235,6 +236,18 @@ export default class Controller extends Dom {
     disable(){
         this.addClass('disabled');
         return this;
+    }
+
+    /**
+     * Play button keydown event callback
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
+    onPlayBtnKeydown(evt){
+        if(evt.key === " "){
+            evt.stopPropagation();
+        }
     }
 
 }
