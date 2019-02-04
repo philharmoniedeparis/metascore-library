@@ -1692,7 +1692,7 @@ export default class Editor extends Dom {
     }
 
     /**
-    * Player componenet beforeremove event callback
+    * Player component beforeremove event callback
     *
     * @private
     * @param {CustomEvent} evt The event object
@@ -1870,9 +1870,9 @@ export default class Editor extends Dom {
             return;
         }
 
-        this.panels.element.unsetComponents();
-        this.panels.page.unsetComponents();
-        this.panels.block.unsetComponents();
+		Object.entries(this.panels).forEach(([, panel]) => {
+            panel.unsetComponents();
+        });
 
         evt.stopPropagation();
     }
@@ -2569,9 +2569,9 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
-        this.panels.element.unsetComponents();
-        this.panels.page.unsetComponents();
-        this.panels.block.unsetComponents();
+		Object.entries(this.panels).forEach(([, panel]) => {
+            panel.unsetComponents();
+        });
 
         this
             .removeClass('has-player')

@@ -525,12 +525,12 @@ export default class Player extends Dom {
     }
 
     /**
-     * Componenet propchange event callback
+     * Component propchange event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponenetPropChange(evt){
+    onComponentPropChange(evt){
         const component = evt.detail.component;
 
         switch(evt.detail.property){
@@ -882,7 +882,7 @@ export default class Player extends Dom {
             block = new Block(Object.assign({}, block, {
                     'container': this,
                     'listeners': {
-                        'propchange': this.onComponenetPropChange.bind(this)
+                        'propchange': this.onComponentPropChange.bind(this)
                     }
                 }))
                 .addListener('pageactivate', this.onPageActivate.bind(this))

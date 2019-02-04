@@ -117,7 +117,7 @@ export default class Panel extends Dom {
      * @return {this}
      */
     updateUI(){
-        const has_componenets = this.components.length > 0;
+        const has_components = this.components.length > 0;
 
         /**
          * The list of fields
@@ -127,7 +127,7 @@ export default class Panel extends Dom {
 
         this.contents.empty();
 
-        if(has_componenets){
+        if(has_components){
             const properties = this.getComponent().getProperties();
 
             Object.entries(properties).forEach(([key, prop]) => {
@@ -154,8 +154,8 @@ export default class Panel extends Dom {
             });
         }
 
-        this.toggleClass('has-component', has_componenets);
-        this.getToolbar().toggleMenuItem('delete', has_componenets);
+        this.toggleClass('has-component', has_components);
+        this.getToolbar().toggleMenuItem('delete', has_components);
 
         return this;
     }
@@ -477,7 +477,6 @@ export default class Panel extends Dom {
      * @private
      */
     onComponentDragStart(){
-
         /**
         * Values of x and y when dragging starts
         * @type {Array}

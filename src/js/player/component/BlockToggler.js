@@ -205,8 +205,8 @@ export default class BlockToggler extends Component{
      */
     update(components){
         const boxes = [];
-        let componenets_width = 0;
-        let componenets_height = 0;
+        let components_width = 0;
+        let components_height = 0;
 
         this.btn_wrapper.empty();
 
@@ -224,8 +224,8 @@ export default class BlockToggler extends Component{
                 'height': height
             });
 
-            componenets_width = Math.max(x + width, componenets_width);
-            componenets_height = Math.max(y + height, componenets_height);
+            components_width = Math.max(x + width, components_width);
+            components_height = Math.max(y + height, components_height);
         });
 
         boxes.forEach((box, index) => {
@@ -235,7 +235,7 @@ export default class BlockToggler extends Component{
 
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             svg.setAttributeNS(null, "preserveAspectRatio", "xMidYMidmeet");
-            svg.setAttributeNS(null, "viewBox", `0 0 ${componenets_width} ${componenets_height}`);
+            svg.setAttributeNS(null, "viewBox", `0 0 ${components_width} ${components_height}`);
             button.get(0).appendChild(svg);
 
             boxes.forEach((box2, index2) => {
