@@ -1,8 +1,9 @@
 .DS_Store
 node_modules
 
-# ignore VSCode settings
-/.vscode
+# ignore some VSCode settings
+.vscode/*
+!.vscode/settings.json
 
 # ignore the design directory
 /design

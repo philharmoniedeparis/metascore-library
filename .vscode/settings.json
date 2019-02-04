@@ -2,6 +2,9 @@
     // The default end of line character. Use \n for LF and \r\n for CRLF.
     "files.eol": "\n",
     "files.trimTrailingWhitespace": true,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    },
     "files.exclude": {
         "**/.vscode": true,
         "**/design": true,
