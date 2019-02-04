@@ -196,7 +196,7 @@ export default class Share extends Overlay {
             url += `?${query.join('&')}`;
         }
 
-        return Locale.formatString('<iframe type="text/html" src="!url" width="!width" height="!height" frameborder="0" allowfullscreen="true" class="metascore-embed"></iframe>', {
+        return Locale.formatString('<iframe type="text/html" src="!url" width="!width" height="!height" frameborder="0" allowfullscreen="true" allow="autoplay; fullscreen" class="metascore-embed"></iframe>', {
             '!url': url,
             '!width': width,
             '!height': height

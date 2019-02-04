@@ -1,5 +1,5 @@
 import HTML5 from './HTML5';
-import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
 
 /**
 * The dash.js CDN URL
@@ -116,39 +116,55 @@ export default class Dash extends HTML5 {
                 return;
             }
 
+            const DashJS = window.dashjs.MediaPlayer;
+            const dash = DashJS().create();
             const audio = new Audio();
+
+            // TODO: replace with promises to eliminate the propability of both an error and a success being called
+
+            dash.on(DashJS.events.ERROR, (evt) => {
+                if(this.isErrorFatal(evt)){
+                    // TODO: be more specific
+                    const message = Locale.t('player.renderer.Dash.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+                    console.error(evt.response.text);
+                    callback(new Error(message));
+                }
+            });
+
             audio.addEventListener('loadedmetadata', () => {
                 callback(null, audio.duration);
             });
 
-            const dash = window.dashjs.MediaPlayer().create();
             dash.initialize(audio, url, false);
         });
+    }
+
+    static isErrorFatal(evt){
+        // See https://github.com/Dash-Industry-Forum/dash.js/issues/1475
+        if (evt.error === 'download'){
+            if('event' in evt && ['manifest', 'initialization', 'content'].includes(evt.event.id)){
+                return true;
+            }
+        }
+        else if(evt.error === 'manifestError'){
+            if('event' in evt && ['parse', 'nostreams', 'codec'].includes(evt.event.id)){
+                return true;
+            }
+        }
+        else if(evt.error === 'mediasource'){
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Initialize
      */
     init(){
-        this.addClass('dash');
-
-        /**
-         * The <video> or <audio> element
-         * @type {Dom}
-         */
-        this.el = new Dom(`<${this.configs.type}></${this.configs.type}/>`, {'preload': 'auto'})
-            .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
-            .addListener('play', this.onPlay.bind(this))
-            .addListener('pause', this.onPause.bind(this))
-            .addListener('seeking', this.onSeeking.bind(this))
-            .addListener('seeked', this.onSeeked.bind(this))
-            .appendTo(this);
-
-        /**
-         * The HTMLVideoElement or HTMLAudioElement
-         * @type {HTMLVideoElement|HTMLAudioElement}
-         */
-        this.dom = this.el.get(0);
+        this
+            .setupUI()
+            .addClass('dash');
 
         this.constructor.loadLib((error) => {
             if(!error){
@@ -169,7 +185,11 @@ export default class Dash extends HTML5 {
     * @return {this}
     */
     setSource(source, supressEvent){
-        const dash = window.dashjs.MediaPlayer().create();
+        const DashJS = window.dashjs.MediaPlayer;
+        const dash = DashJS().create();
+
+        dash.on(DashJS.events.ERROR, this.onLibError.bind(this));
+
         dash.initialize(this.dom, source.url, false);
 
        if(supressEvent !== true){
@@ -177,7 +197,20 @@ export default class Dash extends HTML5 {
        }
 
        return this;
-   }
+    }
+
+    onLibError(evt){
+        const fatal = this.constructor.isErrorFatal(evt);
+
+        if(fatal){
+            const message = Locale.t('player.renderer.Dash.error', 'An error occured while attempting to read the media stream');
+            this.triggerEvent('error', {'renderer': this, 'message': message});
+            console.error(`Dash.js:`, evt);
+        }
+        else{
+            console.warn(`Dash.js:`, evt);
+        }
+    }
 
    /**
    * Get the WaveformData assiciated with the media file
