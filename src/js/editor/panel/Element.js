@@ -22,11 +22,6 @@ export default class Element extends Panel {
         // call parent constructor
         super(configs);
 
-        // fix event handlers scope
-        this.onComponentDblClick = this.onComponentDblClick.bind(this);
-        this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
-        this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
-
         this
             .addClass('element')
             .addListener('componentset', this.onComponentSet.bind(this))
@@ -272,6 +267,11 @@ export default class Element extends Panel {
      */
     lockText(component, supressEvent){
         if(component.instanceOf('Text')){
+            // fix event handlers scope
+            // for an unknown reason, Chrome 71 on Windows will not trigger those events after a player reload unless the callbacks are bound each time
+            // therefor, the bindings are done here instead of within the constructor
+            this.onComponentDblClick = this.onComponentDblClick.bind(this);
+
             component
                 .addListener('dblclick', this.onComponentDblClick)
                 .removeClass('text-unlocked');
@@ -307,6 +307,12 @@ export default class Element extends Panel {
      */
     unlockText(component, supressEvent){
         if(component.instanceOf('Text')){
+            // fix event handlers scope
+            // for an unknown reason, Chrome 71 on Windows will not trigger those events after a player reload unless the callbacks are bound each time
+            // therefor, the bindings are done here instead of within the constructor
+            this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
+            this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
+
             if(component._draggable){
                 component._draggable.disable();
             }
