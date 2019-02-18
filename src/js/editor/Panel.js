@@ -62,6 +62,15 @@ export default class Panel extends Dom {
         // call parent constructor
         super('<div/>', {'class': `panel ${className}`});
 
+        // fix event handlers scope
+        this.onComponentPropChange = this.onComponentPropChange.bind(this);
+        this.onComponentDragStart = this.onComponentDragStart.bind(this);
+        this.onComponentDrag = this.onComponentDrag.bind(this);
+        this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
+        this.onComponentResizeStart = this.onComponentResizeStart.bind(this);
+        this.onComponentResize = this.onComponentResize.bind(this);
+        this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
+
         /**
          * The configuration values
          * @type {Object}
@@ -304,18 +313,8 @@ export default class Panel extends Dom {
 
         this.updateUI();
 
-        // fix event handlers scope
-        // for an unknown reason, Chrome 71 on Windows will not trigger those events after a player reload unless the callbacks are bound each time
-        // therefor, the bindings are done here instead of within the constructor
-        this.onComponentPropChange = this.onComponentPropChange.bind(this);
-        this.onComponentDragStart = this.onComponentDragStart.bind(this);
-        this.onComponentDrag = this.onComponentDrag.bind(this);
-        this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
-        this.onComponentResizeStart = this.onComponentResizeStart.bind(this);
-        this.onComponentResize = this.onComponentResize.bind(this);
-        this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
-
-        component
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0))
             .addClass('selected')
             .addListener('propchange', this.onComponentPropChange)
             .addListener('dragstart', this.onComponentDragStart)
@@ -359,7 +358,8 @@ export default class Panel extends Dom {
 
         this.updateUI();
 
-        component
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0))
             .removeClass('selected')
             .removeListener('propchange', this.onComponentPropChange)
             .removeListener('dragstart', this.onComponentDragStart)
