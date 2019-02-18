@@ -1,3 +1,4 @@
+import Dom from '../../core/Dom';
 import Panel from '../Panel';
 import Locale from '../../core/Locale';
 import {getImageMetadata} from '../../core/utils/Media';
@@ -21,6 +22,11 @@ export default class Element extends Panel {
     constructor(configs) {
         // call parent constructor
         super(configs);
+
+        // fix event handlers scope
+        this.onComponentDblClick = this.onComponentDblClick.bind(this);
+        this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
+        this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
         this
             .addClass('element')
@@ -267,16 +273,13 @@ export default class Element extends Panel {
      */
     lockText(component, supressEvent){
         if(component.instanceOf('Text')){
-            // fix event handlers scope
-            // for an unknown reason, Chrome 71 on Windows will not trigger those events after a player reload unless the callbacks are bound each time
-            // therefor, the bindings are done here instead of within the constructor
-            this.onComponentDblClick = this.onComponentDblClick.bind(this);
-
-            component
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.get(0))
                 .addListener('dblclick', this.onComponentDblClick)
                 .removeClass('text-unlocked');
 
-            component.contents
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.contents.get(0))
                 .attr('contenteditable', null)
                 .removeListener('click', this.onComponentContentsClick)
                 .removeListener('keydown', this.onComponentContentsKey)
@@ -307,12 +310,6 @@ export default class Element extends Panel {
      */
     unlockText(component, supressEvent){
         if(component.instanceOf('Text')){
-            // fix event handlers scope
-            // for an unknown reason, Chrome 71 on Windows will not trigger those events after a player reload unless the callbacks are bound each time
-            // therefor, the bindings are done here instead of within the constructor
-            this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
-            this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
-
             if(component._draggable){
                 component._draggable.disable();
             }
@@ -320,14 +317,16 @@ export default class Element extends Panel {
                 component._resizable.disable();
             }
 
-            component.contents
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.contents.get(0))
                 .attr('contenteditable', 'true')
                 .addListener('click', this.onComponentContentsClick)
                 .addListener('keydown', this.onComponentContentsKey)
                 .addListener('keypress', this.onComponentContentsKey)
                 .addListener('keyup', this.onComponentContentsKey);
 
-            component
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.get(0))
                 .removeListener('dblclick', this.onComponentDblClick)
                 .addClass('text-unlocked');
 

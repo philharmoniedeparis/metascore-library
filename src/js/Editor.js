@@ -1752,14 +1752,18 @@ export default class Editor extends Dom {
              * The player instance
              * @type {Player}
              */
-            this.player = player
+            this.player = player;
+
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(this.player.get(0))
                 .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
                 .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
                 .addListener('idset', this.onPlayerIdSet.bind(this))
                 .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
                 .addListener('sourceset', this.onPlayerSourceSet.bind(this))
-                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
-                .load();
+                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this));
+
+            this.player.load();
 
             this.addClass('has-player');
         }
@@ -1791,8 +1795,8 @@ export default class Editor extends Dom {
      * @param {LoadMask} loadmask the loadmask to hide
      */
     onPlayerLoadSuccess(loadmask){
-        this.player
-            .setInEditor(true)
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(this.player.get(0))
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
@@ -1813,8 +1817,9 @@ export default class Editor extends Dom {
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
 
-            this.player.contextmenu
-                .disable();
+            this.player.setInEditor(true);
+
+            this.player.contextmenu.disable();
 
             const player_body = this.player_frame.get(0).contentWindow.document.body;
             this.player_contextmenu
