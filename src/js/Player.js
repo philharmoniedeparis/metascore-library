@@ -133,7 +133,7 @@ export default class Player extends Dom {
          */
         this.contextmenu = new ContextMenu({'target': this, 'items': {
                 'about': {
-                    'text': Locale.t('player.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
+                    'text': Locale.t('player.contextmenu.about', 'metaScore v.!version', {'!version': this.constructor.getVersion()})
                 },
                 'logo': {
                     'class': 'logo'

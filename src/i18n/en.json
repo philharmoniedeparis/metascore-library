@@ -247,7 +247,7 @@
 	"player.component.element.Cursor.direction.right": "Left > Right",
 	"player.component.element.Cursor.direction.top": "Bottom > Top",
 	"player.component.element.Text.locked": "Text locked?",
-	"player.contextmenu.about": "metaScore v.!version r.!revision",
+	"player.contextmenu.about": "metaScore v.!version",
 	"player.onMediaError.ok": "OK",
 	"player.renderer.Dash.error": "An error occured while attempting to read the media stream",
 	"player.renderer.Dash.getDurationFromURI.error": "An error occured while attempting to load the media: !url",

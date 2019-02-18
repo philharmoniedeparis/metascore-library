@@ -247,7 +247,7 @@
 	"player.component.element.Cursor.direction.right": "Gauche > Droite",
 	"player.component.element.Cursor.direction.top": "Bas > Haut",
 	"player.component.element.Text.locked": "Texte verrouillé ?",
-	"player.contextmenu.about": "metaScore v.!version r.!revision",
+	"player.contextmenu.about": "metaScore v.!version",
 	"player.onMediaError.ok": "OK",
 	"player.renderer.Dash.error": "Une erreur s'est produite lors de la tentative de lecture du flux média",
 	"player.renderer.Dash.getDurationFromURI.error": "Une erreur s'est produite lors du chargement du média: !url",
