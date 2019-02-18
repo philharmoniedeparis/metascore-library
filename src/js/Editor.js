@@ -2737,13 +2737,15 @@ export default class Editor extends Dom {
                         default: {
                             component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
 
-                            // add a page
-                            const page_configs = {};
-                            if(component.getPropertyValue('synched')){
-                                page_configs['start-time'] = 0;
-                                page_configs['end-time'] = player.getMedia().getDuration();
+                            if(component.getPageCount() === 0){
+                                // add a page
+                                const page_configs = {};
+                                if(component.getPropertyValue('synched')){
+                                    page_configs['start-time'] = 0;
+                                    page_configs['end-time'] = player.getMedia().getDuration();
+                                }
+                                component.addPage(page_configs);
                             }
-                            component.addPage(page_configs);
                         }
                     }
 
