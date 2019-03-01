@@ -27,14 +27,6 @@ body{
         top: 0;
         left: 0;
 
-        &:focus{
-            outline: none;
-        }
-
-        &[data-hidden="true"]{
-            display: none;
-        }
-
         &.media{
             &.audio{
                 display: none;
@@ -294,17 +286,17 @@ body{
                     }
                 }
             }
-        }
 
-        &:hover{
-            .pager{
-                display: block;
-            }
-
-            &[data-page-count="0"],
-            &[data-page-count="1"]{
+            &:hover{
                 .pager{
-                    display: none;
+                    display: block;
+                }
+
+                &[data-page-count="0"],
+                &[data-page-count="1"]{
+                    .pager{
+                        display: none;
+                    }
                 }
             }
         }
@@ -427,6 +419,14 @@ body{
                     }
                 }
             }
+        }
+
+        &:focus{
+            outline: none;
+        }
+
+        &[data-hidden="true"]{
+            display: none !important;
         }
     }
 
