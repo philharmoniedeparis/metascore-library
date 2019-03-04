@@ -37,6 +37,18 @@ export default class Controller extends Component{
                         this.data('locked', value ? "true" : null);
                     }
                 },
+                'hidden': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': Locale.t('player.component.Controller.hidden', 'Hidden?')
+                    },
+                    'getter': function(){
+                        return this.data('hidden') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('hidden', value ? "true" : null);
+                    }
+                },
                 'x': {
                     'type': 'Number',
                     'configs': {

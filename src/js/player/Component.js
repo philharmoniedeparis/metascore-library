@@ -270,25 +270,15 @@ export default class Component extends Dom {
     }
 
     /**
-     * Show/hide
+     * Show or hide the component
      *
-     * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggle
+     * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggled
      * @return {this}
      */
     toggleVisibility(show){
-
-        if(show === true){
-            this.data('hidden', null);
-        }
-        else if(show === false){
-            this.data('hidden', "true");
-        }
-        else{
-            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
-        }
+        this.setPropertyValue('hidden', !(typeof show === 'undefined' ? this.getPropertyValue('hidden') : show));
 
         return this;
-
     }
 
     /**
