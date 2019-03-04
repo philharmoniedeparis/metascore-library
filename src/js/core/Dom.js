@@ -477,13 +477,45 @@ export default class Dom {
      */
     static css(element, name, value, inline){
         const camel = this.camel(name);
-
         if(typeof value !== "undefined"){
             element.style[camel] = value;
         }
 
         const style = inline === true ? element.style : window.getComputedStyle(element);
-        const new_value = style.getPropertyValue(name);
+        let new_value = style.getPropertyValue(name);
+
+        if(!new_value){
+            // Shorthand names do not work in most browsers.
+            // @todo: improve handling of shorthands
+            switch(name){
+                case 'border-width':
+                    new_value = style.getPropertyValue('border-top-width');
+                    break;
+
+                case 'border-color':
+                    new_value = style.getPropertyValue('border-top-color');
+                    break;
+
+                case 'border-radius': {
+                    const tl = style.getPropertyValue('border-top-left-radius').split(' ');
+                    const tr = style.getPropertyValue('border-top-right-radius').split(' ');
+                    const bl = style.getPropertyValue('border-bottom-left-radius').split(' ');
+                    const br = style.getPropertyValue('border-bottom-right-radius').split(' ');
+
+                    new_value = "";
+                    new_value += tl[0] + " "; // top-left width
+                    new_value += tr[0] + " "; // top-right width
+                    new_value += br[0] + " "; // bottom-right width
+                    new_value += bl[0] + " "; // bottom-left width
+                    new_value += "/ ";
+                    new_value += (tl.length > 1 ? tl[1] : tl[0]) + " "; // top-left height
+                    new_value += (tr.length > 1 ? tr[1] : tr[0]) + " "; // top-right height
+                    new_value += (br.length > 1 ? br[1] : br[0]) + " "; // bottom-right height
+                    new_value += bl.length > 1 ? bl[1] : bl[0]; // bottom-left height
+                    break;
+                }
+            }
+        }
 
         return new_value !== "" ? new_value : null;
     }
