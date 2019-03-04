@@ -1037,7 +1037,6 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onControllerTimeFieldChange(evt){
-        console.log(evt);
         const value = evt.detail.value;
 
         this.getPlayer().getMedia().setTime(value);

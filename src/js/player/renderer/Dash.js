@@ -120,11 +120,11 @@ export default class Dash extends HTML5 {
             const dash = DashJS().create();
             const audio = new Audio();
 
-            // TODO: replace with promises to eliminate the propability of both an error and a success being called
+            // @todo: replace with promises to eliminate the propability of both an error and a success being called
 
             dash.on(DashJS.events.ERROR, (evt) => {
                 if(this.isErrorFatal(evt)){
-                    // TODO: be more specific
+                    // @todo: be more specific
                     const message = Locale.t('player.renderer.Dash.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
                     console.error(evt.response.text);
                     callback(new Error(message));
