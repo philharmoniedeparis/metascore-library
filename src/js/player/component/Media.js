@@ -44,9 +44,11 @@ export default class Media extends Component{
     * @return {Object} The default values
     */
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
+        const defaults = super.getDefaults();
+
+        return Object.assign({}, defaults, {
             'type': 'audio',
-            'properties': {
+            'properties': Object.assign({}, defaults.properties, {
                 'type': {
                     'editable': false,
                     'getter': function(){
@@ -180,7 +182,7 @@ export default class Media extends Component{
                         this.css('border-radius', value);
                     }
                 }
-            }
+            })
         });
     }
 

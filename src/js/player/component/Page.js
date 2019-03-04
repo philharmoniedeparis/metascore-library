@@ -35,8 +35,10 @@ export default class Page extends Component {
     * @return {Object} The default values
     */
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'properties': {
+        const defaults = super.getDefaults();
+
+        return Object.assign({}, defaults, {
+            'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
                     'type': 'Color',
                     'configs': {
@@ -119,7 +121,7 @@ export default class Page extends Component {
                         });
                     }
                 }
-            }
+            })
         });
     }
 
