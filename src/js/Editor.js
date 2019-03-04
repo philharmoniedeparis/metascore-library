@@ -1670,13 +1670,9 @@ export default class Editor extends Dom {
      * Player blocktaggleradd event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object
      */
-    onPlayerBlockTogglerAdd(evt){
+    onPlayerBlockTogglerAdd(){
         this.updateBlockSelector();
-
-        const blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
-        evt.detail.blocktoggler.update(blocks);
     }
 
     /**
@@ -2623,23 +2619,7 @@ export default class Editor extends Dom {
                 this.panels.page.setComponent(page);
 
                 _configs.forEach((config, index) => {
-                    let name = '';
-                    const el_index = page.children(`.element.${config.type}`).count() + 1;
-
-                    switch(config.type){
-                        case 'Cursor':
-                            name = `cur ${el_index}`;
-                            break;
-                        case 'Image':
-                            name = `img ${el_index}`;
-                            break;
-
-                        case 'Text':
-                            name = `txt ${el_index}`;
-                            break;
-                    }
-
-                    const component = page.addElement(Object.assign({'name': name}, config));
+                    const component = page.addElement(config);
                     panel.setComponent(component, index > 0);
                     components.push(component);
                 });
@@ -2735,16 +2715,6 @@ export default class Editor extends Dom {
 
                         default: {
                             component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
-
-                            if(component.getPageCount() === 0){
-                                // add a page
-                                const page_configs = {};
-                                if(component.getPropertyValue('synched')){
-                                    page_configs['start-time'] = 0;
-                                    page_configs['end-time'] = player.getMedia().getDuration();
-                                }
-                                component.addPage(page_configs);
-                            }
                         }
                     }
 

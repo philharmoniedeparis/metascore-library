@@ -795,8 +795,20 @@ export default class Player extends Dom {
     addMedia(configs, supressEvent){
         let media = configs;
 
-        if(!(media instanceof Media)){
-            media = new Media(configs)
+        if(media instanceof Media){
+            media.appendTo(this);
+        }
+        else{
+            media = new Media(Object.assign(
+                    {},
+                    media,
+                    {
+                        'container': this,
+                        'listeners': {
+                            'propchange': this.onComponentPropChange.bind(this)
+                        }
+                    }
+                ))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))
@@ -808,8 +820,6 @@ export default class Player extends Dom {
                 .addListener('stalled', this.onMediaStalled.bind(this))
                 .addListener('error', this.onMediaError.bind(this));
         }
-
-        media.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent('mediaadd', {'player': this, 'media': media}, true, false);
@@ -828,12 +838,22 @@ export default class Player extends Dom {
     addController(configs, supressEvent){
         let controller = configs;
 
-        if(!(controller instanceof Controller)){
-            controller = new Controller(controller)
+        if(controller instanceof Controller){
+            controller.appendTo(this);
+        }
+        else{
+            controller = new Controller(Object.assign(
+                    {},
+                    controller,
+                    {
+                        'container': this,
+                        'listeners': {
+                            'propchange': this.onComponentPropChange.bind(this)
+                        }
+                    }
+                ))
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
         }
-
-        controller.appendTo(this);
 
         if(supressEvent !== true){
             this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
@@ -850,19 +870,28 @@ export default class Player extends Dom {
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        let toggler = configs;
+        let block_toggler = configs;
 
-        if(!(toggler instanceof BlockToggler)){
-            toggler = new BlockToggler(toggler);
+        if(block_toggler instanceof BlockToggler){
+            block_toggler.appendTo(this);
+        }
+        else{
+            block_toggler = new BlockToggler(Object.assign(
+                {},
+                block_toggler,
+                {
+                    'container': this
+                }
+            ));
         }
 
-        toggler.appendTo(this);
+        this.updateBlockToggler(block_toggler);
 
         if(supressEvent !== true){
-            this.triggerEvent('blocktoggleradd', {'player': this, 'blocktoggler': toggler}, true, false);
+            this.triggerEvent('blocktoggleradd', {'player': this, 'blocktoggler': block_toggler}, true, false);
         }
 
-        return toggler;
+        return block_toggler;
     }
 
     /**
@@ -879,17 +908,31 @@ export default class Player extends Dom {
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign({}, block, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
+            block = new Block(Object.assign(
+                    {},
+                    block,
+                    {
+                        'container': this,
+                        'listeners': {
+                            'propchange': this.onComponentPropChange.bind(this)
+                        }
                     }
-                }))
+                ))
                 .addListener('pageactivate', this.onPageActivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
                 .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
+        }
+
+        if(block.getPageCount() === 0){
+            // add a page
+            const page_configs = {};
+            if(block.getPropertyValue('synched')){
+                page_configs['start-time'] = 0;
+                page_configs['end-time'] = this.getMedia().getDuration();
+            }
+            block.addPage(page_configs);
         }
 
         if(supressEvent !== true){
@@ -1039,17 +1082,29 @@ export default class Player extends Dom {
     }
 
     /**
+    * Update a block toggler
+    *
+    * @return {this}
+    */
+    updateBlockToggler(block_toggler) {
+        const blocks = this.getComponents('.block, .media.video, .controller');
+
+        block_toggler.update(blocks);
+
+        return this;
+    }
+
+    /**
     * Update all block togglers
     *
     * @return {this}
     */
     updateBlockTogglers() {
-        const block_togglers = this.getComponents('.block-toggler');
-        const blocks = this.getComponents('.block, .media.video, .controller');
-
-        block_togglers.forEach((block_toggler) => {
-            block_toggler.update(blocks);
+        this.getComponents('.block-toggler').forEach((block_toggler) => {
+            this.updateBlockToggler(block_toggler);
         });
+
+        return this;
     }
 
 }

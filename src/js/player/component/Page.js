@@ -161,9 +161,28 @@ export default class Page extends Component {
             element.appendTo(this);
         }
         else{
-            element = new ELEMENT_TYPES[configs.type](Object.assign({}, element, {
-                'container': this
-            }));
+            const type = element.type;
+            const el_index = this.children(`.element.${type}`).count() + 1;
+            let name = '';
+
+            switch(type){
+                case 'Cursor':
+                    name = `cur ${el_index}`;
+                    break;
+
+                case 'Image':
+                    name = `img ${el_index}`;
+                    break;
+
+                case 'Text':
+                    name = `txt ${el_index}`;
+                    break;
+            }
+
+            element = new ELEMENT_TYPES[configs.type](Object.assign({
+                'container': this,
+                'name': name,
+            }, element));
         }
 
         if(supressEvent !== true){
