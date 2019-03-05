@@ -1136,6 +1136,17 @@ export default class Editor extends Dom {
         if(block.instanceOf('Block')){
             this.panels.page.getToolbar().toggleMenuItem('new', true);
         }
+        else if(block.instanceOf('BlockToggler')){
+            // Update the 'blocks' field options and value
+            const panel = this.panels.block;
+            const field = panel.getField('blocks');
+
+            this.getPlayer().getComponents('.media.video, .controller, .block').forEach((component) => {
+                field.addOption(component.getId(), component.getName());
+            });
+
+            field.setValue(block.getPropertyValue('blocks'));
+        }
 
         this.updatePageSelector();
     }
@@ -1176,7 +1187,8 @@ export default class Editor extends Dom {
                     ('x' in set[key]) ||
                     ('y' in set[key]) ||
                     ('width' in set[key]) ||
-                    ('height' in set[key])
+                    ('height' in set[key]) ||
+                    ('blocks' in set[key])
                 );
             });
 

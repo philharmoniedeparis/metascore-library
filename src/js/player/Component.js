@@ -23,7 +23,7 @@ export default class Component extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'metaScore-component', 'id': `component-${uuid(5)}`});
+        super('<div/>', {'class': 'metaScore-component'});
 
         /**
          * The configuration values
@@ -61,9 +61,20 @@ export default class Component extends Dom {
     */
     static getDefaults(){
         return {
+            'id': `component-${uuid(10)}`,
             'container': null,
             'index': null,
-            'properties': {}
+            'properties': {
+                'id': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.attr('id');
+                    },
+                    'setter': function(value){
+                        this.attr('id', value);
+                    }
+                },
+            }
         };
     }
 
@@ -110,7 +121,7 @@ export default class Component extends Dom {
      * @return {String} The id
      */
     getId() {
-        return this.attr('id');
+        return this.getPropertyValue('id');
     }
 
     /**
@@ -251,7 +262,7 @@ export default class Component extends Dom {
      * @return {this}
      */
     setPropertyValues(properties, supressEvent){
-		Object.entries(properties).forEach(([key, value]) => {
+        Object.entries(properties).forEach(([key, value]) => {
             this.setPropertyValue(key, value, supressEvent);
         });
 
@@ -259,25 +270,15 @@ export default class Component extends Dom {
     }
 
     /**
-     * Show/hide
+     * Show or hide the component
      *
-     * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggle
+     * @param {Boolean} [show=undefined] Whether to show or hide the component. If undefined, the visibility will be toggled
      * @return {this}
      */
     toggleVisibility(show){
-
-        if(show === true){
-            this.data('hidden', null);
-        }
-        else if(show === false){
-            this.data('hidden', "true");
-        }
-        else{
-            this.data('hidden', (this.data('hidden') === "true") ? null : "true");
-        }
+        this.setPropertyValue('hidden', !(typeof show === 'undefined' ? this.getPropertyValue('hidden') : show));
 
         return this;
-
     }
 
     /**

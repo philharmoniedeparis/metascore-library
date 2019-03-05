@@ -9,6 +9,7 @@ import Media from './player/component/Media';
 import Controller from './player/component/Controller';
 import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
+import {isEmpty} from './core/utils/Var';
 import {toCentiseconds, toSeconds} from './core/utils/Media';
 
 import {className} from '../css/Player.less';
@@ -549,6 +550,13 @@ export default class Player extends Dom {
                 }
                 break;
             }
+
+            case 'hidden':{
+                // Update all BlockTogglers to reflect the change in a component's hidden state.
+                this.find(`.block-toggler .button[data-component=${component.getId()}]`)
+                    .toggleClass('active', component.getPropertyValue('hidden'));
+                break;
+            }
         }
     }
 
@@ -877,7 +885,11 @@ export default class Player extends Dom {
         }
         else{
             block_toggler = new BlockToggler(Object.assign(
-                {},
+                {
+                    'blocks': this.getComponents('.block, .media.video').map((block) => {
+                        return block.getId();
+                    })
+                },
                 block_toggler,
                 {
                     'container': this
@@ -1087,7 +1099,16 @@ export default class Player extends Dom {
     * @return {this}
     */
     updateBlockToggler(block_toggler) {
-        const blocks = this.getComponents('.block, .media.video, .controller');
+        let blocks = [];
+        const ids = block_toggler.getPropertyValue('blocks');
+
+        if(!isEmpty(ids)){
+            blocks = this.getComponents(`#${ids.join(', #')}`);
+        }
+        else{
+            // Select all blocks, including the controller for backward compatibility.
+            blocks = this.getComponents('.block, .media.video, .controller');
+        }
 
         block_toggler.update(blocks);
 
