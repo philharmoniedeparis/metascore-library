@@ -502,16 +502,21 @@ export default class Dom {
                     const bl = style.getPropertyValue('border-bottom-left-radius').split(' ');
                     const br = style.getPropertyValue('border-bottom-right-radius').split(' ');
 
-                    new_value = "";
-                    new_value += tl[0] + " "; // top-left width
-                    new_value += tr[0] + " "; // top-right width
-                    new_value += br[0] + " "; // bottom-right width
-                    new_value += bl[0] + " "; // bottom-left width
-                    new_value += "/ ";
-                    new_value += (tl.length > 1 ? tl[1] : tl[0]) + " "; // top-left height
-                    new_value += (tr.length > 1 ? tr[1] : tr[0]) + " "; // top-right height
-                    new_value += (br.length > 1 ? br[1] : br[0]) + " "; // bottom-right height
-                    new_value += bl.length > 1 ? bl[1] : bl[0]; // bottom-left height
+                    const widths = [
+                        tl[0], // top-left width
+                        tr[0], // top-right width
+                        br[0], // bottom-right width
+                        bl[0] // bottom-left width
+                    ];
+
+                    const heights = [
+                        tl.length > 1 ? tl[1] : tl[0], // top-left height
+                        tr.length > 1 ? tr[1] : tr[0], // top-right height
+                        br.length > 1 ? br[1] : br[0], // bottom-right height
+                        bl.length > 1 ? bl[1] : bl[0] // bottom-left height
+                    ];
+
+                    new_value = `${widths.join(' ')} / ${heights.join(' ')}`;
                     break;
                 }
             }
