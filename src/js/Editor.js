@@ -843,7 +843,6 @@ export default class Editor extends Dom {
                     this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
                     this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
                     this.detailsOverlay
-                        .clearValues(true)
                         .setValues({'action': 'new'}, true)
                         .show();
                 };
@@ -900,7 +899,6 @@ export default class Editor extends Dom {
                 this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.edit.info', 'The guide needs to be saved in order for applied changes to become permanent'));
                 this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.edit.submitText', 'Apply'));
                 this.detailsOverlay
-                    .clearValues(true)
                     .setValues(Object.assign({'action': 'edit'}, this.getPlayer().getData()), true)
                     .show();
                 break;
@@ -2136,7 +2134,7 @@ export default class Editor extends Dom {
                  * The unsaved data
                  * @type {Object}
                  */
-                this.dirty_data = data;
+                this.dirty_data = Object.assign({}, this.dirty_data, data);
                 player.updateData(data);
                 overlay.hide();
 
