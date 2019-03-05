@@ -534,18 +534,8 @@ export default class Dom {
      * @return {String} The value of the data attribute
      */
     static data(element, name, value){
-        const camel = this.camel(name);
-
-        if(value === null){
-            if(element.dataset[camel]){
-                delete element.dataset[camel];
-            }
-        }
-        else if(typeof value !== "undefined"){
-            element.dataset[camel] = value;
-        }
-
-        return element.dataset[camel];
+        // Avoid using HTMLElement.dataset due to a bug in IE11 that does not trigger a redraw.
+        return this.attr(element, `data-${name}`, value);
     }
 
     /**
