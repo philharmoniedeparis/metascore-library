@@ -191,10 +191,29 @@ body{
 
                 .button{
                     flex: 1 1 0;
+                    cursor: pointer;
 
                     svg{
                         width: 100%;
                         height: 100%;
+
+                        rect{
+                            opacity: 0.5;
+                            fill: #CECECE;
+
+                            &.current{
+                                opacity: 1;
+                                fill: #666666;
+                            }
+                        }
+                    }
+
+                    &.active{
+                        opacity: 0.75;
+                    }
+
+                    &:hover{
+                        opacity: 0.5;
                     }
                 }
             }
