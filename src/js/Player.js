@@ -239,7 +239,7 @@ export default class Player extends Dom {
             case 'hideBlock':
             case 'toggleBlock':{
                 const state = method.replace('Block', '');
-                const show = state === 'toggle' ? null : method !== 'hide';
+                const show = state === 'toggle' ? void 0 : method !== 'hide';
 
                 this.getComponents('.media.video, .controller, .block').forEach((block) => {
                     if(block.getName() === params.name){
@@ -516,7 +516,7 @@ export default class Player extends Dom {
      */
     onTextElementBlockVisibility(evt){
         const state = evt.detail.action;
-        const show = state === 'toggle' ? null : state !== 'hide';
+        const show = state === 'toggle' ? void 0 : state !== 'hide';
 
         this.getComponents('.media.video, .controller, .block').forEach((block) => {
             if(block.getName() === evt.detail.block){
@@ -1099,16 +1099,8 @@ export default class Player extends Dom {
     * @return {this}
     */
     updateBlockToggler(block_toggler) {
-        let blocks = [];
         const ids = block_toggler.getPropertyValue('blocks');
-
-        if(!isEmpty(ids)){
-            blocks = this.getComponents(`#${ids.join(', #')}`);
-        }
-        else{
-            // Select all blocks, including the controller for backward compatibility.
-            blocks = this.getComponents('.block, .media.video, .controller');
-        }
+        const blocks = !isEmpty(ids) ? this.getComponents(`#${ids.join(', #')}`) : [];
 
         block_toggler.update(blocks);
 
