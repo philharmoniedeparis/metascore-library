@@ -14,7 +14,9 @@
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",
     "i18n": "node ./bin/i18n-extract.js",
-    "drupal": "copyfiles -u 1 dist/**/* ../Drupal-8.git/web/sites/all/assets/vendor/metaScore"
+    "drupal": "git-branch-is -q drupal-8 && npm run drupal-8 || npm run drupal-7",
+    "drupal-7": "copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore",
+    "drupal-8": "copyfiles -u 1 dist/**/* ../Drupal-8.git/web/sites/all/assets/vendor/metaScore"
   },
   "repository": {
     "type": "git",
@@ -37,6 +39,7 @@
     "eslint": "^5.14.1",
     "eslint-loader": "^2.1.2",
     "file-loader": "^3.0.1",
+    "git-branch-is": "^2.1.0",
     "git-rev-sync": "^1.12.0",
     "image-webpack-loader": "^4.6.0",
     "less": "^3.9.0",
