@@ -3,7 +3,7 @@ import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 import Locale from '../../core/Locale';
-import {isArray} from '../../core/utils/Var';
+import {isArray, isString, isEmpty} from '../../core/utils/Var';
 import {toCSS} from '../../core/utils/Color';
 
 /**
@@ -59,7 +59,14 @@ export default class BlockToggler extends Component{
                     },
                     'getter': function(){
                         const value = this.data('blocks');
-                        return value ? value.split(',') : [];
+                        if(isString(value)){
+                            return value.split(',').filter((el) => {
+                                return !isEmpty(el);
+                            });
+                        }
+                        // Return null if the data-blocks attribute doesn't exist for backwards compatibility.
+                        // See Player.updateBlockToggler
+                        return null;
                     },
                     'setter': function(value){
                         this.data('blocks', isArray(value) ? value.join(',') : null);

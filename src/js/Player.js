@@ -807,16 +807,12 @@ export default class Player extends Dom {
             media.appendTo(this);
         }
         else{
-            media = new Media(Object.assign(
-                    {},
-                    media,
-                    {
-                        'container': this,
-                        'listeners': {
-                            'propchange': this.onComponentPropChange.bind(this)
-                        }
+            media = new Media(Object.assign({}, media, {
+                    'container': this,
+                    'listeners': {
+                        'propchange': this.onComponentPropChange.bind(this)
                     }
-                ))
+                }))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))
@@ -850,16 +846,12 @@ export default class Player extends Dom {
             controller.appendTo(this);
         }
         else{
-            controller = new Controller(Object.assign(
-                    {},
-                    controller,
-                    {
-                        'container': this,
-                        'listeners': {
-                            'propchange': this.onComponentPropChange.bind(this)
-                        }
+            controller = new Controller(Object.assign({}, controller, {
+                    'container': this,
+                    'listeners': {
+                        'propchange': this.onComponentPropChange.bind(this)
                     }
-                ))
+                }))
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
         }
 
@@ -884,17 +876,9 @@ export default class Player extends Dom {
             block_toggler.appendTo(this);
         }
         else{
-            block_toggler = new BlockToggler(Object.assign(
-                {
-                    'blocks': this.getComponents('.block, .media.video').map((block) => {
-                        return block.getId();
-                    })
-                },
-                block_toggler,
-                {
-                    'container': this
-                }
-            ));
+            block_toggler = new BlockToggler(Object.assign({}, block_toggler, {
+                'container': this
+            }));
         }
 
         this.updateBlockToggler(block_toggler);
@@ -920,16 +904,12 @@ export default class Player extends Dom {
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign(
-                    {},
-                    block,
-                    {
-                        'container': this,
-                        'listeners': {
-                            'propchange': this.onComponentPropChange.bind(this)
-                        }
+            block = new Block(Object.assign({}, block, {
+                    'container': this,
+                    'listeners': {
+                        'propchange': this.onComponentPropChange.bind(this)
                     }
-                ))
+                }))
                 .addListener('pageactivate', this.onPageActivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
@@ -1099,8 +1079,17 @@ export default class Player extends Dom {
     * @return {this}
     */
     updateBlockToggler(block_toggler) {
+        let blocks = [];
         const ids = block_toggler.getPropertyValue('blocks');
-        const blocks = !isEmpty(ids) ? this.getComponents(`#${ids.join(', #')}`) : [];
+
+        if(ids === null){
+            // If ids is not an array, return all blocks for backwards compatibility.
+            // See BlockToggler's blocks property
+            blocks = this.getComponents(`.block, .controller, .media.video`);
+        }
+        else if(!isEmpty(ids)){
+            blocks = this.getComponents(`#${ids.join(', #')}`);
+        }
 
         block_toggler.update(blocks);
 
