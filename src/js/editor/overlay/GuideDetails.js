@@ -271,6 +271,15 @@ export default class GuideDetails extends Overlay {
     }
 
     /**
+     * Get all changed field values
+     *
+     * @return {Object} The values of changed fields in name/value pairs
+     */
+    getValues() {
+        return Object.assign({}, this.changed);
+    }
+
+    /**
      * Clears all field values
      *
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -282,15 +291,6 @@ export default class GuideDetails extends Overlay {
         });
 
         return this;
-    }
-
-    /**
-     * Get all changed field values
-     *
-     * @return {Object} The values of changed fields in name/value pairs
-     */
-    getValues() {
-        return Object.assign({}, this.changed);
     }
 
     /**
@@ -326,14 +326,25 @@ export default class GuideDetails extends Overlay {
      * @param {Event} evt The event object
      */
     onCloseClick(evt){
-        if(this.previous_values){
-            this.clearValues(true)
-                .setValues(this.previous_values, true);
-        }
-
         this.hide();
 
         evt.preventDefault();
+    }
+
+    /**
+     * Hide the overlay
+     *
+     * @return {this}
+     */
+    hide(){
+        super.hide();
+
+        this.clearValues(true);
+        this.changed = {};
+        this.previous_values = null;
+
+        return this;
+
     }
 
 }

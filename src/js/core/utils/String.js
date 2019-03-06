@@ -17,15 +17,15 @@ export function capitalize(str){
  * @return {String} The generated uuid
  *
  * @exqmple
- *    var id = String.uuid();
+ *    let id = uuid();
  *    // "66209871-857D-4A12-AC7E-E9EEBC2A6AC3"
  *
  * @exqmple
- *    var id = String.uuid(5);
+ *    let id = uuid(5);
  *    // "kryIh"
  *
  * @exqmple
- *    var id = String.uuid(5, 2);
+ *    let id = uuid(5, 2);
  *    // "10100"
  */
 export function uuid(len, radix) {

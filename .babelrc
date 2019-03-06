@@ -1,12 +1,8 @@
 {
-    "presets" : [
-      ["env", {
-        "targets": {
-          "browsers": [
-              "last 5 versions",
-              "ie >= 11"
-            ]
-        }
-      }]
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-syntax-dynamic-import"
     ]
-  }
+}

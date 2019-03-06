@@ -131,11 +131,11 @@ export default class HLS extends HTML5 {
                 const hls = new Hls();
                 const audio = new Audio();
 
-                // TODO: replace with promises to eliminate the propability of both an error and a success being called
+                // @todo: replace with promises to eliminate the propability of both an error and a success being called
 
                 hls.on(Hls.Events.ERROR, (evt) => {
                     if(evt.fatal){
-                        // TODO: be more specific
+                        // @todo: be more specific
                         const message = Locale.t('player.renderer.HLS.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
                         console.error(evt.response.text);
                         callback(new Error(message));

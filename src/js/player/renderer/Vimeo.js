@@ -205,8 +205,6 @@ export default class Vimeo extends HTML5 {
      */
     triggerTimeUpdate(loop) {
         this.dom.getCurrentTime().then((seconds) => {
-            console.log('triggerTimeUpdate', seconds);
-
             if(loop !== false && this.isPlaying()){
                 this.triggerTimeUpdate(loop);
             }

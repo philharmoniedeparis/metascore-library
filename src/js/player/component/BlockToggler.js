@@ -3,6 +3,7 @@ import Dom from '../../core/Dom';
 import Draggable from '../../core/ui/Draggable';
 import Resizable from '../../core/ui/Resizable';
 import Locale from '../../core/Locale';
+import {isArray, isString, isEmpty} from '../../core/utils/Var';
 import {toCSS} from '../../core/utils/Color';
 
 /**
@@ -16,8 +17,10 @@ export default class BlockToggler extends Component{
     * @return {Object} The default values
     */
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'properties': {
+        const defaults = super.getDefaults();
+
+        return Object.assign({}, defaults, {
+            'properties': Object.assign({}, defaults.properties, {
                 'type': {
                     'editable': false,
                     'getter': function(){
@@ -46,6 +49,27 @@ export default class BlockToggler extends Component{
                     },
                     'setter': function(value){
                         this.data('locked', value ? "true" : null);
+                    }
+                },
+                'blocks': {
+                    'type': 'Select',
+                    'configs': {
+                        'label': Locale.t('player.component.BlockToggler.blocks', 'Blocks'),
+                        'multiple': true
+                    },
+                    'getter': function(){
+                        const value = this.data('blocks');
+                        if(isString(value)){
+                            return value.split(',').filter((el) => {
+                                return !isEmpty(el);
+                            });
+                        }
+                        // Return null if the data-blocks attribute doesn't exist for backwards compatibility.
+                        // See Player.updateBlockToggler
+                        return null;
+                    },
+                    'setter': function(value){
+                        this.data('blocks', isArray(value) ? value.join(',') : null);
                     }
                 },
                 'x': {
@@ -163,7 +187,7 @@ export default class BlockToggler extends Component{
                         this.css('border-radius', value);
                     }
                 }
-            }
+            })
         });
     }
 
@@ -210,6 +234,7 @@ export default class BlockToggler extends Component{
 
         this.btn_wrapper.empty();
 
+        // Iterate through the list of components to retreive bounding box data.
         components.forEach((component) => {
             const x = component.getPropertyValue('x') || 0;
             const y = component.getPropertyValue('y') || 0;
@@ -228,13 +253,24 @@ export default class BlockToggler extends Component{
             components_height = Math.max(y + height, components_height);
         });
 
+        // Sort boxes by position from top-left to bottom-right.
+        boxes.sort((a, b) => {
+            if(a.x > b.x) {return 1;}
+            if(a.x < b.x) {return -1;}
+            if(a.y > b.y) {return 1;}
+            if(a.y < b.y) {return -1;}
+            return 0;
+        });
+
+        // Iterate through the boxes to create a corresponding toggle button.
         boxes.forEach((box, index) => {
             const button = new Dom('<div/>', {'class': 'button'})
+                .data('component', box.component.getId())
                 .addListener('click', this.onTogglerClick.bind(this, box.component))
                 .appendTo(this.btn_wrapper);
 
             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-            svg.setAttributeNS(null, "preserveAspectRatio", "xMidYMidmeet");
+            svg.setAttributeNS(null, "preserveAspectRatio", "xMidYMid meet");
             svg.setAttributeNS(null, "viewBox", `0 0 ${components_width} ${components_height}`);
             button.get(0).appendChild(svg);
 
@@ -245,11 +281,14 @@ export default class BlockToggler extends Component{
                 const height = box2.height;
 
                 const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                rect.setAttributeNS(null, "fill", index2 === index ? "#666666" : "#CECECE");
                 rect.setAttributeNS(null, "width", width);
                 rect.setAttributeNS(null, "height", height);
                 rect.setAttributeNS(null, "x", x);
                 rect.setAttributeNS(null, "y", y);
+
+                if(index2 === index){
+                    rect.setAttribute('class', "current");
+                }
 
                 svg.appendChild(rect);
             });

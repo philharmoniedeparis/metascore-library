@@ -849,7 +849,6 @@ export default class Editor extends Dom {
                     this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.new.info', ''));
                     this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.new.submitText', 'Save'));
                     this.detailsOverlay
-                        .clearValues(true)
                         .setValues({'action': 'new'}, true)
                         .show();
                 };
@@ -906,7 +905,6 @@ export default class Editor extends Dom {
                 this.detailsOverlay.info.text(Locale.t('editor.detailsOverlay.edit.info', 'The guide needs to be saved in order for applied changes to become permanent'));
                 this.detailsOverlay.buttons.submit.setLabel(Locale.t('editor.detailsOverlay.edit.submitText', 'Apply'));
                 this.detailsOverlay
-                    .clearValues(true)
                     .setValues(Object.assign({'action': 'edit'}, this.getPlayer().getData()), true)
                     .show();
                 break;
@@ -1142,6 +1140,17 @@ export default class Editor extends Dom {
         if(block.instanceOf('Block')){
             this.panels.page.getToolbar().toggleMenuItem('new', true);
         }
+        else if(block.instanceOf('BlockToggler')){
+            // Update the 'blocks' field options and value
+            const panel = this.panels.block;
+            const field = panel.getField('blocks');
+
+            this.getPlayer().getComponents('.media.video, .controller, .block').forEach((component) => {
+                field.addOption(component.getId(), component.getName());
+            });
+
+            field.setValue(block.getPropertyValue('blocks'));
+        }
 
         this.updatePageSelector();
     }
@@ -1182,7 +1191,8 @@ export default class Editor extends Dom {
                     ('x' in set[key]) ||
                     ('y' in set[key]) ||
                     ('width' in set[key]) ||
-                    ('height' in set[key])
+                    ('height' in set[key]) ||
+                    ('blocks' in set[key])
                 );
             });
 
@@ -1676,13 +1686,9 @@ export default class Editor extends Dom {
      * Player blocktaggleradd event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object
      */
-    onPlayerBlockTogglerAdd(evt){
+    onPlayerBlockTogglerAdd(){
         this.updateBlockSelector();
-
-        const blocks = this.getPlayer().getComponents('.block, .media.video, .controller');
-        evt.detail.blocktoggler.update(blocks);
     }
 
     /**
@@ -2134,7 +2140,7 @@ export default class Editor extends Dom {
                  * The unsaved data
                  * @type {Object}
                  */
-                this.dirty_data = data;
+                this.dirty_data = Object.assign({}, this.dirty_data, data);
                 player.updateData(data);
                 overlay.hide();
 
@@ -2629,23 +2635,7 @@ export default class Editor extends Dom {
                 this.panels.page.setComponent(page);
 
                 _configs.forEach((config, index) => {
-                    let name = '';
-                    const el_index = page.children(`.element.${config.type}`).count() + 1;
-
-                    switch(config.type){
-                        case 'Cursor':
-                            name = `cur ${el_index}`;
-                            break;
-                        case 'Image':
-                            name = `img ${el_index}`;
-                            break;
-
-                        case 'Text':
-                            name = `txt ${el_index}`;
-                            break;
-                    }
-
-                    const component = page.addElement(Object.assign({'name': name}, config));
+                    const component = page.addElement(config);
                     panel.setComponent(component, index > 0);
                     components.push(component);
                 });
@@ -2741,16 +2731,6 @@ export default class Editor extends Dom {
 
                         default: {
                             component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
-
-                            if(component.getPageCount() === 0){
-                                // add a page
-                                const page_configs = {};
-                                if(component.getPropertyValue('synched')){
-                                    page_configs['start-time'] = 0;
-                                    page_configs['end-time'] = player.getMedia().getDuration();
-                                }
-                                component.addPage(page_configs);
-                            }
                         }
                     }
 

@@ -11,7 +11,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const LIB_NAME = pckg.name;
-const DIST = path.join(__dirname, "dist");
+const DIST_DIR = path.join(__dirname, "dist");
 
 class BeepPlugin{
   apply(compiler){
@@ -78,14 +78,14 @@ module.exports = (env, argv) => {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['babel-polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
-        Editor: ['babel-polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
+        Player: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
+        Editor: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
         API: ['classlist-polyfill', './src/js/polyfills', './src/js/API']
     },
     devtool: "source-map",
     output: {
         filename: LIB_NAME +'.[name].js',
-        path: DIST,
+        path: DIST_DIR,
         library: [LIB_NAME, "[name]"],
         libraryTarget: 'var',
         libraryExport: 'default'
@@ -108,12 +108,12 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          // Lint JS files
+          // Lint JS files.
           test: /\.js$/,
           exclude: /node_modules/,
           use: [
             {
-              loader: "babel-loader"
+              loader: "babel-loader",
             },
             {
               loader: "eslint-loader",
@@ -140,33 +140,25 @@ module.exports = (env, argv) => {
           ],
         },
         {
-          // compiles Less to CSS
+          // Compiles Less to CSS.
           test: /\.less$/,
           use: [
               MiniCssExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
+                  modules: 'global',
                   importLoaders: 2,
                   context: './src/css',
                   localIdentName: '[path][name]--[hash:base64:5]'
                 }
               },
-              {
-                loader: 'postcss-loader',
-                options: {
-                  plugins: () => [
-                    require('autoprefixer')({
-                      browsers: ['last 4 versions']
-                    })
-                  ]
-                }
-              },
+              'postcss-loader',
               'less-loader'
             ]
         },
         {
-          // pack images
+          // Pack images.
           test: /\.(gif|png|jpe?g|svg)$/i,
           use: [
             {
@@ -179,8 +171,7 @@ module.exports = (env, argv) => {
             {
               loader: 'image-webpack-loader',
               options: {
-                bypassOnDebug: true, // webpack@1.x
-                disable: true, // webpack@2.x and newer
+                disable: true,
               },
             },
           ],
@@ -192,7 +183,7 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
-      new CleanWebpackPlugin(DIST),
+      new CleanWebpackPlugin(DIST_DIR),
       new CopyWebpackPlugin([{
         from: './src/i18n/',
         to: './i18n/'
