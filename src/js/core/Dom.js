@@ -477,13 +477,50 @@ export default class Dom {
      */
     static css(element, name, value, inline){
         const camel = this.camel(name);
-
         if(typeof value !== "undefined"){
             element.style[camel] = value;
         }
 
         const style = inline === true ? element.style : window.getComputedStyle(element);
-        const new_value = style.getPropertyValue(name);
+        let new_value = style.getPropertyValue(name);
+
+        if(!new_value){
+            // Shorthand names do not work in most browsers.
+            // @todo: improve handling of shorthands
+            switch(name){
+                case 'border-width':
+                    new_value = style.getPropertyValue('border-top-width');
+                    break;
+
+                case 'border-color':
+                    new_value = style.getPropertyValue('border-top-color');
+                    break;
+
+                case 'border-radius': {
+                    const tl = style.getPropertyValue('border-top-left-radius').split(' ');
+                    const tr = style.getPropertyValue('border-top-right-radius').split(' ');
+                    const bl = style.getPropertyValue('border-bottom-left-radius').split(' ');
+                    const br = style.getPropertyValue('border-bottom-right-radius').split(' ');
+
+                    const widths = [
+                        tl[0], // top-left width
+                        tr[0], // top-right width
+                        br[0], // bottom-right width
+                        bl[0] // bottom-left width
+                    ];
+
+                    const heights = [
+                        tl.length > 1 ? tl[1] : tl[0], // top-left height
+                        tr.length > 1 ? tr[1] : tr[0], // top-right height
+                        br.length > 1 ? br[1] : br[0], // bottom-right height
+                        bl.length > 1 ? bl[1] : bl[0] // bottom-left height
+                    ];
+
+                    new_value = `${widths.join(' ')} / ${heights.join(' ')}`;
+                    break;
+                }
+            }
+        }
 
         return new_value !== "" ? new_value : null;
     }
@@ -497,18 +534,8 @@ export default class Dom {
      * @return {String} The value of the data attribute
      */
     static data(element, name, value){
-        const camel = this.camel(name);
-
-        if(value === null){
-            if(element.dataset[camel]){
-                delete element.dataset[camel];
-            }
-        }
-        else if(typeof value !== "undefined"){
-            element.dataset[camel] = value;
-        }
-
-        return element.dataset[camel];
+        // Avoid using HTMLElement.dataset due to a bug in IE11 that does not trigger a redraw.
+        return this.attr(element, `data-${name}`, value);
     }
 
     /**

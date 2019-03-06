@@ -1,6 +1,6 @@
 {
   "name": "metaScore",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "metaScore",
   "homepage": "http://metascore.philharmoniedeparis.fr",
   "author": "Oussama Mubarak",
@@ -51,6 +51,6 @@
     "babel-polyfill": "^6.26.0",
     "classlist-polyfill": "^1.2.0",
     "resize-observer-polyfill": "^1.5.0",
-    "waveform-data": "git+https://github.com/semiaddict/waveform-data.js.git#feature/audiodecoder-worker"
+    "waveform-data": "^2.1.2"
   }
 }
