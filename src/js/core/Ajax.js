@@ -142,6 +142,32 @@ export default class Ajax extends EventEmitter {
     }
 
     /**
+     * Send an XMLHttp PATCH request
+     *
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} configs Custom configs to override defaults
+     * @return {Ajax} The Ajax instance
+     */
+    static PATCH(url, configs) {
+
+        return new this(url, Object.assign({}, configs, {'method': 'PATCH'}));
+
+    }
+
+    /**
+     * Send an XMLHttp DELETE request
+     *
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} configs Custom configs to override defaults
+     * @return {Ajax} The Ajax instance
+     */
+    static DELETE(url, configs) {
+
+        return new this(url, Object.assign({}, configs, {'method': 'DELETE'}));
+
+    }
+
+    /**
     * readystatechange event callback
     *
     * @private
