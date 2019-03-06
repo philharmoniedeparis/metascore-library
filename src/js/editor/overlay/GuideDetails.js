@@ -29,8 +29,8 @@ export default class GuideDetails extends Overlay {
      * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
      * @property {String} [title='Guide Info'] The overlay's title
-     * @property {Object} [groups={}] The groups the user belongs to
      * @property {String} [submit_text='Save'] The overlay's submit button label
+     * @property {Object} [groups={}] The groups the user belongs to
      */
     constructor(configs) {
         // call parent constructor

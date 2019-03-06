@@ -25,10 +25,6 @@ export default class ColorSelector extends Overlay {
         // call parent constructor
         super(configs);
 
-        // fix event handlers scope
-        this.onGradientClick = this.onGradientClick.bind(this);
-        this.onAlphaClick = this.onAlphaClick.bind(this);
-
         this.addClass(`color-selector ${className}`);
     }
 
@@ -49,6 +45,10 @@ export default class ColorSelector extends Overlay {
      * @private
      */
     setupUI() {
+        // fix event handlers scope
+        this.onGradientClick = this.onGradientClick.bind(this);
+        this.onAlphaClick = this.onAlphaClick.bind(this);
+
         // call parent method
         super.setupUI();
 
