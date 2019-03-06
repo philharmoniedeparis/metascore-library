@@ -50,9 +50,10 @@ export default class Select extends Field {
      * @private
      */
     setupUI() {
-        super.setupUI();
+        // fix event handlers scope
+        this.onWrapperClick = this.onWrapperClick.bind(this);
 
-        this.input_wrapper.addListener('click', this.onWrapperClick.bind(this));
+        super.setupUI();
 
         this.input.addListener('keypress', this.onInputKeypress.bind(this));
 
@@ -367,6 +368,28 @@ export default class Select extends Field {
      */
     clear() {
         this.menu.empty();
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    disable() {
+        super.disable();
+
+        this.input_wrapper.removeListener('click', this.onWrapperClick);
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    enable() {
+        super.enable();
+
+        this.input_wrapper.addListener('click', this.onWrapperClick);
 
         return this;
     }
