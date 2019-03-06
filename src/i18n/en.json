@@ -130,7 +130,7 @@
 	"editor.overlay.GuideSelector.button": "Select",
 	"editor.overlay.GuideSelector.draftsGroup": "drafts",
 	"editor.overlay.GuideSelector.emptyText": "No guides available",
-	"editor.overlay.GuideSelector.filters.author.label": "Guide's author",
+	"editor.overlay.GuideSelector.filters.author.label": "Author",
 	"editor.overlay.GuideSelector.filters.fieldset.legend": "Filter",
 	"editor.overlay.GuideSelector.filters.fulltext.description": "Search in the guide's title, credits, description and blocks",
 	"editor.overlay.GuideSelector.filters.fulltext.label": "Full-text search",

@@ -15,7 +15,13 @@
                 margin-bottom: 1em;
 
                 .field{
+                    display: inline-block;
+                    width: 48%;
                     margin: 0.5em 0;
+
+                    &:nth-child(even){
+                        margin-right: 4%;
+                    }
 
                     &.text{
                         input{
@@ -24,17 +30,14 @@
                         }
                     }
 
-                    &.select{
-                        display: inline-block;
-                        width: 48%;
+                    &[data-name="filters[fulltext]"]{
+                        display: block;
+                        width: auto;
+                        margin-right: 0;
+                    }
 
-                        &:nth-child(even){
-                            margin-right: 4%;
-                        }
-
-                        &[data-name^="sort_"]{
-                            width: auto;
-                        }
+                    &[data-name^="sort_"]{
+                        width: auto;
                     }
                 }
 

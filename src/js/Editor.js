@@ -38,14 +38,16 @@ export default class Editor extends Dom {
      * @property {String} [player_url=''] The base URL of players
      * @property {String} [api_url=''] The base URL of the RESTful API
      * @property {String} [help_url=''] The base URL of the RESTful API
-     * @property {String} [player_api_help_url=''] The URL of the player API help page
+     * @property {String} [api_help_url=''] The URL of the player API help page
      * @property {String} [account_url=''] The URL of the user account page
      * @property {String} [logout_url=''] The URL of the user logout page
      * @property {String} [user_groups={}] The list of groups the current user belongs to
-     * @property {Boolean} [reload_player_on_save=false] Whether to reload the player each time the guide is saved or not
+     * @property {Boolean} [reload_on_save=false] Whether to reload the player each time the guide is saved or not
      * @property {String} [lang='en'] The language to use for i18n
      * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Object} [groups={}] The groups the user belongs to
      * @property {Object} [guide_details={}] Configs to send to the GuideDetails overlay
+     * @property {Object} [guide_selector={}] Configs to send to the GuidSelector overlay
      */
     constructor(configs) {
         // call parent constructor
@@ -80,13 +82,15 @@ export default class Editor extends Dom {
             'player_url': '',
             'api_url': '',
             'help_url': '',
-            'player_api_help_url': '',
+            'api_help_url': '',
             'account_url': '',
             'logout_url': '',
             'user_groups': {},
-            'reload_player_on_save': false,
+            'reload_on_save': false,
             'lang': 'en',
             'xhr': {},
+            'groups': {},
+            'guide_selector': {},
             'guide_details': {}
         };
     }
@@ -243,7 +247,9 @@ export default class Editor extends Dom {
          * The guide details overlay
          * @type {GuideDetails}
          */
-        this.detailsOverlay = new GuideDetails(this.configs.guide_details)
+        this.detailsOverlay = new GuideDetails(Object.assign({}, this.configs.guide_details, {
+                'groups': this.configs.groups
+            }))
             .addListener('show', this.onDetailsOverlayShow.bind(this))
             .addListener('submit', this.onDetailsOverlaySubmit.bind(this));
 
@@ -667,7 +673,7 @@ export default class Editor extends Dom {
 
         loadmask.hide();
 
-        if(!player || (data.id !== player.getId()) || this.configs.reload_player_on_save){
+        if(!player || (data.id !== player.getId()) || this.configs.reload_on_save){
             this.loadPlayer(data.id, data.vid);
         }
         else{
@@ -937,8 +943,8 @@ export default class Editor extends Dom {
 
             case 'share':
                 new Share({
-                    'url': this.configs.player_url + this.getPlayer().getId(),
-                    'api_help_url': this.configs.player_api_help_url,
+                    'url': `${this.configs.player_url}/${this.getPlayer().getId()}`,
+                    'api_help_url': this.configs.api_help_url,
                     'autoShow': true
                 });
                 break;
@@ -1037,7 +1043,6 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onControllerTimeFieldChange(evt){
-        console.log(evt);
         const value = evt.detail.value;
 
         this.getPlayer().getMedia().setTime(value);
@@ -2541,7 +2546,7 @@ export default class Editor extends Dom {
      * @return {this}
      */
     loadPlayer(id, vid){
-        let url = `${this.configs.player_url + id}?autoload=0&keyboard=0`;
+        let url = `${this.configs.player_url}/${id}?autoload=0&keyboard=0`;
 
         if(vid){
             url += `&vid=${vid}`;
@@ -3019,11 +3024,13 @@ export default class Editor extends Dom {
      * @return {this}
      */
     openGuideSelector() {
-        new GuideSelector({
-                'url': `${this.configs.api_url}guide.json`,
-                'autoShow': true,
-                'xhr': this.configs.xhr
-            })
+        const configs = Object.assign({}, this.configs.guide_selector, {
+            'groups': this.configs.groups,
+            'autoShow': true,
+            'xhr': this.configs.xhr
+        });
+
+        new GuideSelector(configs)
             .addListener('submit', this.onGuideSelectorSubmit.bind(this));
 
         return this;
@@ -3100,6 +3107,11 @@ export default class Editor extends Dom {
             data.append('publish', true);
         }
 
+        // append the clone flag if true
+        if(action === 'clone'){
+            data.append('clone', true);
+        }
+
         // append blocks data
         components.forEach((component) => {
             data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
@@ -3123,7 +3135,8 @@ export default class Editor extends Dom {
         }, this.configs.xhr);
 
         const hundred = 100;
-        Ajax.POST(`${this.configs.api_url}guide/${id}/${action}.json?vid=${vid}`, options)
+
+        Ajax.PATCH(`${this.configs.api_url}guide/${id}.json?vid=${vid}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
