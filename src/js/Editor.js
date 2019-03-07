@@ -368,8 +368,12 @@ export default class Editor extends Dom {
 
                         elements.forEach((element) => {
                             const config = element.getPropertyValues();
+                            // Slightly move the copy by 5 pixels right and 5 pixels down.
                             config.x += 5;
                             config.y += 5;
+
+                            // Delete the id to generate a new one.
+                            delete config.id;
 
                             configs.push(config);
                         });
@@ -539,8 +543,13 @@ export default class Editor extends Dom {
                     'callback': (el) => {
                         const component = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
                         const config = component.getPropertyValues();
+
+                        // Slightly move the copy by 5 pixels right and 5 pixels down.
                         config.x += 5;
                         config.y += 5;
+
+                        // Delete the id to generate a new one.
+                        delete config.id;
 
                         this.clipboard.setData('block', config);
                     },
