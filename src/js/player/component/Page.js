@@ -106,11 +106,11 @@ export default class Page extends Component {
                 },
                 'elements': {
                     'editable': false,
-                    'getter': function(skipDefault){
+                    'getter': function(skipDefault, skipID){
                         const elements = [];
 
                         this.getElements().forEach((element) => {
-                            elements.push(element.getPropertyValues(skipDefault));
+                            elements.push(element.getPropertyValues(skipDefault, skipID));
                         });
 
                         return elements;

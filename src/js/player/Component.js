@@ -206,9 +206,10 @@ export default class Component extends Dom {
      * Get the values of all properties
      *
      * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
+     * @param {Boolean} [skipID=false] Whether to skip the 'id' property, usefull when cloning
      * @return {Object} The values of the properties as name/value pairs
      */
-    getPropertyValues(skipDefaults){
+    getPropertyValues(skipDefaults, skipID){
         const values = {};
         const _skipDefaults = (typeof skipDefaults === "undefined") ? true : skipDefaults;
         const selected = this.hasClass('selected');
@@ -218,8 +219,11 @@ export default class Component extends Dom {
         }
 
 		Object.entries(this.getProperties()).forEach(([name, prop]) => {
+            if(skipID === true && name === 'id'){
+                return;
+            }
             if('getter' in prop){
-                const value = prop.getter.call(this, _skipDefaults);
+                const value = prop.getter.call(this, _skipDefaults, skipID);
 
                 if(value !== null){
                     values[name] = value;
