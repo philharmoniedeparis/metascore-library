@@ -119,6 +119,12 @@ export default class GuideSelector extends Overlay {
 
         this.filter_fields.group = new SelectField({
                 'label': Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group'),
+                'options': [
+                    {
+                        'value': '',
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.group.all.label', '- Any -')
+                    }
+                ],
                 'value': ''
             })
             .data('name', 'filters[group]')
@@ -138,7 +144,7 @@ export default class GuideSelector extends Overlay {
                 'options': [
                     {
                         'value': '',
-                        'text': ''
+                        'text': Locale.t('editor.overlay.GuideSelector.filters.status.all.label', '- Any -')
                     },
                     {
                         'value': '1',
