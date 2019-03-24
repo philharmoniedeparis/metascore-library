@@ -136,7 +136,7 @@ export default class GuideSelector extends Overlay {
             });
         }
         else{
-            this.filter_fields.groups.disable();
+            this.filter_fields.group.disable();
         }
 
         this.filter_fields.status = new SelectField({
@@ -365,17 +365,17 @@ export default class GuideSelector extends Overlay {
                     let group_label = null;
 
                     switch(revision.state){
-                        case 0: // archives
+                        case 'archive':
                             group_id = 'archives';
                             group_label = Locale.t('editor.overlay.GuideSelector.archivesGroup', 'archives');
                             break;
 
-                        case 1: // published
-                            group_id = 'published';
-                            group_label = Locale.t('editor.overlay.GuideSelector.publishedGroup', 'published');
+                        case 'default':
+                            group_id = 'default';
+                            group_label = Locale.t('editor.overlay.GuideSelector.defaultGroup', 'current');
                             break;
 
-                        case 2: // drafts
+                        case 'draft':
                             group_id = 'drafts';
                             group_label = Locale.t('editor.overlay.GuideSelector.draftsGroup', 'drafts');
                             break;

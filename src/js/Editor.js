@@ -702,12 +702,11 @@ export default class Editor extends Dom {
 
         const options = Object.assign({}, {
             'responseType': 'json',
-            'method': 'DELETE',
             'onSuccess': this.onGuideDeleteSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask)
         }, this.configs.xhr);
 
-        new Ajax(`${this.configs.api_url}guide/${id}.json`, options);
+        Ajax.DELETE(`${this.configs.api_url}/${id}`, options);
     }
 
     /**
@@ -3048,7 +3047,7 @@ export default class Editor extends Dom {
         }, this.configs.xhr);
 
         const hundred = 100;
-        Ajax.POST(`${this.configs.api_url}guide.json`, options)
+        Ajax.POST(`${this.configs.api_url}`, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
@@ -3082,16 +3081,6 @@ export default class Editor extends Dom {
         // prepare the formdata from the dirty data
         const data = this.prepareFormData(this.dirty_data);
 
-        // append the publish flag if true
-        if(publish === true){
-            data.append('publish', true);
-        }
-
-        // append the clone flag if true
-        if(action === 'clone'){
-            data.append('clone', true);
-        }
-
         // append blocks data
         components.forEach((component) => {
             data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
@@ -3116,7 +3105,17 @@ export default class Editor extends Dom {
 
         const hundred = 100;
 
-        Ajax.PATCH(`${this.configs.api_url}guide/${id}.json?vid=${vid}`, options)
+        let url = `${this.configs.api_url}/${id}?vid=${vid}`;
+        if(publish === true){
+            // append the publish flag if true
+            url += '&publish=1';
+        }
+        if(action === 'clone'){
+            // append the clone flag if true
+            url += '&clone=1';
+        }
+
+        Ajax.PATCH(url, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
