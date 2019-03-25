@@ -191,7 +191,7 @@ export default class Zoom extends Dom {
             this.resampleData();
         }
 
-        this.setOffset(this.offset, true)
+        this.setOffset(this.offset, true);
 
         return this;
     }
