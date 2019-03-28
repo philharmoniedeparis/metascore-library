@@ -372,9 +372,23 @@ body{
             }
 
             &.Cursor{
+                position: relative;
                 z-index: 9999;
                 pointer-events: auto;
+
+                canvas{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+
+                &[data-form="circular"]{
+                    .contents{
+                        border-radius: 100% !important;
+                    }
+                }
             }
+
             &.Text{
                 .contents{
                     overflow: auto;
