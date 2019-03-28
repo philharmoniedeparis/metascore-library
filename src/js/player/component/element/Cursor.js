@@ -196,7 +196,7 @@ export default class Cursor extends Element {
                 'loop-duration': {
                     'type': 'Time',
                     'configs': {
-                        'label': Locale.t('player.component.Cursor.loop-duration', 'Loop duration'),
+                        'label': Locale.t('player.component.element.Cursor.loop-duration', 'Loop duration'),
                         'clearButton': true
                     },
                     'getter': function(){
