@@ -44,3 +44,21 @@ export function normalize(value, start, stop) {
 export function map(value, input_start, input_stop, output_start, output_stop) {
     return output_start + (output_stop - output_start) * ((value - input_start) / (input_stop - input_start));
 }
+
+/**
+ * Convert a value from degrees to radians
+ *
+ * @param {float} value the value to convert
+ */
+export function radians(value) {
+    return value * Math.PI / 180;
+}
+
+/**
+ * Convert a value from radians to degrees
+ *
+ * @param {float} value the value to convert
+ */
+export function degrees(value) {
+    return value * 180 / Math.PI;
+}
