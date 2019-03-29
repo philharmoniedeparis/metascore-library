@@ -227,11 +227,11 @@ export default class Block extends Component {
                 },
                 'pages': {
                     'editable':false,
-                    'getter': function(skipDefault){
+                    'getter': function(skipDefault, skipID){
                         const pages = [];
 
                         this.getPages().forEach((page) => {
-                            pages.push(page.getPropertyValues(skipDefault));
+                            pages.push(page.getPropertyValues(skipDefault, skipID));
                         });
 
                         return pages;

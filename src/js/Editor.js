@@ -373,7 +373,8 @@ export default class Editor extends Dom {
                         }
 
                         elements.forEach((element) => {
-                            const config = element.getPropertyValues();
+                            const config = element.getPropertyValues(void 0, true);
+                            // Slightly move the copy by 5 pixels right and 5 pixels down.
                             config.x += 5;
                             config.y += 5;
 
@@ -544,7 +545,9 @@ export default class Editor extends Dom {
                     'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
                     'callback': (el) => {
                         const component = el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
-                        const config = component.getPropertyValues();
+                        const config = component.getPropertyValues(void 0, true);
+
+                        // Slightly move the copy by 5 pixels right and 5 pixels down.
                         config.x += 5;
                         config.y += 5;
 
