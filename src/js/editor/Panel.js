@@ -104,6 +104,7 @@ export default class Panel extends Dom {
         this
             .addDelegate('.fields .field', 'valuechange', this.onFieldValueChange.bind(this))
             .addDelegate('.fields .image.field', 'resize', this.onImageFieldResize.bind(this))
+            .addDelegate('.fields .image.field', 'filebrowser', this.onImageFieldFilebrowser.bind(this))
             .updateUI();
     }
 
@@ -679,6 +680,17 @@ export default class Panel extends Dom {
 
             this.triggerEvent('valueschange', values, false);
         });
+    }
+
+    /**
+     * The imagefields' filebrowser event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onImageFieldFilebrowser(evt){
+        // Add the master component properties to the event.
+        evt.detail.component = this.getComponent().getPropertyValues(false);
     }
 
     /**
