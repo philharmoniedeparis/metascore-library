@@ -1,4 +1,6 @@
 import Dom from '../core/Dom';
+import Draggable from '../core/ui/Draggable';
+import Resizable from '../core/ui/Resizable';
 import {isNumber, isFunction} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
@@ -19,6 +21,8 @@ export default class Component extends Dom {
      * @param {Object} configs Custom configs to override defaults
      * @property {String} [container=null] The Dom instance to which the component should be appended
      * @property {Integer} [index=null] The index position at which the component should be appended
+     * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
+     * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
      * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
@@ -74,6 +78,8 @@ export default class Component extends Dom {
             'id': `component-${uuid(10)}`,
             'container': null,
             'index': null,
+            'draggable': true,
+            'resizable': true,
             'properties': {
                 'id': {
                     'editable': false,
@@ -301,6 +307,93 @@ export default class Component extends Dom {
         this.setPropertyValue('hidden', !(typeof show === 'undefined' ? this.getPropertyValue('hidden') : show));
 
         return this;
+    }
+
+    /**
+     * Set/Unset the draggable behaviour
+     *
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {this}
+     */
+    setDraggable(draggable){
+        if(!this.configs.draggable){
+            return this;
+        }
+
+        if(this.getPropertyValue('locked') && draggable){
+            return this;
+        }
+
+        if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
+            this._draggable = new Draggable(this.getDraggableConfigs());
+        }
+        else if(!draggable && this._draggable){
+            this._draggable.destroy();
+            delete this._draggable;
+        }
+
+        return this;
+    }
+
+    getDraggableConfigs(){
+        return {
+            'target': this,
+            'handle': this
+        };
+    }
+
+    /**
+     * Get the draggable behaviour
+     *
+     * @return {Draggable} The draggable behaviour
+     */
+    getDraggable(){
+        return this._draggable;
+    }
+
+    /**
+     * Set/Unset the resizable behaviour
+     *
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {this}
+     */
+    setResizable(resizable){
+        if(!this.configs.resizable){
+            return this;
+        }
+
+        if(this.getPropertyValue('locked') && resizable){
+            return this;
+        }
+
+        if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
+            this._resizable = new Resizable({
+                'target': this
+            });
+        }
+        else if(!resizable && this._resizable){
+            this._resizable.destroy();
+            delete this._resizable;
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the resizable behaviour
+     *
+     * @return {Resizable} The resizable behaviour
+     */
+    getResizable(){
+        return this._resizable;
     }
 
     /**

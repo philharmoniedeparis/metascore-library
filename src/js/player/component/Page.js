@@ -38,6 +38,8 @@ export default class Page extends Component {
         const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
+            'draggable': false,
+            'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
                     'type': 'Color',
