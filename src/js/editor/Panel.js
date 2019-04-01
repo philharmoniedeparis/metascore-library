@@ -582,7 +582,7 @@ export default class Panel extends Dom {
     onComponentDragEnd(){
         const fields = ['x', 'y'];
 
-        this.refreshFieldValues(fields);
+        this.refreshFieldValues(fields, true);
 
         const values = this.components.map((component, index) => {
             const new_values = {};
@@ -641,7 +641,7 @@ export default class Panel extends Dom {
         const fields = ['x', 'y', 'width', 'height'];
         const new_values = {};
 
-        this.refreshFieldValues(fields);
+        this.refreshFieldValues(fields, true);
 
         fields.forEach((field) => {
             new_values[field] = component.getPropertyValue(field)
