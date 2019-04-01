@@ -9,6 +9,7 @@ import {className} from '../../../css/editor/field/Image.less';
  * An image field wich depends on an external file browser to function
  *
  * @emits {filebrowser} Fired when the external filebrowser should be opened
+ * @param {Object} field The field instance
  * @param {Function} callback The callback to invoke once a file is selected throught the external file browser
  * @emits {resize} Fired when the resize button is clicked
  * @param {Object} field The field instance
@@ -98,11 +99,14 @@ export default class Image extends Field {
             return;
         }
 
-        const details = {'callback': this.onFileSelect.bind(this)};
+        const data = {
+            'field': this,
+            'callback': this.onFileSelect.bind(this)
+        };
 
-        this.triggerEvent('filebrowser', details, true, false);
+        this.triggerEvent('filebrowser', data, true, false);
 
-        if('url' in details){
+        if('url' in data){
             /**
              * The file browser
              * @type {iFrame}
@@ -110,7 +114,7 @@ export default class Image extends Field {
             this.browser = new iFrame({
                 'parent': '.metaScore-editor',
                 'title': Locale.t('editor.field.Image.browser.title', 'Select file'),
-                'url': details.url,
+                'url': data.url,
                 'autoShow': true
             });
         }
