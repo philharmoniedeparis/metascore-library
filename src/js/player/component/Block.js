@@ -472,10 +472,10 @@ export default class Block extends Component {
 
         if(_page instanceof Page){
 			this.getPages().forEach((other_page) => {
-                other_page.removeClass('active');
+                other_page.deactivate();
             });
 
-            _page.addClass('active');
+            _page.activate();
 
             this.updatePager();
 

@@ -12,6 +12,10 @@ import CuePoint from './CuePoint';
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
+ *
+ * @emits {cuepointset} Fired when a cue point is set
+ * @param {Component} component The component instance
+ * @param {CuePoint} cuepoint The cuepoint
  */
 export default class Component extends Dom {
 
@@ -400,14 +404,16 @@ export default class Component extends Dom {
      * Set a cuepoint on the component
      *
      * @param {Object} configs Custom configs to override defaults
-     * @return {player.CuePoint} The created cuepoint
+     * @param {Boolean} [supressEvent=false] Whether to supress the cuepointset event
+     * @return {this}
      */
-    setCuePoint(configs){
+    setCuePoint(configs, supressEvent){
         const inTime = this.getPropertyValue('start-time');
         const outTime = this.getPropertyValue('end-time');
 
         if(this.cuepoint){
-            this.cuepoint.destroy();
+            this.cuepoint.deactivate();
+            delete this.cuepoint;
         }
 
         if(inTime !== null || outTime !== null){
@@ -420,22 +426,12 @@ export default class Component extends Dom {
                 'outTime': outTime
             }));
 
-            if(this.onCuePointStart){
-                this.cuepoint.addListener('start', this.onCuePointStart.bind(this));
+            if(supressEvent !== true){
+                this.triggerEvent('cuepointset', {'component': this, 'cuepoint': this.cuepoint});
             }
-
-            if(this.onCuePointUpdate){
-                this.cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
-            }
-
-            if(this.onCuePointStop){
-                this.cuepoint.addListener('stop', this.onCuePointStop.bind(this));
-            }
-
-            this.cuepoint.init();
         }
 
-        return this.cuepoint;
+        return this;
     }
 
     /**

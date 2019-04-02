@@ -343,6 +343,32 @@ export default class Cursor extends Element {
     }
 
     /**
+     * The cuepoint set event handler
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        const cuepoint = evt.detail.cuepoint;
+
+        cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
+
+        super.onCuePointSet(evt);
+    }
+
+    /**
+     * The cuepoint update event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCuePointStart(evt){
+        super.onCuePointStart(evt);
+
+        this.resizeCanvas();
+    }
+
+    /**
      * The cuepoint update event handler
      *
      * @private

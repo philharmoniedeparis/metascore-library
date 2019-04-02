@@ -145,7 +145,9 @@ export default class Page extends Component {
         // call parent function
         super.setupUI();
 
-        this.addClass('page');
+        this
+            .addClass('page')
+            .addListener('cuepointset', this.onCuePointSet.bind(this));
 
         return this;
     }
@@ -220,6 +222,53 @@ export default class Page extends Component {
         });
 
         return elements;
+    }
+
+    /**
+     * Activate the page and its elements
+     *
+     * @return {this}
+     */
+    activate(){
+        this.addClass('active');
+
+        this.getElements().forEach((element) => {
+            element.activate();
+        });
+
+        return this;
+    }
+
+    /**
+     * Deactivate the page and its elements
+     *
+     * @return {this}
+     */
+    deactivate(){
+        this.getElements().forEach((element) => {
+            element.deactivate();
+        });
+
+        this.removeClass('active');
+
+        return this;
+    }
+
+    /**
+     * The cuepoint set event handler
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        const cuepoint = evt.detail.cuepoint;
+
+        cuepoint
+            .addListener('start', this.onCuePointStart.bind(this))
+            .addListener('stop', this.onCuePointStop.bind(this))
+            .activate();
+
+        evt.stopPropagation();
     }
 
     /**

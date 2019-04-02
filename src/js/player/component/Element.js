@@ -273,7 +273,8 @@ export default class Element extends Component{
 
         this
             .addClass('element')
-            .addClass(this.constructor.getType());
+            .addClass(this.constructor.getType())
+            .addListener('cuepointset', this.onCuePointSet.bind(this));
 
         /**
          * The contents container
@@ -294,6 +295,52 @@ export default class Element extends Component{
         const dom = this.closest('.metaScore-component.page');
 
         return dom ? dom._metaScore : null;
+    }
+
+    /**
+     * Activate the element
+     *
+     * @return {this}
+     */
+    activate(){
+        const cuepoint = this.getCuePoint();
+
+        if(cuepoint){
+            cuepoint.activate();
+        }
+
+        return this;
+    }
+
+    /**
+     * Deactivate the element
+     *
+     * @return {this}
+     */
+    deactivate(){
+        const cuepoint = this.getCuePoint();
+
+        if(cuepoint){
+            cuepoint.deactivate();
+        }
+
+        return this;
+    }
+
+    /**
+     * The cuepoint set event handler
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        const cuepoint = evt.detail.cuepoint;
+
+        cuepoint
+            .addListener('start', this.onCuePointStart.bind(this))
+            .addListener('stop', this.onCuePointStop.bind(this));
+
+        evt.stopPropagation();
     }
 
     /**
