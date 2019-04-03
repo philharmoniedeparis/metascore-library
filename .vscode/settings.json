@@ -6,7 +6,6 @@
         "files.trimTrailingWhitespace": false
     },
     "files.exclude": {
-        "**/.vscode": true,
         "**/design": true,
         "**/dist": true,
         "**/docs": true,
