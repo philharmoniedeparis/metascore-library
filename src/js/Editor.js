@@ -19,6 +19,7 @@ import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
 import TimeField from './editor/field/Time';
 import Controller from './editor/Controller';
+import CursorKeyframesEditor from './editor/CursorKeyframesEditor';
 
 import {className} from '../css/Editor.less';
 
@@ -206,6 +207,8 @@ export default class Editor extends Dom {
 
         this.panels.element = new ElementPanel().appendTo(this.sidebar)
             .addListener('componentset', this.onElementSet.bind(this))
+            .addListener('cursoradvancededitmodeunlock', this.onElementPanelCursorAdvancedEditModeUnlock.bind(this))
+            .addListener('cursoradvancededitmodelock', this.onElementPanelCursorAdvancedEditModeLock.bind(this))
             .addListener('valueschange', this.onElementPanelValueChange.bind(this));
 
         this.panels.element.getToolbar()
@@ -1450,6 +1453,31 @@ export default class Editor extends Dom {
         player.setReadingIndex(element.getPropertyValue('r-index') || 0);
 
         evt.stopPropagation();
+    }
+
+    /**
+     * Element panel cursoradvancededitmodeunlock event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onElementPanelCursorAdvancedEditModeUnlock(evt){
+        const media = this.getPlayer().getMedia();
+        const component = evt.detail.component;
+
+        this._keyframes_editor = new CursorKeyframesEditor(component, media);
+    }
+
+    /**
+     * Element panel cursoradvancededitmodelock event callback
+     *
+     * @private
+     */
+    onElementPanelCursorAdvancedEditModeLock(){
+        if(this._keyframes_editor){
+            this._keyframes_editor.remove();
+            delete this._keyframes_editor;
+        }
     }
 
     /**

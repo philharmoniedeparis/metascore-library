@@ -340,7 +340,8 @@ body{
             pointer-events: none;
 
             .contents{
-                display: none;
+                visibility: hidden;
+                pointer-events: none;
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -366,7 +367,8 @@ body{
                     pointer-events: auto;
 
                     .contents{
-                        display: block;
+                        visibility: visible;
+                        pointer-events: auto;
                     }
                 }
             }
@@ -380,6 +382,20 @@ body{
                     position: absolute;
                     top: 0;
                     left: 0;
+                    width: 100% !important;
+                    height: 100% !important;
+
+                    &.keyframes-editor{
+                        cursor: url('../img/editor/cursorkeyframeseditor/cursors/add.png'), auto;
+
+                        &[data-state="remove"]{
+                            cursor: url('../img/editor/cursorkeyframeseditor/cursors/remove.png'), auto;
+                        }
+
+                        &[data-state="invalid"]{
+                            cursor: url('../img/editor/cursorkeyframeseditor/cursors/invalid.png'), auto;
+                        }
+                    }
                 }
 
                 &[data-form="circular"]{
@@ -428,6 +444,7 @@ body{
 
     /*
     * Special styles when embedded in editor
+    * @todo : move to a seperate file to be auto-inserted by the Editor
     */
     &.in-editor{
         margin: 0;
@@ -556,6 +573,12 @@ body{
 
                         &.Cursor{
                             box-shadow: @cursor-outline 0px 0px 4px 1px;
+
+                            &.resizing{
+                                canvas{
+                                    opacity: 0.25;
+                                }
+                            }
                         }
 
                         &.Image{
@@ -586,7 +609,8 @@ body{
 
                         &.text-unlocked{
                             .contents{
-                                display: block;
+                                visibility: visible;
+                                pointer-events: auto;
                                 user-select: auto;
                             }
                         }
@@ -600,7 +624,8 @@ body{
                      * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
                      */
                     .contents{
-                        display: block;
+                        visibility: visible;
+                        pointer-events: auto;
                     }
                 }
             }

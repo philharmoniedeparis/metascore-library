@@ -43,10 +43,10 @@ export default class Text extends Element {
 
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
-                'text-locked': {
+                'edit-text': {
                     'type': 'Checkbox',
                     'configs': {
-                        'label': Locale.t('player.component.element.Text.locked', 'Text locked?')
+                        'label': Locale.t('player.component.element.Text.edit-text', 'Edit text')
                     }
                 },
                 'text': {
