@@ -191,6 +191,10 @@ export default class Page extends Component {
             }, element));
         }
 
+        if(this.active){
+            element.activate();
+        }
+
         if(supressEvent !== true){
             this.triggerEvent('elementadd', {'page': this, 'element': element, 'new': !existing});
         }
@@ -236,6 +240,8 @@ export default class Page extends Component {
             element.activate();
         });
 
+        this.active = true;
+
         return this;
     }
 
@@ -245,6 +251,8 @@ export default class Page extends Component {
      * @return {this}
      */
     deactivate(){
+        delete this.active;
+
         this.getElements().forEach((element) => {
             element.deactivate();
         });

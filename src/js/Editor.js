@@ -1465,18 +1465,21 @@ export default class Editor extends Dom {
         const media = this.getPlayer().getMedia();
         const component = evt.detail.component;
 
-        this._keyframes_editor = new CursorKeyframesEditor(component, media);
+        component._keyframes_editor = new CursorKeyframesEditor(component, media);
     }
 
     /**
      * Element panel cursoradvancededitmodelock event callback
      *
      * @private
+     * @param {CustomEvent} evt The event object
      */
-    onElementPanelCursorAdvancedEditModeLock(){
-        if(this._keyframes_editor){
-            this._keyframes_editor.remove();
-            delete this._keyframes_editor;
+    onElementPanelCursorAdvancedEditModeLock(evt){
+        const component = evt.detail.component;
+
+        if(component._keyframes_editor){
+            component._keyframes_editor.remove();
+            delete component._keyframes_editor;
         }
     }
 

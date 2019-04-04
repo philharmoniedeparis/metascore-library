@@ -309,6 +309,8 @@ export default class Element extends Component{
             cuepoint.activate();
         }
 
+        this.active = true;
+
         return this;
     }
 
@@ -318,8 +320,9 @@ export default class Element extends Component{
      * @return {this}
      */
     deactivate(){
-        const cuepoint = this.getCuePoint();
+        delete this.active;
 
+        const cuepoint = this.getCuePoint();
         if(cuepoint){
             cuepoint.deactivate();
         }
@@ -339,6 +342,10 @@ export default class Element extends Component{
         cuepoint
             .addListener('start', this.onCuePointStart.bind(this))
             .addListener('stop', this.onCuePointStop.bind(this));
+
+        if(this.active){
+            cuepoint.activate();
+        }
 
         evt.stopPropagation();
     }
