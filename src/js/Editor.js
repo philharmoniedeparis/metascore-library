@@ -19,7 +19,6 @@ import GuideSelector from './editor/overlay/GuideSelector';
 import Share from './editor/overlay/Share';
 import TimeField from './editor/field/Time';
 import Controller from './editor/Controller';
-import CursorKeyframesEditor from './editor/CursorKeyframesEditor';
 
 import {className} from '../css/Editor.less';
 
@@ -207,8 +206,7 @@ export default class Editor extends Dom {
 
         this.panels.element = new ElementPanel().appendTo(this.sidebar)
             .addListener('componentset', this.onElementSet.bind(this))
-            .addListener('cursoradvancededitmodeunlock', this.onElementPanelCursorAdvancedEditModeUnlock.bind(this))
-            .addListener('cursoradvancededitmodelock', this.onElementPanelCursorAdvancedEditModeLock.bind(this))
+            .addListener('beforecursoradvancededitmodeunlock', this.onElementPanelBeforeCursorAdvancedEditModeUnlock.bind(this))
             .addListener('valueschange', this.onElementPanelValueChange.bind(this));
 
         this.panels.element.getToolbar()
@@ -1456,31 +1454,13 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Element panel cursoradvancededitmodeunlock event callback
+     * Element panel beforecursoradvancededitmodeunlock event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onElementPanelCursorAdvancedEditModeUnlock(evt){
-        const media = this.getPlayer().getMedia();
-        const component = evt.detail.component;
-
-        component._keyframes_editor = new CursorKeyframesEditor(component, media);
-    }
-
-    /**
-     * Element panel cursoradvancededitmodelock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onElementPanelCursorAdvancedEditModeLock(evt){
-        const component = evt.detail.component;
-
-        if(component._keyframes_editor){
-            component._keyframes_editor.remove();
-            delete component._keyframes_editor;
-        }
+    onElementPanelBeforeCursorAdvancedEditModeUnlock(evt){
+        evt.detail.media = this.getPlayer().getMedia();
     }
 
     /**

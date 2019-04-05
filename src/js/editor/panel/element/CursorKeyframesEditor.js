@@ -1,6 +1,6 @@
-import Dom from '../core/Dom';
-import TimeField from '../editor/field/Time';
-import {isEmpty} from '../core/utils/Var';
+import Dom from '../../../core/Dom';
+import TimeField from '../../../editor/field/Time';
+import {isEmpty} from '../../../core/utils/Var';
 
 /**
  * A helper class to manage a cursor component's keyframes

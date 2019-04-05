@@ -2,6 +2,7 @@ import Dom from '../../core/Dom';
 import Panel from '../Panel';
 import Locale from '../../core/Locale';
 import {getImageMetadata} from '../../core/utils/Media';
+import CursorKeyframesEditor from './element/CursorKeyframesEditor';
 
 /**
  * A panel for Element components
@@ -12,11 +13,7 @@ import {getImageMetadata} from '../../core/utils/Media';
  * @emits {textunlock} Fired when a component's text is unlocked
  * @param {Object} component The component instance
  *
- * @emits {cursoradvancededitmodelock} Fired when a cursor component's advanced edit mode is locked
- * @param {Object} component The component instance
- *
- * @emits {cursoradvancededitmodeunlock} Fired when a cursor component's advanced edit mode is unlocked
- * @param {Object} component The component instance
+ * @emits {beforecursoradvancededitmodeunlock} Fired when a cursor component's advanced edit mode is locked
  */
 export default class Element extends Panel {
 
@@ -113,13 +110,21 @@ export default class Element extends Panel {
                 }
             }
             else if(component.instanceOf('Cursor')){
-                if(name === 'keyframes-edit-mode'){
-                    if(value === true){
-                        this.unlockCursorAdvancedEditMode(component);
-                    }
-                    else{
-                        this.lockCursorAdvancedEditMode(component);
-                    }
+                switch(name){
+                    case 'keyframes-edit-mode':
+                        if(value === true){
+                            this.unlockCursorAdvancedEditMode();
+                        }
+                        else{
+                            this.lockCursorAdvancedEditMode();
+                        }
+                        break;
+
+                    case 'form':
+                    case 'mode':
+                        this.lockCursorAdvancedEditMode();
+                        break;
+
                 }
             }
 
@@ -375,13 +380,15 @@ export default class Element extends Panel {
      * Lock a cursor component's advance edit mode
      *
      * @param {Component} component The component
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    lockCursorAdvancedEditMode(component, supressEvent){
-        if(supressEvent !== true){
-            this.triggerEvent('cursoradvancededitmodelock', {'component': component}, false);
-        }
+    lockCursorAdvancedEditMode(){
+        this.components.forEach((component) => {
+            if(component._keyframes_editor){
+                component._keyframes_editor.remove();
+                delete component._keyframes_editor;
+            }
+        });
 
         return this;
     }
@@ -393,9 +400,17 @@ export default class Element extends Panel {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    unlockCursorAdvancedEditMode(component, supressEvent){
-        if(supressEvent !== true){
-            this.triggerEvent('cursoradvancededitmodeunlock', {'component': component}, false);
+    unlockCursorAdvancedEditMode(){
+        const data = {};
+
+        this.triggerEvent('beforecursoradvancededitmodeunlock', data, false);
+
+        if('media' in data){
+            this.components.forEach((component) => {
+                if(component.instanceOf('Cursor')){
+                    component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
+                }
+            });
         }
 
         return this;
