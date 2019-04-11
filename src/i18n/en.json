@@ -89,7 +89,7 @@
 	"editor.onMainmenuClick.open.msg": "Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>",
 	"editor.onMainmenuClick.open.no": "No",
 	"editor.onMainmenuClick.open.yes": "Yes",
-	"editor.onMainmenuClick.publish.msg": "This action will make this version the public version.<br/>Are you sure you want to continue?",
+	"editor.onMainmenuClick.publish.msg": "This action will make this version the public version.<br/><br/>All productions made using metaScore that you publish on your websites must have been made from recordings, scores and images for which: either you have verified that they are free of copyright, or you have aquired the authorization to use them from the rights holders. The Cité de la musique - Philharmonie de Paris cannot be held liable in cas of copyright infringement.<br/><br/>Are you sure you want to continue?",
 	"editor.onMainmenuClick.publish.no": "No",
 	"editor.onMainmenuClick.publish.yes": "Yes",
 	"editor.onMainmenuClick.revert.msg": "Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>",
