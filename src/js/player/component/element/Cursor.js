@@ -457,16 +457,14 @@ export default class Cursor extends Element {
         const start_time = this.getPropertyValue('start-time');
         const end_time = this.getPropertyValue('end-time');
         const direction = this.getPropertyValue('direction');
-        const start_angle = radians(this.getPropertyValue('start-angle'));
+        const start_angle = this.getPropertyValue('start-angle');
         const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
         const cursor_width = this.getPropertyValue('cursor-width');
         const cursor_color = this.getPropertyValue('cursor-color');
 
-        let angle = start_angle;
-        angle += map(this.current_time - start_time, 0, loop_duration, 0, 2 * Math.PI);
-        if(direction === 'ccw'){
-            angle *= -1;
-        }
+        let angle = radians(start_angle); //
+        angle += Math.PI / 2; // Adjust the angle so that 0 start at top
+        angle += map(this.current_time - start_time, 0, loop_duration, 0, 2 * Math.PI) * (direction === 'ccw' ? -1 : 1);
 
         const centre = {
             x: width / 2,
@@ -480,7 +478,7 @@ export default class Cursor extends Element {
 
         // Draw the cursor line.
         this.context.save();
-        this.context.translate(0.5, 0.5);
+        this.context.translate(0.5, 0.5); // Translate by 0.5 px in both direction for anti-aliasing
         this.context.beginPath();
         this.context.moveTo(centre.x, centre.y);
         this.context.lineTo(point.x, point.y);
