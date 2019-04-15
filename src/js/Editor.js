@@ -3155,9 +3155,14 @@ export default class Editor extends Dom {
                     formdata.append(`files[${key}]`, value.object);
                 }
                 else if(isArray(value)){
-                    value.forEach((val) => {
-                        formdata.append(`${key}[]`, isObject(val) ? JSON.stringify(val) : val);
-                    });
+                    if(isEmpty(value)){
+                        formdata.append(`${key}[]`, null);
+                    }
+                    else{
+                        value.forEach((val) => {
+                            formdata.append(`${key}[]`, isObject(val) ? JSON.stringify(val) : val);
+                        });
+                    }
                 }
                 else if(isObject(value)){
                     formdata.append(key, JSON.stringify(value));

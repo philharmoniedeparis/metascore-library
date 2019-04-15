@@ -30,7 +30,7 @@ export default class GuideDetails extends Overlay {
      * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
      * @property {String} [title='Guide Info'] The overlay's title
      * @property {String} [submit_text='Save'] The overlay's submit button label
-     * @property {Object} [groups={}] The groups the user belongs to
+     * @property {Array} [groups=[]] The groups the user belongs to
      */
     constructor(configs) {
         // call parent constructor
@@ -65,7 +65,7 @@ export default class GuideDetails extends Overlay {
             'thumbnail_upload_max_filesize': 0,
             'media_upload_extensions': ['mp4', 'mp3'],
             'media_upload_max_filesize': 0,
-            'groups': {},
+            'groups': [],
             'submit_text': Locale.t('editor.overlay.GuideDetails.submitText', 'Save')
         });
     }
@@ -251,16 +251,6 @@ export default class GuideDetails extends Overlay {
             const field = this.getField(name);
 
             if(field){
-                if(name === 'shared_with'){
-                    field.clear();
-
-                    if(values.available_groups){
-                        Object.entries(values.available_groups).forEach(([gid, group_name]) => {
-                            field.addOption(gid, group_name);
-                        });
-                    }
-                }
-
                 field.setValue(value, supressEvent);
             }
         });
