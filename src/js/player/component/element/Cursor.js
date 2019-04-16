@@ -351,7 +351,6 @@ export default class Cursor extends Element {
      */
     onResizeEnd(){
         this.resizeCanvas();
-        this.draw();
     }
 
     /**
@@ -364,13 +363,16 @@ export default class Cursor extends Element {
         const form = this.getPropertyValue('form');
 
         switch(form){
-            case 'circular':
+            case 'circular': {
+                const angle = this.getCircularAngleFromMouse(evt);
+                const time = this.getTimeFromCircularAngle(angle);
+                this.triggerEvent('time', {'element': this, 'time': time});
                 break;
+            }
 
             default: {
-                const position = this.getLinearPositionFromClick(evt);
-                const time = this.getTimeFromLinearPosition(position.x, position.y);
-
+                const pos = this.getLinearPositionFromMouse(evt);
+                const time = this.getTimeFromLinearPosition(pos.x, pos.y);
                 this.triggerEvent('time', {'element': this, 'time': time});
                 break;
             }
@@ -413,6 +415,18 @@ export default class Cursor extends Element {
         this.current_time = evt.target.getMedia().getTime();
 
         this.draw();
+    }
+
+    /**
+     * The cuepoint stop event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCuePointStop(evt){
+        super.onCuePointStop(evt);
+
+        this.current_time = null;
     }
 
     /**
@@ -497,53 +511,19 @@ export default class Cursor extends Element {
     }
 
     /**
-     * Draw a circular cursor
+     * Helper function to get a position on a linear cursor corresponding to a mouse position
      *
-     * @return {this}
+     * @private
+     * @param {Event} evt The mouse click event
+     * @returns {Object} The x and y position
      */
-    drawCircularCursor(){
-        const width = this.canvas.width;
-        const height = this.canvas.height;
+    getLinearPositionFromMouse(evt){
+        const rect = this.canvas.getBoundingClientRect();
 
-        const border_width = this.getPropertyValue('border-width');
-        const start_time = this.getPropertyValue('start-time');
-        const end_time = this.getPropertyValue('end-time');
-        const direction = this.getPropertyValue('direction');
-        const start_angle = radians(this.getPropertyValue('start-angle'));
-        const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
-        const cursor_width = this.getPropertyValue('cursor-width');
-        const cursor_color = this.getPropertyValue('cursor-color');
-
-        let angle = start_angle;
-        angle += map(this.current_time - start_time, 0, loop_duration, 0, 2 * Math.PI);
-        if(direction === 'ccw'){
-            angle *= -1;
-        }
-
-        const centre = {
-            x: width / 2,
-            y: height / 2
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
         };
-
-        const point = {
-            x: centre.x - ((width / 2 + border_width) * Math.cos(angle)),
-            y: centre.y - ((height / 2 + border_width) * Math.sin(angle))
-        };
-
-        // Draw the cursor line.
-        this.context.save();
-        this.context.translate(0.5, 0.5);
-        this.context.beginPath();
-        this.context.moveTo(centre.x, centre.y);
-        this.context.lineTo(point.x, point.y);
-        this.context.lineCap = "round";
-        this.context.lineWidth = cursor_width;
-        this.context.strokeStyle = cursor_color;
-        this.context.stroke();
-        this.context.closePath();
-        this.context.restore();
-
-        return this;
     }
 
     /**
@@ -564,8 +544,9 @@ export default class Cursor extends Element {
     /**
      * Helper function to get a position on a linear cursor corresponding to a media time
      *
+     * @private
      * @param {Number} time The media time in centiseconds
-     * @return {Object} The position on the cursor with x and y properties
+     * @returns {Object} The x and y position
      */
     getLinearPositionFromTime(time){
         const direction = this.getPropertyValue('direction');
@@ -633,9 +614,10 @@ export default class Cursor extends Element {
     /**
      * Helper function to get the media time corresponding to a position on the cursor
      *
-     * @param {Number} x The position on the cursor's horizontal axis
-     * @param {Number} y The position on the cursor's vertical axis
-     * @return {Number} The corresponding time
+     * @private
+     * @param {Number} x The position on the horizontal axis
+     * @param {Number} y The position on the vertical axis
+     * @returns {Number} The corresponding media time
      */
     getTimeFromLinearPosition(x, y){
         const width = this.canvas.width;
@@ -666,4 +648,116 @@ export default class Cursor extends Element {
                 return map(value, 0, width, start_time, end_time);
         }
     }
+
+    /**
+     * Draw a circular cursor
+     *
+     * @return {this}
+     */
+    drawCircularCursor(){
+        const width = this.canvas.width;
+        const height = this.canvas.height;
+
+        const border_width = this.getPropertyValue('border-width');
+        const cursor_width = this.getPropertyValue('cursor-width');
+        const cursor_color = this.getPropertyValue('cursor-color');
+
+        const angle = this.getCircularAngleFromTime(this.current_time);
+
+        const centre = {
+            x: width / 2,
+            y: height / 2
+        };
+
+        const point = {
+            x: centre.x - ((width / 2 + border_width) * Math.cos(angle)),
+            y: centre.y - ((height / 2 + border_width) * Math.sin(angle))
+        };
+
+        // Draw the cursor line.
+        this.context.save();
+        this.context.translate(0.5, 0.5); // Translate by 0.5 px in both direction for anti-aliasing
+        this.context.beginPath();
+        this.context.moveTo(centre.x, centre.y);
+        this.context.lineTo(point.x, point.y);
+        this.context.lineCap = "round";
+        this.context.lineWidth = cursor_width;
+        this.context.strokeStyle = cursor_color;
+        this.context.stroke();
+        this.context.closePath();
+        this.context.restore();
+
+        return this;
+    }
+
+    /**
+     * Helper function to get an angle on a circular cursor corresponding to a mouse position
+     *
+     * @private
+     * @param {Event} evt The mouse click event
+     * @returns {Number} The angle in radians
+     */
+    getCircularAngleFromMouse(evt){
+        const pos = this.getLinearPositionFromMouse(evt);
+        const direction = this.getPropertyValue('direction');
+
+        let x = pos.x;
+        x -= this.canvas.width/2;
+        x *= direction === 'ccw' ? -1 : 1;
+
+        let y = pos.y;
+        y -= this.canvas.height/2;
+
+        return Math.atan2(y, x) + Math.PI;
+    }
+
+    /**
+     * Helper function to get an angle on a circular cursor corresponding to a media time
+     *
+     * @private
+     * @param {Number} time The media time in centiseconds
+     * @returns {Number} The angle in radians
+     */
+    getCircularAngleFromTime(time){
+        const start_time = this.getPropertyValue('start-time');
+        const end_time = this.getPropertyValue('end-time');
+        const direction = this.getPropertyValue('direction');
+        const start_angle = radians(this.getPropertyValue('start-angle'));
+        const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
+
+        let angle = start_angle;
+        angle += Math.PI / 2; // Adjust the angle so that 0 start at top
+        angle += map(time - start_time, 0, loop_duration, 0, Math.PI * 2) * (direction === 'ccw' ? -1 : 1);
+
+        return angle;
+    }
+
+    /**
+     * Helper function to get the media time corresponding to an angle in a circular cursor
+     *
+     * @private
+     * @param {Number} a The angle in radians
+     * @returns {Number} The corresponding media time
+     */
+    getTimeFromCircularAngle(a){
+        const start_time = this.getPropertyValue('start-time');
+        const end_time = this.getPropertyValue('end-time');
+        const start_angle = radians(this.getPropertyValue('start-angle'));
+        const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
+
+        let angle = a;
+        angle -= Math.PI / 2; // Adjust the angle so that 0 start at top
+        angle -= start_angle;
+
+        let time = map(angle, 0, Math.PI * 2, 0, loop_duration);
+        time += start_time;
+
+        if(this.current_time !== null){
+            const current_loop = Math.floor((this.current_time - start_time) / loop_duration);
+            time += loop_duration * current_loop;
+        }
+
+        return time;
+    }
+
 }
