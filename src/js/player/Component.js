@@ -1,5 +1,5 @@
 import Dom from '../core/Dom';
-import {isNumber} from '../core/utils/Var';
+import {isNumber, isFunction} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
 
@@ -25,11 +25,21 @@ export default class Component extends Dom {
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
+        // Get default configs.
+        const defaults = this.constructor.getDefaults();
+
+        // Add default property values.
+        Object.entries(defaults.properties).forEach(([name, property]) => {
+            if('default' in property){
+                defaults[name] = property.default;
+            }
+        });
+
         /**
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, defaults, configs);
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
@@ -219,9 +229,17 @@ export default class Component extends Dom {
         }
 
 		Object.entries(this.getProperties()).forEach(([name, prop]) => {
+            // Skip if this is an id property and the skipID argument is true.
             if(skipID === true && name === 'id'){
                 return;
             }
+
+            // Skip if this property does not apply.
+            if('applies' in prop && isFunction(prop.applies) && !prop.applies.call(this)){
+                return;
+            }
+
+            // Return the value retreived from the property's getter.
             if('getter' in prop){
                 const value = prop.getter.call(this, _skipDefaults, skipID);
 

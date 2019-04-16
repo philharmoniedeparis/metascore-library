@@ -375,56 +375,19 @@ body{
                 z-index: 9999;
                 pointer-events: auto;
 
-                .cursor{
+                canvas{
                     position: absolute;
-                    background-color: rgb(0, 0, 0);
+                    top: 0;
+                    left: 0;
                 }
 
-                &:not([data-direction]),
-                &[data-direction="right"]{
-                    .cursor{
-                        width: 1px;
-                        height: 100% !important;
-                        top: initial !important;
-                        right: initial !important;
-                        bottom: initial !important;
-                        left: 0;
-                    }
-                }
-
-                &[data-direction="left"]{
-                    .cursor{
-                        width: 1px;
-                        height: 100% !important;
-                        top: initial !important;
-                        right: 0;
-                        bottom: initial !important;
-                        left: initial !important;
-                    }
-                }
-
-                &[data-direction="bottom"]{
-                    .cursor{
-                        width: 100% !important;
-                        height: 1px;
-                        top: 0;
-                        right: initial !important;
-                        bottom: initial !important;
-                        left: initial !important;
-                    }
-                }
-
-                &[data-direction="top"]{
-                    .cursor{
-                        width: 100% !important;
-                        height: 1px;
-                        top: initial !important;
-                        right: initial !important;
-                        bottom: 0;
-                        left: initial !important;
+                &[data-form="circular"]{
+                    .contents{
+                        border-radius: 100% !important;
                     }
                 }
             }
+
             &.Text{
                 .contents{
                     overflow: auto;

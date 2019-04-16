@@ -153,18 +153,66 @@ export default class Panel extends Dom {
 
             this.refreshFieldValues(Object.keys(this.fields), true);
 
-            // hide fields that are not common with all components
-            Object.entries(this.getField()).forEach(([name]) => {
-                const common = this.components.every((component) => {
-                    return component.hasProperty(name) && component.getProperty(name).editable !== false;
-                });
-
-                this[`${common ? 'show' : 'hide'}Field`](name);
-            });
+            this.updateFieldsVisibility();
         }
 
         this.toggleClass('has-component', has_components);
         this.getToolbar().toggleMenuItem('delete', has_components);
+
+        return this;
+    }
+
+    /**
+     * Show fields that are not common to all components and hide those that are not.
+     *
+     * @private
+     * @return {this}
+     */
+    updateFieldsVisibility(){
+        Object.entries(this.getField()).forEach(([name, field]) => {
+            const common = this.components.every((component) => {
+                // Check that the component has the given property
+                if(!component.hasProperty(name)){
+                    return false;
+                }
+
+                const prop = component.getProperty(name);
+
+                // Check that the given property is editable.
+                if('editable' in prop && prop.editable === false){
+                    return false;
+                }
+
+                // Check that the given property applies.
+                if('applies' in prop && isFunction(prop.applies) && !prop.applies.call(component)){
+                    return false;
+                }
+
+                // Update Select field options.
+                if(field instanceof FIELD_TYPES.Select){
+                    field.configs.options.forEach((opt) => {
+                        if('applies' in opt && isFunction(opt.applies)){
+                            const option = field.getOption(opt.value);
+                            const hidden = option.hidden();
+
+                            if(opt.applies.call(component)){
+                                if(hidden){
+                                    field.setValue(null);
+                                    option.show();
+                                }
+                            }
+                            else if(!hidden){
+                                option.hide();
+                            }
+                        }
+                    });
+                }
+
+                return true;
+            });
+
+            this[`${common ? 'show' : 'hide'}Field`](name);
+        });
 
         return this;
     }
@@ -212,7 +260,12 @@ export default class Panel extends Dom {
      * @return {this}
      */
     showField(name){
-        this.getField(name).show();
+        const field = this.getField(name);
+
+        if(field.hidden()){
+            field.show();
+            this.refreshFieldValue(name);
+        }
 
         return this;
     }
@@ -465,6 +518,10 @@ export default class Panel extends Dom {
                 break;
         }
 
+        this.updateFieldsVisibility();
+
+        // If this is the only component or the master one,
+        // refresh the field value.
         if(component === this.getComponent()){
             this.refreshFieldValue(property, true);
         }
@@ -534,7 +591,7 @@ export default class Panel extends Dom {
     onComponentDragEnd(){
         const fields = ['x', 'y'];
 
-        this.refreshFieldValues(fields, true);
+        this.refreshFieldValues(fields);
 
         const values = this.components.map((component, index) => {
             const new_values = {};
@@ -593,7 +650,7 @@ export default class Panel extends Dom {
         const fields = ['x', 'y', 'width', 'height'];
         const new_values = {};
 
-        this.refreshFieldValues(fields, true);
+        this.refreshFieldValues(fields);
 
         fields.forEach((field) => {
             new_values[field] = component.getPropertyValue(field)

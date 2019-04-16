@@ -22,6 +22,7 @@ export default class BorderRadius extends Overlay {
      * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
      * @property {String} [title='Border Radius'] The overlay's title
+     * @property {String} [format="css"] The format of the value (css, object)
      */
     constructor(configs) {
         // call parent constructor
@@ -39,7 +40,8 @@ export default class BorderRadius extends Overlay {
         return Object.assign({}, super.getDefaults(), {
             'parent': '.metaScore-editor',
             'toolbar': true,
-            'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius')
+            'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius'),
+            'format': 'css'
         });
     }
 
@@ -219,7 +221,22 @@ export default class BorderRadius extends Overlay {
      * @return {String} The value in CSS border-radius format
      */
     getValue() {
-        return this.preview.css('border-radius');
+        switch(this.configs.format){
+            case 'object':
+                return {
+                    tlw: this.fields.tlw.getValue(),
+                    trw: this.fields.trw.getValue(),
+                    brw: this.fields.brw.getValue(),
+                    blw: this.fields.blw.getValue(),
+                    tlh: this.fields.tlh.getValue(),
+                    trh: this.fields.trh.getValue(),
+                    brh: this.fields.brh.getValue(),
+                    blh: this.fields.blh.getValue()
+                };
+
+            default:
+                return this.preview.css('border-radius');
+        }
     }
 
     /**
