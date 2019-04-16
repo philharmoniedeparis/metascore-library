@@ -455,10 +455,19 @@ export default class Editor extends Dom {
                         return (el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
                     }
                 },
-                'add-page': {
-                    'text': Locale.t('editor.contextmenu.add-page', 'Add a page'),
+                'add-page-before': {
+                    'text': Locale.t('editor.contextmenu.add-page-before', 'Add a page before'),
                     'callback': (el) => {
-                        this.addPlayerComponents('page', {}, el.closest('.metaScore-component.block')._metaScore);
+                        this.addPlayerComponents('page', {'position': 'before'}, el.closest('.metaScore-component.block')._metaScore);
+                    },
+                    'toggler': (el) => {
+                        return (this.editing === true) && (el.closest('.metaScore-component.block') ? true : false);
+                    }
+                },
+                'add-page-after': {
+                    'text': Locale.t('editor.contextmenu.add-page-after', 'Add a page after'),
+                    'callback': (el) => {
+                        this.addPlayerComponents('page', {'position': 'after'}, el.closest('.metaScore-component.block')._metaScore);
                     },
                     'toggler': (el) => {
                         return (this.editing === true) && (el.closest('.metaScore-component.block') ? true : false);
@@ -1394,9 +1403,15 @@ export default class Editor extends Dom {
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
-            case 'new': {
+            case 'new-before': {
                 const block = this.panels.block.getComponent();
-                this.addPlayerComponents('page', {}, block);
+                this.addPlayerComponents('page', {'position': 'before'}, block);
+                break;
+            }
+
+            case 'new-after': {
+                const block = this.panels.block.getComponent();
+                this.addPlayerComponents('page', {'position': 'after'}, block);
                 break;
             }
 
@@ -2611,15 +2626,14 @@ export default class Editor extends Dom {
      *
      * @private
      * @param {String} type The components' type
-     * @param {Array} configs An array of configs to use when creating the components
+     * @param {Mixed} config A config or an array of configs to use when creating the component(s)
      * @param {Mixed} parent The components' parent
      * @return {this}
      */
-    addPlayerComponents(type, configs, parent){
-        const _configs = isArray(configs) ? configs : [configs];
-
+    addPlayerComponents(type, config, parent){
         switch(type){
             case 'element': {
+                const configs = isArray(config) ? config : [config];
                 const page = parent;
                 const panel = this.panels.element;
                 const components = [];
@@ -2627,8 +2641,8 @@ export default class Editor extends Dom {
                 this.panels.block.setComponent(page.getBlock());
                 this.panels.page.setComponent(page);
 
-                _configs.forEach((config, index) => {
-                    const component = page.addElement(config);
+                configs.forEach((element_config, index) => {
+                    const component = page.addElement(element_config);
                     panel.setComponent(component, index > 0);
                     components.push(component);
                 });
@@ -2653,9 +2667,11 @@ export default class Editor extends Dom {
             case 'page': {
                 const block = parent;
                 const panel = this.panels.page;
-                const config = _configs[0]; // only one page can be added at a time !
+                const before = 'position' in config  && config.position === 'before';
                 const index = block.getActivePageIndex();
                 let current_time = null;
+
+                delete config.position;
 
                 if(block.getPropertyValue('synched')){
                     const media = this.getPlayer().getMedia();
@@ -2677,53 +2693,55 @@ export default class Editor extends Dom {
                         break;
                     }
 
-                    const previous_page = block.getPage(index);
-                    config['start-time'] = current_time;
-                    config['end-time'] = previous_page.getPropertyValue('end-time');
-
-                    previous_page.setPropertyValue('end-time', current_time);
+                    const adjacent_page = block.getPage(index);
+                    config['start-time'] = before ? adjacent_page.getPropertyValue('start-time') : current_time;
+                    config['end-time'] = before ? current_time : adjacent_page.getPropertyValue('end-time');
+                    adjacent_page.setPropertyValue(before ? 'start-time' : 'end-time', current_time);
                 }
 
-                const component = block.addPage(config, index + 1);
-                block.setActivePage(index + 1);
+                const component = block.addPage(config, before ? index : index + 1);
+                block.setActivePage(index);
 
                 this.history.add({
                     'undo': function(){
                         panel.unsetComponents();
                         if(block.getPropertyValue('synched')){
-                            const previous_page = block.getPage(index);
-                            previous_page.setPropertyValue('end-time', component.getPropertyValue('end-time'));
+                            const adjacent_page = block.getPage(before ? index + 1 : index);
+                            const prop = before ? 'start-time' : 'end-time';
+                            adjacent_page.setPropertyValue(prop, component.getPropertyValue(prop));
                         }
                         block.removePage(component);
                         block.setActivePage(index);
                     },
                     'redo': function(){
                         if(block.getPropertyValue('synched')){
-                            const previous_page = block.getPage(index);
-                            previous_page.setPropertyValue('end-time', current_time);
+                            const adjacent_page = block.getPage(index);
+                            const prop = before ? 'start-time' : 'end-time';
+                            adjacent_page.setPropertyValue(prop, current_time);
                         }
-                        block.addPage(component, index + 1);
-                        block.setActivePage(index + 1);
+                        block.addPage(component, before ? index : index + 1);
+                        block.setActivePage(index);
                     }
                 });
                 break;
             }
 
             case 'block': {
+                const configs = isArray(config) ? config : [config];
                 const player = parent;
                 const panel = this.panels.block;
                 const components = [];
 
-                _configs.forEach((config, index) => {
+                configs.forEach((block_config, index) => {
                     let component = null;
 
-                    switch(config.type){
+                    switch(block_config.type){
                         case 'BlockToggler':
-                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, config));
+                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, block_config));
                             break;
 
                         default: {
-                            component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, config));
+                            component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, block_config));
                         }
                     }
 
