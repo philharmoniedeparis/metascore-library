@@ -516,7 +516,45 @@ export default class Dom {
                         bl.length > 1 ? bl[1] : bl[0] // bottom-left height
                     ];
 
-                    new_value = `${widths.join(' ')} / ${heights.join(' ')}`;
+
+                    if(heights.every((v, i) => v===widths[i])){
+                        // All hights are the same as width, remove them.
+                        heights.splice(0, 4);
+                    }
+                    // Remove unnessecary height values for the shortest syntax.
+                    else if(heights.every((v, i, a) => v===a[0])){
+                        // All hights are at 0, remove them.
+                        if(parseInt(heights[0], 10) === 0){
+                            heights.splice(0, 4);
+                        }
+
+                        // Same for all sides.
+                        heights.splice(1, 3);
+                    }
+                    else if(heights[0] === heights[2] && heights[1] === heights[3]){
+                        // top-left-and-bottom-right | top-right-and-bottom-left
+                        heights.splice(3, 1).splice(1, 1);
+                    }
+                    else if(heights[1] === heights[3]){
+                        // top-left | top-right-and-bottom-left | bottom-right
+                        heights.splice(3, 1);
+                    }
+
+                    // Remove unnessecary width values for the shortest syntax.
+                    if(widths.every((v, i, a) => v===a[0])){
+                        // same for all sides
+                        widths.splice(1, 3);
+                    }
+                    else if(widths[0] === widths[2] && widths[1] === widths[3]){
+                        // top-left-and-bottom-right | top-right-and-bottom-left
+                        widths.splice(3, 1).splice(1, 1);
+                    }
+                    else if(widths[1] === widths[3]){
+                        // top-left | top-right-and-bottom-left | bottom-right
+                        widths.splice(3, 1);
+                    }
+
+                    new_value = heights.length > 0 ? `${widths.join(' ')} / ${heights.join(' ')}` : widths.join(' ');
                     break;
                 }
             }

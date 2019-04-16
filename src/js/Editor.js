@@ -916,10 +916,6 @@ export default class Editor extends Dom {
                 break;
 
             case 'publish':{
-                const callback = () => {
-                    this.saveGuide('update', true);
-                };
-
                 new Alert({
                         'parent': this,
                         'text': Locale.t('editor.onMainmenuClick.publish.msg', 'This action will make this version the public version.<br/>Are you sure you want to continue?'),
@@ -931,7 +927,7 @@ export default class Editor extends Dom {
                     })
                     .addListener('buttonclick', (click_evt) => {
                         if(click_evt.detail.action === 'confirm'){
-                            callback();
+                            this.saveGuide('update', true);
                         }
                     });
                 break;

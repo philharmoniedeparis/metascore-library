@@ -34,13 +34,13 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#play" rel="metascore" data-guide="guide-93">PLAY</a>
  *         <a href="#play=20,500,2" rel="metascore" data-guide="guide-93">PLAY EXTRACT</a>
  *         <a href="#pause" rel="metascore" data-guide="guide-93">PAUSE</a>
- *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEL TO 500 SECONDS</a>
+ *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEk TO 500 CENTISECONDS</a>
  *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
  *         <a href="#rindex=2" rel="metascore" data-guide="guide-93">SET THE READING INDEX TO 2</a>
  *         <a href="#showBlock=block1" rel="metascore" data-guide="guide-93">SHOW BLOCK 1</a>
  *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
- *         <a href="#page=permanentText,3&rindex=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE READING INDEX TO 2 AND SEEK TO 500 SECONDS</a>
+ *         <a href="#page=permanentText,3&rindex=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE READING INDEX TO 2 AND SEEK TO 500 CENTISECONDS</a>
  */
 export default class API{
 
