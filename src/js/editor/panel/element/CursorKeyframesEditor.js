@@ -1,9 +1,13 @@
 import Dom from '../../../core/Dom';
 import TimeField from '../../../editor/field/Time';
 import {isEmpty} from '../../../core/utils/Var';
+import {clamp} from '../../../core/utils/Math';
+import ContextMenu from '../../../core/ui/ContextMenu';
+import Locale from '../../../core/Locale';
 
 /**
  * A helper class to manage a cursor component's keyframes
+ * @todo: move some code to a Keyframe subclass
  */
 export default class CursorKeyframesEditor extends Dom {
 
@@ -46,12 +50,13 @@ export default class CursorKeyframesEditor extends Dom {
         this.canvas = this.get(0);
         this.context = this.canvas.getContext('2d');
 
-        this.mouse_position = null;
-
         // fix event handlers scope
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
         this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
         this.onMousemove = this.onMousemove.bind(this);
+        this.onDocMousemove = this.onDocMousemove.bind(this);
+        this.onDocMouseup = this.onDocMouseup.bind(this);
+        this.onDocClick = this.onDocClick.bind(this);
         this.onMediaTimeupdate = this.onMediaTimeupdate.bind(this);
 
         // Disable the draggable behaviour
@@ -65,9 +70,15 @@ export default class CursorKeyframesEditor extends Dom {
             resizable.disable();
         }
 
+        const component_el = this.component.get(0);
+        const component_dom = new Dom(component_el);
+
+        this.doc = new Dom(Dom.getElementDocument(component_el));
+
         this
             .initKeyframes()
             .addListener('mouseover', this.onMouseover.bind(this))
+            .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('mouseout', this.onMouseout.bind(this))
             .addListener('click', this.onClick.bind(this))
             .appendTo(this.component.contents.get(0))
@@ -75,9 +86,47 @@ export default class CursorKeyframesEditor extends Dom {
             .draw();
 
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(this.component.get(0))
+        component_dom
             .addListener('propchange', this.onComponentPropChange)
             .addListener('resizeend', this.onComponentResizeEnd);
+
+        /**
+         * The context menu
+         * @type {ContextMenu}
+         */
+        this.contextmenu = new ContextMenu({'target': component_dom, 'items': {
+            'add-cursor-keyframe': {
+                'text': Locale.t('editor.contextmenu.add-cursor-keyframe', 'Add keyframe'),
+                'callback': (context) => {
+                    const mouse_position = this.getRelativeMousePosition(context.x, context.y);
+                    const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
+                    const time = this.media.getTime();
+
+                    this.addKeyframe(position, time);
+                },
+                'toggler': (context) => {
+                    return context.el.data('state') === 'add';
+                }
+            },
+            'delete-cursor-keyframe': {
+                'text': Locale.t('editor.contextmenu.delete-cursor-keyframe', 'Delete keyframe'),
+                'callback': () => {
+                    // Check if there is a keyframe at that position.
+                    const found = this.keyframes.findIndex((keyframe) => {
+                        return keyframe.over;
+                    });
+
+                    if(found > -1){
+                        this.removeKeyframe(found);
+                    }
+                },
+                'toggler': (context) => {
+                    const state = context.el.data('state');
+                    return state === 'over' || state === 'overlabel';
+                }
+            }
+        }})
+        .appendTo(component_dom.closest('.metaScore-player'));
     }
 
     /**
@@ -115,12 +164,14 @@ export default class CursorKeyframesEditor extends Dom {
      * @param {Event} evt The event object
      */
     onMouseover(evt){
-        this.mouse_position = this.getMousePosition(evt);
+        this.mouse_position = this.getRelativeMousePosition(evt.clientX, evt.clientY);
 
         this.addListener('mousemove', this.onMousemove);
         this.media.addListener('timeupdate', this.onMediaTimeupdate);
 
-        this.updateState();
+        if(!this.dragging){
+            this.updateState();
+        }
     }
 
     /**
@@ -130,9 +181,57 @@ export default class CursorKeyframesEditor extends Dom {
      * @param {Event} evt The event object
      */
     onMousemove(evt){
-        this.mouse_position = this.getMousePosition(evt);
+        if(!this.dragging){
+            this.mouse_position = this.getRelativeMousePosition(evt.clientX, evt.clientY);
+            this.updateState();
+        }
+    }
 
-        this.updateState();
+    /**
+     * The mousedown event handler
+     *
+     * @private
+     */
+    onMousedown(){
+        if(this.data('state') !== 'over'){
+            return;
+        }
+
+        // Check if there is a keyframe at that position.
+        this.dragging = this.keyframes.find((keyframe) => {
+            return keyframe.over;
+        });
+
+        if(this.dragging){
+            const width = this.canvas.width;
+            const height = this.canvas.height;
+            const direction = this.component.getPropertyValue('direction');
+            const vertical = direction === 'top' || direction === 'bottom';
+
+            let min = 0;
+            let max = vertical ? height : width;
+
+            // Calculate the drag limits
+            this.keyframes.forEach((keyframe) => {
+                if(keyframe !== this.dragging){
+                    if(keyframe.position < this.dragging.position){
+                        min = Math.max(min, keyframe.position + 1);
+                    }
+                    else if(keyframe.position > this.dragging.position){
+                        max = Math.min(max, keyframe.position - 1);
+                    }
+                }
+            });
+
+            this._drag_limits = {
+                'min': min,
+                'max': max
+            };
+
+            this.doc
+                .addListener('mousemove', this.onDocMousemove)
+                .addListener('mouseup', this.onDocMouseup);
+        }
     }
 
     /**
@@ -156,34 +255,28 @@ export default class CursorKeyframesEditor extends Dom {
      * @param {Event} evt The event object
      */
     onClick(evt){
+        switch(this.data('state')){
+            case 'add': {
+                    const mouse_position = this.getRelativeMousePosition(evt.clientX, evt.clientY);
+                    const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
+                    const time = this.media.getTime();
+
+                    this.addKeyframe(position, time);
+                }
+                break;
+
+            case 'overlabel': {
+                    const found = this.keyframes.find((keyframe) => {
+                        return keyframe.over;
+                    });
+                    if(found){
+                        this.media.setTime(found.time);
+                    }
+                }
+                break;
+        }
+
         evt.stopPropagation();
-
-        if(this.data('state') === 'invalid'){
-            return;
-        }
-
-        // Check if there is a keyframe at that position.
-        const found = this.keyframes.findIndex((keyframe) => {
-            return keyframe.mouseover;
-        });
-
-        if(found > -1){
-            this.keyframes.splice(found, 1);
-        }
-        else{
-            const position = this.getMousePosition(evt);
-            const time = this.media.getTime();
-
-            this.keyframes.push({
-                'time': parseInt(time, 10),
-                'position': parseInt(position, 10),
-                'mouseover': false
-            });
-        }
-
-        this
-            .updateComponentKeyframes()
-            .draw();
     }
 
     /**
@@ -192,7 +285,107 @@ export default class CursorKeyframesEditor extends Dom {
      * @private
      */
     onMediaTimeupdate(){
+        if(!this.dragging){
+            this.updateState();
+        }
+    }
+
+    /**
+     * The document mousemove event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onDocMousemove(evt){
+        const mouse_position = this.getRelativeMousePosition(evt.clientX, evt.clientY);
+        let position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
+
+        // Clamp the position
+        position = clamp(position, this._drag_limits.min, this._drag_limits.max);
+
+        if(this.dragging.position !== position){
+            this.dragging.position = position;
+
+            this
+                .updateComponentKeyframes()
+                .draw();
+        }
+
+        this._dragged = true;
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * The document mouseup event handler
+     *
+     * @private
+     */
+    onDocMouseup(){
+        this.doc
+            .removeListener('mousemove', this.onDocMousemove)
+            .removeListener('mouseup', this.onDocMouseup);
+
+        // if a drag did occur, prevent the next click event from propagating
+        if(this._dragged){
+            this.doc.addOneTimeListener('click', this.onDocClick, true);
+        }
+
+        delete this.dragging;
+        delete this._drag_limits;
+        delete this._dragged;
+    }
+
+    /**
+     * The document click event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onDocClick(evt){
         this.updateState();
+
+        evt.stopPropagation();
+        evt.preventDefault();
+    }
+
+    /**
+     * Add a keyframe
+     *
+     * @private
+     * @param {Number} position The keyframe's position
+     * @param {Number} time The keyframe's time
+     * @returns {this}
+     */
+    addKeyframe(position, time){
+        this.keyframes.push({
+            'time': parseInt(time, 10),
+            'position': parseInt(position, 10),
+            'label': {},
+            'over': false
+        });
+
+        this
+            .updateComponentKeyframes()
+            .draw();
+
+        return this;
+    }
+
+    /**
+     * Remove a keyframe
+     *
+     * @private
+     * @param {Number} index The keyframe's index
+     * @returns {this}
+     */
+    removeKeyframe(index){
+        this.keyframes.splice(index, 1);
+
+        this
+            .updateComponentKeyframes()
+            .draw();
+
     }
 
     /**
@@ -213,7 +406,8 @@ export default class CursorKeyframesEditor extends Dom {
                 this.keyframes.push({
                     'time': parseInt(time, 10),
                     'position': parseInt(position, 10),
-                    'mouseover': false
+                    'label': {},
+                    'over': false
                 });
             });
         }
@@ -222,24 +416,33 @@ export default class CursorKeyframesEditor extends Dom {
     }
 
     /**
-     * Get the mouse position from a mouse event
+     * Get the relative mouse position from a mouse event
      *
      * @private
-     * @param {MouseEvent} evt The mouse event
-     * @return {Number} The corresponding position
+     * @param {Number} x The absolute mouse x position
+     * @param {Number} y The absolute mouse y position
+     * @return {Object} The relative x and y positions
      */
-    getMousePosition(evt){
-        const direction = this.component.getPropertyValue('direction');
+    getRelativeMousePosition(x, y){
         const rect = this.canvas.getBoundingClientRect();
+
+        return {
+            x: x - rect.left,
+            y: y - rect.top
+        };
+    }
+
+    getKeyframePositionFromMouse(x, y){
+        const direction = this.component.getPropertyValue('direction');
 
         switch(direction){
             case 'bottom':
             case 'top':
-                return evt.clientY - rect.top;
+                return y;
 
             case 'left':
             default:
-                return evt.clientX - rect.left;
+                return x;
         }
     }
 
@@ -254,10 +457,14 @@ export default class CursorKeyframesEditor extends Dom {
             this.component.setPropertyValue('keyframes', null);
         }
         else{
-            const value = [];
-            this.keyframes.forEach((keyframe) => {
-                value.push(`${keyframe.position}|${keyframe.time}`);
-            });
+            const value = this.keyframes
+                .sort((a, b) => {
+                    return a.position - b.position;
+                })
+                .reduce((accumulator, keyframe) => {
+                    return accumulator.concat(`${keyframe.position}|${keyframe.time}`);
+                }, []);
+
             this.component.setPropertyValue('keyframes', value.join(','));
         }
 
@@ -284,33 +491,55 @@ export default class CursorKeyframesEditor extends Dom {
      * @return {this}
      */
     updateState(){
-        const position = this.mouse_position;
+        const position = this.getKeyframePositionFromMouse(this.mouse_position.x, this.mouse_position.y);
         const direction = this.component.getPropertyValue('direction');
 
         this
-            .data('state', null)
+            .data('state', 'add')
             .attr('title', null);
 
-        let needs_redraw = false;
-        let is_over_keyframe = false;
         this.keyframes.forEach((keyframe) => {
-            const over = Math.abs(keyframe.position - position) <= this.configs.mouseoverDistance;
-
-            if(over){
-                this
-                    .data('state', 'remove')
-                    .attr('title', TimeField.getTextualValue(keyframe.time));
-            }
-
-            if(keyframe.mouseover !== over){
-                needs_redraw = true;
-            }
-
-            is_over_keyframe = is_over_keyframe || over;
-            keyframe.mouseover = over;
+            delete keyframe.over;
         });
 
-        if(!is_over_keyframe){
+        let over_keyframe = false;
+        this.keyframes.some((keyframe) => {
+            // Check if we are over the keyframe.
+            const over = Math.abs(keyframe.position - position) <= this.configs.mouseoverDistance;
+            if(over){
+                this
+                    .data('state', 'over')
+                    .attr('title', TimeField.getTextualValue(keyframe.time));
+
+                keyframe.over = true;
+                over_keyframe = true;
+
+                return true;
+            }
+
+            // Else, check if we are over the keyframe's label.
+            const over_label = this.mouse_position.x >= keyframe.label.x
+                && this.mouse_position.y >= keyframe.label.y
+                && this.mouse_position.x <= keyframe.label.x + keyframe.label.width
+                && this.mouse_position.y <= keyframe.label.y + keyframe.label.height;
+
+            if(over_label){
+                this
+                    .data('state', 'overlabel')
+                    .attr('title', TimeField.getTextualValue(keyframe.time));
+
+                keyframe.over = true;
+                over_keyframe = true;
+
+                return true;
+            }
+
+            return false;
+        });
+
+
+        // If we are neither over a keyframe nor over a label, check if a keyframe can be added.
+        if(!over_keyframe){
             const time = this.media.getTime();
 
             // Check if a cursor can be added at that position and time.
@@ -330,9 +559,7 @@ export default class CursorKeyframesEditor extends Dom {
             }
         }
 
-        if(needs_redraw){
-            this.draw();
-        }
+        this.draw();
 
         return this;
     }
@@ -347,7 +574,21 @@ export default class CursorKeyframesEditor extends Dom {
         // Clear the canvas.
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.keyframes.forEach((keyframe) => {
+        // Clone array
+        const keyframes = this.keyframes.slice();
+
+        // Sort keyframes to make sure the one with over = true is on top
+        keyframes.sort((a, b) => {
+            if(a.over){
+                return 1;
+            }
+            else if(b.over){
+                return -1;
+            }
+            return 0;
+        });
+
+        keyframes.forEach((keyframe) => {
             this.drawKeyframe(keyframe);
         });
 
@@ -405,22 +646,29 @@ export default class CursorKeyframesEditor extends Dom {
         this.context.moveTo(pos_1.x, pos_1.y);
         this.context.lineTo(pos_2.x, pos_2.y);
         this.context.lineWidth = 1;
-        this.context.strokeStyle = this.configs[keyframe.mouseover ? 'hoverCursorColor' : 'defaultCursorColor'];
+        this.context.strokeStyle = this.configs[keyframe.over ? 'hoverCursorColor' : 'defaultCursorColor'];
         this.context.stroke();
         this.context.closePath();
         this.context.restore();
 
         // Draw the cursor label.
         const label_text = TimeField.getTextualValue(keyframe.time);
+        const label_size = this.context.measureText(label_text);
+        Object.assign(keyframe.label, {
+            'x': pos_1.x,
+            'y': pos_1.y,
+            'width': label_size.width + this.configs.labelPadding * 2,
+            'height': this.configs.labelFontSize + this.configs.labelPadding * 2
+        });
         this.context.save();
         this.context.translate(0.5, 0.5);
         this.context.font = `${this.configs.labelFontSize}px ${this.configs.labelFontFamily}`;
-        const label_size = this.context.measureText(label_text);
-        this.context.textBaseline = 'top';
-        this.context.fillStyle = this.configs[keyframe.mouseover ? 'hoverCursorColor' : 'defaultCursorColor'];
-        this.context.fillRect(pos_1.x, pos_1.y, label_size.width + this.configs.labelPadding, this.configs.labelFontSize + this.configs.labelPadding);
+        this.context.textBaseline = 'middle';
+        this.context.textAlign = 'center';
+        this.context.fillStyle = this.configs[keyframe.over ? 'hoverCursorColor' : 'defaultCursorColor'];
+        this.context.fillRect(keyframe.label.x, keyframe.label.y, keyframe.label.width, keyframe.label.height);
         this.context.fillStyle = this.configs.labelColor;
-        this.context.fillText(label_text, pos_1.x + this.configs.labelPadding/2, pos_1.y + this.configs.labelPadding/2);
+        this.context.fillText(label_text, keyframe.label.x + keyframe.label.width/2, keyframe.label.y + keyframe.label.height/2);
         this.context.restore();
 
         return this;
@@ -445,6 +693,9 @@ export default class CursorKeyframesEditor extends Dom {
         if(resizable){
             resizable.enable();
         }
+
+        this.contextmenu.remove();
+        delete this.contextmenu;
 
         return super.remove();
     }

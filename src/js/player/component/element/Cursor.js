@@ -550,6 +550,7 @@ export default class Cursor extends Element {
      */
     getLinearPositionFromTime(time){
         const direction = this.getPropertyValue('direction');
+        const reversed = direction === 'left' || direction === 'top';
         const mode = this.getPropertyValue('mode');
         let start_time = this.getPropertyValue('start-time');
         let end_time = this.getPropertyValue('end-time');
@@ -559,31 +560,42 @@ export default class Cursor extends Element {
         let acceleration = 1;
         const pos = {'x': 0, 'y': 0};
 
-        if(direction === 'left' || direction === 'top'){
+        if(reversed){
             start_position = end_position;
             end_position = 0;
         }
 
         // Calculate position from keyframes
         if(mode === 'advanced'){
-            const keyframes_value = this.getPropertyValue('keyframes');
+            const keyframes = this.getPropertyValue('keyframes');
 
-            if(keyframes_value){
-                keyframes_value.split(',').forEach((keyframe) => {
+            if(keyframes){
+                keyframes.split(',').forEach((keyframe) => {
                     let [keyframe_position, keyframe_time] = keyframe.split('|');
-
                     keyframe_position = parseInt(keyframe_position, 10);
                     keyframe_time = parseInt(keyframe_time, 10);
 
-                    const diff = keyframe_time - time;
+                    if(reversed){
+                        if(keyframe_time <= time && keyframe_position < start_position){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
 
-                    if(diff <= 0 && diff > start_time - time){
-                        start_position = keyframe_position;
-                        start_time = keyframe_time;
+                        if(keyframe_time >= time && keyframe_position > end_position){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
                     }
-                    else if(diff >= 0 && diff < end_time - time){
-                        end_position = keyframe_position;
-                        end_time = keyframe_time;
+                    else{
+                        if(keyframe_time <= time && keyframe_position > start_position){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_time >= time && keyframe_position < end_position){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
                     }
                 });
             }

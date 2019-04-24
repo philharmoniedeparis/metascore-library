@@ -385,14 +385,20 @@ body{
                     height: 100% !important;
 
                     &.keyframes-editor{
-                        cursor: url('../img/editor/cursorkeyframeseditor/cursors/add.png'), auto;
+                        &[data-state="add"]{
+                            cursor: copy;
+                        }
 
-                        &[data-state="remove"]{
-                            cursor: url('../img/editor/cursorkeyframeseditor/cursors/remove.png'), auto;
+                        &[data-state="over"]{
+                            cursor: move;
+                        }
+
+                        &[data-state="overlabel"]{
+                            cursor: pointer;
                         }
 
                         &[data-state="invalid"]{
-                            cursor: url('../img/editor/cursorkeyframeseditor/cursors/invalid.png'), auto;
+                            cursor: not-allowed;
                         }
                     }
                 }

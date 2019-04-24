@@ -113,16 +113,16 @@ export default class Element extends Panel {
                 switch(name){
                     case 'keyframes-edit-mode':
                         if(value === true){
-                            this.unlockCursorAdvancedEditMode();
+                            this.unlockCursorAdvancedEditMode(component);
                         }
                         else{
-                            this.lockCursorAdvancedEditMode();
+                            this.lockCursorAdvancedEditMode(component);
                         }
                         break;
 
                     case 'form':
                     case 'mode':
-                        this.lockCursorAdvancedEditMode();
+                        this.lockCursorAdvancedEditMode(component);
                         break;
 
                 }
@@ -382,13 +382,11 @@ export default class Element extends Panel {
      * @param {Component} component The component
      * @return {this}
      */
-    lockCursorAdvancedEditMode(){
-        this.components.forEach((component) => {
-            if(component._keyframes_editor){
-                component._keyframes_editor.remove();
-                delete component._keyframes_editor;
-            }
-        });
+    lockCursorAdvancedEditMode(component){
+        if(component._keyframes_editor){
+            component._keyframes_editor.remove();
+            delete component._keyframes_editor;
+        }
 
         return this;
     }
@@ -400,17 +398,15 @@ export default class Element extends Panel {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    unlockCursorAdvancedEditMode(){
+    unlockCursorAdvancedEditMode(component){
         const data = {};
 
         this.triggerEvent('beforecursoradvancededitmodeunlock', data, false);
 
         if('media' in data){
-            this.components.forEach((component) => {
-                if(component.instanceOf('Cursor')){
-                    component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
-                }
-            });
+            if(component.instanceOf('Cursor')){
+                component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
+            }
         }
 
         return this;
