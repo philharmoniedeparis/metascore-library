@@ -977,7 +977,7 @@ export default class Player extends Dom {
         const media = this.getMedia();
 
         if(this.cuepoint){
-            this.cuepoint.destroy();
+            this.cuepoint.deactivate();
         }
 
         const _inTime = parseFloat(inTime);
@@ -1002,7 +1002,7 @@ export default class Player extends Dom {
                 player.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
             })
             .addListener('seekout', (evt) => {
-                evt.target.destroy();
+                evt.target.deactivate();
                 delete player.cuepoint;
 
                 player.setReadingIndex(0);
@@ -1010,7 +1010,7 @@ export default class Player extends Dom {
             .addListener('stop', (evt) => {
                 evt.target.getMedia().pause();
             })
-            .init();
+            .activate();
 
             media.setTime(_inTime).play();
         }
