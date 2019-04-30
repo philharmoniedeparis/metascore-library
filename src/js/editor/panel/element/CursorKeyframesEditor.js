@@ -29,6 +29,55 @@ export default class CursorKeyframesEditor extends Dom {
     }
 
     /**
+     * Parse a component's keyframes propoerty
+     *
+     * @param {Component} component The cursor component
+     * @return {Array} keyframes The keyframes
+     */
+    static parseComponentKeyframes(component){
+        const value = component.getPropertyValue('keyframes');
+        const keyframes = [];
+
+        if(!isEmpty(value)){
+            value.split(',').forEach((keyframe) => {
+                const [position, time] = keyframe.split('|');
+
+                keyframes.push({
+                    'time': parseInt(time, 10),
+                    'position': parseInt(position, 10),
+                    'label': {},
+                    'over': false
+                });
+            });
+        }
+
+        return keyframes;
+    }
+
+    /**
+     * Update a component's keyframes propoerty
+     *
+     * @param {Component} component The cursor component
+     * @param {Array} keyframes The keyframes
+     */
+    static updateComponentKeyframes(component, keyframes){
+        if(keyframes.length === 0){
+            component.setPropertyValue('keyframes', null);
+        }
+        else{
+            const value = keyframes
+                .sort((a, b) => {
+                    return a.position - b.position;
+                })
+                .reduce((accumulator, keyframe) => {
+                    return accumulator.concat(`${keyframe.position}|${keyframe.time}`);
+                }, []);
+
+            component.setPropertyValue('keyframes', value.join(','));
+        }
+    }
+
+    /**
      * Instantiate
      *
      * @param {Component} component The cursor component
@@ -395,22 +444,7 @@ export default class CursorKeyframesEditor extends Dom {
      * @return {this}
      */
     initKeyframes(){
-        const value = this.component.getPropertyValue('keyframes');
-
-        this.keyframes = [];
-
-        if(!isEmpty(value)){
-            value.split(',').forEach((keyframe) => {
-                const [position, time] = keyframe.split('|');
-
-                this.keyframes.push({
-                    'time': parseInt(time, 10),
-                    'position': parseInt(position, 10),
-                    'label': {},
-                    'over': false
-                });
-            });
-        }
+        this.keyframes = this.constructor.parseComponentKeyframes(this.component);
 
         return this;
     }
@@ -453,20 +487,7 @@ export default class CursorKeyframesEditor extends Dom {
      * @return {this}
      */
     updateComponentKeyframes(){
-        if(this.keyframes.length === 0){
-            this.component.setPropertyValue('keyframes', null);
-        }
-        else{
-            const value = this.keyframes
-                .sort((a, b) => {
-                    return a.position - b.position;
-                })
-                .reduce((accumulator, keyframe) => {
-                    return accumulator.concat(`${keyframe.position}|${keyframe.time}`);
-                }, []);
-
-            this.component.setPropertyValue('keyframes', value.join(','));
-        }
+        this.constructor.updateComponentKeyframes(this.component, this.keyframes);
 
         return this;
     }

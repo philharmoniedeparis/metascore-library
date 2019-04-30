@@ -31,6 +31,8 @@ export default class Element extends Panel {
         this.onTextDblClick = this.onTextDblClick.bind(this);
         this.onTextContentsClick = this.onTextContentsClick.bind(this);
         this.onTextContentsKey = this.onTextContentsKey.bind(this);
+        this.onCursorPropChange = this.onCursorPropChange.bind(this);
+        this.onCursorResizeEnd = this.onCursorResizeEnd.bind(this);
 
         this
             .addClass('element')
@@ -145,6 +147,11 @@ export default class Element extends Panel {
         if(component.instanceOf('Text')){
             this.lockText(component);
         }
+        else if(component.instanceOf('Cursor')){
+            component
+                .addListener('propchange', this.onCursorPropChange)
+                .addListener('resizeend', this.onCursorResizeEnd);
+        }
     }
 
     /**
@@ -161,6 +168,10 @@ export default class Element extends Panel {
         }
         else if(component.instanceOf('Cursor')){
             this.lockCursorAdvancedEditMode(component);
+
+            component
+                .removeListener('propchange', this.onCursorPropChange)
+                .removeListener('resizeend', this.onCursorResizeEnd);
         }
 
         return this;
@@ -278,6 +289,111 @@ export default class Element extends Panel {
     }
 
     /**
+     * The text component dblclick event handler
+     *
+     * @private
+     */
+    onTextDblClick(){
+        this.getField('edit-text').setValue(true);
+    }
+
+    /**
+     * The text component's contents click event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTextContentsClick(evt){
+        evt.stopPropagation();
+    }
+
+    /**
+     * The text component's contents key event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTextContentsKey(evt){
+        evt.stopPropagation();
+    }
+
+    /**
+     * The cursor component's propchange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCursorPropChange(evt){
+        const component = evt.detail.component;
+        const mode = component.getPropertyValue('mode');
+
+        if(mode !== 'advanced'){
+            return;
+        }
+
+        const property = evt.detail.property;
+        const direction = component.getPropertyValue('direction');
+        const vertical = direction === 'top' || direction === 'bottom';
+
+        if((property === 'width' && !vertical) || (property === 'height' && vertical)){
+            this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.old);
+        }
+    }
+
+    /**
+     * The cursor component's resizeend event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCursorResizeEnd(evt){
+        const component = evt.target._metaScore;
+        const mode = component.getPropertyValue('mode');
+
+        if(mode !== 'advanced'){
+            return;
+        }
+
+        const direction = component.getPropertyValue('direction');
+        const vertical = direction === 'top' || direction === 'bottom';
+        const old_value = vertical ? evt.detail.start_state.h : evt.detail.start_state.w;
+        const new_value = vertical ? component.getPropertyValue('height') : component.getPropertyValue('width');
+
+        this.repositionCursorKeyframes(component, new_value / old_value);
+    }
+
+    /**
+     * Helper method to reposition a cursor component's keyframes after a resize
+     *
+     * @private
+     * @param {Component} component The cursor component
+     * @param {Number} multiplier A multiplier to multiply the position of each keyframe with
+     * @return {this}
+     */
+    repositionCursorKeyframes(component, multiplier){
+        if(component._keyframes_editor){
+            component._keyframes_editor.keyframes.forEach((keyframe) => {
+                keyframe.position *= multiplier;
+            });
+
+            component._keyframes_editor
+                .updateComponentKeyframes()
+                .draw();
+        }
+        else{
+            const keyframes = CursorKeyframesEditor.parseComponentKeyframes(component);
+
+            keyframes.forEach((keyframe) => {
+                keyframe.position *= multiplier;
+            });
+
+            CursorKeyframesEditor.updateComponentKeyframes(component, keyframes);
+        }
+
+        return this;
+    }
+
+    /**
      * Lock a text component's contents
      *
      * @param {Component} component The component
@@ -348,35 +464,6 @@ export default class Element extends Panel {
     }
 
     /**
-     * The text component dblclick event handler
-     *
-     * @private
-     */
-    onTextDblClick(){
-        this.getField('edit-text').setValue(true);
-    }
-
-    /**
-     * The text component's contents click event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onTextContentsClick(evt){
-        evt.stopPropagation();
-    }
-
-    /**
-     * The text component's contents key event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onTextContentsKey(evt){
-        evt.stopPropagation();
-    }
-
-    /**
      * Lock a cursor component's advance edit mode
      *
      * @param {Component} component The component
@@ -404,9 +491,7 @@ export default class Element extends Panel {
         this.triggerEvent('beforecursoradvancededitmodeunlock', data, false);
 
         if('media' in data){
-            if(component.instanceOf('Cursor')){
-                component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
-            }
+            component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
         }
 
         return this;

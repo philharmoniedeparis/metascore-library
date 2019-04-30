@@ -12,6 +12,7 @@ import CuePoint from './CuePoint';
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
+ * @param {Mixed} old The old value of the property
  *
  * @emits {cuepointset} Fired when a cue point is set
  * @param {Component} component The component instance
@@ -276,10 +277,12 @@ export default class Component extends Dom {
      */
     setPropertyValue(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
+            const old_value = this.getPropertyValue(name);
+
             this.configs.properties[name].setter.call(this, value);
 
             if(supressEvent !== true){
-                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
             }
         }
 
