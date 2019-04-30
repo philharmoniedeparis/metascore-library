@@ -10,6 +10,9 @@ import EventEmitter from '../core/EventEmitter';
  * @emits {redo} Fired when a command is redone
  * @param {Object} command The added command
  * @emits {clear} Fired when the command history is cleared
+ *
+ * @todo: make signleton
+ * @todo: move closer to a Command Pattern ? see https://www.codeproject.com/Articles/33384/Multilevel-Undo-and-Redo-Implementation-in-Cshar-2
  */
 export default class History extends EventEmitter {
 

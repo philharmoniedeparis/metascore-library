@@ -378,12 +378,9 @@ export default class Panel extends Dom {
             .addListener('resizeend', this.onComponentResizeEnd);
 
         if(!this.hasClass('locked')){
-            if(isFunction(component.setDraggable)){
-                component.setDraggable(true);
-            }
-            if(isFunction(component.setResizable)){
-                component.setResizable(true);
-            }
+            component
+                .setDraggable(true)
+                .setResizable(true);
         }
 
         this.getToolbar().getSelector().addValue(component.getId(), true);
@@ -422,12 +419,9 @@ export default class Panel extends Dom {
             .removeListener('resize', this.onComponentResize)
             .removeListener('resizeend', this.onComponentResizeEnd);
 
-        if(isFunction(component.setDraggable)){
-            component.setDraggable(false);
-        }
-        if(isFunction(component.setResizable)){
-            component.setResizable(false);
-        }
+        component
+            .setDraggable(false)
+            .setResizable(false);
 
         this.getToolbar().getSelector().removeValue(component.getId(), true);
 
@@ -505,12 +499,9 @@ export default class Panel extends Dom {
 
         switch(property){
             case 'locked':
-                if(isFunction(component.setDraggable)){
-                    component.setDraggable(!value);
-                }
-                if(isFunction(component.setResizable)){
-                    component.setResizable(!value);
-                }
+                component
+                    .setDraggable(!value)
+                    .setResizable(!value);
                 break;
 
             case 'name':
@@ -591,7 +582,7 @@ export default class Panel extends Dom {
     onComponentDragEnd(){
         const fields = ['x', 'y'];
 
-        this.refreshFieldValues(fields);
+        this.refreshFieldValues(fields, true);
 
         const values = this.components.map((component, index) => {
             const new_values = {};
@@ -650,7 +641,7 @@ export default class Panel extends Dom {
         const fields = ['x', 'y', 'width', 'height'];
         const new_values = {};
 
-        this.refreshFieldValues(fields);
+        this.refreshFieldValues(fields, true);
 
         fields.forEach((field) => {
             new_values[field] = component.getPropertyValue(field)

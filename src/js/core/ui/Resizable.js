@@ -88,10 +88,9 @@ export default class Resizable {
          * @type {Object}
          */
         this._start_state = {
-            'handle': evt.target,
+            'direction': Dom.data(evt.target, 'direction'),
             'x': evt.clientX,
             'y': evt.clientY,
-            'position': this.configs.target.css('position'),
             'left': parseInt(this.configs.target.css('left'), 10),
             'top': parseInt(this.configs.target.css('top'), 10),
             'w': parseInt(this.configs.target.css('width'), 10),
@@ -105,7 +104,7 @@ export default class Resizable {
         this.configs.target
             .addListener('click', this.onTargetClick, this)
             .addClass('resizing')
-            .triggerEvent('resizestart', null, false, true);
+            .triggerEvent('resizestart', {'start_state': this._start_state}, false, true);
 
         evt.stopPropagation();
     }
@@ -117,10 +116,10 @@ export default class Resizable {
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        const handle = new Dom(this._start_state.handle);
+        const direction = this._start_state.direction;
         const new_state = {};
 
-        switch(handle.data('direction')){
+        switch(direction){
             case 'top':
                 new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
                 new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
@@ -173,7 +172,7 @@ export default class Resizable {
         this.configs.target
             .css('width', `${new_state.w}px`)
             .css('height', `${new_state.h}px`)
-            .triggerEvent('resize', null, false, true);
+            .triggerEvent('resize', {'start_state': this._start_state}, false, true);
 
         evt.stopPropagation();
     }
@@ -197,7 +196,7 @@ export default class Resizable {
 
         this.configs.target
             .removeClass('resizing')
-            .triggerEvent('resizeend', null, false, true);
+            .triggerEvent('resizeend', {'start_state': this._start_state}, false, true);
 
         delete this._start_state;
 

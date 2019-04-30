@@ -10,6 +10,7 @@ import {map, radians} from '../../../core/utils/Math';
  * @emits {time} Fired when a cursor is clicked, requesting a time update
  * @param {Object} element The element instance
  * @param {Number} time The time value according to the click position
+ * @param {Number} position The click position relative to the component
  */
 export default class Cursor extends Element {
 
@@ -115,6 +116,27 @@ export default class Cursor extends Element {
                     },
                     'applies': function(){
                         return this.getPropertyValue('form') === 'linear';
+                    }
+                },
+                'keyframes-edit-mode': {
+                    'type': 'Checkbox',
+                    'configs': {
+                        'label': Locale.t('player.component.element.Cursor.keyframes-edit-mode', 'Keyframes edit mode')
+                    },
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear' && this.getPropertyValue('mode') === 'advanced';
+                    }
+                },
+                'keyframes': {
+                    'editable':false,
+                    'getter': function(){
+                        return this.data('keyframes');
+                    },
+                    'setter': function(value){
+                        this.data('keyframes', value);
+                    },
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear' && this.getPropertyValue('mode') === 'advanced';
                     }
                 },
                 'direction': {
@@ -223,6 +245,9 @@ export default class Cursor extends Element {
                     },
                     'setter': function(value){
                         this.data('accel', value);
+                    },
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear' && this.getPropertyValue('mode') === 'simple';
                     }
                 },
                 'cursor-width': {
@@ -295,6 +320,7 @@ export default class Cursor extends Element {
 
         this
             .addListener('propchange', this.onPropChange.bind(this))
+            .addListener('resizeend', this.onResizeEnd.bind(this))
             .addListener('click', this.onClick.bind(this));
 
         return this;
@@ -307,7 +333,6 @@ export default class Cursor extends Element {
      * @param {Event} evt The event object
      */
     onPropChange(evt){
-
         switch(evt.detail.property){
             case 'width':
             case 'height':
@@ -317,6 +342,67 @@ export default class Cursor extends Element {
         }
 
         this.draw();
+    }
+
+    /**
+     * The resizeend event handler
+     *
+     * @private
+     */
+    onResizeEnd(){
+        this.resizeCanvas();
+    }
+
+    /**
+     * The click event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onClick(evt){
+        const form = this.getPropertyValue('form');
+
+        switch(form){
+            case 'circular': {
+                const angle = this.getCircularAngleFromMouse(evt);
+                const time = this.getTimeFromCircularAngle(angle);
+                this.triggerEvent('time', {'element': this, 'time': time});
+                break;
+            }
+
+            default: {
+                const pos = this.getLinearPositionFromMouse(evt);
+                const time = this.getTimeFromLinearPosition(pos.x, pos.y);
+                this.triggerEvent('time', {'element': this, 'time': time});
+                break;
+            }
+        }
+    }
+
+    /**
+     * The cuepoint set event handler
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        const cuepoint = evt.detail.cuepoint;
+
+        cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
+
+        super.onCuePointSet(evt);
+    }
+
+    /**
+     * The cuepoint update event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCuePointStart(evt){
+        super.onCuePointStart(evt);
+
+        this.resizeCanvas();
     }
 
     /**
@@ -337,34 +423,10 @@ export default class Cursor extends Element {
      * @private
      * @param {Event} evt The event object
      */
-    onCuePointStop(){
+    onCuePointStop(evt){
+        super.onCuePointStop(evt);
+
         this.current_time = null;
-    }
-
-    /**
-     * The click event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onClick(evt){
-        const form = this.getPropertyValue('form');
-
-        switch(form){
-            case 'circular': {
-                const angle = this.getCircularAngleFromMouse(evt);
-                const time = this.getTimeFromCircularAngle(angle);
-                this.triggerEvent('time', {'element': this, 'value': time});
-                break;
-            }
-
-            default: {
-                const pos = this.getLinearPositionFromMouse(evt);
-                const time = this.getTimeFromLinearPosition(pos.x, pos.y);
-                this.triggerEvent('time', {'element': this, 'value': time});
-                break;
-            }
-        }
     }
 
     /**
@@ -374,12 +436,8 @@ export default class Cursor extends Element {
      * @return {this}
      */
     resizeCanvas(){
-        const width = this.contents.get(0).clientWidth;
-        const height = this.contents.get(0).clientHeight;
-
-        // Resize the canvas.
-        this.canvas.width = width;
-        this.canvas.height = height;
+        this.canvas.width = this.canvas.clientWidth;
+        this.canvas.height = this.canvas.clientHeight;
 
         return this;
     }
@@ -390,15 +448,10 @@ export default class Cursor extends Element {
      * @return {this}
      */
     draw(){
-        const form = this.getPropertyValue('form');
-
-        if(this.canvas.width === 0 || this.canvas.height === 0){
-            this.resizeCanvas();
-        }
-
         // Clear the canvas.
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        const form = this.getPropertyValue('form');
         switch(form){
             case 'circular':
                 this.drawCircularCursor();
@@ -474,6 +527,21 @@ export default class Cursor extends Element {
     }
 
     /**
+     * Helper function to get a position on a linear cursor corresponding to click event
+     *
+     * @param {Event} evt The click event
+     * @return {Object} The position on the cursor with x and y properties
+     */
+    getLinearPositionFromClick(evt){
+        const rect = this.canvas.getBoundingClientRect();
+
+        return {
+            'x': evt.clientX - rect.left,
+            'y': evt.clientY - rect.top
+        };
+    }
+
+    /**
      * Helper function to get a position on a linear cursor corresponding to a media time
      *
      * @private
@@ -481,40 +549,73 @@ export default class Cursor extends Element {
      * @returns {Object} The x and y position
      */
     getLinearPositionFromTime(time){
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-
-        const start_time = this.getPropertyValue('start-time');
-        const end_time = this.getPropertyValue('end-time');
         const direction = this.getPropertyValue('direction');
-        const acceleration = this.getPropertyValue('acceleration');
+        const reversed = direction === 'left' || direction === 'top';
+        const mode = this.getPropertyValue('mode');
+        let start_time = this.getPropertyValue('start-time');
+        let end_time = this.getPropertyValue('end-time');
 
-        const pos = {
-            x: 0,
-            y: 0
-        };
+        let start_position = 0;
+        let end_position = direction === 'top' || direction === 'bottom' ? this.canvas.height : this.canvas.width;
+        let acceleration = 1;
+        const pos = {'x': 0, 'y': 0};
 
+        if(reversed){
+            start_position = end_position;
+            end_position = 0;
+        }
+
+        // Calculate position from keyframes
+        if(mode === 'advanced'){
+            const keyframes = this.getPropertyValue('keyframes');
+
+            if(keyframes){
+                keyframes.split(',').forEach((keyframe) => {
+                    let [keyframe_position, keyframe_time] = keyframe.split('|');
+                    keyframe_position = parseInt(keyframe_position, 10);
+                    keyframe_time = parseInt(keyframe_time, 10);
+
+                    if(reversed){
+                        if(keyframe_time <= time && keyframe_position < start_position){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_time >= time && keyframe_position > end_position){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
+                    }
+                    else{
+                        if(keyframe_time <= time && keyframe_position > start_position){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_time >= time && keyframe_position < end_position){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
+                    }
+                });
+            }
+        }
+        else{
+            acceleration = this.getPropertyValue('acceleration');
+        }
+
+        // Calculate position
         switch(direction){
             case 'top':
-                pos.y = map(time, start_time, end_time, 0, height);
-                pos.y = height - Math.pow(pos.y, acceleration);
-                pos.y = Math.round(pos.y);
-                break;
-
             case 'bottom':
-                pos.y = map(time, start_time, end_time, 0, height);
+                pos.y = map(time, start_time, end_time, start_position, end_position);
                 pos.y = Math.pow(pos.y, acceleration);
                 pos.y = Math.round(pos.y);
                 break;
 
             case 'left':
-                pos.x = map(time, start_time, end_time, 0, width);
-                pos.x = width - Math.pow(pos.x, acceleration);
-                pos.x = Math.round(pos.x);
-                break;
-
             default:
-                pos.x = map(time, start_time, end_time, 0, width);
+                pos.x = map(time, start_time, end_time, start_position, end_position);
                 pos.x = Math.pow(pos.x, acceleration);
                 pos.x = Math.round(pos.x);
         }

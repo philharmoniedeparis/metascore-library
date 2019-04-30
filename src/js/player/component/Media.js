@@ -1,8 +1,6 @@
 import Component from '../Component';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
-import Draggable from '../../core/ui/Draggable';
-import Resizable from '../../core/ui/Resizable';
 
 import HTML5 from '../renderer/HTML5';
 import HLS from '../renderer/HLS';
@@ -355,65 +353,6 @@ export default class Media extends Component{
         }
 
         return null;
-    }
-
-    /**
-     * Set/Unset the draggable behaviour
-     *
-     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
-     * @return {Draggable} The draggable behaviour
-     */
-    setDraggable(draggable){
-        if(this.getPropertyValue('locked') && draggable){
-            return false;
-        }
-
-        if(draggable && !this._draggable){
-            /**
-             * The draggable behavior
-             * @type {Draggable}
-             */
-            this._draggable = new Draggable({
-                'target': this,
-                'handle': this
-            });
-        }
-        else if(!draggable && this._draggable){
-            this._draggable.destroy();
-            delete this._draggable;
-        }
-
-        return this._draggable;
-
-    }
-
-    /**
-     * Set/Unset the resizable behaviour
-     *
-     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
-     * @return {Resizable} The resizable behaviour
-     */
-    setResizable(resizable){
-        if(this.getPropertyValue('locked') && resizable){
-            return false;
-        }
-
-        if(resizable && !this._resizable){
-            /**
-             * The resizable behavior
-             * @type {Resizable}
-             */
-            this._resizable = new Resizable({
-                'target': this
-            });
-        }
-        else if(!resizable && this._resizable){
-            this._resizable.destroy();
-            delete this._resizable;
-        }
-
-        return this._resizable;
-
     }
 
     /**
