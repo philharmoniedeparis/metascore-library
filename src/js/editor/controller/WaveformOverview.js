@@ -1,6 +1,8 @@
 import Dom from '../../core/Dom';
 import {toCentiseconds, toSeconds} from '../../core/utils/Media';
 
+import {className} from '../../../css/editor/controller/WaveformOverview.less';
+
 /**
  * A waveform overview
  *
@@ -13,7 +15,7 @@ export default class Overview extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [waveColor='#999'] The wave fill color
+     * @property {String} [waveColor='#777'] The wave fill color
      * @property {String} [highlightColor='#0000fe'] The highlight rectangle color
      * @property {Number} [highlightOpacity=0.25] The highlight rectangle opacity
      * @property {Number} [playheadWidth=1] The playhead line width
@@ -21,7 +23,7 @@ export default class Overview extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'view overview'});
+        super('<div/>', {'class': `view overview ${className}`});
 
         /**
          * The configuration values
@@ -55,6 +57,7 @@ export default class Overview extends Dom {
 
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
@@ -113,17 +116,34 @@ export default class Overview extends Dom {
     }
 
     /**
-     * Set the media's duration
+     * Set the associated media
      *
-     * @param {Number} duration The media's duration in centiseconds
+     * @param {Media} media The media component
      * @return {this}
      */
-    setDuration(duration){
+    setMedia(media){
+        if(this.media){
+            this.media.removeListener('timeupdate', this.onMediaTimeUpdate);
+        }
+
         /**
-         * The media's duration in seconds
+         * The associated media
+         * @type {Media}
+         */
+        this.media = media;
+
+        this.media.addListener('timeupdate', this.onMediaTimeUpdate);
+        this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
+
+        /**
+         * The media's duration in centiseconds
          * @type {Number}
          */
-        this.duration = toSeconds(duration);
+        this.duration = this.media.getDuration();
+
+        this
+            .updateSize()
+            .update();
 
         return this;
     }
@@ -219,14 +239,7 @@ export default class Overview extends Dom {
     updatePlayhead(){
         const canvas = this.playhead_layer.get(0);
         const context = canvas.getContext('2d');
-        let x = 0;
-
-        if(this.resampled_data){
-            x = this.getPositionAt(this.time) + 0.5;
-        }
-        else if(this.duration){
-            x = Math.round(this.time / this.duration * this.width) + 0.5;
-        }
+        const x = Math.round(this.getPositionAt(this.time))  + 0.5;
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
@@ -275,7 +288,7 @@ export default class Overview extends Dom {
 
         const offset = evt.target.getBoundingClientRect();
         const x = evt.pageX - offset.left;
-        const time = toCentiseconds(this.getTimeAt(x));
+        const time = this.getTimeAt(x);
 
         this.triggerEvent('playheadclick', {'time': time});
     }
@@ -303,30 +316,46 @@ export default class Overview extends Dom {
     }
 
     /**
-     * Set the current media's time
+     * Media timeupdate event callback
      *
-     * @param {Number} time The media's time in centiseconds
-     * @return {this}
+     * @private
      */
-    setTime(time){
+    onMediaTimeUpdate(evt){
         /**
-         * The current time in seconds
+         * The current time in centiseconds
          * @type {Number}
          */
-        this.time = toSeconds(time);
+        this.time = evt.detail.time;
 
         if(this.duration || this.resampled_data){
             this.updatePlayhead();
         }
+    }
 
-        return this;
+    /**
+    * Media getWaveformData callback
+    *
+    * @private
+    * @param {WaveformData} data The waveform data, or null if none could be retreived
+    */
+    onMediaWaveformData(data){
+        if(data){
+            let range = 0;
+            for(let x = 0; x < data.adapter.length; x++) {
+                const min = data.adapter.at(2 * x);
+                const max = data.adapter.at(2 * x + 1);
+                range = Math.max(range, Math.abs(min), Math.abs(max));
+            }
+
+            this.updateSize().setData(data, range);
+        }
     }
 
     /**
      * Set the highlight rectangle
      *
-     * @param {Number} start The start time in seconds
-     * @param {Number} end The end time in seconds
+     * @param {Number} start The start time in centiseconds
+     * @param {Number} end The end time in centiseconds
      * @return {this}
      */
     setHighlight(start, end){
@@ -345,23 +374,31 @@ export default class Overview extends Dom {
     }
 
     /**
-     * Get the time in seconds corresponding to an x position in pixels
+     * Get the time in centiseconds corresponding to an x position in pixels
      *
      * @param {Number} x The x position
-     * @return {Number} The corresponding time in seconds
+     * @return {Number} The corresponding time in centiseconds
      */
     getTimeAt(x){
-        return this.resampled_data.time(x);
+        if(this.resampled_data){
+            return toCentiseconds(this.resampled_data.time(x));
+        }
+
+        return this.duration * x / this.width;
     }
 
     /**
-     * Get the x position in pixels corresponding to a time in seconds
+     * Get the x position in pixels corresponding to a time in centiseconds
      *
-     * @param {Number} time The time in seconds
+     * @param {Number} time The time in centiseconds
      * @return {Number} The corresponding x position
      */
     getPositionAt(time){
-        return this.resampled_data.at_time(time);
+        if(this.resampled_data){
+            return this.resampled_data.at_time(toSeconds(time));
+        }
+
+        return time * this.width / this.duration;
     }
 
     /**
