@@ -109,7 +109,7 @@ export default class Element extends Component{
                     },
                     'getter': function(){
                         const value = parseInt(this.data('r-index'), 10);
-                        return isNaN(value) ? null : value;
+                        return isNaN(value) || value === 0 ? null : value;
                     },
                     'setter': function(value){
                         this.data('r-index', value);
