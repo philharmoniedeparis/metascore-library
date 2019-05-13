@@ -30,18 +30,9 @@ import {className} from '../css/Player.less';
  * @emits {revisionset} Fired when the vid is set
  * @param {Object} player The player instance
  * @param {Integer} vid The guide's vid
- * @emits {mediaadd} Fired when the media is added
- * @param {Object} player The player instance
- * @param {Object} media The media instance
- * @emits {controlleradd} Fired when the controller is added
- * @param {Object} player The player instance
- * @param {Object} controller The controller instance
- * @emits {blocktoggleradd} Fired when a block toggler is added
- * @param {Object} player The player instance
- * @param {Object} blocktoggler The blocktoggler instance
- * @emits {blockadd} Fired when a block is added
- * @param {Object} player The player instance
- * @param {Object} block The block instance
+ * @emits {componentadd} Fired when a component is added
+ * @param {Object} component The component instance
+ * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  * @emits {rindex} Fired when the reading index is set
  * @param {Object} player The player instance
  * @param {Object} value The reading index value
@@ -801,13 +792,15 @@ export default class Player extends Dom {
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
-        let media = configs;
+        const existing = configs instanceof Media;
+        let media = null;
 
-        if(media instanceof Media){
+        if(existing){
+            media = configs;
             media.appendTo(this);
         }
         else{
-            media = new Media(Object.assign({}, media, {
+            media = new Media(Object.assign({}, configs, {
                     'container': this,
                     'listeners': {
                         'propchange': this.onComponentPropChange.bind(this)
@@ -826,7 +819,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('mediaadd', {'player': this, 'media': media}, true, false);
+            this.triggerEvent('componentadd', {'component': media, 'new': existing}, true, false);
         }
 
         return media;
@@ -836,17 +829,19 @@ export default class Player extends Dom {
      * Create and add a Controller instance
      *
      * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
-        let controller = configs;
+        const existing = configs instanceof Controller;
+        let controller = null;
 
-        if(controller instanceof Controller){
+        if(existing){
+            controller = configs;
             controller.appendTo(this);
         }
         else{
-            controller = new Controller(Object.assign({}, controller, {
+            controller = new Controller(Object.assign({}, configs, {
                     'container': this,
                     'listeners': {
                         'propchange': this.onComponentPropChange.bind(this)
@@ -856,7 +851,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
+            this.triggerEvent('componentadd', {'component': controller, 'new': existing}, true, false);
         }
 
         return controller;
@@ -866,13 +861,15 @@ export default class Player extends Dom {
      * Create and add a Block Toggler instance
      *
      * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        let block_toggler = configs;
+        const existing = configs instanceof BlockToggler;
+        let block_toggler = null;
 
-        if(block_toggler instanceof BlockToggler){
+        if(existing){
+            block_toggler = configs;
             block_toggler.appendTo(this);
         }
         else{
@@ -884,7 +881,7 @@ export default class Player extends Dom {
         this.updateBlockToggler(block_toggler);
 
         if(supressEvent !== true){
-            this.triggerEvent('blocktoggleradd', {'player': this, 'blocktoggler': block_toggler}, true, false);
+            this.triggerEvent('componentadd', {'component': block_toggler, 'new': existing}, true, false);
         }
 
         return block_toggler;
@@ -894,17 +891,19 @@ export default class Player extends Dom {
      * Create and add a Block instance
      *
      * @param {Object} configs The configurations to send to the Block class
-     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Block} The Block instance
      */
     addBlock(configs, supressEvent){
-        let block = configs;
+        const existing = configs instanceof Block;
+        let block = null;
 
-        if(block instanceof Block){
+        if(existing){
+            block = configs;
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign({}, block, {
+            block = new Block(Object.assign({}, configs, {
                     'container': this,
                     'listeners': {
                         'propchange': this.onComponentPropChange.bind(this)
@@ -928,7 +927,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
+            this.triggerEvent('componentadd', {'component': block, 'new': existing}, true, false);
         }
 
         return block;

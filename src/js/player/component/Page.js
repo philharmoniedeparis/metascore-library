@@ -21,9 +21,9 @@ const ELEMENT_TYPES = {
 /**
  * A page component
  *
- * @emits {elementadd} Fired when an element is added
- * @param {Object} page The page instance
- * @param {Object} element The element instance
+ * @emits {componentadd} Fired when an element is added
+ * @param {Object} component The element instance
+ * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  * @emits {cuepointstart} Fired when a cuepoint started
  * @emits {cuepointstop} Fired when a cuepoint stops
  */
@@ -156,18 +156,19 @@ export default class Page extends Component {
      * Add an element
      *
      * @param {Object|Element} configs Element configs or an existing Element instance
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event
      * @return {Element} The element
      */
     addElement(configs, supressEvent){
-        let element = configs;
-        const existing = element instanceof Element;
+        const existing = configs instanceof Element;
+        let element = null;
 
         if(existing){
+            element = configs;
             element.appendTo(this);
         }
         else{
-            const type = element.type;
+            const type = configs.type;
             const el_index = this.children(`.element.${type}`).count() + 1;
             let name = '';
 
@@ -188,7 +189,7 @@ export default class Page extends Component {
             element = new ELEMENT_TYPES[configs.type](Object.assign({
                 'container': this,
                 'name': name,
-            }, element));
+            }, configs));
         }
 
         if(this.active){
@@ -196,7 +197,7 @@ export default class Page extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('elementadd', {'page': this, 'element': element, 'new': !existing});
+            this.triggerEvent('componentadd', {'component': element, 'new': !existing});
         }
 
         return element;

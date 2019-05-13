@@ -153,7 +153,7 @@ export default class Editor extends Dom {
 
         /**
          * The controller
-         * @type {Dom}
+         * @type {Controller}
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
@@ -1680,45 +1680,47 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Player mediaadd event callback
+     * Player componentadd event callback
      *
      * @private
      */
-    onPlayerMediaAdd(){
-        this.updateBlockSelector();
+    onPlayerComponentAdd(evt){
+        const component = evt.detail.component;
 
-        this.getPlayer().updateBlockTogglers();
-    }
+        if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block')){
+            this.updateBlockSelector();
+            this.getPlayer().updateBlockTogglers();
+        }
+        else if(component.instanceOf('BlockToggler')){
+            this.updateBlockSelector();
+        }
+        else if(component.instanceOf('Page')){
+            const block = component.getBlock();
+            if(block === this.panels.block.getComponent()){
+                this.updatePageSelector();
+            }
+        }
+        else if(component.instanceOf('Element')){
+            const page = component.getPage();
 
-    /**
-     * Player controlleradd event callback
-     *
-     * @private
-     */
-    onPlayerControllerAdd(){
-        this.updateBlockSelector();
+            if(evt.detail.new && component.instanceOf('Cursor')){
+                const media = this.getPlayer().getMedia();
 
-        this.getPlayer().updateBlockTogglers();
-    }
+                if(!isNumber(component.getPropertyValue('start-time'))){
+                    component.setPropertyValue('start-time', media.getTime());
 
-    /**
-     * Player blocktaggleradd event callback
-     *
-     * @private
-     */
-    onPlayerBlockTogglerAdd(){
-        this.updateBlockSelector();
-    }
+                }
 
-    /**
-     * Player blockadd event callback
-     *
-     * @private
-     */
-    onPlayerBlockAdd(){
-        this.updateBlockSelector();
+                if(!isNumber(component.getPropertyValue('end-time'))){
+                    const block = page.getBlock();
+                    component.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+                }
+            }
 
-        this.getPlayer().updateBlockTogglers();
+            if(page === this.panels.page.getComponent()){
+                this.updateElementSelector();
+            }
+        }
     }
 
     /**
@@ -1829,20 +1831,15 @@ export default class Editor extends Dom {
         new Dom(this.player.get(0))
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
             .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
-            .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
-            .addListener('mediaadd', this.onPlayerMediaAdd.bind(this))
-            .addListener('controlleradd', this.onPlayerControllerAdd.bind(this))
-            .addListener('blocktoggleradd', this.onPlayerBlockTogglerAdd.bind(this))
-            .addListener('blockadd', this.onPlayerBlockAdd.bind(this))
+            .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
+            .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
             .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
             .addListener('rindex', this.onPlayerReadingIndex.bind(this))
-            .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
@@ -2026,22 +2023,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Block pageadd event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onBlockPageAdd(evt){
-        const block = evt.detail.block;
-
-        if(block === this.panels.block.getComponent()){
-            this.updatePageSelector();
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
      * Block pageactivate event callback
      *
      * @private
@@ -2053,37 +2034,6 @@ export default class Editor extends Dom {
         if(page.getBlock() === this.panels.block.getComponent()){
             this.panels.page.setComponent(page);
         }
-    }
-
-    /**
-     * Page elementadd event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPageElementAdd(evt){
-        const element = evt.detail.element;
-        const page = evt.detail.page;
-
-        if(evt.detail.new && element.instanceOf('Cursor')){
-            const media = this.getPlayer().getMedia();
-
-            if(!isNumber(element.getPropertyValue('start-time'))){
-                element.setPropertyValue('start-time', media.getTime());
-
-            }
-
-            if(!isNumber(element.getPropertyValue('end-time'))){
-                const block = page.getBlock();
-                element.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
-            }
-        }
-
-        if(page === this.panels.page.getComponent()){
-            this.updateElementSelector();
-        }
-
-        evt.stopPropagation();
     }
 
     /**
@@ -2721,7 +2671,7 @@ export default class Editor extends Dom {
                             const prop = before ? 'start-time' : 'end-time';
                             adjacent_page.setPropertyValue(prop, component.getPropertyValue(prop));
                         }
-                        block.removePage(component);
+                        component.remove();
                         block.setActivePage(index);
                     },
                     'redo': function(){
@@ -2923,7 +2873,7 @@ export default class Editor extends Dom {
                                     next_page.setPropertyValue('start-time', ctx.component.getPropertyValue('start-time'));
                                 }
 
-                                context.block.removePage(ctx.component, true);
+                                ctx.component.remove();
 
                                 page_index = ctx.index - 1;
                             });
@@ -2950,7 +2900,7 @@ export default class Editor extends Dom {
 
                             // remove the new page if one was added
                             if(context.auto_page){
-                                context.block.removePage(context.auto_page);
+                                context.auto_page.remove();
                             }
 
                             // re-add removed pages

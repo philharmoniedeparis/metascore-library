@@ -27,7 +27,7 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Setup the menu's UI
+     * Setup the UI
      *
      * @private
      */

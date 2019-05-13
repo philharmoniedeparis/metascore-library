@@ -9,12 +9,9 @@ import {isString, isNumber} from '../../core/utils/Var';
 /**
  * A block component
  *
- * @emits {pageadd} Fired when a page is added
- * @param {Block} block The block instance
- * @param {Page} page The page instance
- * @emits {pageremove} Fired when a page is removed
- * @param {Block} block The block instance
- * @param {Page} page The page instance
+ * @emits {componentadd} Fired when a page is added
+ * @param {Component} component The page instance
+ * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  * @emits {pageactivate} Fired when the active page is set
  * @param {Block} block The block instance
  * @param {Page} current The currently active page instance
@@ -357,7 +354,7 @@ export default class Block extends Component {
      *
      * @param {Object|Page} configs Page configs or an existing Page instance
      * @param {Integer} [index] The new page's index, page is appended if not given
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event
      * @return {Page} The added page
      */
     addPage(configs, index, supressEvent){
@@ -382,27 +379,10 @@ export default class Block extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('pageadd', {'block': this, 'page': page, 'new': !existing});
+            this.triggerEvent('componentadd', {'component': page, 'new': !existing});
         }
 
         this.setActivePage(page);
-
-        return page;
-    }
-
-    /**
-     * Remove a page
-     *
-     * @param {Page} page The page to remove
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
-     * @return {Page} The removed page
-     */
-    removePage(page, supressEvent){
-        page.remove();
-
-        if(supressEvent !== true){
-            this.triggerEvent('pageremove', {'block': this, 'page': page});
-        }
 
         return page;
     }
