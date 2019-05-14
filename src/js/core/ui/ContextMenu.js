@@ -130,9 +130,6 @@ export default class ContextMenu extends Dom {
      * @param {Event} evt The event object
      */
     onTargetContextmenu(evt){
-        let x = 0;
-        let y = 0;
-
         if(this.triggerEvent('beforeshow', {'original_event': evt}) === false){
             return;
         }
@@ -141,6 +138,8 @@ export default class ContextMenu extends Dom {
             return;
         }
 
+        let x = 0;
+        let y = 0;
         if(evt.pageX || evt.pageY){
             x = evt.pageX;
             y = evt.pageY;
@@ -150,9 +149,10 @@ export default class ContextMenu extends Dom {
             y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
 
-        this.show(evt.target, x, y);
+        this.show(x, y, evt);
 
         evt.preventDefault();
+        evt.stopPropagation();
     }
 
     /**
@@ -288,15 +288,16 @@ export default class ContextMenu extends Dom {
      * @param {Number} y The vertical position at which the menu should be shown
      * @return {this}
      */
-    show(el, x, y){
-        let _x = x;
-        let _y = y;
-
+    show(x, y, evt){
         /**
          * The element that triggered the context menu
          * @type {Dom}
          */
-        this.context = new Dom(el);
+        this.context = {
+            'x': x,
+            'y': y,
+            'el': new Dom(evt.target)
+        };
 
         if(this.tasks){
             Object.entries(this.tasks).forEach(([, task]) => {
@@ -323,16 +324,18 @@ export default class ContextMenu extends Dom {
         Dom.addListener(Dom.getElementWindow(this.target.get(0)), 'keyup', this.onWindowKeyup);
 
         const menu_el = this.get(0);
-        const window = Dom.getElementWindow(el);
+        const window = Dom.getElementWindow(evt.target);
         const window_width = window.innerWidth;
         const window_height = window.innerHeight;
         const menu_width = menu_el.offsetWidth;
         const menu_height = menu_el.offsetHeight;
 
+        let _x = x;
         if((menu_width + _x) > window_width){
             _x = window_width - menu_width;
         }
 
+        let _y = y;
         if((menu_height + _y) > window_height){
             _y = window_height - menu_height;
         }
@@ -401,6 +404,15 @@ export default class ContextMenu extends Dom {
         this.enabled = false;
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    remove(){
+        this.disable();
+
+        return super.remove();
     }
 
 }

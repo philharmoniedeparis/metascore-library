@@ -64,11 +64,11 @@ export function isEmpty(value) {
     }
 
     if(value.hasOwnProperty('length')){
-        return value.length <= 0;
+        return value.length === 0;
     }
 
     if(isObject(value)){
-        return Object.keys(value).length <= 0;
+        return Object.keys(value).length === 0;
     }
 
     return false;

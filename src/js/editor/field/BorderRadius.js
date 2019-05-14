@@ -10,9 +10,21 @@ import {className} from '../../../css/editor/field/BorderRadius.less';
 export default class BorderRadius extends Field{
 
     /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'format': 'css'
+        });
+    }
+
+    /**
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
+     * @property {String} [format="css"] The format of the value (css, object)
      */
     constructor(configs) {
         // call parent constructor
@@ -48,7 +60,9 @@ export default class BorderRadius extends Field{
          * The overlay
          * @type {BorderRadiusOverlay}
          */
-        this.overlay = new BorderRadiusOverlay()
+        this.overlay = new BorderRadiusOverlay({
+                'format': this.configs.format
+            })
             .addListener('submit', this.onOverlaySubmit.bind(this));
     }
 

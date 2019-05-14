@@ -131,15 +131,28 @@ export default class CuePoint extends EventEmitter{
     }
 
     /**
-     * Init the cuepoint
+     * Activate the cuepoint
      *
      * @return {this}
      */
-    init() {
+    activate() {
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
             this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
             this.update();
         }
+
+        return this;
+    }
+
+    /**
+     * Deactivate the cuepoint
+     *
+     * @return {this}
+     */
+    deactivate() {
+        this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
+
+        this.stop();
 
         return this;
     }
@@ -221,16 +234,6 @@ export default class CuePoint extends EventEmitter{
         }
 
         this.running = false;
-    }
-
-    /**
-     * Destroy the cuepoint
-     *
-     */
-    destroy() {
-        this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
-
-        this.stop();
     }
 
 }

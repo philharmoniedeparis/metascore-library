@@ -481,7 +481,7 @@ export default class Player extends Dom {
      */
     onCursorElementTime(evt){
         if(!this.hasClass('editing') || evt.detail.element.hasClass('selected')){
-            this.getMedia().setTime(evt.detail.value);
+            this.getMedia().setTime(evt.detail.time);
         }
     }
 
@@ -977,7 +977,7 @@ export default class Player extends Dom {
         const media = this.getMedia();
 
         if(this.cuepoint){
-            this.cuepoint.destroy();
+            this.cuepoint.deactivate();
         }
 
         const _inTime = parseFloat(inTime);
@@ -1002,7 +1002,7 @@ export default class Player extends Dom {
                 player.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
             })
             .addListener('seekout', (evt) => {
-                evt.target.destroy();
+                evt.target.deactivate();
                 delete player.cuepoint;
 
                 player.setReadingIndex(0);
@@ -1010,7 +1010,7 @@ export default class Player extends Dom {
             .addListener('stop', (evt) => {
                 evt.target.getMedia().pause();
             })
-            .init();
+            .activate();
 
             media.setTime(_inTime).play();
         }
@@ -1043,8 +1043,8 @@ export default class Player extends Dom {
                 this.rindex_css
                     .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
                     .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'display: block;')
-                    .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'display: block;');
+                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'visibility: visible; pointer-events: auto;')
+                    .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'visibility: visible; pointer-events: auto;');
 
                 this.data('r-index', index);
             }

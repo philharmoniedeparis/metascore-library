@@ -1,5 +1,7 @@
 import Dom from '../core/Dom';
-import {isNumber} from '../core/utils/Var';
+import Draggable from '../core/ui/Draggable';
+import Resizable from '../core/ui/Resizable';
+import {isNumber, isFunction} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
 
@@ -10,6 +12,11 @@ import CuePoint from './CuePoint';
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
+ * @param {Mixed} old The old value of the property
+ *
+ * @emits {cuepointset} Fired when a cue point is set
+ * @param {Component} component The component instance
+ * @param {CuePoint} cuepoint The cuepoint
  */
 export default class Component extends Dom {
 
@@ -19,17 +26,29 @@ export default class Component extends Dom {
      * @param {Object} configs Custom configs to override defaults
      * @property {String} [container=null] The Dom instance to which the component should be appended
      * @property {Integer} [index=null] The index position at which the component should be appended
+     * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
+     * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
      * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
+        // Get default configs.
+        const defaults = this.constructor.getDefaults();
+
+        // Add default property values.
+        Object.entries(defaults.properties).forEach(([name, property]) => {
+            if('default' in property){
+                defaults[name] = property.default;
+            }
+        });
+
         /**
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, defaults, configs);
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
@@ -64,6 +83,8 @@ export default class Component extends Dom {
             'id': `component-${uuid(10)}`,
             'container': null,
             'index': null,
+            'draggable': true,
+            'resizable': true,
             'properties': {
                 'id': {
                     'editable': false,
@@ -219,9 +240,17 @@ export default class Component extends Dom {
         }
 
 		Object.entries(this.getProperties()).forEach(([name, prop]) => {
+            // Skip if this is an id property and the skipID argument is true.
             if(skipID === true && name === 'id'){
                 return;
             }
+
+            // Skip if this property does not apply.
+            if('applies' in prop && isFunction(prop.applies) && !prop.applies.call(this)){
+                return;
+            }
+
+            // Return the value retreived from the property's getter.
             if('getter' in prop){
                 const value = prop.getter.call(this, _skipDefaults, skipID);
 
@@ -248,10 +277,12 @@ export default class Component extends Dom {
      */
     setPropertyValue(name, value, supressEvent){
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
+            const old_value = this.getPropertyValue(name);
+
             this.configs.properties[name].setter.call(this, value);
 
             if(supressEvent !== true){
-                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value});
+                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
             }
         }
 
@@ -286,17 +317,106 @@ export default class Component extends Dom {
     }
 
     /**
+     * Set/Unset the draggable behaviour
+     *
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {this}
+     */
+    setDraggable(draggable){
+        if(!this.configs.draggable){
+            return this;
+        }
+
+        if(this.getPropertyValue('locked') && draggable){
+            return this;
+        }
+
+        if(draggable && !this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
+            this._draggable = new Draggable(this.getDraggableConfigs());
+        }
+        else if(!draggable && this._draggable){
+            this._draggable.destroy();
+            delete this._draggable;
+        }
+
+        return this;
+    }
+
+    getDraggableConfigs(){
+        return {
+            'target': this,
+            'handle': this
+        };
+    }
+
+    /**
+     * Get the draggable behaviour
+     *
+     * @return {Draggable} The draggable behaviour
+     */
+    getDraggable(){
+        return this._draggable;
+    }
+
+    /**
+     * Set/Unset the resizable behaviour
+     *
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {this}
+     */
+    setResizable(resizable){
+        if(!this.configs.resizable){
+            return this;
+        }
+
+        if(this.getPropertyValue('locked') && resizable){
+            return this;
+        }
+
+        if(resizable && !this._resizable){
+            /**
+             * The resizable behavior
+             * @type {Resizable}
+             */
+            this._resizable = new Resizable({
+                'target': this
+            });
+        }
+        else if(!resizable && this._resizable){
+            this._resizable.destroy();
+            delete this._resizable;
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the resizable behaviour
+     *
+     * @return {Resizable} The resizable behaviour
+     */
+    getResizable(){
+        return this._resizable;
+    }
+
+    /**
      * Set a cuepoint on the component
      *
      * @param {Object} configs Custom configs to override defaults
-     * @return {player.CuePoint} The created cuepoint
+     * @param {Boolean} [supressEvent=false] Whether to supress the cuepointset event
+     * @return {this}
      */
-    setCuePoint(configs){
+    setCuePoint(configs, supressEvent){
         const inTime = this.getPropertyValue('start-time');
         const outTime = this.getPropertyValue('end-time');
 
         if(this.cuepoint){
-            this.cuepoint.destroy();
+            this.cuepoint.deactivate();
+            delete this.cuepoint;
         }
 
         if(inTime !== null || outTime !== null){
@@ -309,22 +429,12 @@ export default class Component extends Dom {
                 'outTime': outTime
             }));
 
-            if(this.onCuePointStart){
-                this.cuepoint.addListener('start', this.onCuePointStart.bind(this));
+            if(supressEvent !== true){
+                this.triggerEvent('cuepointset', {'component': this, 'cuepoint': this.cuepoint});
             }
-
-            if(this.onCuePointUpdate){
-                this.cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
-            }
-
-            if(this.onCuePointStop){
-                this.cuepoint.addListener('stop', this.onCuePointStop.bind(this));
-            }
-
-            this.cuepoint.init();
         }
 
-        return this.cuepoint;
+        return this;
     }
 
     /**

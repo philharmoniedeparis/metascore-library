@@ -1,7 +1,5 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import Draggable from '../../core/ui/Draggable';
-import Resizable from '../../core/ui/Resizable';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
@@ -111,7 +109,7 @@ export default class Element extends Component{
                     },
                     'getter': function(){
                         const value = parseInt(this.data('r-index'), 10);
-                        return isNaN(value) ? null : value;
+                        return isNaN(value) || value === 0 ? null : value;
                     },
                     'setter': function(value){
                         this.data('r-index', value);
@@ -275,7 +273,8 @@ export default class Element extends Component{
 
         this
             .addClass('element')
-            .addClass(this.constructor.getType());
+            .addClass(this.constructor.getType())
+            .addListener('cuepointset', this.onCuePointSet.bind(this));
 
         /**
          * The contents container
@@ -299,6 +298,59 @@ export default class Element extends Component{
     }
 
     /**
+     * Activate the element
+     *
+     * @return {this}
+     */
+    activate(){
+        const cuepoint = this.getCuePoint();
+
+        if(cuepoint){
+            cuepoint.activate();
+        }
+
+        this.active = true;
+
+        return this;
+    }
+
+    /**
+     * Deactivate the element
+     *
+     * @return {this}
+     */
+    deactivate(){
+        delete this.active;
+
+        const cuepoint = this.getCuePoint();
+        if(cuepoint){
+            cuepoint.deactivate();
+        }
+
+        return this;
+    }
+
+    /**
+     * The cuepoint set event handler
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        const cuepoint = evt.detail.cuepoint;
+
+        cuepoint
+            .addListener('start', this.onCuePointStart.bind(this))
+            .addListener('stop', this.onCuePointStop.bind(this));
+
+        if(this.active){
+            cuepoint.activate();
+        }
+
+        evt.stopPropagation();
+    }
+
+    /**
      * The cuepoint start event handler
      *
      * @private
@@ -314,65 +366,6 @@ export default class Element extends Component{
      */
     onCuePointStop(){
         this.removeClass('active');
-    }
-
-    /**
-     * Set/Unset the draggable behaviour
-     *
-     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
-     * @return {Draggable} The draggable behaviour
-     */
-    setDraggable(draggable){
-        if(this.getPropertyValue('locked') && draggable){
-            return false;
-        }
-
-        if(draggable && !this._draggable){
-            /**
-             * The draggable behavior
-             * @type {Draggable}
-             */
-            this._draggable = new Draggable({
-                'target': this,
-                'handle': this
-            });
-        }
-        else if(!draggable && this._draggable){
-            this._draggable.destroy();
-            delete this._draggable;
-        }
-
-        return this._draggable;
-
-    }
-
-    /**
-     * Set/Unset the resizable behaviour
-     *
-     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
-     * @return {Resizable} The resizable behaviour
-     */
-    setResizable(resizable){
-        if(this.getPropertyValue('locked') && resizable){
-            return false;
-        }
-
-        if(resizable && !this._resizable){
-            /**
-             * The resizable behavior
-             * @type {Resizable}
-             */
-            this._resizable = new Resizable({
-                'target': this
-            });
-        }
-        else if(!resizable && this._resizable){
-            this._resizable.destroy();
-            delete this._resizable;
-        }
-
-        return this._resizable;
-
     }
 
 }
