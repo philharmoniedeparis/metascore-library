@@ -14,7 +14,7 @@
             .input-wrapper{
                 input{
                     width: 100%;
-                    height: 25px;
+                    height: 30px;
                     padding: 0;
                     text-align: center;
                     color: #fff;
@@ -108,102 +108,13 @@
         }
     }
 
-    .waveform{
+    .progress-bar{
         position: relative;
         flex-grow: 1;
-
-        .view{
-            .layers{
-                overflow: hidden;
-                position: relative;
-
-                .layer{
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                }
-            }
-
-            &.overview{
-                border-bottom: 1px solid #ccc;
-
-                .layers{
-                    height: 25px;
-                }
-            }
-
-            &.zoom{
-                position: relative;
-
-                .message{
-                    position: absolute;
-                    top: 50%;
-                    left: 0;
-                    right: 0;
-                    color: #666;
-                    transform: translateY(-50%);
-                    text-align: center;
-                }
-
-                .layers{
-                    height: 100px;
-                }
-
-                .controls{
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    display: none;
-                    user-select: none;
-                    background-color: #f7f7f7;
-                    background-image: linear-gradient(to bottom, #f7f7f7 0%, #e7e7e7 100%);
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    opacity: 0.5;
-
-                    button{
-                        display: inline-block;
-                        height: 2em;
-                        width: 2em;
-                        outline: none;
-                        vertical-align: middle;
-
-                        &[data-action="zoom-out"]{
-                            border-right: 1px solid #ccc;
-                        }
-
-                        &[data-action="zoom-in"]{
-                            border-left: 1px solid #ccc;
-                        }
-
-                        &:hover{
-                            opacity: 1;
-                            color: #fff;
-                            background: #0000fe;
-                        }
-                    }
-
-                    .slider.field{
-                        display: inline-block;
-                        vertical-align: middle;
-                    }
-
-                    &:hover{
-                        opacity: 1;
-                    }
-                }
-
-                &.has-data{
-                    .controls{
-                        display: block;
-                    }
-                }
-            }
-        }
     }
 
     &.minimized{
-        .waveform{
+        .progress-bar{
             .view{
                 &.overview{
                     border-bottom: none;

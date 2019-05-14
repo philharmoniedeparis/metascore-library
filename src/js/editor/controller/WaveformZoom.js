@@ -1,6 +1,9 @@
 import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
 import SliderField from '../field/Slider';
 import {toCentiseconds, toSeconds, formatTime} from '../../core/utils/Media';
+
+import {className} from '../../../css/editor/controller/WaveformZoom.less';
 
 /**
  * A waveform zoomable view
@@ -9,8 +12,8 @@ import {toCentiseconds, toSeconds, formatTime} from '../../core/utils/Media';
  * @param {Number} time The time in centiseconds corresponding to the click position
  * @emits {offsetupdate} Fired when the offset is updated
  * @param {Object} waveform The Waveform instance
- * @param {Number} start The start time of the offset in seconds
- * @param {Number} end The end time of the offset in seconds
+ * @param {Number} start The start time of the offset in centiseconds
+ * @param {Number} end The end time of the offset in centiseconds
  */
 export default class Zoom extends Dom {
 
@@ -31,7 +34,7 @@ export default class Zoom extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': 'view zoom'});
+        super('<div/>', {'class': `view zoom ${className}`});
 
         /**
          * The configuration values
@@ -137,6 +140,7 @@ export default class Zoom extends Dom {
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
@@ -209,19 +213,35 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Set the media's duration
+     * Set the associated media
      *
-     * @param {Number} duration The media's duration in centiseconds
+     * @param {Media} media The media component
      * @return {this}
      */
-    setDuration(duration){
+    setMedia(media){
+        if(this.media){
+            this.media.removeListener('timeupdate', this.onMediaTimeUpdate);
+        }
+
         /**
-         * The media's duration in seconds
+         * The associated media
+         * @type {Media}
+         */
+        this.media = media;
+
+        this.media.addListener('timeupdate', this.onMediaTimeUpdate);
+        this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
+
+        /**
+         * The media's duration in centiseconds
          * @type {Number}
          */
-        this.duration = toSeconds(duration);
+        this.duration = this.media.getDuration();
 
-        this.updateAxis();
+        this
+            .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
+            .updateSize()
+            .update();
 
         return this;
     }
@@ -377,7 +397,7 @@ export default class Zoom extends Dom {
 
                 for(let time = startTime; time < endTime; time+=step){
                     const x = this.getPositionAt(time) + 0.5;
-                    const text = formatTime(toCentiseconds(time));
+                    const text = formatTime(time);
 
                     context.moveTo(x, 0);
                     context.lineTo(x, this.configs.axisTickHeight);
@@ -440,7 +460,7 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Returns number of seconds for each axis tick, appropriate for the
+     * Returns number of centiseconds for each axis tick, appropriate for the
      * current zoom level, ensuring that ticks are not too close together
      * and that ticks are placed at intuitive time intervals (i.e., every 1,
      * 2, 5, 10, 20, 30 seconds, then every 1, 2, 5, 10, 20, 30 minutes, then
@@ -448,17 +468,17 @@ export default class Zoom extends Dom {
      *
      * Credit: peaks.js (see src/main/waveform/waveform.axis.js:getAxisLabelScale)
      *
-     * @returns {Number} The number of seconds for each axis tick
+     * @returns {Number} The number of centiseconds for each axis tick
      */
     getAxisStep() {
         const min_spacing = 60;
         const steps = [1, 2, 5, 10, 20, 30];
         let index = 0;
-        let base_secs = 1;
-        let step = base_secs;
+        let base = 1;
+        let step = base;
 
         for (;;) {
-            step = base_secs * steps[index];
+            step = toCentiseconds(base * steps[index]);
             const pixels = this.timeToPixels(step);
 
             if(pixels === null){
@@ -467,7 +487,7 @@ export default class Zoom extends Dom {
 
             if (pixels < min_spacing) {
                 if (++index === steps.length) {
-                    base_secs *= 60; // seconds -> minutes -> hours
+                    base *= 60; // seconds -> minutes -> hours
                     index = 0;
                 }
             }
@@ -621,7 +641,7 @@ export default class Zoom extends Dom {
         if(!this._dragging){
             const offset = evt.target.getBoundingClientRect();
             const x = evt.pageX - offset.left;
-            const time = toCentiseconds(this.getTimeAt(x));
+            const time = this.getTimeAt(x);
 
             this.triggerEvent('playheadclick', {'time': time});
         }
@@ -631,20 +651,41 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Set the current media's time
+     * Media timeupdate event callback
      *
-     * @param {Number} time The media's time in centiseconds
-     * @return {this}
+     * @private
      */
-    setTime(time){
+    onMediaTimeUpdate(evt){
         /**
-         * The current time in seconds
+         * The current time in centiseconds
          * @type {Number}
          */
-        this.time = toSeconds(time);
+        this.time = evt.detail.time;
 
         if(this.duration || this.resampled_data){
             this.updatePlayhead(true);
+        }
+    }
+
+    /**
+    * Media getWaveformData callback
+    *
+    * @private
+    * @param {WaveformData} data The waveform data, or null if none could be retreived
+    */
+    onMediaWaveformData(data){
+        if(data){
+            let range = 0;
+            for(let x = 0; x < data.adapter.length; x++) {
+                const min = data.adapter.at(2 * x);
+                const max = data.adapter.at(2 * x + 1);
+                range = Math.max(range, Math.abs(min), Math.abs(max));
+            }
+
+            this.updateSize().setData(data, range).setMessage(null);
+        }
+        else{
+            this.setMessage(Locale.t('editor.Controller.zoom.noWaveform', 'No waveform data available'));
         }
     }
 
@@ -702,14 +743,14 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Get the time in seconds corresponding to an x position in pixels
+     * Get the time in centiseconds corresponding to an x position in pixels
      *
      * @param {Number} x The x position
-     * @return {Number} The corresponding time in seconds
+     * @return {Number} The corresponding time in centiseconds
      */
     getTimeAt(x){
         if(this.resampled_data){
-            return this.resampled_data.time(x + this.offset);
+            return toCentiseconds(this.resampled_data.time(x + this.offset));
         }
         else if(this.duration){
             return x * this.duration / this.width;
@@ -719,14 +760,14 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Get the x position in pixels corresponding to a time in seconds
+     * Get the x position in pixels corresponding to a time in centiseconds
      *
-     * @param {Number} time The time in seconds
+     * @param {Number} time The time in centiseconds
      * @return {Number} The corresponding x position
      */
     getPositionAt(time){
         if(this.resampled_data){
-            return this.resampled_data.at_time(time) - this.offset;
+            return this.resampled_data.at_time(toSeconds(time)) - this.offset;
         }
         else if(this.duration){
             return Math.round(time / this.duration * this.width);
@@ -738,13 +779,13 @@ export default class Zoom extends Dom {
     /**
      * Get number of pixels corresponding to a period of time
      *
-     * @param {Number} time The time in seconds
+     * @param {Number} time The time in centiseconds
      * @return {Number} The corresponding pixel size
      */
     timeToPixels(time){
         if(this.resampled_data){
             const adapter = this.resampled_data.adapter;
-            return Math.floor(time * adapter.sample_rate / adapter.scale);
+            return Math.floor(toSeconds(time) * adapter.sample_rate / adapter.scale);
         }
         else if(this.duration){
             return Math.round(time / this.duration * this.width);

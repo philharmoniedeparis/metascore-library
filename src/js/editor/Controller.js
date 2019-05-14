@@ -1,14 +1,14 @@
 import Dom from '../core/Dom';
-import WaveformOverview from './waveform/Overview';
-import WaveformZoom from './waveform/Zoom';
+import BufferIndicator from './controller/BufferIndicator';
+import WaveformOverview from './controller/WaveformOverview';
+import WaveformZoom from './controller/WaveformZoom';
 import TimeField from './field/Time';
-import Locale from '../core/Locale';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import {className} from '../../css/editor/Controller.less';
 
 /**
- * A controller with a play/pause button, a waveform, etc
+ * A controller with a play/pause button, a buffer indicator, and a waveform
  *
  * @emits {timeset} Fired when the time is set
  * @param {Object} controller The Controller instance
@@ -22,6 +22,11 @@ export default class Controller extends Dom {
     constructor() {
         // call parent constructor
         super('<div/>', {'class': `controller ${className}`});
+
+        // fix event handlers scope
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
+        this.onMediaPlay = this.onMediaPlay.bind(this);
+        this.onMediaPause = this.onMediaPause.bind(this);
 
         this.setupUI();
     }
@@ -62,113 +67,118 @@ export default class Controller extends Dom {
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(buttons);
 
-        const waveform = new Dom('<div/>', {'class': 'waveform'})
-            .addListener('playheadclick', this.onWaveformPlayheadClick.bind(this))
+        const progress_bar = new Dom('<div/>', {'class': 'progress-bar'})
+            .addListener('playheadclick', this.onProgressBarPlayheadClick.bind(this))
             .appendTo(this);
 
         /**
-         * The waveform's overview
+         * The buffer indicator
+         * @type {Dom}
+         */
+        this.buffer_indicator = new BufferIndicator()
+            .appendTo(progress_bar);
+
+        /**
+         * The waveform overview
          * @type {Dom}
          */
         this.overview = new WaveformOverview()
-            .appendTo(waveform);
+            .appendTo(progress_bar);
 
         /**
-         * The waveform's zoom
+         * The waveform zoom
          * @type {Dom}
          */
         this.zoom = new WaveformZoom()
             .addListener('offsetupdate', this.onZoomOffsetUpodate.bind(this))
-            .appendTo(waveform);
+            .appendTo(progress_bar);
 
-        const resize_observer = new ResizeObserver(this.onWaveformResize.bind(this));
-        resize_observer.observe(waveform.get(0));
+        const resize_observer = new ResizeObserver(this.onProgressBarResize.bind(this));
+        resize_observer.observe(progress_bar.get(0));
     }
 
     /**
-     * Set the media's duration
+     * Set the media
      *
-     * @param {Number} duration The media's duration in centiseconds
+     * @param {Media} media The media component
      * @return {this}
      */
-    setDuration(duration){
-        this.timefield.setMax(duration);
+    attachMedia(media){
+        media.getRenderer()
+            .addListener('timeupdate', this.onMediaTimeUpdate)
+            .addListener('play', this.onMediaPlay)
+            .addListener('pause', this.onMediaPause);
 
-        this.overview
-            .updateSize()
-            .setDuration(duration)
-            .update();
+        this.timefield.setMax(media.getDuration());
 
-        this.zoom
-            .updateSize()
-            .setDuration(duration)
-            .update()
-            .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'));
+        this.buffer_indicator.setMedia(media);
+        this.overview.setMedia(media);
+        this.zoom.setMedia(media);
+
+        this.removeClass('disabled');
 
         return this;
     }
 
     /**
-     * Set the waveform data
-     *
-     * @param {WaveformData} data The waveform data, or null if none could be retreived
-     * @return {this}
-     */
-    setWaveformData(data){
-        if(data){
-            let range = 0;
-            for(let x = 0; x < data.adapter.length; x++) {
-                const min = data.adapter.at(2 * x);
-                const max = data.adapter.at(2 * x + 1);
-                range = Math.max(range, Math.abs(min), Math.abs(max));
-            }
-
-            this.overview.updateSize().setData(data, range);
-            this.zoom.updateSize().setData(data, range).setMessage(null);
-        }
-        else{
-            this.zoom.setMessage(Locale.t('editor.Controller.zoom.noWaveform', 'No waveform data available'));
-        }
-
-        return this;
-    }
-
-    /**
-     * Clear the waveform
+     * Disable the controller
      *
      * @return {this}
      */
-    clearWaveform(){
+    dettachMedia(){
+        if(this.media){
+            this.media.getRenderer()
+                .removeListener('timeupdate', this.onMediaTimeUpdate)
+                .removeListener('play', this.onMediaPlay)
+                .removeListener('pause', this.onMediaPause);
+        }
+
+        this.buffer_indicator.clear();
         this.overview.clear();
         this.zoom.clear();
 
+        this.addClass('disabled');
+
         return this;
     }
 
     /**
-     * Set the current media's time
+     * Media timeupdate event callback
      *
-     * @param {Number} time The media's time in centiseconds
-     * @return {this}
+     * @private
      */
-    setTime(time){
-        this.timefield.setValue(time, true);
-        this.overview.setTime(time);
-        this.zoom.setTime(time);
-
-        return this;
+    onMediaTimeUpdate(evt){
+        this.timefield.setValue(evt.detail.time, true);
     }
 
     /**
-     * Waveform's playhead click event callback
+     * Media playing event callback
+     *
+     * @private
+     */
+    onMediaPlay(){
+        this.addClass('playing');
+    }
+
+    /**
+     * Media pause event callback
+     *
+     * @private
+     */
+    onMediaPause(){
+        this.removeClass('playing');
+    }
+
+    /**
+     * Progress bar's playhead click event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onWaveformPlayheadClick(evt){
+    onProgressBarPlayheadClick(evt){
         const time = evt.detail.time;
 
-        if(Dom.is(evt.target, '.overview')){
+        if(!Dom.is(evt.target, '.zoom')){
             this.zoom.centerToTime(time);
         }
 
@@ -189,11 +199,12 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Waveform's resize event callback
+     * Progress bar's resize event callback
      *
      * @private
      */
-    onWaveformResize() {
+    onProgressBarResize() {
+        this.buffer_indicator.updateSize();
         this.overview.updateSize();
         this.zoom.updateSize();
     }
@@ -215,26 +226,6 @@ export default class Controller extends Dom {
      */
     maximize(){
         this.removeClass('minimized');
-        return this;
-    }
-
-    /**
-     * Enable the controller
-     *
-     * @return {this}
-     */
-    enable(){
-        this.removeClass('disabled');
-        return this;
-    }
-
-    /**
-     * Disable the controller
-     *
-     * @return {this}
-     */
-    disable(){
-        this.addClass('disabled');
         return this;
     }
 
