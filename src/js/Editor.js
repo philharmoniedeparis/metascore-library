@@ -383,11 +383,11 @@ export default class Editor extends Dom {
                 },
                 'paste-elements': {
                     'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
-                    'callback': (el) => {
-                        this.addPlayerComponents('element', this.clipboard.getData(), el.closest('.metaScore-component.page')._metaScore);
+                    'callback': (context) => {
+                        this.addPlayerComponents('element', this.clipboard.getData(), context.el.closest('.metaScore-component.page')._metaScore);
                     },
-                    'toggler': (el) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (el.closest('.metaScore-component.page') ? true : false);
+                    'toggler': (context) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (context.el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
                 'delete-elements': {
