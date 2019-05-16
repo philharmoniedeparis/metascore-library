@@ -1,7 +1,8 @@
 import Dom from '../core/Dom';
-import WaveformOverview from './waveform/Overview';
-import WaveformZoom from './waveform/Zoom';
 import TimeField from './field/Time';
+import WaveformOverview from './controller/waveform/Overview';
+import WaveformZoom from './controller/waveform/Zoom';
+import Timeline from './controller/Timeline';
 import Locale from '../core/Locale';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -68,18 +69,25 @@ export default class Controller extends Dom {
 
         /**
          * The waveform's overview
-         * @type {Dom}
+         * @type {WaveformOverview}
          */
         this.overview = new WaveformOverview()
             .appendTo(waveform);
 
         /**
          * The waveform's zoom
-         * @type {Dom}
+         * @type {WaveformZoom}
          */
         this.zoom = new WaveformZoom()
             .addListener('offsetupdate', this.onZoomOffsetUpodate.bind(this))
             .appendTo(waveform);
+
+        /**
+         * The timeline
+         * @type {Timeline}
+         */
+        this.timeline = new Timeline()
+            .appendTo(this);
 
         const resize_observer = new ResizeObserver(this.onWaveformResize.bind(this));
         resize_observer.observe(waveform.get(0));
@@ -104,6 +112,8 @@ export default class Controller extends Dom {
             .setDuration(duration)
             .update()
             .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'));
+
+        this.timeline.setDuration(duration);
 
         return this;
     }
@@ -134,13 +144,14 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Clear the waveform
+     * Clear the waveforms and timeline
      *
      * @return {this}
      */
-    clearWaveform(){
+    clear(){
         this.overview.clear();
         this.zoom.clear();
+        this.timeline.clear();
 
         return this;
     }

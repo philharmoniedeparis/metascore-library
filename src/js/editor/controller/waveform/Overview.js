@@ -1,5 +1,5 @@
-import Dom from '../../core/Dom';
-import {toCentiseconds, toSeconds} from '../../core/utils/Media';
+import Dom from '../../../core/Dom';
+import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
 /**
  * A waveform overview

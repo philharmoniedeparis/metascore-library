@@ -1,6 +1,6 @@
-import Dom from '../../core/Dom';
-import SliderField from '../field/Slider';
-import {toCentiseconds, toSeconds, formatTime} from '../../core/utils/Media';
+import Dom from '../../../core/Dom';
+import SliderField from '../../field/Slider';
+import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 
 /**
  * A waveform zoomable view

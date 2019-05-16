@@ -133,9 +133,10 @@ export default class Player extends Dom {
             }})
             .appendTo(this);
 
-        this.appendTo(this.configs.container);
-
-        this.triggerEvent('ready', {'player': this}, false, false);
+        this
+            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
+            .appendTo(this.configs.container)
+            .triggerEvent('ready', {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
             this.load();
@@ -801,10 +802,7 @@ export default class Player extends Dom {
         }
         else{
             media = new Media(Object.assign({}, configs, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
-                    }
+                    'container': this
                 }))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
@@ -842,10 +840,7 @@ export default class Player extends Dom {
         }
         else{
             controller = new Controller(Object.assign({}, configs, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
-                    }
+                    'container': this
                 }))
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
         }
@@ -904,10 +899,7 @@ export default class Player extends Dom {
         }
         else{
             block = new Block(Object.assign({}, configs, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
-                    }
+                    'container': this
                 }))
                 .addListener('pageactivate', this.onPageActivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))

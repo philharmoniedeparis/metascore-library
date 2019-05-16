@@ -1607,7 +1607,9 @@ export default class Editor extends Dom {
 
         this.removeClass('metadata-loaded');
 
-        this.controller.disable().clearWaveform();
+        this.controller
+            .clear()
+            .disable();
 
         this.getPlayer()
             .addOneTimeListener('mediaerror', (evt) => {
@@ -1687,6 +1689,8 @@ export default class Editor extends Dom {
     onPlayerComponentAdd(evt){
         const component = evt.detail.component;
 
+        this.controller.timeline.addTrack(component);
+
         if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block')){
             this.updateBlockSelector();
             this.getPlayer().updateBlockTogglers();
@@ -1754,6 +1758,8 @@ export default class Editor extends Dom {
         const component = child._metaScore;
 
         if(component){
+            this.controller.timeline.removeTrack(component);
+
             if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
                 this.updateBlockSelector();
 
@@ -1793,7 +1799,8 @@ export default class Editor extends Dom {
                 .addListener('idset', this.onPlayerIdSet.bind(this))
                 .addListener('revisionset', this.onPlayerRevisionSet.bind(this))
                 .addListener('sourceset', this.onPlayerSourceSet.bind(this))
-                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this));
+                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
+                .addListener('componentadd', this.onPlayerComponentAdd.bind(this));
 
             this.player.load();
 
@@ -1830,11 +1837,10 @@ export default class Editor extends Dom {
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(this.player.get(0))
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
-            .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
-            .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
@@ -1855,10 +1861,7 @@ export default class Editor extends Dom {
 
             this
                 .setEditing(true)
-                .updateMainmenu()
-                .updateBlockSelector()
-                .updatePageSelector()
-                .updateElementSelector();
+                .updateMainmenu();
 
             const data = this.player.getData();
             this.mainmenu
@@ -2562,12 +2565,14 @@ export default class Editor extends Dom {
             .removeClass('has-player')
             .removeClass('metadata-loaded');
 
-        this.controller.disable();
-
         this.player_contextmenu.disable();
 
-        this.controller.clearWaveform();
+        this.controller
+            .clear()
+            .disable();
+
         this.history.clear();
+
         this.setDirty(false)
             .setEditing(false)
             .updateMainmenu();

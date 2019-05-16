@@ -1,0 +1,16 @@
+:local(.className){
+    position: relative;
+    line-height: 1em;
+    padding: 0 0.5em;
+    border-bottom: 1px solid #666;
+
+    .name{
+        font-size: 0.75em;
+
+        &:empty{
+            &::after{
+                content: '\00a0';
+            }
+        }
+    }
+}

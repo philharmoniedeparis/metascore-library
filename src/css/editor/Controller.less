@@ -1,14 +1,16 @@
 :local(.className){
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 
     > .controls{
+        width: 10em;
         display: flex;
         flex-direction: column;
+        box-sizing: border-box;
         border-right: 1px solid #7b7b7b;
 
         .time.field{
-            width: 100px;
             background: #0000fe;
 
             .input-wrapper{

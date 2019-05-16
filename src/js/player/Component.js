@@ -155,6 +155,15 @@ export default class Component extends Dom {
     }
 
     /**
+     * Get the component's type
+     *
+     * @return {String} The component's type
+     */
+    getType() {
+        return this.constructor.getType();
+    }
+
+    /**
      * Check if the component is of a given type
      *
      * @param {String} type The type to check for
@@ -411,22 +420,22 @@ export default class Component extends Dom {
      * @return {this}
      */
     setCuePoint(configs, supressEvent){
-        const inTime = this.getPropertyValue('start-time');
-        const outTime = this.getPropertyValue('end-time');
+        const start_time = this.getPropertyValue('start-time');
+        const end_time = this.getPropertyValue('end-time');
 
         if(this.cuepoint){
             this.cuepoint.deactivate();
             delete this.cuepoint;
         }
 
-        if(inTime !== null || outTime !== null){
+        if(start_time !== null || end_time !== null){
             /**
              * A cuepoint associated with the component
              * @type {CuePoint}
              */
             this.cuepoint = new CuePoint(Object.assign({}, configs, {
-                'inTime': inTime,
-                'outTime': outTime
+                'inTime': start_time,
+                'outTime': end_time
             }));
 
             if(supressEvent !== true){
