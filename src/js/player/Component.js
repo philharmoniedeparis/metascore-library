@@ -326,6 +326,74 @@ export default class Component extends Dom {
     }
 
     /**
+     * Get the parent component
+     *
+     * @return {Component} The parent component
+     */
+    getParent(){
+        const dom = this.parents().closest('.metaScore-component');
+
+        return dom ? dom._metaScore : null;
+    }
+
+    /**
+     * Get the child components
+     *
+     * @return {Array} A list of child components
+     */
+    getChildren(){
+        const children = [];
+
+        this.children('.metaScore-component').forEach((dom) => {
+            children.push(dom._metaScore);
+        });
+
+        return children;
+    }
+
+    /**
+     * Get the count of children
+     *
+     * @return {Integer} The number of children
+     */
+    getChildrenCount() {
+        return this.children('.metaScore-component').count();
+    }
+
+    /**
+     * Remove all pages
+     *
+     * @return {this}
+     */
+    removeAllChildren() {
+        this.children('.metaScore-component').remove();
+
+        return this;
+    }
+
+    /**
+     * Get a child component by index
+     *
+     * @param {Integer} index The child's index
+     * @return {Component} The component
+     */
+    getChild(index){
+        const child = this.child(`.metaScore-component:nth-child(${index+1})`).get(0);
+
+        return child ? child._metaScore : null;
+    }
+
+    /**
+     * Get the index of a chiuld component
+     *
+     * @param {Component} child The child component
+     * @return {Integer} The child's index
+     */
+    getChildIndex(child){
+        return this.getChildren().indexOf(child);
+    }
+
+    /**
      * Set/Unset the draggable behaviour
      *
      * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable

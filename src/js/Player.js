@@ -908,7 +908,7 @@ export default class Player extends Dom {
                 .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
         }
 
-        if(block.getPageCount() === 0){
+        if(block.getChildrenCount() === 0){
             // add a page
             const page_configs = {};
             if(block.getPropertyValue('synched')){

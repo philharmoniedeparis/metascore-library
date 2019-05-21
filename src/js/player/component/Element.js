@@ -287,17 +287,6 @@ export default class Element extends Component{
     }
 
     /**
-     * Get the page component this element belongs to
-     *
-     * @return {player.component.Page} The page
-     */
-    getPage() {
-        const dom = this.closest('.metaScore-component.page');
-
-        return dom ? dom._metaScore : null;
-    }
-
-    /**
      * Activate the element
      *
      * @return {this}

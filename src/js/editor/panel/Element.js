@@ -65,8 +65,8 @@ export default class Element extends Panel {
      * @return {String} The component's label for use in the selector
      */
     getSelectorLabel(component){
-        const page = component.getPage();
-        const block = page.getBlock();
+        const page = component.getParent();
+        const block = page.getParent();
         let out_of_range = false;
 
         if(block.getPropertyValue('synched')){

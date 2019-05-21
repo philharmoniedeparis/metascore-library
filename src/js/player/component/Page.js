@@ -111,7 +111,7 @@ export default class Page extends Component {
                     'getter': function(skipDefault, skipID){
                         const elements = [];
 
-                        this.getElements().forEach((element) => {
+                        this.getChildren().forEach((element) => {
                             elements.push(element.getPropertyValues(skipDefault, skipID));
                         });
 
@@ -204,32 +204,6 @@ export default class Page extends Component {
     }
 
     /**
-     * Get the block component this page belongs to
-     *
-     * @return {player.component.Block}
-     */
-    getBlock() {
-        const dom = this.closest('.metaScore-component.block');
-
-        return dom ? dom._metaScore : null;
-    }
-
-    /**
-     * Get the element components that belong to this page
-     *
-     * @return {Array} The list of elements
-     */
-    getElements() {
-        const elements = [];
-
-        this.children('.element').forEach((dom) => {
-            elements.push(dom._metaScore);
-        });
-
-        return elements;
-    }
-
-    /**
      * Activate the page and its elements
      *
      * @return {this}
@@ -237,7 +211,7 @@ export default class Page extends Component {
     activate(){
         this.addClass('active');
 
-        this.getElements().forEach((element) => {
+        this.getChildren().forEach((element) => {
             element.activate();
         });
 
@@ -254,7 +228,7 @@ export default class Page extends Component {
     deactivate(){
         delete this.active;
 
-        this.getElements().forEach((element) => {
+        this.getChildren().forEach((element) => {
             element.deactivate();
         });
 

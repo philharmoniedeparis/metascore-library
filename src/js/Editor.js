@@ -321,10 +321,10 @@ export default class Editor extends Dom {
                     'callback': (context) => {
                         const page = context.el.closest('.metaScore-component.page')._metaScore;
 
-                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.block.setComponent(page.getParent());
                         this.panels.page.setComponent(page);
 
-                        page.getElements().forEach((element, index) => {
+                        page.getChildren().forEach((element, index) => {
                             this.panels.element.setComponent(element, index > 0);
                         });
                     },
@@ -338,11 +338,11 @@ export default class Editor extends Dom {
                         const rindex = this.getPlayer().getReadingIndex();
                         const page = context.el.closest('.metaScore-component.page')._metaScore;
 
-                        this.panels.block.setComponent(page.getBlock());
+                        this.panels.block.setComponent(page.getParent());
                         this.panels.page.setComponent(page);
                         this.panels.element.unsetComponents();
 
-                        page.getElements().forEach((element) => {
+                        page.getChildren().forEach((element) => {
                             if(element.getPropertyValue('r-index') === rindex){
                                 this.panels.element.setComponent(element, true);
                             }
@@ -1167,7 +1167,7 @@ export default class Editor extends Dom {
         const block = evt.detail.component;
 
         if(block.instanceOf('Block')){
-            block.getPages().forEach((page) => {
+            block.getChildren().forEach((page) => {
                 this.panels.page.unsetComponent(page);
             });
 
@@ -1288,14 +1288,14 @@ export default class Editor extends Dom {
                 .toggleMenuItem('Image', true)
                 .toggleMenuItem('Text', true);
 
-        const block = evt.detail.component.getBlock();
+        const block = evt.detail.component.getParent();
         const start_time_field = this.panels.page.getField('start-time');
         const end_time_field = this.panels.page.getField('end-time');
 
         if(block.getPropertyValue('synched')){
             const index = block.getActivePageIndex();
-            const previous_page = block.getPage(index-1);
-            const next_page = block.getPage(index+1);
+            const previous_page = block.getChild(index-1);
+            const next_page = block.getChild(index+1);
 
             if(previous_page){
                 start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
@@ -1329,7 +1329,7 @@ export default class Editor extends Dom {
     onPageUnset(evt){
         const page = evt.detail.component;
 
-        page.getElements().forEach((element) => {
+        page.getChildren().forEach((element) => {
             this.panels.element.unsetComponent(element);
         });
 
@@ -1355,12 +1355,12 @@ export default class Editor extends Dom {
             sets.forEach((set) => {
                 if(('start-time' in set[key]) || ('end-time' in set[key])){
                     const page = set.component;
-                    const block = page.getBlock();
+                    const block = page.getParent();
 
                     if(block.getPropertyValue('synched')){
-                        const index = block.getPageIndex(page);
-                        const previous_page = block.getPage(index - 1);
-                        const next_page = block.getPage(index + 1);
+                        const index = block.getChildIndex(page);
+                        const previous_page = block.getChild(index - 1);
+                        const next_page = block.getChild(index + 1);
 
                         if(('start-time' in set[key]) && previous_page){
                             previous_page.setPropertyValue('end-time', set[key]['start-time']);
@@ -1437,7 +1437,7 @@ export default class Editor extends Dom {
             const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
             added.forEach((component) => {
                 this.panels.page.setComponent(component, true);
-                component.getBlock().setActivePage(component, true);
+                component.getParent().setActivePage(component, true);
             });
         }
 
@@ -1699,13 +1699,13 @@ export default class Editor extends Dom {
             this.updateBlockSelector();
         }
         else if(component.instanceOf('Page')){
-            const block = component.getBlock();
+            const block = component.getParent();
             if(block === this.panels.block.getComponent()){
                 this.updatePageSelector();
             }
         }
         else if(component.instanceOf('Element')){
-            const page = component.getPage();
+            const page = component.getParent();
 
             if(evt.detail.new && component.instanceOf('Cursor')){
                 const media = this.getPlayer().getMedia();
@@ -1716,7 +1716,7 @@ export default class Editor extends Dom {
                 }
 
                 if(!isNumber(component.getPropertyValue('end-time'))){
-                    const block = page.getBlock();
+                    const block = page.getParent();
                     component.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
                 }
             }
@@ -1969,8 +1969,8 @@ export default class Editor extends Dom {
                 this.panels.element.unsetComponent(component);
             }
             else{
-                const page = component.getPage();
-                const block = page.getBlock();
+                const page = component.getParent();
+                const block = page.getParent();
 
                 this.panels.block.setComponent(block, evt.shiftKey);
                 this.panels.page.setComponent(page, evt.shiftKey);
@@ -1978,12 +1978,12 @@ export default class Editor extends Dom {
             }
         }
         else if(component.instanceOf('Page')){
-            const block = component.getBlock();
+            const block = component.getParent();
 
             if(evt.shiftKey && this.panels.page.getComponents().includes(component)){
                 this.panels.block.unsetComponent(block);
 
-                const elements = component.getElements();
+                const elements = component.getChildren();
                 elements.forEach((element) => {
                     this.panels.element.unsetComponent(element);
                 });
@@ -2002,7 +2002,7 @@ export default class Editor extends Dom {
                 this.panels.block.unsetComponent(component);
 
                 if(component.instanceOf('Block')){
-                    const pages = component.getPages();
+                    const pages = component.getChildren();
                     pages.forEach((page) => {
                         this.panels.page.unsetComponent(page);
                     });
@@ -2034,7 +2034,7 @@ export default class Editor extends Dom {
     onBlockPageActivate(evt){
         const page = evt.detail.current;
 
-        if(page.getBlock() === this.panels.block.getComponent()){
+        if(page.getParent() === this.panels.block.getComponent()){
             this.panels.page.setComponent(page);
         }
     }
@@ -2100,7 +2100,7 @@ export default class Editor extends Dom {
                 if(new_duration){
                     player.getComponents('.block').forEach((block) => {
                         if(block.getPropertyValue('synched')){
-                            const page = block.getPage(block.getPageCount()-1);
+                            const page = block.getChild(block.getChildrenCount()-1);
                             if(page){
                                 page.setPropertyValue('end-time', new_duration);
                             }
@@ -2154,7 +2154,7 @@ export default class Editor extends Dom {
                         if(new_duration < old_duration){
                             player.getComponents('.block').forEach((block) => {
                                 if(block.getPropertyValue('synched')){
-                                    block.getPages().some((page) => {
+                                    block.getChildren().some((page) => {
                                         if(page.getPropertyValue('start-time') > new_duration){
                                             blocks.push(block.getPropertyValue('name'));
                                             return true;
@@ -2405,7 +2405,7 @@ export default class Editor extends Dom {
             blocks.forEach((block) => {
                 const optgroup = blocks.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(block));
 
-                block.getPages().forEach((page, index) => {
+                block.getChildren().forEach((page, index) => {
                     selector.addOption(page.getId(), index+1, optgroup);
                 });
             });
@@ -2439,11 +2439,11 @@ export default class Editor extends Dom {
             selector.enable();
 
             pages.forEach((page) => {
-                const block_optgroup = pages.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(page.getBlock()));
+                const block_optgroup = pages.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(page.getParent()));
                 const optgroups = {};
 
                 // fill the list of optgroups
-                page.getElements().forEach((element) => {
+                page.getChildren().forEach((element) => {
                     const rindex = element.getPropertyValue('r-index') || 0;
 
                     if(!(rindex in optgroups)){
@@ -2604,7 +2604,7 @@ export default class Editor extends Dom {
                 const panel = this.panels.element;
                 const components = [];
 
-                this.panels.block.setComponent(page.getBlock());
+                this.panels.block.setComponent(page.getParent());
                 this.panels.page.setComponent(page);
 
                 configs.forEach((element_config, index) => {
@@ -2659,7 +2659,7 @@ export default class Editor extends Dom {
                         break;
                     }
 
-                    const adjacent_page = block.getPage(index);
+                    const adjacent_page = block.getChild(index);
                     config['start-time'] = before ? adjacent_page.getPropertyValue('start-time') : current_time;
                     config['end-time'] = before ? current_time : adjacent_page.getPropertyValue('end-time');
                     adjacent_page.setPropertyValue(before ? 'start-time' : 'end-time', current_time);
@@ -2672,7 +2672,7 @@ export default class Editor extends Dom {
                     'undo': function(){
                         panel.unsetComponents();
                         if(block.getPropertyValue('synched')){
-                            const adjacent_page = block.getPage(before ? index + 1 : index);
+                            const adjacent_page = block.getChild(before ? index + 1 : index);
                             const prop = before ? 'start-time' : 'end-time';
                             adjacent_page.setPropertyValue(prop, component.getPropertyValue(prop));
                         }
@@ -2681,7 +2681,7 @@ export default class Editor extends Dom {
                     },
                     'redo': function(){
                         if(block.getPropertyValue('synched')){
-                            const adjacent_page = block.getPage(index);
+                            const adjacent_page = block.getChild(index);
                             const prop = before ? 'start-time' : 'end-time';
                             adjacent_page.setPropertyValue(prop, current_time);
                         }
@@ -2766,8 +2766,8 @@ export default class Editor extends Dom {
                         alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', {'@count': components.length});
                     }
                     else{
-                        const block = components[0].getBlock();
-                        const index = block.getPageIndex(components[0]) + 1;
+                        const block = components[0].getParent();
+                        const index = block.getChildIndex(components[0]) + 1;
                         alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', {'@index': index, '@block': block.getName()});
                     }
                     break;
@@ -2831,9 +2831,9 @@ export default class Editor extends Dom {
                     const contexts = {};
 
                     components.forEach((component) => {
-                        const block = component.getBlock();
+                        const block = component.getParent();
                         const block_id = block.getId();
-                        const index = block.getPageIndex(component);
+                        const index = block.getChildIndex(component);
 
                         contexts[block_id] = contexts[block_id] || {
                             'block': block,
@@ -2854,7 +2854,7 @@ export default class Editor extends Dom {
                             // store original page start and end times
                             if(context.block.getPropertyValue('synched')){
                                 context.times = {};
-                                context.block.getPages().forEach((page) => {
+                                context.block.getChildren().forEach((page) => {
                                     context.times[page.getId()] = {
                                         'start': page.getPropertyValue('start-time'),
                                         'end': page.getPropertyValue('end-time')
@@ -2864,17 +2864,17 @@ export default class Editor extends Dom {
 
                             // remove deleted pages
                             context.pages.forEach((ctx) => {
-                                const index = context.block.getPageIndex(ctx.component);
+                                const index = context.block.getChildIndex(ctx.component);
                                 panel.unsetComponent(ctx.component);
 
                                 if(index > 0){
                                     // if there is a page before, update it's end time
-                                    const previous_page = context.block.getPage(index - 1);
+                                    const previous_page = context.block.getChild(index - 1);
                                     previous_page.setPropertyValue('end-time', ctx.component.getPropertyValue('end-time'));
                                 }
-                                else if(context.block.getPageCount() > 1){
+                                else if(context.block.getChildrenCount() > 1){
                                     // else if there is a page after, update it's start time
-                                    const next_page = context.block.getPage(index + 1);
+                                    const next_page = context.block.getChild(index + 1);
                                     next_page.setPropertyValue('start-time', ctx.component.getPropertyValue('start-time'));
                                 }
 
@@ -2884,7 +2884,7 @@ export default class Editor extends Dom {
                             });
 
                             // add a new page if the block is empty
-                            if(context.block.getPageCount() < 1){
+                            if(context.block.getChildrenCount() < 1){
                                 const configs = {};
 
                                 if(context.block.getPropertyValue('synched')){
@@ -2916,7 +2916,7 @@ export default class Editor extends Dom {
 
                             // reset all page times
                             if(context.block.getPropertyValue('synched')){
-                                context.block.getPages().forEach((page) => {
+                                context.block.getChildren().forEach((page) => {
                                     const page_id = page.getId();
                                     if(page_id in context.times){
                                         page.setPropertyValue('start-time', context.times[page_id].start);
@@ -2945,7 +2945,7 @@ export default class Editor extends Dom {
                     components.forEach((component) => {
                         context.push({
                             'component': component,
-                            'page': component.getPage()
+                            'page': component.getParent()
                         });
 
                         panel.unsetComponent(component);
