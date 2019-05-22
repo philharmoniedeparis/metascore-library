@@ -29,9 +29,14 @@ const bubbleEvents = {
 /**
  * A class for Dom manipulation
  *
+ * @emits {childadd} Fired when an element is added
+ * @param {Object} child The added child
+ *
  * @emits {beforeremove} Fired before an element is removed
+ *
  * @emits {childremove} Fired when a child element is removed
  * @param {Object} child The removed child
+ *
  * @example
  *     var div = new Dom('<div/>', {'class': 'my-class'});
  *     var body = new Dom('body');
@@ -587,6 +592,7 @@ export default class Dom {
 
         _children.forEach((child) => {
             element.appendChild(child);
+            this.triggerEvent(element, 'childadd', {'child': child});
         });
     }
 
@@ -601,6 +607,7 @@ export default class Dom {
 
         _siblings.forEach((sibling) => {
             element.parentElement.insertBefore(sibling, element);
+            this.triggerEvent(element.parentElement, 'childadd', {'child': sibling});
         });
     }
 
@@ -614,6 +621,7 @@ export default class Dom {
 
         _siblings.forEach((sibling) => {
             element.parentElement.insertBefore(sibling, element.nextSibling);
+            this.triggerEvent(element.parentElement, 'childadd', {'child': sibling});
         });
     }
 
