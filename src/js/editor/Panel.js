@@ -387,6 +387,7 @@ export default class Panel extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentset', {'component': component, 'count': this.components.length}, false);
+            component.triggerEvent('selected', {'component': component});
         }
 
         return this;
@@ -427,6 +428,7 @@ export default class Panel extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentunset', {'component': component, 'count': this.components.length}, false);
+            component.triggerEvent('unselected', {'component': component});
         }
 
         return this;

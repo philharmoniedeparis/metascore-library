@@ -1,16 +1,29 @@
 :local(.className){
-    position: relative;
-    line-height: 1em;
-    padding: 0 0.5em;
-    border-bottom: 1px solid #666;
 
-    .name{
-        font-size: 0.75em;
+    .info{
+        height: 1.1em;
+        line-height: 1.1em;
+        padding: 0 0.5em;
+        background: #ccc;
+        box-sizing: border-box;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
 
-        &:empty{
-            &::after{
-                content: '\00a0';
+        .name{
+            font-size: 0.75em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            &:empty{
+                &::after{
+                    content: '\00a0';
+                }
             }
         }
+    }
+
+    .sub-handles{
+        padding-left: 0.5em;
+        background: rgba(0, 0, 0, 0.25);
     }
 }

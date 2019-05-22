@@ -1608,7 +1608,7 @@ export default class Editor extends Dom {
         this.removeClass('metadata-loaded');
 
         this.controller
-            .clear()
+            .clearWaveform()
             .disable();
 
         this.getPlayer()
@@ -2568,7 +2568,8 @@ export default class Editor extends Dom {
         this.player_contextmenu.disable();
 
         this.controller
-            .clear()
+            .clearWaveform()
+            .clearTimeline()
             .disable();
 
         this.history.clear();

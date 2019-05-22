@@ -1,7 +1,4 @@
-@block-outline: rgb(51,49,47);
-@cursor-outline: rgb(255,0,60);
-@image-outline: rgb(255,138,0);
-@text-outline: rgb(0,193,118);
+@import "core/colors";
 
 html,
 body{
@@ -511,15 +508,15 @@ body{
         .metaScore-component{
             &.element{
                 &.Cursor{
-                    outline-color: @cursor-outline;
+                    outline-color: @cursor-color;
                 }
 
                 &.Image{
-                    outline-color: @image-outline;
+                    outline-color: @image-color;
                 }
 
                 &.Text{
-                    outline-color: @text-outline;
+                    outline-color: @text-color;
                 }
             }
         }
@@ -543,7 +540,7 @@ body{
                 &.block-toggler{
                     &.selected{
                         z-index: 2147483647 !important;
-                        box-shadow: @block-outline 0px 0px 4px 2px;
+                        box-shadow: @block-color 0px 0px 4px 2px;
                     }
 
                     &:hover,
@@ -569,7 +566,7 @@ body{
                         display: block;
 
                         &.Cursor{
-                            box-shadow: @cursor-outline 0px 0px 4px 1px;
+                            box-shadow: @cursor-color 0px 0px 4px 1px;
 
                             &.resizing{
                                 canvas{
@@ -579,15 +576,15 @@ body{
                         }
 
                         &.Image{
-                            box-shadow: @image-outline 0px 0px 4px 1px;
+                            box-shadow: @image-color 0px 0px 4px 1px;
                         }
 
                         &.Text{
-                            box-shadow: @text-outline 0px 0px 4px 1px;
+                            box-shadow: @text-color 0px 0px 4px 1px;
 
                             .contents{
                                 &[contenteditable]{
-                                    outline-color: @text-outline;
+                                    outline-color: @text-color;
                                     outline-width: 2px;
                                     outline-style: solid;
                                 }

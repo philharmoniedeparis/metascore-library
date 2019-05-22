@@ -144,13 +144,23 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Clear the waveforms and timeline
+     * Clear the waveforms
      *
      * @return {this}
      */
-    clear(){
+    clearWaveform(){
         this.overview.clear();
         this.zoom.clear();
+
+        return this;
+    }
+
+    /**
+     * Clear the timeline
+     *
+     * @return {this}
+     */
+    clearTimeline(){
         this.timeline.clear();
 
         return this;

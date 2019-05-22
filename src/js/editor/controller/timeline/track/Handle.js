@@ -14,12 +14,17 @@ export default class Handle extends Dom {
         // call parent constructor
         super('<div/>', {'class': `track-handle ${className}`});
 
-        this.name = new Dom('<div/>', {'class': 'name'})
+        this.info = new Dom('<div/>', {'class': 'info'})
             .appendTo(this);
+
+        this.name = new Dom('<div/>', {'class': 'name'})
+            .appendTo(this.info);
     }
 
     setName(value){
-        this.name.text(value);
+        this.name
+            .text(value)
+            .attr('title', value);
 
         return this;
     }

@@ -1,9 +1,13 @@
+@import "../../../core/colors";
+
 :local(.className){
 
-    > .inner{
+    > .info-wrapper{
         position: relative;
-        height: 1em;
+        height: 1.1em;
+        opacity: 0.5;
         border-bottom: 1px dashed #CCC;
+        box-sizing: border-box;
 
         .info{
             position: absolute;
@@ -24,28 +28,37 @@
         }
     }
 
-    &.truncated-start > .inner .info{
+    &.selected > .info-wrapper{
+        opacity: 1;
+    }
+
+    &.truncated-start > .info-wrapper .info{
         border-radius: 0 0.5em 0.5em 0;
         border-left-style: dotted;
     }
-    &.truncated-end > .inner .info{
+    &.truncated-end > .info-wrapper .info{
         border-radius: 0.5em 0 0 0.5em;
         border-right-style: dotted;
     }
-    &.truncated-start.truncated-end > .inner .info{
+    &.truncated-start.truncated-end > .info-wrapper .info{
         border-radius: 0;
     }
 
-    &[data-type="Block"] > .inner .info{
-        background: rgb(51,49,47);
+    &[data-type="Controller"],
+    &[data-type="Media"],
+    &[data-type="BlockToggler"],
+    &[data-type="Block"]{
+       & > .info-wrapper .info{
+            background: @block-color;
+        }
     }
-    &[data-type="Cursor"] > .inner .info{
-        background: rgb(255,0,60);
+    &[data-type="Cursor"] > .info-wrapper .info{
+        background: @cursor-color;
     }
-    &[data-type="Image"] > .inner .info{
-        background: rgb(255,138,0);
+    &[data-type="Image"] > .info-wrapper .info{
+        background: @image-color;
     }
-    &[data-type="Text"] > .inner .info{
-        background: rgb(0,193,118);
+    &[data-type="Text"] > .info-wrapper .info{
+        background: @text-color;
     }
 }

@@ -16,26 +16,61 @@ export default class Track extends Dom {
         super('<div/>', {'class': `track ${className}`});
 
         const id = component.getId();
+        const type = component.getType();
+        const name = component.getName();
 
         this.duration = 0;
 
         this.component = component
+            .addListener('selected', this.onComponentSelected.bind(this))
+            .addListener('unselected', this.onComponentUnselected.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
-        const inner = new Dom('<div/>', {'class': 'inner'})
+        const wrapper = new Dom('<div/>', {'class': 'info-wrapper'})
             .appendTo(this);
 
         this.info = new Dom('<div/>', {'class': 'info'})
-            .appendTo(inner);
+            .appendTo(wrapper);
 
         this.handle = new Handle()
             .data('component', id)
-            .setName(component.getName());
+            .setName(name);
 
         this
             .data('component', id)
-            .data('type', component.getType())
+            .data('type', type)
+            .attr('title', name)
             .updateSize();
+    }
+
+    /**
+     * Component selected event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentSelected(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
+        this.addClass('selected');
+    }
+
+    /**
+     * Component unselected event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentUnselected(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
+        this.removeClass('selected');
     }
 
     /**
@@ -55,8 +90,10 @@ export default class Track extends Dom {
             case 'end-time':
                 this.updateSize();
                 break;
+
             case 'name':
-                this.handle.setName(this.getComponent().getName());
+                this.handle.setName(evt.detail.value);
+                this.attr('title', evt.detail.value);
                 break;
         }
     }
@@ -123,7 +160,7 @@ export default class Track extends Dom {
             }
             else if(parent_time !== null){
                 const fn = limit === 'start' ? 'max' : 'min';
-                time = Math[fn](parent_time);
+                time = Math[fn](time, parent_time);
             }
         }
 
