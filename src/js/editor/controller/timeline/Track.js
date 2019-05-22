@@ -42,7 +42,7 @@ export default class Track extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onComponentPropChange(evt){
-        if(evt.detail.component !== this.component){
+        if(evt.target !== evt.currentTarget){
             // Caught a bubbled event, skip
             return;
         }

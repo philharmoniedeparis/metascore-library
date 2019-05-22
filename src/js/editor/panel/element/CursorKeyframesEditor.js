@@ -185,6 +185,11 @@ export default class CursorKeyframesEditor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
         switch(evt.detail.property){
             case 'width':
             case 'height':

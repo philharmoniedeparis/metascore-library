@@ -324,6 +324,11 @@ export default class Element extends Panel {
      * @param {Event} evt The event object
      */
     onCursorPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
         const component = evt.detail.component;
         const mode = component.getPropertyValue('mode');
 
