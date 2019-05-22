@@ -24,4 +24,13 @@ export default class Handle extends Dom {
         return this;
     }
 
+    addSubHandle(handle, index){
+        if(!this.subhandles){
+            this.subhandles = new Dom('<div/>', {'class': 'sub-handles'})
+                .appendTo(this)
+        }
+
+        handle.insertAt(this.subhandles, index);
+    }
+
 }

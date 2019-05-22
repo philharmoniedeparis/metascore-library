@@ -243,6 +243,7 @@
 	"player.component.Page.background-color": "Couleur de fond",
 	"player.component.Page.background-image": "Image de fond",
 	"player.component.Page.end-time": "Temps de fin",
+	"player.component.Page.name": "Page !index",
 	"player.component.Page.start-time": "Temps de début",
 	"player.component.element.Cursor.acceleration": "Accélération",
 	"player.component.element.Cursor.cursor-color": "Couleur du curseur",

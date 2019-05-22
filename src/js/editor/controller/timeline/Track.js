@@ -22,8 +22,11 @@ export default class Track extends Dom {
         this.component = component
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
-        this.info = new Dom('<div/>', {'class': 'info'})
+        const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
+
+        this.info = new Dom('<div/>', {'class': 'info'})
+            .appendTo(inner);
 
         this.handle = new Handle()
             .data('component', id)
@@ -52,6 +55,9 @@ export default class Track extends Dom {
             case 'end-time':
                 this.updateSize();
                 break;
+            case 'name':
+                this.handle.setName(this.getComponent().getName());
+                break;
         }
     }
 
@@ -64,26 +70,77 @@ export default class Track extends Dom {
     }
 
     updateSize(){
-        const start_time = this.component.getPropertyValue('start-time');
-        const end_time = this.component.getPropertyValue('end-time');
+        const component = this.getComponent();
 
-        if(start_time !== null){
-            this.info.css('left', `${(start_time / this.duration) * 100}%`);
+        const start_time = component.getPropertyValue('start-time');
+        const end_time = component.getPropertyValue('end-time');
+
+        const true_start_time = this.getComponentTrueTimeLimit(component, 'start');
+        const true_end_time = this.getComponentTrueTimeLimit(component, 'end');
+
+        if(true_start_time !== null){
+            this.info.css('left', `${(true_start_time / this.duration) * 100}%`);
         }
         else{
             this.info.css('left', 0);
         }
 
-        if(end_time !== null){
-            this.info.css('width', `${((end_time - start_time) / this.duration) * 100}%`);
+        if(true_end_time !== null){
+            this.info.css('width', `${((true_end_time - true_start_time) / this.duration) * 100}%`);
         }
         else{
             this.info.css('width', null);
         }
+
+        if(start_time !== true_start_time){
+            this.addClass('truncated-start');
+        }
+        else{
+            this.removeClass('truncated-start');
+        }
+
+        if(end_time !== true_end_time){
+            this.addClass('truncated-end');
+        }
+        else{
+            this.removeClass('truncated-end');
+        }
+    }
+
+    getComponent(){
+        return this.component;
+    }
+
+    getComponentTrueTimeLimit(component, limit){
+        let time = component.getPropertyValue(`${limit}-time`);
+        const parent = component.getParent();
+
+        if(parent){
+            const parent_time = this.getComponentTrueTimeLimit(parent, limit);
+
+            if(time === null){
+                time = parent_time;
+            }
+            else if(parent_time !== null){
+                const fn = limit === 'start' ? 'max' : 'min';
+                time = Math[fn](parent_time);
+            }
+        }
+
+        return time;
     }
 
     getHandle(){
         return this.handle;
+    }
+
+    addSubTrack(track, index){
+        if(!this.subtracks){
+            this.subtracks = new Dom('<div/>', {'class': 'sub-tracks'})
+                .appendTo(this)
+        }
+
+        track.insertAt(this.subtracks, index);
     }
 
     remove(){

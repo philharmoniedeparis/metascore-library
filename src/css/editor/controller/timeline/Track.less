@@ -1,38 +1,51 @@
 :local(.className){
-    position: relative;
-    height: 1em;
-    border-bottom: 1px dashed #CCC;
 
-    .info{
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        left: 0;
-        top: 0;
-        background: #555;
-        border: 1px solid #555;
-        border-radius: 0.5em;
-        box-sizing: border-box;
+    > .inner{
+        position: relative;
+        height: 1em;
+        border-bottom: 1px dashed #CCC;
+
+        .info{
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            left: 0;
+            top: 0;
+            background: #555;
+            border: 1px solid #555;
+            border-radius: 0.5em;
+            box-sizing: border-box;
+
+            .name{
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
     }
 
-    &[data-type="Block"]{
-        .info{
-            background: rgb(51,49,47);
-        }
+    &.truncated-start > .inner .info{
+        border-radius: 0 0.5em 0.5em 0;
+        border-left-style: dotted;
     }
-    &[data-type="Cursor"]{
-        .info{
-            background: rgb(255,0,60);
-        }
+    &.truncated-end > .inner .info{
+        border-radius: 0.5em 0 0 0.5em;
+        border-right-style: dotted;
     }
-    &[data-type="Image"]{
-        .info{
-            background: rgb(255,138,0);
-        }
+    &.truncated-start.truncated-end > .inner .info{
+        border-radius: 0;
     }
-    &[data-type="Text"]{
-        .info{
-            background: rgb(0,193,118);
-        }
+
+    &[data-type="Block"] > .inner .info{
+        background: rgb(51,49,47);
+    }
+    &[data-type="Cursor"] > .inner .info{
+        background: rgb(255,0,60);
+    }
+    &[data-type="Image"] > .inner .info{
+        background: rgb(255,138,0);
+    }
+    &[data-type="Text"] > .inner .info{
+        background: rgb(0,193,118);
     }
 }

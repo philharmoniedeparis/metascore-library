@@ -51,19 +51,45 @@ export default class Timeline extends Dom {
         });
     }
 
+    /**
+     * Add a track
+     *
+     * @param {Component} component The component to associate with the track
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @return {this}
+     */
     addTrack(component, supressEvent){
-        const track = new Track(component)
-            .setDuration(this.duration)
-            .appendTo(this.tracks_container);
+        const parent_component = component.getParent();
+        const parent_track = parent_component ? this.getTrack(parent_component) : null;
 
-        track.getHandle()
-            .appendTo(this.track_handle_container);
+        if(parent_component && !parent_track){
+            return this;
+        }
+
+        const track = new Track(component)
+            .setDuration(this.duration);
+
+        const handle = track.getHandle();
+
+        if(parent_component){
+            const index = parent_component.getChildIndex(component);
+            parent_track.addSubTrack(track, index);
+            parent_track.getHandle().addSubHandle(handle, index);
+        }
+        else{
+            track.appendTo(this.tracks_container);
+            handle.appendTo(this.track_handle_container);
+        }
 
         this.tracks[component.getId()] = track;
 
         if(supressEvent !== true){
             this.triggerEvent('addtrack', {'track': track});
         }
+
+        component.getChildren().forEach((child_component) => {
+            this.addTrack(child_component);
+        });
 
         return this;
     }

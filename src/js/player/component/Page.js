@@ -152,6 +152,13 @@ export default class Page extends Component {
         return this;
     }
 
+    getName(){
+        const block = this.getParent();
+        const index = block ? block.getChildIndex(this) + 1 : null;
+
+        return Locale.t('player.component.Page.name', 'page !index', {'!index': index});
+    }
+
     /**
      * Add an element
      *
