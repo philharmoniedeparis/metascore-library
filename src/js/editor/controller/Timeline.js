@@ -80,7 +80,7 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
-            .appendTo(this);
+            .appendTo(this.tracks_container_outer);
     }
 
     /**
@@ -192,6 +192,8 @@ export default class Timeline extends Dom {
         this.tracks_container_outer.get(0).scrollLeft = scroll * zoom;
         this.tracks_container_inner.css('width', `${zoom * 100}%`);
 
+        this.updateSize();
+
         if(supressEvent !== true){
             this.triggerEvent('offsetupdate', {'start': start, 'end': end});
         }
@@ -203,22 +205,15 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        /**
-         * The view's width
-         * @type {Number}
-         */
-        this.width = this.get(0).clientWidth;
-
-        /**
-         * The view's height
-         * @type {Number}
-         */
-        this.height = this.get(0).clientHeight;
+        const width = this.tracks_container_inner.get(0).clientWidth;
+        const height = this.tracks_container_inner.get(0).clientHeight;
 
         this.find('canvas').forEach((canvas) => {
-            canvas.width = this.width;
-            canvas.height = this.height;
+            canvas.width = width;
+            canvas.height = height;
         });
+
+        this.updatePlayhead();
 
         return this;
     }
@@ -229,15 +224,18 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updatePlayhead(){
-        if(this.width > 0 && this.height > 0){
-            const canvas = this.playhead.get(0);
+        const canvas = this.playhead.get(0);
+
+        if(canvas.width > 0 && canvas.height > 0){
             const context = canvas.getContext('2d');
             const x = this.getPositionAt(this.time) + 0.5;
 
-            context.clearRect(0, 0, this.width, this.height);
+            console.log(x);
+
+            context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
             context.moveTo(x, 0);
-            context.lineTo(x, this.height);
+            context.lineTo(x, canvas.height);
             context.lineWidth = this.configs.playheadWidth;
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
@@ -254,7 +252,8 @@ export default class Timeline extends Dom {
      */
     getPositionAt(time){
         if(this.duration){
-            return Math.round(time / this.duration * this.width);
+            const canvas = this.playhead.get(0);
+            return Math.round(time / this.duration * canvas.width);
         }
 
         return null;
@@ -280,7 +279,7 @@ export default class Timeline extends Dom {
     clear(){
         this.find('canvas').forEach((canvas) => {
             const context = canvas.getContext('2d');
-            context.clearRect(0, 0, this.width, this.height);
+            context.clearRect(0, 0, canvas.width, canvas.height);
         });
 
         Object.entries(this.tracks).forEach(([id, track]) => {
