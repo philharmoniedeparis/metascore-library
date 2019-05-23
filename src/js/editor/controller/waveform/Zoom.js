@@ -11,7 +11,6 @@ import {className} from '../../../../css/editor/controller/WaveformZoom.less';
  * @emits {playheadclick} Fired when the playhead is clicked
  * @param {Number} time The time in centiseconds corresponding to the click position
  * @emits {offsetupdate} Fired when the offset is updated
- * @param {Object} waveform The Waveform instance
  * @param {Number} start The start time of the offset in centiseconds
  * @param {Number} end The end time of the offset in centiseconds
  */
@@ -34,7 +33,7 @@ export default class Zoom extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `view zoom ${className}`});
+        super('<div/>', {'class': `waveform-zoom ${className}`});
 
         /**
          * The configuration values

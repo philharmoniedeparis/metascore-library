@@ -39,7 +39,7 @@ export default class Controller extends Dom {
      * @private
      */
     setupUI() {
-        const controls = new Dom('<div/>', {'class': 'controls'})
+        const top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
 
         /**
@@ -47,7 +47,30 @@ export default class Controller extends Dom {
          * @type {TimeField}
          */
         this.timefield = new TimeField()
-            .appendTo(controls);
+            .appendTo(top);
+
+        const overview = new Dom('<div/>', {'class': 'overview'})
+            .appendTo(top);
+
+        /**
+         * The buffer indicator
+         * @type {BufferIndicator}
+         */
+        this.buffer_indicator = new BufferIndicator()
+            .appendTo(overview);
+
+        /**
+         * The overview waveform
+         * @type {WaveformOverview}
+         */
+        this.waveform_overview = new WaveformOverview()
+            .appendTo(overview);
+
+        const middle = new Dom('<div/>', {'class': 'middle'})
+            .appendTo(this);
+
+        const controls = new Dom('<div/>', {'class': 'controls'})
+            .appendTo(middle);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(controls);
@@ -69,41 +92,36 @@ export default class Controller extends Dom {
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(buttons);
 
-        const progress_bar = new Dom('<div/>', {'class': 'progress-bar'})
-            .addListener('playheadclick', this.onProgressBarPlayheadClick.bind(this))
-            .appendTo(this);
-
-        /**
-         * The buffer indicator
-         * @type {Dom}
-         */
-        this.buffer_indicator = new BufferIndicator()
-            .appendTo(progress_bar);
-
-        /**
-         * The overview waveform
-         * @type {WaveformOverview}
-         */
-        this.overview = new WaveformOverview()
-            .appendTo(progress_bar);
-
         /**
          * The zoom waveform
          * @type {WaveformZoom}
          */
-        this.zoom = new WaveformZoom()
+        this.waveform_zoom = new WaveformZoom()
             .addListener('offsetupdate', this.onZoomOffsetUpodate.bind(this))
-            .appendTo(progress_bar);
+            .appendTo(middle);
+
+        const bottom = new Dom('<div/>', {'class': 'bottom'})
+            .appendTo(this);
+
+        const bottom_wrapperr = new Dom('<div/>', {'class': 'bottom-wrapper'})
+            .appendTo(bottom);
+
+        const timeline_handles = new Dom('<div/>', {'class': 'timeline-handles'})
+            .appendTo(bottom_wrapperr);
 
         /**
          * The timeline
          * @type {Timeline}
          */
-        this.timeline = new Timeline()
-            .appendTo(this);
+        this.timeline = new Timeline({
+                'handlesContriner': timeline_handles
+            })
+            .appendTo(bottom_wrapperr)
 
-        const resize_observer = new ResizeObserver(this.onProgressBarResize.bind(this));
-        resize_observer.observe(progress_bar.get(0));
+        this.addListener('playheadclick', this.onProgressBarPlayheadClick.bind(this));
+
+        const resize_observer = new ResizeObserver(this.onResize.bind(this));
+        resize_observer.observe(this.get(0));
     }
 
     /**
@@ -113,23 +131,21 @@ export default class Controller extends Dom {
      * @return {this}
      */
     attachMedia(media){
-        const duration = media.getDuration();
-
         media.getRenderer()
             .addListener('timeupdate', this.onMediaTimeUpdate)
             .addListener('play', this.onMediaPlay)
             .addListener('pause', this.onMediaPause)
             .addListener('sourceset', this.onMediaSourceSet);
 
-        this.timefield.setMax(duration);
+        this.timefield.setMax(media.getDuration());
 
         this.buffer_indicator.setMedia(media);
-        this.overview.setMedia(media);
-        this.zoom.setMedia(media);
+        this.waveform_overview.setMedia(media);
+        this.waveform_zoom.setMedia(media);
+        this.timeline.setMedia(media);
 
         this.removeClass('disabled');
 
-        this.timeline.setDuration(duration);
 
         return this;
     }
@@ -149,13 +165,41 @@ export default class Controller extends Dom {
         }
 
         this.buffer_indicator.clear();
-        this.overview.clear();
-        this.zoom.clear();
+        this.waveform_overview.clear();
+        this.waveform_zoom.clear();
         this.timeline.clear();
 
         this.addClass('disabled');
 
         return this;
+    }
+
+    /**
+     * Progress bar's resize event callback
+     *
+     * @private
+     */
+    onResize() {
+        this.buffer_indicator.updateSize();
+        this.waveform_overview.updateSize();
+        this.timeline.updateSize();
+        this.waveform_zoom.updateSize();
+    }
+
+    /**
+     * Progress bar's playhead click event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onProgressBarPlayheadClick(evt){
+        const time = evt.detail.time;
+
+        if(!Dom.is(evt.target, '.view.zoom')){
+            this.waveform_zoom.centerToTime(time);
+        }
+
+        this.triggerEvent('timeset', {'time': time});
     }
 
     /**
@@ -196,22 +240,6 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Progress bar's playhead click event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onProgressBarPlayheadClick(evt){
-        const time = evt.detail.time;
-
-        if(!Dom.is(evt.target, '.zoom')){
-            this.zoom.centerToTime(time);
-        }
-
-        this.triggerEvent('timeset', {'time': time});
-    }
-
-    /**
      * Waveform's zoom offsetupdate event callback
      *
      * @private
@@ -221,18 +249,8 @@ export default class Controller extends Dom {
         const start = evt.detail.start;
         const end = evt.detail.end;
 
-        this.overview.setHighlight(start, end, true);
-    }
-
-    /**
-     * Progress bar's resize event callback
-     *
-     * @private
-     */
-    onProgressBarResize() {
-        this.buffer_indicator.updateSize();
-        this.overview.updateSize();
-        this.zoom.updateSize();
+        this.waveform_overview.setHighlight(start, end, true);
+        this.timeline.setOffset(start, end, true);
     }
 
     /**

@@ -15,7 +15,7 @@ export default class BufferIndicator extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `view buffer-indicator ${className}`});
+        super('<div/>', {'class': `buffer-indicator ${className}`});
 
         /**
          * The configuration values

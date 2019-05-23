@@ -34,7 +34,7 @@ export default class Zoom extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `view zoom ${className}`});
+        super('<div/>', {'class': `waveform-zoom ${className}`});
 
         /**
          * The configuration values

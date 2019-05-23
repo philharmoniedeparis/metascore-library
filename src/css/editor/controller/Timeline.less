@@ -1,25 +1,14 @@
 :local(.className){
-    position: relative;
-    width: 100%;
-    height: 10em;
-    overflow-x: hidden;
-    overflow-y: auto;
-    border-top: 1px solid #000;
-
-    .track-handles-container{
-        width: 10em;
-        border-right: 1px solid #666;
-        box-sizing: border-box;
+    .tracks-container-outer{
+        overflow: hidden;
     }
 
-    .tracks-container{
+    .playhead{
         position: absolute;
-        left: 10em;
-        right: 0;
         top: 0;
-        overflow-x: visible;
-        overflow-y: hidden;
-        background: #F4F5F5;
-        box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.2);
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
     }
 }

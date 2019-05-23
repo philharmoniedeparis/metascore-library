@@ -1,22 +1,27 @@
 :local(.className){
+    height: 20em;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
 
-    > .controls{
-        width: 10em;
+    .top {
         display: flex;
-        flex-direction: column;
-        box-sizing: border-box;
-        border-right: 1px solid #7b7b7b;
+        flex-direction: row;
+        height: 2em;
+        flex: 0 0 auto;
 
         .time.field{
+            width: 10em;
+            flex: 0 0 auto;
             background: #0000fe;
+            box-sizing: border-box;
+            border-right: 1px solid #7b7b7b;
 
             .input-wrapper{
+                height: 100%;
+
                 input{
                     width: 100%;
-                    height: 30px;
+                    height: 100%;
                     padding: 0;
                     text-align: center;
                     color: #fff;
@@ -24,116 +29,168 @@
             }
         }
 
-        .buttons{
-            flex-grow: 1;
+        .overview {
             display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
+            flex: 1;
 
-            button{
-                border: none;
-                outline: none;
-                background-color: transparent;
-                background-repeat: no-repeat;
+            .buffer-indicator{
+                height: 15%;
+            }
 
-                &[data-action="rewind"]{
-                    flex: 0 0 14%;
-                    margin-right: 5%;
-                    padding: 7%; /* 50% of flex-basis for 1:1 ratio*/
-                    background-size: contain;
-                    background-image: url('../../img/editor/controller/rewind.svg');
-                }
+            .waveform-overview{
+                flex-grow: 1;
+            }
 
-                &[data-action="play"]{
-                    position: relative;
-                    flex: 0 0 50%;
-                    margin-right: 14%;
-                    padding: 25%; /* 50% of flex-basis for 1:1 ratio*/
-                    background: #fff;
-                    border-radius: 50%;
-                    box-shadow: inset 0px 8px 48px #ddd;
+        }
+    }
 
-                    &::before{
-                        content: "";
-                        position: absolute;
-                        top: 5px;
-                        right: 5px;
-                        bottom: 5px;
-                        left: 5px;
-                        background-color: #f7f7f7;
-                        background-image: linear-gradient(to bottom, #f7f7f7 0%, #e7e7e7 100%);
-                        color: #a7a7a7;
+    .middle {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        border-bottom: 1px solid #7b7b7b;
+
+        > .controls {
+            width: 10em;
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            border-right: 1px solid #7b7b7b;
+
+            .buttons{
+                flex-grow: 1;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                button{
+                    border: none;
+                    outline: none;
+                    background-color: transparent;
+                    background-repeat: no-repeat;
+
+                    &[data-action="rewind"]{
+                        flex: 0 0 14%;
+                        margin-right: 5%;
+                        padding: 7%; /* 50% of flex-basis for 1:1 ratio*/
+                        background-size: contain;
+                        background-image: url('../../img/editor/controller/rewind.svg');
+                    }
+
+                    &[data-action="play"]{
+                        position: relative;
+                        flex: 0 0 50%;
+                        margin-right: 14%;
+                        padding: 25%; /* 50% of flex-basis for 1:1 ratio*/
+                        background: #fff;
                         border-radius: 50%;
-                        box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
-                    }
+                        box-shadow: inset 0px 8px 48px #ddd;
 
-                    &::after{
-                        content: "";
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: url('../../img/editor/controller/play.svg') 50% 50% no-repeat;
-                        background-size: 25%;
-                    }
-
-                    &:hover{
                         &::before{
-                            background: #f5f5f5;
+                            content: "";
+                            position: absolute;
+                            top: 5px;
+                            right: 5px;
+                            bottom: 5px;
+                            left: 5px;
+                            background-color: #f7f7f7;
+                            background-image: linear-gradient(to bottom, #f7f7f7 0%, #e7e7e7 100%);
+                            color: #a7a7a7;
+                            border-radius: 50%;
+                            box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
                         }
 
                         &::after{
-                            opacity: 1;
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: url('../../img/editor/controller/play.svg') 50% 50% no-repeat;
+                            background-size: 25%;
                         }
-                    }
 
-                    &:active{
-                        &::before{
-                            background-image: linear-gradient(to top, #f7f7f7 0%, #e7e7e7 100%);
+                        &:hover{
+                            &::before{
+                                background: #f5f5f5;
+                            }
+
+                            &::after{
+                                opacity: 1;
+                            }
+                        }
+
+                        &:active{
+                            &::before{
+                                background-image: linear-gradient(to top, #f7f7f7 0%, #e7e7e7 100%);
+                            }
                         }
                     }
                 }
             }
+
+            &::after{
+                content: "";
+                flex: 0 0 20px;
+                margin-bottom: 5px;
+                background-image: url('../../img/logo-metaScore.png');
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center center;
+                opacity: 0.75;
+            }
         }
 
-        &::after{
-            content: "";
-            flex: 0 0 20px;
-            margin-bottom: 5px;
-            background-image: url('../../img/logo-metaScore.png');
-            background-repeat: no-repeat;
-            background-size: contain;
-            background-position: center center;
-            opacity: 0.75;
+        .waveform-zoom {
+            flex: 1 1 auto;
         }
     }
 
-    .progress-bar{
+    .bottom {
+        flex: 1;
+        overflow-x: hidden;
+        overflow-y: scroll;
+
+        .bottom-wrapper{
+            display: flex;
+            flex-direction: row;
+
+            .timeline-handles {
+                width: 10em;
+                flex: 0 0 auto;
+
+                .track-handle{
+                    .info{
+                        border-right: 1px solid #7b7b7b;
+                    }
+                }
+            }
+
+            .timeline {
+                flex: 1 1 auto;
+                position: relative;
+
+                /*&::before{
+                    content: '';
+                    height: 100%;
+                    box-shadow: inset 0 0 0.5em 0 rgba(0,0,0,0.5);
+                }*/
+            }
+        }
+    }
+
+    .overview-wrapper,
+    .zoom-wrapper{
         position: relative;
         flex-grow: 1;
+        flex-shrink: 0;
     }
 
     &.minimized{
-        .progress-bar{
-            .view{
-                &.overview{
-                    border-bottom: none;
-
-                    .layers{
-                        .layer.highlight{
-                            display: none;
-                        }
-                    }
-                }
-
-                &.zoom{
-                    display: none;
-                }
-            }
-        }
-
         > .controls{
             flex-direction: row-reverse;
 
@@ -167,6 +224,20 @@
             &::after{
                 display: none;
             }
+        }
+
+        .waveform-overview{
+            border-bottom: none;
+
+            .layers{
+                .layer.highlight{
+                    display: none;
+                }
+            }
+        }
+
+        .waveform-zoom{
+            display: none;
         }
     }
 

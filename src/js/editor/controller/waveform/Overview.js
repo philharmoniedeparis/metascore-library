@@ -23,7 +23,7 @@ export default class Overview extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `view overview ${className}`});
+        super('<div/>', {'class': `waveform-overview ${className}`});
 
         /**
          * The configuration values
