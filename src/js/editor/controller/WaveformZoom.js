@@ -1,9 +1,9 @@
 import Dom from '../../../core/Dom';
 import SliderField from '../../field/Slider';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
-import Locale from '../../../core/Locale';
+import Locale from '../../core/Locale';
 
-import {className} from '../../../../css/editor/controller/WaveformZoom.less';
+import {className} from '../../../css/editor/controller/WaveformZoom.less';
 
 /**
  * A waveform zoomable view

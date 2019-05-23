@@ -159,7 +159,6 @@ export default class Editor extends Dom {
             .addListener('timeset', this.onControllerTimeSet.bind(this))
             .addDelegate('.time.field', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
-            .disable()
             .appendTo(bottom);
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
@@ -384,11 +383,11 @@ export default class Editor extends Dom {
                 },
                 'paste-elements': {
                     'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
-                    'callback': (el) => {
-                        this.addPlayerComponents('element', this.clipboard.getData(), el.closest('.metaScore-component.page')._metaScore);
+                    'callback': (context) => {
+                        this.addPlayerComponents('element', this.clipboard.getData(), context.el.closest('.metaScore-component.page')._metaScore);
                     },
-                    'toggler': (el) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (el.closest('.metaScore-component.page') ? true : false);
+                    'toggler': (context) => {
+                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (context.el.closest('.metaScore-component.page') ? true : false);
                     }
                 },
                 'delete-elements': {
@@ -1561,16 +1560,6 @@ export default class Editor extends Dom {
     }
 
     /**
-    * Renderer getWaveformData callback
-    *
-    * @private
-    * @param {WaveformData} data The waveform data, or null if none could be retreived
-    */
-    onRendererWaveformData(data){
-        this.controller.setWaveformData(data);
-    }
-
-    /**
      * Player idset event callback
      *
      * @private
@@ -1607,10 +1596,6 @@ export default class Editor extends Dom {
 
         this.removeClass('metadata-loaded');
 
-        this.controller
-            .clearWaveform()
-            .disable();
-
         this.getPlayer()
             .addOneTimeListener('mediaerror', (evt) => {
                 loadmask.hide();
@@ -1634,29 +1619,14 @@ export default class Editor extends Dom {
      *
      * @private
      */
-    onPlayerLoadedMetadata(evt){
-        const renderer = evt.detail.renderer;
+    onPlayerLoadedMetadata(){
+        const media = this.getPlayer().getMedia();
 
         this.addClass('metadata-loaded');
 
-        this.getPlayer().getMedia().reset();
+        this.controller.attachMedia(media);
 
-        this.controller
-            .enable()
-            .setDuration(this.getPlayer().getMedia().getDuration());
-
-        renderer.getWaveformData(this.onRendererWaveformData.bind(this));
-    }
-
-    /**
-     * Media timeupdate event callback
-     *
-     * @private
-     */
-    onPlayerTimeUpdate(evt){
-        const time = evt.detail.time;
-
-        this.controller.setTime(time);
+        media.reset();
     }
 
     /**
@@ -1844,7 +1814,6 @@ export default class Editor extends Dom {
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addListener('timeupdate', this.onPlayerTimeUpdate.bind(this))
             .addListener('rindex', this.onPlayerReadingIndex.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('play', this.onPlayerPlay.bind(this))
@@ -1919,7 +1888,6 @@ export default class Editor extends Dom {
      */
     onPlayerPlay(){
         this.addClass('playing');
-        this.controller.addClass('playing');
     }
 
     /**
@@ -1929,7 +1897,6 @@ export default class Editor extends Dom {
      */
     onPlayerPause(){
         this.removeClass('playing');
-        this.controller.removeClass('playing');
     }
 
     /**
@@ -2115,8 +2082,6 @@ export default class Editor extends Dom {
                 this.dirty_data = Object.assign({}, this.dirty_data, data);
                 player.updateData(data);
                 overlay.hide();
-
-                this.controller.timefield.setMax(new_duration);
 
                 this.setDirty(true)
                     .updateMainmenu();
@@ -2567,10 +2532,9 @@ export default class Editor extends Dom {
 
         this.player_contextmenu.disable();
 
-        this.controller
-            .clearWaveform()
-            .clearTimeline()
-            .disable();
+        this.controller.dettachMedia();
+
+        this.player_contextmenu.disable();
 
         this.history.clear();
 

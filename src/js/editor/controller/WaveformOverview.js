@@ -1,7 +1,7 @@
 import Dom from '../../../core/Dom';
 import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
-import {className} from '../../../../css/editor/controller/WaveformOverview.less';
+import {className} from '../../../css/editor/controller/WaveformOverview.less';
 
 /**
  * A waveform overview

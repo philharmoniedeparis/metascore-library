@@ -253,7 +253,8 @@ export default class Cursor extends Element {
                 'cursor-width': {
                     'type': 'Number',
                     'configs': {
-                        'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
+                        'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width'),
+                        'min': 1
                     },
                     'getter': function(){
                         const value = parseInt(this.data('cursor-width'), 10);
@@ -476,39 +477,31 @@ export default class Cursor extends Element {
      * @return {this}
      */
     drawLinearCursor(){
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-
         const direction = this.getPropertyValue('direction');
         const cursor_width = this.getPropertyValue('cursor-width');
         const cursor_color = this.getPropertyValue('cursor-color');
 
-        const pos_1 = this.getLinearPositionFromTime(this.current_time);
-        const pos_2 = {
-            x: pos_1.x,
-            y: pos_1.y
-        };
+        const pos = this.getLinearPositionFromTime(this.current_time);
+        const vertical = direction === 'bottom' || direction === 'top';
+        const width = vertical ? this.canvas.width : cursor_width;
+        const height = vertical ? cursor_width : this.canvas.height;
 
         switch(direction){
-            case 'bottom':
             case 'top':
-                pos_2.x = width;
+                pos.y -= cursor_width;
                 break;
 
             case 'left':
-            default:
-                pos_2.y = height;
+                pos.x -= cursor_width;
+                break;
         }
 
         // Draw the cursor line.
         this.context.save();
-        this.context.translate(0.5, 0.5);
         this.context.beginPath();
-        this.context.moveTo(pos_1.x, pos_1.y);
-        this.context.lineTo(pos_2.x, pos_2.y);
-        this.context.lineWidth = cursor_width;
-        this.context.strokeStyle = cursor_color;
-        this.context.stroke();
+        this.context.rect(pos.x, pos.y, width, height);
+        this.context.fillStyle = cursor_color;
+        this.context.fill();
         this.context.closePath();
         this.context.restore();
 
