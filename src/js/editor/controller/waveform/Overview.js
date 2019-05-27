@@ -286,7 +286,7 @@ export default class Overview extends Dom {
             return;
         }
 
-        const offset = evt.target.getBoundingClientRect();
+        const offset = this.get(0).getBoundingClientRect();
         const x = evt.pageX - offset.left;
         const time = this.getTimeAt(x);
 
