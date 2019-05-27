@@ -426,7 +426,8 @@ export default class Zoom extends Dom {
 
             if(this.resampled_data){
                 if(update_offset === true && !this._dragging){
-                    if(x < 0 || x > this.width - 10){
+                    // If the playhead is outside of the view area, update the offset.
+                    if(x < 0 || (x > this.width - 10 && this.resampled_data.adapter.length > this.offset + this.width)){
                         this.setOffset(this.offset + x - 10);
                         return this;
                     }
