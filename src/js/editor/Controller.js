@@ -49,6 +49,12 @@ export default class Controller extends Dom {
         this.timefield = new TimeField()
             .appendTo(top);
 
+        new Dom('<button/>')
+            .data('action', 'play')
+            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
+            .insertAt(this.timefield, 0);
+
+
         const overview = new Dom('<div/>', {'class': 'overview'})
             .appendTo(top);
 
@@ -57,6 +63,7 @@ export default class Controller extends Dom {
          * @type {BufferIndicator}
          */
         this.buffer_indicator = new BufferIndicator()
+            .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(overview);
 
         /**
@@ -64,6 +71,7 @@ export default class Controller extends Dom {
          * @type {WaveformOverview}
          */
         this.waveform_overview = new WaveformOverview()
+            .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(overview);
 
         const middle = new Dom('<div/>', {'class': 'middle'})
@@ -75,19 +83,11 @@ export default class Controller extends Dom {
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(controls);
 
-        /**
-         * The rewind button
-         * @type {Dom}
-         */
-        this.rewind_btn = new Dom('<button/>')
+        new Dom('<button/>')
             .data('action', 'rewind')
             .appendTo(buttons);
 
-        /**
-         * The play button
-         * @type {Dom}
-         */
-        this.play_btn = new Dom('<button/>')
+        new Dom('<button/>')
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(buttons);
@@ -97,7 +97,8 @@ export default class Controller extends Dom {
          * @type {WaveformZoom}
          */
         this.waveform_zoom = new WaveformZoom()
-            .addListener('offsetupdate', this.onZoomOffsetUpodate.bind(this))
+            .addListener('offsetupdate', this.onWaveformZoomOffsetUpdate.bind(this))
+            .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(middle);
 
         const bottom = new Dom('<div/>', {'class': 'bottom'})
@@ -113,12 +114,8 @@ export default class Controller extends Dom {
          * The timeline
          * @type {Timeline}
          */
-        this.timeline = new Timeline({
-                'handlesContriner': timeline_handles
-            })
+        this.timeline = new Timeline({'handlesContriner': timeline_handles})
             .appendTo(bottom_wrapperr)
-
-        this.addListener('playheadclick', this.onProgressBarPlayheadClick.bind(this));
 
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));
@@ -187,19 +184,33 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Progress bar's playhead click event callback
+     * Waveform overview playhead click event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onProgressBarPlayheadClick(evt){
+    onPlayheadClick(evt){
         const time = evt.detail.time;
 
-        if(!Dom.is(evt.target, '.view.zoom')){
+        if(!Dom.is(evt.currentTarget, '.waveform-zoom')){
             this.waveform_zoom.centerToTime(time);
         }
 
         this.triggerEvent('timeset', {'time': time});
+    }
+
+    /**
+     * Waveform's zoom offsetupdate event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onWaveformZoomOffsetUpdate(evt){
+        const start = evt.detail.start;
+        const end = evt.detail.end;
+
+        this.waveform_overview.setHighlight(start, end, true);
+        this.timeline.setOffset(start, end);
     }
 
     /**
@@ -237,20 +248,6 @@ export default class Controller extends Dom {
      */
     onMediaSourceSet(){
         console.log('onMediaSourceSet');
-    }
-
-    /**
-     * Waveform's zoom offsetupdate event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onZoomOffsetUpodate(evt){
-        const start = evt.detail.start;
-        const end = evt.detail.end;
-
-        this.waveform_overview.setHighlight(start, end, true);
-        this.timeline.setOffset(start, end, true);
     }
 
     /**
