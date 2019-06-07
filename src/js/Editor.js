@@ -157,9 +157,14 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .addDelegate('.time.field', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
             .appendTo(bottom);
+
+        this.controller.getTimeField()
+            .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
+
+        this.controller.getTimeline()
+            .addListener('click', this.onTimelineClick.bind(this));
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
@@ -1037,18 +1042,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Controller time field valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onControllerTimeFieldChange(evt){
-        const value = evt.detail.value;
-
-        this.getPlayer().getMedia().setTime(value);
-    }
-
-    /**
      * Controller button click event callback
      *
      * @private
@@ -1063,6 +1056,38 @@ export default class Editor extends Dom {
                 break;
             default:
                 this.getPlayer().togglePlay();
+        }
+    }
+
+    /**
+     * Controller time field valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onControllerTimeFieldChange(evt){
+        const value = evt.detail.value;
+
+        this.getPlayer().getMedia().setTime(value);
+    }
+
+    /**
+     * Timeline click event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelineClick(evt){
+        const dom = evt.target;
+
+        let track_dom = dom;
+        if(Dom.is(track_dom, '.track') || (track_dom = Dom.closest(track_dom, '.track'))){
+            const track = track_dom._metaScore;
+            const component = track.getComponent();
+
+            this.selectPlayerComponent(component, evt.shiftKey);
+
+            evt.stopImmediatePropagation();
         }
     }
 
@@ -1918,12 +1943,11 @@ export default class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onComponentClick(evt){
-        let component = null;
-
         if(this.editing !== true){
             return;
         }
 
+        let component = null;
         if(!Dom.is(evt.target, '.metaScore-component')){
             component = Dom.closest(evt.target, '.metaScore-component')._metaScore;
         }
@@ -1931,63 +1955,7 @@ export default class Editor extends Dom {
             component = evt.target._metaScore;
         }
 
-        if(component.instanceOf('Element')){
-            if(evt.shiftKey && this.panels.element.getComponents().includes(component)){
-                this.panels.element.unsetComponent(component);
-            }
-            else{
-                const page = component.getParent();
-                const block = page.getParent();
-
-                this.panels.block.setComponent(block, evt.shiftKey);
-                this.panels.page.setComponent(page, evt.shiftKey);
-                this.panels.element.setComponent(component, evt.shiftKey);
-            }
-        }
-        else if(component.instanceOf('Page')){
-            const block = component.getParent();
-
-            if(evt.shiftKey && this.panels.page.getComponents().includes(component)){
-                this.panels.block.unsetComponent(block);
-
-                const elements = component.getChildren();
-                elements.forEach((element) => {
-                    this.panels.element.unsetComponent(element);
-                });
-            }
-            else{
-                this.panels.block.setComponent(block, evt.shiftKey);
-                this.panels.page.setComponent(component, evt.shiftKey);
-
-                if(!evt.shiftKey){
-                    this.panels.element.unsetComponents();
-                }
-            }
-        }
-        else{
-            if(evt.shiftKey && this.panels.block.getComponents().includes(component)){
-                this.panels.block.unsetComponent(component);
-
-                if(component.instanceOf('Block')){
-                    const pages = component.getChildren();
-                    pages.forEach((page) => {
-                        this.panels.page.unsetComponent(page);
-                    });
-                }
-            }
-            else{
-                this.panels.block.setComponent(component, evt.shiftKey);
-
-                if(!evt.shiftKey){
-                    this.panels.page.unsetComponents();
-                    this.panels.element.unsetComponents();
-                }
-
-                if(component.instanceOf('Block')){
-                    this.panels.page.setComponent(component.getActivePage(), evt.shiftKey);
-                }
-            }
-        }
+        this.selectPlayerComponent(component, evt.shiftKey);
 
         evt.stopImmediatePropagation();
     }
@@ -2935,6 +2903,76 @@ export default class Editor extends Dom {
             }
 
             this.player_frame.focus();
+        }
+
+        return this;
+    }
+
+    /**
+     * Select a component in the player
+     *
+     * @private
+     * @param {Component} component The component
+     * @param {Boolean} keep_existing Whether to keep already selected components selected
+     * @return {this}
+     */
+    selectPlayerComponent(component, keep_existing){
+        if(component.instanceOf('Element')){
+            if(keep_existing && this.panels.element.getComponents().includes(component)){
+                this.panels.element.unsetComponent(component);
+            }
+            else{
+                const page = component.getParent();
+                const block = page.getParent();
+
+                this.panels.block.setComponent(block, keep_existing);
+                this.panels.page.setComponent(page, keep_existing);
+                this.panels.element.setComponent(component, keep_existing);
+            }
+        }
+        else if(component.instanceOf('Page')){
+            const block = component.getParent();
+
+            if(keep_existing && this.panels.page.getComponents().includes(component)){
+                this.panels.block.unsetComponent(block);
+
+                const elements = component.getChildren();
+                elements.forEach((element) => {
+                    this.panels.element.unsetComponent(element);
+                });
+            }
+            else{
+                this.panels.block.setComponent(block, keep_existing);
+                this.panels.page.setComponent(component, keep_existing);
+
+                if(!keep_existing){
+                    this.panels.element.unsetComponents();
+                }
+            }
+        }
+        else{
+            if(keep_existing && this.panels.block.getComponents().includes(component)){
+                this.panels.block.unsetComponent(component);
+
+                if(component.instanceOf('Block')){
+                    const pages = component.getChildren();
+                    pages.forEach((page) => {
+                        this.panels.page.unsetComponent(page);
+                    });
+                }
+            }
+            else{
+                this.panels.block.setComponent(component, keep_existing);
+
+                if(!keep_existing){
+                    this.panels.page.unsetComponents();
+                    this.panels.element.unsetComponents();
+                }
+
+                if(component.instanceOf('Block')){
+                    this.panels.page.setComponent(component.getActivePage(), keep_existing);
+                }
+            }
         }
 
         return this;

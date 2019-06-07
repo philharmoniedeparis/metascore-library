@@ -31,6 +31,11 @@ export default class Overview extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        // fix event handlers scope
+        this.onMousemove = this.onMousemove.bind(this);
+        this.onMouseup = this.onMouseup.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
+
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
 
@@ -54,10 +59,6 @@ export default class Overview extends Dom {
          */
         this.playhead_layer = new Dom('<canvas/>', {'class': 'layer playhead'})
             .appendTo(layers);
-
-        this.onMousemove = this.onMousemove.bind(this);
-        this.onMouseup = this.onMouseup.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         layers
             .addListener('mousedown', this.onMousedown.bind(this))

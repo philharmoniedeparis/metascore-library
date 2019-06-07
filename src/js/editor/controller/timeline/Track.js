@@ -15,6 +15,9 @@ export default class Track extends Dom {
         // call parent constructor
         super('<div/>', {'class': `track ${className}`});
 
+        // keep a reference to this class instance in the DOM node
+        this.get(0)._metaScore = this;
+
         const id = component.getId();
         const type = component.getType();
         const name = component.getName();

@@ -118,7 +118,8 @@ export default class Timeline extends Dom {
             return this;
         }
 
-        const track = new Track(component);
+        const track = new Track(component)
+            .addListener('click', this.onTrackClick);
 
         if(this.media){
             track.setDuration(this.media.getDuration());
@@ -176,7 +177,11 @@ export default class Timeline extends Dom {
 
         if(id in this.tracks){
             const track = this.tracks[id];
-            track.remove();
+
+            track
+                .removeListener('click', this.onTrackClick)
+                .remove();
+
             delete this.tracks[id];
 
             if(supressEvent !== true){

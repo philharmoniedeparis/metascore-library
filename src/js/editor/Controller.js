@@ -145,12 +145,12 @@ export default class Controller extends Dom {
             .addListener('pause', this.onMediaPause)
             .addListener('sourceset', this.onMediaSourceSet);
 
-        this.timefield.setMax(media.getDuration());
+        this.getTimeField().setMax(media.getDuration());
 
-        this.buffer_indicator.setMedia(media);
-        this.waveform_overview.setMedia(media);
-        this.waveform_zoom.setMedia(media);
-        this.timeline.setMedia(media);
+        this.getBufferIndicator().setMedia(media);
+        this.getWaveformOverview().setMedia(media);
+        this.getWaveformZoom().setMedia(media);
+        this.getTimeline().setMedia(media);
 
         this.removeClass('disabled');
 
@@ -172,10 +172,10 @@ export default class Controller extends Dom {
                 .removeListener('sourceset', this.onMediaSourceSet);
         }
 
-        this.buffer_indicator.clear();
-        this.waveform_overview.clear();
-        this.waveform_zoom.clear();
-        this.timeline.clear();
+        this.getBufferIndicator().clear();
+        this.getWaveformOverview().clear();
+        this.getWaveformZoom().clear();
+        this.getTimeline().clear();
 
         this.addClass('disabled');
 
@@ -188,10 +188,10 @@ export default class Controller extends Dom {
      * @private
      */
     onResize() {
-        this.buffer_indicator.updateSize();
-        this.waveform_overview.updateSize();
-        this.timeline.updateSize();
-        this.waveform_zoom.updateSize();
+        this.getBufferIndicator().updateSize();
+        this.getWaveformOverview().updateSize();
+        this.getTimeline().updateSize();
+        this.getWaveformZoom().updateSize();
     }
 
     /**
@@ -204,7 +204,7 @@ export default class Controller extends Dom {
         const time = evt.detail.time;
 
         if(!Dom.is(evt.currentTarget, '.waveform-zoom')){
-            this.waveform_zoom.centerToTime(time);
+            this.getWaveformZoom().centerToTime(time);
         }
 
         this.triggerEvent('timeset', {'time': time});
@@ -220,14 +220,14 @@ export default class Controller extends Dom {
         const start = evt.detail.start;
         const end = evt.detail.end;
 
-        this.waveform_overview.setHighlight(start, end, true);
-        this.timeline.setOffset(start, end);
+        this.getWaveformOverview().setHighlight(start, end, true);
+        this.getTimeline().setOffset(start, end);
     }
 
     onWaveformZoomPlayheadUpdate(evt){
         const position = evt.detail.position;
 
-        this.timeline.updatePlayhead(position);
+        this.getTimeline().updatePlayhead(position);
     }
 
     /**
@@ -236,7 +236,7 @@ export default class Controller extends Dom {
      * @private
      */
     onMediaTimeUpdate(evt){
-        this.timefield.setValue(evt.detail.time, true);
+        this.getTimeField().setValue(evt.detail.time, true);
     }
 
     /**
@@ -297,6 +297,51 @@ export default class Controller extends Dom {
         if(evt.key === " "){
             evt.stopPropagation();
         }
+    }
+
+    /**
+     * Get the timefield
+     *
+     * @return {TimeField} The timefield
+     */
+    getTimeField(){
+        return this.timefield;
+    }
+
+    /**
+     * Get the buffer indicator
+     *
+     * @return {BufferIndicator} The buffer indicator
+     */
+    getBufferIndicator(){
+        return this.buffer_indicator;
+    }
+
+    /**
+     * Get the waveform overview
+     *
+     * @return {WaveformOverview} The waveform overview
+     */
+    getWaveformOverview(){
+        return this.waveform_overview;
+    }
+
+    /**
+     * Get the waveform zoom
+     *
+     * @return {WaveformZoom} The waveform zoom
+     */
+    getWaveformZoom(){
+        return this.waveform_zoom;
+    }
+
+    /**
+     * Get the timeline
+     *
+     * @return {Timeline} The timeline
+     */
+    getTimeline(){
+        return this.timeline;
     }
 
 }
