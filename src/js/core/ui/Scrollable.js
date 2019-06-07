@@ -17,6 +17,7 @@ export default class Scrollable {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
+     * @property {Dom} target The target Dom object
      * @property {Dom} scrollWrapper A Dom object to use as the scroll wrapper element
      * @property {Dom} contentWrapper A Dom object to use as the content wrapper element
      */
@@ -31,9 +32,13 @@ export default class Scrollable {
         this.onContentScroll = this.onContentScroll.bind(this);
         this.onContentMouseEnter = this.onContentMouseEnter.bind(this);
         this.onResize = this.onResize.bind(this);
-        this.onBarMousedown = this.onBarMousedown.bind(this);
+        this.onBarClick = this.onBarClick.bind(this);
+        this.onThumbMousedown = this.onThumbMousedown.bind(this);
         this.onDocMousemove = this.onDocMousemove.bind(this);
         this.onDocMouseup = this.onDocMouseup.bind(this);
+
+        const native_scrollbar_width = this.constructor.getNativeScrollbarWidth();
+        this.configs.contentWrapper.css('width', `calc(100% + ${native_scrollbar_width}px)`);
 
         this.direction = this.configs.contentWrapper.css('direction');
 
@@ -43,6 +48,9 @@ export default class Scrollable {
 
         this.bar = new Dom("<div/>", {'class': 'scrollbar'})
             .appendTo(this.configs.target);
+
+        this.thumb = new Dom("<div/>", {'class': 'thumb'})
+            .appendTo(this.bar);
 
         this.resize_observer = new ResizeObserver(this.onResize);
 
@@ -58,23 +66,53 @@ export default class Scrollable {
         return {
             'target': null,
             'scrollWrapper': null,
-            'contentWrapper': null,
+            'contentWrapper': null
         };
     }
 
+    /**
+    * Get the browser's native scrollbar width
+    *
+    * @return {Number} The scrollbar's width
+    */
+    static getNativeScrollbarWidth(){
+        // Create inner element
+        const inner = new Dom('<div/>');
+
+        // Create container
+        const outer = new Dom('<div/>')
+            .css('visibility', 'hidden')
+            .css('overflow', 'scroll')
+            .css('overflow', 'scroll')
+            .append(inner)
+            .appendTo(new Dom('body'));
+
+        // Calculate difference between outer's full width and inner's width
+        const width = (outer.get(0).offsetWidth - inner.get(0).offsetWidth);
+
+        // Remove the elements
+        outer.remove();
+
+        return width;
+    }
+
     onContentScroll(){
-        this.updateBar();
+        this.update();
     }
 
     onContentMouseEnter(){
-        this.updateBar();
+        this.update();
     }
 
     onResize(){
-        this.updateBar();
+        this.update();
     }
 
-    onBarMousedown(evt){
+    onBarClick(evt){
+        this.onDocMousemove(evt);
+    }
+
+    onThumbMousedown(evt){
         this.last_page_y = evt.pageY;
 
         this.configs.target.addClass('scrolling');
@@ -96,7 +134,7 @@ export default class Scrollable {
     }
 
     onDocMousemove(evt){
-        const delta = evt.pageY - this.last_page_y;
+        const delta = evt.pageY - (this.last_page_y || 0);
 
         this.last_page_y = evt.pageY;
 
@@ -121,7 +159,7 @@ export default class Scrollable {
         evt.preventDefault();
     }
 
-    updateBar(){
+    update(){
         const content_wrapper_el = this.configs.contentWrapper.get(0);
 
         const total_height = content_wrapper_el.scrollHeight;
@@ -136,18 +174,19 @@ export default class Scrollable {
             }
             else {
                 const target_width = this.configs.target.get(0).clientWidth;
-                const bar_width = this.bar.get(0).clientWidth;
-
-                const height = Math.max(this.scroll_ratio * 100, 10);
-                const top = (content_wrapper_el.scrollTop / total_height ) * 100;
-
+                const bar_width = this.thumb.get(0).clientWidth;
                 const right = this.direction === 'rtl' ? (target_width - bar_width + 18) : (target_width - bar_width) * -1;
 
                 this.bar
                     .show()
-                    .css('height', `${height}%`)
-                    .css('top', `${top}%`)
                     .css('right', `${right}px`);
+
+                const height = this.scroll_ratio * 100;
+                const top = (content_wrapper_el.scrollTop / total_height ) * 100;
+
+                this.thumb
+                    .css('height', `${height}%`)
+                    .css('top', `${top}%`);
             }
         });
     }
@@ -167,7 +206,9 @@ export default class Scrollable {
             .addListener('scroll', this.onContentScroll)
             .addListener('mouseenter', this.onContentMouseEnter);
 
-        this.bar.addListener('mousedown', this.onBarMousedown);
+        this.bar.addListener('click', this.onBarClick);
+
+        this.thumb.addListener('mousedown', this.onThumbMousedown);
 
         this.resize_observer.observe(this.configs.scrollWrapper.get(0));
 
@@ -195,7 +236,9 @@ export default class Scrollable {
             .removeListener('scroll', this.onContentScroll)
             .removeListener('mouseenter', this.onContentMouseEnter);
 
-        this.bar.removeListener('mousedown', this.onBarMousedown);
+        this.bar.removeListener('click', this.onBarClick);
+
+        this.thumb.removeListener('mousedown', this.onThumbMousedown);
 
         this.resize_observer.unobserve(this.configs.scrollWrapper.get(0));
 

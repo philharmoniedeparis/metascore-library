@@ -1,3 +1,5 @@
+@import "../../core/theme";
+
 :local(.className){
     > .scroll-wrapper{
         overflow: hidden;
@@ -8,15 +10,13 @@
         float: left;
 
         > .content-wrapper{
-            height: 100%;
-            width: calc(100% + 18px);
-            padding: 0 0 0 0;
             position: relative;
+            height: 100%;
+            padding: 0;
             overflow: auto;
             box-sizing: border-box;
 
             &.rtl{
-                width: calc(100% + 18px);
                 right: auto;
             }
         }
@@ -24,20 +24,24 @@
 
     > .scrollbar{
         position: relative;
-        top: 0;
-        width: 0.75em;
-        padding: 0 1px;
+        width: @scrollbar-width;
+        height: 100%;
         z-index: 2;
         transition: opacity 0.25s linear;
         opacity: 0;
-        cursor: pointer;
+        background: @scrollbar-track-color;
 
-        &::after{
-            display: block;
-            content: '';
-            height: 100%;
-            background: rgba(0, 0, 0, .5);
-            border-radius: 0.25em;
+        .thumb{
+            position: relative;
+            top: 0;
+            min-height: @scrollbar-thumb-min-height;
+            background-color: @scrollbar-thumb-color;
+            cursor: pointer;
+
+            &:hover,
+            &:active{
+                background-color: @scrollbar-thumb-active-color;
+            }
         }
     }
 
