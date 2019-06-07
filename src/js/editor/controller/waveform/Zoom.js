@@ -8,6 +8,9 @@ import {className} from '../../../../css/editor/controller/WaveformZoom.less';
 /**
  * A waveform zoomable view
  *
+ * @emits {playheadupdate} Fired when the playhead is updated
+ * @param {Number} time The time in centiseconds corresponding to playhead position
+ * @param {Number} position The playhead's position in pixels
  * @emits {playheadclick} Fired when the playhead is clicked
  * @param {Number} time The time in centiseconds corresponding to the click position
  * @emits {offsetupdate} Fired when the offset is updated

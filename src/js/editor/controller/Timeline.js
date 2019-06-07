@@ -149,6 +149,12 @@ export default class Timeline extends Dom {
         return this;
     }
 
+    /**
+     * Get a track for a corresponding component
+     *
+     * @param {Component} component The component associated with the track
+     * @return {Track} The associated track, or null if not found
+     */
     getTrack(component){
         const id = component.getId();
         if(id in this.tracks){
@@ -158,6 +164,13 @@ export default class Timeline extends Dom {
         return null;
     }
 
+    /**
+     * Remove a track for a corresponding component
+     *
+     * @param {Component} component The component associated with the track
+     * @param {Boolean} [supressEvent=false] Whether to supress the removetrack event
+     * @return {this}
+     */
     removeTrack(component, supressEvent){
         const id = component.getId();
 
@@ -174,6 +187,14 @@ export default class Timeline extends Dom {
         return this;
     }
 
+    /**
+     * Set the current timeline's offset
+     *
+     * @param {Number} start The timeline's left most visible position
+     * @param {Number} end The timeline's right most visible position
+     * @param {Boolean} [supressEvent=false] Whether to supress the offsetupdate event
+     * @return {this}
+     */
     setOffset(start, end, supressEvent){
         const duration = this.media.getDuration();
         const zoom = duration / (end - start);
@@ -181,8 +202,6 @@ export default class Timeline extends Dom {
 
         this.tracks_container_outer.get(0).scrollLeft = scroll * zoom;
         this.tracks_container_inner.css('width', `${zoom * 100}%`);
-
-        this.updateSize();
 
         if(supressEvent !== true){
             this.triggerEvent('offsetupdate', {'start': start, 'end': end});
@@ -202,8 +221,6 @@ export default class Timeline extends Dom {
             canvas.width = width;
             canvas.height = height;
         });
-
-        this.updatePlayhead();
 
         return this;
     }
@@ -246,6 +263,11 @@ export default class Timeline extends Dom {
         return null;
     }
 
+    /**
+     * Clear the playhead and remove all tracks
+     *
+     * @return {this}
+     */
     clear(){
         this.find('canvas').forEach((canvas) => {
             const context = canvas.getContext('2d');
