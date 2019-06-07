@@ -231,12 +231,6 @@ export default class Zoom extends Dom {
         this.media.addListener('timeupdate', this.onMediaTimeUpdate);
         this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
 
-        /**
-         * The media's duration in centiseconds
-         * @type {Number}
-         */
-        this.duration = this.media.getDuration();
-
         this
             .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
             .updateSize()
@@ -308,7 +302,6 @@ export default class Zoom extends Dom {
      * @return {this}
      */
     clear(){
-        delete this.duration;
         delete this.waveformdata;
         delete this.resampled_data;
 
@@ -441,6 +434,8 @@ export default class Zoom extends Dom {
             context.lineWidth = this.configs.playheadWidth;
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
+
+            this.triggerEvent('playheadupdate', {'time': this.time, 'position': x});
         }
 
         return this;
@@ -634,7 +629,7 @@ export default class Zoom extends Dom {
      * @param {Event} evt The event object
      */
     onClick(evt){
-        if(!this.duration && !this.resampled_data){
+        if(!this.media && !this.resampled_data){
             return;
         }
 
@@ -662,7 +657,7 @@ export default class Zoom extends Dom {
          */
         this.time = evt.detail.time;
 
-        if(this.duration || this.resampled_data){
+        if(this.media || this.resampled_data){
             this.updatePlayhead(true);
         }
     }
@@ -752,8 +747,8 @@ export default class Zoom extends Dom {
         if(this.resampled_data){
             return toCentiseconds(this.resampled_data.time(x + this.offset));
         }
-        else if(this.duration){
-            return x * this.duration / this.width;
+        else if(this.media){
+            return x * this.media.getDuration() / this.width;
         }
 
         return null;
@@ -769,8 +764,8 @@ export default class Zoom extends Dom {
         if(this.resampled_data){
             return this.resampled_data.at_time(toSeconds(time)) - this.offset;
         }
-        else if(this.duration){
-            return Math.round(time / this.duration * this.width);
+        else if(this.media){
+            return Math.round(time / this.media.getDuration() * this.width);
         }
 
         return null;
@@ -787,8 +782,8 @@ export default class Zoom extends Dom {
             const adapter = this.resampled_data.adapter;
             return Math.floor(toSeconds(time) * adapter.sample_rate / adapter.scale);
         }
-        else if(this.duration){
-            return Math.round(time / this.duration * this.width);
+        else if(this.media){
+            return Math.round(time / this.media.getDuration() * this.width);
         }
 
         return null;

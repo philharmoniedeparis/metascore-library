@@ -99,6 +99,7 @@ export default class Controller extends Dom {
          */
         this.waveform_zoom = new WaveformZoom()
             .addListener('offsetupdate', this.onWaveformZoomOffsetUpdate.bind(this))
+            .addListener('playheadupdate', this.onWaveformZoomPlayheadUpdate.bind(this))
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(middle);
 
@@ -221,6 +222,12 @@ export default class Controller extends Dom {
 
         this.waveform_overview.setHighlight(start, end, true);
         this.timeline.setOffset(start, end);
+    }
+
+    onWaveformZoomPlayheadUpdate(evt){
+        const position = evt.detail.position;
+
+        this.timeline.updatePlayhead(position);
     }
 
     /**

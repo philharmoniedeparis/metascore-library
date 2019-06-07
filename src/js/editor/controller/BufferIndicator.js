@@ -114,12 +114,6 @@ export default class BufferIndicator extends Dom {
             .addListener('timeupdate', this.onMediaTimeUpdate)
             .addListener('progress', this.onMediaProgress);
 
-        /**
-         * The media's duration in seconds
-         * @type {Number}
-         */
-        this.duration = this.media.getDuration();
-
         this
             .updateSize()
             .update();
@@ -133,8 +127,6 @@ export default class BufferIndicator extends Dom {
      * @return {this}
      */
     clear(){
-        delete this.duration;
-
         this.find('canvas').forEach((canvas) => {
             const context = canvas.getContext('2d');
             context.clearRect(0, 0, this.width, this.height);
@@ -149,10 +141,10 @@ export default class BufferIndicator extends Dom {
 
         context.clearRect(0, 0, this.width, this.height);
 
-        if(this.duration){
+        if(this.media){
             const renderer = this.media.getRenderer();
             const ranges = renderer.getBuffered();
-            const multiplier = canvas.width / this.duration;
+            const multiplier = canvas.width / this.media.getDuration();
 
             context.fillStyle = this.configs.bufferedColor;
 
@@ -178,7 +170,7 @@ export default class BufferIndicator extends Dom {
             const time = this.media.getTime();
 
             context.fillStyle = this.configs.playbackColor;
-            context.fillRect(0, 0, (time * canvas.width / this.duration) + 1, canvas.height);
+            context.fillRect(0, 0, (time * canvas.width / this.media.getDuration()) + 1, canvas.height);
         }
 
         return this;
@@ -214,7 +206,7 @@ export default class BufferIndicator extends Dom {
      * @private
      */
     onMousemove(evt){
-        if(!this.duration){
+        if(!this.media){
             return;
         }
 
@@ -272,11 +264,11 @@ export default class BufferIndicator extends Dom {
      * @return {Number} The corresponding time in seconds
      */
     getTimeAt(x){
-        if(!this.duration){
+        if(!this.media){
             return -1;
         }
 
-        return this.duration * x / this.width;
+        return this.media.getDuration() * x / this.width;
     }
 
 }

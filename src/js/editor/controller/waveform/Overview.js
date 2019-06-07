@@ -135,12 +135,6 @@ export default class Overview extends Dom {
         this.media.addListener('timeupdate', this.onMediaTimeUpdate);
         this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
 
-        /**
-         * The media's duration in centiseconds
-         * @type {Number}
-         */
-        this.duration = this.media.getDuration();
-
         this
             .updateSize()
             .update();
@@ -183,7 +177,6 @@ export default class Overview extends Dom {
      * @return {this}
      */
     clear(){
-        delete this.duration;
         delete this.waveformdata;
         delete this.resampled_data;
 
@@ -282,7 +275,7 @@ export default class Overview extends Dom {
      * @private
      */
     onMousemove(evt){
-        if(!this.duration && !this.resampled_data){
+        if(!this.media && !this.resampled_data){
             return;
         }
 
@@ -327,7 +320,7 @@ export default class Overview extends Dom {
          */
         this.time = evt.detail.time;
 
-        if(this.duration || this.resampled_data){
+        if(this.media || this.resampled_data){
             this.updatePlayhead();
         }
     }
@@ -383,8 +376,11 @@ export default class Overview extends Dom {
         if(this.resampled_data){
             return toCentiseconds(this.resampled_data.time(x));
         }
+        else if(this.media){
+            return this.media.getDuration() * x / this.width;
+        }
 
-        return this.duration * x / this.width;
+        return null;
     }
 
     /**
@@ -397,8 +393,11 @@ export default class Overview extends Dom {
         if(this.resampled_data){
             return this.resampled_data.at_time(toSeconds(time));
         }
+        else if(this.media){
+            return time * this.width / this.media.getDuration();
+        }
 
-        return time * this.width / this.duration;
+        return null;
     }
 
     /**

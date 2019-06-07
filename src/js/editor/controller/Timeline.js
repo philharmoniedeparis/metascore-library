@@ -22,19 +22,13 @@ export default class Timeline extends Dom {
         // call parent constructor
         super('<div/>', {'class': `timeline ${className}`});
 
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-
         /**
          * The configuration values
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        this.duration = 0;
         this.tracks = {};
-
-        this.zoom = 1;
-        this.offset = 0;
 
         this.setupUI();
     }
@@ -93,26 +87,15 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     setMedia(media){
-        if(this.media){
-            this.media.removeListener('timeupdate', this.onMediaTimeUpdate);
-        }
-
         /**
          * The associated media
          * @type {Media}
          */
         this.media = media;
 
-        this.media.addListener('timeupdate', this.onMediaTimeUpdate);
-
-        /**
-         * The media's duration in centiseconds
-         * @type {Number}
-         */
-        this.duration = this.media.getDuration();
-
+        const duration = this.media.getDuration();
         Object.values(this.tracks).forEach((track) => {
-            track.setDuration(this.duration);
+            track.setDuration(duration);
         });
 
         this.updateSize();
@@ -135,8 +118,11 @@ export default class Timeline extends Dom {
             return this;
         }
 
-        const track = new Track(component)
-            .setDuration(this.duration);
+        const track = new Track(component);
+
+        if(this.media){
+            track.setDuration(this.media.getDuration());
+        }
 
         const handle = track.getHandle();
 
@@ -189,11 +175,12 @@ export default class Timeline extends Dom {
     }
 
     setOffset(start, end, supressEvent){
-        this.zoom = this.duration / (end - start);
-        this.scroll = this.width * start / this.duration;
+        const duration = this.media.getDuration();
+        const zoom = duration / (end - start);
+        const scroll = this.tracks_container_outer.get(0).clientWidth * start / duration;
 
-        this.tracks_container_inner.css('width', `${this.zoom * 100}%`);
-        this.tracks_container_outer.get(0).scrollLeft = this.scroll * this.zoom;
+        this.tracks_container_outer.get(0).scrollLeft = scroll * zoom;
+        this.tracks_container_inner.css('width', `${zoom * 100}%`);
 
         this.updateSize();
 
@@ -208,21 +195,12 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        /**
-         * The view's width
-         * @type {Number}
-         */
-        this.width = this.get(0).clientWidth;
-
-        /**
-         * The view's height
-         * @type {Number}
-         */
-        this.height = this.get(0).clientHeight;
+        const width = this.tracks_container_inner.get(0).clientWidth;
+        const height = this.tracks_container_inner.get(0).clientHeight;
 
         this.find('canvas').forEach((canvas) => {
-            canvas.width = this.width;
-            canvas.height = this.height;
+            canvas.width = width;
+            canvas.height = height;
         });
 
         this.updatePlayhead();
@@ -235,16 +213,16 @@ export default class Timeline extends Dom {
      *
      * @return {this}
      */
-    updatePlayhead(){
-        if(this.width > 0 && this.height > 0){
-            const canvas = this.playhead.get(0);
+    updatePlayhead(position){
+        const canvas = this.playhead.get(0);
+
+        if(canvas.width > 0 && canvas.height > 0){
             const context = canvas.getContext('2d');
-            const x = this.getPositionAt(this.time) + 0.5;
 
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
-            context.moveTo(x, 0);
-            context.lineTo(x, canvas.height);
+            context.moveTo(position, 0);
+            context.lineTo(position, canvas.height);
             context.lineWidth = this.configs.playheadWidth;
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
@@ -260,28 +238,12 @@ export default class Timeline extends Dom {
      * @return {Number} The corresponding x position
      */
     getPositionAt(time){
-        if(this.duration){
-            return Math.round(((time / this.duration) * (this.width * this.zoom)) - (this.scroll * this.zoom));
+        if(this.media){
+            const canvas = this.playhead.get(0);
+            return Math.round(time / this.media.getDuration() * canvas.width);
         }
 
         return null;
-    }
-
-    /**
-     * Media timeupdate event callback
-     *
-     * @private
-     */
-    onMediaTimeUpdate(evt){
-        /**
-         * The current time in centiseconds
-         * @type {Number}
-         */
-        this.time = evt.detail.time;
-
-        if(this.duration){
-            this.updatePlayhead();
-        }
     }
 
     clear(){
