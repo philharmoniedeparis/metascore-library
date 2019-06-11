@@ -546,7 +546,7 @@ export default class Zoom extends Dom {
                 this.zoom_in_btn.toggleClass('disabled', clamped <= min);
                 this.zoom_slider.setValue(scale, true);
 
-                const offset = this.resampled_data.at_time(this.time) - this.width/2;
+                const offset = this.resampled_data.at_time(toSeconds(this.time)) - this.width/2;
                 this.setOffset(offset, true);
             }
         }
