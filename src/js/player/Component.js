@@ -288,10 +288,13 @@ export default class Component extends Dom {
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
             const old_value = this.getPropertyValue(name);
 
-            this.configs.properties[name].setter.call(this, value);
+            // Only update if the value has changed
+            if(old_value !== value){
+                this.configs.properties[name].setter.call(this, value);
 
-            if(supressEvent !== true){
-                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
+                if(supressEvent !== true){
+                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
+                }
             }
         }
 

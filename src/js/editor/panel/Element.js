@@ -283,8 +283,6 @@ export default class Element extends Panel {
             _results.forEach((result) => {
                 this.setPropertyValues(result.component, result.new_values);
             });
-
-            this.triggerEvent('valueschange', results, false);
         });
     }
 

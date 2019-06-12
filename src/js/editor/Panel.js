@@ -44,10 +44,6 @@ const FIELD_TYPES = {
  * @param {Component} component The component instance
  * @emits {componentunset} Fired when a component is unset
  * @param {Component} component The component instance
- * @emits {valueschange} Fired when a component's values change
- * @param {Component} component The component instance
- * @param {Object} old_values The component instance
- * @param {Object} new_values The component instance
  */
 export default class Panel extends Dom {
 
@@ -591,20 +587,19 @@ export default class Panel extends Dom {
 
         this.refreshFieldValues(fields, true);
 
-        const values = this.components.map((component, index) => {
-            const new_values = {};
+        this.components.forEach((component, index) => {
             fields.forEach((field) => {
-                new_values[field] = component.getPropertyValue(field)
+                const value = component.getPropertyValue(field);
+                const old_value = this._before_drag_values[index][field];
+
+                component.triggerEvent('propchange', {
+                    'component': component,
+                    'property': field,
+                    'value': value,
+                    'old': old_value
+                });
             });
-
-            return {
-                component: component,
-                new_values: new_values,
-                old_values: this._before_drag_values[index],
-            };
         });
-
-        this.triggerEvent('valueschange', values, false);
 
         delete this._before_drag_values;
     }
@@ -646,15 +641,20 @@ export default class Panel extends Dom {
     onComponentResizeEnd(evt){
         const component = evt.target._metaScore;
         const fields = ['x', 'y', 'width', 'height'];
-        const new_values = {};
 
         this.refreshFieldValues(fields, true);
 
         fields.forEach((field) => {
-            new_values[field] = component.getPropertyValue(field)
-        });
+            const value = component.getPropertyValue(field);
+            const old_value = this._before_resize_values[field];
 
-        this.triggerEvent('valueschange', [{'component': component, 'old_values': this._before_resize_values, 'new_values': new_values}], false);
+            component.triggerEvent('propchange', {
+                'component': component,
+                'property': field,
+                'value': value,
+                'old': old_value
+            });
+        });
 
         delete this._before_resize_values;
     }
@@ -689,10 +689,6 @@ export default class Panel extends Dom {
         });
 
         this.toggleMultival(evt.detail.field, false);
-
-        this.triggerEvent('valueschange', values, false);
-
-
     }
 
     /**
@@ -731,8 +727,6 @@ export default class Panel extends Dom {
                     old_values: old_values
                 });
             });
-
-            this.triggerEvent('valueschange', values, false);
         });
     }
 

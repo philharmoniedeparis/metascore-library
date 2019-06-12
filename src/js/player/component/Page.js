@@ -30,6 +30,19 @@ const ELEMENT_TYPES = {
 export default class Page extends Component {
 
     /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Object} [properties={...}] A list of the component properties as name/descriptor pairs
+     */
+    constructor(configs){
+        // call parent constructor
+        super(configs);
+
+        this.addListener('propchange', this.onPropChange.bind(this));
+    }
+
+    /**
     * Get the default config values
     *
     * @return {Object} The default values
@@ -242,6 +255,24 @@ export default class Page extends Component {
         this.removeClass('active');
 
         return this;
+    }
+
+    onPropChange(evt){
+        const property = evt.detail.property;
+
+        if((property === 'start-time') || (property === 'end-time')){
+            const page = evt.detail.component;
+            const block = page.getParent();
+
+            if(block.getPropertyValue('synched')){
+                const index = block.getChildIndex(page);
+                const sibling_page = property === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
+
+                if(sibling_page){
+                    sibling_page.setPropertyValue(property === 'start-time' ? 'end-time' : 'start-time', evt.detail.value);
+                }
+            }
+        }
     }
 
     /**

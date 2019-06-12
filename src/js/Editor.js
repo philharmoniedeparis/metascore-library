@@ -46,6 +46,7 @@ export default class Editor extends Dom {
      * @property {String} [lang='en'] The language to use for i18n
      * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [guide_details={}] Configs to send to the GuideDetails overlay
+     * @property {Object} [history_grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
      */
     constructor(configs) {
         // call parent constructor
@@ -87,7 +88,8 @@ export default class Editor extends Dom {
             'reload_player_on_save': false,
             'lang': 'en',
             'xhr': {},
-            'guide_details': {}
+            'guide_details': {},
+            'history_grouping_timeout': 100
         };
     }
 
@@ -192,8 +194,7 @@ export default class Editor extends Dom {
 
         this.panels.block = new BlockPanel().appendTo(this.sidebar)
             .addListener('componentset', this.onBlockSet.bind(this))
-            .addListener('componentunset', this.onBlockUnset.bind(this))
-            .addListener('valueschange', this.onBlockPanelValueChange.bind(this));
+            .addListener('componentunset', this.onBlockUnset.bind(this));
 
         this.panels.block.getToolbar()
             .addDelegate('.selector', 'valuechange', this.onBlockPanelSelectorChange.bind(this))
@@ -201,8 +202,7 @@ export default class Editor extends Dom {
 
         this.panels.page = new PagePanel().appendTo(this.sidebar)
             .addListener('componentset', this.onPageSet.bind(this))
-            .addListener('componentunset', this.onPageUnset.bind(this))
-            .addListener('valueschange', this.onPagePanelValueChange.bind(this));
+            .addListener('componentunset', this.onPageUnset.bind(this));
 
         this.panels.page.getToolbar()
             .addDelegate('.selector', 'valuechange', this.onPagePanelSelectorChange.bind(this))
@@ -210,8 +210,7 @@ export default class Editor extends Dom {
 
         this.panels.element = new ElementPanel().appendTo(this.sidebar)
             .addListener('componentset', this.onElementSet.bind(this))
-            .addListener('beforecursoradvancededitmodeunlock', this.onElementPanelBeforeCursorAdvancedEditModeUnlock.bind(this))
-            .addListener('valueschange', this.onElementPanelValueChange.bind(this));
+            .addListener('beforecursoradvancededitmodeunlock', this.onElementPanelBeforeCursorAdvancedEditModeUnlock.bind(this));
 
         this.panels.element.getToolbar()
             .addDelegate('.selector', 'valuechange', this.onElementPanelSelectorChange.bind(this))
@@ -1204,51 +1203,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Block panel valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onBlockPanelValueChange(evt){
-        const sets = evt.detail;
-
-        const update = (key) => {
-            const doUpdateBlockTogglers = sets.some((set) => {
-                return (
-                    ('x' in set[key]) ||
-                    ('y' in set[key]) ||
-                    ('width' in set[key]) ||
-                    ('height' in set[key]) ||
-                    ('blocks' in set[key])
-                );
-            });
-
-            if(doUpdateBlockTogglers){
-                this.getPlayer().updateBlockTogglers();
-            }
-        };
-
-        this.history.add({
-            'undo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.old_values);
-                });
-
-                update('old_values');
-            },
-            'redo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.new_values);
-                });
-
-                update('new_values');
-            }
-        });
-
-        update('new_values');
-    }
-
-    /**
      * Block panel toolbar click event callback
      *
      * @private
@@ -1367,58 +1321,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Page panel valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPagePanelValueChange(evt){
-        const sets = evt.detail;
-
-        const update = (key) => {
-            sets.forEach((set) => {
-                if(('start-time' in set[key]) || ('end-time' in set[key])){
-                    const page = set.component;
-                    const block = page.getParent();
-
-                    if(block.getPropertyValue('synched')){
-                        const index = block.getChildIndex(page);
-                        const previous_page = block.getChild(index - 1);
-                        const next_page = block.getChild(index + 1);
-
-                        if(('start-time' in set[key]) && previous_page){
-                            previous_page.setPropertyValue('end-time', set[key]['start-time']);
-                        }
-
-                        if(('end-time' in set[key]) && next_page){
-                            next_page.setPropertyValue('start-time', set[key]['end-time']);
-                        }
-                    }
-                }
-            });
-        };
-
-        this.history.add({
-            'undo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.old_values);
-                });
-
-                update('old_values');
-            },
-            'redo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.new_values);
-                });
-
-                update('new_values');
-            }
-        });
-
-        update('new_values');
-    }
-
-    /**
      * Page panel toolbar click event callback
      *
      * @private
@@ -1496,44 +1398,6 @@ export default class Editor extends Dom {
      */
     onElementPanelBeforeCursorAdvancedEditModeUnlock(evt){
         evt.detail.media = this.getPlayer().getMedia();
-    }
-
-    /**
-     * Element panel valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onElementPanelValueChange(evt){
-        const sets = evt.detail;
-
-        const update = (key) => {
-            const doUpdateElementSelector = sets.some((set) => {
-                return ('r-index' in set[key]);
-            });
-            if(doUpdateElementSelector){
-                this.updateElementSelector();
-            }
-        };
-
-        this.history.add({
-            'undo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.old_values);
-                });
-
-                update('old_values');
-            },
-            'redo': () => {
-                sets.forEach((set) => {
-                    set.component.setPropertyValues(set.new_values);
-                });
-
-                update('new_values');
-            }
-        });
-
-        update('new_values');
     }
 
     /**
@@ -1831,6 +1695,7 @@ export default class Editor extends Dom {
     onPlayerLoadSuccess(loadmask){
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(this.player.get(0))
+            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
@@ -1922,6 +1787,79 @@ export default class Editor extends Dom {
      */
     onPlayerPause(){
         this.removeClass('playing');
+    }
+
+    /**
+     * Component propchange event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentPropChange(evt){
+        const component = evt.detail.component;
+        const property = evt.detail.property;
+
+        if(component.instanceOf('Element')){
+            if(evt.detail.property === 'r-index'){
+                this.updateElementSelector();
+            }
+        }
+        else if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
+            if(['x', 'y', 'width', 'height', 'blocks'].includes(property)){
+                this.getPlayer().updateBlockTogglers();
+            }
+        }
+
+        // If we are not in an undo or redo operation, group property changes via a timeout
+        if(!this.history.isExecuting()){
+            if(this._oncomponentpropchange_timeout){
+                clearTimeout(this._oncomponentpropchange_timeout);
+            }
+
+            if(!this._oncomponentpropchange_stack){
+                this._oncomponentpropchange_stack = [];
+            }
+
+            // Check if the component and property are already in the stack
+            const existing = this._oncomponentpropchange_stack.find((detail) => {
+                return detail.component === component && detail.property === property;
+            });
+            if(existing){
+                // The component and property are already in the stack, update the value
+                existing.value = evt.detail.value;
+            }
+            else{
+                // Add the component and property to the stack
+                this._oncomponentpropchange_stack.push(evt.detail);
+            }
+
+            this._oncomponentpropchange_timeout = setTimeout(this.onComponentPropChangeTimeout.bind(this), this.configs.history_grouping_timeout);
+        }
+    }
+
+    /**
+     * Component propchange event timeout callback
+     *
+     * @private
+     */
+    onComponentPropChangeTimeout(){
+        const stack = this._oncomponentpropchange_stack;
+
+        delete this._oncomponentpropchange_stack;
+        delete this._oncomponentpropchange_timeout;
+
+        this.history.add({
+            'undo': () => {
+                stack.forEach((detail) => {
+                    detail.component.setPropertyValue(detail.property, detail.old);
+                });
+            },
+            'redo': () => {
+                stack.forEach((detail) => {
+                    detail.component.setPropertyValue(detail.property, detail.value);
+                });
+            }
+        });
     }
 
     /**
