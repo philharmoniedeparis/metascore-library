@@ -1,0 +1,54 @@
+:local(.className){
+    .resize-handle{
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        z-index: 99997;
+
+        &[data-direction="top"]{
+            top: 0px;
+            left: 50%;
+            margin-left: -5px;
+            cursor: n-resize;
+        }
+        &[data-direction="right"]{
+            right: 0px;
+            top: 50%;
+            margin-top: -5px;
+            cursor: e-resize;
+        }
+        &[data-direction="bottom"]{
+            bottom: 0px;
+            left: 50%;
+            margin-left: -5px;
+            cursor: s-resize;
+        }
+        &[data-direction="left"]{
+            left: px;
+            top: 50%;
+            margin-top: -5px;
+            cursor: w-resize;
+        }
+
+        &[data-direction="top-right"]{
+            top: 0px;
+            right: 0px;
+            cursor: ne-resize;
+        }
+        &[data-direction="top-left"]{
+            top: 0px;
+            left: 0px;
+            cursor: nw-resize;
+        }
+        &[data-direction="bottom-left"]{
+            bottom: 0px;
+            left: 0px;
+            cursor: sw-resize;
+        }
+        &[data-direction="bottom-right"]{
+            bottom: 0px;
+            right: 0px;
+            cursor: se-resize;
+        }
+    }
+}
