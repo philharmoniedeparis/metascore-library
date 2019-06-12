@@ -1,5 +1,7 @@
 import Dom from '../Dom';
 
+import {bodyClassName, className} from '../../../css/core/ui/Resizable.less';
+
 /**
  * A class for adding resizable behaviors
  *
@@ -22,12 +24,6 @@ export default class Resizable {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
-
-        /**
-         * The target's owner document
-         * @type {Dom}
-         */
-        this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
         /**
          * A list of resize handles
@@ -93,16 +89,25 @@ export default class Resizable {
             'y': evt.clientY,
             'left': parseInt(this.configs.target.css('left'), 10),
             'top': parseInt(this.configs.target.css('top'), 10),
-            'w': parseInt(this.configs.target.css('width'), 10),
-            'h': parseInt(this.configs.target.css('height'), 10)
+            'width': parseInt(this.configs.target.css('width'), 10),
+            'height': parseInt(this.configs.target.css('height'), 10)
         };
+
+        if(!this.doc){
+            /**
+             * The target's owner document
+             * @type {Dom}
+             */
+            this.doc = new Dom(Dom.getElementDocument(this.configs.target.get(0)));
+        }
 
         this.doc
             .addListener('mousemove', this.onMouseMove)
             .addListener('mouseup', this.onMouseUp);
 
+        Dom.addClass(this.doc.get(0).body, bodyClassName);
+
         this.configs.target
-            .addListener('click', this.onTargetClick, this)
             .addClass('resizing')
             .triggerEvent('resizestart', {'start_state': this._start_state}, false, true);
 
@@ -121,46 +126,39 @@ export default class Resizable {
 
         switch(direction){
             case 'top':
-                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.height = this._start_state.height - evt.clientY + this._start_state.y;
                 new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
                 break;
             case 'right':
-                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
+                new_state.width = this._start_state.width + evt.clientX - this._start_state.x;
                 break;
             case 'bottom':
-                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.height = this._start_state.height + evt.clientY - this._start_state.y;
                 break;
             case 'left':
-                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
+                new_state.width = this._start_state.width - evt.clientX + this._start_state.x;
                 new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'top-left':
-                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
-                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.width = this._start_state.width - evt.clientX + this._start_state.x;
+                new_state.height = this._start_state.height - evt.clientY + this._start_state.y;
                 new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
                 new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'top-right':
-                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
-                new_state.h = this._start_state.h - evt.clientY + this._start_state.y;
+                new_state.width = this._start_state.width + evt.clientX - this._start_state.x;
+                new_state.height = this._start_state.height - evt.clientY + this._start_state.y;
                 new_state.top = this._start_state.top + evt.clientY - this._start_state.y;
                 break;
             case 'bottom-left':
-                new_state.w = this._start_state.w - evt.clientX + this._start_state.x;
-                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.width = this._start_state.width - evt.clientX + this._start_state.x;
+                new_state.height = this._start_state.height + evt.clientY - this._start_state.y;
                 new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
                 break;
             case 'bottom-right':
-                new_state.w = this._start_state.w + evt.clientX - this._start_state.x;
-                new_state.h = this._start_state.h + evt.clientY - this._start_state.y;
+                new_state.width = this._start_state.width + evt.clientX - this._start_state.x;
+                new_state.height = this._start_state.height + evt.clientY - this._start_state.y;
                 break;
-        }
-
-        if('top' in new_state){
-            this.configs.target.css('top', `${new_state.top}px`);
-        }
-        if('left' in new_state){
-            this.configs.target.css('left', `${new_state.left}px`);
         }
 
         /**
@@ -169,10 +167,13 @@ export default class Resizable {
          */
         this._resized = true;
 
-        this.configs.target
-            .css('width', `${new_state.w}px`)
-            .css('height', `${new_state.h}px`)
-            .triggerEvent('resize', {'start_state': this._start_state}, false, true);
+        if(this.configs.target.triggerEvent('beforeresize', {'start_state': this._start_state, 'new_state': new_state}, false) !== false){
+            Object.entries(new_state).forEach(([key, value]) => {
+                this.configs.target.css(key, `${value}px`);
+            });
+
+            this.configs.target.triggerEvent('resize', {'start_state': this._start_state}, false, true);
+        }
 
         evt.stopPropagation();
     }
@@ -193,6 +194,8 @@ export default class Resizable {
             delete this._resized;
             this.doc.addOneTimeListener('click', this.onClick, true);
         }
+
+        Dom.removeClass(this.doc.get(0).body, bodyClassName);
 
         this.configs.target
             .removeClass('resizing')
@@ -229,7 +232,7 @@ export default class Resizable {
      * @return {this}
      */
     enable() {
-        this.configs.target.addClass('resizable');
+        this.configs.target.addClass(`resizable ${className}`);
 
         /**
          * Whether the behavior is enabled
@@ -246,7 +249,7 @@ export default class Resizable {
      * @return {this}
      */
     disable() {
-        this.configs.target.removeClass('resizable');
+        this.configs.target.removeClass(`resizable ${className}`);
 
         this.enabled = false;
 

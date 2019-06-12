@@ -361,7 +361,7 @@ export default class Element extends Panel {
 
         const direction = component.getPropertyValue('direction');
         const vertical = direction === 'top' || direction === 'bottom';
-        const old_value = vertical ? evt.detail.start_state.h : evt.detail.start_state.w;
+        const old_value = vertical ? evt.detail.start_state.height : evt.detail.start_state.width;
         const new_value = vertical ? component.getPropertyValue('height') : component.getPropertyValue('width');
 
         this.repositionCursorKeyframes(component, new_value / old_value);

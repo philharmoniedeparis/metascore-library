@@ -1,6 +1,6 @@
 import Dom from '../Dom';
 
-import {className} from '../../../css/core/ui/Draggable.less';
+import {bodyClassName, className} from '../../../css/core/ui/Draggable.less';
 
 /**
  * A class for adding draggable behaviors
@@ -27,12 +27,6 @@ export default class Draggable {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
-
-        /**
-         * The target's owner document
-         * @type {Dom}
-         */
-        this.doc = new Dom(this.configs.target.get(0).ownerDocument);
 
         // fix event handlers scope
         this.onMouseDown = this.onMouseDown.bind(this);
@@ -81,9 +75,19 @@ export default class Draggable {
             'y': evt.clientY
         };
 
+        if(!this.doc){
+            /**
+             * The target's owner document
+             * @type {Dom}
+             */
+            this.doc = new Dom(Dom.getElementDocument(this.configs.target.get(0)));
+        }
+
         this.doc
             .addListener('mousemove', this.onMouseMove)
             .addListener('mouseup', this.onMouseUp);
+
+        Dom.addClass(this.doc.get(0).body, bodyClassName);
 
         this.configs.target
             .addClass('dragging')
@@ -134,6 +138,8 @@ export default class Draggable {
             delete this._dragged;
             this.doc.addOneTimeListener('click', this.onClick, true);
         }
+
+        Dom.removeClass(this.doc.get(0).body, bodyClassName);
 
         this.configs.target
             .removeClass('dragging')
