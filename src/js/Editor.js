@@ -8,7 +8,7 @@ import Resizable from './core/ui/Resizable';
 import BlockPanel from './editor/panel/Block';
 import PagePanel from './editor/panel/Page';
 import ElementPanel from './editor/panel/Element';
-import History from './editor/History';
+import UndoRedo from './editor/UndoRedo';
 import Alert from './core/ui/overlay/Alert';
 import LoadMask from './core/ui/overlay/LoadMask';
 import Clipboard from './core/Clipboard';
@@ -225,9 +225,9 @@ export default class Editor extends Dom {
 
         /**
          * The undo/redo handler
-         * @type {History}
+         * @type {UndoRedo}
          */
-        this.history = new History()
+        this.history = new UndoRedo()
             .addListener('add', this.onHistoryAdd.bind(this))
             .addListener('undo', this.onHistoryUndo.bind(this))
             .addListener('redo', this.onHistoryRedo.bind(this));

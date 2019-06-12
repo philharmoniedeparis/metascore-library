@@ -9,12 +9,10 @@ import EventEmitter from '../core/EventEmitter';
  * @param {Object} command The added command
  * @emits {redo} Fired when a command is redone
  * @param {Object} command The added command
- * @emits {clear} Fired when the command history is cleared
  *
- * @todo: make signleton
- * @todo: move closer to a Command Pattern ? see https://www.codeproject.com/Articles/33384/Multilevel-Undo-and-Redo-Implementation-in-Cshar-2
+ * @todo: make signleton ?
  */
-export default class History extends EventEmitter {
+export default class UndoRedo extends EventEmitter {
 
     /**
      * Instantiate
@@ -36,13 +34,10 @@ export default class History extends EventEmitter {
          * The list of available undo/redo commands
          * @type {Array}
          */
-        this.commands = [];
-
-        /**
-         * The current comamnd index
-         * @type {Number}
-         */
-        this.index = -1;
+        this.commands = {
+            'redo': [],
+            'undo': []
+        };
 
         /**
          * Whether a command is being executed
@@ -91,19 +86,16 @@ export default class History extends EventEmitter {
             return this;
         }
 
-        // invalidate items higher on the stack
-        this.commands.splice(this.index + 1, this.commands.length - this.index);
+        // remove all redo items
+        this.commands.redo = [];
 
         // insert the new command
-        this.commands.push(command);
+        this.commands.undo.push(command);
 
         // remove old commands
-        if(this.commands.length > this.configs.max_commands){
-            this.commands = this.commands.slice(this.configs.max_commands * -1);
+        if(this.commands.undo.length > this.configs.max_commands){
+            this.commands.undo = this.commands.undo.slice(this.configs.max_commands * -1);
         }
-
-        // update the index
-        this.index = this.commands.length - 1;
 
         this.triggerEvent('add', {'command': command});
 
@@ -116,17 +108,16 @@ export default class History extends EventEmitter {
      * @return {this}
      */
     undo() {
-        const command = this.commands[this.index];
+        const command = this.commands.undo.pop();
 
         if (!command) {
             return this;
         }
 
         // execute the command's undo
-         this.execute(command, 'undo');
+        this.execute(command, 'undo');
 
-        // update the index
-        this.index -= 1;
+        this.commands.redo.push(command);
 
         this.triggerEvent('undo', {'command': command});
 
@@ -139,7 +130,7 @@ export default class History extends EventEmitter {
      * @return {this}
      */
     redo() {
-        const command = this.commands[this.index + 1];
+        const command = this.commands.redo.pop();
 
         if (!command) {
             return this;
@@ -148,8 +139,7 @@ export default class History extends EventEmitter {
         // execute the command's redo
         this.execute(command, 'redo');
 
-        // update the index
-        this.index += 1;
+        this.commands.undo.push(command);
 
         this.triggerEvent('redo', {'command': command});
 
@@ -162,17 +152,10 @@ export default class History extends EventEmitter {
      * @return {this}
      */
     clear () {
-        const length = this.commands.length;
-
-        this.commands = [];
-        this.index = -1;
-
-        if(length > 0) {
-            this.triggerEvent('clear');
-        }
+        this.commands.undo = [];
+        this.commands.redo = [];
 
         return this;
-
     }
 
     /**
@@ -181,7 +164,7 @@ export default class History extends EventEmitter {
      * @return {Boolean} Whether an undo action is available
      */
     hasUndo() {
-        return this.index !== -1;
+        return this.commands.undo.length > 0;
     }
 
     /**
@@ -190,7 +173,16 @@ export default class History extends EventEmitter {
      * @return {Boolean} Whether a redo action is available
      */
     hasRedo() {
-        return this.index < (this.commands.length - 1);
+        return this.commands.redo.length > 0;
+    }
+
+    /**
+     * Check if an undo or redo operation is undergoing
+     *
+     * @return {Boolean} Whether a action is undergoing
+     */
+    isExecuting(){
+        return this.executing;
     }
 
 }
