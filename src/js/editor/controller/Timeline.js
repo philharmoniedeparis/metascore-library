@@ -112,14 +112,13 @@ export default class Timeline extends Dom {
      */
     addTrack(component, supressEvent){
         const parent_component = component.getParent();
-        const parent_track = parent_component ? this.getTrack(parent_component) : null;
+        const parent_track = parent_component ? this.getTrack(parent_component.getId()) : null;
 
         if(parent_component && !parent_track){
             return this;
         }
 
-        const track = new Track(component)
-            .addListener('click', this.onTrackClick);
+        const track = new Track(component);
 
         if(this.media){
             track.setDuration(this.media.getDuration());
@@ -153,13 +152,12 @@ export default class Timeline extends Dom {
     /**
      * Get a track for a corresponding component
      *
-     * @param {Component} component The component associated with the track
+     * @param {String} component_id The component id associated with the track
      * @return {Track} The associated track, or null if not found
      */
-    getTrack(component){
-        const id = component.getId();
-        if(id in this.tracks){
-            return this.tracks[id];
+    getTrack(component_id){
+        if(component_id in this.tracks){
+            return this.tracks[component_id];
         }
 
         return null;
@@ -178,9 +176,7 @@ export default class Timeline extends Dom {
         if(id in this.tracks){
             const track = this.tracks[id];
 
-            track
-                .removeListener('click', this.onTrackClick)
-                .remove();
+            track.remove();
 
             delete this.tracks[id];
 

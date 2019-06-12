@@ -2,12 +2,13 @@
 
 :local(.className){
 
-    > .info-wrapper{
+    > .inner{
         position: relative;
         height: 1.1em;
         opacity: 0.5;
         border-bottom: 1px dashed #CCC;
         box-sizing: border-box;
+        pointer-events: none;
 
         .info{
             position: absolute;
@@ -25,26 +26,35 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
+            .resize-handle{
+                display: none;
+            }
         }
     }
 
-    &.selected > .info-wrapper{
+    &.selected > .inner{
         opacity: 1;
+        pointer-events: auto;
 
         .info{
             box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
+
+            .resize-handle{
+                display: block;
+            }
         }
     }
 
-    &.truncated-start > .info-wrapper .info{
+    &.truncated-start > .inner .info{
         border-radius: 0 0.5em 0.5em 0;
         border-left-style: dotted;
     }
-    &.truncated-end > .info-wrapper .info{
+    &.truncated-end > .inner .info{
         border-radius: 0.5em 0 0 0.5em;
         border-right-style: dotted;
     }
-    &.truncated-start.truncated-end > .info-wrapper .info{
+    &.truncated-start.truncated-end > .inner .info{
         border-radius: 0;
     }
 
@@ -52,17 +62,17 @@
     &[data-type="Media"],
     &[data-type="BlockToggler"],
     &[data-type="Block"]{
-       & > .info-wrapper .info{
+       & > .inner .info{
             background: @block-color;
         }
     }
-    &[data-type="Cursor"] > .info-wrapper .info{
+    &[data-type="Cursor"] > .inner .info{
         background: @cursor-color;
     }
-    &[data-type="Image"] > .info-wrapper .info{
+    &[data-type="Image"] > .inner .info{
         background: @image-color;
     }
-    &[data-type="Text"] > .info-wrapper .info{
+    &[data-type="Text"] > .inner .info{
         background: @text-color;
     }
 }

@@ -166,7 +166,7 @@ export default class Editor extends Dom {
             .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
 
         this.controller.getTimeline()
-            .addListener('click', this.onTimelineClick.bind(this));
+            .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this));
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
@@ -1071,22 +1071,17 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Timeline click event callback
+     * Timeline track click event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineClick(evt){
-        const dom = evt.target;
+    onTimelineTrackClick(evt){
+        const component_id = Dom.data(evt.target, 'component');
+        const component = this.getPlayer().getComponent(`#${component_id}`);
 
-        let track_dom = dom;
-        if(Dom.is(track_dom, '.track') || (track_dom = Dom.closest(track_dom, '.track'))){
-            const track = track_dom._metaScore;
-            const component = track.getComponent();
-
+        if(component){
             this.selectPlayerComponent(component, evt.shiftKey);
-
-            evt.stopImmediatePropagation();
         }
     }
 

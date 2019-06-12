@@ -1,5 +1,6 @@
 import Dom from '../../../core/Dom';
 import Handle from './track/Handle';
+import Resizable from '../../../core/ui/Resizable';
 
 import {className} from '../../../../css/editor/controller/timeline/Track.less';
 
@@ -15,9 +16,6 @@ export default class Track extends Dom {
         // call parent constructor
         super('<div/>', {'class': `track ${className}`});
 
-        // keep a reference to this class instance in the DOM node
-        this.get(0)._metaScore = this;
-
         const id = component.getId();
         const type = component.getType();
         const name = component.getName();
@@ -29,11 +27,14 @@ export default class Track extends Dom {
             .addListener('unselected', this.onComponentUnselected.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
-        const wrapper = new Dom('<div/>', {'class': 'info-wrapper'})
+        const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
 
         this.info = new Dom('<div/>', {'class': 'info'})
-            .appendTo(wrapper);
+            .addListener('resizestart', this.onResizeStart.bind(this))
+            .addListener('beforeresize', this.onBeforeResize.bind(this))
+            .addListener('resizeend', this.onResizeEnd.bind(this))
+            .appendTo(inner);
 
         this.handle = new Handle()
             .data('component', id)
@@ -58,6 +59,12 @@ export default class Track extends Dom {
             return;
         }
 
+        this._resizable = new Resizable({
+            'target': this.info,
+            'relative': true,
+            'directions': ['left', 'right']
+        });
+
         this.addClass('selected');
     }
 
@@ -72,6 +79,8 @@ export default class Track extends Dom {
             // Caught a bubbled event, skip
             return;
         }
+
+        this._resizable.destroy();
 
         this.removeClass('selected');
     }
@@ -99,6 +108,40 @@ export default class Track extends Dom {
                 this.attr('title', evt.detail.value);
                 break;
         }
+    }
+
+    onResizeStart(){
+        const component = this.getComponent();
+
+        this._before_resize_state = {
+            'start-time': component.getPropertyValue('start-time'),
+            'end-time': component.getPropertyValue('end-time')
+        }
+    }
+
+    onBeforeResize(evt){
+        const component = this.getComponent();
+
+        switch(evt.detail.start_state.direction){
+            case 'left': {
+                const start_time = this._before_resize_state['start-time'];
+                component.setPropertyValue('start-time', start_time * evt.detail.new_state.left / evt.detail.start_state.left);
+                break;
+            }
+            case 'right': {
+                const old_right = evt.detail.start_state.left + evt.detail.start_state.width;
+                const new_right = evt.detail.start_state.left + evt.detail.new_state.width;
+                const end_time = this._before_resize_state['end-time'];
+                component.setPropertyValue('end-time', end_time * new_right / old_right);
+                break;
+            }
+        }
+
+        evt.preventDefault();
+    }
+
+    onResizeEnd(){
+        delete this._before_resize_state;
     }
 
     setDuration(duration){
