@@ -59,13 +59,29 @@ export default class Track extends Dom {
             return;
         }
 
-        this._resizable = new Resizable({
-            'target': this.info,
-            'relative': true,
-            'directions': ['left', 'right']
-        });
+        // Add a resizable behavior if applicable
+        const component = this.getComponent();
+        const directions = [];
+        if(component.hasProperty('start-time')){
+            directions.push('left');
+        }
+        if(component.hasProperty('end-time')){
+            directions.push('right');
+        }
+        if(directions.length > 0){
+            this._resizable = new Resizable({
+                'target': this.info,
+                'relative': true,
+                'directions': directions
+            });
+        }
 
+        // Add the selected class to the track and handle
         this.addClass('selected');
+        this.getHandle().addClass('selected');
+
+        // Scroll into view
+        this.get(0).scrollIntoView();
     }
 
     /**
@@ -80,9 +96,12 @@ export default class Track extends Dom {
             return;
         }
 
-        this._resizable.destroy();
+        if(this._resizable){
+            this._resizable.destroy();
+        }
 
         this.removeClass('selected');
+        this.getHandle().removeClass('selected');
     }
 
     /**
@@ -111,37 +130,31 @@ export default class Track extends Dom {
     }
 
     onResizeStart(){
-        const component = this.getComponent();
-
-        this._before_resize_state = {
-            'start-time': component.getPropertyValue('start-time'),
-            'end-time': component.getPropertyValue('end-time')
-        }
+        const {width} = this.get(0).getBoundingClientRect();
+        this._resize_multiplier = this.duration / width;
     }
 
     onResize(evt){
         const component = this.getComponent();
+        const property = evt.detail.start_state.direction === 'left' ? 'start-time' : 'end-time';
+        let new_value = 0;
 
-        switch(evt.detail.start_state.direction){
-            case 'left': {
-                const start_time = this._before_resize_state['start-time'];
-                component.setPropertyValue('start-time', start_time * evt.detail.new_state.left / evt.detail.start_state.left);
-                break;
-            }
-            case 'right': {
-                const old_right = evt.detail.start_state.left + evt.detail.start_state.width;
-                const new_right = evt.detail.start_state.left + evt.detail.new_state.width;
-                const end_time = this._before_resize_state['end-time'];
-                component.setPropertyValue('end-time', end_time * new_right / old_right);
-                break;
-            }
+        if(property === 'start-time'){
+            new_value = evt.detail.new_state.left;
         }
+        else{
+            new_value = evt.detail.start_state.left + evt.detail.new_state.width;
+        }
+
+        new_value *= this._resize_multiplier;
+
+        component.setPropertyValue(property, new_value);
 
         evt.preventDefault();
     }
 
     onResizeEnd(){
-        delete this._before_resize_state;
+        delete this._resize_multiplier;
     }
 
     setDuration(duration){
@@ -158,59 +171,24 @@ export default class Track extends Dom {
         const start_time = component.getPropertyValue('start-time');
         const end_time = component.getPropertyValue('end-time');
 
-        const true_start_time = this.getComponentTrueTimeLimit(component, 'start');
-        const true_end_time = this.getComponentTrueTimeLimit(component, 'end');
-
-        if(true_start_time !== null){
-            this.info.css('left', `${(true_start_time / this.duration) * 100}%`);
+        if(start_time !== null){
+            this.info.css('left', `${(start_time / this.duration) * 100}%`);
         }
         else{
-            this.info.css('left', 0);
+            this.info.css('left', null);
         }
 
-        if(true_end_time !== null){
-            this.info.css('width', `${((true_end_time - true_start_time) / this.duration) * 100}%`);
+        if(end_time !== null){
+            const diff_time = end_time - (start_time !== null ? start_time : 0);
+            this.info.css('width', `${diff_time / this.duration * 100}%`);
         }
         else{
             this.info.css('width', null);
-        }
-
-        if(start_time !== true_start_time){
-            this.addClass('truncated-start');
-        }
-        else{
-            this.removeClass('truncated-start');
-        }
-
-        if(end_time !== true_end_time){
-            this.addClass('truncated-end');
-        }
-        else{
-            this.removeClass('truncated-end');
         }
     }
 
     getComponent(){
         return this.component;
-    }
-
-    getComponentTrueTimeLimit(component, limit){
-        let time = component.getPropertyValue(`${limit}-time`);
-        const parent = component.getParent();
-
-        if(parent){
-            const parent_time = this.getComponentTrueTimeLimit(parent, limit);
-
-            if(time === null){
-                time = parent_time;
-            }
-            else if(parent_time !== null){
-                const fn = limit === 'start' ? 'max' : 'min';
-                time = Math[fn](time, parent_time);
-            }
-        }
-
-        return time;
     }
 
     getHandle(){

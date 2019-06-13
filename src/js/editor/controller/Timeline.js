@@ -268,6 +268,10 @@ export default class Timeline extends Dom {
         return null;
     }
 
+    getHandlesContainer(){
+        return this.handles_container;
+    }
+
     /**
      * Clear the playhead and remove all tracks
      *

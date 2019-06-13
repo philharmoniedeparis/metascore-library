@@ -1,12 +1,14 @@
 :local(.className){
+    cursor: pointer;
 
-    .info{
+    > .inner{
         height: 1.1em;
         line-height: 1.1em;
         padding: 0 0.5em;
         background: #ccc;
         box-sizing: border-box;
         border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        pointer-events: none;
 
         .name{
             font-size: 0.75em;
@@ -20,6 +22,10 @@
                 }
             }
         }
+    }
+
+    &.selected > .inner{
+        background: #ddd;
     }
 
     .sub-handles{

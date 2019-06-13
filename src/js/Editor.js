@@ -166,7 +166,9 @@ export default class Editor extends Dom {
             .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
 
         this.controller.getTimeline()
-            .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this));
+            .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this))
+            .getHandlesContainer()
+                .addDelegate('.track-handle', 'click', this.onTimelineTrackClick.bind(this));
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
@@ -1079,11 +1081,10 @@ export default class Editor extends Dom {
      */
     onTimelineTrackClick(evt){
         const component_id = Dom.data(evt.target, 'component');
-        const component = this.getPlayer().getComponent(`#${component_id}`);
+        const track = this.controller.getTimeline().getTrack(component_id);
+        const component = track.getComponent();
 
-        if(component){
-            this.selectPlayerComponent(component, evt.shiftKey);
-        }
+        this.selectPlayerComponent(component, evt.shiftKey);
     }
 
     /**

@@ -1,13 +1,15 @@
 @import "../../../core/theme";
 
+@info-fade: 25%;
+
 :local(.className){
+    cursor: pointer;
 
     > .inner{
         position: relative;
         height: 1.1em;
-        opacity: 0.5;
-        border-bottom: 1px dashed #CCC;
         box-sizing: border-box;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.25);
         pointer-events: none;
 
         .info{
@@ -20,24 +22,25 @@
             border: 1px solid #555;
             border-radius: 0.5em;
             box-sizing: border-box;
-
-            .name{
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
+            opacity: 0.5;
 
             .resize-handle{
                 display: none;
+                width: 6px;
+                height: 6px;
+                margin-top: -3px;
+                background: #fff;
+                border-radius: 50%;
             }
         }
     }
 
     &.selected > .inner{
-        opacity: 1;
+        background: #ddd;
         pointer-events: auto;
 
         .info{
+            opacity: 1;
             box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
 
             .resize-handle{
@@ -46,33 +49,27 @@
         }
     }
 
-    &.truncated-start > .inner .info{
-        border-radius: 0 0.5em 0.5em 0;
-        border-left-style: dotted;
-    }
-    &.truncated-end > .inner .info{
-        border-radius: 0.5em 0 0 0.5em;
-        border-right-style: dotted;
-    }
-    &.truncated-start.truncated-end > .inner .info{
-        border-radius: 0;
-    }
-
     &[data-type="Controller"],
     &[data-type="Media"],
     &[data-type="BlockToggler"],
     &[data-type="Block"]{
-       & > .inner .info{
+        & > .inner .info{
             background: @block-color;
         }
     }
-    &[data-type="Cursor"] > .inner .info{
-        background: @cursor-color;
+    &[data-type="Cursor"]{
+        & > .inner .info{
+            background: @cursor-color;
+        }
     }
-    &[data-type="Image"] > .inner .info{
-        background: @image-color;
+    &[data-type="Image"]{
+        & > .inner .info{
+            background: @image-color;
+        }
     }
-    &[data-type="Text"] > .inner .info{
-        background: @text-color;
+    &[data-type="Text"]{
+        & > .inner .info{
+            background: @text-color;
+        }
     }
 }
