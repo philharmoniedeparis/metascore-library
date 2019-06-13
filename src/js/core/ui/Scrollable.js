@@ -109,7 +109,15 @@ export default class Scrollable {
     }
 
     onBarClick(evt){
-        this.onDocMousemove(evt);
+        if(evt.target !== evt.currentTarget){
+            return;
+        }
+
+        const {top} = evt.target.getBoundingClientRect();
+
+        window.requestAnimationFrame(() => {
+            this.configs.contentWrapper.get(0).scrollTop = (evt.pageY - top) / this.scroll_ratio;
+        });
     }
 
     onThumbMousedown(evt){
@@ -134,7 +142,7 @@ export default class Scrollable {
     }
 
     onDocMousemove(evt){
-        const delta = evt.pageY - (this.last_page_y || 0);
+        const delta = evt.pageY - this.last_page_y;
 
         this.last_page_y = evt.pageY;
 
@@ -211,6 +219,8 @@ export default class Scrollable {
         this.thumb.addListener('mousedown', this.onThumbMousedown);
 
         this.resize_observer.observe(this.configs.scrollWrapper.get(0));
+
+        this.update();
 
         /**
          * Whether the behavior is enabled
