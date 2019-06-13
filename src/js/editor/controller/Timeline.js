@@ -199,10 +199,14 @@ export default class Timeline extends Dom {
     setOffset(start, end, supressEvent){
         const duration = this.media.getDuration();
         const zoom = duration / (end - start);
-        const scroll = this.tracks_container_outer.get(0).clientWidth * start / duration;
 
-        this.tracks_container_outer.get(0).scrollLeft = scroll * zoom;
         this.tracks_container_inner.css('width', `${zoom * 100}%`);
+
+        const container_dom = this.tracks_container_outer.get(0);
+        const scroll = container_dom.clientWidth * start / duration * zoom;
+        const max_scroll = container_dom.scrollWidth - container_dom.clientWidth;
+
+        container_dom.scrollLeft = Math.min(scroll, max_scroll);
 
         if(supressEvent !== true){
             this.triggerEvent('offsetupdate', {'start': start, 'end': end});
