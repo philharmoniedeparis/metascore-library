@@ -219,6 +219,20 @@ body{
             max-width: 500px;
             background: #f2f2f2;
             border-left: 1px solid #b2b2b2;
+
+            .resize-handle{
+                position: relative;
+                top: 0;
+                width: 9px;
+                height: 100%;
+                margin-top: 0;
+                cursor: col-resize;
+                background: #e6e6e6 url('../img/editor/sidebar/resizer-handle.png') no-repeat center center;
+
+                &:hover{
+                    background-color: #d9d9d9;
+                }
+            }
         }
     }
 
@@ -274,16 +288,6 @@ body{
             margin: 0;
             padding: 0;
             border: none;
-        }
-    }
-
-    .resize-handle{
-        width: 9px;
-        cursor: col-resize;
-        background: #e6e6e6 url('../img/editor/sidebar/resizer-handle.png') no-repeat center center;
-
-        &:hover{
-            background-color: #d9d9d9;
         }
     }
 

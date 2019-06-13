@@ -170,6 +170,7 @@ export default class Editor extends Dom {
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
+            .addListener('resize', this.onSidebarResize.bind(this))
             .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
 
         /**
@@ -1127,6 +1128,19 @@ export default class Editor extends Dom {
      */
     onSidebarResizeStart(){
         this.addClass('sidebar-resizing');
+    }
+
+    /**
+     * Sidebar resize event callback
+     *
+     * @private
+     */
+    onSidebarResize(evt){
+        const right = new Dom(evt.target);
+
+        Object.entries(evt.detail.new_state).forEach(([key, value]) => {
+            right.css(key, `${value}px`);
+        });
     }
 
     /**

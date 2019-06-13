@@ -629,8 +629,15 @@ export default class Panel extends Dom {
      *
      * @private
      */
-    onComponentResize(){
-        this.refreshFieldValues(['x', 'y', 'width', 'height'], true);
+    onComponentResize(evt){
+        const component = evt.target._metaScore;
+        const fields = ['x', 'y', 'width', 'height'];
+
+        Object.entries(evt.detail.new_state).forEach(([key, value]) => {
+            component.css(key, `${value}px`);
+        });
+
+        this.refreshFieldValues(fields, true);
     }
 
     /**

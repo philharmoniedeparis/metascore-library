@@ -167,13 +167,7 @@ export default class Resizable {
          */
         this._resized = true;
 
-        if(this.configs.target.triggerEvent('beforeresize', {'start_state': this._start_state, 'new_state': new_state}, false) !== false){
-            Object.entries(new_state).forEach(([key, value]) => {
-                this.configs.target.css(key, `${value}px`);
-            });
-
-            this.configs.target.triggerEvent('resize', {'start_state': this._start_state}, false, true);
-        }
+        this.configs.target.triggerEvent('resize', {'start_state': this._start_state, 'new_state': new_state}, false, true);
 
         evt.stopPropagation();
     }

@@ -32,7 +32,7 @@ export default class Track extends Dom {
 
         this.info = new Dom('<div/>', {'class': 'info'})
             .addListener('resizestart', this.onResizeStart.bind(this))
-            .addListener('beforeresize', this.onBeforeResize.bind(this))
+            .addListener('resize', this.onResize.bind(this))
             .addListener('resizeend', this.onResizeEnd.bind(this))
             .appendTo(inner);
 
@@ -119,7 +119,7 @@ export default class Track extends Dom {
         }
     }
 
-    onBeforeResize(evt){
+    onResize(evt){
         const component = this.getComponent();
 
         switch(evt.detail.start_state.direction){
