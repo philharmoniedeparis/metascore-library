@@ -23,7 +23,8 @@ export default class Number extends Field {
      * @property {Number} [max=null] The maximum allowed value
      * @property {Number} [step=1] The spin up/down step amount
      * @property {Boolean} [spinButtons=true] Whether to show the spin buttons
-     * @property {Integer} [spinDelay=500] The delay between each increment/decrement of the spin buttons
+     * @property {Integer} [initSpinDelay=500] The delay between the first increment/decrement and the second one
+     * @property {Integer} [spinDelay=40] The delay between each increment/decrement of the spin buttons
      * @property {Boolean|Function} [spinIncremental=true] Defines whether the steps taken when holding down a spin button increases, and how
      * @property {String} [spinDirection='horizontal'] The direction of the spin buttons
      * @property {Boolean} [flipSpinButtons=false] Whether to flip the spin buttons
@@ -47,6 +48,7 @@ export default class Number extends Field {
             'max': null,
             'step': 1,
             'spinButtons': true,
+            'initSpinDelay': 500,
             'spinDelay': 40,
             'spinIncremental': true,
             'spinDirection': 'horizontal',
@@ -252,7 +254,7 @@ export default class Number extends Field {
         this.setValue(value);
 
         if(loop !== false){
-            const delay = this.spin_count === 1 ? 500 : this.configs.spinDelay;
+            const delay = this.spin_count === 1 ? this.configs.initSpinDelay : this.configs.spinDelay;
 
             this.timeout = setTimeout(() => {
                 this.spin(direction, loop);
