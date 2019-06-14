@@ -38,7 +38,9 @@ export default class Scrollable {
         this.onDocMouseup = this.onDocMouseup.bind(this);
 
         const native_scrollbar_width = this.constructor.getNativeScrollbarWidth();
-        this.configs.contentWrapper.css('width', `calc(100% + ${native_scrollbar_width}px)`);
+        this.configs.contentWrapper
+            .css('overflow-y', 'scroll')
+            .css('width', `calc(100% + ${native_scrollbar_width}px)`);
 
         this.direction = this.configs.contentWrapper.css('direction');
 
