@@ -38,6 +38,8 @@ export default class Track extends Dom {
 
         this.handle = new Handle()
             .data('component', id)
+            .addListener('expand', this.onHandleExpand.bind(this))
+            .addListener('shrink', this.onHandleShrink.bind(this))
             .setName(name);
 
         this
@@ -81,7 +83,7 @@ export default class Track extends Dom {
         this.getHandle().addClass('selected');
 
         // Scroll into view
-        this.get(0).scrollIntoView();
+        //this.get(0).scrollIntoView();
     }
 
     /**
@@ -157,6 +159,23 @@ export default class Track extends Dom {
         delete this._resize_multiplier;
     }
 
+    onDescendentsChildRemove(evt){
+        const child = evt.detail.child;
+        if(!Dom.is(child, `.${className}`)){
+            return;
+        }
+
+        this.toggleClass('has-descendents', this.descendents.is(':empty'));
+    }
+
+    onHandleExpand(){
+        this.addClass('expanded');
+    }
+
+    onHandleShrink(){
+        this.removeClass('expanded');
+    }
+
     setDuration(duration){
         this.duration = duration;
 
@@ -195,13 +214,16 @@ export default class Track extends Dom {
         return this.handle;
     }
 
-    addSubTrack(track, index){
-        if(!this.subtracks){
-            this.subtracks = new Dom('<div/>', {'class': 'sub-tracks'})
+    addDescendent(track, index){
+        if(!this.descendents){
+            this.descendents = new Dom('<div/>', {'class': 'descendents'})
+                .addListener('childremove', this.onDescendentsChildRemove.bind(this))
                 .appendTo(this)
         }
 
-        track.insertAt(this.subtracks, index);
+        track.insertAt(this.descendents, index);
+
+        this.addClass('has-descendents');
     }
 
     remove(){

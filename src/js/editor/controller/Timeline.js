@@ -28,6 +28,8 @@ export default class Timeline extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        this.playhead_position = 0;
+
         this.tracks = {};
 
         this.setupUI();
@@ -56,7 +58,9 @@ export default class Timeline extends Dom {
          * The handles container
          * @type {Dom}
          */
-        this.handles_container = this.configs.handlesContriner ? this.configs.handlesContriner : new Dom('<div/>', {'class': 'handles-container'}).appendTo(this);
+        this.handles_container = (this.configs.handlesContriner ? this.configs.handlesContriner : new Dom('<div/>', {'class': 'handles-container'}).appendTo(this))
+            .addListener('expand', this.onHandlesExpandOrShrink.bind(this))
+            .addListener('shrink', this.onHandlesExpandOrShrink.bind(this));
 
         /**
          * The tracks outer container
@@ -78,6 +82,10 @@ export default class Timeline extends Dom {
          */
         this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
             .appendTo(this.tracks_container_outer);
+    }
+
+    onHandlesExpandOrShrink(){
+        this.updateSize();
     }
 
     /**
@@ -128,8 +136,8 @@ export default class Timeline extends Dom {
 
         if(parent_component){
             const index = parent_component.getChildIndex(component);
-            parent_track.addSubTrack(track, index);
-            parent_track.getHandle().addSubHandle(handle, index);
+            parent_track.addDescendent(track, index);
+            parent_track.getHandle().addDescendent(handle, index);
         }
         else{
             track.appendTo(this.tracks_container_inner);
@@ -219,13 +227,15 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        const width = this.tracks_container_inner.get(0).clientWidth;
-        const height = this.tracks_container_inner.get(0).clientHeight;
+        const width = this.tracks_container_outer.get(0).clientWidth;
+        const height = this.tracks_container_outer.get(0).clientHeight;
 
         this.find('canvas').forEach((canvas) => {
             canvas.width = width;
             canvas.height = height;
         });
+
+        this.updatePlayhead();
 
         return this;
     }
@@ -235,7 +245,18 @@ export default class Timeline extends Dom {
      *
      * @return {this}
      */
-    updatePlayhead(position){
+    updatePlayheadPosition(position){
+        this.playhead_position = position;
+
+        this.updatePlayhead();
+    }
+
+    /**
+     * Update the playhead layer
+     *
+     * @return {this}
+     */
+    updatePlayhead(){
         const canvas = this.playhead.get(0);
 
         if(canvas.width > 0 && canvas.height > 0){
@@ -243,29 +264,14 @@ export default class Timeline extends Dom {
 
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
-            context.moveTo(position, 0);
-            context.lineTo(position, canvas.height);
+            context.moveTo(this.playhead_position, 0);
+            context.lineTo(this.playhead_position, canvas.height);
             context.lineWidth = this.configs.playheadWidth;
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
         }
 
         return this;
-    }
-
-    /**
-     * Get the x position in pixels corresponding to a time in centiseconds
-     *
-     * @param {Number} time The time in centiseconds
-     * @return {Number} The corresponding x position
-     */
-    getPositionAt(time){
-        if(this.media){
-            const canvas = this.playhead.get(0);
-            return Math.round(time / this.media.getDuration() * canvas.width);
-        }
-
-        return null;
     }
 
     getHandlesContainer(){

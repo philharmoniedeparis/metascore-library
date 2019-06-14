@@ -227,7 +227,7 @@ export default class Controller extends Dom {
     onWaveformZoomPlayheadUpdate(evt){
         const position = evt.detail.position;
 
-        this.getTimeline().updatePlayhead(position);
+        this.getTimeline().updatePlayheadPosition(position);
     }
 
     /**

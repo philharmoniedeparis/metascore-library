@@ -17,8 +17,27 @@ export default class Handle extends Dom {
         const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
 
+        new Dom('<div/>', {'class': 'expander'})
+            .addListener('click', this.onExpanderClick.bind(this))
+            .appendTo(inner);
+
         this.name = new Dom('<div/>', {'class': 'name'})
             .appendTo(inner);
+    }
+
+    onExpanderClick(){
+        this.toggleClass('expanded');
+
+        this.triggerEvent(this.hasClass('expanded') ? 'expand' : 'shrink');
+    }
+
+    onDescendentsChildRemove(evt){
+        const child = evt.detail.child;
+        if(!Dom.is(child, `.${className}`)){
+            return;
+        }
+
+        this.toggleClass('has-descendents', this.descendents.is(':empty'));
     }
 
     setName(value){
@@ -29,13 +48,16 @@ export default class Handle extends Dom {
         return this;
     }
 
-    addSubHandle(handle, index){
-        if(!this.subhandles){
-            this.subhandles = new Dom('<div/>', {'class': 'sub-handles'})
+    addDescendent(handle, index){
+        if(!this.descendents){
+            this.descendents = new Dom('<div/>', {'class': 'descendents'})
+                .addListener('childremove', this.onDescendentsChildRemove.bind(this))
                 .appendTo(this)
         }
 
-        handle.insertAt(this.subhandles, index);
+        handle.insertAt(this.descendents, index);
+
+        this.addClass('has-descendents');
     }
 
 }

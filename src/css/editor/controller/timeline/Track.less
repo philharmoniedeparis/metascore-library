@@ -35,20 +35,6 @@
         }
     }
 
-    &.selected > .inner{
-        background: #ddd;
-        pointer-events: auto;
-
-        .info{
-            opacity: 1;
-            box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
-
-            .resize-handle{
-                display: block;
-            }
-        }
-    }
-
     &[data-type="Controller"],
     &[data-type="Media"],
     &[data-type="BlockToggler"],
@@ -70,6 +56,28 @@
     &[data-type="Text"]{
         & > .inner .info{
             background: @text-color;
+        }
+    }
+
+    .descendents{
+        display: none;
+    }
+
+    &.expanded > .descendents{
+        display: block;
+    }
+
+    &.selected > .inner{
+        background: #ddd;
+        pointer-events: auto;
+
+        .info{
+            opacity: 1;
+            box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
+
+            .resize-handle{
+                display: block;
+            }
         }
     }
 }
