@@ -63,8 +63,11 @@
         display: none;
     }
 
-    &.expanded > .descendents{
-        display: block;
+    &.user-expanded,
+    &.auto-expanded{
+        > .descendents{
+            display: block;
+        }
     }
 
     &.selected > .inner{

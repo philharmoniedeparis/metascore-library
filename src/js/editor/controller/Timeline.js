@@ -58,9 +58,7 @@ export default class Timeline extends Dom {
          * The handles container
          * @type {Dom}
          */
-        this.handles_container = (this.configs.handlesContriner ? this.configs.handlesContriner : new Dom('<div/>', {'class': 'handles-container'}).appendTo(this))
-            .addListener('expand', this.onHandlesExpandOrShrink.bind(this))
-            .addListener('shrink', this.onHandlesExpandOrShrink.bind(this));
+        this.handles_container = this.configs.handlesContriner ? this.configs.handlesContriner : new Dom('<div/>', {'class': 'handles-container'}).appendTo(this);
 
         /**
          * The tracks outer container
@@ -70,22 +68,18 @@ export default class Timeline extends Dom {
             .appendTo(this);
 
         /**
-         * The tracks inner container
-         * @type {Dom}
-         */
-        this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
-            .appendTo(this.tracks_container_outer);
-
-        /**
          * The playhead <canvas> element
          * @type {Dom}
          */
         this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
             .appendTo(this.tracks_container_outer);
-    }
 
-    onHandlesExpandOrShrink(){
-        this.updateSize();
+        /**
+         * The tracks inner container
+         * @type {Dom}
+         */
+        this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
+            .appendTo(this.tracks_container_outer);
     }
 
     /**
@@ -227,8 +221,8 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        const width = this.tracks_container_outer.get(0).clientWidth;
-        const height = this.tracks_container_outer.get(0).clientHeight;
+        const width = this.get(0).clientWidth;
+        const height = this.get(0).clientHeight;
 
         this.find('canvas').forEach((canvas) => {
             canvas.width = width;

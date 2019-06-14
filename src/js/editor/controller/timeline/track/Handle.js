@@ -18,17 +18,10 @@ export default class Handle extends Dom {
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'expander'})
-            .addListener('click', this.onExpanderClick.bind(this))
             .appendTo(inner);
 
         this.name = new Dom('<div/>', {'class': 'name'})
             .appendTo(inner);
-    }
-
-    onExpanderClick(){
-        this.toggleClass('expanded');
-
-        this.triggerEvent(this.hasClass('expanded') ? 'expand' : 'shrink');
     }
 
     onDescendentsChildRemove(evt){

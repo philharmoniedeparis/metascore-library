@@ -1,13 +1,14 @@
 :local(.className){
     .tracks-container-outer{
+        position: absolute;
+        width: 100%;
         min-height: 100%;
         overflow: hidden;
 
         .playhead{
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: fixed;
             pointer-events: none;
+            z-index: 2;
         }
     }
 }

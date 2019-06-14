@@ -23,7 +23,7 @@ export default class Track extends Dom {
         this.duration = 0;
 
         this.component = component
-            .addListener('selected', this.onComponentSelected.bind(this))
+            .addListener('selected', this.onComponentSelected.bind(this), true)
             .addListener('unselected', this.onComponentUnselected.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
@@ -38,8 +38,7 @@ export default class Track extends Dom {
 
         this.handle = new Handle()
             .data('component', id)
-            .addListener('expand', this.onHandleExpand.bind(this))
-            .addListener('shrink', this.onHandleShrink.bind(this))
+            .addDelegate('.expander', 'click', this.onHandleExpanderClick.bind(this))
             .setName(name);
 
         this
@@ -57,33 +56,38 @@ export default class Track extends Dom {
      */
     onComponentSelected(evt){
         if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
+            // Caught a bubbled event, this is a parent component
+            // This is applied first, as the listener is registered on the capturing phase
 
-        // Add a resizable behavior if applicable
-        const component = this.getComponent();
-        const directions = [];
-        if(component.hasProperty('start-time')){
-            directions.push('left');
+            // Expand the parent
+            this.addClass('auto-expanded')
+                .getHandle().addClass('auto-expanded');
         }
-        if(component.hasProperty('end-time')){
-            directions.push('right');
-        }
-        if(directions.length > 0){
-            this._resizable = new Resizable({
-                'target': this.info,
-                'relative': true,
-                'directions': directions
-            });
-        }
+        else{
+            // Add a resizable behavior if applicable
+            const component = this.getComponent();
+            const directions = [];
+            if(component.hasProperty('start-time')){
+                directions.push('left');
+            }
+            if(component.hasProperty('end-time')){
+                directions.push('right');
+            }
+            if(directions.length > 0){
+                this._resizable = new Resizable({
+                    'target': this.info,
+                    'relative': true,
+                    'directions': directions
+                });
+            }
 
-        // Add the selected class to the track and handle
-        this.addClass('selected');
-        this.getHandle().addClass('selected');
+            // Add the selected class to the track and handle
+            this.addClass('selected');
+            this.getHandle().addClass('selected');
 
-        // Scroll into view
-        //this.get(0).scrollIntoView();
+            // Scroll into view
+            this.get(0).scrollIntoView();
+        }
     }
 
     /**
@@ -94,16 +98,24 @@ export default class Track extends Dom {
      */
     onComponentUnselected(evt){
         if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
+            // Caught a bubbled event, this is a parent component
 
-        if(this._resizable){
-            this._resizable.destroy();
+            // Check if a desendent is selected in the parent
+            const expanded_descendents = this.descendents.find('.selected');
+            if(expanded_descendents.count() === 0){
+                // Shrik the parent
+                this.removeClass('auto-expanded')
+                    .getHandle().removeClass('auto-expanded');
+            }
         }
+        else{
+            if(this._resizable){
+                this._resizable.destroy();
+            }
 
-        this.removeClass('selected');
-        this.getHandle().removeClass('selected');
+            this.removeClass('selected');
+            this.getHandle().removeClass('selected');
+        }
     }
 
     /**
@@ -168,12 +180,20 @@ export default class Track extends Dom {
         this.toggleClass('has-descendents', this.descendents.is(':empty'));
     }
 
-    onHandleExpand(){
-        this.addClass('expanded');
-    }
+    onHandleExpanderClick(evt){
+        const expanded = this.hasClass('user-expanded') || this.hasClass('auto-expanded');
+        const handle = this.getHandle();
 
-    onHandleShrink(){
-        this.removeClass('expanded');
+        this.toggleClass('user-expanded', !expanded);
+        handle.toggleClass('user-expanded', !expanded);
+
+        if(expanded){
+            // Force shrink
+            this.removeClass('auto-expanded');
+            handle.removeClass('auto-expanded');
+        }
+
+        evt.stopPropagation();
     }
 
     setDuration(duration){
@@ -218,7 +238,7 @@ export default class Track extends Dom {
         if(!this.descendents){
             this.descendents = new Dom('<div/>', {'class': 'descendents'})
                 .addListener('childremove', this.onDescendentsChildRemove.bind(this))
-                .appendTo(this)
+                .appendTo(this);
         }
 
         track.insertAt(this.descendents, index);
