@@ -31,7 +31,6 @@ export default class Scrollable {
         // fix event handlers scope
         this.onContentScroll = this.onContentScroll.bind(this);
         this.onContentMouseEnter = this.onContentMouseEnter.bind(this);
-        this.onResize = this.onResize.bind(this);
         this.onBarClick = this.onBarClick.bind(this);
         this.onThumbMousedown = this.onThumbMousedown.bind(this);
         this.onDocMousemove = this.onDocMousemove.bind(this);
@@ -39,7 +38,6 @@ export default class Scrollable {
 
         const native_scrollbar_width = this.constructor.getNativeScrollbarWidth();
         this.configs.contentWrapper
-            .css('overflow-y', 'scroll')
             .css('width', `calc(100% + ${native_scrollbar_width}px)`);
 
         this.direction = this.configs.contentWrapper.css('direction');
@@ -54,7 +52,7 @@ export default class Scrollable {
         this.thumb = new Dom("<div/>", {'class': 'thumb'})
             .appendTo(this.bar);
 
-        this.resize_observer = new ResizeObserver(this.onResize);
+        this.resize_observer = new ResizeObserver(this.onResize.bind(this));
 
         this.enable();
     }
@@ -148,9 +146,7 @@ export default class Scrollable {
 
         this.last_page_y = evt.pageY;
 
-        window.requestAnimationFrame(() => {
-            this.configs.contentWrapper.get(0).scrollTop += delta / this.scroll_ratio;
-        });
+        this.scrollTo(this.getScrollPosition() + (delta / this.scroll_ratio));
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -167,6 +163,26 @@ export default class Scrollable {
 
         evt.stopPropagation();
         evt.preventDefault();
+    }
+
+    getScrollPosition(){
+        return this.configs.contentWrapper.get(0).scrollTop;
+    }
+
+    scrollTo(position){
+        window.requestAnimationFrame(() => {
+            this.configs.contentWrapper.get(0).scrollTop = position;
+        });
+    }
+
+    scrollIntoView(dom){
+        const offsetTop = dom.get(0).offsetTop;
+        const scrollTop = this.getScrollPosition();
+        const height = this.configs.contentWrapper.get(0).clientHeight;
+
+        if(offsetTop < scrollTop || offsetTop > scrollTop + height){
+            this.scrollTo(offsetTop);
+        }
     }
 
     update(){
