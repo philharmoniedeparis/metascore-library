@@ -2,6 +2,7 @@
     cursor: pointer;
     box-sizing: border-box;
     border-right: 1px solid #7b7b7b;
+    user-select: none;
 
     > .inner{
         display: flex;
@@ -43,13 +44,6 @@
         }
     }
 
-    &.user-expanded,
-    &.auto-expanded{
-        > .descendents{
-            display: block;
-        }
-    }
-
     &.has-descendents{
         > .inner .expander{
             width: 0;
@@ -60,6 +54,17 @@
             border-left: 0.5em solid #333;
             border-bottom: 0.25em solid transparent;
             pointer-events: auto;
+        }
+
+        &.user-expanded,
+        &.auto-expanded{
+            > .inner .expander{
+                transform: rotate(90deg);
+            }
+
+            > .descendents{
+                display: block;
+            }
         }
     }
 

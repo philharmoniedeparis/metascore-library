@@ -181,16 +181,20 @@ export default class Track extends Dom {
     }
 
     onHandleExpanderClick(evt){
-        const expanded = this.hasClass('user-expanded') || this.hasClass('auto-expanded');
+        const expand = !(this.hasClass('user-expanded') || this.hasClass('auto-expanded'));
         const handle = this.getHandle();
 
-        this.toggleClass('user-expanded', !expanded);
-        handle.toggleClass('user-expanded', !expanded);
+        this.toggleClass('user-expanded', expand);
+        handle.toggleClass('user-expanded', expand);
 
-        if(expanded){
+        if(!expand){
             // Force shrink
             this.removeClass('auto-expanded');
             handle.removeClass('auto-expanded');
+
+            // Shrink children
+            this.find('.user-expanded').removeClass('user-expanded');
+            handle.find('.user-expanded').removeClass('user-expanded');
         }
 
         evt.stopPropagation();
