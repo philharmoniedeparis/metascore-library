@@ -1,5 +1,4 @@
 import Dom from '../core/Dom';
-import Scrollable from '../core/ui/Scrollable';
 import TimeField from './field/Time';
 import BufferIndicator from './controller/BufferIndicator';
 import WaveformOverview from './controller/waveform/Overview';
@@ -106,27 +105,12 @@ export default class Controller extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        const bottom_scroll_wrapper = new Dom('<div/>', {'class': 'bottom-scroll-wrapper'})
-            .appendTo(bottom);
-
-        const bottom_content_wrapper = new Dom('<div/>', {'class': 'bottom-content-wrapper'})
-            .appendTo(bottom_scroll_wrapper);
-
-        const timeline_handles = new Dom('<div/>', {'class': 'timeline-handles'})
-            .appendTo(bottom_content_wrapper);
-
         /**
          * The timeline
          * @type {Timeline}
          */
-        this.timeline = new Timeline({'handlesContriner': timeline_handles})
-            .appendTo(bottom_content_wrapper);
-
-        new Scrollable({
-            'target': bottom,
-            'scrollWrapper': bottom_scroll_wrapper,
-            'contentWrapper': bottom_content_wrapper
-        });
+        this.timeline = new Timeline()
+            .appendTo(bottom);
 
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));

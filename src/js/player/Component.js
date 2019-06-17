@@ -387,7 +387,7 @@ export default class Component extends Dom {
     }
 
     /**
-     * Get the index of a chiuld component
+     * Get the index of a child component
      *
      * @param {Component} child The child component
      * @return {Integer} The child's index

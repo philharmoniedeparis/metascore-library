@@ -1,5 +1,6 @@
 import Dom from '../../core/Dom';
 import Track from './timeline/Track';
+import Scrollable from '../../core/ui/Scrollable';
 
 import {className} from '../../../css/editor/controller/Timeline.less';
 
@@ -43,8 +44,7 @@ export default class Timeline extends Dom {
     static getDefaults(){
         return {
             'playheadWidth': 1,
-            'playheadColor': '#000',
-            'handlesContriner': null
+            'playheadColor': '#000'
         };
     }
 
@@ -54,18 +54,28 @@ export default class Timeline extends Dom {
      * @private
      */
     setupUI() {
+        const scroll_wrapper = new Dom('<div/>', {'class': 'scroll-wrapper'})
+            .appendTo(this);
+
+        const content_wrapper = new Dom('<div/>', {'class': 'content-wrapper'})
+            .appendTo(scroll_wrapper);
+
         /**
          * The handles container
          * @type {Dom}
          */
-        this.handles_container = this.configs.handlesContriner ? this.configs.handlesContriner : new Dom('<div/>', {'class': 'handles-container'}).appendTo(this);
+        this.handles_container = new Dom('<div/>', {'class': 'handles-container'})
+            .appendTo(content_wrapper);
+
+        const tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
+            .appendTo(content_wrapper);
 
         /**
          * The tracks outer container
          * @type {Dom}
          */
         this.tracks_container_outer = new Dom('<div/>', {'class': 'tracks-container-outer'})
-            .appendTo(this);
+            .appendTo(tracks_container);
 
         /**
          * The playhead <canvas> element
@@ -79,7 +89,19 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
+            .addDelegate('.track', 'select', this.onTrackSelect.bind(this))
             .appendTo(this.tracks_container_outer);
+
+        this.scrollable = new Scrollable({
+            'target': this,
+            'scrollWrapper': scroll_wrapper,
+            'contentWrapper': content_wrapper
+        });
+    }
+
+    onTrackSelect(evt){
+        // Scroll the track into view
+        this.scrollable.scrollIntoView(evt.detail.track);
     }
 
     /**

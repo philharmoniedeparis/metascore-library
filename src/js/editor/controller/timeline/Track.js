@@ -76,7 +76,6 @@ export default class Track extends Dom {
             if(directions.length > 0){
                 this._resizable = new Resizable({
                     'target': this.info,
-                    'relative': true,
                     'directions': directions
                 });
             }
@@ -85,8 +84,7 @@ export default class Track extends Dom {
             this.addClass('selected');
             this.getHandle().addClass('selected');
 
-            // Scroll into view
-            this.get(0).scrollIntoView();
+            this.triggerEvent('select', {'track': this});
         }
     }
 
@@ -115,6 +113,8 @@ export default class Track extends Dom {
 
             this.removeClass('selected');
             this.getHandle().removeClass('selected');
+
+            this.triggerEvent('unselect', {'track': this});
         }
     }
 

@@ -1,14 +1,38 @@
 :local(.className){
-    .tracks-container-outer{
-        position: absolute;
-        width: 100%;
-        min-height: 100%;
-        overflow: hidden;
+    height: 100%;
 
-        .playhead{
-            position: fixed;
-            pointer-events: none;
-            z-index: 2;
+    .content-wrapper{
+        display: flex;
+        flex-direction: row;
+        overflow-x: hidden;
+
+        .handles-container {
+            width: 10em;
+            flex: 0 0 auto;
+
+            .track-handle{
+                .info{
+                    border-right: 1px solid #7b7b7b;
+                }
+            }
+        }
+
+        .tracks-container {
+            flex: 1 1 auto;
+            position: relative;
+
+            .tracks-container-outer{
+                position: absolute;
+                width: 100%;
+                min-height: 100%;
+                overflow: hidden;
+
+                .playhead{
+                    position: fixed;
+                    pointer-events: none;
+                    z-index: 2;
+                }
+            }
         }
     }
 }
