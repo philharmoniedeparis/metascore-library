@@ -44,6 +44,11 @@ export default class Zoom extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        this.onMousemove = this.onMousemove.bind(this);
+        this.onMouseup = this.onMouseup.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
+
         /**
          * The current time
          * @type {Number}
@@ -138,12 +143,6 @@ export default class Zoom extends Dom {
             })
             .appendTo(controls);
 
-
-        this.onMousemove = this.onMousemove.bind(this);
-        this.onMouseup = this.onMouseup.bind(this);
-        this.onMouseWheel = this.onMouseWheel.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
@@ -193,11 +192,9 @@ export default class Zoom extends Dom {
             canvas.height = this.height;
         });
 
-        if(!this.resampled_data){
-            this.resampleData();
-        }
-
-        this.setOffset(this.offset, true);
+        this
+            .resampleData()
+            .setOffset(this.offset, true);
 
         return this;
     }
@@ -236,8 +233,7 @@ export default class Zoom extends Dom {
 
         this
             .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
-            .updateSize()
-            .update();
+            .updateSize();
 
         return this;
     }
@@ -699,8 +695,8 @@ export default class Zoom extends Dom {
         if(this.resampled_data && this.width > 0){
             let new_offset = offset;
 
-            new_offset = Math.max(0, new_offset);
             new_offset = Math.min(this.resampled_data.adapter.length - this.width, new_offset);
+            new_offset = Math.max(0, new_offset);
             new_offset = Math.round(new_offset);
 
             if(forceRedraw || new_offset !== this.offset){
