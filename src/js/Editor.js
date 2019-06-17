@@ -1276,12 +1276,13 @@ export default class Editor extends Dom {
                 .toggleMenuItem('Image', true)
                 .toggleMenuItem('Text', true);
 
-        const block = evt.detail.component.getParent();
+        const page = evt.detail.component;
+        const block = page.getParent();
         const start_time_field = this.panels.page.getField('start-time');
         const end_time_field = this.panels.page.getField('end-time');
 
         if(block.getPropertyValue('synched')){
-            const index = block.getActivePageIndex();
+            const index = block.getChildIndex(page);
             const previous_page = block.getChild(index-1);
             const next_page = block.getChild(index+1);
 
