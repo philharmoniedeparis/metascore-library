@@ -15,11 +15,6 @@ import {isString, isNumber} from '../../core/utils/Var';
  * @emits {pageremove} Fired when a page is removed
  * @param {Block} block The block instance
  * @param {Page} page The page instance
- * @emits {pageactivate} Fired when the active page is set
- * @param {Block} block The block instance
- * @param {Page} current The currently active page instance
- * @param {Page} previous The previously active page instance
- * @param {String} basis The reason behind this action
  */
 export default class Block extends Component {
 
@@ -371,12 +366,12 @@ export default class Block extends Component {
             page = new Page(configs);
         }
 
-            if(isNumber(index)){
-                page.insertAt(this.page_wrapper, index);
-            }
-            else{
-                page.appendTo(this.page_wrapper);
-            }
+        if(isNumber(index)){
+            page.insertAt(this.page_wrapper, index);
+        }
+        else{
+            page.appendTo(this.page_wrapper);
+        }
 
         if(!existing){
             page.init();
@@ -460,10 +455,9 @@ export default class Block extends Component {
      * Set the active page
      *
      * @param {Mixed} page The page to activate or its index
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
      * @return {this}
      */
-    setActivePage(page, supressEvent){
+    setActivePage(page){
         const previous = this.getActivePage();
         let _page = page;
 
@@ -471,18 +465,14 @@ export default class Block extends Component {
             _page = this.getPage(page);
         }
 
-        if(_page instanceof Page){
-			this.getPages().forEach((other_page) => {
-                other_page.deactivate();
-            });
+        if(_page instanceof Page && _page !== previous){
+            if(previous){
+                previous.deactivate();
+            }
 
             _page.activate();
 
             this.updatePager();
-
-            if(supressEvent !== true){
-                this.triggerEvent('pageactivate', {'block': this, 'current': _page, 'previous': previous});
-            }
         }
 
         return this;

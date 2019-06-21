@@ -300,16 +300,24 @@ export default class Element extends Component{
     /**
      * Activate the element
      *
+     * @param {Boolean} [supressEvent=false] Whether to supress the activate event
      * @return {this}
      */
-    activate(){
+    activate(supressEvent){
         const cuepoint = this.getCuePoint();
 
         if(cuepoint){
             cuepoint.activate();
         }
+        else{
+            this.addClass('active');
+        }
 
         this.active = true;
+
+        if(supressEvent !== true){
+            this.triggerEvent('activate', {'element': this});
+        }
 
         return this;
     }
@@ -317,14 +325,22 @@ export default class Element extends Component{
     /**
      * Deactivate the element
      *
+     * @param {Boolean} [supressEvent=false] Whether to supress the deactivate event
      * @return {this}
      */
-    deactivate(){
+    deactivate(supressEvent){
         delete this.active;
 
         const cuepoint = this.getCuePoint();
         if(cuepoint){
             cuepoint.deactivate();
+        }
+        else{
+            this.removeClass('active');
+        }
+
+        if(supressEvent !== true){
+            this.triggerEvent('deactivate', {'element': this});
         }
 
         return this;
@@ -338,6 +354,8 @@ export default class Element extends Component{
      */
     onCuePointSet(evt){
         const cuepoint = evt.detail.cuepoint;
+
+        this.removeClass('active');
 
         cuepoint
             .addListener('start', this.onCuePointStart.bind(this))

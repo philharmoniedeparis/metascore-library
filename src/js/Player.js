@@ -459,14 +459,14 @@ export default class Player extends Dom {
     }
 
     /**
-     * Block pageactivate event callback
+     * Page activate event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
     onPageActivate(evt){
-        const block = evt.target._metaScore;
-        const page = evt.detail.current;
+        const page = evt.detail.page;
+        const block = page.getBlock();
 
         if(block.getPropertyValue('synched')){
             this.getMedia().setTime(page.getPropertyValue('start-time'));
@@ -849,7 +849,7 @@ export default class Player extends Dom {
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
                 .appendTo(this)
                 .init();
-                    }
+        }
 
         if(supressEvent !== true){
             this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
@@ -901,7 +901,7 @@ export default class Player extends Dom {
         }
         else{
             block = new Block(block)
-                .addListener('pageactivate', this.onPageActivate.bind(this))
+                .addDelegate('.page', 'activate', this.onPageActivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
