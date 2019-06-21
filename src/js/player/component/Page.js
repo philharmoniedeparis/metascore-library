@@ -186,9 +186,10 @@ export default class Page extends Component {
             }
 
             element = new ELEMENT_TYPES[configs.type](Object.assign({
-                'container': this,
                 'name': name,
-            }, element));
+                }, element))
+                .appendTo(this)
+                .init();
         }
 
         if(this.active){

@@ -366,6 +366,10 @@ export default class Block extends Component {
 
         if(existing){
             page = configs;
+        }
+        else{
+            page = new Page(configs);
+        }
 
             if(isNumber(index)){
                 page.insertAt(this.page_wrapper, index);
@@ -373,12 +377,9 @@ export default class Block extends Component {
             else{
                 page.appendTo(this.page_wrapper);
             }
-        }
-        else{
-            page = new Page(Object.assign({}, configs, {
-                'container': this.page_wrapper,
-                'index': index
-            }));
+
+        if(!existing){
+            page.init();
         }
 
         if(supressEvent !== true){

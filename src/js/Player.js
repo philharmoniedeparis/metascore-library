@@ -591,6 +591,8 @@ export default class Player extends Dom {
         this.rindex_css = new StyleSheet()
             .appendTo(document.head);
 
+        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+
         this.json.blocks.forEach((block) => {
             switch(block.type){
                 case 'Media':
@@ -807,12 +809,7 @@ export default class Player extends Dom {
             media.appendTo(this);
         }
         else{
-            media = new Media(Object.assign({}, media, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
-                    }
-                }))
+            media = new Media(media)
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))
@@ -822,7 +819,9 @@ export default class Player extends Dom {
                 .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
                 .addListener('suspend', this.onMediaSuspend.bind(this))
                 .addListener('stalled', this.onMediaStalled.bind(this))
-                .addListener('error', this.onMediaError.bind(this));
+                .addListener('error', this.onMediaError.bind(this))
+                .appendTo(this)
+                .init();
         }
 
         if(supressEvent !== true){
@@ -846,14 +845,11 @@ export default class Player extends Dom {
             controller.appendTo(this);
         }
         else{
-            controller = new Controller(Object.assign({}, controller, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
+            controller = new Controller(controller)
+                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
+                .appendTo(this)
+                .init();
                     }
-                }))
-                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
-        }
 
         if(supressEvent !== true){
             this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
@@ -876,9 +872,9 @@ export default class Player extends Dom {
             block_toggler.appendTo(this);
         }
         else{
-            block_toggler = new BlockToggler(Object.assign({}, block_toggler, {
-                'container': this
-            }));
+            block_toggler = new BlockToggler(block_toggler)
+                .appendTo(this)
+                .init();
         }
 
         this.updateBlockToggler(block_toggler);
@@ -904,17 +900,14 @@ export default class Player extends Dom {
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign({}, block, {
-                    'container': this,
-                    'listeners': {
-                        'propchange': this.onComponentPropChange.bind(this)
-                    }
-                }))
+            block = new Block(block)
                 .addListener('pageactivate', this.onPageActivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
-                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
+                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this))
+                .appendTo(this)
+                .init();
         }
 
         if(block.getPageCount() === 0){
