@@ -466,7 +466,42 @@ export default class Player extends Dom {
      */
     onPageActivate(evt){
         const page = evt.detail.page;
-        const block = page.getBlock();
+        const rindex = this.getReadingIndex();
+
+        page.getElements().forEach((element) => {
+            const el_rindex = element.getPropertyValue('r-index');
+            if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                element.activate();
+            }
+            else{
+                element.deactivate();
+            }
+        });
+    }
+
+    /**
+     * Page deactivate event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPageDeactivate(evt){
+        const page = evt.detail.page;
+
+        page.getElements().forEach((element) => {
+            element.deactivate();
+        });
+    }
+
+    /**
+     * Block activepageset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockActivePageSet(evt){
+        const block = evt.detail.block;
+        const page = evt.detail.page;
 
         if(block.getPropertyValue('synched')){
             this.getMedia().setTime(page.getPropertyValue('start-time'));
@@ -582,13 +617,6 @@ export default class Player extends Dom {
          */
         this.css = new StyleSheet()
             .setInternalValue(this.json.css)
-            .appendTo(document.head);
-
-        /**
-         * A stylesheet for dynamic r-index manipulation
-         * @type {StyleSheet}
-         */
-        this.rindex_css = new StyleSheet()
             .appendTo(document.head);
 
         this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
@@ -901,7 +929,9 @@ export default class Player extends Dom {
         }
         else{
             block = new Block(block)
+                .addListener('activepageset', this.onBlockActivePageSet.bind(this))
                 .addDelegate('.page', 'activate', this.onPageActivate.bind(this))
+                .addDelegate('.page', 'deactivate', this.onPageDeactivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
@@ -966,7 +996,6 @@ export default class Player extends Dom {
      * @return {this}
      */
     play(inTime, outTime, rIndex){
-        const player = this;
         const media = this.getMedia();
 
         if(this.cuepoint){
@@ -992,13 +1021,13 @@ export default class Player extends Dom {
                 'considerError': true
             })
             .addListener('start', () => {
-                player.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
+                this.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
             })
             .addListener('seekout', (evt) => {
                 evt.target.deactivate();
-                delete player.cuepoint;
+                delete this.cuepoint;
 
-                player.setReadingIndex(0);
+                this.setReadingIndex(0);
             })
             .addListener('stop', (evt) => {
                 evt.target.getMedia().pause();
@@ -1024,29 +1053,30 @@ export default class Player extends Dom {
     /**
      * Set the current reading index
      *
-     * @param {Integer} index The reading index
+     * @param {Integer} rindex The reading index
      * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @return {this}
      */
-    setReadingIndex(index, supressEvent){
-        if(index !== this.getReadingIndex()){
-            this.rindex_css.removeRules();
+    setReadingIndex(rindex, supressEvent){
+        if(rindex !== this.getReadingIndex()){
+            this.data('r-index', rindex !== 0 ? rindex : null);
 
-            if(index !== 0){
-                this.rindex_css
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'visibility: visible; pointer-events: auto;')
-                    .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'visibility: visible; pointer-events: auto;');
-
-                this.data('r-index', index);
-            }
-            else{
-                this.data('r-index', null);
-            }
+            this.getComponents('.block').forEach((block) => {
+                block.getActivePage().getElements().forEach((element) => {
+                    const el_rindex = element.getPropertyValue('r-index');
+                    if(el_rindex !== null && el_rindex !== 0){
+                        if(el_rindex === rindex){
+                            element.activate();
+                        }
+                        else{
+                            element.deactivate();
+                        }
+                    }
+                });
+            });
 
             if(supressEvent !== true){
-                this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
+                this.triggerEvent('rindex', {'player': this, 'value': rindex}, true, false);
             }
         }
 
@@ -1078,7 +1108,7 @@ export default class Player extends Dom {
         if(ids === null){
             // If ids is not an array, return all blocks for backwards compatibility.
             // See BlockToggler's blocks property
-            blocks = this.getComponents(`.block, .controller, .media.video`);
+            blocks = this.getComponents('.block, .controller, .media.video');
         }
         else if(!isEmpty(ids)){
             blocks = this.getComponents(`#${ids.join(', #')}`);

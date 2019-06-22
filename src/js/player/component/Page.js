@@ -24,12 +24,12 @@ const ELEMENT_TYPES = {
  * @emits {elementadd} Fired when an element is added
  * @param {Object} page The page instance
  * @param {Object} element The element instance
- * @emits {cuepointstart} Fired when a cuepoint started
- * @emits {cuepointstop} Fired when a cuepoint stops
  * @emits {activate} Fired when the page is activated
  * @param {Object} page The page instance
  * @emits {deactivate} Fired when the page is deactivated
  * @param {Object} page The page instance
+ * @emits {cuepointstart} Fired when a cuepoint started
+ * @emits {cuepointstop} Fired when a cuepoint stops
  */
 export default class Page extends Component {
 
@@ -240,16 +240,12 @@ export default class Page extends Component {
      * @return {this}
      */
     activate(supressEvent){
-        this.addClass('active');
+        if(!this.hasClass('active')){
+            this.addClass('active');
 
-        this.getElements().forEach((element) => {
-            element.activate();
-        });
-
-        this.active = true;
-
-        if(supressEvent !== true){
-            this.triggerEvent('activate', {'page': this});
+            if(supressEvent !== true){
+                this.triggerEvent('activate', {'page': this});
+            }
         }
 
         return this;
@@ -262,16 +258,12 @@ export default class Page extends Component {
      * @return {this}
      */
     deactivate(supressEvent){
-        delete this.active;
+        if(this.hasClass('active')){
+            this.removeClass('active');
 
-        this.getElements().forEach((element) => {
-            element.deactivate();
-        });
-
-        this.removeClass('active');
-
-        if(supressEvent !== true){
-            this.triggerEvent('deactivate', {'page': this});
+            if(supressEvent !== true){
+                this.triggerEvent('deactivate', {'page': this});
+            }
         }
 
         return this;
