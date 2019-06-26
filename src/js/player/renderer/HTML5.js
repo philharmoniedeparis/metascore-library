@@ -23,6 +23,8 @@ import WebAudioBuilder from 'waveform-data/webaudio';
  * @param {Object} renderer The renderer instance
  * @emits {seeked} Fired when a seek operation completes
  * @param {Object} renderer The renderer instance
+ * @emits {progress} Fired as the resource loads
+ * @param {Object} renderer The renderer instance
  * @emits {timeupdate} Fired when the renderer's time changed
  * @param {Object} renderer The renderer instance
  * @emits {waveformdataloaded} Fired when the waveform data has finished loading
@@ -129,6 +131,7 @@ export default class HTML5 extends Dom {
             .addListener('pause', this.onPause.bind(this))
             .addListener('seeking', this.onSeeking.bind(this))
             .addListener('seeked', this.onSeeked.bind(this))
+            .addListener('progress', this.onProgress.bind(this))
             .appendTo(this);
 
         /**
@@ -362,6 +365,19 @@ export default class HTML5 extends Dom {
     }
 
     /**
+     * The progress event handler
+     *
+     * @private
+     */
+    onProgress(evt){
+        this.triggerEvent('progress', {'renderer': this});
+
+        if(isFunction(evt.stopPropagation)){
+            evt.stopPropagation();
+        }
+    }
+
+    /**
      * Check whether the media is playing
      *
      * @return {Boolean} Whether the media is playing
@@ -447,6 +463,24 @@ export default class HTML5 extends Dom {
      */
     getDuration() {
         return toCentiseconds(this.dom.duration);
+    }
+
+    /**
+     * Get the media's buffered time ranges
+     *
+     * @return {Array} An array of arrays, each containing a time range
+     */
+    getBuffered() {
+        const buffered = [];
+
+        for(let i = 0; i < this.dom.buffered.length; i++){
+            const start_x = toCentiseconds(this.dom.buffered.start(i));
+            const end_x = toCentiseconds(this.dom.buffered.end(i));
+
+            buffered.push([start_x, end_x]);
+        }
+
+        return buffered;
     }
 
 }

@@ -1194,6 +1194,15 @@ export default class Dom {
     }
 
     /**
+     * Check if the element managed by the Dom object is invisible
+     *
+     * @return {Boolean} Whether the element is hidden or not
+     */
+    hidden() {
+        return this.css('display') === 'none';
+    }
+
+    /**
      * Set focus on the first element managed by the Dom object
      *
      * @return {this}

@@ -9,6 +9,8 @@ import {className} from '../../../css/core/ui/Draggable.less';
  * @emits {dragstart} Fired when the dragging started
  * @emits {drag} Fired when a drag occured
  * @emits {dragend} Fired when the dragging ended
+ *
+ * @todo: move the position updating to this class, as is the case with the Resizable class
  */
 export default class Draggable {
 

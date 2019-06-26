@@ -1,6 +1,5 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import Draggable from '../../core/ui/Draggable';
 import Locale from '../../core/Locale';
 import {formatTime} from '../../core/utils/Media';
 
@@ -18,6 +17,7 @@ export default class Controller extends Component{
         const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
+            'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
                     'editable': false,
@@ -188,33 +188,15 @@ export default class Controller extends Component{
     }
 
     /**
-     * Set/Unset the draggable behaviour
+     * Get the draggable behaviour's configuration
      *
-     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
-     * @return {Draggable} The draggable behaviour
+     * @return {Object} The configuration
      */
-    setDraggable(draggable){
-        if(this.getPropertyValue('locked') && draggable){
-            return false;
-        }
-
-        if(draggable && !this._draggable){
-            /**
-             * The draggable behavior
-             * @type {Draggable}
-             */
-            this._draggable = new Draggable({
-                'target': this,
-                'handle': this.child('.timer')
-            });
-        }
-        else if(!draggable && this._draggable){
-            this._draggable.destroy();
-            delete this._draggable;
-        }
-
-        return this._draggable;
-
+    getDraggableConfigs(){
+        return {
+            'target': this,
+            'handle': this.child('.timer')
+        };
     }
 
     /**

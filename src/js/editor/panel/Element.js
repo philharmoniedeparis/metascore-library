@@ -2,14 +2,18 @@ import Dom from '../../core/Dom';
 import Panel from '../Panel';
 import Locale from '../../core/Locale';
 import {getImageMetadata} from '../../core/utils/Media';
+import CursorKeyframesEditor from './element/CursorKeyframesEditor';
 
 /**
  * A panel for Element components
  *
  * @emits {textlock} Fired when a component's text is locked
  * @param {Object} component The component instance
+ *
  * @emits {textunlock} Fired when a component's text is unlocked
  * @param {Object} component The component instance
+ *
+ * @emits {beforecursoradvancededitmodeunlock} Fired when a cursor component's advanced edit mode is locked
  */
 export default class Element extends Panel {
 
@@ -24,9 +28,11 @@ export default class Element extends Panel {
         super(configs);
 
         // fix event handlers scope
-        this.onComponentDblClick = this.onComponentDblClick.bind(this);
-        this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
-        this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
+        this.onTextDblClick = this.onTextDblClick.bind(this);
+        this.onTextContentsClick = this.onTextContentsClick.bind(this);
+        this.onTextContentsKey = this.onTextContentsKey.bind(this);
+        this.onCursorPropChange = this.onCursorPropChange.bind(this);
+        this.onCursorResizeEnd = this.onCursorResizeEnd.bind(this);
 
         this
             .addClass('element')
@@ -89,19 +95,41 @@ export default class Element extends Panel {
             const name = evt.detail.field.data('name');
             const value = evt.detail.value;
 
-            if(component.instanceOf('Image') && name === 'background-image'){
-                this.onBeforeImageSet(name, value);
-                return;
+            if(component.instanceOf('Image')){
+                if(name === 'background-image'){
+                    this.onBeforeImageSet(name, value);
+                    return;
+                }
+            }
+            else if(component.instanceOf('Text')){
+                if(name === 'edit-text'){
+                    if(value === true){
+                        this.unlockText(component);
+                    }
+                    else{
+                        this.lockText(component);
+                    }
+                }
+            }
+            else if(component.instanceOf('Cursor')){
+                switch(name){
+                    case 'keyframes-edit-mode':
+                        if(value === true){
+                            this.unlockCursorAdvancedEditMode(component);
+                        }
+                        else{
+                            this.lockCursorAdvancedEditMode(component);
+                        }
+                        break;
+
+                    case 'form':
+                    case 'mode':
+                        this.lockCursorAdvancedEditMode(component);
+                        break;
+
+                }
             }
 
-            if(component.instanceOf('Text') && name === 'text-locked'){
-                if(value === true){
-                    this.lockText(component);
-                }
-                else{
-                    this.unlockText(component);
-                }
-            }
         }
 
         super.onFieldValueChange(evt);
@@ -115,17 +143,14 @@ export default class Element extends Panel {
      */
     onComponentSet(evt){
         const component = evt.detail.component;
-        const count = evt.detail.count;
 
-        this.lockText(component);
-
-        const field = this.getField('text-locked');
-        if(field){
-            field.setValue(true, true);
-
-            if(count > 1){
-                field.hide();
-            }
+        if(component.instanceOf('Text')){
+            this.lockText(component);
+        }
+        else if(component.instanceOf('Cursor')){
+            component
+                .addListener('propchange', this.onCursorPropChange)
+                .addListener('resizeend', this.onCursorResizeEnd);
         }
     }
 
@@ -137,17 +162,16 @@ export default class Element extends Panel {
      */
     onComponentUnset(evt){
         const component = evt.detail.component;
-        const count = evt.detail.count;
 
-        this.lockText(component);
+        if(component.instanceOf('Text')){
+            this.lockText(component);
+        }
+        else if(component.instanceOf('Cursor')){
+            this.lockCursorAdvancedEditMode(component);
 
-        const field = this.getField('text-locked');
-        if(field){
-            field.setValue(true, true);
-
-            if(count === 1){
-                field.show();
-            }
+            component
+                .removeListener('propchange', this.onCursorPropChange)
+                .removeListener('resizeend', this.onCursorResizeEnd);
         }
 
         return this;
@@ -265,106 +289,212 @@ export default class Element extends Panel {
     }
 
     /**
-     * Lock a component's text
+     * The text component dblclick event handler
+     *
+     * @private
+     */
+    onTextDblClick(){
+        this.getField('edit-text').setValue(true);
+    }
+
+    /**
+     * The text component's contents click event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTextContentsClick(evt){
+        evt.stopPropagation();
+    }
+
+    /**
+     * The text component's contents key event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTextContentsKey(evt){
+        evt.stopPropagation();
+    }
+
+    /**
+     * The cursor component's propchange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCursorPropChange(evt){
+        const component = evt.detail.component;
+        const mode = component.getPropertyValue('mode');
+
+        if(mode !== 'advanced'){
+            return;
+        }
+
+        const property = evt.detail.property;
+        const direction = component.getPropertyValue('direction');
+        const vertical = direction === 'top' || direction === 'bottom';
+
+        if((property === 'width' && !vertical) || (property === 'height' && vertical)){
+            this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.old);
+        }
+    }
+
+    /**
+     * The cursor component's resizeend event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCursorResizeEnd(evt){
+        const component = evt.target._metaScore;
+        const mode = component.getPropertyValue('mode');
+
+        if(mode !== 'advanced'){
+            return;
+        }
+
+        const direction = component.getPropertyValue('direction');
+        const vertical = direction === 'top' || direction === 'bottom';
+        const old_value = vertical ? evt.detail.start_state.h : evt.detail.start_state.w;
+        const new_value = vertical ? component.getPropertyValue('height') : component.getPropertyValue('width');
+
+        this.repositionCursorKeyframes(component, new_value / old_value);
+    }
+
+    /**
+     * Helper method to reposition a cursor component's keyframes after a resize
+     *
+     * @private
+     * @param {Component} component The cursor component
+     * @param {Number} multiplier A multiplier to multiply the position of each keyframe with
+     * @return {this}
+     */
+    repositionCursorKeyframes(component, multiplier){
+        if(component._keyframes_editor){
+            component._keyframes_editor.keyframes.forEach((keyframe) => {
+                keyframe.position *= multiplier;
+            });
+
+            component._keyframes_editor
+                .updateComponentKeyframes()
+                .draw();
+        }
+        else{
+            const keyframes = CursorKeyframesEditor.parseComponentKeyframes(component);
+
+            keyframes.forEach((keyframe) => {
+                keyframe.position *= multiplier;
+            });
+
+            CursorKeyframesEditor.updateComponentKeyframes(component, keyframes);
+        }
+
+        return this;
+    }
+
+    /**
+     * Lock a text component's contents
      *
      * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
     lockText(component, supressEvent){
-        if(component.instanceOf('Text')){
-            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-            new Dom(component.get(0))
-                .addListener('dblclick', this.onComponentDblClick)
-                .removeClass('text-unlocked');
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0))
+            .addListener('dblclick', this.onTextDblClick)
+            .removeClass('text-unlocked');
 
-            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-            new Dom(component.contents.get(0))
-                .attr('contenteditable', null)
-                .removeListener('click', this.onComponentContentsClick)
-                .removeListener('keydown', this.onComponentContentsKey)
-                .removeListener('keypress', this.onComponentContentsKey)
-                .removeListener('keyup', this.onComponentContentsKey);
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.contents.get(0))
+            .attr('contenteditable', null)
+            .removeListener('click', this.onTextContentsClick)
+            .removeListener('keydown', this.onTextContentsKey)
+            .removeListener('keypress', this.onTextContentsKey)
+            .removeListener('keyup', this.onTextContentsKey);
 
-            if(component._draggable){
-                component._draggable.enable();
-            }
-            if(component._resizable){
-                component._resizable.enable();
-            }
+        if(component._draggable){
+            component._draggable.enable();
+        }
+        if(component._resizable){
+            component._resizable.enable();
+        }
 
-            if(supressEvent !== true){
-                this.triggerEvent('textlock', {'component': component}, false);
-            }
+        if(supressEvent !== true){
+            this.triggerEvent('textlock', {'component': component}, false);
         }
 
         return this;
     }
 
     /**
-     * Unlock a component's text
+     * Unlock a text component's contents
      *
      * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
     unlockText(component, supressEvent){
-        if(component.instanceOf('Text')){
-            if(component._draggable){
-                component._draggable.disable();
-            }
-            if(component._resizable){
-                component._resizable.disable();
-            }
+        if(component._draggable){
+            component._draggable.disable();
+        }
+        if(component._resizable){
+            component._resizable.disable();
+        }
 
-            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-            new Dom(component.contents.get(0))
-                .attr('contenteditable', 'true')
-                .addListener('click', this.onComponentContentsClick)
-                .addListener('keydown', this.onComponentContentsKey)
-                .addListener('keypress', this.onComponentContentsKey)
-                .addListener('keyup', this.onComponentContentsKey);
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.contents.get(0))
+            .attr('contenteditable', 'true')
+            .addListener('click', this.onTextContentsClick)
+            .addListener('keydown', this.onTextContentsKey)
+            .addListener('keypress', this.onTextContentsKey)
+            .addListener('keyup', this.onTextContentsKey);
 
-            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-            new Dom(component.get(0))
-                .removeListener('dblclick', this.onComponentDblClick)
-                .addClass('text-unlocked');
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0))
+            .removeListener('dblclick', this.onTextDblClick)
+            .addClass('text-unlocked');
 
-            if(supressEvent !== true){
-                this.triggerEvent('textunlock', {'component': component}, false);
-            }
+        if(supressEvent !== true){
+            this.triggerEvent('textunlock', {'component': component}, false);
         }
 
         return this;
     }
 
     /**
-     * The component dblclick event handler
+     * Lock a cursor component's advance edit mode
      *
-     * @private
+     * @param {Component} component The component
+     * @return {this}
      */
-    onComponentDblClick(){
-        this.refreshFieldValue('text-locked', false);
+    lockCursorAdvancedEditMode(component){
+        if(component._keyframes_editor){
+            component._keyframes_editor.remove();
+            delete component._keyframes_editor;
+        }
+
+        return this;
     }
 
     /**
-     * The component's contents click event handler
+     * Unlock a cursor component's advance edit mode
      *
-     * @private
-     * @param {Event} evt The event object
+     * @param {Component} component The component
+     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @return {this}
      */
-    onComponentContentsClick(evt){
-        evt.stopPropagation();
-    }
+    unlockCursorAdvancedEditMode(component){
+        const data = {};
 
-    /**
-     * The component's contents key event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onComponentContentsKey(evt){
-        evt.stopPropagation();
+        this.triggerEvent('beforecursoradvancededitmodeunlock', data, false);
+
+        if('media' in data){
+            component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
+        }
+
+        return this;
     }
 
 }
