@@ -137,6 +137,8 @@ export default class CuePoint extends EventEmitter{
      */
     activate() {
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
+            this.active = true;
+
             this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
             this.update();
         }
@@ -150,6 +152,8 @@ export default class CuePoint extends EventEmitter{
      * @return {this}
      */
     deactivate() {
+        delete this.active;
+
         this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
 
         this.stop();
@@ -185,6 +189,10 @@ export default class CuePoint extends EventEmitter{
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      */
     update(supressEvent){
+        if(!this.active){
+            return;
+        }
+
         const cur_time = this.getMedia().getTime();
 
         if(!this.running){
