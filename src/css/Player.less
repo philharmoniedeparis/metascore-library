@@ -356,14 +356,12 @@ body{
             }
 
             &:not([data-r-index]),
-            &[data-r-index="0"]{
-                /**
-                 * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
-                 */
+            &[data-r-index="0"],
+            &.active{
                 display: block;
 
                 &:not([data-start-time]):not([data-end-time]),
-                &.active{
+                &.cuepointactive{
                     pointer-events: auto;
 
                     .contents{
@@ -616,13 +614,14 @@ body{
             }
 
             &.show-contents{
-                .metaScore-component.element[data-r-index="0"]{
-                    /**
-                     * CSS for other indexes is dynamically generated. See metaScore.Player.setReadingIndex
-                     */
-                    .contents{
-                        visibility: visible;
-                        pointer-events: auto;
+                .metaScore-component.element{
+                    &:not([data-r-index]),
+                    &[data-r-index="0"],
+                    &.active{
+                        .contents{
+                            visibility: visible;
+                            pointer-events: auto;
+                        }
                     }
                 }
             }
