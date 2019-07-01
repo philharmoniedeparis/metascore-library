@@ -305,13 +305,22 @@ export default class Element extends Component{
     }
 
     /**
+     * Check if the element is active or not
+     *
+     * @return {Boolean} Whether the element is active or not
+     */
+    isActive(){
+        return this.hasClass('active');
+    }
+
+    /**
      * Activate the element
      *
      * @param {Boolean} [supressEvent=false] Whether to supress the activate event
      * @return {this}
      */
     activate(supressEvent){
-        if(!this.hasClass('active')){
+        if(!this.isActive()){
             this.addClass('active');
 
             const cuepoint = this.getCuePoint();
@@ -334,7 +343,7 @@ export default class Element extends Component{
      * @return {this}
      */
     deactivate(supressEvent){
-        if(this.hasClass('active')){
+        if(this.isActive()){
             this.removeClass('active');
 
             const cuepoint = this.getCuePoint();
@@ -365,7 +374,7 @@ export default class Element extends Component{
             .addListener('start', this.onCuePointStart.bind(this))
             .addListener('stop', this.onCuePointStop.bind(this));
 
-        if(this.hasClass('active')){
+        if(this.isActive()){
             cuepoint.activate();
         }
 

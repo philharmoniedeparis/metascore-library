@@ -494,6 +494,29 @@ export default class Player extends Dom {
     }
 
     /**
+     * Page elementadd event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPageElementAdd(evt){
+        const page = evt.detail.page;
+
+        if(page.isActive()){
+            const element = evt.detail.element;
+            const rindex = this.getReadingIndex();
+            const el_rindex = element.getPropertyValue('r-index');
+
+            if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                element.activate();
+            }
+            else{
+                element.deactivate();
+            }
+        }
+    }
+
+    /**
      * Block activepageset event callback
      *
      * @private
@@ -932,6 +955,7 @@ export default class Player extends Dom {
                 .addListener('activepageset', this.onBlockActivePageSet.bind(this))
                 .addDelegate('.page', 'activate', this.onPageActivate.bind(this))
                 .addDelegate('.page', 'deactivate', this.onPageDeactivate.bind(this))
+                .addDelegate('.page', 'elementadd', this.onPageElementAdd.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
@@ -1064,13 +1088,11 @@ export default class Player extends Dom {
             this.getComponents('.block').forEach((block) => {
                 block.getActivePage().getElements().forEach((element) => {
                     const el_rindex = element.getPropertyValue('r-index');
-                    if(el_rindex !== null && el_rindex !== 0){
-                        if(el_rindex === rindex){
-                            element.activate();
-                        }
-                        else{
-                            element.deactivate();
-                        }
+                    if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                        element.activate();
+                    }
+                    else{
+                        element.deactivate();
                     }
                 });
             });
