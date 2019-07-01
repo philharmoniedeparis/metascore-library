@@ -388,7 +388,6 @@ export default class Cursor extends Element {
      */
     onCuePointSet(evt){
         const cuepoint = evt.detail.cuepoint;
-
         cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
 
         super.onCuePointSet(evt);

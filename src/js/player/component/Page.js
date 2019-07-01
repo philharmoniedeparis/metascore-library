@@ -24,6 +24,10 @@ const ELEMENT_TYPES = {
  * @emits {elementadd} Fired when an element is added
  * @param {Object} page The page instance
  * @param {Object} element The element instance
+ * @emits {activate} Fired when the page is activated
+ * @param {Object} page The page instance
+ * @emits {deactivate} Fired when the page is deactivated
+ * @param {Object} page The page instance
  * @emits {cuepointstart} Fired when a cuepoint started
  * @emits {cuepointstop} Fired when a cuepoint stops
  */
@@ -186,13 +190,10 @@ export default class Page extends Component {
             }
 
             element = new ELEMENT_TYPES[configs.type](Object.assign({
-                'container': this,
-                'name': name,
-            }, element));
-        }
-
-        if(this.active){
-            element.activate();
+                    'name': name,
+                }, element))
+                .appendTo(this)
+                .init();
         }
 
         if(supressEvent !== true){
@@ -229,18 +230,28 @@ export default class Page extends Component {
     }
 
     /**
+     * Check if the page is active or not
+     *
+     * @return {Boolean} Whether the page is active or not
+     */
+    isActive(){
+        return this.hasClass('active');
+    }
+
+    /**
      * Activate the page and its elements
      *
+     * @param {Boolean} [supressEvent=false] Whether to supress the activate event
      * @return {this}
      */
-    activate(){
-        this.addClass('active');
+    activate(supressEvent){
+        if(!this.isActive()){
+            this.addClass('active');
 
-        this.getElements().forEach((element) => {
-            element.activate();
-        });
-
-        this.active = true;
+            if(supressEvent !== true){
+                this.triggerEvent('activate', {'page': this});
+            }
+        }
 
         return this;
     }
@@ -248,16 +259,17 @@ export default class Page extends Component {
     /**
      * Deactivate the page and its elements
      *
+     * @param {Boolean} [supressEvent=false] Whether to supress the deactivate event
      * @return {this}
      */
-    deactivate(){
-        delete this.active;
+    deactivate(supressEvent){
+        if(this.isActive()){
+            this.removeClass('active');
 
-        this.getElements().forEach((element) => {
-            element.deactivate();
-        });
-
-        this.removeClass('active');
+            if(supressEvent !== true){
+                this.triggerEvent('deactivate', {'page': this});
+            }
+        }
 
         return this;
     }
