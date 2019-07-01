@@ -196,10 +196,6 @@ export default class Page extends Component {
                 .init();
         }
 
-        if(this.active){
-            element.activate();
-        }
-
         if(supressEvent !== true){
             this.triggerEvent('elementadd', {'page': this, 'element': element, 'new': !existing});
         }
@@ -234,13 +230,22 @@ export default class Page extends Component {
     }
 
     /**
+     * Check if the page is active or not
+     *
+     * @return {Boolean} Whether the page is active or not
+     */
+    isActive(){
+        return this.hasClass('active');
+    }
+
+    /**
      * Activate the page and its elements
      *
      * @param {Boolean} [supressEvent=false] Whether to supress the activate event
      * @return {this}
      */
     activate(supressEvent){
-        if(!this.hasClass('active')){
+        if(!this.isActive()){
             this.addClass('active');
 
             if(supressEvent !== true){
@@ -258,7 +263,7 @@ export default class Page extends Component {
      * @return {this}
      */
     deactivate(supressEvent){
-        if(this.hasClass('active')){
+        if(this.isActive()){
             this.removeClass('active');
 
             if(supressEvent !== true){
