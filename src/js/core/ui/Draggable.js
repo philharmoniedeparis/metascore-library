@@ -1,14 +1,14 @@
 import Dom from '../Dom';
 
-import {bodyClassName, className} from '../../../css/core/ui/Draggable.less';
+import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Draggable.less';
 
 /**
  * A class for adding draggable behaviors
  *
- * @emits {beforedrag} Fired before the dragging starts. The dragging can be canceled by invoking preventDefault on the event
- * @emits {dragstart} Fired when the dragging started
+ * @emits {beforedrag} Fired before the drag starts. The event bubbles allowing the drag to be canceled by invoking preventDefault
+ * @emits {dragstart} Fired when the drag started
  * @emits {drag} Fired when a drag occured
- * @emits {dragend} Fired when the dragging ended
+ * @emits {dragend} Fired when the drag ended
  *
  * @todo: move the position updating to this class, as is the case with the Resizable class
  */
@@ -19,7 +19,7 @@ export default class Draggable {
      *
      * @param {Object} configs Custom configs to override defaults
      * @property {Dom} target The Dom object to add the behavior to
-     * @property {Dom} handle The Dom object to use as a dragging handle
+     * @property {Dom} handle The Dom object to use as a drag handle
      */
     constructor(configs) {
         /**
@@ -27,6 +27,12 @@ export default class Draggable {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        /**
+         * Snap guides
+         * @type {Array}
+         */
+        this._snap_guides = [];
 
         // fix event handlers scope
         this.onMouseDown = this.onMouseDown.bind(this);
@@ -47,7 +53,8 @@ export default class Draggable {
     static getDefaults(){
         return {
             'target': null,
-            'handle': null
+            'handle': null,
+            'snapTreshhold': 5
         };
     }
 
@@ -67,10 +74,10 @@ export default class Draggable {
         }
 
         /**
-         * The state at which the target was on mouse down
+         * The state at which the mouse was on last move
          * @type {Object}
          */
-        this._start_state = {
+        this._state = {
             'x': evt.clientX,
             'y': evt.clientY
         };
@@ -104,11 +111,57 @@ export default class Draggable {
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        const offsetX = evt.clientX - this._start_state.x;
-        const offsetY = evt.clientY - this._start_state.y;
+        const clientX = evt.clientX;
+        const clientY = evt.clientY;
 
-        this._start_state.x = evt.clientX;
-        this._start_state.y = evt.clientY;
+        let offsetX = clientX - this._state.x;
+        let offsetY = clientY - this._state.y;
+
+        this._state.x = clientX;
+        this._state.y = clientY;
+
+        // Apply snap
+        const min_distances = {};
+        const closest = {};
+        const rect = this.configs.target.get(0).getBoundingClientRect();
+        const positions = {
+            'x': [
+                rect.x + offsetX, //left
+                rect.x + offsetX + rect.width / 2, // center
+                rect.x + offsetX + rect.width, // right
+            ],
+            'y': [
+                rect.y + offsetY, //top
+                rect.y + offsetY + rect.height / 2, // center
+                rect.y + offsetY + rect.height, // bottom
+            ]
+        };
+        this.getSnapGuides().forEach((guide) => {
+            const axis = guide.data('axis');
+
+            guide.hide();
+
+            positions[axis].forEach((position) => {
+                const diff = guide.data('position') - position;
+                const distance = Math.abs(diff);
+                if(distance <= this.configs.snapTreshhold){
+                    guide.show();
+
+                    if(!(axis in min_distances) || distance < min_distances[axis]){
+                        min_distances[axis] = distance;
+                        closest[axis] = diff;
+                    }
+                }
+            });
+        });
+        if('x' in closest){
+            offsetX += closest.x;
+            this._state.x += closest.x;
+        }
+        if('y' in closest){
+            offsetY += closest.y;
+            this._state.y += closest.y;
+        }
 
         /**
          * Whether the target is being dragged
@@ -145,7 +198,7 @@ export default class Draggable {
             .removeClass('dragging')
             .triggerEvent('dragend', null, false, true);
 
-        delete this._start_state;
+        delete this._state;
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -162,12 +215,51 @@ export default class Draggable {
         evt.preventDefault();
     }
 
+    addSnapGuide(axis, position){
+        const exists = this._snap_guides.find((guide) => {
+            return guide.data('axis') === axis && guide.data('position') === position;
+        });
+
+        if(!exists){
+            const guide = new Dom('<div/>', {'class': `${guideClassName} snap-guide`})
+                .data('axis', axis)
+                .data('position', position)
+                .css(axis === 'y' ? 'top' : 'left', `${position}px`)
+                .hide()
+                .appendTo(this.doc.find('body'));
+
+            this._snap_guides.push(guide);
+        }
+
+        return this;
+    }
+
+    getSnapGuides(axis){
+        if(axis){
+            return this._snap_guides.filter((guide) => {
+                return guide.data('axis') === axis;
+            });
+        }
+
+        return this._snap_guides;
+    }
+
+    clearSnapGudies(){
+        this._snap_guides.forEach((guide) => {
+            guide.remove();
+        });
+
+        this._snap_guides = [];
+
+        return this;
+    }
+
     /**
      * Enable the behavior
      *
      * @return {this}
      */
-    enable() {
+    enable(){
         this.configs.target.addClass(`draggable ${className}`);
 
         this.configs.handle.addClass('drag-handle');
@@ -186,12 +278,12 @@ export default class Draggable {
      *
      * @return {this}
      */
-    disable() {
+    disable(){
         this.configs.target.removeClass(`draggable ${className}`);
 
         this.configs.handle.removeClass('drag-handle');
 
-        this.enabled = false;
+        delete this.enabled;
 
         return this;
     }
@@ -201,8 +293,10 @@ export default class Draggable {
      *
      * @return {this}
      */
-    destroy() {
-        this.disable();
+    destroy(){
+        this
+            .clearSnapGudies()
+            .disable();
 
         this.configs.handle.removeListener('mousedown', this.onMouseDown);
 

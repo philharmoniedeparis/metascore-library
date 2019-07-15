@@ -7,3 +7,21 @@
         cursor: move;
     }
 }
+
+:local(.guideClassName){
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #ff0000;
+    z-index: 2147483647;
+
+    &[data-axis="x"]{
+        width: 1px;
+        height: 100%;
+    }
+
+    &[data-axis="y"]{
+        width: 100%;
+        height: 1px;
+    }
+}

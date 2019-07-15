@@ -1708,6 +1708,8 @@ export default class Editor extends Dom {
         new Dom(this.player.get(0))
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
+            .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
@@ -1883,6 +1885,39 @@ export default class Editor extends Dom {
         if(this.editing !== true){
             evt.preventDefault();
         }
+    }
+
+    /**
+     * Component dragstart event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentDragStart(evt){
+        const draggable = evt.target._metaScore.getDraggable();
+        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
+
+        siblings.forEach((sibling) => {
+            const rect = sibling.getBoundingClientRect();
+            draggable
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right)
+                .addSnapGuide('x', rect.left + rect.width / 2)
+                .addSnapGuide('y', rect.top)
+                .addSnapGuide('y', rect.bottom)
+                .addSnapGuide('y', rect.top + rect.height / 2);
+            });
+    }
+
+    /**
+     * Component dragend event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentDragEnd(evt){
+        const draggable = evt.target._metaScore.getDraggable();
+        draggable.clearSnapGudies();
     }
 
     /**
