@@ -549,6 +549,7 @@ export default class Panel extends Dom {
      */
     onComponentDrag(evt){
         const components = this.getComponents();
+
         let offsetX = evt.detail.offsetX;
         let offsetY = evt.detail.offsetY;
 
@@ -633,7 +634,7 @@ export default class Panel extends Dom {
         const component = evt.target._metaScore;
         const fields = ['x', 'y', 'width', 'height'];
 
-        Object.entries(evt.detail.new_state).forEach(([key, value]) => {
+        Object.entries(evt.detail.new_values).forEach(([key, value]) => {
             component.css(key, `${value}px`);
         });
 

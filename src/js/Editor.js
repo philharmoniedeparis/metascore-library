@@ -1139,7 +1139,7 @@ export default class Editor extends Dom {
     onSidebarResize(evt){
         const right = new Dom(evt.target);
 
-        Object.entries(evt.detail.new_state).forEach(([key, value]) => {
+        Object.entries(evt.detail.new_values).forEach(([key, value]) => {
             right.css(key, `${value}px`);
         });
     }
@@ -1710,6 +1710,9 @@ export default class Editor extends Dom {
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
             .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
+            .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
+            .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
+            .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
@@ -1898,6 +1901,11 @@ export default class Editor extends Dom {
         const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
 
         siblings.forEach((sibling) => {
+            if(new Dom(sibling).hidden()){
+                // Do not add guides for hidden siblings
+                return;
+            }
+
             const rect = sibling.getBoundingClientRect();
             draggable
                 .addSnapGuide('x', rect.left)
@@ -1906,7 +1914,7 @@ export default class Editor extends Dom {
                 .addSnapGuide('y', rect.top)
                 .addSnapGuide('y', rect.bottom)
                 .addSnapGuide('y', rect.top + rect.height / 2);
-            });
+        });
     }
 
     /**
@@ -1918,6 +1926,56 @@ export default class Editor extends Dom {
     onComponentDragEnd(evt){
         const draggable = evt.target._metaScore.getDraggable();
         draggable.clearSnapGudies();
+    }
+
+    /**
+     * Component beforeresize event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentBeforeResize(evt){
+        if(this.editing !== true){
+            evt.preventDefault();
+        }
+    }
+
+    /**
+     * Component resizestart event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentResizeStart(evt){
+        const resizable = evt.target._metaScore.getResizable();
+        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
+
+        siblings.forEach((sibling) => {
+            if(new Dom(sibling).hidden()){
+                // Do not add guides for hidden siblings
+                return;
+            }
+
+            const rect = sibling.getBoundingClientRect();
+            resizable
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right)
+                .addSnapGuide('x', rect.left + rect.width / 2)
+                .addSnapGuide('y', rect.top)
+                .addSnapGuide('y', rect.bottom)
+                .addSnapGuide('y', rect.top + rect.height / 2);
+        });
+    }
+
+    /**
+     * Component resizeend event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentResizeEnd(evt){
+        const resizable = evt.target._metaScore.getResizable();
+        resizable.clearSnapGudies();
     }
 
     /**

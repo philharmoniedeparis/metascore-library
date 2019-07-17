@@ -73,13 +73,26 @@ export default class Draggable {
             return;
         }
 
+        const left = parseInt(this.configs.target.css('left'), 10);
+        const top = parseInt(this.configs.target.css('top'), 10);
+
         /**
-         * The state at which the mouse was on last move
+         * State data needed during drag
          * @type {Object}
          */
         this._state = {
-            'x': evt.clientX,
-            'y': evt.clientY
+            'mouse': {
+                'x': evt.clientX,
+                'y': evt.clientY
+            },
+            'original_values': {
+                'left': left,
+                'top': top
+            },
+            'new_values': {
+                'left': left,
+                'top': top
+            }
         };
 
         if(!this.doc){
@@ -114,54 +127,17 @@ export default class Draggable {
         const clientX = evt.clientX;
         const clientY = evt.clientY;
 
-        let offsetX = clientX - this._state.x;
-        let offsetY = clientY - this._state.y;
+        this._state.offsetX = clientX - this._state.mouse.x;
+        this._state.offsetY = clientY - this._state.mouse.y;
 
-        this._state.x = clientX;
-        this._state.y = clientY;
+        this._state.mouse.x = clientX;
+        this._state.mouse.y = clientY;
 
-        // Apply snap
-        const min_distances = {};
-        const closest = {};
-        const rect = this.configs.target.get(0).getBoundingClientRect();
-        const positions = {
-            'x': [
-                rect.x + offsetX, //left
-                rect.x + offsetX + rect.width / 2, // center
-                rect.x + offsetX + rect.width, // right
-            ],
-            'y': [
-                rect.y + offsetY, //top
-                rect.y + offsetY + rect.height / 2, // center
-                rect.y + offsetY + rect.height, // bottom
-            ]
-        };
-        this.getSnapGuides().forEach((guide) => {
-            const axis = guide.data('axis');
+        this.applySnap(this._state);
 
-            guide.hide();
-
-            positions[axis].forEach((position) => {
-                const diff = guide.data('position') - position;
-                const distance = Math.abs(diff);
-                if(distance <= this.configs.snapTreshhold){
-                    guide.show();
-
-                    if(!(axis in min_distances) || distance < min_distances[axis]){
-                        min_distances[axis] = distance;
-                        closest[axis] = diff;
-                    }
-                }
-            });
-        });
-        if('x' in closest){
-            offsetX += closest.x;
-            this._state.x += closest.x;
-        }
-        if('y' in closest){
-            offsetY += closest.y;
-            this._state.y += closest.y;
-        }
+        // Update state values
+        this._state.new_values.left += this._state.offsetX;
+        this._state.new_values.top += this._state.offsetY;
 
         /**
          * Whether the target is being dragged
@@ -169,7 +145,7 @@ export default class Draggable {
          */
         this._dragged = true;
 
-        this.configs.target.triggerEvent('drag', {'offsetX': offsetX, 'offsetY': offsetY}, false, true);
+        this.configs.target.triggerEvent('drag', this._state, false, true);
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -242,6 +218,54 @@ export default class Draggable {
         }
 
         return this._snap_guides;
+    }
+
+    applySnap(state){
+        const min_distances = {};
+        const closest = {};
+        const rect = this.configs.target.get(0).getBoundingClientRect();
+        const positions = {
+            'x': [
+                rect.x + state.offsetX, //left
+                rect.x + (rect.width / 2) + state.offsetX, // center
+                rect.x + rect.width + state.offsetX, // right
+            ],
+            'y': [
+                rect.y + state.offsetY, //top
+                rect.y + (rect.height / 2) + state.offsetY, // center
+                rect.y + rect.height + state.offsetY, // bottom
+            ]
+        };
+
+        this.getSnapGuides().forEach((guide) => {
+            const axis = guide.data('axis');
+
+            guide.hide();
+
+            positions[axis].forEach((position) => {
+                const diff = guide.data('position') - position;
+                const distance = Math.abs(diff);
+                if(distance <= this.configs.snapTreshhold){
+                    guide.show();
+
+                    if(!(axis in min_distances) || distance < min_distances[axis]){
+                        min_distances[axis] = distance;
+                        closest[axis] = diff;
+                    }
+                }
+            });
+        });
+
+        if('x' in closest){
+            state.offsetX += closest.x;
+            state.mouse.x += closest.x;
+        }
+        if('y' in closest){
+            state.offsetY += closest.y;
+            state.mouse.y += closest.y;
+        }
+
+        return this;
     }
 
     clearSnapGudies(){
