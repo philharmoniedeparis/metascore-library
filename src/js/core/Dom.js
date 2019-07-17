@@ -1230,7 +1230,8 @@ export default class Dom {
      * @return {Boolean} Whether the element is hidden or not
      */
     hidden() {
-        return this.css('display') === 'none';
+        const el = this.get(0);
+        return !(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
     }
 
     /**
