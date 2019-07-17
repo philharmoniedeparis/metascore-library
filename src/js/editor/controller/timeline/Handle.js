@@ -1,6 +1,6 @@
-import Dom from '../../../../core/Dom';
+import Dom from '../../../core/Dom';
 
-import {className} from '../../../../../css/editor/controller/timeline/track/Handle.less';
+import {className} from '../../../../css/editor/controller/timeline/Handle.less';
 
 /**
  * A timeline track handle
@@ -20,10 +20,16 @@ export default class Handle extends Dom {
         new Dom('<div/>', {'class': 'expander'})
             .appendTo(inner);
 
-        this.name = new Dom('<div/>', {'class': 'name'})
+        this.label = new Dom('<div/>', {'class': 'label'})
             .appendTo(inner);
     }
 
+    /**
+     * Descendents childremove event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onDescendentsChildRemove(evt){
         const child = evt.detail.child;
         if(!Dom.is(child, `.${className}`)){
@@ -33,14 +39,27 @@ export default class Handle extends Dom {
         this.toggleClass('has-descendents', this.descendents.is(':empty'));
     }
 
-    setName(value){
-        this.name
+    /**
+     * Set the label's text
+     *
+     * @param {String} value The text
+     * @return {this}
+     */
+    setLabel(value){
+        this.label
             .text(value)
             .attr('title', value);
 
         return this;
     }
 
+    /**
+     * Add a descendent handle
+     *
+     * @param {Handle} handle The handle to add
+     * @param {Integer} index The position at which the handle should be added
+     * @return {this}
+     */
     addDescendent(handle, index){
         if(!this.descendents){
             this.descendents = new Dom('<div/>', {'class': 'descendents'})
@@ -51,6 +70,8 @@ export default class Handle extends Dom {
         handle.insertAt(this.descendents, index);
 
         this.addClass('has-descendents');
+
+        return this;
     }
 
 }
