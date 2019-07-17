@@ -312,11 +312,7 @@ export default class BlockToggler extends Component{
     getDraggableConfigs(){
         return {
             'target': this,
-            'handle': this,
-            'limits': {
-                'top': 0,
-                'left': 0
-            }
+            'handle': this
         };
     }
 
