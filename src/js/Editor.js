@@ -1138,8 +1138,9 @@ export default class Editor extends Dom {
      */
     onSidebarResize(evt){
         const right = new Dom(evt.target);
+        const state = evt.detail.behavior.getState();
 
-        Object.entries(evt.detail.new_values).forEach(([key, value]) => {
+        Object.entries(state.new_values).forEach(([key, value]) => {
             right.css(key, `${value}px`);
         });
     }
@@ -1780,7 +1781,7 @@ export default class Editor extends Dom {
             return;
         }
 
-		Object.entries(this.panels).forEach(([, panel]) => {
+		Object.values(this.panels).forEach((panel) => {
             panel.unsetComponents();
         });
 
@@ -1897,7 +1898,7 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentDragStart(evt){
-        const draggable = evt.target._metaScore.getDraggable();
+        const draggable = evt.detail.behavior;
         const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
 
         siblings.forEach((sibling) => {
@@ -1924,7 +1925,7 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentDragEnd(evt){
-        const draggable = evt.target._metaScore.getDraggable();
+        const draggable = evt.detail.behavior;
         draggable.clearSnapGudies();
     }
 
@@ -1947,7 +1948,7 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentResizeStart(evt){
-        const resizable = evt.target._metaScore.getResizable();
+        const resizable = evt.detail.behavior;
         const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
 
         siblings.forEach((sibling) => {
@@ -1974,7 +1975,7 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentResizeEnd(evt){
-        const resizable = evt.target._metaScore.getResizable();
+        const resizable = evt.detail.behavior;
         resizable.clearSnapGudies();
     }
 
@@ -2255,7 +2256,7 @@ export default class Editor extends Dom {
          */
         this.editing = editing !== false;
 
-		Object.entries(this.panels).forEach(([, panel]) => {
+		Object.values(this.panels).forEach((panel) => {
             if(this.editing){
                 panel.enable();
             }
@@ -2532,7 +2533,7 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
-		Object.entries(this.panels).forEach(([, panel]) => {
+		Object.values(this.panels).forEach((panel) => {
             panel.unsetComponents();
         });
 
@@ -2823,7 +2824,7 @@ export default class Editor extends Dom {
                     });
 
                     const removePages = () => {
-                        Object.entries(contexts).forEach(([, context]) => {
+                        Object.values(contexts).forEach((context) => {
                             let page_index = 0;
 
                             // store original page start and end times
@@ -2875,7 +2876,7 @@ export default class Editor extends Dom {
                     };
 
                     const unremovePages = () => {
-                        Object.entries(contexts).forEach(([, context]) => {
+                        Object.values(contexts).forEach((context) => {
                             let page_index = 0;
 
                             // remove the new page if one was added

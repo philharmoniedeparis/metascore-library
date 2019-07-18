@@ -72,7 +72,7 @@ export default class Resizable {
                 'bottom-left',
                 'bottom-right'
             ],
-            'snapTreshhold': 5
+            'snapThreshold': 5
         };
     }
 
@@ -87,10 +87,9 @@ export default class Resizable {
             return;
         }
 
-        if(!this.configs.target.triggerEvent('beforeresize', null, true, true)){
+        if(!this.configs.target.triggerEvent('beforeresize', {'behavior': this}, true, true)){
             return;
         }
-
 
         /**
          * State data needed during resize
@@ -127,7 +126,7 @@ export default class Resizable {
 
         this.configs.target
             .addClass('resizing')
-            .triggerEvent('resizestart', null, false, true);
+            .triggerEvent('resizestart', {'behavior': this}, false, true);
 
         evt.stopPropagation();
     }
@@ -148,7 +147,7 @@ export default class Resizable {
         this._state.mouse.x = clientX;
         this._state.mouse.y = clientY;
 
-        this.applySnap(this._state);
+        this.applySnap();
 
         // Update state values
         if(this._state.direction.includes('left')){
@@ -192,7 +191,7 @@ export default class Resizable {
          */
         this._resized = true;
 
-        this.configs.target.triggerEvent('resize', this._state, false, true);
+        this.configs.target.triggerEvent('resize', {'behavior': this}, false, true);
 
         evt.stopPropagation();
     }
@@ -218,7 +217,7 @@ export default class Resizable {
 
         this.configs.target
             .removeClass('resizing')
-            .triggerEvent('resizeend', this._state, false, true);
+            .triggerEvent('resizeend', {'behavior': this}, false, true);
 
         delete this._state;
 
@@ -236,6 +235,22 @@ export default class Resizable {
         evt.preventDefault();
     }
 
+    /**
+    * Get the current state
+    *
+    * @return {Object} The state data
+    */
+    getState(){
+        return this._state;
+    }
+
+    /**
+    * Add a snap guide
+    *
+    * @param {String} axis The guide's axis (x or y)
+    * @param {Integer} position The guide's pixel position relative to the viewport
+    * @return {this}
+    */
     addSnapGuide(axis, position){
         const exists = this._snap_guides.find((guide) => {
             return guide.data('axis') === axis && guide.data('position') === position;
@@ -255,6 +270,12 @@ export default class Resizable {
         return this;
     }
 
+    /**
+    * Get the snap guides, optionally filtered by axis
+    *
+    * @param {String} [axis] The axis to filter guides by (x or y)
+    * @return {Array} The available snap guides
+    */
     getSnapGuides(axis){
         if(axis){
             return this._snap_guides.filter((guide) => {
@@ -265,7 +286,14 @@ export default class Resizable {
         return this._snap_guides;
     }
 
-    applySnap(state){
+    /**
+    * Snap the current state to the closes guide(s)
+    *
+    * @private
+    * @return {this}
+    */
+    applySnap(){
+        const state = this.getState();
         const min_distances = {};
         const closest = {};
         const rect = this.configs.target.get(0).getBoundingClientRect();
@@ -295,7 +323,7 @@ export default class Resizable {
             positions[axis].forEach((position) => {
                 const diff = guide.data('position') - position;
                 const distance = Math.abs(diff);
-                if(distance <= this.configs.snapTreshhold){
+                if(distance <= this.configs.snapThreshold){
                     guide.show();
 
                     if(!(axis in min_distances) || distance < min_distances[axis]){
@@ -318,6 +346,11 @@ export default class Resizable {
         return this;
     }
 
+    /**
+    * Remove all snap guides
+    *
+    * @return {this}
+    */
     clearSnapGudies(){
         this._snap_guides.forEach((guide) => {
             guide.remove();

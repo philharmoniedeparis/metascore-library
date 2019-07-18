@@ -805,7 +805,7 @@ export default class Dom {
     }
 
     /**
-     * Get the first child , optionally filtered by a given CSS selector
+     * Get the first child, optionally filtered by a given CSS selector
      *
      * @param {String} [selector] The CSS selector
      * @return {Dom} A Dom object of the matched child

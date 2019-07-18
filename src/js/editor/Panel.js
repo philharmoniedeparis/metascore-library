@@ -549,9 +549,10 @@ export default class Panel extends Dom {
      */
     onComponentDrag(evt){
         const components = this.getComponents();
+        const state = evt.detail.behavior.getState();
 
-        let offsetX = evt.detail.offsetX;
-        let offsetY = evt.detail.offsetY;
+        let offsetX = state.offsetX;
+        let offsetY = state.offsetY;
 
         components.forEach((component) => {
             const left = parseInt(component.css('left'), 10);
@@ -632,12 +633,13 @@ export default class Panel extends Dom {
      */
     onComponentResize(evt){
         const component = evt.target._metaScore;
-        const fields = ['x', 'y', 'width', 'height'];
+        const state = evt.detail.behavior.getState();
 
-        Object.entries(evt.detail.new_values).forEach(([key, value]) => {
+        Object.entries(state.new_values).forEach(([key, value]) => {
             component.css(key, `${value}px`);
         });
 
+        const fields = ['x', 'y', 'width', 'height'];
         this.refreshFieldValues(fields, true);
     }
 

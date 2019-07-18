@@ -54,7 +54,11 @@ export default class Draggable {
         return {
             'target': null,
             'handle': null,
-            'snapTreshhold': 5
+            'snapThreshold': 5,
+            'snapPositions': {
+                'x': [0, 0.5, 1],
+                'y': [0, 0.5, 1],
+            }
         };
     }
 
@@ -69,7 +73,7 @@ export default class Draggable {
             return;
         }
 
-        if(!this.configs.target.triggerEvent('beforedrag', null, true, true)){
+        if(!this.configs.target.triggerEvent('beforedrag', {'behavior': this}, true, true)){
             return;
         }
 
@@ -111,7 +115,7 @@ export default class Draggable {
 
         this.configs.target
             .addClass('dragging')
-            .triggerEvent('dragstart', null, false, true);
+            .triggerEvent('dragstart', {'behavior': this}, false, true);
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -133,7 +137,7 @@ export default class Draggable {
         this._state.mouse.x = clientX;
         this._state.mouse.y = clientY;
 
-        this.applySnap(this._state);
+        this.applySnap();
 
         // Update state values
         this._state.new_values.left += this._state.offsetX;
@@ -145,7 +149,7 @@ export default class Draggable {
          */
         this._dragged = true;
 
-        this.configs.target.triggerEvent('drag', this._state, false, true);
+        this.configs.target.triggerEvent('drag', {'behavior': this}, false, true);
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -172,7 +176,7 @@ export default class Draggable {
 
         this.configs.target
             .removeClass('dragging')
-            .triggerEvent('dragend', null, false, true);
+            .triggerEvent('dragend', {'behavior': this}, false, true);
 
         delete this._state;
 
@@ -191,6 +195,22 @@ export default class Draggable {
         evt.preventDefault();
     }
 
+    /**
+    * Get the current state
+    *
+    * @return {Object} The state data
+    */
+    getState(){
+        return this._state;
+    }
+
+    /**
+    * Add a snap guide
+    *
+    * @param {String} axis The guide's axis (x or y)
+    * @param {Integer} position The guide's pixel position relative to the viewport
+    * @return {this}
+    */
     addSnapGuide(axis, position){
         const exists = this._snap_guides.find((guide) => {
             return guide.data('axis') === axis && guide.data('position') === position;
@@ -210,6 +230,12 @@ export default class Draggable {
         return this;
     }
 
+    /**
+    * Get the snap guides, optionally filtered by axis
+    *
+    * @param {String} [axis] The axis to filter guides by (x or y)
+    * @return {Array} The available snap guides
+    */
     getSnapGuides(axis){
         if(axis){
             return this._snap_guides.filter((guide) => {
@@ -220,22 +246,34 @@ export default class Draggable {
         return this._snap_guides;
     }
 
-    applySnap(state){
+    /**
+    * Snap the current state to the closes guide(s)
+    *
+    * @private
+    * @return {this}
+    */
+    applySnap(){
+        const state = this.getState();
         const min_distances = {};
         const closest = {};
         const rect = this.configs.target.get(0).getBoundingClientRect();
-        const positions = {
-            'x': [
-                rect.x + state.offsetX, //left
-                rect.x + (rect.width / 2) + state.offsetX, // center
-                rect.x + rect.width + state.offsetX, // right
-            ],
-            'y': [
-                rect.y + state.offsetY, //top
-                rect.y + (rect.height / 2) + state.offsetY, // center
-                rect.y + rect.height + state.offsetY, // bottom
-            ]
-        };
+        const positions = {'x': [], 'y': []};
+
+        Object.entries(this.configs.snapPositions).forEach(([axis, values]) => {
+            switch(axis){
+                case 'x':
+                    values.forEach((position) => {
+                        positions.x.push(rect.x + (rect.width * position) + state.offsetX);
+                    });
+                    break;
+
+                case 'y':
+                    values.forEach((position) => {
+                        positions.y.push(rect.y + (rect.height * position) + state.offsetY);
+                    });
+                    break;
+            }
+        });
 
         this.getSnapGuides().forEach((guide) => {
             const axis = guide.data('axis');
@@ -245,7 +283,7 @@ export default class Draggable {
             positions[axis].forEach((position) => {
                 const diff = guide.data('position') - position;
                 const distance = Math.abs(diff);
-                if(distance <= this.configs.snapTreshhold){
+                if(distance <= this.configs.snapThreshold){
                     guide.show();
 
                     if(!(axis in min_distances) || distance < min_distances[axis]){
@@ -268,6 +306,11 @@ export default class Draggable {
         return this;
     }
 
+    /**
+    * Remove all snap guides
+    *
+    * @return {this}
+    */
     clearSnapGudies(){
         this._snap_guides.forEach((guide) => {
             guide.remove();
