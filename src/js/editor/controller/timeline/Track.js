@@ -32,12 +32,12 @@ export default class Track extends Dom {
             .appendTo(this);
 
         this.info = new Dom('<div/>', {'class': 'info'})
-            .addListener('dragstart', this.onDragStart.bind(this))
-            .addListener('drag', this.onDrag.bind(this))
-            .addListener('dragend', this.onDragEnd.bind(this))
-            .addListener('resizestart', this.onResizeStart.bind(this))
-            .addListener('resize', this.onResize.bind(this))
-            .addListener('resizeend', this.onResizeEnd.bind(this))
+            .addListener('dragstart', this.onInfoDragStart.bind(this))
+            .addListener('drag', this.onInfoDrag.bind(this))
+            .addListener('dragend', this.onInfoDragEnd.bind(this))
+            .addListener('resizestart', this.onInfoResizeStart.bind(this))
+            .addListener('resize', this.onInfoResize.bind(this))
+            .addListener('resizeend', this.onInfoResizeEnd.bind(this))
             .appendTo(inner);
 
         this.handle = new Handle()
@@ -68,38 +68,13 @@ export default class Track extends Dom {
                 .getHandle().addClass('auto-expanded');
         }
         else{
-            const component = this.getComponent();
+            this.getHandle().addClass('selected');
 
-            // Add a draggable behavior if applicable
-            if(component.instanceOf('Element')){
-                if(component.getPropertyValue('start-time') !== null && component.getPropertyValue('end-time') !== null){
-                    this._draggable = new Draggable({
-                        'target': this.info,
-                        'handle': this.info
-                    });
-                }
-            }
-
-            // Add a resizable behavior if applicable
-            const directions = [];
-            if(component.hasProperty('start-time')){
-                directions.push('left');
-            }
-            if(component.hasProperty('end-time')){
-                directions.push('right');
-            }
-            if(directions.length > 0){
-                this._resizable = new Resizable({
-                    'target': this.info,
-                    'directions': directions
-                });
-            }
-
-            // Add the selected class to the track and handle
-            this.addClass('selected')
-                .getHandle().addClass('selected');
-
-            this.triggerEvent('select', {'track': this});
+            this
+                .setDraggable(true)
+                .setResizable(true)
+                .addClass('selected')
+                .triggerEvent('select', {'track': this});
         }
     }
 
@@ -122,17 +97,13 @@ export default class Track extends Dom {
             }
         }
         else{
-            if(this._draggable){
-                this._draggable.destroy();
-            }
-            if(this._resizable){
-                this._resizable.destroy();
-            }
-
-            this.removeClass('selected');
             this.getHandle().removeClass('selected');
 
-            this.triggerEvent('unselect', {'track': this});
+            this
+                .setDraggable(false)
+                .setResizable(false)
+                .removeClass('selected')
+                .triggerEvent('unselect', {'track': this});
         }
     }
 
@@ -162,80 +133,107 @@ export default class Track extends Dom {
     }
 
     /**
-     * The dragstart event callback
+     * Info dragstart event callback
      *
      * @private
      */
-    onDragStart(){
+    onInfoDragStart(evt){
         const {width} = this.get(0).getBoundingClientRect();
         this._drag_multiplier = this.duration / width;
+
+        this.triggerEvent('dragstart', evt.detail, false, true);
+
+        evt.stopPropagation();
     }
 
     /**
-     * The drag event callback
+     * Info drag event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onDrag(evt){
+    onInfoDrag(evt){
         const component = this.getComponent();
-        const diff = evt.detail.offsetX * this._drag_multiplier;
+        const state = evt.detail.behavior.getState();
+        const diff = state.offsetX * this._drag_multiplier;
 
         component.setPropertyValues({
             'start-time': component.getPropertyValue('start-time') + diff,
             'end-time': component.getPropertyValue('end-time') + diff
         });
+
+        this.triggerEvent('drag', evt.detail, false, true);
+
+        evt.stopPropagation();
     }
 
     /**
-     * The dragend event callback
+     * Info dragend event callback
      *
      * @private
      */
-    onDragEnd(){
+    onInfoDragEnd(evt){
         delete this._drag_multiplier;
+
+        this.triggerEvent('dragend', evt.detail, false, true);
+
+        evt.stopPropagation();
     }
 
     /**
-     * The resizestart event callback
+     * Info resizestart event callback
      *
      * @private
      */
-    onResizeStart(){
+    onInfoResizeStart(evt){
         const {width} = this.get(0).getBoundingClientRect();
         this._resize_multiplier = this.duration / width;
+
+        this.triggerEvent('resizestart', evt.detail, false, true);
+
+        evt.stopPropagation();
     }
 
     /**
-     * The resize event callback
+     * Info resize event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onResize(evt){
+    onInfoResize(evt){
         const component = this.getComponent();
-        const property = evt.detail.direction === 'left' ? 'start-time' : 'end-time';
+        const state = evt.detail.behavior.getState();
+        const property = state.direction === 'left' ? 'start-time' : 'end-time';
+
         let new_value = 0;
 
         if(property === 'start-time'){
-            new_value = evt.detail.new_values.left;
+            new_value =state.new_values.left;
         }
         else{
-            new_value = evt.detail.original_values.left + evt.detail.new_values.width;
+            new_value = state.original_values.left + state.new_values.width;
         }
 
         new_value *= this._resize_multiplier;
 
         component.setPropertyValue(property, new_value);
+
+        this.triggerEvent('resize', evt.detail, false, true);
+
+        evt.stopPropagation();
     }
 
     /**
-     * The resizeend event callback
+     * Info resizeend event callback
      *
      * @private
      */
-    onResizeEnd(){
+    onInfoResizeEnd(evt){
         delete this._resize_multiplier;
+
+        this.triggerEvent('resizeend', evt.detail, false, true);
+
+        evt.stopPropagation();
     }
 
     /**
@@ -291,6 +289,114 @@ export default class Track extends Dom {
         this.updateSize();
 
         return this;
+    }
+
+    /**
+     * Set/Unset the draggable behaviour
+     *
+     * @param {Boolean} [draggable=true] Whether to activate or deactivate the draggable
+     * @return {this}
+     */
+    setDraggable(draggable){
+        if(draggable){
+            const component = this.getComponent();
+
+            if(!component.instanceOf('Element')){
+                // Only add draggable to Element components
+                return this;
+            }
+
+            if(component.getPropertyValue('locked')){
+                // Do not add draggable to a locked component
+                return this;
+            }
+
+            if(component.getPropertyValue('start-time') === null || component.getPropertyValue('end-time') === null){
+                // Do not add draggable to component that doesn't have both a start-time and end-time
+                return this;
+            }
+
+            if(!this._draggable){
+                /**
+                 * The draggable behavior
+                 * @type {Draggable}
+                 */
+                this._draggable = new Draggable({
+                    'target': this.info,
+                    'handle': this.info,
+                    'snapPositions': {
+                        'x': [0, 1]
+                    }
+                });
+            }
+        }
+        else if(!draggable && this._draggable){
+            this._draggable.destroy();
+            delete this._draggable;
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the draggable behaviour
+     *
+     * @return {Draggable} The draggable behaviour
+     */
+    getDraggable(){
+        return this._draggable;
+    }
+
+    /**
+     * Set/Unset the resizable behaviour
+     *
+     * @param {Boolean} [resizable=true] Whether to activate or deactivate the resizable
+     * @return {this}
+     */
+    setResizable(resizable){
+        if(resizable){
+            const component = this.getComponent();
+
+            if(component.getPropertyValue('locked')){
+                // Do not add resizable to a locked component
+                return this;
+            }
+
+            if(!this._resizable){
+                const directions = [];
+                if(component.hasProperty('start-time')){
+                    directions.push('left');
+                }
+                if(component.hasProperty('end-time')){
+                    directions.push('right');
+                }
+                if(directions.length > 0){
+                    /**
+                     * The resizable behavior
+                     * @type {Resizable}
+                     */
+                    this._resizable = new Resizable({
+                        'target': this.info,
+                        'directions': directions
+                    });
+                }
+            }
+        }
+        else if(!resizable && this._resizable){
+            this._resizable.destroy();
+            delete this._resizable;
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the resizable behaviour
+     *
+     * @return {Resizable} The resizable behaviour
+     */
+    getResizable(){
+        return this._resizable;
     }
 
     /**

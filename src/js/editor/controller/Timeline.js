@@ -90,6 +90,10 @@ export default class Timeline extends Dom {
          */
         this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
             .addDelegate('.track', 'select', this.onTrackSelect.bind(this))
+            .addDelegate('.track', 'dragstart', this.onTrackDragStart.bind(this), true)
+            .addDelegate('.track', 'dragend', this.onTrackDragEnd.bind(this), true)
+            .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
+            .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
             .appendTo(this.tracks_container_outer);
 
         this.scrollable = new Scrollable({
@@ -99,9 +103,91 @@ export default class Timeline extends Dom {
         });
     }
 
+    /**
+     * Track select event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onTrackSelect(evt){
         // Scroll the track into view
         this.scrollable.scrollIntoView(evt.detail.track);
+    }
+
+    /**
+     * Track dragstart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTrackDragStart(evt){
+        const draggable = evt.detail.behavior;
+        const track_id = Dom.data(evt.target, 'component');
+
+        Object.entries(this.tracks).forEach(([id, track]) => {
+            if(track.hidden()){
+                return;
+            }
+
+            if(id === track_id){
+                return;
+            }
+
+            const rect = track.info.get(0).getBoundingClientRect();
+            draggable
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right);
+
+        });
+    }
+
+    /**
+     * Track dragend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTrackDragEnd(evt){
+        const draggable = evt.detail.behavior;
+        draggable.clearSnapGudies();
+    }
+
+    /**
+     * Track resizestart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTrackResizeStart(evt){
+        const resizable = evt.detail.behavior;
+        const track_id = Dom.data(evt.target, 'component');
+
+        Object.entries(this.tracks).forEach(([id, track]) => {
+            if(track.hidden()){
+                return;
+            }
+
+            if(id === track_id){
+                return;
+            }
+
+            const rect = track.info.get(0).getBoundingClientRect();
+            resizable
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right);
+
+        });
+    }
+
+    /**
+     * Track resizeend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTrackResizeEnd(evt){
+        const resizable = evt.detail.behavior;
+        resizable.clearSnapGudies();
     }
 
     /**
