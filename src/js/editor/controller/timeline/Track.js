@@ -68,6 +68,8 @@ export default class Track extends Dom {
                 .getHandle().addClass('auto-expanded');
         }
         else{
+            this.component.addListener('propchange', this.onSelectedComponentPropChange.bind(this));
+
             this.getHandle().addClass('selected');
 
             this
@@ -97,6 +99,8 @@ export default class Track extends Dom {
             }
         }
         else{
+            this.component.removeListener('propchange', this.onSelectedComponentPropChange.bind(this));
+
             this.getHandle().removeClass('selected');
 
             this
@@ -119,15 +123,45 @@ export default class Track extends Dom {
             return;
         }
 
-        switch(evt.detail.property){
+        const property = evt.detail.property;
+        const value = evt.detail.value;
+
+        switch(property){
             case 'start-time':
             case 'end-time':
                 this.updateSize();
                 break;
 
             case 'name':
-                this.handle.setLabel(evt.detail.value);
-                this.attr('title', evt.detail.value);
+                this.handle.setLabel(value);
+                this.attr('title', value);
+                break;
+        }
+    }
+
+    /**
+     * Selected component propchange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onSelectedComponentPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
+        const property = evt.detail.property;
+        const value = evt.detail.value;
+
+        switch(property){
+            case 'start-time':
+            case 'end-time':
+                this.setDraggable(value !== null);
+                break;
+
+            case 'locked':
+                this.setDraggable(!value).setResizable(!value);
                 break;
         }
     }
