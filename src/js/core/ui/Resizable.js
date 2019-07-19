@@ -249,9 +249,10 @@ export default class Resizable {
     *
     * @param {String} axis The guide's axis (x or y)
     * @param {Integer} position The guide's pixel position relative to the viewport
+    * @param {Dom} [container] The Dom element to append the guide to
     * @return {this}
     */
-    addSnapGuide(axis, position){
+    addSnapGuide(axis, position, container){
         const exists = this._snap_guides.find((guide) => {
             return guide.data('axis') === axis && guide.data('position') === position;
         });
@@ -261,8 +262,20 @@ export default class Resizable {
                 .data('axis', axis)
                 .data('position', position)
                 .css(axis === 'y' ? 'top' : 'left', `${position}px`)
-                .hide()
-                .appendTo(this.doc.find('body'));
+                .hide();
+
+            if(container){
+                const {left} = container.get(0).getBoundingClientRect();
+
+                guide
+                    .css(axis === 'y' ? 'top' : 'left', `${position - left}px`)
+                    .appendTo(container);
+            }
+            else{
+                guide
+                    .css(axis === 'y' ? 'top' : 'left', `${position}px`)
+                    .appendTo(this.doc.find('body'));
+            }
 
             this._snap_guides.push(guide);
         }
