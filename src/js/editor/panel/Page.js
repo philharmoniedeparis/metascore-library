@@ -29,8 +29,8 @@ export default class Page extends Panel {
             'toolbarConfigs': {
                 'title': Locale.t('editor.panel.Page.title', 'Page'),
                 'menuItems': {
-                    'new-before': Locale.t('editor.panel.Page.menuItems.new', 'Add a new page before'),
-                    'new-after': Locale.t('editor.panel.Page.menuItems.new', 'Add a new page after'),
+                    'new-before': Locale.t('editor.panel.Page.menuItems.new-before', 'Add a new page before'),
+                    'new-after': Locale.t('editor.panel.Page.menuItems.new-after', 'Add a new page after'),
                     'delete': Locale.t('editor.panel.Page.menuItems.delete', 'Delete the selected pages')
                 }
             }
