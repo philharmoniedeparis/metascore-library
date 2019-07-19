@@ -445,20 +445,13 @@ export default class Track extends Dom {
         const start_time = component.getPropertyValue('start-time');
         const end_time = component.getPropertyValue('end-time');
 
-        if(start_time !== null){
-            this.info.css('left', `${(start_time / this.duration) * 100}%`);
-        }
-        else{
-            this.info.css('left', null);
-        }
+        const left = start_time === null ? 0 : start_time / this.duration;
+        const right = end_time === null ? 1 : end_time / this.duration;
+        const width = right - left;
 
-        if(end_time !== null){
-            const diff_time = end_time - (start_time !== null ? start_time : 0);
-            this.info.css('width', `${diff_time / this.duration * 100}%`);
-        }
-        else{
-            this.info.css('width', null);
-        }
+        this.info
+            .css('left', `${left * 100}%`)
+            .css('width', `${width * 100}%`);
 
         return this;
     }
