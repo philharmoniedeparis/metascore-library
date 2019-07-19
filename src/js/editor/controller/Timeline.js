@@ -135,8 +135,8 @@ export default class Timeline extends Dom {
 
             const rect = track.info.get(0).getBoundingClientRect();
             draggable
-                .addSnapGuide('x', rect.left, this.tracks_container_outer)
-                .addSnapGuide('x', rect.right, this.tracks_container_outer);
+                .addSnapGuide('x', rect.left, this.tracks_container_inner)
+                .addSnapGuide('x', rect.right, this.tracks_container_inner);
 
         });
     }
@@ -173,8 +173,8 @@ export default class Timeline extends Dom {
 
             const rect = track.info.get(0).getBoundingClientRect();
             resizable
-                .addSnapGuide('x', rect.left, this.tracks_container_outer)
-                .addSnapGuide('x', rect.right, this.tracks_container_outer);
+                .addSnapGuide('x', rect.left, this.tracks_container_inner)
+                .addSnapGuide('x', rect.right, this.tracks_container_inner);
 
         });
     }
