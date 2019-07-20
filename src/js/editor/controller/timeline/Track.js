@@ -25,7 +25,7 @@ export default class Track extends Dom {
 
         this.component = component
             .addListener('selected', this.onComponentSelected.bind(this), true)
-            .addListener('unselected', this.onComponentUnselected.bind(this))
+            .addListener('deselected', this.onComponentDeselected.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
         const inner = new Dom('<div/>', {'class': 'inner'})
@@ -81,12 +81,12 @@ export default class Track extends Dom {
     }
 
     /**
-     * Component unselected event callback
+     * Component deselected event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentUnselected(evt){
+    onComponentDeselected(evt){
         if(evt.target !== evt.currentTarget){
             // Caught a bubbled event, this is a parent component
 
@@ -107,7 +107,7 @@ export default class Track extends Dom {
                 .setDraggable(false)
                 .setResizable(false)
                 .removeClass('selected')
-                .triggerEvent('unselect', {'track': this});
+                .triggerEvent('deselect', {'track': this});
         }
     }
 

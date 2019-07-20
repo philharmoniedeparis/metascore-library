@@ -424,7 +424,7 @@ export default class Panel extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentunset', {'component': component, 'count': this.components.length}, false);
-            component.triggerEvent('unselected', {'component': component});
+            component.triggerEvent('deselected', {'component': component});
         }
 
         return this;
