@@ -53,6 +53,10 @@ export default class Track extends Dom {
             .addDelegate('button', 'click', this.onHandleButtonClick.bind(this))
             .setLabel(name);
 
+        if(component.getPropertyValue('locked')){
+            this.handle.addClass('locked');
+        }
+
         this
             .data('component', id)
             .data('type', type)
