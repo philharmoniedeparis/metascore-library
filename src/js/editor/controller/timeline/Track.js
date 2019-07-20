@@ -40,9 +40,17 @@ export default class Track extends Dom {
             .addListener('resizeend', this.onInfoResizeEnd.bind(this))
             .appendTo(inner);
 
-        this.handle = new Handle()
+        const buttons = [];
+        if(component.hasProperty('locked')){
+            buttons.push('lock');
+        }
+
+        this.handle = new Handle({
+                'buttons': buttons
+            })
             .data('component', id)
             .addDelegate('.expander', 'click', this.onHandleExpanderClick.bind(this))
+            .addDelegate('button', 'click', this.onHandleButtonClick.bind(this))
             .setLabel(name);
 
         this
@@ -133,8 +141,12 @@ export default class Track extends Dom {
                 break;
 
             case 'name':
-                this.handle.setLabel(value);
+                this.getHandle().setLabel(value);
                 this.attr('title', value);
+                break;
+
+            case 'locked':
+                this.getHandle().toggleClass('locked', value);
                 break;
         }
     }
@@ -306,6 +318,20 @@ export default class Track extends Dom {
             // Shrink children
             this.find('.user-expanded').removeClass('user-expanded');
             handle.find('.user-expanded').removeClass('user-expanded');
+        }
+
+        evt.stopPropagation();
+    }
+
+    onHandleButtonClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'lock':{
+                const locked = this.getComponent().getPropertyValue('locked');
+                this.getComponent().setPropertyValue('locked', !locked);
+            }
+            break;
         }
 
         evt.stopPropagation();
@@ -499,7 +525,7 @@ export default class Track extends Dom {
      * @inheritdoc
      */
     remove(){
-        this.handle.remove();
+        this.getHandle().remove();
         return super.remove();
     }
 

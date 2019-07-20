@@ -6,29 +6,55 @@
 
     > .inner{
         display: flex;
-        height: 1.1em;
-        padding: 0 0.5em;
+        height: 1.25em;
         line-height: 1.1em;
         flex-direction: row;
         flex-wrap: nowrap;
         justify-content: flex-start;
-        align-content: flex-start;
-        align-items: center;
+        align-content: stretch;
+        align-items: stretch;
         background: #ccc;
         box-sizing: border-box;
         border-bottom: 1px solid rgba(0, 0, 0, 0.25);
         pointer-events: none;
 
+        .expander{
+            display: none;
+            align-self: center;
+        }
+
         .label{
-            font-size: 0.75em;
+            flex: 1 1 auto;
+            font-size: 1em;
+            padding-left: 0.25em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            flex: 0 1 auto;
 
             &:empty{
                 &::after{
                     content: '\00a0';
+                }
+            }
+        }
+
+        .buttons{
+            height: 100%;
+
+            button{
+                height: 100%;
+                vertical-align: middle;
+                background-size: 75%;
+                border-radius: 0.25em;
+                pointer-events: auto;
+
+                &[data-action="lock"]{
+                    opacity: 0.5;
+                    background-image: url('../../../../img/editor/controller/timeline/handle/lock-open.svg');
+
+                    &:hover{
+                        opacity: 0.75;
+                    }
                 }
             }
         }
@@ -39,21 +65,25 @@
         padding-left: 0.5em;
         background: rgba(0, 0, 0, 0.25);
 
-        .track-handle{
+        :local(.className){
             border-right: 0;
         }
     }
 
     &.has-descendents{
-        > .inner .expander{
-            width: 0;
-            height: 0;
-            margin-right: 0.25em;
-            margin-left: -0.25em;
-            border-top: 0.25em solid transparent;
-            border-left: 0.5em solid #333;
-            border-bottom: 0.25em solid transparent;
-            pointer-events: auto;
+        > .inner{
+            padding-left: 0.5em;
+
+            .expander{
+                display: block;
+                width: 0;
+                height: 0;
+                margin-left: -0.25em;
+                border-top: 0.25em solid transparent;
+                border-left: 0.5em solid #333;
+                border-bottom: 0.25em solid transparent;
+                pointer-events: auto;
+            }
         }
 
         &.user-expanded,
@@ -70,5 +100,16 @@
 
     &.selected > .inner{
         background: #ddd;
+    }
+
+    &.locked{
+        > .inner{
+            .buttons{
+                button[data-action="lock"]{
+                    opacity: 1;
+                    background-image: url('../../../../img/editor/controller/timeline/handle/lock-closed.svg');
+                }
+            }
+        }
     }
 }

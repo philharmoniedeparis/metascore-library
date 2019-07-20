@@ -1,4 +1,6 @@
 import Dom from '../../../core/Dom';
+import Button from '../../../core/ui/Button';
+import {isEmpty} from '../../../core/utils/Var';
 
 import {className} from '../../../../css/editor/controller/timeline/Handle.less';
 
@@ -10,9 +12,15 @@ export default class Handle extends Dom {
     /**
      * Instantiate
      */
-    constructor() {
+    constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `track-handle ${className}`});
+        super('<div/>', {'class': `handle ${className}`});
+
+        /**
+         * The configuration values
+         * @type {Object}
+         */
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
@@ -22,6 +30,27 @@ export default class Handle extends Dom {
 
         this.label = new Dom('<div/>', {'class': 'label'})
             .appendTo(inner);
+
+        if(!isEmpty(this.configs.buttons)){
+            const buttons = new Dom('<div/>', {'class': 'buttons'})
+                .appendTo(inner);
+
+			this.configs.buttons.forEach((action) => {
+                new Button().data('action', action)
+                    .appendTo(buttons);
+            });
+        }
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults(){
+        return {
+            'buttons': []
+        };
     }
 
     /**

@@ -159,8 +159,10 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
             .appendTo(bottom);
+
+        this.controller.getControls()
+            .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
 
         this.controller.getTimeField()
             .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
@@ -168,7 +170,7 @@ export default class Editor extends Dom {
         this.controller.getTimeline()
             .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this))
             .getHandlesContainer()
-                .addDelegate('.track-handle', 'click', this.onTimelineTrackClick.bind(this));
+                .addDelegate('.handle', 'click', this.onTimelineTrackClick.bind(this));
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
@@ -1044,12 +1046,12 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Controller button click event callback
+     * Controller controls button click event callback
      *
      * @private
      * @param {MouseEvent} evt The event object.
      */
-    onControllerButtonClick(evt){
+    onControllerControlsButtonClick(evt){
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
