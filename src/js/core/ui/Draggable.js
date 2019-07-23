@@ -55,6 +55,7 @@ export default class Draggable {
             'target': null,
             'handle': null,
             'snapThreshold': 5,
+            'snapGuideContainer': null,
             'snapPositions': {
                 'x': [0, 0.5, 1],
                 'y': [0, 0.5, 1],
@@ -209,32 +210,29 @@ export default class Draggable {
     *
     * @param {String} axis The guide's axis (x or y)
     * @param {Integer} position The guide's pixel position relative to the viewport
-    * @param {Dom} [container] The Dom element to append the guide to
     * @return {this}
     */
-    addSnapGuide(axis, position, container){
+    addSnapGuide(axis, position){
         const exists = this._snap_guides.find((guide) => {
             return guide.data('axis') === axis && guide.data('position') === position;
         });
 
         if(!exists){
+            const container = this.configs.snapGuideContainer || this.doc.find('body');
+            const rect = container.get(0).getBoundingClientRect();
+            const offsetX = rect.left;
+            const offsetY = rect.top;
+
+            console.log(container.get(0).scrollTop, offsetY);
+
             const guide = new Dom('<div/>', {'class': `${guideClassName} snap-guide`})
                 .data('axis', axis)
                 .data('position', position)
-                .hide();
-
-            if(container){
-                const {left} = container.get(0).getBoundingClientRect();
-
-                guide
-                    .css(axis === 'y' ? 'top' : 'left', `${position - left}px`)
-                    .appendTo(container);
-            }
-            else{
-                guide
-                    .css(axis === 'y' ? 'top' : 'left', `${position}px`)
-                    .appendTo(this.doc.find('body'));
-            }
+                .css('margin-left', `${-offsetX}px`)
+                .css('margin-top', `${-offsetY}px`)
+                .css(axis === 'y' ? 'top' : 'left', `${position}px`)
+                .hide()
+                .appendTo(container);
 
             this._snap_guides.push(guide);
         }

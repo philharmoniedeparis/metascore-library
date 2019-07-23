@@ -72,6 +72,7 @@ export default class Resizable {
                 'bottom-left',
                 'bottom-right'
             ],
+            'snapGuideContainer': null,
             'snapThreshold': 5
         };
     }
@@ -249,32 +250,34 @@ export default class Resizable {
     *
     * @param {String} axis The guide's axis (x or y)
     * @param {Integer} position The guide's pixel position relative to the viewport
-    * @param {Dom} [container] The Dom element to append the guide to
     * @return {this}
     */
-    addSnapGuide(axis, position, container){
+    addSnapGuide(axis, position){
         const exists = this._snap_guides.find((guide) => {
             return guide.data('axis') === axis && guide.data('position') === position;
         });
 
         if(!exists){
+            const container = this.configs.snapGuideContainer || this.doc.find('body');
+            const rect = container.get(0).getBoundingClientRect();
+            const offsetX = rect.left;
+            const offsetY = rect.top;
+
             const guide = new Dom('<div/>', {'class': `${guideClassName} snap-guide`})
                 .data('axis', axis)
                 .data('position', position)
-                .css(axis === 'y' ? 'top' : 'left', `${position}px`)
-                .hide();
+                .hide()
+                .appendTo(container);
 
-            if(container){
-                const {left} = container.get(0).getBoundingClientRect();
-
+            if(axis === 'y'){
                 guide
-                    .css(axis === 'y' ? 'top' : 'left', `${position - left}px`)
-                    .appendTo(container);
+                    .css('left', `${-offsetX}px`)
+                    .css('top', `${position - offsetY}px`);
             }
             else{
                 guide
-                    .css(axis === 'y' ? 'top' : 'left', `${position}px`)
-                    .appendTo(this.doc.find('body'));
+                    .css('left', `${position - offsetX}px`)
+                    .css('top', `${-offsetY}px`);
             }
 
             this._snap_guides.push(guide);

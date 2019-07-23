@@ -135,9 +135,8 @@ export default class Timeline extends Dom {
 
             const rect = track.info.get(0).getBoundingClientRect();
             draggable
-                .addSnapGuide('x', rect.left, this.tracks_container_inner)
-                .addSnapGuide('x', rect.right, this.tracks_container_inner);
-
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right);
         });
     }
 
@@ -173,9 +172,8 @@ export default class Timeline extends Dom {
 
             const rect = track.info.get(0).getBoundingClientRect();
             resizable
-                .addSnapGuide('x', rect.left, this.tracks_container_inner)
-                .addSnapGuide('x', rect.right, this.tracks_container_inner);
-
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right);
         });
     }
 
@@ -228,7 +226,14 @@ export default class Timeline extends Dom {
             return this;
         }
 
-        const track = new Track(component);
+        const track = new Track(component, {
+            'draggableConfigs': {
+                'snapGuideContainer': this.tracks_container_inner
+            },
+            'resizableConfigs': {
+                'snapGuideContainer': this.tracks_container_inner
+            },
+        });
 
         if(this.media){
             track.setDuration(this.media.getDuration());

@@ -12,10 +12,18 @@ export default class Track extends Dom {
 
     /**
      * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
      */
-    constructor(component) {
+    constructor(component, configs) {
         // call parent constructor
         super('<div/>', {'class': `track ${className}`});
+
+        /**
+         * The configuration values
+         * @type {Object}
+         */
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         const id = component.getId();
         const type = component.getType();
@@ -62,6 +70,18 @@ export default class Track extends Dom {
             .data('type', type)
             .attr('title', name)
             .updateSize();
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults(){
+        return {
+            'draggableConfigs': null,
+            'resizableConfigs': null
+        };
     }
 
     /**
@@ -381,17 +401,19 @@ export default class Track extends Dom {
             }
 
             if(!this._draggable){
-                /**
-                 * The draggable behavior
-                 * @type {Draggable}
-                 */
-                this._draggable = new Draggable({
+                const configs = Object.assign({}, this.configs.draggableConfigs, {
                     'target': this.info,
                     'handle': this.info,
                     'snapPositions': {
                         'x': [0, 1]
                     }
                 });
+
+                /**
+                 * The draggable behavior
+                 * @type {Draggable}
+                 */
+                this._draggable = new Draggable(configs);
             }
         }
         else if(!draggable && this._draggable){
@@ -435,14 +457,16 @@ export default class Track extends Dom {
                     directions.push('right');
                 }
                 if(directions.length > 0){
+                    const configs = Object.assign({}, this.configs.resizableConfigs, {
+                        'target': this.info,
+                        'directions': directions,
+                    });
+
                     /**
                      * The resizable behavior
                      * @type {Resizable}
                      */
-                    this._resizable = new Resizable({
-                        'target': this.info,
-                        'directions': directions
-                    });
+                    this._resizable = new Resizable(configs);
                 }
             }
         }
