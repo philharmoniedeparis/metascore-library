@@ -482,11 +482,7 @@ export default class Block extends Component {
     getDraggableConfigs(){
         return {
             'target': this,
-            'handle': this.child('.pager'),
-            'limits': {
-                'top': 0,
-                'left': 0
-            }
+            'handle': this.child('.pager')
         };
     }
 

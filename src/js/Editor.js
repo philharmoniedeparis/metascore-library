@@ -159,8 +159,10 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .addDelegate('button', 'click', this.onControllerButtonClick.bind(this))
             .appendTo(bottom);
+
+        this.controller.getControls()
+            .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
 
         this.controller.getTimeField()
             .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
@@ -168,7 +170,7 @@ export default class Editor extends Dom {
         this.controller.getTimeline()
             .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this))
             .getHandlesContainer()
-                .addDelegate('.track-handle', 'click', this.onTimelineTrackClick.bind(this));
+                .addDelegate('.handle', 'click', this.onTimelineTrackClick.bind(this));
 
         const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
             .addListener('resizestart', this.onSidebarResizeStart.bind(this))
@@ -1044,12 +1046,12 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Controller button click event callback
+     * Controller controls button click event callback
      *
      * @private
      * @param {MouseEvent} evt The event object.
      */
-    onControllerButtonClick(evt){
+    onControllerControlsButtonClick(evt){
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
@@ -1138,8 +1140,9 @@ export default class Editor extends Dom {
      */
     onSidebarResize(evt){
         const right = new Dom(evt.target);
+        const state = evt.detail.behavior.getState();
 
-        Object.entries(evt.detail.new_state).forEach(([key, value]) => {
+        Object.entries(state.new_values).forEach(([key, value]) => {
             right.css(key, `${value}px`);
         });
     }
@@ -1708,6 +1711,11 @@ export default class Editor extends Dom {
         new Dom(this.player.get(0))
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+            .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
+            .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
+            .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
+            .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
+            .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
@@ -1775,7 +1783,7 @@ export default class Editor extends Dom {
             return;
         }
 
-		Object.entries(this.panels).forEach(([, panel]) => {
+		Object.values(this.panels).forEach((panel) => {
             panel.unsetComponents();
         });
 
@@ -1883,6 +1891,94 @@ export default class Editor extends Dom {
         if(this.editing !== true){
             evt.preventDefault();
         }
+    }
+
+    /**
+     * Component dragstart event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentDragStart(evt){
+        const draggable = evt.detail.behavior;
+        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
+
+        siblings.forEach((sibling) => {
+            if(new Dom(sibling).hidden()){
+                // Do not add guides for hidden siblings
+                return;
+            }
+
+            const rect = sibling.getBoundingClientRect();
+            draggable
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right)
+                .addSnapGuide('x', rect.left + rect.width / 2)
+                .addSnapGuide('y', rect.top)
+                .addSnapGuide('y', rect.bottom)
+                .addSnapGuide('y', rect.top + rect.height / 2);
+        });
+    }
+
+    /**
+     * Component dragend event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentDragEnd(evt){
+        const draggable = evt.detail.behavior;
+        draggable.clearSnapGudies();
+    }
+
+    /**
+     * Component beforeresize event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentBeforeResize(evt){
+        if(this.editing !== true){
+            evt.preventDefault();
+        }
+    }
+
+    /**
+     * Component resizestart event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentResizeStart(evt){
+        const resizable = evt.detail.behavior;
+        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
+
+        siblings.forEach((sibling) => {
+            if(new Dom(sibling).hidden()){
+                // Do not add guides for hidden siblings
+                return;
+            }
+
+            const rect = sibling.getBoundingClientRect();
+            resizable
+                .addSnapGuide('x', rect.left)
+                .addSnapGuide('x', rect.right)
+                .addSnapGuide('x', rect.left + rect.width / 2)
+                .addSnapGuide('y', rect.top)
+                .addSnapGuide('y', rect.bottom)
+                .addSnapGuide('y', rect.top + rect.height / 2);
+        });
+    }
+
+    /**
+     * Component resizeend event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentResizeEnd(evt){
+        const resizable = evt.detail.behavior;
+        resizable.clearSnapGudies();
     }
 
     /**
@@ -2162,7 +2258,7 @@ export default class Editor extends Dom {
          */
         this.editing = editing !== false;
 
-		Object.entries(this.panels).forEach(([, panel]) => {
+		Object.values(this.panels).forEach((panel) => {
             if(this.editing){
                 panel.enable();
             }
@@ -2439,7 +2535,7 @@ export default class Editor extends Dom {
         delete this.player;
         delete this.dirty_data;
 
-		Object.entries(this.panels).forEach(([, panel]) => {
+		Object.values(this.panels).forEach((panel) => {
             panel.unsetComponents();
         });
 
@@ -2730,7 +2826,7 @@ export default class Editor extends Dom {
                     });
 
                     const removePages = () => {
-                        Object.entries(contexts).forEach(([, context]) => {
+                        Object.values(contexts).forEach((context) => {
                             let page_index = 0;
 
                             // store original page start and end times
@@ -2782,7 +2878,7 @@ export default class Editor extends Dom {
                     };
 
                     const unremovePages = () => {
-                        Object.entries(contexts).forEach(([, context]) => {
+                        Object.values(contexts).forEach((context) => {
                             let page_index = 0;
 
                             // remove the new page if one was added

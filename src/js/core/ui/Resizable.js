@@ -1,10 +1,11 @@
 import Dom from '../Dom';
 
-import {bodyClassName, className} from '../../../css/core/ui/Resizable.less';
+import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Resizable.less';
 
 /**
  * A class for adding resizable behaviors
  *
+ * @emits {beforeresize} Fired before the resize starts. The event bubbles allowing the resize to be canceled by invoking preventDefault
  * @emits {resizestart} Fired when a resize started
  * @emits {resize} Fired when a resize occured
  * @emits {resizeend} Fired when a resize ended
@@ -24,6 +25,12 @@ export default class Resizable {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        /**
+         * Snap guides
+         * @type {Array}
+         */
+        this._snap_guides = [];
 
         /**
          * A list of resize handles
@@ -64,7 +71,9 @@ export default class Resizable {
                 'top-right',
                 'bottom-left',
                 'bottom-right'
-            ]
+            ],
+            'snapGuideContainer': null,
+            'snapThreshold': 5
         };
     }
 
@@ -79,18 +88,27 @@ export default class Resizable {
             return;
         }
 
+        if(!this.configs.target.triggerEvent('beforeresize', {'behavior': this}, true, true)){
+            return;
+        }
+
         /**
-         * The state at which the target was on mouse down
+         * State data needed during resize
          * @type {Object}
          */
-        this._start_state = {
+        this._state = {
             'direction': Dom.data(evt.target, 'direction'),
-            'x': evt.clientX,
-            'y': evt.clientY,
-            'left': parseInt(this.configs.target.css('left'), 10),
-            'top': parseInt(this.configs.target.css('top'), 10),
-            'width': parseInt(this.configs.target.css('width'), 10),
-            'height': parseInt(this.configs.target.css('height'), 10)
+            'mouse': {
+                'x': evt.clientX,
+                'y': evt.clientY
+            },
+            'original_values': {
+                'left': parseInt(this.configs.target.css('left'), 10),
+                'top': parseInt(this.configs.target.css('top'), 10),
+                'width': parseInt(this.configs.target.css('width'), 10),
+                'height': parseInt(this.configs.target.css('height'), 10)
+            },
+            'new_values': {}
         };
 
         if(!this.doc){
@@ -109,7 +127,7 @@ export default class Resizable {
 
         this.configs.target
             .addClass('resizing')
-            .triggerEvent('resizestart', {'start_state': this._start_state}, false, true);
+            .triggerEvent('resizestart', {'behavior': this}, false, true);
 
         evt.stopPropagation();
     }
@@ -121,44 +139,51 @@ export default class Resizable {
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
-        const direction = this._start_state.direction;
-        const new_state = {};
+        const clientX = evt.clientX;
+        const clientY = evt.clientY;
 
-        switch(direction){
-            case 'top':
-                new_state.height = this._start_state.height - evt.clientY + this._start_state.y;
-                new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
-                break;
-            case 'right':
-                new_state.width = this._start_state.width + evt.clientX - this._start_state.x;
-                break;
-            case 'bottom':
-                new_state.height = this._start_state.height + evt.clientY - this._start_state.y;
-                break;
-            case 'left':
-                new_state.width = this._start_state.width - evt.clientX + this._start_state.x;
-                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
-                break;
-            case 'top-left':
-                new_state.width = this._start_state.width - evt.clientX + this._start_state.x;
-                new_state.height = this._start_state.height - evt.clientY + this._start_state.y;
-                new_state.top = this._start_state.top + evt.clientY    - this._start_state.y;
-                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
-                break;
-            case 'top-right':
-                new_state.width = this._start_state.width + evt.clientX - this._start_state.x;
-                new_state.height = this._start_state.height - evt.clientY + this._start_state.y;
-                new_state.top = this._start_state.top + evt.clientY - this._start_state.y;
-                break;
-            case 'bottom-left':
-                new_state.width = this._start_state.width - evt.clientX + this._start_state.x;
-                new_state.height = this._start_state.height + evt.clientY - this._start_state.y;
-                new_state.left = this._start_state.left + evt.clientX - this._start_state.x;
-                break;
-            case 'bottom-right':
-                new_state.width = this._start_state.width + evt.clientX - this._start_state.x;
-                new_state.height = this._start_state.height + evt.clientY - this._start_state.y;
-                break;
+        this._state.offsetX = clientX - this._state.mouse.x;
+        this._state.offsetY = clientY - this._state.mouse.y;
+
+        this._state.mouse.x = clientX;
+        this._state.mouse.y = clientY;
+
+        this.applySnap();
+
+        // Update state values
+        if(this._state.direction.includes('left')){
+            if(!('width' in this._state.new_values)){
+                this._state.new_values.width = this._state.original_values.width;
+            }
+            this._state.new_values.width -= this._state.offsetX;
+
+            if(!('left' in this._state.new_values)){
+                this._state.new_values.left = this._state.original_values.left;
+            }
+            this._state.new_values.left += this._state.offsetX;
+        }
+        else if(this._state.direction.includes('right')){
+            if(!('width' in this._state.new_values)){
+                this._state.new_values.width = this._state.original_values.width;
+            }
+            this._state.new_values.width += this._state.offsetX;
+        }
+        if(this._state.direction.includes('top')){
+            if(!('height' in this._state.new_values)){
+                this._state.new_values.height = this._state.original_values.height;
+            }
+            this._state.new_values.height -= this._state.offsetY;
+
+            if(!('top' in this._state.new_values)){
+                this._state.new_values.top = this._state.original_values.top;
+            }
+            this._state.new_values.top += this._state.offsetY;
+        }
+        else if(this._state.direction.includes('bottom')){
+            if(!('height' in this._state.new_values)){
+                this._state.new_values.height = this._state.original_values.height;
+            }
+            this._state.new_values.height += this._state.offsetY;
         }
 
         /**
@@ -167,7 +192,7 @@ export default class Resizable {
          */
         this._resized = true;
 
-        this.configs.target.triggerEvent('resize', {'start_state': this._start_state, 'new_state': new_state}, false, true);
+        this.configs.target.triggerEvent('resize', {'behavior': this}, false, true);
 
         evt.stopPropagation();
     }
@@ -193,9 +218,9 @@ export default class Resizable {
 
         this.configs.target
             .removeClass('resizing')
-            .triggerEvent('resizeend', {'start_state': this._start_state}, false, true);
+            .triggerEvent('resizeend', {'behavior': this}, false, true);
 
-        delete this._start_state;
+        delete this._state;
 
         evt.stopPropagation();
     }
@@ -209,6 +234,147 @@ export default class Resizable {
     onClick(evt){
         evt.stopPropagation();
         evt.preventDefault();
+    }
+
+    /**
+    * Get the current state
+    *
+    * @return {Object} The state data
+    */
+    getState(){
+        return this._state;
+    }
+
+    /**
+    * Add a snap guide
+    *
+    * @param {String} axis The guide's axis (x or y)
+    * @param {Integer} position The guide's pixel position relative to the viewport
+    * @return {this}
+    */
+    addSnapGuide(axis, position){
+        const exists = this._snap_guides.find((guide) => {
+            return guide.data('axis') === axis && guide.data('position') === position;
+        });
+
+        if(!exists){
+            const container = this.configs.snapGuideContainer || this.doc.find('body');
+            const rect = container.get(0).getBoundingClientRect();
+            const offsetX = rect.left;
+            const offsetY = rect.top;
+
+            const guide = new Dom('<div/>', {'class': `${guideClassName} snap-guide`})
+                .data('axis', axis)
+                .data('position', position)
+                .hide()
+                .appendTo(container);
+
+            if(axis === 'y'){
+                guide
+                    .css('left', `${-offsetX}px`)
+                    .css('top', `${position - offsetY}px`);
+            }
+            else{
+                guide
+                    .css('left', `${position - offsetX}px`)
+                    .css('top', `${-offsetY}px`);
+            }
+
+            this._snap_guides.push(guide);
+        }
+
+        return this;
+    }
+
+    /**
+    * Get the snap guides, optionally filtered by axis
+    *
+    * @param {String} [axis] The axis to filter guides by (x or y)
+    * @return {Array} The available snap guides
+    */
+    getSnapGuides(axis){
+        if(axis){
+            return this._snap_guides.filter((guide) => {
+                return guide.data('axis') === axis;
+            });
+        }
+
+        return this._snap_guides;
+    }
+
+    /**
+    * Snap the current state to the closes guide(s)
+    *
+    * @private
+    * @return {this}
+    */
+    applySnap(){
+        const state = this.getState();
+        const min_distances = {};
+        const closest = {};
+        const rect = this.configs.target.get(0).getBoundingClientRect();
+        const positions = {
+            'x': [],
+            'y': []
+        };
+
+        if(state.direction.includes('left')){
+            positions.x.push(rect.x + state.offsetX);
+        }
+        else if(state.direction.includes('right')){
+            positions.x.push(rect.x + rect.width + state.offsetX);
+        }
+        if(state.direction.includes('top')){
+            positions.y.push(rect.y + state.offsetY);
+        }
+        else if(state.direction.includes('bottom')){
+            positions.y.push(rect.y + rect.height + state.offsetY);
+        }
+
+        this.getSnapGuides().forEach((guide) => {
+            const axis = guide.data('axis');
+
+            guide.hide();
+
+            positions[axis].forEach((position) => {
+                const diff = guide.data('position') - position;
+                const distance = Math.abs(diff);
+                if(distance <= this.configs.snapThreshold){
+                    guide.show();
+
+                    if(!(axis in min_distances) || distance < min_distances[axis]){
+                        min_distances[axis] = distance;
+                        closest[axis] = diff;
+                    }
+                }
+            });
+        });
+
+        if('x' in closest){
+            state.offsetX += closest.x;
+            state.mouse.x += closest.x;
+        }
+        if('y' in closest){
+            state.offsetY += closest.y;
+            state.mouse.y += closest.y;
+        }
+
+        return this;
+    }
+
+    /**
+    * Remove all snap guides
+    *
+    * @return {this}
+    */
+    clearSnapGudies(){
+        this._snap_guides.forEach((guide) => {
+            guide.remove();
+        });
+
+        this._snap_guides = [];
+
+        return this;
     }
 
     /**
@@ -256,13 +422,16 @@ export default class Resizable {
      * @return {this}
      */
     destroy() {
-        this.disable();
+        this
+            .clearSnapGudies()
+            .disable();
 
         if(this.handles){
             Object.entries(this.handles).forEach(([, handle]) => {
                 handle.remove();
             });
         }
+
 
         return this;
     }

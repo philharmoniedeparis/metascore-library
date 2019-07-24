@@ -77,11 +77,11 @@ export default class Controller extends Dom {
         const middle = new Dom('<div/>', {'class': 'middle'})
             .appendTo(this);
 
-        const controls = new Dom('<div/>', {'class': 'controls'})
+        this.controls = new Dom('<div/>', {'class': 'controls'})
             .appendTo(middle);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
-            .appendTo(controls);
+            .appendTo(this.controls);
 
         new Dom('<button/>')
             .data('action', 'rewind')
@@ -290,6 +290,15 @@ export default class Controller extends Dom {
      */
     getTimeField(){
         return this.timefield;
+    }
+
+    /**
+     * Get the controls
+     *
+     * @return {Dom} The controls
+     */
+    getControls(){
+        return this.controls;
     }
 
     /**

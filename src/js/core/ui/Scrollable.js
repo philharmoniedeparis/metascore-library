@@ -6,10 +6,6 @@ import {className} from '../../../css/core/ui/Scrollable.less';
 /**
  * A class for adding resizable behaviors
  * Inspired by Vitor Buzinaro's SimpleScrollbar (https://github.com/buzinas/simple-scrollbar)
- *
- * @emits {resizestart} Fired when a resize started
- * @emits {resize} Fired when a resize occured
- * @emits {resizeend} Fired when a resize ended
  */
 export default class Scrollable {
 

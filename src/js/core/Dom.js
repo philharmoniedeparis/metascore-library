@@ -805,7 +805,7 @@ export default class Dom {
     }
 
     /**
-     * Get the first child , optionally filtered by a given CSS selector
+     * Get the first child, optionally filtered by a given CSS selector
      *
      * @param {String} [selector] The CSS selector
      * @return {Dom} A Dom object of the matched child
@@ -832,6 +832,30 @@ export default class Dom {
         }
 
         return parents;
+    }
+
+    /**
+     * Get all siblings, optionally filtered by a given CSS selector
+     *
+     * @param {String} [selector] The CSS selector
+     * @return {Dom} A Dom object of all matched siblings
+     */
+    siblings(selector){
+        let siblings = new Dom();
+
+        this.forEach((element) => {
+            Array.prototype.forEach.call(element.parentElement.children, (sibling) => {
+                if(sibling !== element){
+                    siblings.add(sibling);
+                }
+            });
+        });
+
+        if(selector){
+            siblings = siblings.filter(selector);
+        }
+
+        return siblings;
     }
 
     /**
@@ -941,14 +965,13 @@ export default class Dom {
      * @param {String} type The event type
      * @param {Function} callback The callback function to call when the event is captured
      * @param {Event} callback.event The original event
-     * @param {Mixed} [scope] The value to use as this when executing the callback function
      * @param {Boolean} [useCapture] Whether the event should be executed in the capturing or in the bubbling phase
      * @return {this}
      */
-    addDelegate(selector, type, callback, scope, useCapture) {
+    addDelegate(selector, type, callback, useCapture) {
         this.addListener(type, (evt) => {
             if(Dom.is(evt.target, selector)) {
-                callback.call(scope || this, evt);
+                callback(evt);
             }
         }, useCapture);
 
@@ -1207,7 +1230,8 @@ export default class Dom {
      * @return {Boolean} Whether the element is hidden or not
      */
     hidden() {
-        return this.css('display') === 'none';
+        const el = this.get(0);
+        return !(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
     }
 
     /**
