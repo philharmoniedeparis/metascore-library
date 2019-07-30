@@ -37,18 +37,6 @@ export default class Element extends Component{
                         this.data('name', value);
                     }
                 },
-                'locked': {
-                    'type': 'Checkbox',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.locked', 'Locked?')
-                    },
-                    'getter': function(){
-                        return this.data('locked') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('locked', value ? "true" : null);
-                    }
-                },
                 'x': {
                     'type': 'Number',
                     'configs': {

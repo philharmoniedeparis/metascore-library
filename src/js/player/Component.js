@@ -95,6 +95,15 @@ export default class Component extends Dom {
                         this.attr('id', value);
                     }
                 },
+                'locked': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.data('locked') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('locked', value ? "true" : null);
+                    }
+                },
             }
         };
     }

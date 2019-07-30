@@ -53,18 +53,6 @@ export default class Media extends Component{
                         return this.constructor.getType();
                     }
                 },
-                'locked': {
-                    'type': 'Checkbox',
-                    'configs': {
-                        'label': Locale.t('player.component.Media.locked', 'Locked?')
-                    },
-                    'getter': function(){
-                        return this.data('locked') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('locked', value ? "true" : null);
-                    }
-                },
                 'hidden': {
                     'type': 'Checkbox',
                     'configs': {

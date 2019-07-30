@@ -37,18 +37,6 @@ export default class BlockToggler extends Component{
                         this.data('name', value);
                     }
                 },
-                'locked': {
-                    'type': 'Checkbox',
-                    'configs': {
-                        'label': Locale.t('player.component.BlockToggler.locked', 'Locked?')
-                    },
-                    'getter': function(){
-                        return this.data('locked') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('locked', value ? "true" : null);
-                    }
-                },
                 'blocks': {
                     'type': 'Select',
                     'configs': {
