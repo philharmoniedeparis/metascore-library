@@ -561,14 +561,27 @@ export default class Cursor extends Element {
                     keyframe_position = parseInt(keyframe_position, 10);
                     keyframe_time = parseInt(keyframe_time, 10);
 
-                    if(keyframe_time <= time && ((keyframe_position < start_position) ^ reversed)){
-                        start_position = keyframe_position;
-                        start_time = keyframe_time;
-                    }
+                    if(reversed){
+                        if(keyframe_time <= time && keyframe_position <= start_position){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
 
-                    if(keyframe_time >= time && ((keyframe_position > end_position) ^ reversed)){
-                        end_position = keyframe_position;
-                        end_time = keyframe_time;
+                        if(keyframe_time >= time && keyframe_position >= end_position){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
+                    }
+                    else{
+                        if(keyframe_time <= time && keyframe_position >= start_position){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_time >= time && keyframe_position <= end_position){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
                     }
                 });
             }
@@ -631,14 +644,27 @@ export default class Cursor extends Element {
                     keyframe_position = parseInt(keyframe_position, 10);
                     keyframe_time = parseInt(keyframe_time, 10);
 
-                    if(keyframe_position <= pos && ((keyframe_time < start_time) ^ reversed)){
-                        start_position = keyframe_position;
-                        start_time = keyframe_time;
-                    }
+                    if(reversed){
+                        if(keyframe_position <= pos && keyframe_time <= start_time){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
 
-                    if(keyframe_position >= pos && ((keyframe_time > end_time) ^ reversed)){
-                        end_position = keyframe_position;
-                        end_time = keyframe_time;
+                        if(keyframe_position >= pos && keyframe_time >= end_time){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
+                    }
+                    else{
+                        if(keyframe_position <= pos && keyframe_time >= start_time){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_position >= pos && keyframe_time <= end_time){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
                     }
                 });
             }
