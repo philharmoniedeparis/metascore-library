@@ -4,6 +4,9 @@ const fs   = require('fs');
 class i18nExtractPlugin {
   constructor(options){
     this.options = options;
+
+    this.templates = this.walkSync(this.options.templates);
+
     this.entries = [];
   }
 
@@ -24,6 +27,21 @@ class i18nExtractPlugin {
       });
 
       this.updateTemplates();
+
+      this.templates.forEach((filepath) => {
+        const filename = path.basename(filepath);
+        const content = fs.readFileSync(filepath, "utf8");
+        const stats = fs.statSync(filepath);
+
+        compilation.assets[`i18n/${filename}`] = {
+          source: function() {
+            return content;
+          },
+          size: function() {
+            return stats.size;
+          }
+        };
+      });
 
       callback();
     });
@@ -57,7 +75,7 @@ class i18nExtractPlugin {
   }
 
   updateTemplates(){
-    this.walkSync(this.options.templates).forEach((filepath) => {
+    this.templates.forEach((filepath) => {
       let template = JSON.parse(fs.readFileSync(filepath, "utf8"));
       let content = {};
 

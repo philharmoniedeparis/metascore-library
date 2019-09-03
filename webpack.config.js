@@ -8,12 +8,9 @@ const pckg = require('./package.json');
 const BeepPlugin = require('./webpack/plugins/BeepPlugin');
 const ShellPlugin = require('./webpack/plugins/ShellPlugin');
 const i18nExtractPlugin = require('./webpack/plugins/i18nExtractPlugin');
-
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const LIB_NAME = pckg.name;
+const LIB_NAME = "metaScore";
 const DIST_DIR = path.join(__dirname, "dist");
 
 module.exports = (env, argv) => {
@@ -136,13 +133,8 @@ module.exports = (env, argv) => {
             'value': matches[5]
           };
         },
-        templates: './src/i18n'
+        templates: './src/i18n',
       }),
-      new CleanWebpackPlugin(DIST_DIR),
-      new CopyWebpackPlugin([{
-        from: './src/i18n/',
-        to: './i18n/'
-      }]),
       new BeepPlugin()
     ]
   };

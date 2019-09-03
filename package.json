@@ -29,8 +29,6 @@
     "autoprefixer": "^9.4.9",
     "babel-loader": "^8.0.5",
     "beepbeep": "^1.2.2",
-    "clean-webpack-plugin": "^1.0.1",
-    "copy-webpack-plugin": "^5.0.0",
     "copyfiles": "^2.1.0",
     "css-loader": "^2.1.0",
     "esdoc": "^1.1.0",
