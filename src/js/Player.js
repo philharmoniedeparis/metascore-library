@@ -738,33 +738,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * Update the loaded JSON data
-     *
-     * @param {Object} data The data key, value pairs to update
-     * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
-     * @return {this}
-     */
-    updateData(data, skipInternalUpdates){
-        Object.assign(this.json, data);
-
-        if(skipInternalUpdates !== true){
-            if('css' in data){
-                this.updateCSS(data.css);
-            }
-
-            if('media' in data){
-                this.getMedia().setSource(data.media);
-            }
-
-            if('vid' in data){
-                this.setRevision(data.vid);
-            }
-        }
-
-        return this;
-    }
-
-    /**
      * Get a component by CSS selector
      *
      * @param {String} selector The CSS selector

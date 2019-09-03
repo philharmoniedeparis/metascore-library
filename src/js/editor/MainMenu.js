@@ -29,80 +29,11 @@ export default class MainMenu extends Dom {
     setupUI() {
         this._items = {};
 
-        this._items.new = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.new', 'New')
-            })
-            .data('action', 'new')
-            .appendTo(this);
-
-        this._items.open = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.open', 'Open')
-            })
-            .data('action', 'open')
-            .appendTo(this);
-
-        this._items.edit = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.edit', 'Edit')
-            })
-            .data('action', 'edit')
-            .appendTo(this);
-
-        const btn_group = new Dom('<div/>', {'class': 'button-group save'})
-            .appendTo(this);
-
-        const sub_menu = new Dom('<div/>', {'class': 'sub-menu'})
-            .appendTo(btn_group);
-
         this._items.save = new Button()
             .attr({
-                'title': Locale.t('editor.MainMenu.save', 'Save as draft')
+                'title': Locale.t('editor.MainMenu.save', 'Save')
             })
             .data('action', 'save')
-            .appendTo(btn_group);
-
-        this._items.clone = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.clone', 'Save as copy')
-            })
-            .data('action', 'clone')
-            .appendTo(sub_menu);
-
-        this._items.publish = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.publish', 'Save & Publish')
-            })
-            .data('action', 'publish')
-            .appendTo(sub_menu);
-
-        this._items.delete = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.delete', 'Delete')
-            })
-            .data('action', 'delete')
-            .appendTo(this);
-
-        new Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
-        this._items.share = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.share', 'Share')
-            })
-            .data('action', 'share')
-            .appendTo(this);
-
-        this._items.download = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.download', 'Download')
-            })
-            .data('action', 'download')
-            .disable()
-            .appendTo(this);
-
-        new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'separator'})
@@ -154,27 +85,6 @@ export default class MainMenu extends Dom {
             .appendTo(this);
 
         new Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
-        this._items.help = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.help', 'Help')
-            })
-            .data('action', 'help')
-            .appendTo(this);
-
-        this._items.account = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.account', 'My Account')
-            })
-            .data('action', 'account')
-            .appendTo(this);
-
-        this._items.logout = new Button()
-            .attr({
-                'title': Locale.t('editor.MainMenu.logout', 'Logout')
-            })
-            .data('action', 'logout')
             .appendTo(this);
 
     }
