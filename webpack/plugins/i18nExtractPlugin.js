@@ -1,0 +1,73 @@
+const path = require('path');
+const fs   = require('fs');
+
+class i18nExtractPlugin {
+  constructor(options){
+    this.options = options;
+    this.entries = [];
+  }
+
+  apply(compiler) {
+    compiler.hooks.emit.tapAsync('i18nExtractPlugin', (compilation, callback) => {
+      compilation.fileDependencies.forEach((filepath) => {
+        const relative_filepath = path.relative(compiler.context, filepath);
+
+        if(this.options.exclude && this.options.exclude.test(relative_filepath)){
+          return;
+        }
+
+        if(this.options.test && !this.options.test.test(relative_filepath)){
+          return;
+        }
+
+        this.extract(relative_filepath);
+      });
+
+      this.updateTemplates();
+
+      callback();
+    });
+  }
+
+  walkSync(dir){
+    let files = [];
+
+    fs.readdirSync(dir).forEach((file) => {
+        let file_path = path.join(dir, file);
+
+        if(fs.lstatSync(file_path).isDirectory()){
+            files = files.concat(walkSync(file_path));
+        }
+        else{
+            files.push(file_path);
+        }
+    });
+
+    return files;
+}
+
+  extract(filepath){
+    let content = fs.readFileSync(filepath, "utf8");
+    let matches;
+
+    while ((matches = this.options.regexp.exec(content)) !== null) {
+      const {key, value} = this.options.fn(matches);
+      this.entries[key] = value;
+    }
+  }
+
+  updateTemplates(){
+    this.walkSync(this.options.templates).forEach((filepath) => {
+      let template = JSON.parse(fs.readFileSync(filepath, "utf8"));
+      let content = {};
+
+      Object.keys(this.entries).sort().forEach((key) => {
+          content[key] = key in template ? template[key] : this.entries[key];
+      });
+
+      fs.writeFileSync(filepath, JSON.stringify(content, null, '\t'));
+  });
+  }
+}
+
+module.exports = i18nExtractPlugin;

@@ -1,5 +1,5 @@
 {
-  "name": "metaScore",
+  "name": "metascore",
   "version": "1.2.7",
   "description": "metaScore",
   "homepage": "http://metascore.philharmoniedeparis.fr",
@@ -13,7 +13,6 @@
     "dev": "webpack -d -w",
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",
-    "i18n": "node ./bin/i18n-extract.js",
     "drupal": "git-branch-is -q drupal-8 && npm run drupal-8 || npm run drupal-7",
     "drupal-7": "copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore",
     "drupal-8": "copyfiles -u 1 dist/**/* ../Drupal-8.git/web/modules/custom/metascore_library/vendor/metaScore"

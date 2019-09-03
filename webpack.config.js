@@ -3,8 +3,11 @@
 const webpack = require('webpack');
 const path = require("path");
 const git = require('git-rev-sync');
-const beep = require('beepbeep');
 const pckg = require('./package.json');
+
+const BeepPlugin = require('./webpack/plugins/BeepPlugin');
+const ShellPlugin = require('./webpack/plugins/ShellPlugin');
+const i18nExtractPlugin = require('./webpack/plugins/i18nExtractPlugin');
 
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -12,66 +15,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const LIB_NAME = pckg.name;
 const DIST_DIR = path.join(__dirname, "dist");
-
-class BeepPlugin{
-  apply(compiler){
-    compiler.hooks.done.tap('BeepPlugin', (stats) => {
-      if(stats.compilation.errors && stats.compilation.errors.length){
-        beep(2);
-      }
-      else{
-        beep();
-      }
-    });
-  }
-}
-
-class ShellPlugin{
-  constructor(options){
-    this.options = options;
-  }
-
-  apply(compiler){
-    var exec = require('child_process').exec;
-
-    if('onBuildStart' in this.options){
-      compiler.hooks.compilation.tap('ShellPlugin', (compilation) => {
-        this.options.onBuildStart.forEach((script) => {
-          exec(script, (err, stdout, stderr) => {
-            if (stdout) process.stdout.write(stdout);
-            if (stderr) process.stderr.write(stderr);
-          });
-        });
-
-        this.options.onBuildStart = [];
-      });
-    }
-
-    if('onBuildExit' in this.options){
-      compiler.hooks.done.tap('ShellPlugin', (compilation) => {
-        this.options.onBuildExit.forEach((script) => {
-          exec(script, (err, stdout, stderr) => {
-            if (stdout) process.stdout.write(stdout);
-            if (stderr) process.stderr.write(stderr);
-          });
-        });
-      });
-    }
-
-    if('onBuildEnd' in this.options){
-      compiler.hooks.afterEmit.tap('ShellPlugin', (compilation) => {
-        this.options.onBuildEnd.forEach((script) => {
-          exec(script, (err, stdout, stderr) => {
-            if (stdout) process.stdout.write(stdout);
-            if (stderr) process.stderr.write(stderr);
-          });
-        });
-
-        this.options.onBuildEnd = [];
-      });
-    }
-  }
-}
 
 module.exports = (env, argv) => {
   const configs = {
@@ -183,17 +126,24 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
+      new i18nExtractPlugin({
+        test: /^src\\.*\.js$/,
+        exclude: /node_modules/,
+        regexp: /Locale\.t\((["'])((?:(?=(\\?))\3.)*?)\1, ?(["'])((?:(?=(\\?))\6.)*?)\4/gm,
+        fn: (matches) => {
+          return {
+            'key': matches[2],
+            'value': matches[5]
+          };
+        },
+        templates: './src/i18n'
+      }),
       new CleanWebpackPlugin(DIST_DIR),
       new CopyWebpackPlugin([{
         from: './src/i18n/',
         to: './i18n/'
       }]),
-      new BeepPlugin(),
-      new ShellPlugin({
-        onBuildExit: [
-          'echo "Extracting i18n" && npm run i18n'
-        ]
-      })
+      new BeepPlugin()
     ]
   };
 
