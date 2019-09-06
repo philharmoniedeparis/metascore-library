@@ -653,15 +653,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Guide revert confirm callback
-     *
-     * @private
-     */
-    onGuideRevertConfirm() {
-        this.loadPlayer();
-    }
-
-    /**
      * Keydown event callback
      *
      * @private
@@ -764,24 +755,11 @@ export default class Editor extends Dom {
     onMainmenuClick(evt){
         switch(Dom.data(evt.target, 'action')){
             case 'save':
-                this.saveGuide('update');
+                this.saveGuide();
                 break;
 
             case 'revert':
-                new Alert({
-                        'parent': this,
-                        'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
-                        'buttons': {
-                            'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
-                            'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
-                        },
-                        'autoShow': true
-                    })
-                    .addListener('buttonclick', (click_evt) => {
-                        if(click_evt.detail.action === 'confirm'){
-                            this.onGuideRevertConfirm();
-                        }
-                    });
+                this.showRevertDialog();
                 break;
 
             case 'undo':
@@ -2573,6 +2551,28 @@ export default class Editor extends Dom {
             .send();
 
         return this;
+    }
+
+    /**
+     * Show a confirm dialog to revert the guide to its last saved version
+     *
+     * @return {this}
+     */
+    showRevertDialog(){
+        new Alert({
+            'parent': this,
+            'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
+            'buttons': {
+                'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
+                'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
+            },
+            'autoShow': true
+        })
+        .addListener('buttonclick', (evt) => {
+            if(evt.detail.action === 'confirm'){
+                this.loadPlayer();
+            }
+        });
     }
 
     /**
