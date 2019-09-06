@@ -1563,7 +1563,7 @@ export default class Editor extends Dom {
             .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addDelegate('.metaScore-component.block', 'pageadd', this.onBlockPageAdd.bind(this))
-            .addDelegate('.metaScore-component.block', 'pageactivate', this.onBlockPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'activate', this.onPageActivate.bind(this))
             .addDelegate('.metaScore-component.page', 'elementadd', this.onPageElementAdd.bind(this))
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
@@ -1765,13 +1765,13 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Block pageactivate event callback
+     * Page activate event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onBlockPageActivate(evt){
-        const page = evt.detail.current;
+    onPageActivate(evt){
+        const page = evt.detail.page;
 
         if(page.getBlock() === this.panels.block.getComponent()){
             this.panels.page.setComponent(page);

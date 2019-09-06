@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import Draggable from '../core/ui/Draggable';
 import Resizable from '../core/ui/Resizable';
-import {isNumber, isFunction} from '../core/utils/Var';
+import {isFunction} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
 
@@ -24,8 +24,6 @@ export default class Component extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [container=null] The Dom instance to which the component should be appended
-     * @property {Integer} [index=null] The index position at which the component should be appended
      * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
      * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
      * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
@@ -53,24 +51,7 @@ export default class Component extends Dom {
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
 
-        if(this.configs.container){
-            if(isNumber(this.configs.index)){
-                this.insertAt(this.configs.container, this.configs.index);
-            }
-            else{
-                this.appendTo(this.configs.container);
-            }
-        }
-
-        if(this.configs.listeners){
-            Object.entries(this.configs.listeners).forEach(([key, value]) => {
-                this.addListener(key, value);
-            });
-        }
-
         this.setupUI();
-
-        this.setPropertyValues(this.configs);
     }
 
     /**
@@ -81,7 +62,6 @@ export default class Component extends Dom {
     static getDefaults(){
         return {
             'id': `component-${uuid(10)}`,
-            'container': null,
             'index': null,
             'draggable': true,
             'resizable': true,
@@ -133,6 +113,16 @@ export default class Component extends Dom {
      * @private
      */
     setupUI() {
+        return this;
+    }
+
+    /**
+     * Initialize property values with configs
+    *
+    * @return {this}
+     */
+    init(){
+        this.setPropertyValues(this.configs);
         return this;
     }
 
