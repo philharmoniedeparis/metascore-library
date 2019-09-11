@@ -1,0 +1,42 @@
+:local(.className){
+    height: 100%;
+
+    .content-wrapper{
+        display: flex;
+        flex-direction: row;
+        overflow-x: hidden;
+
+        .handles-container {
+            width: 10em;
+            flex: 0 0 auto;
+
+            .handle{
+                .info{
+                    border-right: 1px solid #7b7b7b;
+                }
+            }
+        }
+
+        .tracks-container {
+            flex: 1 1 auto;
+            position: relative;
+
+            .tracks-container-outer{
+                position: absolute;
+                width: 100%;
+                min-height: 100%;
+                overflow: hidden;
+
+                .playhead{
+                    position: fixed;
+                    pointer-events: none;
+                    z-index: 2;
+                }
+
+                .snap-guide{
+                    margin-top: 0 !important;
+                }
+            }
+        }
+    }
+}

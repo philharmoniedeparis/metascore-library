@@ -1,17 +1,19 @@
-import Dom from '../../core/Dom';
-import Locale from '../../core/Locale';
-import SliderField from '../field/Slider';
-import {toCentiseconds, toSeconds, formatTime} from '../../core/utils/Media';
+import Dom from '../../../core/Dom';
+import SliderField from '../../field/Slider';
+import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
+import Locale from '../../../core/Locale';
 
-import {className} from '../../../css/editor/controller/WaveformZoom.less';
+import {className} from '../../../../css/editor/controller/WaveformZoom.less';
 
 /**
  * A waveform zoomable view
  *
+ * @emits {playheadupdate} Fired when the playhead is updated
+ * @param {Number} time The time in centiseconds corresponding to playhead position
+ * @param {Number} position The playhead's position in pixels
  * @emits {playheadclick} Fired when the playhead is clicked
  * @param {Number} time The time in centiseconds corresponding to the click position
  * @emits {offsetupdate} Fired when the offset is updated
- * @param {Object} waveform The Waveform instance
  * @param {Number} start The start time of the offset in centiseconds
  * @param {Number} end The end time of the offset in centiseconds
  */
@@ -34,13 +36,18 @@ export default class Zoom extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `view zoom ${className}`});
+        super('<div/>', {'class': `waveform-zoom ${className}`});
 
         /**
          * The configuration values
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        this.onMousemove = this.onMousemove.bind(this);
+        this.onMouseup = this.onMouseup.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         /**
          * The current time
@@ -136,12 +143,6 @@ export default class Zoom extends Dom {
             })
             .appendTo(controls);
 
-
-        this.onMousemove = this.onMousemove.bind(this);
-        this.onMouseup = this.onMouseup.bind(this);
-        this.onMouseWheel = this.onMouseWheel.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
@@ -191,11 +192,9 @@ export default class Zoom extends Dom {
             canvas.height = this.height;
         });
 
-        if(!this.resampled_data){
-            this.resampleData();
-        }
-
-        this.setOffset(this.offset, true);
+        this
+            .resampleData()
+            .setOffset(this.offset, true);
 
         return this;
     }
@@ -232,16 +231,9 @@ export default class Zoom extends Dom {
         this.media.addListener('timeupdate', this.onMediaTimeUpdate);
         this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
 
-        /**
-         * The media's duration in centiseconds
-         * @type {Number}
-         */
-        this.duration = this.media.getDuration();
-
         this
             .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
-            .updateSize()
-            .update();
+            .updateSize();
 
         return this;
     }
@@ -309,7 +301,6 @@ export default class Zoom extends Dom {
      * @return {this}
      */
     clear(){
-        delete this.duration;
         delete this.waveformdata;
         delete this.resampled_data;
 
@@ -427,7 +418,8 @@ export default class Zoom extends Dom {
 
             if(this.resampled_data){
                 if(update_offset === true && !this._dragging){
-                    if(x < 0 || x > this.width - 10){
+                    // If the playhead is outside of the view area, update the offset.
+                    if(x < 0 || (x > this.width - 10 && this.resampled_data.adapter.length > this.offset + this.width)){
                         this.setOffset(this.offset + x - 10);
                         return this;
                     }
@@ -441,6 +433,8 @@ export default class Zoom extends Dom {
             context.lineWidth = this.configs.playheadWidth;
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
+
+            this.triggerEvent('playheadupdate', {'time': this.time, 'position': x});
         }
 
         return this;
@@ -548,7 +542,7 @@ export default class Zoom extends Dom {
                 this.zoom_in_btn.toggleClass('disabled', clamped <= min);
                 this.zoom_slider.setValue(scale, true);
 
-                const offset = this.resampled_data.at_time(this.time) - this.width/2;
+                const offset = this.resampled_data.at_time(toSeconds(this.time)) - this.width/2;
                 this.setOffset(offset, true);
             }
         }
@@ -634,7 +628,7 @@ export default class Zoom extends Dom {
      * @param {Event} evt The event object
      */
     onClick(evt){
-        if(!this.duration && !this.resampled_data){
+        if(!this.media && !this.resampled_data){
             return;
         }
 
@@ -662,7 +656,7 @@ export default class Zoom extends Dom {
          */
         this.time = evt.detail.time;
 
-        if(this.duration || this.resampled_data){
+        if(this.media || this.resampled_data){
             this.updatePlayhead(true);
         }
     }
@@ -701,8 +695,8 @@ export default class Zoom extends Dom {
         if(this.resampled_data && this.width > 0){
             let new_offset = offset;
 
-            new_offset = Math.max(0, new_offset);
             new_offset = Math.min(this.resampled_data.adapter.length - this.width, new_offset);
+            new_offset = Math.max(0, new_offset);
             new_offset = Math.round(new_offset);
 
             if(forceRedraw || new_offset !== this.offset){
@@ -752,8 +746,8 @@ export default class Zoom extends Dom {
         if(this.resampled_data){
             return toCentiseconds(this.resampled_data.time(x + this.offset));
         }
-        else if(this.duration){
-            return x * this.duration / this.width;
+        else if(this.media){
+            return x * this.media.getDuration() / this.width;
         }
 
         return null;
@@ -769,8 +763,8 @@ export default class Zoom extends Dom {
         if(this.resampled_data){
             return this.resampled_data.at_time(toSeconds(time)) - this.offset;
         }
-        else if(this.duration){
-            return Math.round(time / this.duration * this.width);
+        else if(this.media){
+            return Math.round(time / this.media.getDuration() * this.width);
         }
 
         return null;
@@ -787,8 +781,8 @@ export default class Zoom extends Dom {
             const adapter = this.resampled_data.adapter;
             return Math.floor(toSeconds(time) * adapter.sample_rate / adapter.scale);
         }
-        else if(this.duration){
-            return Math.round(time / this.duration * this.width);
+        else if(this.media){
+            return Math.round(time / this.media.getDuration() * this.width);
         }
 
         return null;

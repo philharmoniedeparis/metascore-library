@@ -1,3 +1,5 @@
+@import "../../core/theme";
+
 :local(.className){
     .input-wrapper{
         input[type="range"]{
@@ -13,7 +15,7 @@
             }
 
             &:hover{
-                background-color: #0000fe;
+                background-color: @metascore-blue;
             }
 
             &::-webkit-slider-thumb{
@@ -25,7 +27,7 @@
                 border: 2px solid #666;
 
                 &:hover{
-                    border-color: #0000fe;
+                    border-color: @metascore-blue;
                 }
             }
         }

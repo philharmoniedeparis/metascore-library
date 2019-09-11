@@ -1,7 +1,7 @@
-import Dom from '../../core/Dom';
-import {toCentiseconds, toSeconds} from '../../core/utils/Media';
+import Dom from '../../../core/Dom';
+import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
-import {className} from '../../../css/editor/controller/WaveformOverview.less';
+import {className} from '../../../../css/editor/controller/WaveformOverview.less';
 
 /**
  * A waveform overview
@@ -23,13 +23,18 @@ export default class Overview extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `view overview ${className}`});
+        super('<div/>', {'class': `waveform-overview ${className}`});
 
         /**
          * The configuration values
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        // fix event handlers scope
+        this.onMousemove = this.onMousemove.bind(this);
+        this.onMouseup = this.onMouseup.bind(this);
+        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
@@ -54,10 +59,6 @@ export default class Overview extends Dom {
          */
         this.playhead_layer = new Dom('<canvas/>', {'class': 'layer playhead'})
             .appendTo(layers);
-
-        this.onMousemove = this.onMousemove.bind(this);
-        this.onMouseup = this.onMouseup.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
@@ -135,12 +136,6 @@ export default class Overview extends Dom {
         this.media.addListener('timeupdate', this.onMediaTimeUpdate);
         this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
 
-        /**
-         * The media's duration in centiseconds
-         * @type {Number}
-         */
-        this.duration = this.media.getDuration();
-
         this
             .updateSize()
             .update();
@@ -183,7 +178,6 @@ export default class Overview extends Dom {
      * @return {this}
      */
     clear(){
-        delete this.duration;
         delete this.waveformdata;
         delete this.resampled_data;
 
@@ -282,11 +276,11 @@ export default class Overview extends Dom {
      * @private
      */
     onMousemove(evt){
-        if(!this.duration && !this.resampled_data){
+        if(!this.media && !this.resampled_data){
             return;
         }
 
-        const offset = evt.target.getBoundingClientRect();
+        const offset = this.get(0).getBoundingClientRect();
         const x = evt.pageX - offset.left;
         const time = this.getTimeAt(x);
 
@@ -327,7 +321,7 @@ export default class Overview extends Dom {
          */
         this.time = evt.detail.time;
 
-        if(this.duration || this.resampled_data){
+        if(this.media || this.resampled_data){
             this.updatePlayhead();
         }
     }
@@ -383,8 +377,11 @@ export default class Overview extends Dom {
         if(this.resampled_data){
             return toCentiseconds(this.resampled_data.time(x));
         }
+        else if(this.media){
+            return this.media.getDuration() * x / this.width;
+        }
 
-        return this.duration * x / this.width;
+        return null;
     }
 
     /**
@@ -397,8 +394,11 @@ export default class Overview extends Dom {
         if(this.resampled_data){
             return this.resampled_data.at_time(toSeconds(time));
         }
+        else if(this.media){
+            return time * this.width / this.media.getDuration();
+        }
 
-        return time * this.width / this.duration;
+        return null;
     }
 
     /**

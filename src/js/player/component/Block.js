@@ -9,12 +9,9 @@ import {isString, isNumber} from '../../core/utils/Var';
 /**
  * A block component
  *
- * @emits {pageadd} Fired when a page is added
- * @param {Block} block The block instance
- * @param {Page} page The page instance
- * @emits {pageremove} Fired when a page is removed
- * @param {Block} block The block instance
- * @param {Page} page The page instance
+ * @emits {componentadd} Fired when a page is added
+ * @param {Component} component The page instance
+ * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  * @emits {activepageset} Fired when the active page is set
  * @param {Block} block The block instance
  * @param {Page} page The active page instance
@@ -47,18 +44,6 @@ export default class Block extends Component {
                     },
                     'setter': function(value){
                         this.data('name', value);
-                    }
-                },
-                'locked': {
-                    'type': 'Checkbox',
-                    'configs': {
-                        'label': Locale.t('player.component.Block.locked', 'Locked?')
-                    },
-                    'getter': function(){
-                        return this.data('locked') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('locked', value ? "true" : null);
                     }
                 },
                 'hidden': {
@@ -226,14 +211,14 @@ export default class Block extends Component {
                     'getter': function(skipDefault, skipID){
                         const pages = [];
 
-                        this.getPages().forEach((page) => {
+                        this.getChildren().forEach((page) => {
                             pages.push(page.getPropertyValues(skipDefault, skipID));
                         });
 
                         return pages;
                     },
                     'setter': function(value){
-                        this.removeAllPages();
+                        this.removeAllChildren();
 
                         value.forEach((configs) => {
                             this.addPage(configs);
@@ -324,30 +309,50 @@ export default class Block extends Component {
     }
 
     /**
-     * Get the block's pages
+     * Get the child components
      *
-     * @return {Array} List of pages
+     * @return {Array} A list of child components
      */
-    getPages() {
-        const pages = [];
+    getChildren(){
+        const children = [];
 
-        this.page_wrapper.children('.page').forEach((dom) => {
-            pages.push(dom._metaScore);
+        this.page_wrapper.children('.metaScore-component').forEach((dom) => {
+            children.push(dom._metaScore);
         });
 
-        return pages;
+        return children;
     }
 
     /**
-     * Get a page by index
+     * Get the count of children
      *
-     * @param {Integer} index The page's index
-     * @return {Page} The page
+     * @return {Integer} The number of children
      */
-    getPage(index){
-        const page = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
+    getChildrenCount() {
+        return this.page_wrapper.children('.metaScore-component').count();
+    }
 
-        return page ? page._metaScore : null;
+    /**
+     * Get a child component by index
+     *
+     * @param {Integer} index The child's index
+     * @return {Component} The component
+     */
+    getChild(index){
+        const child = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
+
+        return child ? child._metaScore : null;
+    }
+
+    /**
+     * Remove all pages
+     *
+     * @return {this}
+     */
+    removeAllChildren() {
+        this.page_wrapper.children('.page').remove();
+
+        return this;
     }
 
     /**
@@ -355,17 +360,14 @@ export default class Block extends Component {
      *
      * @param {Object|Page} configs Page configs or an existing Page instance
      * @param {Integer} [index] The new page's index, page is appended if not given
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event
      * @return {Page} The added page
      */
     addPage(configs, index, supressEvent){
-        const existing = configs instanceof Page;
-        let page = null;
+        let page = configs;
+        const existing = page instanceof Page;
 
-        if(existing){
-            page = configs;
-        }
-        else{
+        if(!existing){
             page = new Page(configs);
         }
 
@@ -381,7 +383,7 @@ export default class Block extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('pageadd', {'block': this, 'page': page, 'new': !existing});
+            this.triggerEvent('componentadd', {'component': page, 'new': !existing});
         }
 
         this.setActivePage(page);
@@ -390,50 +392,12 @@ export default class Block extends Component {
     }
 
     /**
-     * Remove a page
-     *
-     * @param {Page} page The page to remove
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageremove event
-     * @return {Page} The removed page
-     */
-    removePage(page, supressEvent){
-        page.remove();
-
-        if(supressEvent !== true){
-            this.triggerEvent('pageremove', {'block': this, 'page': page});
-        }
-
-        return page;
-    }
-
-    /**
-     * Remove all pages
-     *
-     * @return {this}
-     */
-    removeAllPages() {
-        this.page_wrapper.children('.page').remove();
-
-        return this;
-    }
-
-    /**
-     * Get the index of a page
-     *
-     * @param {Page} page The page
-     * @return {Integer} The page's index
-     */
-    getPageIndex(page){
-        return this.getPages().indexOf(page);
-    }
-
-    /**
      * Get the currently active page
      *
      * @return {Page} The page
      */
     getActivePage() {
-        return this.getPage(this.getActivePageIndex());
+        return this.getChild(this.getActivePageIndex());
     }
 
     /**
@@ -443,15 +407,6 @@ export default class Block extends Component {
      */
     getActivePageIndex() {
         return this.page_wrapper.children('.page').index('.active');
-    }
-
-    /**
-     * Get the page count
-     *
-     * @return {Integer} The number of pages
-     */
-    getPageCount() {
-        return this.page_wrapper.children('.page').count();
     }
 
     /**
@@ -466,7 +421,7 @@ export default class Block extends Component {
         let _page = page;
 
         if(isNumber(page)){
-            _page = this.getPage(page);
+            _page = this.getChild(page);
         }
 
         if(_page instanceof Page && _page !== previous){
@@ -494,7 +449,7 @@ export default class Block extends Component {
      */
     updatePager() {
         const index = this.getActivePageIndex();
-        const count = this.getPageCount();
+        const count = this.getChildrenCount();
 
         this.pager.updateCount(index, count);
 
@@ -511,11 +466,7 @@ export default class Block extends Component {
     getDraggableConfigs(){
         return {
             'target': this,
-            'handle': this.child('.pager'),
-            'limits': {
-                'top': 0,
-                'left': 0
-            }
+            'handle': this.child('.pager')
         };
     }
 

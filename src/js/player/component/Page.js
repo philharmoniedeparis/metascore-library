@@ -21,9 +21,9 @@ const ELEMENT_TYPES = {
 /**
  * A page component
  *
- * @emits {elementadd} Fired when an element is added
- * @param {Object} page The page instance
- * @param {Object} element The element instance
+ * @emits {componentadd} Fired when an element is added
+ * @param {Object} component The element instance
+ * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  * @emits {activate} Fired when the page is activated
  * @param {Object} page The page instance
  * @emits {deactivate} Fired when the page is deactivated
@@ -32,6 +32,19 @@ const ELEMENT_TYPES = {
  * @emits {cuepointstop} Fired when a cuepoint stops
  */
 export default class Page extends Component {
+
+    /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Object} [properties={...}] A list of the component properties as name/descriptor pairs
+     */
+    constructor(configs){
+        // call parent constructor
+        super(configs);
+
+        this.addListener('propchange', this.onPropChange.bind(this));
+    }
 
     /**
     * Get the default config values
@@ -115,7 +128,7 @@ export default class Page extends Component {
                     'getter': function(skipDefault, skipID){
                         const elements = [];
 
-                        this.getElements().forEach((element) => {
+                        this.getChildren().forEach((element) => {
                             elements.push(element.getPropertyValues(skipDefault, skipID));
                         });
 
@@ -156,11 +169,18 @@ export default class Page extends Component {
         return this;
     }
 
+    getName(){
+        const block = this.getParent();
+        const index = block ? block.getChildIndex(this) + 1 : null;
+
+        return Locale.t('player.component.Page.name', 'page !index', {'!index': index});
+    }
+
     /**
      * Add an element
      *
      * @param {Object|Element} configs Element configs or an existing Element instance
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageadd event
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event
      * @return {Element} The element
      */
     addElement(configs, supressEvent){
@@ -172,6 +192,12 @@ export default class Page extends Component {
         }
         else{
             const type = element.type;
+
+            if(!(type in ELEMENT_TYPES)){
+                console.error(`Element of type "${type}" is not supported.`);
+                return null;
+            }
+
             const el_index = this.children(`.element.${type}`).count() + 1;
             let name = '';
 
@@ -189,7 +215,7 @@ export default class Page extends Component {
                     break;
             }
 
-            element = new ELEMENT_TYPES[configs.type](Object.assign({
+            element = new ELEMENT_TYPES[type](Object.assign({
                     'name': name,
                 }, element))
                 .appendTo(this)
@@ -197,36 +223,10 @@ export default class Page extends Component {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('elementadd', {'page': this, 'element': element, 'new': !existing});
+            this.triggerEvent('componentadd', {'component': element, 'new': !existing});
         }
 
         return element;
-    }
-
-    /**
-     * Get the block component this page belongs to
-     *
-     * @return {player.component.Block}
-     */
-    getBlock() {
-        const dom = this.closest('.metaScore-component.block');
-
-        return dom ? dom._metaScore : null;
-    }
-
-    /**
-     * Get the element components that belong to this page
-     *
-     * @return {Array} The list of elements
-     */
-    getElements() {
-        const elements = [];
-
-        this.children('.element').forEach((dom) => {
-            elements.push(dom._metaScore);
-        });
-
-        return elements;
     }
 
     /**
@@ -272,6 +272,24 @@ export default class Page extends Component {
         }
 
         return this;
+    }
+
+    onPropChange(evt){
+        const property = evt.detail.property;
+
+        if((property === 'start-time') || (property === 'end-time')){
+            const page = evt.detail.component;
+            const block = page.getParent();
+
+            if(block.getPropertyValue('synched')){
+                const index = block.getChildIndex(page);
+                const sibling_page = property === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
+
+                if(sibling_page){
+                    sibling_page.setPropertyValue(property === 'start-time' ? 'end-time' : 'start-time', evt.detail.value);
+                }
+            }
+        }
     }
 
     /**

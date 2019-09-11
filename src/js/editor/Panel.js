@@ -44,10 +44,6 @@ const FIELD_TYPES = {
  * @param {Component} component The component instance
  * @emits {componentunset} Fired when a component is unset
  * @param {Component} component The component instance
- * @emits {valueschange} Fired when a component's values change
- * @param {Component} component The component instance
- * @param {Object} old_values The component instance
- * @param {Object} new_values The component instance
  */
 export default class Panel extends Dom {
 
@@ -388,6 +384,7 @@ export default class Panel extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentset', {'component': component, 'count': this.components.length}, false);
+            component.triggerEvent('selected', {'component': component});
         }
 
         return this;
@@ -428,6 +425,7 @@ export default class Panel extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentunset', {'component': component, 'count': this.components.length}, false);
+            component.triggerEvent('deselected', {'component': component});
         }
 
         return this;
@@ -494,6 +492,11 @@ export default class Panel extends Dom {
      * @param {Event} evt The event object
      */
     onComponentPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
         const component = evt.detail.component;
         const property = evt.detail.property;
         const value = evt.detail.value;
@@ -547,8 +550,10 @@ export default class Panel extends Dom {
      */
     onComponentDrag(evt){
         const components = this.getComponents();
-        let offsetX = evt.detail.offsetX;
-        let offsetY = evt.detail.offsetY;
+        const state = evt.detail.behavior.getState();
+
+        let offsetX = state.offsetX;
+        let offsetY = state.offsetY;
 
         components.forEach((component) => {
             const left = parseInt(component.css('left'), 10);
@@ -585,20 +590,19 @@ export default class Panel extends Dom {
 
         this.refreshFieldValues(fields, true);
 
-        const values = this.components.map((component, index) => {
-            const new_values = {};
+        this.components.forEach((component, index) => {
             fields.forEach((field) => {
-                new_values[field] = component.getPropertyValue(field)
+                const value = component.getPropertyValue(field);
+                const old_value = this._before_drag_values[index][field];
+
+                component.triggerEvent('propchange', {
+                    'component': component,
+                    'property': field,
+                    'value': value,
+                    'old': old_value
+                });
             });
-
-            return {
-                component: component,
-                new_values: new_values,
-                old_values: this._before_drag_values[index],
-            };
         });
-
-        this.triggerEvent('valueschange', values, false);
 
         delete this._before_drag_values;
     }
@@ -628,8 +632,16 @@ export default class Panel extends Dom {
      *
      * @private
      */
-    onComponentResize(){
-        this.refreshFieldValues(['x', 'y', 'width', 'height'], true);
+    onComponentResize(evt){
+        const component = evt.target._metaScore;
+        const state = evt.detail.behavior.getState();
+
+        Object.entries(state.new_values).forEach(([key, value]) => {
+            component.css(key, `${value}px`);
+        });
+
+        const fields = ['x', 'y', 'width', 'height'];
+        this.refreshFieldValues(fields, true);
     }
 
     /**
@@ -640,15 +652,20 @@ export default class Panel extends Dom {
     onComponentResizeEnd(evt){
         const component = evt.target._metaScore;
         const fields = ['x', 'y', 'width', 'height'];
-        const new_values = {};
 
         this.refreshFieldValues(fields, true);
 
         fields.forEach((field) => {
-            new_values[field] = component.getPropertyValue(field)
-        });
+            const value = component.getPropertyValue(field);
+            const old_value = this._before_resize_values[field];
 
-        this.triggerEvent('valueschange', [{'component': component, 'old_values': this._before_resize_values, 'new_values': new_values}], false);
+            component.triggerEvent('propchange', {
+                'component': component,
+                'property': field,
+                'value': value,
+                'old': old_value
+            });
+        });
 
         delete this._before_resize_values;
     }
@@ -683,10 +700,6 @@ export default class Panel extends Dom {
         });
 
         this.toggleMultival(evt.detail.field, false);
-
-        this.triggerEvent('valueschange', values, false);
-
-
     }
 
     /**
@@ -725,8 +738,6 @@ export default class Panel extends Dom {
                     old_values: old_values
                 });
             });
-
-            this.triggerEvent('valueschange', values, false);
         });
     }
 

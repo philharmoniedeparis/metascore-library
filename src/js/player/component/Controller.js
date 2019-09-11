@@ -25,18 +25,6 @@ export default class Controller extends Component{
                         return this.constructor.getType();
                     }
                 },
-                'locked': {
-                    'type': 'Checkbox',
-                    'configs': {
-                        'label': Locale.t('player.component.Controller.locked', 'Locked?')
-                    },
-                    'getter': function(){
-                        return this.data('locked') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('locked', value ? "true" : null);
-                    }
-                },
                 'hidden': {
                     'type': 'Checkbox',
                     'configs': {

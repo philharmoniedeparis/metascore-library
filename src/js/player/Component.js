@@ -75,6 +75,15 @@ export default class Component extends Dom {
                         this.attr('id', value);
                     }
                 },
+                'locked': {
+                    'editable': false,
+                    'getter': function(){
+                        return this.data('locked') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('locked', value ? "true" : null);
+                    }
+                },
             }
         };
     }
@@ -142,6 +151,15 @@ export default class Component extends Dom {
      */
     getName() {
         return this.getPropertyValue('name');
+    }
+
+    /**
+     * Get the component's type
+     *
+     * @return {String} The component's type
+     */
+    getType() {
+        return this.constructor.getType();
     }
 
     /**
@@ -269,10 +287,13 @@ export default class Component extends Dom {
         if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
             const old_value = this.getPropertyValue(name);
 
-            this.configs.properties[name].setter.call(this, value);
+            // Only update if the value has changed
+            if(old_value !== value){
+                this.configs.properties[name].setter.call(this, value);
 
-            if(supressEvent !== true){
-                this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
+                if(supressEvent !== true){
+                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
+                }
             }
         }
 
@@ -304,6 +325,74 @@ export default class Component extends Dom {
         this.setPropertyValue('hidden', !(typeof show === 'undefined' ? this.getPropertyValue('hidden') : show));
 
         return this;
+    }
+
+    /**
+     * Get the parent component
+     *
+     * @return {Component} The parent component
+     */
+    getParent(){
+        const dom = this.parents().closest('.metaScore-component');
+
+        return dom ? dom._metaScore : null;
+    }
+
+    /**
+     * Get the child components
+     *
+     * @return {Array} A list of child components
+     */
+    getChildren(){
+        const children = [];
+
+        this.children('.metaScore-component').forEach((dom) => {
+            children.push(dom._metaScore);
+        });
+
+        return children;
+    }
+
+    /**
+     * Get the count of children
+     *
+     * @return {Integer} The number of children
+     */
+    getChildrenCount() {
+        return this.children('.metaScore-component').count();
+    }
+
+    /**
+     * Remove all pages
+     *
+     * @return {this}
+     */
+    removeAllChildren() {
+        this.children('.metaScore-component').remove();
+
+        return this;
+    }
+
+    /**
+     * Get a child component by index
+     *
+     * @param {Integer} index The child's index
+     * @return {Component} The component
+     */
+    getChild(index){
+        const child = this.child(`.metaScore-component:nth-child(${index+1})`).get(0);
+
+        return child ? child._metaScore : null;
+    }
+
+    /**
+     * Get the index of a child component
+     *
+     * @param {Component} child The child component
+     * @return {Integer} The child's index
+     */
+    getChildIndex(child){
+        return this.getChildren().indexOf(child);
     }
 
     /**
@@ -401,22 +490,22 @@ export default class Component extends Dom {
      * @return {this}
      */
     setCuePoint(configs, supressEvent){
-        const inTime = this.getPropertyValue('start-time');
-        const outTime = this.getPropertyValue('end-time');
+        const start_time = this.getPropertyValue('start-time');
+        const end_time = this.getPropertyValue('end-time');
 
         if(this.cuepoint){
             this.cuepoint.deactivate();
             delete this.cuepoint;
         }
 
-        if(inTime !== null || outTime !== null){
+        if(start_time !== null || end_time !== null){
             /**
              * A cuepoint associated with the component
              * @type {CuePoint}
              */
             this.cuepoint = new CuePoint(Object.assign({}, configs, {
-                'inTime': inTime,
-                'outTime': outTime
+                'inTime': start_time,
+                'outTime': end_time
             }));
 
             if(supressEvent !== true){

@@ -343,6 +343,11 @@ export default class Cursor extends Element {
      * @param {Event} evt The event object
      */
     onPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
         switch(evt.detail.property){
             case 'width':
             case 'height':

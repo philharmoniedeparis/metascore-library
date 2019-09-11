@@ -30,18 +30,9 @@ import {className} from '../css/Player.less';
  * @emits {revisionset} Fired when the vid is set
  * @param {Object} player The player instance
  * @param {Integer} vid The guide's vid
- * @emits {mediaadd} Fired when the media is added
- * @param {Object} player The player instance
- * @param {Object} media The media instance
- * @emits {controlleradd} Fired when the controller is added
- * @param {Object} player The player instance
- * @param {Object} controller The controller instance
- * @emits {blocktoggleradd} Fired when a block toggler is added
- * @param {Object} player The player instance
- * @param {Object} blocktoggler The blocktoggler instance
- * @emits {blockadd} Fired when a block is added
- * @param {Object} player The player instance
- * @param {Object} block The block instance
+ * @emits {componentadd} Fired when a component is added
+ * @param {Object} component The component instance
+ * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  * @emits {rindex} Fired when the reading index is set
  * @param {Object} player The player instance
  * @param {Object} value The reading index value
@@ -142,9 +133,10 @@ export default class Player extends Dom {
             }})
             .appendTo(this);
 
-        this.appendTo(this.configs.container);
-
-        this.triggerEvent('ready', {'player': this}, false, false);
+        this
+            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
+            .appendTo(this.configs.container)
+            .triggerEvent('ready', {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
             this.load();
@@ -468,7 +460,7 @@ export default class Player extends Dom {
         const page = evt.detail.page;
         const rindex = this.getReadingIndex();
 
-        page.getElements().forEach((element) => {
+        page.getChildren().forEach((element) => {
             const el_rindex = element.getPropertyValue('r-index');
             if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
                 element.activate();
@@ -488,7 +480,7 @@ export default class Player extends Dom {
     onPageDeactivate(evt){
         const page = evt.detail.page;
 
-        page.getElements().forEach((element) => {
+        page.getChildren().forEach((element) => {
             element.deactivate();
         });
     }
@@ -791,6 +783,33 @@ export default class Player extends Dom {
     }
 
     /**
+     * Update the loaded JSON data
+     *
+     * @param {Object} data The data key, value pairs to update
+     * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
+     * @return {this}
+     */
+    updateData(data, skipInternalUpdates){
+        Object.assign(this.json, data);
+
+        if(skipInternalUpdates !== true){
+            if('css' in data){
+                this.updateCSS(data.css);
+            }
+
+            if('media' in data){
+                this.getMedia().setSource(data.media);
+            }
+
+            if('vid' in data){
+                this.setRevision(data.vid);
+            }
+        }
+
+        return this;
+    }
+
+    /**
      * Get a component by CSS selector
      *
      * @param {String} selector The CSS selector
@@ -823,13 +842,14 @@ export default class Player extends Dom {
      * Create and add a Media instance
      *
      * @param {Object} configs The configurations to send to the Media class
-     * @param {Boolean} [supressEvent=false] Whether to supress the mediadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
         let media = configs;
+        const existing = media instanceof Media;
 
-        if(media instanceof Media){
+        if(existing){
             media.appendTo(this);
         }
         else{
@@ -849,7 +869,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('mediaadd', {'player': this, 'media': media}, true, false);
+            this.triggerEvent('componentadd', {'component': media, 'new': !existing}, true, false);
         }
 
         return media;
@@ -859,13 +879,14 @@ export default class Player extends Dom {
      * Create and add a Controller instance
      *
      * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
         let controller = configs;
+        const existing = controller instanceof Controller;
 
-        if(controller instanceof Controller){
+        if(existing){
             controller.appendTo(this);
         }
         else{
@@ -876,7 +897,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('controlleradd', {'player': this, 'controller': controller}, true, false);
+            this.triggerEvent('componentadd', {'component': controller, 'new': !existing}, true, false);
         }
 
         return controller;
@@ -886,13 +907,14 @@ export default class Player extends Dom {
      * Create and add a Block Toggler instance
      *
      * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Whether to supress the controlleradd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
         let block_toggler = configs;
+        const existing = block_toggler instanceof BlockToggler;
 
-        if(block_toggler instanceof BlockToggler){
+        if(existing){
             block_toggler.appendTo(this);
         }
         else{
@@ -904,7 +926,7 @@ export default class Player extends Dom {
         this.updateBlockToggler(block_toggler);
 
         if(supressEvent !== true){
-            this.triggerEvent('blocktoggleradd', {'player': this, 'blocktoggler': block_toggler}, true, false);
+            this.triggerEvent('componentadd', {'component': block_toggler, 'new': !existing}, true, false);
         }
 
         return block_toggler;
@@ -914,13 +936,14 @@ export default class Player extends Dom {
      * Create and add a Block instance
      *
      * @param {Object} configs The configurations to send to the Block class
-     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Block} The Block instance
      */
     addBlock(configs, supressEvent){
         let block = configs;
+        const existing = block instanceof Block;
 
-        if(block instanceof Block){
+        if(existing){
             block.appendTo(this);
         }
         else{
@@ -937,7 +960,7 @@ export default class Player extends Dom {
                 .init();
         }
 
-        if(block.getPageCount() === 0){
+        if(block.getChildrenCount() === 0){
             // add a page
             const page_configs = {};
             if(block.getPropertyValue('synched')){
@@ -948,7 +971,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('blockadd', {'player': this, 'block': block}, true, false);
+            this.triggerEvent('componentadd', {'component': block, 'new': !existing}, true, false);
         }
 
         return block;
@@ -1059,7 +1082,7 @@ export default class Player extends Dom {
             this.data('r-index', rindex !== 0 ? rindex : null);
 
             this.getComponents('.block').forEach((block) => {
-                block.getActivePage().getElements().forEach((element) => {
+                block.getActivePage().getChildren().forEach((element) => {
                     const el_rindex = element.getPropertyValue('r-index');
                     if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
                         element.activate();

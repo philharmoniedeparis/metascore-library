@@ -1,0 +1,76 @@
+:local(.bodyClassName) * {
+    user-select: none !important;
+}
+
+:local(.className){
+    .resize-handle{
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        z-index: 2147483647;
+
+        &[data-direction="top"]{
+            top: 0px;
+            left: 50%;
+            margin-left: -5px;
+            cursor: n-resize;
+        }
+        &[data-direction="right"]{
+            right: 0px;
+            top: 50%;
+            margin-top: -5px;
+            cursor: e-resize;
+        }
+        &[data-direction="bottom"]{
+            bottom: 0px;
+            left: 50%;
+            margin-left: -5px;
+            cursor: s-resize;
+        }
+        &[data-direction="left"]{
+            left: 0px;
+            top: 50%;
+            margin-top: -5px;
+            cursor: w-resize;
+        }
+
+        &[data-direction="top-right"]{
+            top: 0px;
+            right: 0px;
+            cursor: ne-resize;
+        }
+        &[data-direction="top-left"]{
+            top: 0px;
+            left: 0px;
+            cursor: nw-resize;
+        }
+        &[data-direction="bottom-left"]{
+            bottom: 0px;
+            left: 0px;
+            cursor: sw-resize;
+        }
+        &[data-direction="bottom-right"]{
+            bottom: 0px;
+            right: 0px;
+            cursor: se-resize;
+        }
+    }
+}
+
+:local(.guideClassName){
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(255, 0, 0, 0.5);
+    z-index: 2147483647;
+
+    &[data-axis="x"]{
+        width: 1px;
+        height: 100%;
+    }
+
+    &[data-axis="y"]{
+        width: 100%;
+        height: 1px;
+    }
+}

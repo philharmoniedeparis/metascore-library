@@ -1,26 +1,28 @@
+@import "./core/theme";
+
 @keyframes pulsate {
     from{
         box-shadow: none;
     }
 
     to{
-        box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 254, 1);
+        box-shadow: inset 0px 0px 10px 2px @metascore-blue;
     }
 };
 
 ::-webkit-scrollbar{
     -webkit-appearance: none;
-    background-color: #d8d8d8;
-    width: 8px;
-    height: 8px;
+    background-color: @scrollbar-track-color;
+    width: @scrollbar-width;
+    height: @scrollbar-thumb-min-height;
 }
 ::-webkit-scrollbar-thumb{
     border-radius: 0;
-    background-color: #818181;
+    background-color: @scrollbar-thumb-color;
 
     &:active,
     &:hover{
-        background-color: #0000fe;
+        background-color: @scrollbar-thumb-active-color;
     }
 }
 html,
@@ -139,7 +141,7 @@ body{
             background: #ccc;
 
             &:hover{
-                background: #0000fe;
+                background: @metascore-blue;
                 color: #fff;
                 opacity: 1;
             }
@@ -217,6 +219,20 @@ body{
             max-width: 500px;
             background: #f2f2f2;
             border-left: 1px solid #b2b2b2;
+
+            .resize-handle{
+                position: relative;
+                top: 0;
+                width: 9px;
+                height: 100%;
+                margin-top: 0;
+                cursor: col-resize;
+                background: #e6e6e6 url('../img/editor/sidebar/resizer-handle.png') no-repeat center center;
+
+                &:hover{
+                    background-color: #d9d9d9;
+                }
+            }
         }
     }
 
@@ -272,16 +288,6 @@ body{
             margin: 0;
             padding: 0;
             border: none;
-        }
-    }
-
-    .resize-handle{
-        width: 9px;
-        cursor: col-resize;
-        background: #e6e6e6 url('../img/editor/sidebar/resizer-handle.png') no-repeat center center;
-
-        &:hover{
-            background-color: #d9d9d9;
         }
     }
 

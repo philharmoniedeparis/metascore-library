@@ -65,8 +65,8 @@ export default class Element extends Panel {
      * @return {String} The component's label for use in the selector
      */
     getSelectorLabel(component){
-        const page = component.getPage();
-        const block = page.getBlock();
+        const page = component.getParent();
+        const block = page.getParent();
         let out_of_range = false;
 
         if(block.getPropertyValue('synched')){
@@ -283,8 +283,6 @@ export default class Element extends Panel {
             _results.forEach((result) => {
                 this.setPropertyValues(result.component, result.new_values);
             });
-
-            this.triggerEvent('valueschange', results, false);
         });
     }
 
@@ -324,6 +322,11 @@ export default class Element extends Panel {
      * @param {Event} evt The event object
      */
     onCursorPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
         const component = evt.detail.component;
         const mode = component.getPropertyValue('mode');
 
@@ -356,7 +359,7 @@ export default class Element extends Panel {
 
         const direction = component.getPropertyValue('direction');
         const vertical = direction === 'top' || direction === 'bottom';
-        const old_value = vertical ? evt.detail.start_state.h : evt.detail.start_state.w;
+        const old_value = vertical ? evt.detail.start_state.height : evt.detail.start_state.width;
         const new_value = vertical ? component.getPropertyValue('height') : component.getPropertyValue('width');
 
         this.repositionCursorKeyframes(component, new_value / old_value);
