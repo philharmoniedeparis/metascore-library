@@ -451,14 +451,72 @@ export default class Player extends Dom {
     }
 
     /**
-     * Block pageactivate event callback
+     * Page activate event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
     onPageActivate(evt){
-        const block = evt.target._metaScore;
-        const page = evt.detail.current;
+        const page = evt.detail.page;
+        const rindex = this.getReadingIndex();
+
+        page.getChildren().forEach((element) => {
+            const el_rindex = element.getPropertyValue('r-index');
+            if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                element.activate();
+            }
+            else{
+                element.deactivate();
+            }
+        });
+    }
+
+    /**
+     * Page deactivate event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPageDeactivate(evt){
+        const page = evt.detail.page;
+
+        page.getChildren().forEach((element) => {
+            element.deactivate();
+        });
+    }
+
+    /**
+     * Page elementadd event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPageElementAdd(evt){
+        const page = evt.detail.page;
+
+        if(page.isActive()){
+            const element = evt.detail.element;
+            const rindex = this.getReadingIndex();
+            const el_rindex = element.getPropertyValue('r-index');
+
+            if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                element.activate();
+            }
+            else{
+                element.deactivate();
+            }
+        }
+    }
+
+    /**
+     * Block activepageset event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onBlockActivePageSet(evt){
+        const block = evt.detail.block;
+        const page = evt.detail.page;
 
         if(block.getPropertyValue('synched')){
             this.getMedia().setTime(page.getPropertyValue('start-time'));
@@ -576,12 +634,7 @@ export default class Player extends Dom {
             .setInternalValue(this.json.css)
             .appendTo(document.head);
 
-        /**
-         * A stylesheet for dynamic r-index manipulation
-         * @type {StyleSheet}
-         */
-        this.rindex_css = new StyleSheet()
-            .appendTo(document.head);
+        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
 
         this.json.blocks.forEach((block) => {
             switch(block.type){
@@ -789,21 +842,18 @@ export default class Player extends Dom {
      * Create and add a Media instance
      *
      * @param {Object} configs The configurations to send to the Media class
-     * @param {Boolean} [supressEvent=false] Whether to supress the mediadd event or not
+     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Media} The Media instance
      */
     addMedia(configs, supressEvent){
-        const existing = configs instanceof Media;
-        let media = null;
+        let media = configs;
+        const existing = media instanceof Media;
 
         if(existing){
-            media = configs;
             media.appendTo(this);
         }
         else{
-            media = new Media(Object.assign({}, configs, {
-                    'container': this
-                }))
+            media = new Media(media)
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))
@@ -813,11 +863,13 @@ export default class Player extends Dom {
                 .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
                 .addListener('suspend', this.onMediaSuspend.bind(this))
                 .addListener('stalled', this.onMediaStalled.bind(this))
-                .addListener('error', this.onMediaError.bind(this));
+                .addListener('error', this.onMediaError.bind(this))
+                .appendTo(this)
+                .init();
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': media, 'new': existing}, true, false);
+            this.triggerEvent('componentadd', {'component': media, 'new': !existing}, true, false);
         }
 
         return media;
@@ -831,22 +883,21 @@ export default class Player extends Dom {
      * @return {Controller} The Controller instance
      */
     addController(configs, supressEvent){
-        const existing = configs instanceof Controller;
-        let controller = null;
+        let controller = configs;
+        const existing = controller instanceof Controller;
 
         if(existing){
-            controller = configs;
             controller.appendTo(this);
         }
         else{
-            controller = new Controller(Object.assign({}, configs, {
-                    'container': this
-                }))
-                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this));
+            controller = new Controller(controller)
+                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
+                .appendTo(this)
+                .init();
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': controller, 'new': existing}, true, false);
+            this.triggerEvent('componentadd', {'component': controller, 'new': !existing}, true, false);
         }
 
         return controller;
@@ -860,23 +911,22 @@ export default class Player extends Dom {
      * @return {BlockToggler} The Block Toggler instance
      */
     addBlockToggler(configs, supressEvent){
-        const existing = configs instanceof BlockToggler;
-        let block_toggler = null;
+        let block_toggler = configs;
+        const existing = block_toggler instanceof BlockToggler;
 
         if(existing){
-            block_toggler = configs;
             block_toggler.appendTo(this);
         }
         else{
-            block_toggler = new BlockToggler(Object.assign({}, block_toggler, {
-                'container': this
-            }));
+            block_toggler = new BlockToggler(block_toggler)
+                .appendTo(this)
+                .init();
         }
 
         this.updateBlockToggler(block_toggler);
 
         if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': block_toggler, 'new': existing}, true, false);
+            this.triggerEvent('componentadd', {'component': block_toggler, 'new': !existing}, true, false);
         }
 
         return block_toggler;
@@ -890,22 +940,24 @@ export default class Player extends Dom {
      * @return {Block} The Block instance
      */
     addBlock(configs, supressEvent){
-        const existing = configs instanceof Block;
-        let block = null;
+        let block = configs;
+        const existing = block instanceof Block;
 
         if(existing){
-            block = configs;
             block.appendTo(this);
         }
         else{
-            block = new Block(Object.assign({}, configs, {
-                    'container': this
-                }))
-                .addListener('pageactivate', this.onPageActivate.bind(this))
+            block = new Block(block)
+                .addListener('activepageset', this.onBlockActivePageSet.bind(this))
+                .addDelegate('.page', 'activate', this.onPageActivate.bind(this))
+                .addDelegate('.page', 'deactivate', this.onPageDeactivate.bind(this))
+                .addDelegate('.page', 'elementadd', this.onPageElementAdd.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
-                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this));
+                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this))
+                .appendTo(this)
+                .init();
         }
 
         if(block.getChildrenCount() === 0){
@@ -919,7 +971,7 @@ export default class Player extends Dom {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': block, 'new': existing}, true, false);
+            this.triggerEvent('componentadd', {'component': block, 'new': !existing}, true, false);
         }
 
         return block;
@@ -964,7 +1016,6 @@ export default class Player extends Dom {
      * @return {this}
      */
     play(inTime, outTime, rIndex){
-        const player = this;
         const media = this.getMedia();
 
         if(this.cuepoint){
@@ -990,13 +1041,13 @@ export default class Player extends Dom {
                 'considerError': true
             })
             .addListener('start', () => {
-                player.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
+                this.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
             })
             .addListener('seekout', (evt) => {
                 evt.target.deactivate();
-                delete player.cuepoint;
+                delete this.cuepoint;
 
-                player.setReadingIndex(0);
+                this.setReadingIndex(0);
             })
             .addListener('stop', (evt) => {
                 evt.target.getMedia().pause();
@@ -1022,29 +1073,28 @@ export default class Player extends Dom {
     /**
      * Set the current reading index
      *
-     * @param {Integer} index The reading index
+     * @param {Integer} rindex The reading index
      * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
      * @return {this}
      */
-    setReadingIndex(index, supressEvent){
-        if(index !== this.getReadingIndex()){
-            this.rindex_css.removeRules();
+    setReadingIndex(rindex, supressEvent){
+        if(rindex !== this.getReadingIndex()){
+            this.data('r-index', rindex !== 0 ? rindex : null);
 
-            if(index !== 0){
-                this.rindex_css
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]`, 'display: block;')
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]), .metaScore-component.element[data-r-index="${index}"].active`, 'pointer-events: auto;')
-                    .addRule(`.metaScore-component.element[data-r-index="${index}"]:not([data-start-time]) .contents, .metaScore-component.element[data-r-index="${index}"].active .contents`, 'visibility: visible; pointer-events: auto;')
-                    .addRule(`.in-editor.editing.show-contents .metaScore-component.element[data-r-index="${index}"] .contents`, 'visibility: visible; pointer-events: auto;');
-
-                this.data('r-index', index);
-            }
-            else{
-                this.data('r-index', null);
-            }
+            this.getComponents('.block').forEach((block) => {
+                block.getActivePage().getChildren().forEach((element) => {
+                    const el_rindex = element.getPropertyValue('r-index');
+                    if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                        element.activate();
+                    }
+                    else{
+                        element.deactivate();
+                    }
+                });
+            });
 
             if(supressEvent !== true){
-                this.triggerEvent('rindex', {'player': this, 'value': index}, true, false);
+                this.triggerEvent('rindex', {'player': this, 'value': rindex}, true, false);
             }
         }
 
@@ -1076,7 +1126,7 @@ export default class Player extends Dom {
         if(ids === null){
             // If ids is not an array, return all blocks for backwards compatibility.
             // See BlockToggler's blocks property
-            blocks = this.getComponents(`.block, .controller, .media.video`);
+            blocks = this.getComponents('.block, .controller, .media.video');
         }
         else if(!isEmpty(ids)){
             blocks = this.getComponents(`#${ids.join(', #')}`);

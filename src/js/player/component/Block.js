@@ -12,11 +12,9 @@ import {isString, isNumber} from '../../core/utils/Var';
  * @emits {componentadd} Fired when a page is added
  * @param {Component} component The page instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
- * @emits {pageactivate} Fired when the active page is set
+ * @emits {activepageset} Fired when the active page is set
  * @param {Block} block The block instance
- * @param {Page} current The currently active page instance
- * @param {Page} previous The previously active page instance
- * @param {String} basis The reason behind this action
+ * @param {Page} page The active page instance
  */
 export default class Block extends Component {
 
@@ -366,24 +364,22 @@ export default class Block extends Component {
      * @return {Page} The added page
      */
     addPage(configs, index, supressEvent){
-        const existing = configs instanceof Page;
-        let page = null;
+        let page = configs;
+        const existing = page instanceof Page;
 
-        if(existing){
-            page = configs;
+        if(!existing){
+            page = new Page(configs);
+        }
 
-            if(isNumber(index)){
-                page.insertAt(this.page_wrapper, index);
-            }
-            else{
-                page.appendTo(this.page_wrapper);
-            }
+        if(isNumber(index)){
+            page.insertAt(this.page_wrapper, index);
         }
         else{
-            page = new Page(Object.assign({}, configs, {
-                'container': this.page_wrapper,
-                'index': index
-            }));
+            page.appendTo(this.page_wrapper);
+        }
+
+        if(!existing){
+            page.init();
         }
 
         if(supressEvent !== true){
@@ -417,7 +413,7 @@ export default class Block extends Component {
      * Set the active page
      *
      * @param {Mixed} page The page to activate or its index
-     * @param {Boolean} [supressEvent=false] Whether to supress the pageactivate event
+     * @param {Boolean} [supressEvent=false] Whether to supress the page activate/deactivate events
      * @return {this}
      */
     setActivePage(page, supressEvent){
@@ -428,17 +424,17 @@ export default class Block extends Component {
             _page = this.getChild(page);
         }
 
-        if(_page instanceof Page){
-			this.getChildren().forEach((other_page) => {
-                other_page.deactivate();
-            });
+        if(_page instanceof Page && _page !== previous){
+            if(previous){
+                previous.deactivate();
+            }
 
             _page.activate();
 
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent('pageactivate', {'block': this, 'current': _page, 'previous': previous});
+                this.triggerEvent('activepageset', {'block': this, 'page': _page});
             }
         }
 

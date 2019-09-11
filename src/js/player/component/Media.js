@@ -239,10 +239,10 @@ export default class Media extends Component{
              * @type {Dom}
              */
             this.renderer = new renderer({'type': this.configs.type})
-                .appendTo(this)
                 .addListener('ready', (evt) => {
                     evt.detail.renderer.setSource(source, supressEvent);
                 })
+                .appendTo(this)
                 .init();
         }
 

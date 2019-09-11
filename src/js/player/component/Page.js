@@ -24,6 +24,10 @@ const ELEMENT_TYPES = {
  * @emits {componentadd} Fired when an element is added
  * @param {Object} component The element instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
+ * @emits {activate} Fired when the page is activated
+ * @param {Object} page The page instance
+ * @emits {deactivate} Fired when the page is deactivated
+ * @param {Object} page The page instance
  * @emits {cuepointstart} Fired when a cuepoint started
  * @emits {cuepointstop} Fired when a cuepoint stops
  */
@@ -180,15 +184,20 @@ export default class Page extends Component {
      * @return {Element} The element
      */
     addElement(configs, supressEvent){
-        const existing = configs instanceof Element;
-        let element = null;
+        let element = configs;
+        const existing = element instanceof Element;
 
         if(existing){
-            element = configs;
             element.appendTo(this);
         }
         else{
-            const type = configs.type;
+            const type = element.type;
+
+            if(!(type in ELEMENT_TYPES)){
+                console.error(`Element of type "${type}" is not supported.`);
+                return null;
+            }
+
             const el_index = this.children(`.element.${type}`).count() + 1;
             let name = '';
 
@@ -206,14 +215,11 @@ export default class Page extends Component {
                     break;
             }
 
-            element = new ELEMENT_TYPES[configs.type](Object.assign({
-                'container': this,
-                'name': name,
-            }, configs));
-        }
-
-        if(this.active){
-            element.activate();
+            element = new ELEMENT_TYPES[type](Object.assign({
+                    'name': name,
+                }, element))
+                .appendTo(this)
+                .init();
         }
 
         if(supressEvent !== true){
@@ -224,18 +230,28 @@ export default class Page extends Component {
     }
 
     /**
+     * Check if the page is active or not
+     *
+     * @return {Boolean} Whether the page is active or not
+     */
+    isActive(){
+        return this.hasClass('active');
+    }
+
+    /**
      * Activate the page and its elements
      *
+     * @param {Boolean} [supressEvent=false] Whether to supress the activate event
      * @return {this}
      */
-    activate(){
-        this.addClass('active');
+    activate(supressEvent){
+        if(!this.isActive()){
+            this.addClass('active');
 
-        this.getChildren().forEach((element) => {
-            element.activate();
-        });
-
-        this.active = true;
+            if(supressEvent !== true){
+                this.triggerEvent('activate', {'page': this});
+            }
+        }
 
         return this;
     }
@@ -243,16 +259,17 @@ export default class Page extends Component {
     /**
      * Deactivate the page and its elements
      *
+     * @param {Boolean} [supressEvent=false] Whether to supress the deactivate event
      * @return {this}
      */
-    deactivate(){
-        delete this.active;
+    deactivate(supressEvent){
+        if(this.isActive()){
+            this.removeClass('active');
 
-        this.getChildren().forEach((element) => {
-            element.deactivate();
-        });
-
-        this.removeClass('active');
+            if(supressEvent !== true){
+                this.triggerEvent('deactivate', {'page': this});
+            }
+        }
 
         return this;
     }
