@@ -1,5 +1,5 @@
 import HTML5 from './HTML5';
-import Locale from '../../core/Locale';
+import Locale from '../../Locale';
 
 /**
 * The dash.js CDN URL

@@ -1,20 +1,7 @@
 import Component from '../Component';
 import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
-
-import HTML5 from '../renderer/HTML5';
-import HLS from '../renderer/HLS';
-import Dash from '../renderer/Dash';
-
-/**
- * The list of renderers to use in order of priority
- * @type {Array}
- */
-const RENDERERS = [
-    HTML5,
-    HLS,
-    Dash
-];
+import {getRendererForMime} from '../../core/utils/Media';
 
 /**
  * A media component
@@ -194,24 +181,6 @@ export default class Media extends Component{
     }
 
     /**
-    * Get a renderer class from a mime type
-    *
-    * @param {String} mime The mime type
-    * @return {Class} The matched renderer class, or null
-    */
-    static getRendererForMime(mime){
-        const index = RENDERERS.findIndex((renderer) => {
-            return renderer.canPlayType(mime);
-        });
-
-        if(index > -1){
-            return RENDERERS[index];
-        }
-
-        return null;
-    }
-
-    /**
      * Get the renderer
      *
      * @return {Dom} The renderer
@@ -232,7 +201,7 @@ export default class Media extends Component{
             this.renderer.remove();
         }
 
-        const renderer = this.constructor.getRendererForMime(source.mime);
+        const renderer = getRendererForMime(source.mime);
         if(renderer){
             /**
              * The renderer

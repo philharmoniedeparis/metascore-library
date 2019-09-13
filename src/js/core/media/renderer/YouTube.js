@@ -1,6 +1,6 @@
 import HTML5 from './HTML5';
-import Dom from '../../core/Dom';
-import {toCentiseconds, toSeconds} from '../../core/utils/Media';
+import Dom from '../../Dom';
+import {toCentiseconds, toSeconds} from '../../utils/Media';
 
 /**
  * YouTube renderer

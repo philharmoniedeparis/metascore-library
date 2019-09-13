@@ -1,7 +1,6 @@
 import Dom from './core/Dom';
-import {naturalCompare} from './core/utils/String';
-import {naturalSortInsensitive} from './core/utils/Array';
-import {isArray, isNumber, isEmpty} from './core/utils/Var';
+import {getMediaFileDuration} from './core/utils/Media';
+import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
@@ -1838,7 +1837,7 @@ export default class Editor extends Dom {
                     'autoShow': true
                 });
 
-                this.getMediaFileDuration(data.media, (error, new_duration) => {
+                getMediaFileDuration(data.media, (error, new_duration) => {
                     if(error){
                         loadmask.hide();
 
@@ -2794,40 +2793,4 @@ export default class Editor extends Dom {
             }
         });
     }
-
-    /**
-     * Get a media file's duration in centiseconds
-     *
-     * @private
-     * @param {Object} file The file's url
-     * @property {String} mime The file's mime type
-     * @property {String} url The file's url
-     * @param {Function} callback A callback function to call with an eventual error and the duration
-     */
-    getMediaFileDuration(file, callback){
-        if(isEmpty(file.mime)){
-            const message = Locale.t('editor.getMediaFileDuration.no-mime.error', "The file's mime type could not be determined for !url", {'!url': file.url});
-            callback(new Error(message));
-        }
-        else{
-            const renderer = this.getPlayer().getMedia().constructor.getRendererForMime(file.mime);
-            if(renderer){
-                renderer.getDurationFromURI(file.url, (error, duration) => {
-                    if(error){
-                        callback(error);
-                        return;
-                    }
-
-                    const centiseconds_multiplier = 100;
-                    callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
-                });
-            }
-            else{
-                const message = Locale.t('editor.getMediaFileDuration.no-renderer.error', 'No compatible renderer found for the mime type !mime', {'!mine': file.mine});
-                callback(new Error(message));
-            }
-        }
-
-    }
-
 }

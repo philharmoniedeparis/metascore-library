@@ -1,4 +1,71 @@
 import {pad} from './String';
+import {isEmpty} from './Var';
+import {Locale} from '../Locale';
+import HTML5 from '../media/renderer/HTML5';
+import HLS from '../media/renderer/HLS';
+import Dash from '../media/renderer/Dash';
+
+/**
+ * The list of renderers to use in order of priority
+ * @type {Array}
+ */
+const RENDERERS = [
+    HTML5,
+    HLS,
+    Dash
+];
+
+/**
+* Get a renderer class from a mime type
+*
+* @param {String} mime The mime type
+* @return {Class} The matched renderer class, or null
+*/
+export function getRendererForMime(mime){
+    const index = RENDERERS.findIndex((renderer) => {
+        return renderer.canPlayType(mime);
+    });
+
+    if(index > -1){
+        return RENDERERS[index];
+    }
+
+    return null;
+}
+
+/**
+ * Get a media file's duration in centiseconds
+ *
+ * @private
+ * @param {Object} file The file's url
+ * @property {String} mime The file's mime type
+ * @property {String} url The file's url
+ * @param {Function} callback A callback function to call with an eventual error and the duration
+ */
+export function getMediaFileDuration(file, callback){
+    if(isEmpty(file.mime)){
+        const message = Locale.t('media.no-mime.error', "The file's mime type could not be determined for !url", {'!url': file.url});
+        callback(new Error(message));
+    }
+    else{
+        const renderer = getRendererForMime(file.mime);
+        if(renderer){
+            renderer.getDurationFromURI(file.url, (error, duration) => {
+                if(error){
+                    callback(error);
+                    return;
+                }
+
+                const centiseconds_multiplier = 100;
+                callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
+            });
+        }
+        else{
+            const message = Locale.t('media.no-renderer.error', 'No compatible renderer found for the mime type !mime', {'!mine': file.mine});
+            callback(new Error(message));
+        }
+    }
+}
 
 /**
  * Get an image's metadata (name, width, and height)

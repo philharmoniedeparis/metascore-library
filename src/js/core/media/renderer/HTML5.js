@@ -1,8 +1,8 @@
-import Dom from '../../core/Dom';
-import Locale from '../../core/Locale';
-import {isFunction} from '../../core/utils/Var';
-import {toCentiseconds, toSeconds} from '../../core/utils/Media';
-import Ajax from '../../core/Ajax';
+import Dom from '../../Dom';
+import Locale from '../../Locale';
+import {isFunction} from '../../utils/Var';
+import {toCentiseconds, toSeconds} from '../../utils/Media';
+import Ajax from '../../Ajax';
 import WaveformData from 'waveform-data/waveform-data';
 import WebAudioBuilder from 'waveform-data/webaudio';
 
