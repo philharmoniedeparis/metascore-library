@@ -1,0 +1,45 @@
+@import "../../theme";
+
+:local(.className){
+    .sources-selector{
+        display: flex;
+        margin-bottom: 0.5em;
+
+        .source-selector-wrapper{
+            label{
+                display: inline-block;
+                padding: 0.5em;
+                background: #f7f7f7;
+                font-weight: normal;
+
+                label::after{
+                    display: none;
+                }
+            }
+
+            input:checked+label{
+                background: #ddd;
+                border-bottom: 2px solid @metascore-blue;
+            }
+
+            input{
+                display: none;
+            }
+
+        }
+    }
+
+    .inputs{
+        input{
+            width: 100%;
+        }
+    }
+
+    &.required{
+        .source-selector-wrapper{
+            label::after{
+                display: none;
+            }
+        }
+    }
+}
