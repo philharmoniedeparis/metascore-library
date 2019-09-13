@@ -18,6 +18,9 @@ export default class Resizable {
      * @param {Object} configs Custom configs to override defaults
      * @property {Dom} target The Dom object to add the behavior to
      * @property {Object} [directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
+     * @property {Boolean} [autoUpdate=true] Whether to update the size of the target automatically
+     * @property {Dom} [snapGuideContainer=body] The Dom object to add snap guides to
+     * @property {Number} [snapThreshold=5] The distance at which a snap guide attracts
      */
     constructor(configs) {
         /**
@@ -72,6 +75,7 @@ export default class Resizable {
                 'bottom-left',
                 'bottom-right'
             ],
+            'autoUpdate': true,
             'snapGuideContainer': null,
             'snapThreshold': 5
         };
@@ -98,6 +102,7 @@ export default class Resizable {
          */
         this._state = {
             'direction': Dom.data(evt.target, 'direction'),
+            'position': this.configs.target.css('position'),
             'mouse': {
                 'x': evt.clientX,
                 'y': evt.clientY
@@ -184,6 +189,16 @@ export default class Resizable {
                 this._state.new_values.height = this._state.original_values.height;
             }
             this._state.new_values.height += this._state.offsetY;
+        }
+
+        if(this.configs.autoUpdate){
+            Object.entries(this._state.new_values).forEach(([key, value]) => {
+                if(this._state.position !== 'absolute' && (key === 'top' || key === 'left')){
+                    return;
+                }
+
+                this.configs.target.css(key, `${value}px`);
+            });
         }
 
         /**

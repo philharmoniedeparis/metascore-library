@@ -404,6 +404,7 @@ export default class Track extends Dom {
                 const configs = Object.assign({}, this.configs.draggableConfigs, {
                     'target': this.info,
                     'handle': this.info,
+                    'autoUpdate': false,
                     'snapPositions': {
                         'x': [0, 1]
                     }
@@ -460,6 +461,7 @@ export default class Track extends Dom {
                     const configs = Object.assign({}, this.configs.resizableConfigs, {
                         'target': this.info,
                         'directions': directions,
+                        'autoUpdate': false
                     });
 
                     /**

@@ -20,6 +20,9 @@ export default class Draggable {
      * @param {Object} configs Custom configs to override defaults
      * @property {Dom} target The Dom object to add the behavior to
      * @property {Dom} handle The Dom object to use as a drag handle
+     * @property {Boolean} [autoUpdate=true] Whether to update the size of the target automatically
+     * @property {Dom} [snapGuideContainer=body] The Dom object to add snap guides to
+     * @property {Number} [snapThreshold=5] The distance at which a snap guide attracts
      */
     constructor(configs) {
         /**
@@ -54,6 +57,7 @@ export default class Draggable {
         return {
             'target': null,
             'handle': null,
+            'autoUpdate': true,
             'snapThreshold': 5,
             'snapGuideContainer': null,
             'snapPositions': {
@@ -144,6 +148,12 @@ export default class Draggable {
         this._state.new_values.left += this._state.offsetX;
         this._state.new_values.top += this._state.offsetY;
 
+        if(this.configs.autoUpdate){
+            Object.entries(this._state.new_values).forEach(([key, value]) => {
+                this.configs.target.css(key, `${value}px`);
+            });
+        }
+
         /**
          * Whether the target is being dragged
          * @type {Boolean}
@@ -222,8 +232,6 @@ export default class Draggable {
             const rect = container.get(0).getBoundingClientRect();
             const offsetX = rect.left;
             const offsetY = rect.top;
-
-            console.log(container.get(0).scrollTop, offsetY);
 
             const guide = new Dom('<div/>', {'class': `${guideClassName} snap-guide`})
                 .data('axis', axis)

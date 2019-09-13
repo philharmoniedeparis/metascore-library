@@ -428,7 +428,8 @@ export default class Component extends Dom {
     getDraggableConfigs(){
         return {
             'target': this,
-            'handle': this
+            'handle': this,
+            'autoUpdate': false
         };
     }
 
@@ -462,7 +463,8 @@ export default class Component extends Dom {
              * @type {Resizable}
              */
             this._resizable = new Resizable({
-                'target': this
+                'target': this,
+                'autoUpdate': false
             });
         }
         else if(!resizable && this._resizable){
