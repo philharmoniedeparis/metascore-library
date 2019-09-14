@@ -136,7 +136,7 @@ export default class HLS extends HTML5 {
                 hls.on(Hls.Events.ERROR, (evt) => {
                     if(evt.fatal){
                         // @todo: be more specific
-                        const message = Locale.t('player.renderer.HLS.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+                        const message = Locale.t('core.media.renderer.HLS.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
                         console.error(evt.response.text);
                         callback(new Error(message));
                     }
@@ -196,7 +196,7 @@ export default class HLS extends HTML5 {
 
     onLibError(evt, data){
         if(data.fatal){
-            const message = Locale.t('player.renderer.HLS.error', 'An error occured while attempting to read the media stream');
+            const message = Locale.t('core.media.renderer.HLS.error', 'An error occured while attempting to read the media stream');
             this.triggerEvent('error', {'renderer': this, 'message': message});
             console.error('HLS.js:', data);
         }

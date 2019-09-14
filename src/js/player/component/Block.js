@@ -35,8 +35,8 @@ export default class Block extends Component {
                     }
                 },
                 'name': {
-                    'type': 'Text',
-                    'configs': {
+                    'field': {
+                        'type': 'text',
                         'label': Locale.t('player.component.Block.name', 'Name')
                     },
                     'getter': function(){
@@ -47,8 +47,8 @@ export default class Block extends Component {
                     }
                 },
                 'hidden': {
-                    'type': 'Checkbox',
-                    'configs': {
+                    'field': {
+                        'type': 'checkbox',
                         'label': Locale.t('player.component.Block.hidden', 'Hidden?')
                     },
                     'getter': function(){
@@ -59,10 +59,12 @@ export default class Block extends Component {
                     }
                 },
                 'x': {
-                    'type': 'Number',
-                    'configs': {
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
                         'label': Locale.t('player.component.Block.x', 'X'),
-                        'spinDirection': 'vertical'
                     },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
@@ -72,10 +74,12 @@ export default class Block extends Component {
                     }
                 },
                 'y': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Block.y', 'Y'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.Block.y', 'Y')
                     },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
@@ -85,10 +89,12 @@ export default class Block extends Component {
                     },
                 },
                 'width': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Block.width', 'Width'),
-                        'spinDirection': 'vertical'
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
+                        'label': Locale.t('player.component.Block.width', 'Width')
                     },
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
@@ -98,10 +104,12 @@ export default class Block extends Component {
                     }
                 },
                 'height': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Block.height', 'Height'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.Block.height', 'Height')
                     },
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
@@ -111,8 +119,8 @@ export default class Block extends Component {
                     }
                 },
                 'z-index': {
-                    'type': 'Number',
-                    'configs': {
+                    'field': {
+                        'type': 'number',
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
@@ -124,8 +132,8 @@ export default class Block extends Component {
                     }
                 },
                 'background-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'color',
                         'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
@@ -136,10 +144,12 @@ export default class Block extends Component {
                     }
                 },
                 'background-image': {
-                    'type':'Image',
-                    'configs': {
-                        'label': Locale.t('player.component.Block.background-image', 'Background image'),
-                        'resizeButton': true
+                    'field': {
+                        'type':'image',
+                        'input': {
+                            'resizeButton': true
+                        },
+                        'label': Locale.t('player.component.Block.background-image', 'Background image')
                     },
                     'getter': function(skipDefault){
                         let value = this.css('background-image', void 0, skipDefault);
@@ -160,10 +170,12 @@ export default class Block extends Component {
                     }
                 },
                 'border-width': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Block.border-width', 'Border width'),
-                        'min': 0
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'min': 0
+                        },
+                        'label': Locale.t('player.component.Block.border-width', 'Border width')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
@@ -174,8 +186,8 @@ export default class Block extends Component {
                     }
                 },
                 'border-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'color',
                         'label': Locale.t('player.component.Block.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
@@ -186,8 +198,8 @@ export default class Block extends Component {
                     }
                 },
                 'border-radius': {
-                    'type': 'BorderRadius',
-                    'configs': {
+                    'field': {
+                        'type': 'border-radius',
                         'label': Locale.t('player.component.Block.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
@@ -229,15 +241,6 @@ export default class Block extends Component {
                 }
             })
         });
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return 'Block';
     }
 
     /**
@@ -434,7 +437,7 @@ export default class Block extends Component {
             this.updatePager();
 
             if(supressEvent !== true){
-                this.triggerEvent('activepageset', {'block': this, 'page': _page});
+                this.triggerEvent('activepageset', {'block': this, 'current': _page, 'previous': previous});
             }
         }
 
@@ -464,10 +467,9 @@ export default class Block extends Component {
      * @return {Object} The configuration
      */
     getDraggableConfigs(){
-        return {
-            'target': this,
+        return Object.assign(super.getDraggableConfigs(), {
             'handle': this.child('.pager')
-        };
+        });
     }
 
 }

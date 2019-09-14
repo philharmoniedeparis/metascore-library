@@ -1,62 +1,30 @@
 import Dom from '../core/Dom';
-import Toolbar from './panel/Toolbar';
-import {isFunction} from '../core/utils/Var';
+import {isFunction, isArray} from '../core/utils/Var';
 import Locale from '../core/Locale';
-import BorderRadiusField from './field/BorderRadius';
-import ButtonsField from './field/Buttons';
-import CheckboxField from './field/Checkbox';
-import CheckboxesField from './field/Checkboxes';
-import ColorField from './field/Color';
-import FileField from './field/File';
-import ImageField from './field/Image';
-import NumberField from './field/Number';
-import SelectField from './field/Select';
-import TextField from './field/Text';
-import TextareaField from './field/Textarea';
-import TimeField from './field/Time';
+import Field from './Field';
 import {getImageMetadata} from '../core/utils/Media';
 
-import {className} from '../../css/editor/Panel.less';
+import {className} from '../../css/editor/ComponentForm.less';
 
 /**
- * The list of possible field types
- * @type {Object}
- */
-const FIELD_TYPES = {
-    'BorderRadius': BorderRadiusField,
-    'Buttons': ButtonsField,
-    'Checkbox': CheckboxField,
-    'Checkboxes': CheckboxesField,
-    'Color': ColorField,
-    'File': FileField,
-    'Image': ImageField,
-    'Number': NumberField,
-    'Select': SelectField,
-    'Text': TextField,
-    'Textarea': TextareaField,
-    'Time': TimeField,
-};
-
-/**
- * A generic panel class
+ * A component form class
  *
  * @emits {componentset} Fired when multuiple components are set
  * @param {Component} component The component instance
  * @emits {componentunset} Fired when a component is unset
  * @param {Component} component The component instance
  */
-export default class Panel extends Dom {
+export default class ComponentForm extends Dom {
 
     /**
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
      * @property {Boolean} [allowMultiple=true] Whether multiple selection is allowed
-     * @property {Object} [configs.toolbarConfigs={}] Configs to pass to the toolbar (see {@link Toolbar})
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `panel ${className}`});
+        super('<div/>', {'class': `config-form ${className}`});
 
         // fix event handlers scope
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
@@ -80,28 +48,16 @@ export default class Panel extends Dom {
         this.components = [];
 
         /**
-         * The top toolbar
-         * @type {Toolbar}
-         */
-        this.toolbar = new Toolbar(Object.assign({}, this.configs.toolbarConfigs, {'multiSelection': this.configs.allowMultiple}))
-            .addDelegate('.buttons [data-action]', 'click', this.onToolbarButtonClick.bind(this))
-            .appendTo(this);
-
-        this.toolbar.getTitle()
-            .addListener('click', this.toggleState.bind(this));
-
-        /**
          * The contents container
          * @type {Dom}
          */
         this.contents = new Dom('<div/>', {'class': 'fields'})
+            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
+            .addDelegate('.image.input', 'resize', this.onImageFieldResize.bind(this))
+            .addDelegate('.image.input', 'filebrowser', this.onImageFieldFilebrowser.bind(this))
             .appendTo(this);
 
-        this
-            .addDelegate('.fields .field', 'valuechange', this.onFieldValueChange.bind(this))
-            .addDelegate('.fields .image.field', 'resize', this.onImageFieldResize.bind(this))
-            .addDelegate('.fields .image.field', 'filebrowser', this.onImageFieldFilebrowser.bind(this))
-            .updateUI();
+        this.updateUI();
     }
 
     /**
@@ -111,8 +67,7 @@ export default class Panel extends Dom {
     */
     static getDefaults() {
         return {
-            'allowMultiple': true,
-            'toolbarConfigs': {}
+            'allowMultiple': true
         };
     }
 
@@ -138,9 +93,9 @@ export default class Panel extends Dom {
 
             Object.entries(properties).forEach(([key, prop]) => {
                 if(prop.editable !== false){
-                    const configs = prop.configs || {};
+                    const configs = prop.field || {};
 
-                    const field = new FIELD_TYPES[prop.type](configs)
+                    const field = new Field(configs)
                         .data('name', key)
                         .appendTo(this.contents);
 
@@ -154,7 +109,6 @@ export default class Panel extends Dom {
         }
 
         this.toggleClass('has-component', has_components);
-        this.getToolbar().toggleMenuItem('delete', has_components);
 
         return this;
     }
@@ -186,15 +140,15 @@ export default class Panel extends Dom {
                 }
 
                 // Update Select field options.
-                if(field instanceof FIELD_TYPES.Select){
+                if(field.getInput().getType() === 'SelectInput'){
                     field.configs.options.forEach((opt) => {
                         if('applies' in opt && isFunction(opt.applies)){
-                            const option = field.getOption(opt.value);
+                            const option = field.getInput().getOption(opt.value);
                             const hidden = option.hidden();
 
                             if(opt.applies.call(component)){
                                 if(hidden){
-                                    field.setValue(null);
+                                    field.getInput().setValue(null);
                                     option.show();
                                 }
                             }
@@ -212,15 +166,6 @@ export default class Panel extends Dom {
         });
 
         return this;
-    }
-
-    /**
-     * Get the panel's toolbar
-     *
-     * @return {editor.panel.Toolbar} The toolbar
-     */
-    getToolbar() {
-        return this.toolbar;
     }
 
     /**
@@ -315,10 +260,20 @@ export default class Panel extends Dom {
     /**
      * Get all set components
      *
+     * @param {Mixed} [type] The type(s) of components to return
      * @return {Component[]} The components
      */
-    getComponents() {
-        return Array.from(this.components);
+    getComponents(type) {
+        if(type){
+            const types = isArray(type) ? type : [type];
+            return this.components.filter((component) => {
+                return types.some((name) => {
+                    return component.instanceOf(name);
+                });
+            });
+        }
+
+        return this.components;
     }
 
     /**
@@ -380,8 +335,6 @@ export default class Panel extends Dom {
                 .setResizable(true);
         }
 
-        this.getToolbar().getSelector().addValue(component.getId(), true);
-
         if(supressEvent !== true){
             this.triggerEvent('componentset', {'component': component, 'count': this.components.length}, false);
             component.triggerEvent('selected', {'component': component});
@@ -421,8 +374,6 @@ export default class Panel extends Dom {
             .setDraggable(false)
             .setResizable(false);
 
-        this.getToolbar().getSelector().removeValue(component.getId(), true);
-
         if(supressEvent !== true){
             this.triggerEvent('componentunset', {'component': component, 'count': this.components.length}, false);
             component.triggerEvent('deselected', {'component': component});
@@ -446,46 +397,6 @@ export default class Panel extends Dom {
     }
 
     /**
-     * The toolbar buttons' click event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onToolbarButtonClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'next':
-            case 'previous': {
-                const selector = this.getToolbar().getSelector();
-                const options = selector.getOptions();
-                const count = options.count();
-                let index = 0;
-
-                if(count > 0){
-                    if(action === 'previous'){
-                        index = options.index('.selected') - 1;
-                        if(index < 0){
-                            index = count - 1;
-                        }
-                    }
-                    else{
-                        index = options.index('.selected') + 1;
-                        if(index >= count){
-                            index = 0;
-                        }
-                    }
-
-                    selector.setValue(Dom.data(options.get(index), 'value'));
-                }
-
-                evt.stopPropagation();
-                break;
-            }
-        }
-    }
-
-    /**
      * The component's propchange event handler
      *
      * @private
@@ -506,10 +417,6 @@ export default class Panel extends Dom {
                 component
                     .setDraggable(!value)
                     .setResizable(!value);
-                break;
-
-            case 'name':
-                this.getToolbar().getSelector().updateOption(component.getId(), this.getSelectorLabel(component));
                 break;
         }
 
@@ -768,7 +675,7 @@ export default class Panel extends Dom {
                 return component.getPropertyValue(name) !== value;
             });
 
-            field.setValue(value, supressEvent);
+            field.getInput().setValue(value, supressEvent);
 
             this.toggleMultival(field, multival);
         }
@@ -861,8 +768,8 @@ export default class Panel extends Dom {
      * @return {this}
      */
     toggleMultival(field, toggle){
-        field.toggleClass('warning', toggle)
-            .label.attr('title', toggle ? Locale.t('editor.panel.multivalWarning', 'The value corresponds to that of the first selected component') : null);
+        field.toggleClass('warning', toggle);
+        field.getLabel().attr('title', toggle ? Locale.t('editor.ComponentForm.multivalWarning', 'The value corresponds to that of the first selected component') : null);
 
         return this;
     }

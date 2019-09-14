@@ -1,0 +1,120 @@
+:local(.className){
+    position: relative;
+
+    .fields{
+        display: table;
+        width: 100%;
+        font-size: 0.9em;
+        border-collapse: collapse;
+
+        .field{
+            display: table-row;
+            border-bottom: 1px solid #b2b2b2;
+
+            > label{
+                display: table-cell;
+                width: 130px;
+                padding: 5px;
+                border-right: 1px solid #d7d7d7;
+                white-space: nowrap;
+            }
+
+            .input{
+                display: table-cell;
+                margin: 0;
+                padding: 0;
+                vertical-align: middle;
+
+                input{
+                    width: 100%;
+                    height: 24px;
+                    margin: 0;
+                    padding: 0;
+                    border: none;
+
+                    &[type="checkbox"]{
+                        width: auto;
+                    }
+                }
+            }
+
+            &.warning{
+                label{
+                    position: relative;
+
+                    &::after{
+                        content: "";
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        bottom: 0;
+                        right: 0.25em;
+                        pointer-events: none;
+                        background: url('../../img/editor/field/warning.svg') no-repeat right center;
+                        background-size: 1em;
+                    }
+                }
+            }
+
+            &.buttons.field{
+                .input{
+                    background-repeat: repeat;
+
+                    button{
+                        float: left;
+                        width: 20px;
+                        height: 20px;
+                        background-repeat: no-repeat;
+                        background-position: center center;
+
+                        &.pressed{
+                            background-color: #aaaaaa;
+                        }
+                    }
+                }
+            }
+
+            &.fontStyle{
+                border-bottom: none;
+            }
+        }
+    }
+
+    &.locked{
+        .image.field{
+            button[data-action="resize"]{
+                opacity: 0.25;
+                cursor: default;
+                pointer-events: none;
+            }
+        }
+    }
+
+    &.collapsed,
+    &:not(.has-component),
+    &.disabled{
+        .toolbar{
+            .title{
+                background-image: url('../../img/editor/panel/collapsed.svg');
+            }
+        }
+
+        .fields{
+            display: none;
+        }
+    }
+
+    &:not(.has-component),
+    &.disabled{
+        .toolbar{
+            .title{
+                pointer-events: none;
+            }
+        }
+    }
+
+    &.disabled{
+        pointer-events: none;
+        opacity: 0.5;
+    }
+}

@@ -1,5 +1,5 @@
 import Dom from '../core/Dom';
-import TimeField from './field/Time';
+import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';
 import WaveformOverview from './controller/waveform/Overview';
 import WaveformZoom from './controller/waveform/Zoom';
@@ -43,16 +43,16 @@ export default class Controller extends Dom {
             .appendTo(this);
 
         /**
-         * The time field
-         * @type {TimeField}
+         * The time input
+         * @type {TimeInput}
          */
-        this.timefield = new TimeField()
+        this.timeinput = new TimeInput()
             .appendTo(top);
 
         new Dom('<button/>')
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
-            .insertAt(this.timefield, 0);
+            .insertAt(this.timeinput, 0);
 
 
         const overview = new Dom('<div/>', {'class': 'overview'})
@@ -129,7 +129,7 @@ export default class Controller extends Dom {
             .addListener('pause', this.onMediaPause)
             .addListener('sourceset', this.onMediaSourceSet);
 
-        this.getTimeField().setMax(media.getDuration());
+        this.getTimeInput().setMax(media.getDuration());
 
         this.getBufferIndicator().setMedia(media);
         this.getWaveformOverview().setMedia(media);
@@ -220,7 +220,7 @@ export default class Controller extends Dom {
      * @private
      */
     onMediaTimeUpdate(evt){
-        this.getTimeField().setValue(evt.detail.time, true);
+        this.getTimeInput().setValue(evt.detail.time, true);
     }
 
     /**
@@ -284,12 +284,12 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Get the timefield
+     * Get the time input
      *
-     * @return {TimeField} The timefield
+     * @return {TimeInput} The time input
      */
-    getTimeField(){
-        return this.timefield;
+    getTimeInput(){
+        return this.timeinput;
     }
 
     /**

@@ -1,8 +1,8 @@
 import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
 import Locale from '../core/Locale';
-import NumberField from './field/Number';
-import CheckboxField from './field/Checkbox';
+import NumberInput from '../core/ui/input/NumberInput';
+import CheckboxInput from '../core/ui/input/CheckboxInput';
 
 import {className} from '../../css/editor/MainMenu.less';
 
@@ -39,7 +39,7 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        this._items['r-index'] = new NumberField({
+        this._items['r-index'] = new NumberInput({
                 'min': 0,
                 'max': 999,
                 'spinIncremental': false
@@ -53,7 +53,7 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        this._items['edit-toggle'] = new CheckboxField({'label': ''})
+        this._items['edit-toggle'] = new CheckboxInput({'label': ''})
             .attr({
                 'title': Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
             })

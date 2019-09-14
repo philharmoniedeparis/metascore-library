@@ -7,8 +7,7 @@ import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
 import Fieldset from '../Fieldset';
-import SelectField from '../field/Select';
-import TextField from '../field/Text';
+import Field from '../Field';
 
 import {className} from '../../../css/editor/overlay/GuideSelector.less';
 
@@ -96,36 +95,40 @@ export default class GuideSelector extends Overlay {
          */
         this.filter_fields = {};
 
-        this.filter_fields.fulltext = new TextField({
+        this.filter_fields.fulltext = new Field({
+                'type': 'text',
                 'label': Locale.t('editor.overlay.GuideSelector.filters.fulltext.label', 'Full-text search'),
                 'description': Locale.t('editor.overlay.GuideSelector.filters.fulltext.description', "Search in the guide's title, credits, description and blocks")
             })
             .data('name', 'filters[fulltext]')
             .appendTo(fieldset);
 
-        this.filter_fields.tag = new TextField({
-                'label': Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag'),
-                'value': ''
+        this.filter_fields.tag = new Field({
+                'type': 'text',
+                'label': Locale.t('editor.overlay.GuideSelector.filters.tag.label', 'Tag')
             })
             .data('name', 'filters[tag]')
             .appendTo(fieldset);
 
-        this.filter_fields.author = new TextField({
-                'label': Locale.t('editor.overlay.GuideSelector.filters.author.label', "Author"),
-                'value': ''
+        this.filter_fields.author = new Field({
+                'type': 'text',
+                'label': Locale.t('editor.overlay.GuideSelector.filters.author.label', "Author")
             })
             .data('name', 'filters[author]')
             .appendTo(fieldset);
 
-        this.filter_fields.group = new SelectField({
-                'label': Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group'),
-                'options': [
-                    {
-                        'value': '',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.group.all.label', '- Any -')
-                    }
-                ],
-                'value': ''
+        this.filter_fields.group = new Field({
+                'type': 'select',
+                'input': {
+                    'options': [
+                        {
+                            'value': '',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.group.all.label', '- Any -')
+                        }
+                    ],
+                    'value': ''
+                },
+                'label': Locale.t('editor.overlay.GuideSelector.filters.group.label', 'Group')
             })
             .data('name', 'filters[group]')
             .appendTo(fieldset);
@@ -139,61 +142,70 @@ export default class GuideSelector extends Overlay {
             this.filter_fields.group.disable();
         }
 
-        this.filter_fields.status = new SelectField({
-                'label': Locale.t('editor.overlay.GuideSelector.filters.status.label', 'Status'),
-                'options': [
-                    {
-                        'value': '',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.status.all.label', '- Any -')
-                    },
-                    {
-                        'value': '1',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published')
-                    },
-                    {
-                        'value': '0',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
-                    }
-                ],
-                'value': ''
+        this.filter_fields.status = new Field({
+                'type': 'select',
+                'input': {
+                    'options': [
+                        {
+                            'value': '',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.status.all.label', '- Any -')
+                        },
+                        {
+                            'value': '1',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.status.published.lable', 'Published')
+                        },
+                        {
+                            'value': '0',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.status.unpublished.lable', 'Unpublished')
+                        }
+                    ],
+                    'value': ''
+                },
+                'label': Locale.t('editor.overlay.GuideSelector.filters.status.label', 'Status')
             })
             .data('name', 'filters[status]')
             .appendTo(fieldset);
 
-        this.filter_fields.sort_by = new SelectField({
-                'label': Locale.t('editor.overlay.GuideSelector.filters.sort_by.label', 'Sort by'),
-                'options': [
-                    {
-                        'value': 'title',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.title.lable', 'Title')
-                    },
-                    {
-                        'value': 'created',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.created.lable', 'Creation date')
-                    },
-                    {
-                        'value': 'changed',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
-                    }
-                ],
-                'value': 'changed'
+        this.filter_fields.sort_by = new Field({
+                'type': 'select',
+                'input': {
+                    'options': [
+                        {
+                            'value': 'title',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.title.lable', 'Title')
+                        },
+                        {
+                            'value': 'created',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.created.lable', 'Creation date')
+                        },
+                        {
+                            'value': 'changed',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.sort_by.changed.lable', 'Last update date')
+                        }
+                    ],
+                    'value': 'changed'
+                },
+                'label': Locale.t('editor.overlay.GuideSelector.filters.sort_by.label', 'Sort by')
             })
             .data('name', 'sort_by')
             .appendTo(fieldset);
 
-        this.filter_fields.sort_order = new SelectField({
-                'label': Locale.t('editor.overlay.GuideSelector.filters.sort_order.label', 'Order'),
-                'options': [
-                    {
-                        'value': 'ASC',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_order.asc.lable', 'Asc')
-                    },
-                    {
-                        'value': 'DESC',
-                        'text': Locale.t('editor.overlay.GuideSelector.filters.sort_order.desc.lable', 'Desc')
-                    }
-                ],
-                'value': 'DESC'
+        this.filter_fields.sort_order = new Field({
+                'type': 'select',
+                'input': {
+                    'options': [
+                        {
+                            'value': 'ASC',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.sort_order.asc.lable', 'Asc')
+                        },
+                        {
+                            'value': 'DESC',
+                            'text': Locale.t('editor.overlay.GuideSelector.filters.sort_order.desc.lable', 'Desc')
+                        }
+                    ],
+                    'value': 'DESC'
+                },
+                'label': Locale.t('editor.overlay.GuideSelector.filters.sort_order.label', 'Order')
             })
             .data('name', 'sort_order')
             .appendTo(fieldset);
@@ -311,7 +323,7 @@ export default class GuideSelector extends Overlay {
      */
     onFiltersResetClick(){
 		Object.entries(this.filter_fields).forEach(([, field]) => {
-            field.reset();
+            field.getInput().reset();
         });
     }
 
@@ -320,11 +332,11 @@ export default class GuideSelector extends Overlay {
      *
      * @private
      * @param {Object} guide The selected guide
-     * @param {SelectField} revision_field The revision selection field
+     * @param {Field} revision_field The revision selection field
      * @param {Event} evt The event object
      */
     onGuideSelect(guide, revision_field, evt){
-        this.triggerEvent('submit', {'overlay': this, 'guide': guide, 'vid': revision_field.getValue()}, true, false);
+        this.triggerEvent('submit', {'overlay': this, 'guide': guide, 'vid': revision_field.getInput().getValue()}, true, false);
 
         this.hide();
 
@@ -352,7 +364,8 @@ export default class GuideSelector extends Overlay {
                 .append(new Dom('<img/>', {'src': guide.thumbnail ? guide.thumbnail.url : null}))
                 .appendTo(row);
 
-            const revision_field = new SelectField({
+            const revision_field = new Field({
+                    'type': 'select',
                     'label': Locale.t('editor.overlay.GuideSelector.revisionLabel', 'Version')
                 })
                 .addClass('revisions');
@@ -382,21 +395,21 @@ export default class GuideSelector extends Overlay {
                     }
 
                     if(!(group_id in groups)){
-                        groups[group_id] = revision_field.addGroup(group_label).addClass(group_id);
+                        groups[group_id] = revision_field.getInput().addGroup(group_label).addClass(group_id);
                     }
 
                     const group = groups[group_id];
                     const text = Locale.t('editor.overlay.GuideSelector.revisionText', '!date by !author (!id:!vid)', {'!date': revision.date, '!author': revision.author, '!id': guide.id, '!vid': revision.vid});
 
-                    revision_field.addOption(revision.vid, text, group);
+                    revision_field.getInput().addOption(revision.vid, text, group);
                 });
 
                 if('latest_revision' in guide){
-                    revision_field.setValue(guide.latest_revision);
+                    revision_field.getInput().setValue(guide.latest_revision);
                 }
             }
             else{
-                revision_field.disable();
+                revision_field.getInput().disable();
             }
 
             const button = new Button()
@@ -490,7 +503,8 @@ export default class GuideSelector extends Overlay {
         const data = {};
 
 		Object.entries(this.filter_fields).forEach(([, field]) => {
-            data[field.data('name')] = field.getValue();
+            const input =  field.getInput();
+            data[input.getName()] = input.getValue();
         });
 
         return data;

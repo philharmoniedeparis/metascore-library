@@ -125,7 +125,7 @@ export default class Dash extends HTML5 {
             dash.on(DashJS.events.ERROR, (evt) => {
                 if(this.isErrorFatal(evt)){
                     // @todo: be more specific
-                    const message = Locale.t('player.renderer.Dash.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+                    const message = Locale.t('core.media.renderer.Dash.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
                     console.error(evt.response.text);
                     callback(new Error(message));
                 }
@@ -203,7 +203,7 @@ export default class Dash extends HTML5 {
         const fatal = this.constructor.isErrorFatal(evt);
 
         if(fatal){
-            const message = Locale.t('player.renderer.Dash.error', 'An error occured while attempting to read the media stream');
+            const message = Locale.t('core.media.renderer.Dash.error', 'An error occured while attempting to read the media stream');
             this.triggerEvent('error', {'renderer': this, 'message': message});
             console.error(`Dash.js:`, evt);
         }

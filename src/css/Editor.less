@@ -1,36 +1,5 @@
 @import "./core/theme";
 
-@keyframes pulsate {
-    from{
-        box-shadow: none;
-    }
-
-    to{
-        box-shadow: inset 0px 0px 10px 2px @metascore-blue;
-    }
-};
-
-::-webkit-scrollbar{
-    -webkit-appearance: none;
-    background-color: @scrollbar-track-color;
-    width: @scrollbar-width;
-    height: @scrollbar-thumb-min-height;
-}
-::-webkit-scrollbar-thumb{
-    border-radius: 0;
-    background-color: @scrollbar-thumb-color;
-
-    &:active,
-    &:hover{
-        background-color: @scrollbar-thumb-active-color;
-    }
-}
-html,
-body{
-    height: 100%;
-    margin: 0;
-}
-
 :local(.className){
     width: 100%;
     height: 100%;
@@ -42,6 +11,22 @@ body{
     *{
         font-size: 12px;
         font-family: Verdana, Geneva, sans-serif;
+    }
+
+    ::-webkit-scrollbar{
+        -webkit-appearance: none;
+        background-color: @scrollbar-track-color;
+        width: @scrollbar-width;
+        height: @scrollbar-thumb-min-height;
+    }
+    ::-webkit-scrollbar-thumb{
+        border-radius: 0;
+        background-color: @scrollbar-thumb-color;
+
+        &:active,
+        &:hover{
+            background-color: @scrollbar-thumb-active-color;
+        }
     }
 
     .clearfix::after{
@@ -190,97 +175,134 @@ body{
         }
     }
 
-    #top{
-        flex-grow: 0;
-        z-index: 99;
-    }
 
-    #center{
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-content: center;
-        align-items: stretch;
-        flex: 1 1 auto;
-        min-height: 0;
+    align-items: stretch;
+    flex-wrap: nowrap;
 
-        #left{
+    .pane{
+        @resize-handle-size: 8px;
+
+        position: relative;
+        overflow: hidden;
+        background: #777777;
+        color: #FFF;
+
+        &.collapsed{
+            &.vertical{
+                min-width: auto !important;
+                width: 0 !important;
+            }
+            &.horizontal{
+                min-height: auto !important;
+                height: 0 !important;
+            }
+        }
+
+        &.resizable{
+           > .resize-handle{
+                position: absolute;
+                background: #3f3f3f;
+                flex: 0 0 @resize-handle-size;
+                margin: 0;
+
+                &[data-direction="top"]{
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: @resize-handle-size;
+                }
+                &[data-direction="bottom"]{
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: @resize-handle-size;
+                }
+                &[data-direction="left"]{
+                    top: 0;
+                    left: 0;
+                    width: @resize-handle-size;
+                    height: 100%;
+                }
+                &[data-direction="right"]{
+                    top: 0;
+                    right: 0;
+                    width: @resize-handle-size;
+                    height: 100%;
+                }
+            }
+        }
+
+        &#top-pane{
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: stretch;
+        }
+
+        &#tools-pane{
+            width: 200px;
+            min-width: 150px;
+            max-width: 300px;
+            padding-right: @resize-handle-size;
+        }
+
+        &#center-pane{
             display: flex;
             flex-direction: column;
             flex: 1 1 auto;
         }
 
-        #right{
-            display: none;
-            flex-direction: row;
+        &#configs-pane{
             width: 300px;
-            min-width: 300px;
-            max-width: 500px;
-            background: #f2f2f2;
-            border-left: 1px solid #b2b2b2;
+            min-width: 150px;
+            max-width: 300px;
+            padding-left: @resize-handle-size;
+        }
 
-            .resize-handle{
-                position: relative;
-                top: 0;
-                width: 9px;
-                height: 100%;
-                margin-top: 0;
-                cursor: col-resize;
-                background: #e6e6e6 url('../img/editor/sidebar/resizer-handle.png') no-repeat center center;
-
-                &:hover{
-                    background-color: #d9d9d9;
-                }
-            }
+        &#bottom-pane{
+            height: 200px;
+            min-height: 150px;
+            max-height: 300px;
+            padding-top: @resize-handle-size;
         }
     }
 
-    #bottom{
-        background-color: #dadada;
-        background-image: linear-gradient(to bottom, #dadada 0%, #c8c8c8 100%);
-        border-top: 1px solid #b2b2b2;
+    .main-menu{
+        flex: 0 0 auto;
     }
 
     .workspace{
+        @ruler-width: 20px;
+
         display: flex;
         position: relative;
         flex: 1 1 auto;
         overflow: hidden;
-        background: #fff;
-        padding: 19px 0 0 19px;
+        padding: @ruler-width 0 0 @ruler-width;
 
         .ruler{
             position: absolute;
             z-index: 2;
 
-            &.horizontal{
-                left: 0;
+            &[data-axis="x"]{
+                left: @ruler-width;
                 right: 0;
                 top: 0;
-                height: 19px;
-                background: url('../img/editor/ruler-h.png') no-repeat top left;
             }
 
-            &.vertical{
+            &[data-axis="y"]{
                 left: 0;
-                top: 0;
+                top: @ruler-width;
                 bottom: 0;
-                width: 19px;
-                background: url('../img/editor/ruler-v.png') no-repeat top left;
             }
         }
 
         .grid{
-            position: absolute;
-            display: none;
-            width: 100%;
-            height: 100%;
+            padding-top: @ruler-width;
+            padding-left: @ruler-width;
             z-index: 1;
             pointer-events: none;
-            background: url('../img/editor/grid.png');
-            background-size: 10px 10px;
-            opacity: 0.2;
         }
 
         .player-frame{
@@ -288,43 +310,11 @@ body{
             margin: 0;
             padding: 0;
             border: none;
-        }
-    }
-
-    .sidebar{
-        flex: 1 1 auto;
-        overflow-y: scroll;
-    }
-
-    &.sidebar-resizing{
-        .workspace{
-            pointer-events: none;
-        }
-
-        .sidebar{
-            pointer-events: none;
-            user-select: none;
-        }
-    }
-
-    &.sidebar-hidden{
-        #right{
-            width: 9px !important;
-            min-width: 9px !important;
-
-            .sidebar{
-                display: none;
-            }
+            background-color: #FFF;
         }
     }
 
     &.editing{
-        #center{
-            #right{
-                display: flex;
-            }
-        }
-
         .workspace{
             .grid{
                 display: block;

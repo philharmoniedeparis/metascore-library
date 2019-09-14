@@ -6,24 +6,20 @@
         display: flex;
         flex-direction: row;
 
-        .time.field{
+        .time.input{
             display: flex;
             width: 10em;
             flex: 0 0 auto;
             box-sizing: border-box;
             border-right: 1px solid #7b7b7b;
+            background: @metascore-blue;
 
-            .input-wrapper{
+            input{
+                width: 100%;
                 height: 100%;
-                background: @metascore-blue;
-
-                input{
-                    width: 100%;
-                    height: 100%;
-                    padding: 0;
-                    text-align: center;
-                    color: #fff;
-                }
+                padding: 0;
+                text-align: center;
+                color: #fff;
             }
 
             button[data-action="play"]{

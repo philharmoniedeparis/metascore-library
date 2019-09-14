@@ -703,6 +703,34 @@ export default class Dom {
     }
 
     /**
+     * Allow mouse event of a specified type to bubble up from an iframe to its parent
+     *
+     * @param {HTMLElement} iframe The iframe element
+     * @param {String} type The mouse event type
+     */
+    static bubbleIframeMouseEvent(iframe, type){
+        iframe.contentWindow.addEventListener(type, (original_evt) => {
+            const rect = iframe.getBoundingClientRect();
+            const init = {
+                'screenX': original_evt.screenX,
+                'screenY': original_evt.screenY,
+                'clientX': original_evt.clientX + rect.left,
+                'clientY': original_evt.clientY + rect.top,
+                'ctrlKey': original_evt.ctrlKey,
+                'shiftKey': original_evt.shiftKey,
+                'altKey': original_evt.altKey,
+                'metaKey': original_evt.metaKey,
+                'button': original_evt.button,
+                'buttons': original_evt.buttons,
+                'relatedTarget': original_evt.relatedTarget,
+                'region': original_evt.region
+            };
+
+            iframe.dispatchEvent(new MouseEvent(type, init));
+        });
+    }
+
+    /**
      * Add an element to the set of elements managed by the Dom object
      *
      * @private

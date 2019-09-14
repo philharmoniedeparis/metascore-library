@@ -1,5 +1,5 @@
 import Dom from '../../../core/Dom';
-import SliderField from '../../field/Slider';
+import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
@@ -114,10 +114,10 @@ export default class Zoom extends Dom {
             .appendTo(controls);
 
         /**
-         * The zoom slider field
-         * @type {SliderField}
+         * The zoom slider input
+         * @type {SliderInput}
          */
-        this.zoom_slider = new SliderField({'reversed': true, 'triggerChangeOnDrag': true})
+        this.zoom_slider = new SliderInput({'reversed': true, 'triggerChangeOnDrag': true})
             .addListener('valuechange', (evt) => {
                 this.setZoom(evt.detail.value);
             })

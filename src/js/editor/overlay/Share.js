@@ -2,9 +2,7 @@ import Overlay from '../../core/ui/Overlay';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import {uuid} from '../../core/utils/String';
-import CheckboxField from '../field/Checkbox';
-import TextField from '../field/Text';
-import TextareaField from '../field/Textarea';
+import Field from '../Field';
 
 import {className} from '../../../css/editor/overlay/Share.less';
 
@@ -72,9 +70,12 @@ export default class Share extends Overlay {
         this.fields = {};
 
         // Link
-        this.fields.link = new TextField({
-                'label': Locale.t('editor.overlay.Share.fields.link.label', 'Link'),
-                'readonly': true
+        this.fields.link = new Field({
+                'type': 'text',
+                'input': {
+                    'readonly': true,
+                },
+                'label': Locale.t('editor.overlay.Share.fields.link.label', 'Link')
             })
             .data('name', 'link')
             .addListener('click', (evt) => {
@@ -84,9 +85,12 @@ export default class Share extends Overlay {
             .appendTo(contents);
 
         // Embed
-        this.fields.embed = new TextareaField({
-                'label': Locale.t('editor.overlay.Share.fields.embed.label', 'Embed'),
-                'readonly': true
+        this.fields.embed = new Field({
+                'type': 'textarea',
+                'input': {
+                    'readonly': true
+                },
+                'label': Locale.t('editor.overlay.Share.fields.embed.label', 'Embed')
             })
             .data('name', 'embed')
             .addListener('click', (evt) => {
@@ -112,33 +116,45 @@ export default class Share extends Overlay {
             .data('role', 'collapsible')
             .appendTo(options_wrapper);
 
-        this.fields.width = new TextField({
-                'label': Locale.t('editor.overlay.Share.fields.width.label', 'Width'),
-                'value': this.configs.embed_defaults.width
+        this.fields.width = new Field({
+                'type': 'text',
+                'input': {
+                    'value': this.configs.embed_defaults.width,
+                },
+                'label': Locale.t('editor.overlay.Share.fields.width.label', 'Width')
             })
             .data('name', 'width')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(options);
 
-        this.fields.height = new TextField({
-                'label': Locale.t('editor.overlay.Share.fields.height.label', 'Height'),
-                'value': this.configs.embed_defaults.height
+        this.fields.height = new Field({
+                'type': 'text',
+                'input': {
+                    'value': this.configs.embed_defaults.height
+                },
+                'label': Locale.t('editor.overlay.Share.fields.height.label', 'Height')
             })
             .data('name', 'height')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(options);
 
-        this.fields.keyboard = new CheckboxField({
-                'label': Locale.t('editor.overlay.Share.fields.keyboard.label', 'Disable keyboard shortcuts'),
-                'checked': this.configs.embed_defaults.keyboard
+        this.fields.keyboard = new Field({
+                'type': 'checkbox',
+                'input': {
+                    'checked': this.configs.embed_defaults.keyboard
+                },
+                'label': Locale.t('editor.overlay.Share.fields.keyboard.label', 'Disable keyboard shortcuts')
             })
             .data('name', 'keyboard')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(options);
 
-        this.fields.api = new CheckboxField({
+        this.fields.api = new Field({
+                'type': 'checkbox',
+                'input': {
+                    'checked': this.configs.embed_defaults.api
+                },
                 'label': Locale.t('editor.overlay.Share.fields.api.label', 'Enable controlling the player through the <a href="!url" target="_blank">JavaScript API</a>', {'!url': this.configs.api_help_url}),
-                'checked': this.configs.embed_defaults.api
             })
             .data('name', 'api')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -167,7 +183,7 @@ export default class Share extends Overlay {
      * @private
      */
     onFieldValueChange(){
-        this.getField('embed').setValue(this.getEmbedCode());
+        this.getField('embed').getInput().setValue(this.getEmbedCode());
     }
 
     /**
@@ -178,10 +194,10 @@ export default class Share extends Overlay {
      */
     getEmbedCode() {
         let url = this.configs.url;
-        const width = this.getField('width').getValue();
-        const height = this.getField('height').getValue();
-        const keyboard = this.getField('keyboard').getValue();
-        const api = this.getField('api').getValue();
+        const width = this.getField('width').getInput().getValue();
+        const height = this.getField('height').getInput().getValue();
+        const keyboard = this.getField('keyboard').getInput().getValue();
+        const api = this.getField('api').getInput().getValue();
         const query = [];
 
         if(keyboard !== this.configs.embed_defaults.keyboard){

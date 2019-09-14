@@ -26,8 +26,8 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'name': {
-                    'type': 'Text',
-                    'configs': {
+                    'field': {
+                        'type': 'text',
                         'label': Locale.t('player.component.BlockToggler.name', 'Name')
                     },
                     'getter': function(){
@@ -38,10 +38,12 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'blocks': {
-                    'type': 'Select',
-                    'configs': {
-                        'label': Locale.t('player.component.BlockToggler.blocks', 'Blocks'),
-                        'multiple': true
+                    'field': {
+                        'type': 'select',
+                        'input': {
+                            'multiple': true
+                        },
+                        'label': Locale.t('player.component.BlockToggler.blocks', 'Blocks')
                     },
                     'getter': function(){
                         const value = this.data('blocks');
@@ -59,10 +61,12 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'x': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.BlockToggler.x', 'X'),
-                        'spinDirection': 'vertical'
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
+                        'label': Locale.t('player.component.BlockToggler.x', 'X')
                     },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
@@ -72,10 +76,12 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'y': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.BlockToggler.y', 'Y'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.BlockToggler.y', 'Y')
                     },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
@@ -85,10 +91,12 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'width': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.BlockToggler.width', 'Width'),
-                        'spinDirection': 'vertical'
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
+                        'label': Locale.t('player.component.BlockToggler.width', 'Width')
                     },
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
@@ -98,10 +106,12 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'height': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.BlockToggler.height', 'Height'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.BlockToggler.height', 'Height')
                     },
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
@@ -111,8 +121,8 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'z-index': {
-                    'type': 'Number',
-                    'configs': {
+                    'field': {
+                        'type': 'number',
                         'label': Locale.t('player.component.BlockToggler.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
@@ -124,8 +134,8 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'background-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'color',
                         'label': Locale.t('player.component.Block.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
@@ -136,8 +146,8 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'border-width': {
-                    'type': 'Number',
-                    'configs': {
+                    'field': {
+                        'type': 'number',
                         'label': Locale.t('player.component.BlockToggler.border-width', 'Border width'),
                         'min': 0
                     },
@@ -150,8 +160,8 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'border-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'color',
                         'label': Locale.t('player.component.BlockToggler.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
@@ -162,8 +172,8 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'border-radius': {
-                    'type': 'BorderRadius',
-                    'configs': {
+                    'field': {
+                        'type': 'border-radius',
                         'label': Locale.t('player.component.BlockToggler.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
@@ -175,15 +185,6 @@ export default class BlockToggler extends Component{
                 }
             })
         });
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return 'BlockToggler';
     }
 
     /**
@@ -290,18 +291,6 @@ export default class BlockToggler extends Component{
      */
     onTogglerClick(component){
         component.toggleVisibility();
-    }
-
-    /**
-     * Get the draggable behaviour's configuration
-     *
-     * @return {Object} The configuration
-     */
-    getDraggableConfigs(){
-        return {
-            'target': this,
-            'handle': this
-        };
     }
 
 }

@@ -106,9 +106,9 @@ export default class Ruler extends Dom {
 
     init(){
         this.configs.trackTarget
-            .addListener('mouseover', this.onMouseover)
-            .addListener('mousemove', this.onMousemove)
-            .addListener('mouseout', this.onMouseout);
+            .addListener('mouseover', this.onMouseover, true)
+            .addListener('mousemove', this.onMousemove, true)
+            .addListener('mouseout', this.onMouseout, true);
 
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));
@@ -118,9 +118,9 @@ export default class Ruler extends Dom {
 
     remove(){
         this.configs.trackTarget
-            .removeListener('mouseover', this.onMouseover)
-            .removeListener('mousemove', this.onMousemove)
-            .removeListener('mouseout', this.onMouseout);
+            .removeListener('mouseover', this.onMouseover, true)
+            .removeListener('mousemove', this.onMousemove, true)
+            .removeListener('mouseout', this.onMouseout, true);
 
         super.remove();
     }

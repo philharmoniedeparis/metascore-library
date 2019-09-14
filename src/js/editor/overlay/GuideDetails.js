@@ -4,12 +4,7 @@ import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import {isEmpty} from '../../core/utils/Var';
 import {formatFileSize} from '../../core/utils/Number';
-import HiddenField from '../field/Hidden';
-import SelectField from '../field/Select';
-import TextField from '../field/Text';
-import TextareaField from '../field/Textarea';
-import FileField from '../field/File';
-import CheckboxesField from '../field/Checkboxes';
+import Field from '../Field';
 
 import {className} from '../../../css/editor/overlay/GuideDetails.less';
 
@@ -92,45 +87,55 @@ export default class GuideDetails extends Overlay {
             .appendTo(contents);
 
         // Fields
-        this.fields.action = new HiddenField()
+        this.fields.action = new Field({
+                'type': 'hidden'
+            })
             .data('name', 'action')
             .appendTo(form);
 
 
-        this.fields.type = new SelectField({
-                'label': Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type'),
-                'options': [
-                    {
-                        'value': 'audio',
-                        'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio')
-                    },
-                    {
-                        'value': 'video',
-                        'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
-                    }
-                ],
-                'required': true
+        this.fields.type = new Field({
+                'type': 'select',
+                'input': {
+                    'options': [
+                        {
+                            'value': 'audio',
+                            'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.audio', 'Audio')
+                        },
+                        {
+                            'value': 'video',
+                            'text': Locale.t('editor.overlay.GuideDetails.fields.type.options.video', 'Video')
+                        }
+                    ],
+                    'required': true
+                },
+                'label': Locale.t('editor.overlay.GuideDetails.fields.type.label', 'Type')
             })
             .data('name', 'type')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
-        this.fields.title = new TextField({
-                'label': Locale.t('editor.overlay.GuideDetails.fields.title.label', 'Title'),
-                'required': true
+        this.fields.title = new Field({
+                'type': 'text',
+                'input': {
+                    'required': true
+                },
+                'label': Locale.t('editor.overlay.GuideDetails.fields.title.label', 'Title')
             })
             .data('name', 'title')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
-        this.fields.description = new TextareaField({
+        this.fields.description = new Field({
+                'type': 'textarea',
                 'label': Locale.t('editor.overlay.GuideDetails.fields.description.label', 'Description')
             })
             .data('name', 'description')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
-        this.fields.credits = new TextareaField({
+        this.fields.credits = new Field({
+                'type': 'textarea',
                 'label': Locale.t('editor.overlay.GuideDetails.fields.credits.label', 'Credits')
             })
             .data('name', 'credits')
@@ -138,47 +143,55 @@ export default class GuideDetails extends Overlay {
             .appendTo(form);
 
         const thumbnail_upload_extensions = `.${this.configs.thumbnail_upload_extensions.join(`, .`)}`;
-        this.fields.thumbnail = new FileField({
-                'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
-                'sources': {
-                    'upload': {
-                        'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Files must be less than: !size<br/>Supported file types: !types', {'!dimentions': '155x123', '!size': formatFileSize(this.configs.thumbnail_upload_max_filesize), '!types': thumbnail_upload_extensions}),
-                        'accept': thumbnail_upload_extensions
+        this.fields.thumbnail = new Field({
+                'type': 'file',
+                'input': {
+                    'sources': {
+                        'upload': {
+                            'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Files must be less than: !size<br/>Supported file types: !types', {'!dimentions': '155x123', '!size': formatFileSize(this.configs.thumbnail_upload_max_filesize), '!types': thumbnail_upload_extensions}),
+                            'accept': thumbnail_upload_extensions
+                        }
                     }
-                }
+                },
+                'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail')
             })
             .data('name', 'thumbnail')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
         const media_upload_extensions = `.${this.configs.media_upload_extensions.join(`, .`)}`;
-        this.fields.media = new FileField({
-                'label': Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media'),
-                'sources': {
-                    'upload': {
-                        'label': Locale.t('overlay.GuideDetails.fields.media.sources.upload.label', 'Upload'),
-                        'accept': media_upload_extensions,
-                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.upload.description', 'Files must be less than: !size<br/>Supported file types: !types', {'!size': formatFileSize(this.configs.media_upload_max_filesize),'!types': media_upload_extensions}),
+        this.fields.media = new new Field({
+                'type': 'file',
+                'input': {
+                    'sources': {
+                        'upload': {
+                            'label': Locale.t('overlay.GuideDetails.fields.media.sources.upload.label', 'Upload'),
+                            'accept': media_upload_extensions,
+                            'description': Locale.t('editor.overlay.GuideDetails.fields.media.upload.description', 'Files must be less than: !size<br/>Supported file types: !types', {'!size': formatFileSize(this.configs.media_upload_max_filesize),'!types': media_upload_extensions}),
+                        },
+                        'url': {
+                            'label': Locale.t('overlay.GuideDetails.fields.media.sources.url.label', 'URL'),
+                            'description': Locale.t('editor.overlay.GuideDetails.fields.media.url.description', 'Supported file types: !types', {'!types': `${media_upload_extensions}, .m3u8 (HLS), .mpd (MPEG-Dash)`}),
+                        }
                     },
-                    'url': {
-                        'label': Locale.t('overlay.GuideDetails.fields.media.sources.url.label', 'URL'),
-                        'description': Locale.t('editor.overlay.GuideDetails.fields.media.url.description', 'Supported file types: !types', {'!types': `${media_upload_extensions}, .m3u8 (HLS), .mpd (MPEG-Dash)`}),
-                    }
+                    'required': true
                 },
-                'required': true
+                'label': Locale.t('editor.overlay.GuideDetails.fields.media.label', 'Media')
             })
             .data('name', 'media')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
-        this.fields.css = new TextareaField({
+        this.fields.css = new Field({
+                'type': 'textarea',
                 'label': Locale.t('editor.overlay.GuideDetails.fields.css.label', 'CSS')
             })
             .data('name', 'css')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
             .appendTo(form);
 
-        this.fields.tags = new TextField({
+        this.fields.tags = new Field({
+                'type': 'text',
                 'label': Locale.t('editor.overlay.GuideDetails.fields.tags.label', 'Tags'),
                 'description': Locale.t('editor.overlay.GuideDetails.fields.tags.description', 'Comma separated list of tags'),
             })
@@ -187,10 +200,13 @@ export default class GuideDetails extends Overlay {
             .appendTo(form);
 
         if(!isEmpty(this.configs.groups)){
-            this.fields.groups = new CheckboxesField({
+            this.fields.groups = new Field({
+                    'type': 'checkboxes',
+                    'input': {
+                        'multiple': true
+                    },
                     'label': Locale.t('editor.overlay.GuideDetails.fields.groups.label', 'Groups'),
-                    'description': Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The checked groups are those in which this guide is shared'),
-                    'multiple': true
+                    'description': Locale.t('editor.overlay.GuideDetails.fields.groups.description', 'The checked groups are those in which this guide is shared')
                 })
                 .data('name', 'groups')
                 .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -251,7 +267,7 @@ export default class GuideDetails extends Overlay {
             const field = this.getField(name);
 
             if(field){
-                field.setValue(value, supressEvent);
+                field.getInput().setValue(value, supressEvent);
             }
         });
 
@@ -277,7 +293,7 @@ export default class GuideDetails extends Overlay {
      */
     clearValues(supressEvent){
 		Object.entries(this.fields).forEach(([, field]) => {
-            field.setValue(null, supressEvent);
+            field.getInput().setValue(null, supressEvent);
         });
 
         return this;

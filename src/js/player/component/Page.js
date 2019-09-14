@@ -59,8 +59,8 @@ export default class Page extends Component {
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'color',
                         'label': Locale.t('player.component.Page.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
@@ -71,8 +71,8 @@ export default class Page extends Component {
                     }
                 },
                 'background-image': {
-                    'type': 'Image',
-                    'configs': {
+                    'field': {
+                        'type': 'image',
                         'label': Locale.t('player.component.Page.background-image', 'Background image')
                     },
                     'getter': function(skipDefault){
@@ -94,11 +94,13 @@ export default class Page extends Component {
                     }
                 },
                 'start-time': {
-                    'type': 'Time',
-                    'configs': {
-                        'label': Locale.t('player.component.Page.start-time', 'Start time'),
-                        'inButton': true,
-                        'outButton': true
+                    'field': {
+                        'type': 'time',
+                        'input': {
+                            'inButton': true,
+                            'outButton': true
+                        },
+                        'label': Locale.t('player.component.Page.start-time', 'Start time')
                     },
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
@@ -109,11 +111,13 @@ export default class Page extends Component {
                     }
                 },
                 'end-time': {
-                    'type': 'Time',
-                    'configs': {
-                        'label': Locale.t('player.component.Page.end-time', 'End time'),
-                        'inButton': true,
-                        'outButton': true
+                    'field': {
+                        'type': 'time',
+                        'input': {
+                            'inButton': true,
+                            'outButton': true
+                        },
+                        'label': Locale.t('player.component.Page.end-time', 'End time')
                     },
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
@@ -142,15 +146,6 @@ export default class Page extends Component {
                 }
             })
         });
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return 'Page';
     }
 
     /**

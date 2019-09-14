@@ -1,20 +1,22 @@
+/* eslint-disable */
+
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
 import Resizable from './core/ui/Resizable';
-import BlockPanel from './editor/panel/Block';
-import PagePanel from './editor/panel/Page';
-import ElementPanel from './editor/panel/Element';
+import ComponentForm from './editor/ComponentForm';
 import UndoRedo from './editor/UndoRedo';
 import Alert from './core/ui/overlay/Alert';
 import LoadMask from './core/ui/overlay/LoadMask';
 import Clipboard from './core/Clipboard';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
-import TimeField from './editor/field/Time';
+import TimeInput from './core/ui/input/TimeInput';
 import Controller from './editor/Controller';
+import Ruler from './editor/Ruler';
+import Grid from './editor/Grid';
 
 import {className} from '../css/Editor.less';
 
@@ -97,40 +99,79 @@ export default class Editor extends Dom {
     * Initialize
     */
     init(){
-        const top =  new Dom('<div/>', {'id': 'top'}).appendTo(this);
+        const top_pane = new Dom('<div/>', {'id': 'top-pane', 'class': 'pane horizontal'}).appendTo(this);
+        const bottom_pane = new Dom('<div/>', {'id': 'bottom-pane', 'class': 'pane horizontal'}).appendTo(this);
+
+        const tools_pane = new Dom('<div/>', {'id': 'tools-pane', 'class': 'pane vertical'}).appendTo(top_pane);
+        const center_pane = new Dom('<div/>', {'id': 'center-pane', 'class': 'pane vertical'}).appendTo(top_pane);
+        const config_pane = new Dom('<div/>', {'id': 'configs-pane', 'class': 'pane vertical'}).appendTo(top_pane);
+
+        bottom_pane._resizable = new Resizable({
+                'target': bottom_pane,
+                'directions': ['top']
+            })
+            .getHandle('top')
+            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, bottom_pane));
+
+        tools_pane._resizable = new Resizable({
+                'target': tools_pane,
+                'directions': ['right']
+            })
+            .getHandle('right')
+            .addDelegate('.resize-handle', 'dblclick', this.onPaneResizeDblclick.bind(this, tools_pane));
+
+        config_pane._resizable = new Resizable({
+                'target': config_pane,
+                'directions': ['left']
+            })
+            .getHandle('left')
+            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, config_pane));
 
         /**
          * The top menu
          * @type {MainMenu}
          */
-        this.mainmenu = new MainMenu().appendTo(top)
+        this.mainmenu = new MainMenu()
+            .appendTo(center_pane)
             .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.checkbox.field[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
-            .addDelegate('.number.field[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
-
-        const center =  new Dom('<div/>', {'id': 'center'}).appendTo(this);
-
-        const left =  new Dom('<div/>', {'id': 'left'}).appendTo(center);
+            .addDelegate('.checkbox.input[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
+            .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
 
         /**
          * The workspace
          * @type {Dom}
          */
-        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(left);
+        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(center_pane);
 
         /**
          * The horizontal ruler
-         * @type {Dom}
+         * @type {Ruler}
          */
-        this.h_ruler = new Dom('<div/>', {'class': 'ruler horizontal'}).appendTo(this.workspace);
+        this.x_ruler = new Ruler({
+                'axis': 'x',
+                'trackTarget': this.workspace
+            })
+            .appendTo(this.workspace)
+            .init();
 
         /**
          * The vertical ruler
+         * @type {Ruler}
+         */
+        this.y_ruler = new Ruler({
+                'axis': 'y',
+                'trackTarget': this.workspace
+            })
+            .appendTo(this.workspace)
+            .init();
+
+        /**
+         * The grid
          * @type {Dom}
          */
-        this.v_ruler = new Dom('<div/>', {'class': 'ruler vertical'}).appendTo(this.workspace);
-
-        const bottom =  new Dom('<div/>', {'id': 'bottom'}).appendTo(left);
+        this.grid = new Grid()
+            .appendTo(this.workspace)
+            .init();
 
         /**
          * The controller
@@ -138,12 +179,12 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .appendTo(bottom);
+            .appendTo(bottom_pane);
 
         this.controller.getControls()
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
 
-        this.controller.getTimeField()
+        this.controller.getTimeInput()
             .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
 
         this.controller.getTimeline()
@@ -151,60 +192,14 @@ export default class Editor extends Dom {
             .getHandlesContainer()
                 .addDelegate('.handle', 'click', this.onTimelineTrackClick.bind(this));
 
-        const right =  new Dom('<div/>', {'id': 'right'}).appendTo(center)
-            .addListener('resizestart', this.onSidebarResizeStart.bind(this))
-            .addListener('resize', this.onSidebarResize.bind(this))
-            .addListener('resizeend', this.onSidebarResizeEnd.bind(this));
-
         /**
-         * The sidebar resizer
-         * @type {Resizable}
+         * The component form
+         * @type {ComponentForm}
          */
-        this.sidebar_resizer = new Resizable({target: right, directions: ['left']});
-        this.sidebar_resizer.getHandle('left')
-            .addListener('dblclick', this.onSidebarResizeDblclick.bind(this));
-
-        /**
-         * The sidebar
-         * @type {Dom}
-         */
-        this.sidebar = new Dom('<div/>', {'class': 'sidebar'}).appendTo(right);
-
-        /**
-         * The list of panels
-         * @type {Object}
-         */
-        this.panels = {};
-
-        this.panels.block = new BlockPanel().appendTo(this.sidebar)
-            .addListener('componentset', this.onBlockSet.bind(this))
-            .addListener('componentunset', this.onBlockUnset.bind(this));
-
-        this.panels.block.getToolbar()
-            .addDelegate('.selector', 'valuechange', this.onBlockPanelSelectorChange.bind(this))
-            .addDelegate('.buttons [data-action]', 'click', this.onBlockPanelToolbarClick.bind(this));
-
-        this.panels.page = new PagePanel().appendTo(this.sidebar)
-            .addListener('componentset', this.onPageSet.bind(this))
-            .addListener('componentunset', this.onPageUnset.bind(this));
-
-        this.panels.page.getToolbar()
-            .addDelegate('.selector', 'valuechange', this.onPagePanelSelectorChange.bind(this))
-            .addDelegate('.buttons [data-action]', 'click', this.onPagePanelToolbarClick.bind(this));
-
-        this.panels.element = new ElementPanel().appendTo(this.sidebar)
-            .addListener('componentset', this.onElementSet.bind(this))
-            .addListener('beforecursoradvancededitmodeunlock', this.onElementPanelBeforeCursorAdvancedEditModeUnlock.bind(this));
-
-        this.panels.element.getToolbar()
-            .addDelegate('.selector', 'valuechange', this.onElementPanelSelectorChange.bind(this))
-            .addDelegate('.buttons [data-action]', 'click', this.onElementPanelToolbarClick.bind(this));
-
-        /**
-         * The grid
-         * @type {Dom}
-         */
-        this.grid = new Dom('<div/>', {'class': 'grid'}).appendTo(this.workspace);
+        this.component_form = new ComponentForm()
+            .addListener('componentset', this.onComponentFormComponentSet.bind(this))
+            .addListener('beforecursoradvancededitmodeunlock', this.onComponentFormBeforeCursorAdvancedEditModeUnlock.bind(this))
+            .appendTo(config_pane);
 
         /**
          * The undo/redo handler
@@ -299,11 +294,10 @@ export default class Editor extends Dom {
                     'callback': (context) => {
                         const page = context.el.closest('.metaScore-component.page')._metaScore;
 
-                        this.panels.block.setComponent(page.getParent());
-                        this.panels.page.setComponent(page);
+                        this.component_form.unsetComponents();
 
                         page.getChildren().forEach((element, index) => {
-                            this.panels.element.setComponent(element, index > 0);
+                            this.component_form.setComponent(element, index > 0);
                         });
                     },
                     'toggler': (context) => {
@@ -316,13 +310,11 @@ export default class Editor extends Dom {
                         const rindex = this.getPlayer().getReadingIndex();
                         const page = context.el.closest('.metaScore-component.page')._metaScore;
 
-                        this.panels.block.setComponent(page.getParent());
-                        this.panels.page.setComponent(page);
-                        this.panels.element.unsetComponents();
+                        this.component_form.unsetComponents();
 
                         page.getChildren().forEach((element) => {
                             if(element.getPropertyValue('r-index') === rindex){
-                                this.panels.element.setComponent(element, true);
+                                this.component_form.setComponent(element, true);
                             }
                         });
                     },
@@ -331,21 +323,15 @@ export default class Editor extends Dom {
                     }
                 },
                 'copy-elements': {
-                    'text': () => {
-                        if(this.panels.element.getComponents().length > 0){
+                    'text': (context) => {
+                        if(context.data.selected){
                             return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
                         }
                         return Locale.t('editor.contextmenu.copy-element', 'Copy element');
                     },
                     'callback': (context) => {
                         const configs = [];
-                        let elements = this.panels.element.getComponents();
-
-                        if(elements.length === 0){
-                            elements = [context.el.closest('.metaScore-component.element')._metaScore];
-                        }
-
-                        elements.forEach((element) => {
+                        context.data.elements.forEach((element) => {
                             const config = element.getPropertyValues(void 0, true);
                             // Slightly move the copy by 5 pixels right and 5 pixels down.
                             config.x += 5;
@@ -353,20 +339,42 @@ export default class Editor extends Dom {
 
                             configs.push(config);
                         });
-
                         this.clipboard.setData('element', configs);
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && ((this.panels.element.getComponents().length > 0) || (context.el.closest('.metaScore-component.element') ? true : false));
+                        if(this.editing !== true){
+                            return false;
+                        }
+                        const components = this.component_form.getComponents('Element');
+                        if(components.length > 0){
+                            context.data.selected = true;
+                            context.data.elements = components;
+                            return true;
+                        }
+                        const component = context.el.closest('.metaScore-component.element');
+                        if(component){
+                            context.data.elements = [component];
+                            return true;
+                        }
+                        return false;
                     }
                 },
                 'paste-elements': {
                     'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
                     'callback': (context) => {
-                        this.addPlayerComponents('element', this.clipboard.getData(), context.el.closest('.metaScore-component.page')._metaScore);
+                        this.addPlayerComponents('element', context.data.element, context.data.page);
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'element') && (context.el.closest('.metaScore-component.page') ? true : false);
+                        if((this.editing !== true) || (this.clipboard.getDataType() !== 'element')){
+                            return false;
+                        }
+                        const dom = context.el.closest('.metaScore-component.page');
+                        if(dom){
+                            context.data.element = this.clipboard.getData();
+                            context.data.page = dom._metaScore;
+                            return true;
+                        }
+                        return false;
                     }
                 },
                 'delete-elements': {
@@ -861,7 +869,7 @@ export default class Editor extends Dom {
         const field = evt.detail.field;
         const time = this.getPlayer().getMedia().getTime();
 
-        field.setValue(time);
+        field.getInput().setValue(time);
     }
 
     /**
@@ -919,32 +927,26 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Sidebar resize handle dblclick event callback
+     * Pane resize handle dblclick event callback
      *
      * @private
      */
-    onSidebarResizeDblclick(){
-        this.toggleClass('sidebar-hidden');
-
-        this.toggleSidebarResizer();
+    onPaneResizeDblclick(pane){
+        pane.toggleClass('collapsed');
     }
 
     /**
-     * Block panel componentset event callback
+     * ComponentForm componentset event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onBlockSet(evt){
-        const block = evt.detail.component;
+    onComponentFormComponentSet(evt){
+        const component = evt.detail.component;
 
-        if(block.instanceOf('Block')){
-            this.panels.page.getToolbar().toggleMenuItem('new', true);
-        }
-        else if(block.instanceOf('BlockToggler')){
+        if(component.instanceOf('BlockToggler')){
             // Update the 'blocks' field options and value
-            const panel = this.panels.block;
-            const field = panel.getField('blocks');
+            const field = this.component_form.getField('blocks');
 
             this.getPlayer().getComponents('.media.video, .controller, .block').forEach((component) => {
                 field.addOption(component.getId(), component.getName());
@@ -952,276 +954,56 @@ export default class Editor extends Dom {
 
             field.setValue(block.getPropertyValue('blocks'));
         }
+        else if(component.instanceOf('Page')){
+            const page = evt.detail.component;
+            const block = page.getParent();
+            const start_time_field = this.component_form.getField('start-time');
+            const end_time_field = this.component_form.getField('end-time');
 
-        this.updatePageSelector();
-    }
+            if(block.getPropertyValue('synched')){
+                const index = block.getChildIndex(page);
+                const previous_page = block.getChild(index-1);
+                const next_page = block.getChild(index+1);
 
-    /**
-     * Block panel componentunset event callback
-     *
-     * @private
-     */
-    onBlockUnset(evt){
-        const block = evt.detail.component;
+                if(previous_page){
+                    start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
+                }
+                else{
+                    start_time_field.readonly(true).enable();
+                }
 
-        if(block.instanceOf('Block')){
-            block.getChildren().forEach((page) => {
-                this.panels.page.unsetComponent(page);
-            });
-
-            const toggle = this.panels.block.getComponents().length > 0;
-            this.panels.page.getToolbar().toggleMenuItem('new', toggle);
-        }
-
-        this.updatePageSelector();
-        this.updateElementSelector();
-    }
-
-    /**
-     * Block panel toolbar click event callback
-     *
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onBlockPanelToolbarClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'synched':
-            case 'non-synched':
-                this.addPlayerComponents('block', {'type': 'Block', 'synched': action === 'synched'}, this.getPlayer());
-                break;
-
-            case 'block-toggler':
-                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
-                break;
-
-            case 'delete': {
-                const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
-                this.deletePlayerComponents('block', blocks);
-                break;
-            }
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Block panel toolbar selector valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onBlockPanelSelectorChange(evt){
-        if(evt.detail.added.length > 0){
-            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
-            added.forEach((component) => {
-                this.panels.block.setComponent(component, true);
-            });
-        }
-
-        if(evt.detail.removed.length > 0){
-            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
-            removed.forEach((component) => {
-                this.panels.block.unsetComponent(component);
-            });
-        }
-    }
-
-    /**
-     * Page panel componentset event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPageSet(evt){
-        this.panels.element
-            .getToolbar()
-                .toggleMenuItem('Cursor', true)
-                .toggleMenuItem('Image', true)
-                .toggleMenuItem('Text', true);
-
-        const page = evt.detail.component;
-        const block = page.getParent();
-        const start_time_field = this.panels.page.getField('start-time');
-        const end_time_field = this.panels.page.getField('end-time');
-
-        if(block.getPropertyValue('synched')){
-            const index = block.getChildIndex(page);
-            const previous_page = block.getChild(index-1);
-            const next_page = block.getChild(index+1);
-
-            if(previous_page){
-                start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
+                if(next_page){
+                    end_time_field.readonly(false).enable().setMax(next_page.getPropertyValue('end-time'));
+                }
+                else{
+                    end_time_field.readonly(true).enable();
+                }
             }
             else{
-                start_time_field.readonly(true).enable();
+                start_time_field.disable();
+                end_time_field.disable();
             }
 
-            if(next_page){
-                end_time_field.readonly(false).enable().setMax(next_page.getPropertyValue('end-time'));
-            }
-            else{
-                end_time_field.readonly(true).enable();
-            }
+            evt.stopPropagation();
         }
-        else{
-            start_time_field.disable();
-            end_time_field.disable();
+        else if(component.instanceOf('Element')){
+            const element = evt.detail.component;
+            const player = this.getPlayer();
+
+            player.setReadingIndex(element.getPropertyValue('r-index') || 0);
+
+            evt.stopPropagation();
         }
-
-        this.updateElementSelector();
-
-        evt.stopPropagation();
     }
 
     /**
-     * Page panel componentunset event callback
-     *
-     * @private
-     */
-    onPageUnset(evt){
-        const page = evt.detail.component;
-
-        page.getChildren().forEach((element) => {
-            this.panels.element.unsetComponent(element);
-        });
-
-        const toggle = this.panels.page.getComponents().length > 0;
-        this.panels.element.getToolbar()
-            .toggleMenuItem('Cursor', toggle)
-            .toggleMenuItem('Image', toggle)
-            .toggleMenuItem('Text', toggle);
-
-        this.updateElementSelector();
-    }
-
-    /**
-     * Page panel toolbar click event callback
-     *
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onPagePanelToolbarClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'new-before': {
-                const block = this.panels.block.getComponent();
-                this.addPlayerComponents('page', {'position': 'before'}, block);
-                break;
-            }
-
-            case 'new-after': {
-                const block = this.panels.block.getComponent();
-                this.addPlayerComponents('page', {'position': 'after'}, block);
-                break;
-            }
-
-            case 'delete': {
-                const pages = this.panels.page.getComponents();
-                this.deletePlayerComponents('page', pages);
-                break;
-            }
-        }
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Page panel toolbar selector valuechange event callback
+     * ComponentForm beforecursoradvancededitmodeunlock event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPagePanelSelectorChange(evt){
-        if(evt.detail.added.length > 0){
-            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
-            added.forEach((component) => {
-                this.panels.page.setComponent(component, true);
-                component.getParent().setActivePage(component, true);
-            });
-        }
-
-        if(evt.detail.removed.length > 0){
-            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
-            removed.forEach((component) => {
-                this.panels.page.unsetComponent(component);
-            });
-        }
-    }
-
-    /**
-     * Element panel componentset event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onElementSet(evt){
-        const element = evt.detail.component;
-        const player = this.getPlayer();
-
-        player.setReadingIndex(element.getPropertyValue('r-index') || 0);
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Element panel beforecursoradvancededitmodeunlock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onElementPanelBeforeCursorAdvancedEditModeUnlock(evt){
+    onComponentFormBeforeCursorAdvancedEditModeUnlock(evt){
         evt.detail.media = this.getPlayer().getMedia();
-    }
-
-    /**
-     * Element panel toolbar click event callback
-     *
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onElementPanelToolbarClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'Cursor':
-            case 'Image':
-            case 'Text': {
-                const page = this.panels.page.getComponent();
-                this.addPlayerComponents('element', {'type': action}, page);
-                break;
-            }
-
-            case 'delete': {
-                const elements = this.panels.element.getComponents();
-                this.deletePlayerComponents('element', elements);
-                break;
-            }
-        }
-    }
-
-    /**
-     * Element panel toolbar selector valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onElementPanelSelectorChange(evt){
-        if(evt.detail.added.length > 0){
-            const added = this.getPlayer().getComponents(`#${evt.detail.added.join(',#')}`);
-            added.forEach((component) => {
-                this.panels.element.setComponent(component, true);
-            });
-        }
-
-        if(evt.detail.removed.length > 0){
-            const removed = this.getPlayer().getComponents(`#${evt.detail.removed.join(',#')}`);
-            removed.forEach((component) => {
-                this.panels.element.unsetComponent(component);
-            });
-        }
     }
 
     /**
@@ -1280,9 +1062,9 @@ export default class Editor extends Dom {
      */
     onPlayerReadingIndex(evt){
         const rindex = evt.detail.value;
-        const field = this.mainmenu.getItem('r-index');
+        const input = this.mainmenu.getItem('r-index');
 
-        field.setValue(rindex, true);
+        input.setValue(rindex, true);
     }
 
     /**
@@ -1305,17 +1087,7 @@ export default class Editor extends Dom {
         this.controller.timeline.addTrack(component);
 
         if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block')){
-            this.updateBlockSelector();
             this.getPlayer().updateBlockTogglers();
-        }
-        else if(component.instanceOf('BlockToggler')){
-            this.updateBlockSelector();
-        }
-        else if(component.instanceOf('Page')){
-            const block = component.getParent();
-            if(block === this.panels.block.getComponent()){
-                this.updatePageSelector();
-            }
         }
         else if(component.instanceOf('Element')){
             const page = component.getParent();
@@ -1325,17 +1097,12 @@ export default class Editor extends Dom {
 
                 if(!isNumber(component.getPropertyValue('start-time'))){
                     component.setPropertyValue('start-time', media.getTime());
-
                 }
 
                 if(!isNumber(component.getPropertyValue('end-time'))){
                     const block = page.getParent();
                     component.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
                 }
-            }
-
-            if(page === this.panels.page.getComponent()){
-                this.updateElementSelector();
             }
         }
     }
@@ -1348,16 +1115,7 @@ export default class Editor extends Dom {
     */
     onComponentBeforeRemove(evt){
         const component = evt.target._metaScore;
-
-        if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
-            this.panels.block.unsetComponent(component, true);
-        }
-        else if(component.instanceOf('Page')){
-            this.panels.page.unsetComponent(component, true);
-        }
-        else if(component.instanceOf('Element')){
-            this.panels.page.unsetComponent(component, true);
-        }
+        this.component_form.unsetComponent(component, true);
     }
 
     /**
@@ -1373,18 +1131,8 @@ export default class Editor extends Dom {
         if(component){
             this.controller.timeline.removeTrack(component);
 
-            if(component.instanceOf('Block') || component.instanceOf('BlockToggler') || component.instanceOf('Media') || component.instanceOf('Controller')){
-                this.updateBlockSelector();
-
-                if(!component.instanceOf('BlockToggler')){
-                    this.getPlayer().updateBlockTogglers();
-                }
-            }
-            else if(component.instanceOf('Page')){
-                this.updatePageSelector();
-            }
-            else if(component.instanceOf('Element')){
-                this.updateElementSelector();
+            if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
+                this.getPlayer().updateBlockTogglers();
             }
         }
     }
@@ -1396,7 +1144,10 @@ export default class Editor extends Dom {
      * @param {LoadMask} loadmask the loadmask to hide
      */
     onPlayerFrameLoadSuccess(loadmask){
-        const player = this.player_frame.get(0).contentWindow.player;
+        const iframe = this.player_frame.get(0);
+        const player = iframe.contentWindow.player;
+
+        Dom.bubbleIframeMouseEvent(iframe, 'mousemove');
 
         if(player){
             /**
@@ -1456,7 +1207,6 @@ export default class Editor extends Dom {
             .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
             .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
-            .addDelegate('.metaScore-component.page', 'activate', this.onPageActivate.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
@@ -1514,9 +1264,7 @@ export default class Editor extends Dom {
             return;
         }
 
-		Object.values(this.panels).forEach((panel) => {
-            panel.unsetComponents();
-        });
+		this.component_form.unsetComponents();
 
         evt.stopPropagation();
     }
@@ -1549,12 +1297,7 @@ export default class Editor extends Dom {
         const component = evt.detail.component;
         const property = evt.detail.property;
 
-        if(component.instanceOf('Element')){
-            if(evt.detail.property === 'r-index'){
-                this.updateElementSelector();
-            }
-        }
-        else if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
+        if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
             if(['x', 'y', 'width', 'height', 'blocks'].includes(property)){
                 this.getPlayer().updateBlockTogglers();
             }
@@ -1737,20 +1480,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Page activate event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPageActivate(evt){
-        const page = evt.detail.page;
-
-        if(page.getParent() === this.panels.block.getComponent()){
-            this.panels.page.setComponent(page);
-        }
-    }
-
-    /**
      * History add event callback
      *
      * @private
@@ -1856,8 +1585,8 @@ export default class Editor extends Dom {
                     const old_duration = player.getMedia().getDuration();
 
                     if(new_duration !== old_duration){
-                        const formatted_old_duration = TimeField.getTextualValue(old_duration);
-                        const formatted_new_duration = TimeField.getTextualValue(new_duration);
+                        const formatted_old_duration = TimeInput.getTextualValue(old_duration);
+                        const formatted_new_duration = TimeInput.getTextualValue(new_duration);
                         const blocks = [];
 
                         if(new_duration < old_duration){
@@ -1989,14 +1718,12 @@ export default class Editor extends Dom {
          */
         this.editing = editing !== false;
 
-		Object.values(this.panels).forEach((panel) => {
-            if(this.editing){
-                panel.enable();
-            }
-            else{
-                panel.disable();
-            }
-        });
+        if(this.editing){
+            this.component_form.enable();
+        }
+        else{
+            this.component_form.disable();
+        }
 
         this.toggleClass('editing', this.editing);
 
@@ -2005,25 +1732,6 @@ export default class Editor extends Dom {
 
         if(player){
             player.toggleClass('editing', this.editing);
-        }
-
-        this.toggleSidebarResizer();
-
-        return this;
-    }
-
-    /**
-     * Toggles the activation of the sidebar resizer
-     *
-     * @private
-     * @return {this}
-     */
-    toggleSidebarResizer() {
-        if(!this.hasClass('editing') || this.hasClass('sidebar-hidden')){
-            this.sidebar_resizer.disable();
-        }
-        else{
-            this.sidebar_resizer.enable();
         }
 
         return this;
@@ -2045,125 +1753,6 @@ export default class Editor extends Dom {
             .toggleItem('undo', this.history.hasUndo())
             .toggleItem('redo', this.history.hasRedo())
             .toggleItem('revert', this.isDirty());
-
-        return this;
-    }
-
-    /**
-     * Updates the selector of the block panel
-     *
-     * @private
-     * @return {this}
-     */
-    updateBlockSelector() {
-        const panel = this.panels.block;
-        const selector = panel.getToolbar().getSelector();
-
-        selector.clear();
-
-        this.getPlayer().getComponents('.media.video, .controller, .block, .block-toggler').forEach((block) => {
-            selector.addOption(block.getId(), panel.getSelectorLabel(block));
-        });
-
-        const block = panel.getComponent();
-        selector.setValue(block ? block.getId() : null, true);
-
-        return this;
-    }
-
-    /**
-     * Updates the selector of the page panel
-     *
-     * @private
-     * @return {this}
-     */
-    updatePageSelector() {
-        const selector = this.panels.page.getToolbar().getSelector();
-        const blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block'));
-
-        // clear the selector
-        selector.clear();
-
-        if(blocks.length > 0){
-            selector.enable();
-
-            // add each page to the selector grouped by block
-            blocks.forEach((block) => {
-                const optgroup = blocks.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(block));
-
-                block.getChildren().forEach((page, index) => {
-                    selector.addOption(page.getId(), index+1, optgroup);
-                });
-            });
-
-            // set the selector's value to all selected pages
-            const pages = this.panels.page.getComponents();
-            selector.setValue(pages.map((page) => page.getId()), true);
-        }
-        else{
-            selector.disable();
-        }
-
-        return this;
-    }
-
-    /**
-     * Updates the selector of the element panel
-     *
-     * @private
-     * @return {this}
-     */
-    updateElementSelector() {
-        const panel = this.panels.element;
-        const pages = this.panels.page.getComponents();
-        const selector = panel.getToolbar().getSelector();
-
-        // clear the selector
-        selector.clear();
-
-        if(pages.length > 0){
-            selector.enable();
-
-            pages.forEach((page) => {
-                const block_optgroup = pages.length === 1 ? null : selector.addGroup(this.panels.block.getSelectorLabel(page.getParent()));
-                const optgroups = {};
-
-                // fill the list of optgroups
-                page.getChildren().forEach((element) => {
-                    const rindex = element.getPropertyValue('r-index') || 0;
-
-                    if(!(rindex in optgroups)){
-                        optgroups[rindex] = [];
-                    }
-
-                    optgroups[rindex].push(element);
-                });
-
-                // create the optgroups and their options
-                Object.keys(optgroups).sort(naturalSortInsensitive).forEach((rindex) => {
-                    const options = optgroups[rindex];
-
-                    // sort options by element names
-                    options.sort((a, b) => {
-                        return naturalCompare(a.getName(), b.getName(), false);
-                    });
-
-                    // create the optgroup
-                    const optgroup = selector.addGroup(Locale.t('editor.elementSelectorGroupLabel', 'Reading index !rindex', {'!rindex': rindex}), block_optgroup).attr('data-r-index', rindex);
-
-                    // create the options
-                    options.forEach((element) => {
-                        selector.addOption(element.getId(), panel.getSelectorLabel(element), optgroup);
-                    });
-                });
-            });
-
-            const elements = panel.getComponents();
-            selector.setValue(elements.map((element) => element.getId()), true);
-        }
-        else{
-            selector.disable();
-        }
 
         return this;
     }
@@ -2234,9 +1823,7 @@ export default class Editor extends Dom {
     unloadPlayer() {
         delete this.player;
 
-		Object.values(this.panels).forEach((panel) => {
-            panel.unsetComponents();
-        });
+        this.component_form.unsetComponents();
 
         this
             .removeClass('has-player')
@@ -2276,29 +1863,25 @@ export default class Editor extends Dom {
             case 'element': {
                 const configs = isArray(config) ? config : [config];
                 const page = parent;
-                const panel = this.panels.element;
                 const components = [];
-
-                this.panels.block.setComponent(page.getParent());
-                this.panels.page.setComponent(page);
 
                 configs.forEach((element_config, index) => {
                     const component = page.addElement(element_config);
-                    panel.setComponent(component, index > 0);
+                    this.component_form.setComponent(component, index > 0);
                     components.push(component);
                 });
 
                 this.history.add({
-                    'undo': function(){
-                        panel.unsetComponents();
+                    'undo': () => {
+                        this.component_form.unsetComponents();
                         components.forEach((component) => {
                             component.remove();
                         })
                     },
-                    'redo': function(){
+                    'redo': () => {
                         components.forEach((component, index) => {
                             page.addElement(component);
-                            panel.setComponent(component, index > 0);
+                            this.component_form.setComponent(component, index > 0);
                         });
                     }
                 });
@@ -2307,7 +1890,6 @@ export default class Editor extends Dom {
 
             case 'page': {
                 const block = parent;
-                const panel = this.panels.page;
                 const before = 'position' in config  && config.position === 'before';
                 const index = block.getActivePageIndex();
                 let current_time = null;
@@ -2324,7 +1906,7 @@ export default class Editor extends Dom {
                     if(current_time === 0 || current_time >= duration){
                         new Alert({
                             'parent': this,
-                            'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeField.getTextualValue(0), '@duration': TimeField.getTextualValue(duration)}),
+                            'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
                             'buttons': {
                                 'ok': Locale.t('editor.addPlayerComponents.page.time.ok', 'OK'),
                             },
@@ -2344,8 +1926,8 @@ export default class Editor extends Dom {
                 block.setActivePage(index);
 
                 this.history.add({
-                    'undo': function(){
-                        panel.unsetComponents();
+                    'undo': () => {
+                        this.component_form.unsetComponents();
                         if(block.getPropertyValue('synched')){
                             const adjacent_page = block.getChild(before ? index + 1 : index);
                             const prop = before ? 'start-time' : 'end-time';
@@ -2354,7 +1936,7 @@ export default class Editor extends Dom {
                         component.remove();
                         block.setActivePage(index);
                     },
-                    'redo': function(){
+                    'redo': ()=> {
                         if(block.getPropertyValue('synched')){
                             const adjacent_page = block.getChild(index);
                             const prop = before ? 'start-time' : 'end-time';
@@ -2370,7 +1952,6 @@ export default class Editor extends Dom {
             case 'block': {
                 const configs = isArray(config) ? config : [config];
                 const player = parent;
-                const panel = this.panels.block;
                 const components = [];
 
                 configs.forEach((block_config, index) => {
@@ -2378,29 +1959,29 @@ export default class Editor extends Dom {
 
                     switch(block_config.type){
                         case 'BlockToggler':
-                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockTogglerName', 'untitled')}, block_config));
+                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.defaultBlockTogglerName', 'untitled')}, block_config));
                             break;
 
                         default: {
-                            component = player.addBlock(Object.assign({'name': Locale.t('editor.onBlockPanelToolbarClick.defaultBlockName', 'untitled')}, block_config));
+                            component = player.addBlock(Object.assign({'name': Locale.t('editor.defaultBlockName', 'untitled')}, block_config));
                         }
                     }
 
-                    panel.setComponent(component, index > 0);
+                    this.component_form.setComponent(component, index > 0);
                     components.push(component);
                 });
 
                 this.history.add({
-                    'undo': function(){
-                        panel.unsetComponents();
+                    'undo': () => {
+                        this.component_form.unsetComponents();
                         components.forEach((component) => {
                             component.remove();
                         });
                     },
-                    'redo': function(){
+                    'redo': () => {
                         components.forEach((component, index) => {
                             parent[`add${component.getPropertyValue('type')}`](component);
-                            panel.setComponent(component, index > 0);
+                            this.component_form.setComponent(component, index > 0);
                         });
                     }
                 });
@@ -2476,10 +2057,8 @@ export default class Editor extends Dom {
         else{
             switch(type){
                 case 'block': {
-                    const panel = this.panels.block;
-
                     components.forEach((component) => {
-                        panel.unsetComponent(component);
+                        this.component_form.unsetComponent(component);
                         component.remove();
                     });
 
@@ -2492,7 +2071,7 @@ export default class Editor extends Dom {
                         },
                         'redo': () => {
                             components.forEach((component) => {
-                                panel.unsetComponent(component);
+                                this.component_form.unsetComponent(component);
                                 component.remove();
                             });
                         }
@@ -2501,7 +2080,6 @@ export default class Editor extends Dom {
                 }
 
                 case 'page': {
-                    const panel = this.panels.page;
                     const player = this.getPlayer();
                     const contexts = {};
 
@@ -2540,7 +2118,7 @@ export default class Editor extends Dom {
                             // remove deleted pages
                             context.pages.forEach((ctx) => {
                                 const index = context.block.getChildIndex(ctx.component);
-                                panel.unsetComponent(ctx.component);
+                                this.component_form.unsetComponent(ctx.component);
 
                                 if(index > 0){
                                     // if there is a page before, update it's end time
@@ -2614,7 +2192,6 @@ export default class Editor extends Dom {
                 }
 
                 case 'element': {
-                    const panel = this.panels.element;
                     const context = [];
 
                     components.forEach((component) => {
@@ -2623,19 +2200,19 @@ export default class Editor extends Dom {
                             'page': component.getParent()
                         });
 
-                        panel.unsetComponent(component);
+                        this.component_form.unsetComponent(component);
                         component.remove();
                     });
 
                     this.history.add({
-                        'undo': function(){
+                        'undo': () => {
                             context.forEach((ctx) => {
                                 ctx.page.addElement(ctx.component);
                             });
                         },
-                        'redo': function(){
+                        'redo': () => {
                             context.forEach((ctx) => {
-                                panel.unsetComponent(ctx.component);
+                                this.component_form.unsetComponent(ctx.component);
                                 ctx.component.remove();
                             });
                         }
@@ -2659,62 +2236,11 @@ export default class Editor extends Dom {
      * @return {this}
      */
     selectPlayerComponent(component, keep_existing){
-        if(component.instanceOf('Element')){
-            if(keep_existing && this.panels.element.getComponents().includes(component)){
-                this.panels.element.unsetComponent(component);
-            }
-            else{
-                const page = component.getParent();
-                const block = page.getParent();
-
-                this.panels.block.setComponent(block, keep_existing);
-                this.panels.page.setComponent(page, keep_existing);
-                this.panels.element.setComponent(component, keep_existing);
-            }
-        }
-        else if(component.instanceOf('Page')){
-            const block = component.getParent();
-
-            if(keep_existing && this.panels.page.getComponents().includes(component)){
-                this.panels.block.unsetComponent(block);
-
-                const elements = component.getChildren();
-                elements.forEach((element) => {
-                    this.panels.element.unsetComponent(element);
-                });
-            }
-            else{
-                this.panels.block.setComponent(block, keep_existing);
-                this.panels.page.setComponent(component, keep_existing);
-
-                if(!keep_existing){
-                    this.panels.element.unsetComponents();
-                }
-            }
+        if(keep_existing && this.component_form.getComponents().includes(component)){
+            this.component_form.unsetComponent(component);
         }
         else{
-            if(keep_existing && this.panels.block.getComponents().includes(component)){
-                this.panels.block.unsetComponent(component);
-
-                if(component.instanceOf('Block')){
-                    const pages = component.getChildren();
-                    pages.forEach((page) => {
-                        this.panels.page.unsetComponent(page);
-                    });
-                }
-            }
-            else{
-                this.panels.block.setComponent(component, keep_existing);
-
-                if(!keep_existing){
-                    this.panels.page.unsetComponents();
-                    this.panels.element.unsetComponents();
-                }
-
-                if(component.instanceOf('Block')){
-                    this.panels.page.setComponent(component.getActivePage(), keep_existing);
-                }
-            }
+            this.component_form.setComponent(component, keep_existing);
         }
 
         return this;

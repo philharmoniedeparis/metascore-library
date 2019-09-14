@@ -516,7 +516,7 @@ export default class Player extends Dom {
      */
     onBlockActivePageSet(evt){
         const block = evt.detail.block;
-        const page = evt.detail.page;
+        const page = evt.detail.current;
 
         if(block.getPropertyValue('synched')){
             this.getMedia().setTime(page.getPropertyValue('start-time'));

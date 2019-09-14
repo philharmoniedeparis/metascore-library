@@ -296,12 +296,14 @@ export default class ContextMenu extends Dom {
         this.context = {
             'x': x,
             'y': y,
-            'el': new Dom(evt.target)
+            'el': new Dom(evt.target),
+             // Allows adding arbitrary data to the context
+            'data': {}
         };
 
         if(this.tasks){
             Object.entries(this.tasks).forEach(([, task]) => {
-                const active = isFunction(task.toggler) ? task.toggler(this.context) === true : task.toggler !== false;
+                const active = isFunction(task.toggler) ? task.toggler(this.context) !== false : task.toggler !== false;
 
                 if('text' in task && isFunction(task.text)){
                     task.el.text(task.text(this.context));

@@ -44,8 +44,8 @@ export default class Text extends Element {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'edit-text': {
-                    'type': 'Checkbox',
-                    'configs': {
+                    'field': {
+                        'type': 'checkbox',
                         'label': Locale.t('player.component.element.Text.edit-text', 'Edit text')
                     }
                 },
@@ -60,15 +60,6 @@ export default class Text extends Element {
                 }
             })
         });
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return 'Text';
     }
 
     /**

@@ -33,8 +33,8 @@ export default class Element extends Component{
                     }
                 },
                 'name': {
-                    'type': 'Text',
-                    'configs': {
+                    'field': {
+                        'type': 'text',
                         'label': Locale.t('player.component.Element.name', 'Name')
                     },
                     'getter': function(){
@@ -45,10 +45,12 @@ export default class Element extends Component{
                     }
                 },
                 'x': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.x', 'X'),
-                        'spinDirection': 'vertical'
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
+                        'label': Locale.t('player.component.Element.x', 'X')
                     },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
@@ -58,10 +60,12 @@ export default class Element extends Component{
                     }
                 },
                 'y': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.y', 'Y'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.Element.y', 'Y')
                     },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
@@ -71,10 +75,12 @@ export default class Element extends Component{
                     }
                 },
                 'width': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.width', 'Width'),
-                        'spinDirection': 'vertical'
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
+                        'label': Locale.t('player.component.Element.width', 'Width')
                     },
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
@@ -84,10 +90,12 @@ export default class Element extends Component{
                     }
                 },
                 'height': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.height', 'Height'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.Element.height', 'Height')
                     },
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
@@ -97,10 +105,12 @@ export default class Element extends Component{
                     }
                 },
                 'r-index': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.r-index', 'Reading index'),
-                        'min': 0
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'min': 0
+                        },
+                        'label': Locale.t('player.component.Element.r-index', 'Reading index')
                     },
                     'getter': function(){
                         const value = parseInt(this.data('r-index'), 10);
@@ -111,8 +121,8 @@ export default class Element extends Component{
                     }
                 },
                 'z-index': {
-                    'type': 'Number',
-                    'configs': {
+                    'field': {
+                        'type': 'number',
                         'label': Locale.t('player.component.Element.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
@@ -124,8 +134,8 @@ export default class Element extends Component{
                     }
                 },
                 'background-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'timcolore',
                         'label': Locale.t('player.component.Element.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
@@ -136,10 +146,12 @@ export default class Element extends Component{
                     }
                 },
                 'background-image': {
-                    'type': 'Image',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.background-image', 'Background image'),
-                        'resizeButton': true
+                    'field': {
+                        'type': 'image',
+                        'input': {
+                            'resizeButton': true
+                        },
+                        'label': Locale.t('player.component.Element.background-image', 'Background image')
                     },
                     'getter': function(skipDefault){
                         let value = this.contents.css('background-image', void 0, skipDefault);
@@ -160,10 +172,12 @@ export default class Element extends Component{
                     }
                 },
                 'border-width': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.border-width', 'Border width'),
-                        'min': 0
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'min': 0
+                        },
+                        'label': Locale.t('player.component.Element.border-width', 'Border width')
                     },
                     'getter': function(skipDefault){
                         const value = parseInt(this.contents.css('border-width', void 0, skipDefault), 10);
@@ -174,8 +188,8 @@ export default class Element extends Component{
                     }
                 },
                 'border-color': {
-                    'type': 'Color',
-                    'configs': {
+                    'field': {
+                        'type': 'color',
                         'label': Locale.t('player.component.Element.border-color', 'Border color')
                     },
                     'getter': function(skipDefault){
@@ -186,8 +200,8 @@ export default class Element extends Component{
                     }
                 },
                 'border-radius': {
-                    'type': 'BorderRadius',
-                    'configs': {
+                    'field': {
+                        'type': 'border-radius',
                         'label': Locale.t('player.component.Element.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
@@ -198,12 +212,14 @@ export default class Element extends Component{
                     }
                 },
                 'opacity': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.opacity', 'Opacity'),
-                        'min': 0,
-                        'max': 1,
-                        'step': 0.1
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'min': 0,
+                            'max': 1,
+                            'step': 0.1
+                        },
+                        'label': Locale.t('player.component.Element.opacity', 'Opacity')
                     },
                     'getter': function(skipDefault){
                         return this.contents.css('opacity', void 0, skipDefault);
@@ -213,12 +229,14 @@ export default class Element extends Component{
                     }
                 },
                 'start-time': {
-                    'type': 'Time',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.start-time', 'Start time'),
-                        'clearButton': true,
-                        'inButton': true,
-                        'outButton': true
+                    'field': {
+                        'type': 'time',
+                        'input': {
+                            'clearButton': true,
+                            'inButton': true,
+                            'outButton': true
+                        },
+                        'label': Locale.t('player.component.Element.start-time', 'Start time')
                     },
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
@@ -229,12 +247,14 @@ export default class Element extends Component{
                     }
                 },
                 'end-time': {
-                    'type': 'Time',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.end-time', 'End time'),
-                        'clearButton': true,
-                        'inButton': true,
-                        'outButton': true
+                    'field': {
+                        'type': 'time',
+                        'input': {
+                            'clearButton': true,
+                            'inButton': true,
+                            'outButton': true
+                        },
+                        'label': Locale.t('player.component.Element.end-time', 'End time')
                     },
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
@@ -246,15 +266,6 @@ export default class Element extends Component{
                 }
             })
         });
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return 'Element';
     }
 
     /**

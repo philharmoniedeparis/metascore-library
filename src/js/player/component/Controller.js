@@ -26,8 +26,8 @@ export default class Controller extends Component{
                     }
                 },
                 'hidden': {
-                    'type': 'Checkbox',
-                    'configs': {
+                    'field': {
+                        'type': 'checkbox',
                         'label': Locale.t('player.component.Controller.hidden', 'Hidden?')
                     },
                     'getter': function(){
@@ -38,10 +38,12 @@ export default class Controller extends Component{
                     }
                 },
                 'x': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Controller.x', 'X'),
-                        'spinDirection': 'vertical'
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'spinDirection': 'vertical'
+                        },
+                        'label': Locale.t('player.component.Controller.x', 'X')
                     },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
@@ -51,10 +53,12 @@ export default class Controller extends Component{
                     }
                 },
                 'y': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.Controller.y', 'Y'),
-                        'flipSpinButtons': true
+                    'field': {
+                        'type': 'number',
+                        'input': {
+                            'flipSpinButtons': true
+                        },
+                        'label': Locale.t('player.component.Controller.y', 'Y')
                     },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
@@ -76,8 +80,8 @@ export default class Controller extends Component{
                     }
                 },
                 'z-index': {
-                    'type': 'Number',
-                    'configs': {
+                    'field': {
+                        'type': 'number',
                         'label': Locale.t('player.component.Controller.z-index', 'Display index')
                     },
                     'getter': function(skipDefault){
@@ -89,8 +93,8 @@ export default class Controller extends Component{
                     }
                 },
                 'border-radius': {
-                    'type': 'BorderRadius',
-                    'configs': {
+                    'field': {
+                        'type': 'border-radius',
                         'label': Locale.t('player.component.Controller.border-radius', 'Border radius')
                     },
                     'getter': function(skipDefault){
@@ -102,15 +106,6 @@ export default class Controller extends Component{
                 }
             })
         });
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return 'Controller';
     }
 
     /**
@@ -181,10 +176,9 @@ export default class Controller extends Component{
      * @return {Object} The configuration
      */
     getDraggableConfigs(){
-        return {
-            'target': this,
+        return Object.assign(super.getDraggableConfigs(), {
             'handle': this.child('.timer')
-        };
+        });
     }
 
     /**

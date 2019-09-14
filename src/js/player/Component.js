@@ -94,7 +94,7 @@ export default class Component extends Dom {
     * @return {String} The component's type
     */
     static getType(){
-        return 'Component';
+        return this.name;
     }
 
     /**

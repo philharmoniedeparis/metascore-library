@@ -90,7 +90,7 @@ export default class HTML5 extends Dom {
         // @todo: replace with promises to eliminate the propability of both an error and a success being called
 
         audio.addEventListener('error', () => {
-            const message = Locale.t('player.renderer.HTML5.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+            const message = Locale.t('core.media.renderer.HTML5.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
             callback(new Error(message));
         });
 
@@ -266,23 +266,23 @@ export default class HTML5 extends Dom {
 
         switch(error.code) {
             case error.MEDIA_ERR_ABORTED:
-                message = Locale.t('player.renderer.HTML5.onError.aborted.msg', 'You aborted the media playback.');
+                message = Locale.t('core.media.renderer.HTML5.onError.aborted.msg', 'You aborted the media playback.');
                 break;
 
             case error.MEDIA_ERR_NETWORK:
-                message = Locale.t('player.renderer.HTML5.onError.network.msg', 'A network error caused the media download to fail.');
+                message = Locale.t('core.media.renderer.HTML5.onError.network.msg', 'A network error caused the media download to fail.');
                 break;
 
             case error.MEDIA_ERR_DECODE:
-                message = Locale.t('player.renderer.HTML5.onError.decode.msg', 'The media playback was aborted due to a format problem.');
+                message = Locale.t('core.media.renderer.HTML5.onError.decode.msg', 'The media playback was aborted due to a format problem.');
                 break;
 
             case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                message = Locale.t('player.renderer.HTML5.onError.not-supported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
+                message = Locale.t('core.media.renderer.HTML5.onError.not-supported.msg', 'The media could not be loaded, either because the server or network failed or because the format is not supported.');
                 break;
 
             default:
-                message = Locale.t('player.renderer.HTML5.onError.default.msg', 'An unknown error occurred.');
+                message = Locale.t('core.media.renderer.HTML5.onError.default.msg', 'An unknown error occurred.');
                 break;
         }
 
