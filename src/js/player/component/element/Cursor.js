@@ -328,6 +328,15 @@ export default class Cursor extends Element {
     }
 
     /**
+     * @inheritdoc
+     */
+    activate(supressEvent){
+        super.activate(supressEvent);
+
+        this.resizeCanvas();
+    }
+
+    /**
      * The propchange event handler
      *
      * @private
@@ -519,21 +528,6 @@ export default class Cursor extends Element {
     }
 
     /**
-     * Helper function to get a position on a linear cursor corresponding to click event
-     *
-     * @param {Event} evt The click event
-     * @return {Object} The position on the cursor with x and y properties
-     */
-    getLinearPositionFromClick(evt){
-        const rect = this.canvas.getBoundingClientRect();
-
-        return {
-            'x': evt.clientX - rect.left,
-            'y': evt.clientY - rect.top
-        };
-    }
-
-    /**
      * Helper function to get a position on a linear cursor corresponding to a media time
      *
      * @private
@@ -568,23 +562,23 @@ export default class Cursor extends Element {
                     keyframe_time = parseInt(keyframe_time, 10);
 
                     if(reversed){
-                        if(keyframe_time <= time && keyframe_position < start_position){
+                        if(keyframe_time <= time && keyframe_position <= start_position){
                             start_position = keyframe_position;
                             start_time = keyframe_time;
                         }
 
-                        if(keyframe_time >= time && keyframe_position > end_position){
+                        if(keyframe_time >= time && keyframe_position >= end_position){
                             end_position = keyframe_position;
                             end_time = keyframe_time;
                         }
                     }
                     else{
-                        if(keyframe_time <= time && keyframe_position > start_position){
+                        if(keyframe_time <= time && keyframe_position >= start_position){
                             start_position = keyframe_position;
                             start_time = keyframe_time;
                         }
 
-                        if(keyframe_time >= time && keyframe_position < end_position){
+                        if(keyframe_time >= time && keyframe_position <= end_position){
                             end_position = keyframe_position;
                             end_time = keyframe_time;
                         }
@@ -624,33 +618,63 @@ export default class Cursor extends Element {
      * @returns {Number} The corresponding media time
      */
     getTimeFromLinearPosition(x, y){
-        const width = this.canvas.width;
-        const height = this.canvas.height;
-
-        const start_time = this.getPropertyValue('start-time');
-        const end_time = this.getPropertyValue('end-time');
         const direction = this.getPropertyValue('direction');
-        const acceleration = this.getPropertyValue('acceleration');
+        const axis = direction === 'top' || direction === 'bottom' ? 'y' : 'x';
+        const reversed = direction === 'left' || direction === 'top';
+        const mode = this.getPropertyValue('mode');
+        let start_time = this.getPropertyValue('start-time');
+        let end_time = this.getPropertyValue('end-time');
 
-        let value = 0;
+        let start_position = 0;
+        let end_position = axis === 'y' ? this.canvas.height : this.canvas.width;
+        let pos = axis === 'y' ? y : x;
 
-        switch(direction){
-            case 'top':
-                value = Math.pow(height - y, 1/acceleration);
-                return map(value, 0, height, start_time, end_time);
-
-            case 'bottom':
-                value = Math.pow(y, 1/acceleration);
-                return map(value, 0, height, start_time, end_time);
-
-            case 'left':
-                value = Math.pow(width - x, 1/acceleration);
-                return map(value, 0, width, start_time, end_time);
-
-            default:
-                value = Math.pow(x, 1/acceleration);
-                return map(value, 0, width, start_time, end_time);
+        if(reversed){
+            start_position = end_position;
+            end_position = 0;
         }
+
+        // Calculate position from keyframes
+        if(mode === 'advanced'){
+            const keyframes = this.getPropertyValue('keyframes');
+
+            if(keyframes){
+                keyframes.split(',').forEach((keyframe) => {
+                    let [keyframe_position, keyframe_time] = keyframe.split('|');
+                    keyframe_position = parseInt(keyframe_position, 10);
+                    keyframe_time = parseInt(keyframe_time, 10);
+
+                    if(reversed){
+                        if(keyframe_position <= pos && keyframe_time <= start_time){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_position >= pos && keyframe_time >= end_time){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
+                    }
+                    else{
+                        if(keyframe_position <= pos && keyframe_time >= start_time){
+                            start_position = keyframe_position;
+                            start_time = keyframe_time;
+                        }
+
+                        if(keyframe_position >= pos && keyframe_time <= end_time){
+                            end_position = keyframe_position;
+                            end_time = keyframe_time;
+                        }
+                    }
+                });
+            }
+        }
+        else{
+            const acceleration = this.getPropertyValue('acceleration');
+            pos = Math.pow(pos, 1/acceleration);
+        }
+
+        return map(pos, start_position, end_position, start_time, end_time);
     }
 
     /**
