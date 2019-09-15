@@ -53,7 +53,7 @@ export default class MainMenu extends Dom {
         new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
-        this._items['edit-toggle'] = new CheckboxInput({'label': ''})
+        this._items['edit-toggle'] = new CheckboxInput()
             .attr({
                 'title': Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
             })

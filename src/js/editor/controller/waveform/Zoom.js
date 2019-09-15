@@ -23,14 +23,14 @@ export default class Zoom extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [waveColor='#999'] The wave fill color
+     * @property {String} [waveColor='#ccc'] The wave fill color
      * @property {Number} [waveMargin=20] The top and bottom wave margin
      * @property {Number} [axisTickWidth=1] The axis tick width
-     * @property {String} [axisTickColor='#333'] The axis tick color
-     * @property {String} [axisTextColor='#555'] The axis text color
+     * @property {String} [axisTickColor='#fff'] The axis tick color
+     * @property {String} [axisTextColor='#fff'] The axis text color
      * @property {String} [axisFont='11px sans-serif'] The axis font
      * @property {Number} [playheadWidth=1] The playhead line width
-     * @property {String} [playheadColor='#000'] The playhead line color
+     * @property {String} [playheadColor='#0000fe'] The playhead line color
      * @property {Number} [zoomStep=32] The zoom step, for mouse and buttons
      * @property {Number} [zoomButtonInterval=50] The zoom button step interval in ms
      */
@@ -155,15 +155,15 @@ export default class Zoom extends Dom {
      */
     static getDefaults(){
         return {
-            'waveColor': '#0000fe',
+            'waveColor': '#ccc',
             'waveMargin': 20,
             'axisTickWidth': 1,
             'axisTickHeight': 6,
-            'axisTickColor': '#333',
-            'axisTextColor': '#555',
+            'axisTickColor': '#fff',
+            'axisTextColor': '#fff',
             'axisFont': '11px sans-serif',
             'playheadWidth': 1,
-            'playheadColor': '#000',
+            'playheadColor': '#0000fe',
             'zoomStep': 32,
             'zoomButtonInterval': 50
         };

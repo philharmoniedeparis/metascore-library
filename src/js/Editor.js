@@ -99,33 +99,20 @@ export default class Editor extends Dom {
     * Initialize
     */
     init(){
-        const top_pane = new Dom('<div/>', {'id': 'top-pane', 'class': 'pane horizontal'}).appendTo(this);
-        const bottom_pane = new Dom('<div/>', {'id': 'bottom-pane', 'class': 'pane horizontal'}).appendTo(this);
+        // Top pane ////////////////////////
 
-        const tools_pane = new Dom('<div/>', {'id': 'tools-pane', 'class': 'pane vertical'}).appendTo(top_pane);
-        const center_pane = new Dom('<div/>', {'id': 'center-pane', 'class': 'pane vertical'}).appendTo(top_pane);
-        const config_pane = new Dom('<div/>', {'id': 'configs-pane', 'class': 'pane vertical'}).appendTo(top_pane);
+        const top_pane = new Dom('<div/>', {'id': 'top-pane', 'class': 'pane horizontal'})
+            .appendTo(this);
 
-        bottom_pane._resizable = new Resizable({
-                'target': bottom_pane,
-                'directions': ['top']
-            })
-            .getHandle('top')
-            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, bottom_pane));
+        // Tools pane ////////////////////////
 
-        tools_pane._resizable = new Resizable({
-                'target': tools_pane,
-                'directions': ['right']
-            })
-            .getHandle('right')
-            .addDelegate('.resize-handle', 'dblclick', this.onPaneResizeDblclick.bind(this, tools_pane));
+        const tools_pane = new Dom('<div/>', {'id': 'tools-pane', 'class': 'pane vertical'})
+            .appendTo(top_pane);
 
-        config_pane._resizable = new Resizable({
-                'target': config_pane,
-                'directions': ['left']
-            })
-            .getHandle('left')
-            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, config_pane));
+        // Center pane ////////////////////////
+
+        const center_pane = new Dom('<div/>', {'id': 'center-pane', 'class': 'pane vertical'})
+            .appendTo(top_pane);
 
         /**
          * The top menu
@@ -141,7 +128,8 @@ export default class Editor extends Dom {
          * The workspace
          * @type {Dom}
          */
-        this.workspace = new Dom('<div/>', {'class': 'workspace'}).appendTo(center_pane);
+        this.workspace = new Dom('<div/>', {'class': 'workspace'})
+            .appendTo(center_pane);
 
         /**
          * The horizontal ruler
@@ -173,6 +161,46 @@ export default class Editor extends Dom {
             .appendTo(this.workspace)
             .init();
 
+        // Config pane ////////////////////////
+
+        const config_pane = new Dom('<div/>', {'id': 'configs-pane', 'class': 'pane vertical'})
+            .appendTo(top_pane);
+
+        config_pane._resizable = new Resizable({
+                'target': config_pane,
+                'directions': ['left']
+            })
+            .getHandle('left')
+            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, config_pane));
+
+        tools_pane._resizable = new Resizable({
+                'target': tools_pane,
+                'directions': ['right']
+            })
+            .getHandle('right')
+            .addDelegate('.resize-handle', 'dblclick', this.onPaneResizeDblclick.bind(this, tools_pane));
+
+        /**
+         * The component form
+         * @type {ComponentForm}
+         */
+        this.component_form = new ComponentForm()
+            .addListener('componentset', this.onComponentFormComponentSet.bind(this))
+            .addListener('beforecursoradvancededitmodeunlock', this.onComponentFormBeforeCursorAdvancedEditModeUnlock.bind(this))
+            .appendTo(config_pane);
+
+        // Bottom pane ////////////////////////
+
+        const bottom_pane = new Dom('<div/>', {'id': 'bottom-pane', 'class': 'pane horizontal'})
+            .appendTo(this);
+
+        bottom_pane._resizable = new Resizable({
+                'target': bottom_pane,
+                'directions': ['top']
+            })
+            .getHandle('top')
+            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, bottom_pane));
+
         /**
          * The controller
          * @type {Controller}
@@ -191,15 +219,6 @@ export default class Editor extends Dom {
             .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this))
             .getHandlesContainer()
                 .addDelegate('.handle', 'click', this.onTimelineTrackClick.bind(this));
-
-        /**
-         * The component form
-         * @type {ComponentForm}
-         */
-        this.component_form = new ComponentForm()
-            .addListener('componentset', this.onComponentFormComponentSet.bind(this))
-            .addListener('beforecursoradvancededitmodeunlock', this.onComponentFormBeforeCursorAdvancedEditModeUnlock.bind(this))
-            .appendTo(config_pane);
 
         /**
          * The undo/redo handler

@@ -159,7 +159,6 @@ export default class Controller extends Dom {
         this.getBufferIndicator().clear();
         this.getWaveformOverview().clear();
         this.getWaveformZoom().clear();
-        this.getTimeline().clear();
 
         this.addClass('disabled');
 

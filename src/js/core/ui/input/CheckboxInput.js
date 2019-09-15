@@ -1,4 +1,5 @@
 import Input from '../Input';
+import Dom from '../../Dom';
 
 import {className} from '../../../../css/core/ui/input/Checkbox.less';
 
@@ -52,6 +53,9 @@ export default class CheckboxInput extends Input{
         this.native_input
             .attr('type', 'checkbox')
             .addListener('click', this.onClick.bind(this));
+
+        new Dom('<label/>', {'for': this.getId()})
+            .appendTo(this);
     }
 
     /**

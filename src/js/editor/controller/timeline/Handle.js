@@ -1,6 +1,5 @@
 import Dom from '../../../core/Dom';
-import Button from '../../../core/ui/Button';
-import {isEmpty} from '../../../core/utils/Var';
+import CheckboxInput from '../../../core/ui/input/CheckboxInput';
 
 import {className} from '../../../../css/editor/controller/timeline/Handle.less';
 
@@ -31,15 +30,23 @@ export default class Handle extends Dom {
         this.label = new Dom('<div/>', {'class': 'label'})
             .appendTo(inner);
 
-        if(!isEmpty(this.configs.buttons)){
-            const buttons = new Dom('<div/>', {'class': 'buttons'})
-                .appendTo(inner);
+        const togglers = new Dom('<div/>', {'class': 'togglers'})
+            .appendTo(inner);
 
-			this.configs.buttons.forEach((action) => {
-                new Button().data('action', action)
-                    .appendTo(buttons);
-            });
-        }
+        new CheckboxInput()
+            .data('action', 'visibility')
+            .attr('title', 'Toggle visibility')
+            .appendTo(togglers);
+
+        new CheckboxInput()
+            .data('action', 'isolation')
+            .attr('title', 'Toggle isolation')
+            .appendTo(togglers);
+
+        new CheckboxInput()
+            .data('action', 'lock')
+            .attr('title', 'Toggle lock')
+            .appendTo(togglers);
     }
 
     /**
@@ -48,9 +55,7 @@ export default class Handle extends Dom {
     * @return {Object} The default values
     */
     static getDefaults(){
-        return {
-            'buttons': []
-        };
+        return {};
     }
 
     /**

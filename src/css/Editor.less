@@ -184,7 +184,7 @@
 
         position: relative;
         overflow: hidden;
-        background: #777777;
+        background: @editor-background;
         color: #FFF;
 
         &.collapsed{
@@ -201,7 +201,7 @@
         &.resizable{
            > .resize-handle{
                 position: absolute;
-                background: #3f3f3f;
+                background: @editor-borders;
                 flex: 0 0 @resize-handle-size;
                 margin: 0;
 

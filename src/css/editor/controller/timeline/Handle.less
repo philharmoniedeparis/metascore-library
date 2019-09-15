@@ -1,21 +1,18 @@
+@import "../../../core/theme";
+
 :local(.className){
     cursor: pointer;
     box-sizing: border-box;
-    border-right: 1px solid #7b7b7b;
     user-select: none;
 
     > .inner{
         display: flex;
-        height: 1.25em;
-        line-height: 1.1em;
+        height: 2em;
         flex-direction: row;
         flex-wrap: nowrap;
         justify-content: flex-start;
-        align-content: stretch;
-        align-items: stretch;
-        background: #ccc;
-        box-sizing: border-box;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+        align-items: center;
+        border-bottom: 2px solid @editor-borders;
         pointer-events: none;
 
         .expander{
@@ -26,35 +23,44 @@
         .label{
             flex: 1 1 auto;
             font-size: 1em;
-            padding-left: 0.25em;
+            padding: 0 0.25em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-
-            &:empty{
-                &::after{
-                    content: '\00a0';
-                }
-            }
         }
 
-        .buttons{
-            height: 100%;
+        .togglers{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
 
-            button{
-                height: 100%;
-                vertical-align: middle;
-                background-size: 75%;
-                border-radius: 0.25em;
-                pointer-events: auto;
+            .input{
+                margin-right: 1px;
 
-                &[data-action="lock"]{
-                    opacity: 0.5;
-                    background-image: url('../../../../img/editor/controller/timeline/handle/lock-open.svg');
+                input{
+                    + label{
+                        width: 1em;
+                        height: 1em;
+                        padding: 0;
+                        background: #494949;
+                        border-radius: 0;
+                        pointer-events: auto;
+                        transition: none;
 
-                    &:hover{
-                        opacity: 0.75;
+                        &::after{
+                            content: none;
+                        }
                     }
+
+                    &:checked{
+                        + label{
+                            background: #fff;
+                        }
+                    }
+                }
+
+                &:last-child{
+                    margin-right: 0;
                 }
             }
         }
@@ -99,17 +105,6 @@
     }
 
     &.selected > .inner{
-        background: #ddd;
-    }
-
-    &.locked{
-        > .inner{
-            .buttons{
-                button[data-action="lock"]{
-                    opacity: 1;
-                    background-image: url('../../../../img/editor/controller/timeline/handle/lock-closed.svg');
-                }
-            }
-        }
+        background: @editor-background;
     }
 }

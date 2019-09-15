@@ -15,11 +15,10 @@ export default class Overview extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [waveColor='#777'] The wave fill color
-     * @property {String} [highlightColor='#0000fe'] The highlight rectangle color
-     * @property {Number} [highlightOpacity=0.25] The highlight rectangle opacity
+     * @property {String} [waveColor='#ccc'] The wave fill color
+     * @property {String} [highlightColor='rgba(0, 0, 254, 0.25)'] The highlight rectangle color
      * @property {Number} [playheadWidth=1] The playhead line width
-     * @property {String} [playheadColor='#000'] The playhead line color
+     * @property {String} [playheadColor='#0000fe'] The playhead line color
      */
     constructor(configs) {
         // call parent constructor
@@ -73,10 +72,9 @@ export default class Overview extends Dom {
     static getDefaults(){
         return {
             'waveColor': '#777',
-            'highlightColor': '#0000fe',
-            'highlightOpacity': 0.25,
+            'highlightColor': 'rgba(0, 0, 254, 0.25)',
             'playheadWidth': 1,
-            'playheadColor': '#000'
+            'playheadColor': '#0000fe'
         };
     }
 
@@ -360,7 +358,6 @@ export default class Overview extends Dom {
 
         context.clearRect(0, 0, this.width, this.height);
 
-        context.globalAlpha = this.configs.highlightOpacity;
         context.fillStyle = this.configs.highlightColor;
         context.fillRect(x, 0, width, this.height);
 

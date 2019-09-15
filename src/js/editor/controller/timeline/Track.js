@@ -48,17 +48,10 @@ export default class Track extends Dom {
             .addListener('resizeend', this.onInfoResizeEnd.bind(this))
             .appendTo(inner);
 
-        const buttons = [];
-        if(component.hasProperty('locked')){
-            buttons.push('lock');
-        }
-
-        this.handle = new Handle({
-                'buttons': buttons
-            })
+        this.handle = new Handle()
             .data('component', id)
             .addDelegate('.expander', 'click', this.onHandleExpanderClick.bind(this))
-            .addDelegate('button', 'click', this.onHandleButtonClick.bind(this))
+            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
             .setLabel(name);
 
         if(component.getPropertyValue('locked')){
@@ -347,15 +340,14 @@ export default class Track extends Dom {
         evt.stopPropagation();
     }
 
-    onHandleButtonClick(evt){
+    onHandleToggleValueChange(evt){
         const action = Dom.data(evt.target, 'action');
+        const value = evt.detail.value;
 
         switch(action){
-            case 'lock':{
-                const locked = this.getComponent().getPropertyValue('locked');
-                this.getComponent().setPropertyValue('locked', !locked);
-            }
-            break;
+            case 'lock':
+                this.getComponent().setPropertyValue('locked', value);
+                break;
         }
 
         evt.stopPropagation();

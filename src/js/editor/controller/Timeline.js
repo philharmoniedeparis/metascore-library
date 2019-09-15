@@ -44,7 +44,7 @@ export default class Timeline extends Dom {
     static getDefaults(){
         return {
             'playheadWidth': 1,
-            'playheadColor': '#000'
+            'playheadColor': '#0000fe'
         };
     }
 
