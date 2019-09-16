@@ -1,6 +1,6 @@
 import Input from '../Input';
 
-import {className} from '../../../../css/core/ui/input/Slider.less';
+import {className} from '../../../../css/core/ui/input/Slider.scss';
 
 /**
  * A slider field based on an HTML input[type=number] element

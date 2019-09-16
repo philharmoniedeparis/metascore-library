@@ -1,7 +1,7 @@
 import Dom from '../Dom';
 import {uuid} from '../utils/String';
 
-import {className} from '../../../css/core/ui/Input.less';
+import {className} from '../../../css/core/ui/Input.scss';
 
 /**
  * A generic input based on an HTML input element

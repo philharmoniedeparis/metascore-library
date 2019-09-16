@@ -1,5 +1,25 @@
 @import "./core/theme";
 
+@font-face{
+    font-family: 'Source Sans Variable';
+    font-weight: 200 900;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/source-sans-pro/WOFF2/VAR/SourceSansVariable-Roman.ttf.woff2') format('woff2'),
+         url('../fonts/source-sans-pro/WOFF/VAR/SourceSansVariable-Roman.ttf.woff') format('woff'),
+         url('../fonts/source-sans-pro/VAR/SourceSansVariable-Roman.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Variable';
+    font-weight: 200 900;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/source-sans-pro/WOFF2/VAR/SourceSansVariable-Italic.ttf.woff2') format('woff2'),
+         url('../fonts/source-sans-pro/WOFF/VAR/SourceSansVariable-Italic.ttf.woff') format('woff'),
+         url('../fonts/source-sans-pro/VAR/SourceSansVariable-Italic.ttf') format('truetype');
+}
+
 :local(.className){
     width: 100%;
     height: 100%;
@@ -10,22 +30,22 @@
 
     *{
         font-size: 12px;
-        font-family: Verdana, Geneva, sans-serif;
+        font-family: 'Source Sans Variable', sans-serif;
     }
 
     ::-webkit-scrollbar{
         -webkit-appearance: none;
-        background-color: @scrollbar-track-color;
-        width: @scrollbar-width;
-        height: @scrollbar-thumb-min-height;
+        background-color: $scrollbar-track-color;
+        width: $scrollbar-width;
+        height: $scrollbar-thumb-min-height;
     }
     ::-webkit-scrollbar-thumb{
         border-radius: 0;
-        background-color: @scrollbar-thumb-color;
+        background-color: $scrollbar-thumb-color;
 
         &:active,
         &:hover{
-            background-color: @scrollbar-thumb-active-color;
+            background-color: $scrollbar-thumb-active-color;
         }
     }
 
@@ -126,7 +146,7 @@
             background: #ccc;
 
             &:hover{
-                background: @metascore-blue;
+                background: $metascore-blue;
                 color: #fff;
                 opacity: 1;
             }
@@ -180,11 +200,11 @@
     flex-wrap: nowrap;
 
     .pane{
-        @resize-handle-size: 8px;
+        $resize-handle-size: 8px;
 
         position: relative;
         overflow: hidden;
-        background: @editor-background;
+        background: $editor-background;
         color: #FFF;
 
         &.collapsed{
@@ -201,32 +221,32 @@
         &.resizable{
            > .resize-handle{
                 position: absolute;
-                background: @editor-borders;
-                flex: 0 0 @resize-handle-size;
+                background: $editor-borders;
+                flex: 0 0 $resize-handle-size;
                 margin: 0;
 
                 &[data-direction="top"]{
                     top: 0;
                     left: 0;
                     width: 100%;
-                    height: @resize-handle-size;
+                    height: $resize-handle-size;
                 }
                 &[data-direction="bottom"]{
                     bottom: 0;
                     left: 0;
                     width: 100%;
-                    height: @resize-handle-size;
+                    height: $resize-handle-size;
                 }
                 &[data-direction="left"]{
                     top: 0;
                     left: 0;
-                    width: @resize-handle-size;
+                    width: $resize-handle-size;
                     height: 100%;
                 }
                 &[data-direction="right"]{
                     top: 0;
                     right: 0;
-                    width: @resize-handle-size;
+                    width: $resize-handle-size;
                     height: 100%;
                 }
             }
@@ -244,7 +264,7 @@
             width: 200px;
             min-width: 150px;
             max-width: 300px;
-            padding-right: @resize-handle-size;
+            padding-right: $resize-handle-size;
         }
 
         &#center-pane{
@@ -257,14 +277,14 @@
             width: 300px;
             min-width: 150px;
             max-width: 300px;
-            padding-left: @resize-handle-size;
+            padding-left: $resize-handle-size;
         }
 
         &#bottom-pane{
             height: 200px;
             min-height: 150px;
             max-height: 300px;
-            padding-top: @resize-handle-size;
+            padding-top: $resize-handle-size;
         }
     }
 
@@ -273,34 +293,34 @@
     }
 
     .workspace{
-        @ruler-width: 20px;
+        $ruler-width: 20px;
 
         display: flex;
         position: relative;
         flex: 1 1 auto;
         overflow: hidden;
-        padding: @ruler-width 0 0 @ruler-width;
+        padding: $ruler-width 0 0 $ruler-width;
 
         .ruler{
             position: absolute;
             z-index: 2;
 
             &[data-axis="x"]{
-                left: @ruler-width;
+                left: $ruler-width;
                 right: 0;
                 top: 0;
             }
 
             &[data-axis="y"]{
                 left: 0;
-                top: @ruler-width;
+                top: $ruler-width;
                 bottom: 0;
             }
         }
 
         .grid{
-            padding-top: @ruler-width;
-            padding-left: @ruler-width;
+            padding-top: $ruler-width;
+            padding-left: $ruler-width;
             z-index: 1;
             pointer-events: none;
         }

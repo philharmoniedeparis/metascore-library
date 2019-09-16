@@ -1,7 +1,7 @@
 import Dom from '../Dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {className} from '../../../css/core/ui/Scrollable.less';
+import {className} from '../../../css/core/ui/Scrollable.scss';
 
 /**
  * A class for adding resizable behaviors

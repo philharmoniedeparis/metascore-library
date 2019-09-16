@@ -25,23 +25,23 @@
 
     > .scrollbar{
         position: relative;
-        width: @scrollbar-width;
+        width: $scrollbar-width;
         height: 100%;
         z-index: 2;
         transition: opacity 0.25s linear;
         opacity: 0;
-        background: @scrollbar-track-color;
+        background: $scrollbar-track-color;
 
         .thumb{
             position: relative;
             top: 0;
-            min-height: @scrollbar-thumb-min-height;
-            background-color: @scrollbar-thumb-color;
+            min-height: $scrollbar-thumb-min-height;
+            background-color: $scrollbar-thumb-color;
             cursor: pointer;
 
             &:hover,
             &:active{
-                background-color: @scrollbar-thumb-active-color;
+                background-color: $scrollbar-thumb-active-color;
             }
         }
     }

@@ -4,7 +4,7 @@ import Locale from '../core/Locale';
 import Field from './Field';
 import {getImageMetadata} from '../core/utils/Media';
 
-import {className} from '../../css/editor/ComponentForm.less';
+import {className} from '../../css/editor/ComponentForm.scss';
 
 /**
  * A component form class

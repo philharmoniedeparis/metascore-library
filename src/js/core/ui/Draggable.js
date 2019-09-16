@@ -1,6 +1,6 @@
 import Dom from '../Dom';
 
-import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Draggable.less';
+import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Draggable.scss';
 
 /**
  * A class for adding draggable behaviors

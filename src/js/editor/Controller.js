@@ -6,7 +6,7 @@ import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {className} from '../../css/editor/Controller.less';
+import {className} from '../../css/editor/Controller.scss';
 
 /**
  * A controller with a play/pause button, a buffer indicator, and a waveform

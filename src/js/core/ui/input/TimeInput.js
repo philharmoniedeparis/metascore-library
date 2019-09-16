@@ -4,7 +4,7 @@ import Locale from '../../Locale';
 import {pad} from '../../utils/String';
 import {isNumeric} from '../../utils/Var';
 
-import {className} from '../../../../css/core/ui/input/Time.less';
+import {className} from '../../../../css/core/ui/input/Time.scss';
 
 /**
  * Time parts configurations

@@ -2,7 +2,7 @@ import Overlay from '../Overlay';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 
-import {className} from '../../../../css/core/ui/overlay/LoadMask.less';
+import {className} from '../../../../css/core/ui/overlay/LoadMask.scss';
 
 /**
  * A loading mask

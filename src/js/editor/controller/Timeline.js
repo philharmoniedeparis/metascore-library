@@ -2,7 +2,7 @@ import Dom from '../../core/Dom';
 import Track from './timeline/Track';
 import Scrollable from '../../core/ui/Scrollable';
 
-import {className} from '../../../css/editor/controller/Timeline.less';
+import {className} from '../../../css/editor/controller/Timeline.scss';
 
 /**
  * The editor's timeline

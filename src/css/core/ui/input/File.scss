@@ -19,7 +19,7 @@
 
             input:checked+label{
                 background: #ddd;
-                border-bottom: 2px solid @metascore-blue;
+                border-bottom: 2px solid $metascore-blue;
             }
 
             input{

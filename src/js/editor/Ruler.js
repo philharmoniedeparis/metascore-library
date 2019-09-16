@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {className} from '../../css/editor/Ruler.less';
+import {className} from '../../css/editor/Ruler.scss';
 
 /**
  * A 'photoshop' like ruler

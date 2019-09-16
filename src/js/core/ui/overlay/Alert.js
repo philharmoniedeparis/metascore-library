@@ -2,7 +2,7 @@ import Dom from '../../Dom';
 import Button from '../Button';
 import Overlay from '../Overlay';
 
-import {className} from '../../../../css/core/ui/overlay/Alert.less';
+import {className} from '../../../../css/core/ui/overlay/Alert.scss';
 
 /**
  * An alert overlay to show a simple message with buttons

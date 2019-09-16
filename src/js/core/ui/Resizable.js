@@ -1,6 +1,6 @@
 import Dom from '../Dom';
 
-import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Resizable.less';
+import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Resizable.scss';
 
 /**
  * A class for adding resizable behaviors

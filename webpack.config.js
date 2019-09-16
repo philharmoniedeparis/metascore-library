@@ -28,7 +28,8 @@ module.exports = (env, argv) => {
         path: DIST_DIR,
         library: [LIB_NAME, "[name]"],
         libraryTarget: 'var',
-        libraryExport: 'default'
+        libraryExport: 'default',
+        devtoolNamespace: LIB_NAME
     },
     watchOptions: {
       ignored: /src\/i18n/
@@ -80,21 +81,27 @@ module.exports = (env, argv) => {
           ],
         },
         {
-          // Compiles Less to CSS.
-          test: /\.less$/,
+          // Pack Sass and CSS.
+          test: /\.(scss|css)$/,
+          exclude: /node_modules/,
           use: [
               MiniCssExtractPlugin.loader,
               {
                 loader: 'css-loader',
                 options: {
                   modules: 'global',
-                  importLoaders: 2,
-                  context: './src/css',
                   localIdentName: '[path][name]--[hash:base64:5]'
                 }
               },
-              'postcss-loader',
-              'less-loader'
+              {
+                loader: 'postcss-loader',
+                options: {
+                  plugins: [
+                    require('autoprefixer')(),
+                  ]
+                }
+              },
+              'sass-loader'
             ]
         },
         {
@@ -115,6 +122,19 @@ module.exports = (env, argv) => {
               },
             },
           ],
+        },
+        {
+          // Pack fonts files.
+          test: /\.(woff|woff2|eot|ttf|otf)$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                context: './src',
+                name: '[path][name].[ext]'
+              }
+            }
+          ]
         }
       ]
     },

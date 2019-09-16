@@ -3,7 +3,7 @@ import Dom from '../../Dom';
 import Locale from '../../Locale';
 import iFrame from '../overlay/iFrame';
 
-import {className} from '../../../../css/core/ui/input/Image.less';
+import {className} from '../../../../css/core/ui/input/Image.scss';
 
 /**
  * An image field wich depends on an external file browser to function

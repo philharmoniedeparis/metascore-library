@@ -4,7 +4,7 @@ import Button from '../../ui/Button';
 import {isObject} from '../../utils/Var';
 import {toRGBA, rgb2hsv} from '../../utils/Color';
 
-import {className} from '../../../../css/core/ui/overlay/ColorSelector.less';
+import {className} from '../../../../css/core/ui/overlay/ColorSelector.scss';
 
 /**
  * An overlay to select an RGBA color

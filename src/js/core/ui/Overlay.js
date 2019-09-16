@@ -1,7 +1,7 @@
 import Dom from '../Dom';
 import Toolbar from './overlay/Toolbar';
 
-import {className} from '../../../css/core/ui/Overlay.less';
+import {className} from '../../../css/core/ui/Overlay.scss';
 
 /**
  * A generic overlay class

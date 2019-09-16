@@ -16,7 +16,7 @@ import TextareaInput from '../core/ui/input/TextareaInput';
 import TimeInput from '../core/ui/input/TimeInput';
 import UrlInput from '../core/ui/input/UrlInput';
 
-import {className} from '../../css/editor/Field.less';
+import {className} from '../../css/editor/Field.scss';
 
 /**
  * The list of renderers to use in order of priority

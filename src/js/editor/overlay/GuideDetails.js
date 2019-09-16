@@ -6,7 +6,7 @@ import {isEmpty} from '../../core/utils/Var';
 import {formatFileSize} from '../../core/utils/Number';
 import Field from '../Field';
 
-import {className} from '../../../css/editor/overlay/GuideDetails.less';
+import {className} from '../../../css/editor/overlay/GuideDetails.scss';
 
 /**
  * An overlay to update a guide's details (title, description, thumbnail, etc)

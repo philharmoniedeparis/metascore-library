@@ -2,7 +2,7 @@ import Input from '../Input';
 import Dom from '../../Dom';
 import {uuid} from '../../utils/String';
 
-import {className} from '../../../../css/core/ui/input/RadioButtons.less';
+import {className} from '../../../../css/core/ui/input/RadioButtons.scss';
 
 /**
  * A select list field based on an HTML select element

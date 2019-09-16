@@ -1,7 +1,7 @@
 import Dom from '../../../core/Dom';
 import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
-import {className} from '../../../../css/editor/controller/WaveformOverview.less';
+import {className} from '../../../../css/editor/controller/WaveformOverview.scss';
 
 /**
  * A waveform overview
@@ -71,8 +71,8 @@ export default class Overview extends Dom {
      */
     static getDefaults(){
         return {
-            'waveColor': '#777',
-            'highlightColor': 'rgba(0, 0, 254, 0.25)',
+            'waveColor': '#ccc',
+            'highlightColor': 'rgba(0, 0, 254, 0.1)',
             'playheadWidth': 1,
             'playheadColor': '#0000fe'
         };

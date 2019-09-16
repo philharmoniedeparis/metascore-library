@@ -4,7 +4,7 @@ import Locale from '../../Locale';
 import {uuid} from '../../utils/String';
 import {getFileMime} from '../../utils/Media';
 
-import {className} from '../../../../css/core/ui/input/File.less';
+import {className} from '../../../../css/core/ui/input/File.scss';
 
 /**
  * A file field based on an HTML input[type=file] element

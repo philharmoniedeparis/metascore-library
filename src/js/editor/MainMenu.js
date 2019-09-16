@@ -4,7 +4,7 @@ import Locale from '../core/Locale';
 import NumberInput from '../core/ui/input/NumberInput';
 import CheckboxInput from '../core/ui/input/CheckboxInput';
 
-import {className} from '../../css/editor/MainMenu.less';
+import {className} from '../../css/editor/MainMenu.scss';
 
 /**
  * The editor's main menu

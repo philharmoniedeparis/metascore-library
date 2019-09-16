@@ -1,7 +1,7 @@
 import {isFunction} from '../utils/Var';
 import Dom from '../Dom';
 
-import {className} from '../../../css/core/ui/ContextMenu.less';
+import {className} from '../../../css/core/ui/ContextMenu.scss';
 
 /**
  * A class for creating context menus

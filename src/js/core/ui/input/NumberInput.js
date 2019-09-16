@@ -3,7 +3,7 @@ import Dom from '../../Dom';
 import {isNumeric, isFunction} from '../../utils/Var';
 import {getDecimalPlaces} from '../../utils/Number';
 
-import {className} from '../../../../css/core/ui/input/Number.less';
+import {className} from '../../../../css/core/ui/input/Number.scss';
 
 /**
  * A number field based on an HTML input[type=number] element

@@ -4,7 +4,7 @@ import Locale from '../../core/Locale';
 import {uuid} from '../../core/utils/String';
 import Field from '../Field';
 
-import {className} from '../../../css/editor/overlay/Share.less';
+import {className} from '../../../css/editor/overlay/Share.scss';
 
 /**
  * An overlay to share a guide

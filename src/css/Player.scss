@@ -454,15 +454,15 @@ body{
         .metaScore-component{
             &.element{
                 &.Cursor{
-                    outline-color: @cursor-color;
+                    outline-color: $cursor-color;
                 }
 
                 &.Image{
-                    outline-color: @image-color;
+                    outline-color: $image-color;
                 }
 
                 &.Text{
-                    outline-color: @text-color;
+                    outline-color: $text-color;
                 }
             }
         }
@@ -486,7 +486,7 @@ body{
                 &.block-toggler{
                     &.selected{
                         z-index: 2147483647 !important;
-                        box-shadow: @block-color 0px 0px 4px 2px;
+                        box-shadow: $block-color 0px 0px 4px 2px;
                     }
 
                     &:hover,
@@ -512,7 +512,7 @@ body{
                         display: block;
 
                         &.Cursor{
-                            box-shadow: @cursor-color 0px 0px 4px 1px;
+                            box-shadow: $cursor-color 0px 0px 4px 1px;
 
                             &.resizing{
                                 canvas{
@@ -522,15 +522,15 @@ body{
                         }
 
                         &.Image{
-                            box-shadow: @image-color 0px 0px 4px 1px;
+                            box-shadow: $image-color 0px 0px 4px 1px;
                         }
 
                         &.Text{
-                            box-shadow: @text-color 0px 0px 4px 1px;
+                            box-shadow: $text-color 0px 0px 4px 1px;
 
                             .contents{
                                 &[contenteditable]{
-                                    outline-color: @text-color;
+                                    outline-color: $text-color;
                                     outline-width: 2px;
                                     outline-style: solid;
                                 }

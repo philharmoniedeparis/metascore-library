@@ -18,7 +18,7 @@ import Controller from './editor/Controller';
 import Ruler from './editor/Ruler';
 import Grid from './editor/Grid';
 
-import {className} from '../css/Editor.less';
+import {className} from '../css/Editor.scss';
 
 /**
  * Provides the main Editor class

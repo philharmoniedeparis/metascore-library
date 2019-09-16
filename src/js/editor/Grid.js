@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {className} from '../../css/editor/Grid.less';
+import {className} from '../../css/editor/Grid.scss';
 
 /**
  * A dynamic visual grid

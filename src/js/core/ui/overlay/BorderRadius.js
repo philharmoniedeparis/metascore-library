@@ -4,7 +4,7 @@ import Button from '../Button';
 import Locale from '../../Locale';
 import NumberInput from '../input/NumberInput';
 
-import {className} from '../../../../css/core/ui/overlay/BorderRadius.less';
+import {className} from '../../../../css/core/ui/overlay/BorderRadius.scss';
 
 /**
  * An overlay that simplifies the creation of a CSS border-radius value

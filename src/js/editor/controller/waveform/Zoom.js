@@ -3,7 +3,7 @@ import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
-import {className} from '../../../../css/editor/controller/WaveformZoom.less';
+import {className} from '../../../../css/editor/controller/WaveformZoom.scss';
 
 /**
  * A waveform zoomable view

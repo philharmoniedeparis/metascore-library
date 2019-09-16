@@ -2,7 +2,7 @@ import Input from '../Input';
 import Dom from '../../Dom';
 import BorderRadiusOverlay from '../overlay/BorderRadius';
 
-import {className} from '../../../../css/core/ui/input/BorderRadius.less';
+import {className} from '../../../../css/core/ui/input/BorderRadius.scss';
 
 /**
  * A complex input for defining CSS border radius values

@@ -4,7 +4,7 @@ import Locale from '../../Locale';
 import {decodeHTML} from '../../utils/String';
 import {isArray} from '../../utils/Var';
 
-import {className} from '../../../../css/core/ui/input/Select.less';
+import {className} from '../../../../css/core/ui/input/Select.scss';
 
 /**
  * A select list field based on an HTML select element

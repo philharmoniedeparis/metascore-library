@@ -9,7 +9,7 @@ import {isEmpty} from '../../core/utils/Var';
 import Fieldset from '../Fieldset';
 import Field from '../Field';
 
-import {className} from '../../../css/editor/overlay/GuideSelector.less';
+import {className} from '../../../css/editor/overlay/GuideSelector.scss';
 
 /**
  * A guide selector overlay

@@ -3,7 +3,7 @@ import Handle from './Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
 
-import {className} from '../../../../css/editor/controller/timeline/Track.less';
+import {className} from '../../../../css/editor/controller/timeline/Track.scss';
 
 /**
  * A timeline track

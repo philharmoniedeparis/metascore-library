@@ -1,7 +1,7 @@
 import Dom from '../../../core/Dom';
 import CheckboxInput from '../../../core/ui/input/CheckboxInput';
 
-import {className} from '../../../../css/editor/controller/timeline/Handle.less';
+import {className} from '../../../../css/editor/controller/timeline/Handle.scss';
 
 /**
  * A timeline track handle

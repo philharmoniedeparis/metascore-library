@@ -1,7 +1,7 @@
 import Input from '../Input';
 import Dom from '../../Dom';
 
-import {className} from '../../../../css/core/ui/input/Checkbox.less';
+import {className} from '../../../../css/core/ui/input/Checkbox.scss';
 
 /**
  * A checkbox field based on an HTML input[type=checkbox] element

@@ -1,6 +1,6 @@
 import Dom from '../../core/Dom';
 
-import {className} from '../../../css/editor/controller/BufferIndicator.less';
+import {className} from '../../../css/editor/controller/BufferIndicator.scss';
 
 /**
  * A buffer indicator

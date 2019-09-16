@@ -1,14 +1,12 @@
 @import "../../../core/theme";
 
-@info-fade: 25%;
-
 :local(.className){
     cursor: pointer;
 
     > .inner{
         position: relative;
         height: 2em;
-        border-bottom: 2px solid @editor-borders;
+        border-bottom: 2px solid $editor-borders;
         pointer-events: none;
 
         .info{
@@ -39,22 +37,22 @@
     &[data-type="BlockToggler"],
     &[data-type="Block"]{
         & > .inner .info{
-            background: @block-color;
+            background: $block-color;
         }
     }
     &[data-type="Cursor"]{
         & > .inner .info{
-            background: @cursor-color;
+            background: $cursor-color;
         }
     }
     &[data-type="Image"]{
         & > .inner .info{
-            background: @image-color;
+            background: $image-color;
         }
     }
     &[data-type="Text"]{
         & > .inner .info{
-            background: @text-color;
+            background: $text-color;
         }
     }
 
@@ -70,7 +68,7 @@
     }
 
     &.selected > .inner{
-        background: @editor-background;
+        background: $editor-background;
         pointer-events: auto;
 
         .info{

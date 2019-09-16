@@ -1,7 +1,7 @@
 import Dom from '../../Dom';
 import Overlay from '../Overlay';
 
-import {className} from '../../../../css/core/ui/overlay/iFrame.less';
+import {className} from '../../../../css/core/ui/overlay/iFrame.scss';
 
 /**
  * An iframe overlay

@@ -4,7 +4,7 @@ import Locale from '../../Locale';
 import {toRGBA} from '../../utils/Color';
 import ColorSelector from '../overlay/ColorSelector';
 
-import {className} from '../../../../css/core/ui/input/Color.less';
+import {className} from '../../../../css/core/ui/input/Color.scss';
 
 /**
  * A color selection field

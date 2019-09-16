@@ -3,7 +3,7 @@ import Dom from '../../Dom';
 import {uuid} from '../../utils/String';
 import {isArray} from '../../utils/Var';
 
-import {className} from '../../../../css/core/ui/input/Checkboxes.less';
+import {className} from '../../../../css/core/ui/input/Checkboxes.scss';
 
 /**
  * A select list field based on an HTML select element

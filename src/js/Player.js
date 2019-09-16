@@ -12,7 +12,7 @@ import Block from './player/component/Block';
 import {isEmpty} from './core/utils/Var';
 import {toCentiseconds, toSeconds} from './core/utils/Media';
 
-import {className} from '../css/Player.less';
+import {className} from '../css/Player.scss';
 
 /**
  * Provides the main Player class
