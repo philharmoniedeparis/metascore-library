@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?> 
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
+<svg xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <font id="metascore-icons" horiz-adv-x="57.616">
+    <font-face font-family="metascore-icons"
+      units-per-em="57.614" ascent="57.614"
+      descent="0" />
+    <missing-glyph horiz-adv-x="0" />
+    <glyph glyph-name="play"
+      unicode="&#xF101;"
+      horiz-adv-x="57.616" d=" M28.808 57.614C12.898 57.614 0 44.716 0 28.806S12.898 0 28.808 0S57.616 12.896 57.616 28.806S44.718 57.614 28.808 57.614M24.639 19.275V38.337L39.409 28.806L24.639 19.275z" />
+  </font>
+</defs>
+</svg>

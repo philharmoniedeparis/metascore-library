@@ -10,6 +10,7 @@ export default class Button extends Dom {
      *
      * @param {Object} configs Custom configs to override defaults
      * @property {String} [label=null] A text to add as a label
+     * @property {String} [icon=null] An icon class to use
      */
     constructor(configs) {
         // call the super constructor.
@@ -23,6 +24,9 @@ export default class Button extends Dom {
 
         if(this.configs.label){
             this.setLabel(this.configs.label);
+        }
+        if(this.configs.icon){
+            this.setIcon(this.configs.icon);
         }
     }
 
@@ -54,6 +58,31 @@ export default class Button extends Dom {
         }
 
         this.label.text(text);
+
+        return this;
+    }
+
+    /**
+     * Set the button's icon
+     *
+     * @param {String} name The icons's name
+     * @return {this}
+     */
+    setIcon(name){
+        if(typeof this.icon === "undefined"){
+            /**
+             * An eventual label
+             * @type {Dom}
+             */
+            this.icon = new Dom('<i/>', {'class': `icon`})
+                .appendTo(this);
+        }
+        else{
+            this.icon.removeClass(`icon-${this._icon_class}`);
+        }
+
+        this.icon.addClass(`icon-${name}`);
+        this._icon_class = name;
 
         return this;
     }

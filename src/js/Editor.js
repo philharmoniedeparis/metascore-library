@@ -34,7 +34,7 @@ export default class Editor extends Dom {
      * @param {Object} configs Custom configs to override defaults
      * @property {Mixed} [container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
      * @property {String} [player_url=''] The base URL of players
-     * @property {String} [api_url=''] The base URL of the RESTful API
+     * @property {String} [api={}] The URLs of the RESTful API
      * @property {String} [lang='en'] The language to use for i18n
      * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [history_grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
@@ -69,8 +69,12 @@ export default class Editor extends Dom {
     static getDefaults(){
         return {
             'container': 'body',
-            'player_url': '',
-            'api_url': '',
+            'player_url': null,
+            'api': {
+                'update': null,
+                'assets': null,
+                'shared_assets': null
+            },
             'lang': 'en',
             'xhr': {},
             'history_grouping_timeout': 100
@@ -2299,7 +2303,7 @@ export default class Editor extends Dom {
 
         const hundred = 100;
 
-        Ajax.PATCH(this.configs.api_url, options)
+        Ajax.PATCH(this.configs.api.update, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })

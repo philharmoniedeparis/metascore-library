@@ -1,24 +1,5 @@
 @import "./core/theme";
-
-@font-face{
-    font-family: 'Source Sans Variable';
-    font-weight: 200 900;
-    font-style: normal;
-    font-stretch: normal;
-    src: url('../fonts/source-sans-pro/WOFF2/VAR/SourceSansVariable-Roman.ttf.woff2') format('woff2'),
-         url('../fonts/source-sans-pro/WOFF/VAR/SourceSansVariable-Roman.ttf.woff') format('woff'),
-         url('../fonts/source-sans-pro/VAR/SourceSansVariable-Roman.ttf') format('truetype');
-}
-
-@font-face{
-    font-family: 'Source Sans Variable';
-    font-weight: 200 900;
-    font-style: italic;
-    font-stretch: normal;
-    src: url('../fonts/source-sans-pro/WOFF2/VAR/SourceSansVariable-Italic.ttf.woff2') format('woff2'),
-         url('../fonts/source-sans-pro/WOFF/VAR/SourceSansVariable-Italic.ttf.woff') format('woff'),
-         url('../fonts/source-sans-pro/VAR/SourceSansVariable-Italic.ttf') format('truetype');
-}
+@import "../fonts/source-sans-pro/source-sans-variable";
 
 :local(.className){
     width: 100%;

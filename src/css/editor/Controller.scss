@@ -1,4 +1,5 @@
 @import "../core/theme";
+@import "../../fonts/metascore-icons/metascore-icons";
 
 :local(.className){
     .top {
@@ -20,7 +21,8 @@
                 padding: 0;
                 text-align: center;
                 color: #fff;
-                font-weight: bold;
+                font-size: 1.25em;
+                letter-spacing: .05em;
             }
 
             button[data-action="play"]{
@@ -76,10 +78,6 @@
 
                     &[data-action="rewind"]{
                         flex: 0 0 14%;
-                        margin-right: 5%;
-                        padding: 7%; /* 50% of flex-basis for 1:1 ratio*/
-                        background-size: contain;
-                        background-image: url('../../img/editor/controller/rewind.svg');
                     }
 
                     &[data-action="play"]{
@@ -87,63 +85,8 @@
                         flex: 0 0 50%;
                         margin-right: 14%;
                         padding: 25%; /* 50% of flex-basis for 1:1 ratio*/
-                        background: #fff;
-                        border-radius: 50%;
-                        box-shadow: inset 0px 8px 48px #ddd;
-
-                        &::before{
-                            content: "";
-                            position: absolute;
-                            top: 5px;
-                            right: 5px;
-                            bottom: 5px;
-                            left: 5px;
-                            background-color: #f7f7f7;
-                            background-image: linear-gradient(to bottom, #f7f7f7 0%, #e7e7e7 100%);
-                            color: #a7a7a7;
-                            border-radius: 50%;
-                            box-shadow: 0px 3px 8px #aaa, inset 0px 2px 3px #fff;
-                        }
-
-                        &::after{
-                            content: "";
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background: url('../../img/editor/controller/play.svg') 50% 50% no-repeat;
-                            background-size: 25%;
-                        }
-
-                        &:hover{
-                            &::before{
-                                background: #f5f5f5;
-                            }
-
-                            &::after{
-                                opacity: 1;
-                            }
-                        }
-
-                        &:active{
-                            &::before{
-                                background-image: linear-gradient(to top, #f7f7f7 0%, #e7e7e7 100%);
-                            }
-                        }
                     }
                 }
-            }
-
-            &::after{
-                content: "";
-                flex: 0 0 20px;
-                margin-bottom: 5px;
-                background-image: url('../../img/logo-metaScore.png');
-                background-repeat: no-repeat;
-                background-size: contain;
-                background-position: center center;
-                opacity: 0.75;
             }
         }
 

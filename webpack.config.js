@@ -90,7 +90,8 @@ module.exports = (env, argv) => {
                 loader: 'css-loader',
                 options: {
                   modules: 'global',
-                  localIdentName: '[path][name]--[hash:base64:5]'
+                  localIdentName: '[path][name]--[hash:base64:5]',
+                  context: './src/css',
                 }
               },
               {

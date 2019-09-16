@@ -1,4 +1,5 @@
 import Dom from '../core/Dom';
+import Button from '../core/ui/Button';
 import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';
 import WaveformOverview from './controller/waveform/Overview';
@@ -42,17 +43,17 @@ export default class Controller extends Dom {
         const top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
 
+        new Button({'icon': 'play'})
+            .data('action', 'play')
+            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
+            .appendTo(top);
+
         /**
          * The time input
          * @type {TimeInput}
          */
         this.timeinput = new TimeInput()
             .appendTo(top);
-
-        new Dom('<button/>')
-            .data('action', 'play')
-            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
-            .insertAt(this.timeinput, 0);
 
 
         const overview = new Dom('<div/>', {'class': 'overview'})
@@ -83,11 +84,11 @@ export default class Controller extends Dom {
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this.controls);
 
-        new Dom('<button/>')
+        new Button({'icon': 'rewind'})
             .data('action', 'rewind')
             .appendTo(buttons);
 
-        new Dom('<button/>')
+        new Button({'icon': 'play'})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(buttons);
