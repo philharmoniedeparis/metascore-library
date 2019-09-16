@@ -34,18 +34,6 @@ module.exports = (env, argv) => {
     watchOptions: {
       ignored: /src\/i18n/
     },
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          styles: {
-            name: 'styles',
-            test: /\.css$/,
-            chunks: 'all',
-            enforce: true
-          }
-        }
-      }
-    },
     module: {
       rules: [
         {
@@ -82,8 +70,7 @@ module.exports = (env, argv) => {
         },
         {
           // Pack Sass and CSS.
-          test: /\.(scss|css)$/,
-          exclude: /node_modules/,
+          test: /\.(sa|sc|c)ss$/,
           use: [
               MiniCssExtractPlugin.loader,
               {

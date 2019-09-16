@@ -9,7 +9,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "icon-font": "icon-font-generator src/fonts/metascore-icons/icons/*.svg --name metascore-icons --out src/fonts/metascore-icons/ --json false --csspath src/fonts/metascore-icons/metascore-icons.scss",
+    "icon-font": "icon-font-generator src/fonts/metascore-icons/icons/*.svg --name metascore-icons --out src/fonts/metascore-icons/ --json false",
     "pack": "webpack -p",
     "dev": "webpack -d -w",
     "lint": "eslint -c .eslintrc.json src/js",
