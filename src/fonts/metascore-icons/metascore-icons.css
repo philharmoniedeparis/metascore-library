@@ -1,10 +1,10 @@
 @font-face {
     font-family: "metascore-icons";
-    src: url("./metascore-icons.eot?b891abbb73b1e4d22eef8fc1c2714c92?#iefix") format("embedded-opentype"),
-url("./metascore-icons.woff2?b891abbb73b1e4d22eef8fc1c2714c92") format("woff2"),
-url("./metascore-icons.woff?b891abbb73b1e4d22eef8fc1c2714c92") format("woff"),
-url("./metascore-icons.ttf?b891abbb73b1e4d22eef8fc1c2714c92") format("truetype"),
-url("./metascore-icons.svg?b891abbb73b1e4d22eef8fc1c2714c92#metascore-icons") format("svg");
+    src: url("./metascore-icons.eot?520cd79fa454de149a7dfe93f41d1bb6?#iefix") format("embedded-opentype"),
+url("./metascore-icons.woff2?520cd79fa454de149a7dfe93f41d1bb6") format("woff2"),
+url("./metascore-icons.woff?520cd79fa454de149a7dfe93f41d1bb6") format("woff"),
+url("./metascore-icons.ttf?520cd79fa454de149a7dfe93f41d1bb6") format("truetype"),
+url("./metascore-icons.svg?520cd79fa454de149a7dfe93f41d1bb6#metascore-icons") format("svg");
 }
 
 i[class^="icon-"]:before, i[class*=" icon-"]:before {
@@ -18,6 +18,12 @@ i[class^="icon-"]:before, i[class*=" icon-"]:before {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-play:before {
+.icon-pause:before {
     content: "\f101";
+}
+.icon-play:before {
+    content: "\f102";
+}
+.icon-rewind:before {
+    content: "\f103";
 }

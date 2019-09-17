@@ -110,7 +110,6 @@
         background-color: transparent;
         background-position: center center;
         background-repeat: no-repeat;
-        cursor: pointer;
 
         &:hover{
             opacity: 0.75;
@@ -180,9 +179,9 @@
     align-items: stretch;
     flex-wrap: nowrap;
 
-    .pane{
-        $resize-handle-size: 8px;
+    $pane-resize-handle-size: 8px;
 
+    .pane{
         position: relative;
         overflow: hidden;
         background: $editor-background;
@@ -203,70 +202,70 @@
            > .resize-handle{
                 position: absolute;
                 background: $editor-borders;
-                flex: 0 0 $resize-handle-size;
+                flex: 0 0 $pane-resize-handle-size;
                 margin: 0;
 
                 &[data-direction="top"]{
                     top: 0;
                     left: 0;
                     width: 100%;
-                    height: $resize-handle-size;
+                    height: $pane-resize-handle-size;
                 }
                 &[data-direction="bottom"]{
                     bottom: 0;
                     left: 0;
                     width: 100%;
-                    height: $resize-handle-size;
+                    height: $pane-resize-handle-size;
                 }
                 &[data-direction="left"]{
                     top: 0;
                     left: 0;
-                    width: $resize-handle-size;
+                    width: $pane-resize-handle-size;
                     height: 100%;
                 }
                 &[data-direction="right"]{
                     top: 0;
                     right: 0;
-                    width: $resize-handle-size;
+                    width: $pane-resize-handle-size;
                     height: 100%;
                 }
             }
         }
+    }
 
-        &#top-pane{
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: stretch;
-        }
+    #top-pane{
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: stretch;
+    }
 
-        &#tools-pane{
-            width: 200px;
-            min-width: 150px;
-            max-width: 300px;
-            padding-right: $resize-handle-size;
-        }
+    #tools-pane{
+        width: 200px;
+        min-width: 150px;
+        max-width: 300px;
+        padding-right: $pane-resize-handle-size;
+    }
 
-        &#center-pane{
-            display: flex;
-            flex-direction: column;
-            flex: 1 1 auto;
-        }
+    #center-pane{
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+    }
 
-        &#configs-pane{
-            width: 300px;
-            min-width: 150px;
-            max-width: 300px;
-            padding-left: $resize-handle-size;
-        }
+    #configs-pane{
+        width: 300px;
+        min-width: 150px;
+        max-width: 300px;
+        padding-left: $pane-resize-handle-size;
+    }
 
-        &#bottom-pane{
-            height: 200px;
-            min-height: 150px;
-            max-height: 300px;
-            padding-top: $resize-handle-size;
-        }
+    #bottom-pane{
+        height: 300px;
+        min-height: 150px;
+        max-height: 50vh;
+        padding-top: $pane-resize-handle-size;
     }
 
     .main-menu{

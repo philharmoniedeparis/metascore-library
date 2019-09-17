@@ -848,11 +848,12 @@ export default class Editor extends Dom {
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
+            case 'play':
+                this.getPlayer().togglePlay();
+                break;
             case 'rewind':
                 this.getPlayer().getMedia().reset();
                 break;
-            default:
-                this.getPlayer().togglePlay();
         }
     }
 
@@ -1299,6 +1300,10 @@ export default class Editor extends Dom {
      */
     onPlayerPlay(){
         this.addClass('playing');
+
+        this.controller.find('button .icon-play')
+            .removeClass('icon-play')
+            .addClass('icon-pause');
     }
 
     /**
@@ -1308,6 +1313,10 @@ export default class Editor extends Dom {
      */
     onPlayerPause(){
         this.removeClass('playing');
+
+        this.controller.find('button .icon-pause')
+            .removeClass('icon-pause')
+            .addClass('icon-play');
     }
 
     /**

@@ -1,6 +1,5 @@
 import Dom from '../../core/Dom';
 import Track from './timeline/Track';
-import Scrollable from '../../core/ui/Scrollable';
 
 import {className} from '../../../css/editor/controller/Timeline.scss';
 
@@ -54,21 +53,15 @@ export default class Timeline extends Dom {
      * @private
      */
     setupUI() {
-        const scroll_wrapper = new Dom('<div/>', {'class': 'scroll-wrapper'})
-            .appendTo(this);
-
-        const content_wrapper = new Dom('<div/>', {'class': 'content-wrapper'})
-            .appendTo(scroll_wrapper);
-
         /**
          * The handles container
          * @type {Dom}
          */
         this.handles_container = new Dom('<div/>', {'class': 'handles-container'})
-            .appendTo(content_wrapper);
+            .appendTo(this);
 
         const tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
-            .appendTo(content_wrapper);
+            .appendTo(this);
 
         /**
          * The tracks outer container
@@ -95,12 +88,6 @@ export default class Timeline extends Dom {
             .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
             .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
             .appendTo(this.tracks_container_outer);
-
-        this.scrollable = new Scrollable({
-            'target': this,
-            'scrollWrapper': scroll_wrapper,
-            'contentWrapper': content_wrapper
-        });
     }
 
     /**
@@ -109,9 +96,9 @@ export default class Timeline extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTrackSelect(evt){
+    onTrackSelect(){
         // Scroll the track into view
-        this.scrollable.scrollIntoView(evt.detail.track);
+        // TODO
     }
 
     /**

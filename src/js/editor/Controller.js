@@ -43,17 +43,17 @@ export default class Controller extends Dom {
         const top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
 
-        new Button({'icon': 'play'})
-            .data('action', 'play')
-            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
-            .appendTo(top);
-
         /**
          * The time input
          * @type {TimeInput}
          */
         this.timeinput = new TimeInput()
             .appendTo(top);
+
+        new Button({'icon': 'play'})
+            .data('action', 'play')
+            .addListener('keydown', this.onPlayBtnKeydown.bind(this))
+            .appendTo(this.timeinput);
 
 
         const overview = new Dom('<div/>', {'class': 'overview'})
@@ -75,23 +75,23 @@ export default class Controller extends Dom {
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(overview);
 
-        const middle = new Dom('<div/>', {'class': 'middle'})
+        const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        this.controls = new Dom('<div/>', {'class': 'controls'})
-            .appendTo(middle);
+        const sticky = new Dom('<div/>', {'class': 'sticky'})
+            .appendTo(bottom);
 
-        const buttons = new Dom('<div/>', {'class': 'buttons'})
-            .appendTo(this.controls);
+        this.controls = new Dom('<div/>', {'class': 'controls'})
+            .appendTo(sticky);
 
         new Button({'icon': 'rewind'})
             .data('action', 'rewind')
-            .appendTo(buttons);
+            .appendTo(this.controls);
 
         new Button({'icon': 'play'})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
-            .appendTo(buttons);
+            .appendTo(this.controls);
 
         /**
          * The zoom waveform
@@ -101,10 +101,7 @@ export default class Controller extends Dom {
             .addListener('offsetupdate', this.onWaveformZoomOffsetUpdate.bind(this))
             .addListener('playheadupdate', this.onWaveformZoomPlayheadUpdate.bind(this))
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
-            .appendTo(middle);
-
-        const bottom = new Dom('<div/>', {'class': 'bottom'})
-            .appendTo(this);
+            .appendTo(sticky);
 
         /**
          * The timeline
