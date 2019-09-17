@@ -71,8 +71,8 @@ export default class Overview extends Dom {
      */
     static getDefaults(){
         return {
-            'waveColor': '#ccc',
-            'highlightColor': 'rgba(0, 0, 254, 0.1)',
+            'waveColor': '#eee',
+            'highlightColor': 'rgba(0, 0, 254, 0.25)',
             'playheadWidth': 1,
             'playheadColor': '#0000fe'
         };

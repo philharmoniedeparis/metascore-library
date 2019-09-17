@@ -1,5 +1,5 @@
 import Input from '../Input';
-import Dom from '../../Dom';
+import Button from '../Button';
 
 /**
  * A simple buttons field based on HTML button elements
@@ -47,8 +47,8 @@ export default class ButtonsInput extends Input{
         this.buttons = {};
 
         if(this.configs.buttons){
-            Object.entries(this.configs.buttons).forEach(([name, attr]) => {
-                this.buttons[name] = new Dom('<button/>', attr)
+            Object.entries(this.configs.buttons).forEach(([name, configs]) => {
+                this.buttons[name] = new Button(configs)
                     .addListener('click', () => {
                         this.triggerEvent('valuechange', {'input': this, 'value': name}, true, false);
                     })

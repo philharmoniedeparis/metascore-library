@@ -1,5 +1,6 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Button from '../Button';
 import Locale from '../../Locale';
 import iFrame from '../overlay/iFrame';
 
@@ -61,14 +62,16 @@ export default class ImageInput extends Input {
         if(this.configs.resizeButton){
             /**
              * The resize button
-             * @type {Dom}
+             * @type {Button}
              */
-            this.resize = new Dom('<button/>', {'text': '.', 'data-action': 'resize', 'title': Locale.t('core.ui.input.ImageInput.resize.tooltip', 'Adapt container size to image')})
+            this.resize = new Button({'icon': 'resize'})
+                .attr('title', Locale.t('core.ui.input.ImageInput.resize.tooltip', 'Adapt container size to image'))
                 .addListener('click', this.onResizeClick.bind(this))
                 .appendTo(buttons);
         }
 
-        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('core.ui.input.ImageInput.clear.tooltip', 'Clear value')})
+        new Button({'icon': 'clear'})
+            .attr('title', Locale.t('core.ui.input.ImageInput.clear.tooltip', 'Clear value'))
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
     }

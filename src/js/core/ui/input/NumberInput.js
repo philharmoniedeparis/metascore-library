@@ -1,5 +1,6 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Button from '../Button';
 import {isNumeric, isFunction} from '../../utils/Var';
 import {getDecimalPlaces} from '../../utils/Number';
 
@@ -81,9 +82,11 @@ export default class NumberInput extends Input {
 
             /**
              * The spin down button
-             * @type {Dom}
+             * @type {Button}
              */
-            this.spindown_btn = new Dom('<button/>', {'text': '-', 'data-action': 'spin', 'data-direction': 'down'})
+            this.spindown_btn = new Button({'label': '-', 'icon': 'arrow-down'})
+                .data('action', 'spin')
+                .data('direction', 'down')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
@@ -91,9 +94,11 @@ export default class NumberInput extends Input {
 
             /**
              * The spin up button
-             * @type {Dom}
+             * @type {Button}
              */
-            this.spinup_btn = new Dom('<button/>', {'text': '+', 'data-action': 'spin', 'data-direction': 'up'})
+            this.spinup_btn = new Button({'label': '-', 'icon': 'arrow-up'})
+                .data('action', 'spin')
+                .data('direction', 'up')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))

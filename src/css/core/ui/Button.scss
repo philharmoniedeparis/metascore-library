@@ -1,0 +1,11 @@
+:local(.className){
+    cursor: pointer;
+
+    .icon{
+        pointer-events: none;
+
+        &::before{
+            vertical-align: middle;
+        }
+    }
+}

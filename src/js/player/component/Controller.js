@@ -1,5 +1,6 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
+import Button from '../../core/ui/Button';
 import Locale from '../../core/Locale';
 import {formatTime} from '../../core/utils/Media';
 
@@ -127,17 +128,17 @@ export default class Controller extends Component{
             .appendTo(this);
 
         /**
-         * The rewind <button> element
-         * @type {Dom}
+         * The rewind button
+         * @type {Button}
          */
-        this.rewind_btn = new Dom('<button/>')
+        this.rewind_btn = new Button()
             .data('action', 'rewind');
 
         /**
-         * The play <button> element
-         * @type {Dom}
+         * The play button
+         * @type {Button}
          */
-        this.play_btn = new Dom('<button/>')
+        this.play_btn = new Button()
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .data('action', 'play');
 

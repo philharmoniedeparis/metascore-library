@@ -1,4 +1,5 @@
 import Dom from '../../../core/Dom';
+import Button from '../../../core/ui/Button';
 import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
@@ -90,10 +91,10 @@ export default class Zoom extends Dom {
             .appendTo(this);
 
         /**
-         * The zoom out <button> element
-         * @type {Dom}
+         * The zoom out button
+         * @type {Button}
          */
-        this.zoom_out_btn = new Dom('<button/>', {'text': '&minus;'})
+        this.zoom_out_btn = new Button({'icon': 'minus'})
             .data('action', 'zoom-out')
             .addListener('mousedown', () => {
                 /**
@@ -124,10 +125,10 @@ export default class Zoom extends Dom {
             .appendTo(controls);
 
         /**
-         * The zoom in <button> element
-         * @type {Dom}
+         * The zoom in button
+         * @type {Button}
          */
-        this.zoom_in_btn = new Dom('<button/>', {'text': '&plus;'})
+        this.zoom_in_btn = new Button({'icon': 'plus'})
             .data('action', 'zoom-in')
             .addListener('mousedown', () => {
                 this._zoom_interval = setInterval(() => {
@@ -155,7 +156,7 @@ export default class Zoom extends Dom {
      */
     static getDefaults(){
         return {
-            'waveColor': '#ccc',
+            'waveColor': '#eee',
             'waveMargin': 20,
             'axisTickWidth': 1,
             'axisTickHeight': 6,

@@ -1,11 +1,11 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Button from '../Button';
 import Locale from '../../Locale';
 import {toRGBA} from '../../utils/Color';
 import ColorSelector from '../overlay/ColorSelector';
 
 import {className} from '../../../../css/core/ui/input/Color.scss';
-
 /**
  * A color selection field
  *
@@ -59,7 +59,8 @@ export default class ColorInput extends Input {
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
 
-        new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('core.ui.input.ColorInput.clear.tooltip', 'Clear value')})
+        new Button({'icon': 'clear'})
+            .attr('title', Locale.t('core.ui.input.ColorInput.clear.tooltip', 'Clear value'))
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 

@@ -1,5 +1,6 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Button from '../Button';
 import BorderRadiusOverlay from '../overlay/BorderRadius';
 
 import {className} from '../../../../css/core/ui/input/BorderRadius.scss';
@@ -52,7 +53,8 @@ export default class BorderRadiusInput extends Input{
          * The clear button
          * @type {Dom}
          */
-        this.clear = new Dom('<button/>', {'text': '.', 'data-action': 'clear'})
+        this.clear = new Button({'icon': 'clear'})
+            .data('action', 'clear')
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);
 

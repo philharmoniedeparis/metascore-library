@@ -1,5 +1,6 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Button from '../Button';
 import Locale from '../../Locale';
 import {pad} from '../../utils/String';
 import {isNumeric} from '../../utils/Var';
@@ -190,9 +191,11 @@ export default class TimeInput extends Input {
             if(this.configs.clearButton){
                 /**
                  * The potential clear button
-                 * @type {Dom}
+                 * @type {Button}
                  */
-                this.clear_button = new Dom('<button/>', {'text': '.', 'data-action': 'clear', 'title': Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value')})
+                this.clear_button = new Button({'icon': 'clear'})
+                    .data('action', 'clear')
+                    .attr('title', Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value'))
                     .addListener('click', this.onClearClick.bind(this))
                     .appendTo(buttons);
             }
@@ -200,9 +203,11 @@ export default class TimeInput extends Input {
             if(this.configs.inButton){
                 /**
                  * The potential time-in button
-                 * @type {Dom}
+                 * @type {Button}
                  */
-                this.in_button = new Dom('<button/>', {'text': '.', 'data-action': 'in', 'title': Locale.t('core.ui.input.TimeInput.in.tooltip', 'Set field value to current time')})
+                this.in_button = new Button({'icon': 'time-in'})
+                    .data('action', 'in')
+                    .attr('title', Locale.t('core.ui.input.TimeInput.in.tooltip', 'Set field value to current time'))
                     .addListener('click', this.onInClick.bind(this))
                     .appendTo(buttons);
             }
@@ -210,9 +215,11 @@ export default class TimeInput extends Input {
             if(this.configs.outButton){
                 /**
                  * The potential time-out button
-                 * @type {Dom}
+                 * @type {Button}
                  */
-                this.out_button = new Dom('<button/>', {'text': '.', 'data-action': 'out', 'title': Locale.t('core.ui.input.TimeInput.out.tooltip', 'Set current time to field value')})
+                this.out_button = new Button({'icon': 'time-out'})
+                    .data('action', 'out')
+                    .attr('title', Locale.t('core.ui.input.TimeInput.out.tooltip', 'Set current time to field value'))
                     .addListener('click', this.onOutClick.bind(this))
                     .appendTo(buttons);
             }

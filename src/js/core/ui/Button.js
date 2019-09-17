@@ -1,5 +1,7 @@
 import Dom from '../Dom';
 
+import {className} from '../../../css/core/ui/Button.scss';
+
 /**
  * A simple button based on an HTML button element
  */
@@ -14,7 +16,7 @@ export default class Button extends Dom {
      */
     constructor(configs) {
         // call the super constructor.
-        super('<button/>');
+        super('<button/>', {'class': `${className}`});
 
         /**
          * The configuration values
