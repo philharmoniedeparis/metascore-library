@@ -1,0 +1,53 @@
+@import "./theme";
+
+:local(.className){
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    .tabs{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+
+        li{
+            flex: 1 1 auto;
+            margin: 0;
+            padding: 0.5em;
+            background: $mediumgray;
+            border-bottom: 0.25em solid $mediumgray;
+            text-align: center;
+            line-height: 2em;
+            user-select: none;
+            cursor: pointer;
+
+            &.active{
+                background: $lightgray;
+            }
+        }
+    }
+
+    .tabbed-content{
+        overflow-y: auto;
+
+        &:not(.active){
+            display: none;
+        }
+    }
+
+    .loadmask{
+        position: absolute;
+    }
+
+    .assets{
+        .asset{
+            padding: 0.5em;
+            font-size: 1.2em;
+        }
+    }
+}

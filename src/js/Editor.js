@@ -19,6 +19,7 @@ import Ruler from './editor/Ruler';
 import Grid from './editor/Grid';
 
 import {className} from '../css/Editor.scss';
+import AssetBrowser from './editor/AssetBrowser';
 
 /**
  * Provides the main Editor class
@@ -33,11 +34,18 @@ export default class Editor extends Dom {
      *
      * @param {Object} configs Custom configs to override defaults
      * @property {Mixed} [container='body'] The HTMLElement, Dom instance, or CSS selector to which the editor should be appended
-     * @property {String} [player_url=''] The base URL of players
-     * @property {String} [api={}] The URLs of the RESTful API
+     * @property {Object} player Options for the player
+     * @property {String} player.url The player URL
+     * @property {String} player.update_url The player update URL
+     * @property {Object} asset_browser Options for the asset browser
+     * @property {Object} asset_browser.guide_assets Options for the guide assets tab
+     * @property {Object} asset_browser.guide_assets.list_url The guide assets list url
+     * @property {Object} asset_browser.shared_assets Options for the shared assets tab
+     * @property {Object} asset_browser.shared_assets.list_url The shared assets list url
      * @property {String} [lang='en'] The language to use for i18n
-     * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
-     * @property {Object} [history_grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
+     * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
+     * @property {Object} [history] Options for the history
+     * @property {Number} [history.grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
      */
     constructor(configs) {
         // call parent constructor
@@ -69,15 +77,23 @@ export default class Editor extends Dom {
     static getDefaults(){
         return {
             'container': 'body',
-            'player_url': null,
-            'api': {
-                'update': null,
-                'assets': null,
-                'shared_assets': null
+            'player': {
+                'url': null,
+                'update_url': null,
+            },
+            'asset_browser': {
+                'guide_assets': {
+                    'list_url': null,
+                },
+                'shared_assets': {
+                    'list_url': null,
+                },
             },
             'lang': 'en',
             'xhr': {},
-            'history_grouping_timeout': 100
+            'history': {
+                'grouping_timeout': 100
+            }
         };
     }
 
@@ -108,10 +124,20 @@ export default class Editor extends Dom {
         const top_pane = new Dom('<div/>', {'id': 'top-pane', 'class': 'pane horizontal'})
             .appendTo(this);
 
-        // Tools pane ////////////////////////
+        // Assets pane ////////////////////////
 
         const tools_pane = new Dom('<div/>', {'id': 'tools-pane', 'class': 'pane vertical'})
             .appendTo(top_pane);
+
+            tools_pane._resizable = new Resizable({
+            'target': tools_pane,
+            'directions': ['right']
+        })
+        .getHandle('right')
+        .addDelegate('.resize-handle', 'dblclick', this.onPaneResizeDblclick.bind(this, tools_pane));
+
+        this.asset_browser = new AssetBrowser(this.configs.asset_browser)
+            .appendTo(tools_pane);
 
         // Center pane ////////////////////////
 
@@ -176,13 +202,6 @@ export default class Editor extends Dom {
             })
             .getHandle('left')
             .addListener('dblclick', this.onPaneResizeDblclick.bind(this, config_pane));
-
-        tools_pane._resizable = new Resizable({
-                'target': tools_pane,
-                'directions': ['right']
-            })
-            .getHandle('right')
-            .addDelegate('.resize-handle', 'dblclick', this.onPaneResizeDblclick.bind(this, tools_pane));
 
         /**
          * The component form
@@ -1358,7 +1377,7 @@ export default class Editor extends Dom {
                 this._oncomponentpropchange_stack.push(evt.detail);
             }
 
-            this._oncomponentpropchange_timeout = setTimeout(this.onComponentPropChangeTimeout.bind(this), this.configs.history_grouping_timeout);
+            this._oncomponentpropchange_timeout = setTimeout(this.onComponentPropChangeTimeout.bind(this), this.configs.history.grouping_timeout);
         }
     }
 
@@ -1840,7 +1859,7 @@ export default class Editor extends Dom {
          * The player's iframe
          * @type {Dom}
          */
-        this.player_frame = new Dom('<iframe/>', {'src': this.configs.player_url, 'class': 'player-frame'}).appendTo(this.workspace)
+        this.player_frame = new Dom('<iframe/>', {'src': this.configs.player.url, 'class': 'player-frame'}).appendTo(this.workspace)
             .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
             .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
 
@@ -2312,7 +2331,7 @@ export default class Editor extends Dom {
 
         const hundred = 100;
 
-        Ajax.PATCH(this.configs.api.update, options)
+        Ajax.PATCH(this.configs.player.update_url, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })

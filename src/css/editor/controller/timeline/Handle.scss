@@ -1,4 +1,4 @@
-@import "../../../core/theme";
+@import "../../theme";
 
 :local(.className){
     cursor: pointer;
@@ -12,7 +12,7 @@
         flex-wrap: nowrap;
         justify-content: flex-start;
         align-items: center;
-        border-bottom: 2px solid $editor-borders;
+        border-bottom: 2px solid $darkgray;
         pointer-events: none;
 
         .expander{
@@ -105,6 +105,6 @@
     }
 
     &.selected > .inner{
-        background: $editor-background;
+        background: $lightgray;
     }
 }

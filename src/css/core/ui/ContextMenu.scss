@@ -1,4 +1,4 @@
-@import "../theme";
+@import "../../core/theme";
 
 :local(.className){
     position: absolute;
@@ -22,7 +22,7 @@
 
             &:hover{
                 color: #fff;
-                background: $metascore-blue;
+                background: $metascore-color;
             }
 
             &.no-callback{

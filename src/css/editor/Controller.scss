@@ -1,4 +1,4 @@
-@import "../core/theme";
+@import "./theme";
 @import "../../fonts/metascore-icons/metascore-icons.css";
 
 :local(.className){
@@ -16,13 +16,13 @@
         height: $top-height;
         display: flex;
         flex-direction: row;
-        border-bottom: 2px solid $editor-borders;
+        border-bottom: 2px solid $darkgray;
 
         .time.input{
             display: flex;
             flex: 0 0 $left-width;
             box-sizing: border-box;
-            border-right: 2px solid $editor-borders;
+            border-right: 2px solid $darkgray;
 
             button[data-action="play"]{
                 display: none;
@@ -31,7 +31,7 @@
                 background: #fff;
 
                 .icon{
-                    color: $editor-borders;
+                    color: $darkgray;
 
                     &::before{
                         font-size: 1.25em;
@@ -78,8 +78,8 @@
             height: $sticky-height;
             display: flex;
             flex-direction: row;
-            background: $editor-background;
-            border-bottom: 2px solid $editor-borders;
+            background: $lightgray;
+            border-bottom: 2px solid $darkgray;
             z-index: 1;
 
             > .controls {
@@ -90,7 +90,7 @@
                 justify-content: center;
                 align-items: center;
                 box-sizing: border-box;
-                border-right: 2px solid $editor-borders;
+                border-right: 2px solid $darkgray;
 
                 button{
                     border: none;
@@ -122,7 +122,7 @@
                         margin-right: 2.5em;
 
                         .icon{
-                            color: $editor-borders;
+                            color: $darkgray;
 
                             &::before{
                                 font-size: 1.5em;
@@ -146,7 +146,7 @@
                 flex: 0 0 auto;
 
                 .handle{
-                    border-right: 2px solid $editor-borders;
+                    border-right: 2px solid $darkgray;
                 }
             }
 

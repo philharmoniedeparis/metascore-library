@@ -1,4 +1,5 @@
 @import "./core/theme";
+@import "./editor/theme";
 @import "../fonts/source-sans-pro/source-sans-variable.css";
 
 :local(.className){
@@ -126,7 +127,7 @@
             background: #ccc;
 
             &:hover{
-                background: $metascore-blue;
+                background: $metascore-color;
                 color: #fff;
                 opacity: 1;
             }
@@ -184,7 +185,7 @@
     .pane{
         position: relative;
         overflow: hidden;
-        background: $editor-background;
+        background: $lightgray;
         color: #FFF;
 
         &.collapsed{
@@ -201,7 +202,7 @@
         &.resizable{
            > .resize-handle{
                 position: absolute;
-                background: $editor-borders;
+                background: $darkgray;
                 flex: 0 0 $pane-resize-handle-size;
                 margin: 0;
 
