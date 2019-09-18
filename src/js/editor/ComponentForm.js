@@ -141,7 +141,7 @@ export default class ComponentForm extends Dom {
 
                 // Update Select field options.
                 if(field.getInput().getType() === 'SelectInput'){
-                    field.configs.options.forEach((opt) => {
+                    field.configs.input.options.forEach((opt) => {
                         if('applies' in opt && isFunction(opt.applies)){
                             const option = field.getInput().getOption(opt.value);
                             const hidden = option.hidden();
@@ -689,11 +689,11 @@ export default class ComponentForm extends Dom {
                 break;
 
             case 'start-time':
-                this.getField('end-time').setMin(value);
+                this.getField('end-time').getInput().setMin(value);
                 break;
 
             case 'end-time':
-                this.getField('start-time').setMax(value);
+                this.getField('start-time').getInput().setMax(value);
                 break;
         }
 

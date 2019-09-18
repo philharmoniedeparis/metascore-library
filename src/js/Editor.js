@@ -1198,6 +1198,11 @@ export default class Editor extends Dom {
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
 
+            this.player
+                .addListener('dragover', this.onPlayerDragOver.bind(this))
+                .addListener('drop', this.onPlayerDrop.bind(this))
+                .setInEditor(true);
+
             this.player.setInEditor(true);
 
             this.player.contextmenu.disable();
@@ -1233,6 +1238,49 @@ export default class Editor extends Dom {
             },
             'autoShow': true
         });
+    }
+
+    onPlayerDragOver(evt){
+        if(evt.dataTransfer.getData('metascore/component')){
+            evt.preventDefault();
+        }
+    }
+
+    onPlayerDrop(evt){
+        let data = evt.dataTransfer.getData('metascore/component');
+
+        if(data){
+            data = JSON.parse(data);
+
+            const type = data.type;
+            let configs = data.configs;
+            let parent = null;
+
+            switch(data.type){
+                case 'element':
+                    parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                    const rect = parent.get(0).getBoundingClientRect();
+
+                    configs = Object.assign({
+                        'x': evt.clientX - rect.left,
+                        'y': evt.clientY - rect.top
+                    }, configs);
+                    break;
+                case 'page':
+                    parent = evt.target.closest('.metaScore-component.block')._metaScore;
+                    break;
+                case 'block':
+                    configs = Object.assign({
+                        'x': evt.clientX,
+                        'y': evt.clientY
+                    }, configs);
+
+                    parent = this.player;
+                    break;
+            }
+
+            this.addPlayerComponents(type, configs, parent);
+        }
     }
 
     /**
@@ -1941,7 +1989,7 @@ export default class Editor extends Dom {
 
             case 'block': {
                 const configs = isArray(config) ? config : [config];
-                const player = parent;
+                const player = parent || this.player;
                 const components = [];
 
                 configs.forEach((block_config, index) => {

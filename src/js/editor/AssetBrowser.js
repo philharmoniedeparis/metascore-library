@@ -4,7 +4,6 @@ import Ajax from '../core/Ajax';
 import LoadMask from '../core/ui/overlay/LoadMask';
 import Alert from '../core/ui/overlay/Alert';
 import Button from '../core/ui/Button';
-import DragNDrop from '../core/ui/DragNDrop';
 import Field from  './Field';
 
 import {className} from '../../css/editor/AssetBrowser.scss';
@@ -60,42 +59,35 @@ export default class AssetBrowser extends Dom {
         new Dom('<div/>', {'class': 'assets-container'})
             .appendTo(this.guide_assets);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.create-sync-block.label', 'Create a synched block')})
+        new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-sync-block.text', 'Create a synched block'))
+            .attr('draggable', 'true')
             .data('action', 'create-sync-block')
-            .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this.guide_assets);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.create-nonsync-block.label', 'Create a non-synched block')})
+        new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-nonsync-block.text', 'Create a non-synched block'))
+            .attr('draggable', 'true')
             .data('action', 'create-nonsync-block')
-            .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this.guide_assets);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.create-nonsync-block.label', 'Create a non-synched block')})
-            .data('action', 'create-nonsync-block')
-            .addListener('click', this.onButtonClick.bind(this))
+        new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-page.text', 'Create a page'))
+            .attr('draggable', 'true')
+            .data('action', 'create-page')
             .appendTo(this.guide_assets);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.create-cursor-element.label', 'Create a cursor element')})
+        new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-cursor-element.text', 'Create a cursor element'))
+            .attr('draggable', 'true')
             .data('action', 'create-cursor-element')
-            .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this.guide_assets);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.create-text-element.label', 'Create a text element')})
+        new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-text-element.text', 'Create a text element'))
+            .attr('draggable', 'true')
             .data('action', 'create-text-element')
-            .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this.guide_assets);
-
-        new Button({'label': Locale.t('editor.AssetBrowser.create-animation-element.label', 'Create a animation element')})
-            .data('action', 'create-animation-element')
-            .addListener('click', this.onButtonClick.bind(this))
-            .appendTo(this.guide_assets);
-
-        const create_animation_btn = new Dom('<div/>')
-            .text("test drag'n'drop")
-            .appendTo(this.guide_assets);
-
-        const dragndrop = new DragNDrop({'target': create_animation_btn});
-        dragndrop.addDropTarget(this.tabs);
 
         // Shared assets ////////////////////////
         new Button({'label': Locale.t('editor.AssetBrowser.tabs.shared-assets.title', 'Shared Library')})
@@ -105,6 +97,9 @@ export default class AssetBrowser extends Dom {
 
         this.shared_assets = new Dom('<div/>', {'id': 'shared-assets'})
             .appendTo(this);
+
+        this.addDelegate('a[draggable="true"]', 'click', this.onDraggableLinkClick.bind(this));
+        this.addDelegate('a[draggable="true"]', 'dragstart', this.onDraggableLinkDragStart.bind(this));
 
         this.showGuideAssets();
     }
@@ -125,6 +120,38 @@ export default class AssetBrowser extends Dom {
             },
             'xhr': {}
         };
+    }
+
+    onDraggableLinkClick(){
+
+    }
+
+    onDraggableLinkDragStart(evt){
+        const action =  Dom.data(evt.target, 'action');
+        let data = null;
+
+        switch(action){
+            case 'create-sync-block':
+                data = {'type': 'block', 'configs': {'type': 'Block', 'synched': true}};
+                break;
+            case 'create-nonsync-block':
+                data = {'type': 'block', 'configs': {'type': 'Block', 'synched': false}};
+                break;
+            case 'create-page':
+                data = {'type': 'page', 'configs': {'position': 'before'}};
+                break;
+            case 'create-cursor-element':
+                data = {'type': 'element', 'configs': {'type': 'Cursor'}};
+                break;
+            case 'create-text-element':
+                data = {'type': 'element', 'configs': {'type': 'Text'}};
+                break;
+        }
+
+        if(data){
+            evt.dataTransfer.effectAllowed = 'copy';
+            evt.dataTransfer.setData('metascore/component', JSON.stringify(data));
+        }
     }
 
     onGuideAssetImportFieldVlueChange(evt){

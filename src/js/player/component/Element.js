@@ -135,7 +135,7 @@ export default class Element extends Component{
                 },
                 'background-color': {
                     'field': {
-                        'type': 'timcolore',
+                        'type': 'color',
                         'label': Locale.t('player.component.Element.background-color', 'Background color')
                     },
                     'getter': function(skipDefault){
