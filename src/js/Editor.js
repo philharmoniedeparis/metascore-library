@@ -5,7 +5,6 @@ import {getMediaFileDuration} from './core/utils/Media';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import MainMenu from './editor/MainMenu';
-import Resizable from './core/ui/Resizable';
 import ComponentForm from './editor/ComponentForm';
 import UndoRedo from './editor/UndoRedo';
 import Alert from './core/ui/overlay/Alert';
@@ -15,11 +14,12 @@ import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
 import TimeInput from './core/ui/input/TimeInput';
 import Controller from './editor/Controller';
+import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
 import Grid from './editor/Grid';
+import AssetBrowser from './editor/AssetBrowser';
 
 import {className} from '../css/Editor.scss';
-import AssetBrowser from './editor/AssetBrowser';
 
 /**
  * Provides the main Editor class
@@ -37,11 +37,7 @@ export default class Editor extends Dom {
      * @property {Object} player Options for the player
      * @property {String} player.url The player URL
      * @property {String} player.update_url The player update URL
-     * @property {Object} asset_browser Options for the asset browser
-     * @property {Object} asset_browser.guide_assets Options for the guide assets tab
-     * @property {Object} asset_browser.guide_assets.list_url The guide assets list url
-     * @property {Object} asset_browser.shared_assets Options for the shared assets tab
-     * @property {Object} asset_browser.shared_assets.list_url The shared assets list url
+     * @property {Object} asset_browser Options to pass to the asset browser
      * @property {String} [lang='en'] The language to use for i18n
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [history] Options for the history
@@ -81,14 +77,7 @@ export default class Editor extends Dom {
                 'url': null,
                 'update_url': null,
             },
-            'asset_browser': {
-                'guide_assets': {
-                    'list_url': null,
-                },
-                'shared_assets': {
-                    'list_url': null,
-                },
-            },
+            'asset_browser': {},
             'lang': 'en',
             'xhr': {},
             'history': {
@@ -119,47 +108,42 @@ export default class Editor extends Dom {
     * Initialize
     */
     init(){
-        // Top pane ////////////////////////
-
-        const top_pane = new Dom('<div/>', {'id': 'top-pane', 'class': 'pane horizontal'})
+        // Tools pane ////////////////////////
+        const tools_pane = new Pane({
+                'axis': 'vertical',
+                'resizable': {
+                    'directions': ['right']
+                }
+            })
+            .attr('id', 'tools-pane')
             .appendTo(this);
 
-        // Assets pane ////////////////////////
-
-        const tools_pane = new Dom('<div/>', {'id': 'tools-pane', 'class': 'pane vertical'})
-            .appendTo(top_pane);
-
-            tools_pane._resizable = new Resizable({
-            'target': tools_pane,
-            'directions': ['right']
-        })
-        .getHandle('right')
-        .addDelegate('.resize-handle', 'dblclick', this.onPaneResizeDblclick.bind(this, tools_pane));
-
-        this.asset_browser = new AssetBrowser(this.configs.asset_browser)
-            .appendTo(tools_pane);
+        this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
+            .appendTo(tools_pane.getContents());
 
         // Center pane ////////////////////////
-
-        const center_pane = new Dom('<div/>', {'id': 'center-pane', 'class': 'pane vertical'})
-            .appendTo(top_pane);
+        const center_pane = new Pane({
+                'axis': 'vertical'
+            })
+            .attr('id', 'center-pane')
+            .appendTo(this);
 
         /**
          * The top menu
          * @type {MainMenu}
          */
         this.mainmenu = new MainMenu()
-            .appendTo(center_pane)
             .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
             .addDelegate('.checkbox.input[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
-            .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this));
+            .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this))
+            .appendTo(center_pane.getContents());
 
         /**
          * The workspace
          * @type {Dom}
          */
         this.workspace = new Dom('<div/>', {'class': 'workspace'})
-            .appendTo(center_pane);
+            .appendTo(center_pane.getContents());
 
         /**
          * The horizontal ruler
@@ -192,16 +176,14 @@ export default class Editor extends Dom {
             .init();
 
         // Config pane ////////////////////////
-
-        const config_pane = new Dom('<div/>', {'id': 'configs-pane', 'class': 'pane vertical'})
-            .appendTo(top_pane);
-
-        config_pane._resizable = new Resizable({
-                'target': config_pane,
-                'directions': ['left']
+        const config_pane = new Pane({
+                'axis': 'vertical',
+                'resizable': {
+                    'directions': ['left']
+                }
             })
-            .getHandle('left')
-            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, config_pane));
+            .attr('id', 'configs-pane')
+            .appendTo(this);
 
         /**
          * The component form
@@ -210,19 +192,17 @@ export default class Editor extends Dom {
         this.component_form = new ComponentForm()
             .addListener('componentset', this.onComponentFormComponentSet.bind(this))
             .addListener('beforecursoradvancededitmodeunlock', this.onComponentFormBeforeCursorAdvancedEditModeUnlock.bind(this))
-            .appendTo(config_pane);
+            .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
-
-        const bottom_pane = new Dom('<div/>', {'id': 'bottom-pane', 'class': 'pane horizontal'})
-            .appendTo(this);
-
-        bottom_pane._resizable = new Resizable({
-                'target': bottom_pane,
-                'directions': ['top']
+        const bottom_pane = new Pane({
+                'axis': 'horizontal',
+                'resizable': {
+                    'directions': ['top']
+                }
             })
-            .getHandle('top')
-            .addListener('dblclick', this.onPaneResizeDblclick.bind(this, bottom_pane));
+            .attr('id', 'bottom-pane')
+            .appendTo(this);
 
         /**
          * The controller
@@ -230,7 +210,7 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .appendTo(bottom_pane);
+            .appendTo(bottom_pane.getContents());
 
         this.controller.getControls()
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
@@ -935,47 +915,6 @@ export default class Editor extends Dom {
         const time = evt.detail.time;
 
         this.getPlayer().getMedia().setTime(time);
-    }
-
-    /**
-     * Sidebar resizestart event callback
-     *
-     * @private
-     */
-    onSidebarResizeStart(){
-        this.addClass('sidebar-resizing');
-    }
-
-    /**
-     * Sidebar resize event callback
-     *
-     * @private
-     */
-    onSidebarResize(evt){
-        const right = new Dom(evt.target);
-        const state = evt.detail.behavior.getState();
-
-        Object.entries(state.new_values).forEach(([key, value]) => {
-            right.css(key, `${value}px`);
-        });
-    }
-
-    /**
-     * Sidebar resizeend event callback
-     *
-     * @private
-     */
-    onSidebarResizeEnd(){
-        this.removeClass('sidebar-resizing');
-    }
-
-    /**
-     * Pane resize handle dblclick event callback
-     *
-     * @private
-     */
-    onPaneResizeDblclick(pane){
-        pane.toggleClass('collapsed');
     }
 
     /**

@@ -3,12 +3,13 @@
 @import "../fonts/source-sans-pro/source-sans-variable.css";
 
 :local(.className){
-    width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, min-content) auto minmax(0, min-content);
+    grid-template-rows: auto minmax(0, min-content);
+    grid-template-areas: "left center right" "bottom bottom bottom";
 
     *{
         font-size: 12px;
@@ -180,93 +181,35 @@
     align-items: stretch;
     flex-wrap: nowrap;
 
-    $pane-resize-handle-size: 8px;
-
-    .pane{
-        position: relative;
-        overflow: hidden;
-        background: $lightgray;
-        color: #FFF;
-
-        &.collapsed{
-            &.vertical{
-                min-width: auto !important;
-                width: 0 !important;
-            }
-            &.horizontal{
-                min-height: auto !important;
-                height: 0 !important;
-            }
-        }
-
-        &.resizable{
-           > .resize-handle{
-                position: absolute;
-                background: $darkgray;
-                flex: 0 0 $pane-resize-handle-size;
-                margin: 0;
-
-                &[data-direction="top"]{
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: $pane-resize-handle-size;
-                }
-                &[data-direction="bottom"]{
-                    bottom: 0;
-                    left: 0;
-                    width: 100%;
-                    height: $pane-resize-handle-size;
-                }
-                &[data-direction="left"]{
-                    top: 0;
-                    left: 0;
-                    width: $pane-resize-handle-size;
-                    height: 100%;
-                }
-                &[data-direction="right"]{
-                    top: 0;
-                    right: 0;
-                    width: $pane-resize-handle-size;
-                    height: 100%;
-                }
-            }
-        }
-    }
-
-    #top-pane{
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: stretch;
-    }
-
     #tools-pane{
+        grid-area: left;
         width: 200px;
         min-width: 150px;
         max-width: 300px;
-        padding-right: $pane-resize-handle-size;
     }
 
     #center-pane{
-        display: flex;
-        flex-direction: column;
+        grid-area: center;
         flex: 1 1 auto;
+
+        > .contents{
+            display: flex;
+            flex-direction: column;
+        }
     }
 
     #configs-pane{
+        grid-area: right;
         width: 300px;
         min-width: 150px;
         max-width: 300px;
-        padding-left: $pane-resize-handle-size;
     }
 
     #bottom-pane{
+        grid-area: bottom;
         height: 300px;
         min-height: 150px;
         max-height: 50vh;
-        padding-top: $pane-resize-handle-size;
     }
 
     .main-menu{

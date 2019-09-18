@@ -393,6 +393,14 @@ export default class Resizable {
     }
 
     /**
+     * Get all handles
+     * @return {Object} The handles
+     */
+    getHandles(){
+        return this.handles;
+    }
+
+    /**
      * Get a handle
      * @param {String} direction The direction of the handle to get
      * @return {Dom} The handle

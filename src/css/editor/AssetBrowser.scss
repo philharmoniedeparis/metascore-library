@@ -5,26 +5,22 @@
     height: 100%;
     flex-direction: column;
     flex-wrap: nowrap;
+    background: $mediumgray;
 
     .tabs{
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         flex: 0 0 auto;
-        margin: 0;
-        padding: 0;
-        list-style-type: none;
 
-        li{
+        button{
             flex: 1 1 auto;
-            margin: 0;
             padding: 0.5em;
-            background: $mediumgray;
-            border-bottom: 0.25em solid $mediumgray;
-            text-align: center;
+            color: #fff;
+            background: transparent;
+            margin-bottom: 0.25em;
             line-height: 2em;
             user-select: none;
-            cursor: pointer;
 
             &.active{
                 background: $lightgray;
@@ -32,22 +28,48 @@
         }
     }
 
-    .tabbed-content{
-        overflow-y: auto;
-
-        &:not(.active){
-            display: none;
-        }
-    }
-
     .loadmask{
         position: absolute;
     }
 
-    .assets{
-        .asset{
-            padding: 0.5em;
-            font-size: 1.2em;
+    #guide-assets{
+        overflow: hidden;
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+
+        .field.import-asset{
+            label{
+                display: block;
+                padding: 0.5em;
+                background: $lightgray;
+                margin-bottom: 0.25em;
+                line-height: 2em;
+                user-select: none;
+                cursor: pointer;
+            }
+
+            .input{
+                display: none;
+            }
+        }
+
+        .assets-container{
+            flex: 1 1 auto;
+            overflow-y: auto;
+
+            .asset{
+                line-height: 2em;
+            }
+        }
+
+        button{
+            margin: 0;
+            color: #fff;
+            background: $lightgray;
+            margin-top: 0.25em;
+            line-height: 2em;
+            user-select: none;
         }
     }
 }

@@ -146,14 +146,10 @@ export default class GuideDetails extends Overlay {
         this.fields.thumbnail = new Field({
                 'type': 'file',
                 'input': {
-                    'sources': {
-                        'upload': {
-                            'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Files must be less than: !size<br/>Supported file types: !types', {'!dimentions': '155x123', '!size': formatFileSize(this.configs.thumbnail_upload_max_filesize), '!types': thumbnail_upload_extensions}),
-                            'accept': thumbnail_upload_extensions
-                        }
-                    }
+                    'accept': thumbnail_upload_extensions
                 },
-                'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail')
+                'label': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.label', 'Thumbnail'),
+                'description': Locale.t('editor.overlay.GuideDetails.fields.thumbnail.description', 'Prefered dimensions: !dimentions pixels<br/>Files must be less than: !size<br/>Supported file types: !types', {'!dimentions': '155x123', '!size': formatFileSize(this.configs.thumbnail_upload_max_filesize), '!types': thumbnail_upload_extensions})
             })
             .data('name', 'thumbnail')
             .addListener('valuechange', this.onFieldValueChange.bind(this))
@@ -161,7 +157,7 @@ export default class GuideDetails extends Overlay {
 
         const media_upload_extensions = `.${this.configs.media_upload_extensions.join(`, .`)}`;
         this.fields.media = new new Field({
-                'type': 'file',
+                'type': 'fileorurl',
                 'input': {
                     'sources': {
                         'upload': {

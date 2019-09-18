@@ -56,6 +56,12 @@
             cursor: se-resize;
         }
     }
+
+    &.resizing{
+        > .resize-handle{
+            pointer-events: all !important;
+        }
+    }
 }
 
 :local(.guideClassName){

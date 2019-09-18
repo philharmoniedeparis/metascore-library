@@ -1,0 +1,73 @@
+
+@import "./theme";
+
+$resize-handle-size: 8px;
+
+:local(.className){
+    position: relative;
+    overflow: hidden;
+    background: $lightgray;
+    color: #FFF;
+
+    > .contents{
+        height: 100%;
+    }
+
+    &.resize-top{
+        padding-top: $resize-handle-size;
+    }
+    &.resize-right{
+        padding-right: $resize-handle-size;
+    }
+    &.resize-bottom{
+        padding-bottom: $resize-handle-size;
+    }
+    &.resize-left{
+        padding-left: $resize-handle-size;
+    }
+
+    &.collapsed{
+        &.vertical{
+            min-width: auto !important;
+            width: 0 !important;
+        }
+        &.horizontal{
+            min-height: auto !important;
+            height: 0 !important;
+        }
+    }
+
+    &.resizable{
+        > .resize-handle{
+            position: absolute;
+            background: $darkgray;
+            flex: 0 0 $resize-handle-size;
+            margin: 0;
+
+            &[data-direction="top"]{
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: $resize-handle-size;
+            }
+            &[data-direction="bottom"]{
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: $resize-handle-size;
+            }
+            &[data-direction="left"]{
+                top: 0;
+                left: 0;
+                width: $resize-handle-size;
+                height: 100%;
+            }
+            &[data-direction="right"]{
+                top: 0;
+                right: 0;
+                width: $resize-handle-size;
+                height: 100%;
+            }
+        }
+    }
+}

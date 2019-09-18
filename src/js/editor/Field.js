@@ -5,6 +5,7 @@ import CheckboxInput from '../core/ui/input/CheckboxInput';
 import CheckboxesInput from '../core/ui/input/CheckboxesInput';
 import ColorInput from '../core/ui/input/ColorInput';
 import FileInput from '../core/ui/input/FileInput';
+import FileOrUrlInput from '../core/ui/input/FileOrUrlInput';
 import HiddenInput from '../core/ui/input/HiddenInput';
 import ImageInput from '../core/ui/input/ImageInput';
 import NumberInput from '../core/ui/input/NumberInput';
@@ -29,6 +30,7 @@ const INPUTS = {
     'checkboxes': CheckboxesInput,
     'color': ColorInput,
     'file': FileInput,
+    'fileorurl': FileOrUrlInput,
     'hidden': HiddenInput,
     'image': ImageInput,
     'number': NumberInput,
@@ -113,7 +115,8 @@ export default class Field extends Dom{
      * @param {Event} evt The event object
      */
     onInputValueChange(evt){
-        this.triggerEvent('valuechange', {'field': this, 'value': evt.detail.value}, true, false);
+        const detail = Object.assign({}, evt.detail, {'field': this});
+        this.triggerEvent('valuechange', detail, true, false);
         evt.stopPropagation();
     }
 
