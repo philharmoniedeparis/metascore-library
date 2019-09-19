@@ -28,48 +28,16 @@
         }
     }
 
-    .loadmask{
-        position: absolute;
-    }
-
-    #guide-assets{
-        overflow: hidden;
-        display: flex;
-        flex: 1 1 auto;
-        flex-direction: column;
-
-        .field.import-asset{
-            label{
-                display: block;
-                padding: 0.5em;
-                background: $lightgray;
-                margin-bottom: 0.25em;
-                line-height: 2em;
-                user-select: none;
-                cursor: pointer;
-            }
-
-            .input{
-                display: none;
-            }
-        }
-
-        .assets-container{
-            flex: 1 1 auto;
-            overflow-y: auto;
-
-            .asset{
-                line-height: 2em;
-            }
-        }
-
-        a[draggable="true"]{
-            margin: 0;
+    .draggable-links{
+        a{
+            display: block;
+            padding: 0.5em;
             color: #fff;
             background: $lightgray;
             margin-top: 0.25em;
             line-height: 2em;
             user-select: none;
+            cursor: grab;
         }
     }
 }

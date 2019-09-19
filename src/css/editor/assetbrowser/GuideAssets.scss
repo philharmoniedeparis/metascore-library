@@ -1,0 +1,50 @@
+@import "../theme";
+
+:local(.className){
+    overflow: hidden;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+
+    .import-assets{
+        label{
+            display: block;
+            padding: 0.5em;
+            background: $lightgray;
+            margin-bottom: 0.25em;
+            line-height: 2em;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .input{
+            display: none;
+        }
+    }
+
+    .assets-container{
+        flex: 1 1 auto;
+        overflow-y: auto;
+
+        .asset{
+            display: flex;
+            flex-direction: row;
+            line-height: 2em;
+            padding: 0.25em;
+
+            .label{
+                flex: 1 1 auto;
+                padding: 0.25em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                user-select: none;
+                cursor: grab;
+            }
+
+            .buttons{
+                flex: 0 0 auto;
+            }
+        }
+    }
+}

@@ -3,17 +3,14 @@
 @import "../fonts/source-sans-pro/source-sans-variable.css";
 
 :local(.className){
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: minmax(0, min-content) auto minmax(0, min-content);
-    grid-template-rows: auto minmax(0, min-content);
-    grid-template-areas: "left center right" "bottom bottom bottom";
+    /* General styles *******************/
 
     *{
         font-size: 12px;
         font-family: 'Source Sans Variable', sans-serif;
+
+        scrollbar-color: $scrollbar-track-color $scrollbar-thumb-color;
+        scrollbar-width: thin;
     }
 
     ::-webkit-scrollbar{
@@ -31,6 +28,9 @@
             background-color: $scrollbar-thumb-active-color;
         }
     }
+
+    scrollbar-color: $scrollbar-track-color $scrollbar-thumb-color;
+    scrollbar-width: thin;
 
     .clearfix::after{
         visibility: hidden;
@@ -177,7 +177,15 @@
         }
     }
 
+    /* Specific styles *******************/
 
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, min-content) auto minmax(0, min-content);
+    grid-template-rows: auto minmax(0, min-content);
+    grid-template-areas: "left center right" "bottom bottom bottom";
     align-items: stretch;
     flex-wrap: nowrap;
 

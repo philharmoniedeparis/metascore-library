@@ -55,8 +55,8 @@ export default class Ruler extends Dom {
             'majorTickLength': 18,
             'minorTickStep': 5,
             'majorTickStep': 50,
-            'tickColor': '#000',
-            'textColor': '#333',
+            'tickColor': '#fff',
+            'textColor': '#fff',
             'font': '10px sans-serif',
             'trackTarget': null,
         };

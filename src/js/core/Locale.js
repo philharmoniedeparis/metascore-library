@@ -50,14 +50,14 @@ export default class Locale{
         return formatted;
     }
 
-/**
- * Translate a string
- *
- * @param {String} key The string identifier
- * @param {String} str The default string to use if no translation is found
- * @param {Object} args An object of replacements to make after translation
- * @return {String} The translated string
- */
+    /**
+     * Translate a string
+     *
+     * @param {String} key The string identifier
+     * @param {String} str The default string to use if no translation is found
+     * @param {Object} args An object of replacements to make after translation
+     * @return {String} The translated string
+     */
     static t(key, str, args){
         let translated = str;
 

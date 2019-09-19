@@ -20,6 +20,18 @@ export default class FileInput extends Input {
     }
 
     /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'multiple': false,
+            'accept': null
+        });
+    }
+
+    /**
      * @inheritdoc
      */
     setupUI() {
@@ -30,6 +42,8 @@ export default class FileInput extends Input {
          * @type {Dom}
          */
         this.native_input = new Dom('<input/>', {'id': id, 'type': 'file'})
+            .attr('multiple', this.configs.multiple ? 'multiple' : null)
+            .attr('accept', this.configs.accept)
             .addListener('change', this.onChange.bind(this))
             .appendTo(this);
     }
