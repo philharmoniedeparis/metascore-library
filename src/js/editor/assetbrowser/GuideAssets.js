@@ -4,7 +4,9 @@ import Ajax from '../../core/Ajax';
 import Button from '../../core/ui/Button';
 import LoadMask from '../../core/ui/overlay/LoadMask';
 import Alert from '../../core/ui/overlay/Alert';
+import Confirm from '../../core/ui/overlay/Confirm';
 import Field from  '../Field';
+import {isValidMimeType} from '../../core/utils/Media';
 
 import {className} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
@@ -31,8 +33,6 @@ export default class GuideAssets extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        this.assets = {};
-
         // fix event handlers scope
         this.onAssetDragStart = this.onAssetDragStart.bind(this);
         this.onAssetDragEnd = this.onAssetDragEnd.bind(this);
@@ -43,7 +43,7 @@ export default class GuideAssets extends Dom {
                 'label': Locale.t('editor.assetbrowser.GuideAssets.import-assets-field.label', 'Import files'),
                 'input': {
                     'multiple': true,
-                    'accept': null
+                    'accept': this.configs.allowed_import_types
                 }
             })
             .addClass('import-assets')
@@ -53,7 +53,40 @@ export default class GuideAssets extends Dom {
         this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
             .appendTo(this);
 
+        new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-sync-block.text', 'Create a synched block'))
+            .attr('draggable', 'true')
+            .data('action', 'create-sync-block')
+            .appendTo(this);
+
+        new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-nonsync-block.text', 'Create a non-synched block'))
+            .attr('draggable', 'true')
+            .data('action', 'create-nonsync-block')
+            .appendTo(this);
+
+        new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-page.text', 'Create a page'))
+            .attr('draggable', 'true')
+            .data('action', 'create-page')
+            .appendTo(this);
+
+        new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-cursor-element.text', 'Create a cursor element'))
+            .attr('draggable', 'true')
+            .data('action', 'create-cursor-element')
+            .appendTo(this);
+
+        new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-text-element.text', 'Create a text element'))
+            .attr('draggable', 'true')
+            .data('action', 'create-text-element')
+            .appendTo(this);
+
         this
+            .addDelegate('a.component-link', 'click', this.onComponentLinkClick.bind(this))
+            .addDelegate('a.component-link', 'dragstart', this.onComponentLinkDragStart.bind(this))
+            .addDelegate('a.component-link', 'dragend', this.onComponentLinkDragEnd.bind(this))
             .addListener('dragenter', this.onDragEnter.bind(this))
             .addListener('dragover', this.onDragOver.bind(this))
             .addListener('dragleave', this.onDragLeave.bind(this))
@@ -69,12 +102,56 @@ export default class GuideAssets extends Dom {
         return {
             'list_url': null,
             'import_url': null,
-            'allowed_types': null,
+            'max_filesize': null,
+            'allowed_import_types': 'image/*,video/*,audio/*',
             'xhr': {}
         };
     }
 
-    getDropFiles(dataTransfer){
+    onAssetImportFieldVlueChange(evt){
+        this.importAssets(evt.detail.files);
+    }
+
+    onComponentLinkClick(evt){
+        console.log(evt);
+    }
+
+    onComponentLinkDragStart(evt){
+        const link = new Dom(evt.target);
+
+        const action =  link.data('action');
+        let data = null;
+        switch(action){
+            case 'create-sync-block':
+                data = {'type': 'block', 'configs': {'type': 'Block', 'synched': true}};
+                break;
+            case 'create-nonsync-block':
+                data = {'type': 'block', 'configs': {'type': 'Block', 'synched': false}};
+                break;
+            case 'create-page':
+                data = {'type': 'page', 'configs': {'position': 'before'}};
+                break;
+            case 'create-cursor-element':
+                data = {'type': 'element', 'configs': {'type': 'Cursor'}};
+                break;
+            case 'create-text-element':
+                data = {'type': 'element', 'configs': {'type': 'Text'}};
+                break;
+        }
+
+        if(data){
+            link.addClass('dragging');
+            evt.dataTransfer.effectAllowed = 'copy';
+            evt.dataTransfer.setData('metascore/component', JSON.stringify(data));
+        }
+    }
+
+    onComponentLinkDragEnd(evt){
+        const link = new Dom(evt.target);
+        link.removeClass('dragging');
+    }
+
+    getDraggedFiles(dataTransfer){
         let files = [];
 
         // Use DataTransfer interface to access the file(s)
@@ -94,14 +171,14 @@ export default class GuideAssets extends Dom {
     }
 
     onDragEnter(evt){
-        const files = this.getDropFiles(evt.dataTransfer);
+        const files = this.getDraggedFiles(evt.dataTransfer);
         if(files.length > 0){
             this.addClass('droppable');
         }
     }
 
     onDragOver(evt){
-        const files = this.getDropFiles(evt.dataTransfer);
+        const files = this.getDraggedFiles(evt.dataTransfer);
         if(files.length > 0){
             evt.preventDefault();
         }
@@ -112,15 +189,11 @@ export default class GuideAssets extends Dom {
     }
 
     onDrop(evt){
-        const files = this.getDropFiles(evt.dataTransfer);
+        const files = this.getDraggedFiles(evt.dataTransfer);
         this.importAssets(files);
 
         evt.preventDefault();
         evt.stopPropagation();
-    }
-
-    onAssetImportFieldVlueChange(evt){
-        this.importAssets(evt.detail.files);
     }
 
     importAssets(files){
@@ -129,8 +202,25 @@ export default class GuideAssets extends Dom {
         }
 
         const formdata = new FormData();
+
         for(let i=0; i<files.length; i++){
-            formdata.append(`files[asset][]`, files.item(i));
+            const file = files.item(i);
+
+            console.log(file);
+
+            if(!isValidMimeType(file.type, this.configs.allowed_import_types)){
+                new Alert({
+                    'parent': this,
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.msg', '<em>@name</em> is not an accepted file type.', {'@name': file.name}),
+                    'buttons': {
+                        'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
+                    },
+                    'autoShow': true
+                });
+                return;
+            }
+
+            formdata.append(`files[asset][]`, file);
         }
 
         // add a loading mask
@@ -223,7 +313,14 @@ export default class GuideAssets extends Dom {
     }
 
     loadAssets(){
+        this.assets_container.empty();
         delete this._assets_loaded;
+
+        /**
+         * The list of loaded assets
+         * @type {Object}
+         */
+        this.assets = {};
 
         // add a loading mask
         const loadmask = new LoadMask({
@@ -262,12 +359,23 @@ export default class GuideAssets extends Dom {
 
         this.assets[asset.id] = asset;
 
-        new Dom('<div/>', {'class': 'label'})
-            .text(asset.name)
+        const info = new Dom('<figure/>', {'class': 'info'})
             .attr('draggable', 'true')
             .addListener('dragstart', this.onAssetDragStart)
             .addListener('dragend', this.onAssetDragEnd)
             .appendTo(item);
+
+        const icon = new Dom('<div/>', {'class': 'icon'})
+            .appendTo(info);
+
+        if(/^image\/.*/.test(asset.mimetype)){
+            new Dom('<img/>', {'src': asset.url})
+                .appendTo(icon);
+        }
+
+        new Dom('<div/>', {'class': 'label'})
+            .text(asset.name)
+            .appendTo(info);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(item);
@@ -312,7 +420,14 @@ export default class GuideAssets extends Dom {
 
         switch(action){
             case 'delete':
-                this.deleteAsset(asset);
+                new Confirm({
+                    'parent': this,
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.msg', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
+                    'autoShow': true,
+                    'onConfirm': () => {
+                        this.deleteAsset(asset);
+                    }
+                });
                 break;
         }
     }

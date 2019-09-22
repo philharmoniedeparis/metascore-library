@@ -8,6 +8,7 @@ import MainMenu from './editor/MainMenu';
 import ComponentForm from './editor/ComponentForm';
 import UndoRedo from './editor/UndoRedo';
 import Alert from './core/ui/overlay/Alert';
+import Confirm from './core/ui/overlay/Confirm';
 import LoadMask from './core/ui/overlay/LoadMask';
 import Clipboard from './core/Clipboard';
 import Ajax from './core/Ajax';
@@ -119,6 +120,7 @@ export default class Editor extends Dom {
             .appendTo(this);
 
         this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
+            .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
             .appendTo(tools_pane.getContents());
 
         // Center pane ////////////////////////
@@ -782,6 +784,10 @@ export default class Editor extends Dom {
         if(this.player_contextmenu){
             this.player_contextmenu.hide();
         }
+    }
+
+    onAssetBrowserTabChange(evt){
+        this.toggleClass('assetbrowser-expanded', evt.detail.tab === 'shared-assets');
     }
 
     /**
@@ -1663,20 +1669,16 @@ export default class Editor extends Dom {
                                 msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
                             }
 
-                            new Alert({
+                            new Confirm({
                                 'parent': this,
                                 'text': msg,
-                                'buttons': {
-                                    'confirm': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.yes', 'Yes'),
-                                    'cancel': Locale.t('editor.onDetailsOverlaySubmit.update.diffferent.no', 'No')
-                                },
-                                'autoShow': true
-                            })
-                            .addListener('buttonclick', (click_evt) => {
-                                loadmask.hide();
-
-                                if(click_evt.detail.action === 'confirm'){
+                                'autoShow': true,
+                                'onConfirm': () => {
+                                    loadmask.hide();
                                     callback(new_duration);
+                                },
+                                'onCancel': () => {
+                                    loadmask.hide();
                                 }
                             });
                         }
@@ -1691,42 +1693,6 @@ export default class Editor extends Dom {
                 callback();
             }
         }
-    }
-
-    /**
-     * Window hashchange event callback
-     *
-     * @private
-     * @param {HashChangeEvent} evt The event object
-     */
-    onWindowHashChange(evt){
-        const callback = this.loadPlayerFromHash.bind(this);
-        const oldURL = evt.oldURL;
-
-        if(this.isDirty()){
-            new Alert({
-                    'parent': this,
-                    'text': Locale.t('editor.onWindowHashChange.alert.msg', 'Are you sure you want to open another guide?<br/><strong>Any unsaved data will be lost.</strong>'),
-                    'buttons': {
-                        'confirm': Locale.t('editor.onWindowHashChange.alert.yes', 'Yes'),
-                        'cancel': Locale.t('editor.onWindowHashChange.alert.no', 'No')
-                    },
-                    'autoShow': true
-                })
-                .addListener('buttonclick', (click_evt) => {
-                    if(click_evt.detail.action === 'confirm'){
-                        callback();
-                    }
-                    else{
-                        window.history.replaceState(null, null, oldURL);
-                    }
-                });
-        }
-        else{
-            callback();
-        }
-
-        evt.preventDefault();
     }
 
     /**
@@ -2076,21 +2042,15 @@ export default class Editor extends Dom {
                     break;
             }
 
-            new Alert({
+            new Confirm({
                 'parent': this,
                 'text': alert_msg,
-                'buttons': {
-                    'confirm': Locale.t('editor.deletePlayerComponents.yes', 'Yes'),
-                    'cancel': Locale.t('editor.deletePlayerComponents.no', 'No')
-                },
-                'autoShow': true
-            })
-            .addClass('delete-player-component')
-            .addListener('buttonclick', (evt) => {
-                if(evt.detail.action === 'confirm'){
+                'autoShow': true,
+                'onConfirm': () => {
                     this.deletePlayerComponents(type, components, false);
                 }
-            });
+            })
+            .addClass('delete-player-component');
         }
         else{
             switch(type){
@@ -2342,17 +2302,11 @@ export default class Editor extends Dom {
      * @return {this}
      */
     showRevertDialog(){
-        new Alert({
+        new Confirm({
             'parent': this,
             'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
-            'buttons': {
-                'confirm': Locale.t('editor.onMainmenuClick.revert.yes', 'Yes'),
-                'cancel': Locale.t('editor.onMainmenuClick.revert.no', 'No')
-            },
-            'autoShow': true
-        })
-        .addListener('buttonclick', (evt) => {
-            if(evt.detail.action === 'confirm'){
+            'autoShow': true,
+            'onConfirm': () => {
                 this.loadPlayer();
             }
         });

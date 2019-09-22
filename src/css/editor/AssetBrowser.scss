@@ -12,32 +12,22 @@
         flex-direction: row;
         flex-wrap: wrap;
         flex: 0 0 auto;
+        z-index: 100;
 
         button{
             flex: 1 1 auto;
             padding: 0.5em;
             color: #fff;
-            background: transparent;
+            background: $mediumgray;
             margin-bottom: 0.25em;
             line-height: 2em;
             user-select: none;
 
             &.active{
+                pointer-events: none;
                 background: $lightgray;
+                outline: none;
             }
-        }
-    }
-
-    .draggable-links{
-        a{
-            display: block;
-            padding: 0.5em;
-            color: #fff;
-            background: $lightgray;
-            margin-top: 0.25em;
-            line-height: 2em;
-            user-select: none;
-            cursor: grab;
         }
     }
 }

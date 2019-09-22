@@ -113,7 +113,7 @@ export function getFileExtension(url){
  * @param {String} url The file's URL
  * @return {String} The file's mimetype if supported, null otherwise
  */
-export function getFileMime(url){
+export function getMimeTypeFromURL(url){
     if(/^(?:(?:https?:)?\/\/)?(?:www\.)?vimeo.com\/(?:channels\/|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/.test(url)){
         return 'video/vimeo';
     }
@@ -138,6 +138,25 @@ export function getFileMime(url){
     };
 
     return ext in ext2mime ? ext2mime[ext] : null;
+}
+
+export function isValidMimeType(mimetype, accepted_mimetypes){
+    if(!accepted_mimetypes){
+        return true;
+    }
+
+    return accepted_mimetypes.split(',').some((accepted_mimetype) => {
+        // Wildcard mime type
+        if (/\*$/.test(accepted_mimetype)) {
+            const mimetype_group = (/^[^/]+/.exec(mimetype) || []).pop(); // image/png -> image
+            const accepted_mimetype_group = accepted_mimetype.slice(0, -2); // image/* -> image
+
+            return mimetype_group === accepted_mimetype_group;
+        }
+
+        // Normal mime type
+        return mimetype === accepted_mimetype;
+    });
 }
 
 /**

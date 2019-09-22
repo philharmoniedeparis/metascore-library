@@ -2,7 +2,7 @@ import Input from '../Input';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 import {uuid} from '../../utils/String';
-import {getFileMime} from '../../utils/Media';
+import {getMimeTypeFromURL} from '../../utils/Media';
 
 import {className} from '../../../../css/core/ui/input/FileOrUrlInput.scss';
 
@@ -141,7 +141,7 @@ export default class FileOrUrlInput extends Input {
                     this.values[source] = {
                         'url': url,
                         'source': source,
-                        'mime': getFileMime(url)
+                        'mimetype': getMimeTypeFromURL(url)
                     };
                 }
                 break;

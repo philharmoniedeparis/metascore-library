@@ -108,7 +108,6 @@
 
     button{
         border: none;
-        outline: none;
         background-color: transparent;
         background-position: center center;
         background-repeat: no-repeat;
@@ -118,6 +117,14 @@
         }
         &:active{
             opacity: 0.5;
+        }
+        &:focus{
+            outline-width: 1px;
+            outline-style: dotted;
+            outline-offset: -1px;
+        }
+        &::-moz-focus-inner {
+            border: 0;
         }
         &[disabled]{
             opacity: 0.25;
@@ -140,6 +147,13 @@
 
         span{
             pointer-events: none;
+        }
+    }
+
+    .overlay{
+        > .inner{
+            background: $darkgray;
+            border-radius: 0;
         }
     }
 
@@ -218,6 +232,24 @@
         height: 300px;
         min-height: 150px;
         max-height: 50vh;
+    }
+
+    &.assetbrowser-expanded{
+        grid-template-columns: auto 0 minmax(0, min-content);
+
+        #tools-pane{
+            width: auto;
+            max-width: none;
+            padding: 0;
+
+            > .resize-handle{
+                display: none;
+            }
+        }
+
+        #center-pane{
+            display: none;
+        }
     }
 
     .main-menu{

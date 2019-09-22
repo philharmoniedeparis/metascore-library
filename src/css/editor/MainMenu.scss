@@ -1,30 +1,14 @@
+@import "./theme";
+
 :local(.className){
     display: flex;
     padding: 0 20px;
     align-content: space-between;
     align-items: center;
-    z-index: 9999;
-    background-color: #dadada;
-    background-image: linear-gradient(to bottom, #dadada 0%, #c8c8c8 100%);
-    border-bottom: 2px solid #b2b2b2;
+    background-color: $lightgray;
 
     > .separator{
         flex: 1;
-
-        &:last-of-type{
-            flex: 20;
-        }
-    }
-
-    &::before{
-        content: '';
-        width: 102px;
-        height: 40px;
-        flex: 0 0 auto;
-        margin-right: 1em;
-        vertical-align: middle;
-        background: transparent url('../../img/logo-philharmonie.png') left center no-repeat;
-        background-size: contain;
     }
 
     > button,
