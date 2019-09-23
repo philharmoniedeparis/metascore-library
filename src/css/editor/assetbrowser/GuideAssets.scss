@@ -30,17 +30,29 @@
         .asset{
             display: flex;
             flex-direction: row;
-            line-height: 2em;
+            align-items: center;
+            height: 2em;
             padding: 0.25em;
+            cursor: grab;
+
+            figure{
+                flex: 0 0 2em;
+                pointer-events: none;
+
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            }
 
             .label{
                 flex: 1 1 auto;
-                padding: 0.25em;
+                padding: 0 0.25em;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 user-select: none;
-                cursor: grab;
             }
 
             .buttons{
@@ -72,5 +84,9 @@
             box-shadow: inset 0 0 0.5em 0 #fff;
             border: 2px #fff dashed;
         }
+    }
+
+    .overlay.loadmask{
+        position: absolute;
     }
 }

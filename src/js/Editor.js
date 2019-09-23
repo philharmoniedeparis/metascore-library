@@ -2268,13 +2268,13 @@ export default class Editor extends Dom {
         });
 
         // prepare the Ajax options object
-        const options = Object.assign({
+        const options = Object.assign({}, this.configs.xhr, {
             'data': data,
             'responseType': 'json',
             'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false
-        }, this.configs.xhr);
+        });
 
         const hundred = 100;
 

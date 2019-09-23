@@ -206,8 +206,6 @@ export default class GuideAssets extends Dom {
         for(let i=0; i<files.length; i++){
             const file = files.item(i);
 
-            console.log(file);
-
             if(!isValidMimeType(file.type, this.configs.allowed_import_types)){
                 new Alert({
                     'parent': this,
@@ -232,13 +230,13 @@ export default class GuideAssets extends Dom {
         });
 
         // prepare the Ajax options object
-        const options = Object.assign({
+        const options = Object.assign({}, this.configs.xhr, {
             'data': formdata,
             'responseType': 'json',
             'onSuccess': this.onAssetsImportSuccess.bind(this, loadmask),
             'onError': this.onXHRError.bind(this, loadmask),
             'autoSend': false
-        }, this.configs.xhr);
+        });
 
         const hundred = 100;
         Ajax.POST(this.configs.import_url, options)
@@ -278,11 +276,11 @@ export default class GuideAssets extends Dom {
         });
 
         // prepare the Ajax options object
-        const options = Object.assign({
+        const options = Object.assign({}, this.configs.xhr, {
             'responseType': 'json',
             'onSuccess': this.onAssetDeleteSuccess.bind(this, asset, loadmask),
             'onError': this.onXHRError.bind(this, loadmask)
-        }, this.configs.xhr);
+        });
 
         Ajax.DELETE(asset.links.delete, options);
     }
@@ -294,22 +292,6 @@ export default class GuideAssets extends Dom {
         delete this.assets[asset.id];
 
         loadmask.hide();
-    }
-
-    onXHRError(loadmask, evt){
-        loadmask.hide();
-
-        const error = evt.target.getStatusText();
-        const code = evt.target.getStatus();
-
-        new Alert({
-            'parent': this,
-            'text': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
-            'buttons': {
-                'ok': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.ok', 'OK'),
-            },
-            'autoShow': true
-        });
     }
 
     loadAssets(){
@@ -353,29 +335,26 @@ export default class GuideAssets extends Dom {
 
     addAsset(asset){
         const item = new Dom('<div/>', {'class': 'asset'})
+            .attr('draggable', 'true')
             .data('id', asset.id)
+            .addListener('dragstart', this.onAssetDragStart)
+            .addListener('dragend', this.onAssetDragEnd)
             .addDelegate('button', 'click', this.onAssetButtonClick)
             .appendTo(this.assets_container);
 
         this.assets[asset.id] = asset;
 
-        const info = new Dom('<figure/>', {'class': 'info'})
-            .attr('draggable', 'true')
-            .addListener('dragstart', this.onAssetDragStart)
-            .addListener('dragend', this.onAssetDragEnd)
+        const figure = new Dom('<figure/>')
             .appendTo(item);
-
-        const icon = new Dom('<div/>', {'class': 'icon'})
-            .appendTo(info);
 
         if(/^image\/.*/.test(asset.mimetype)){
             new Dom('<img/>', {'src': asset.url})
-                .appendTo(icon);
+                .appendTo(figure);
         }
 
         new Dom('<div/>', {'class': 'label'})
             .text(asset.name)
-            .appendTo(info);
+            .appendTo(item);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(item);
@@ -386,7 +365,7 @@ export default class GuideAssets extends Dom {
     }
 
     onAssetDragStart(evt){
-        const item = new Dom(evt.target).parents('.asset');
+        const item = new Dom(evt.target);
         const asset_id = item.data('id');
         const asset = this.assets[asset_id];
 
@@ -399,14 +378,15 @@ export default class GuideAssets extends Dom {
         evt.dataTransfer.setData("text/plain", asset.url);
 
         if(/^image\/.*/.test(asset.mimetype)){
-            const img = new Dom('<img/>', {'src': asset.url});
-            console.log(img.get(0).outerHTML);
-            evt.dataTransfer.setData('text/html', img.get(0).outerHTML);
+            const img = new Image();
+            img.src = asset.url;
+            evt.dataTransfer.setDragImage(img, 0, 0);
+            evt.dataTransfer.setData('text/html', img.outerHTML);
         }
     }
 
     onAssetDragEnd(evt){
-        const item = new Dom(evt.target).parents('.asset');
+        const item = new Dom(evt.target);
         item.removeClass('dragging');
     }
 
@@ -430,6 +410,23 @@ export default class GuideAssets extends Dom {
                 });
                 break;
         }
+    }
+
+    onXHRError(loadmask, evt){
+        loadmask.hide();
+
+        const response = evt.target.getResponse();
+        const error = 'message' in response ? response.message : evt.target.getStatusText();
+        const code = evt.target.getStatus();
+
+        new Alert({
+            'parent': this,
+            'text': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
+            'buttons': {
+                'ok': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.ok', 'OK'),
+            },
+            'autoShow': true
+        });
     }
 
     show(){

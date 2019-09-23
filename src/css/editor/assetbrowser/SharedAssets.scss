@@ -1,4 +1,80 @@
 @import "../theme";
 
 :local(.className){
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: $lightgray;
+
+    .assets-container{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+        grid-auto-rows: min-content;
+        overflow-y: auto;
+        padding: 1em;
+
+        .asset{
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            margin: 1em;
+
+            figure{
+                position: relative;
+                background: $mediumgray;
+
+                &::before{
+                    content: "";
+                    display: block;
+                    padding-top: 100%;
+                }
+
+                img{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+                .buttons{
+                    display: none;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+
+                    button{
+                        min-width: 50%;
+                        padding: 0.5em;
+                        background: #fff;
+                        border-radius: 5em;
+                    }
+                }
+
+                &:hover{
+                    .buttons{
+                        display: flex;
+                        flex-direction: column;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                        align-content: center;
+                        align-items: center;
+                    }
+                }
+            }
+
+            .label{
+                padding: 0.5em 0;
+                text-align: center;
+                user-select: none;
+            }
+        }
+    }
+
+    .overlay.loadmask{
+        position: absolute;
+    }
 }

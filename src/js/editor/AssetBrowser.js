@@ -46,7 +46,8 @@ export default class AssetBrowser extends Dom {
             .appendTo(this);
 
         this.shared_assets = new SharedAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.shared_assets))
-            .appendTo(this.configs.shared_assets.container || this);
+            .addListener('assetimport', this.onSharedAssetImport.bind(this))
+            .appendTo(this);
 
         this.showGuideAssets();
     }
@@ -85,6 +86,13 @@ export default class AssetBrowser extends Dom {
         this.shared_assets.show();
 
         this.triggerEvent('tabchange', {'tab': 'shared-assets'});
+    }
+
+    onSharedAssetImport(evt){
+        const asset = evt.detail.asset;
+        this.guide_assets.addAsset(asset);
+
+        this.showGuideAssets();
     }
 
 }
