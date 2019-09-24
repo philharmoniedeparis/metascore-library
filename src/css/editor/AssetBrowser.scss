@@ -7,26 +7,71 @@
     flex-wrap: nowrap;
     background: $mediumgray;
 
-    .tabs{
+    .top{
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         flex: 0 0 auto;
-        z-index: 100;
 
-        button{
+        .tabs{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            flex: 0 0 auto;
+            width: 100%;
+
+            button{
+                flex: 1 1 auto;
+                padding: 0.5em;
+                color: #fff;
+                background: $mediumgray;
+                margin-bottom: 0.25em;
+                line-height: 2em;
+                user-select: none;
+
+                &.active{
+                    pointer-events: none;
+                    background: $lightgray;
+                    outline: none;
+                }
+            }
+        }
+
+        .toolbar{
+            display: flex;
+            flex-direction: row;
             flex: 1 1 auto;
-            padding: 0.5em;
-            color: #fff;
-            background: $mediumgray;
-            margin-bottom: 0.25em;
-            line-height: 2em;
-            user-select: none;
+            align-items: center;
+            justify-content: space-between;
+            background: $lightgray;
+            margin-left: 0.25em;
 
-            &.active{
-                pointer-events: none;
-                background: $lightgray;
-                outline: none;
+            .filters{
+                display: flex;
+                flex-direction: row;
+                flex: 0 1 50%;
+
+                .input{
+                    margin: 0 0.5em;
+
+                    &.text{
+                        flex: 1 1 auto;
+
+                        input{
+                            width: 100%;
+                            padding: 0.5em 1em;
+                            box-sizing: border-box;
+                            border: 0;
+                            border-radius: 5em;
+                            background: #282828;
+                            color: #fff;
+
+                            &::placeholder {
+                                color: $lightgray;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

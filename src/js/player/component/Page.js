@@ -5,8 +5,8 @@ import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
 
 import CursorElement from './element/Cursor';
-import ImageElement from './element/Image';
-import TextElement from './element/Text';
+import ContentElement from './element/Content';
+import AnimationElement from './element/Animation';
 
 /**
  * The list of available element types
@@ -14,8 +14,8 @@ import TextElement from './element/Text';
  */
 const ELEMENT_TYPES = {
     'Cursor': CursorElement,
-    'Image': ImageElement,
-    'Text': TextElement,
+    'Content': ContentElement,
+    'Animation': AnimationElement,
 };
 
 /**
@@ -201,12 +201,12 @@ export default class Page extends Component {
                     name = `cur ${el_index}`;
                     break;
 
-                case 'Image':
-                    name = `img ${el_index}`;
+                case 'Content':
+                    name = `content ${el_index}`;
                     break;
 
-                case 'Text':
-                    name = `txt ${el_index}`;
+                case 'Animation':
+                    name = `anim ${el_index}`;
                     break;
             }
 

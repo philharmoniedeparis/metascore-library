@@ -36,6 +36,7 @@ export default class CheckboxInput extends Input{
     */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
+            'label': null,
             'checked': false,
             'checked_value': true,
             'unchecked_value': false
@@ -54,7 +55,7 @@ export default class CheckboxInput extends Input{
             .attr('type', 'checkbox')
             .addListener('click', this.onClick.bind(this));
 
-        new Dom('<label/>', {'for': this.getId()})
+        new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
             .appendTo(this);
     }
 
@@ -95,7 +96,7 @@ export default class CheckboxInput extends Input{
             this.removeClass('checked');
         }
 
-        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
     }
 
     /**

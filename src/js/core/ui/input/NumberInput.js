@@ -119,7 +119,7 @@ export default class NumberInput extends Input {
             this.setValue(this.native_input.val(), true);
         }
 
-        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
     }
 
     /**

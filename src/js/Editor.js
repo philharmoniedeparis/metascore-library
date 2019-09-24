@@ -296,16 +296,16 @@ export default class Editor extends Dom {
                                 this.addPlayerComponents('element', {'type': 'Cursor'}, context.el.closest('.metaScore-component.page')._metaScore);
                             }
                         },
-                        'add-element-image': {
-                            'text': Locale.t('editor.contextmenu.add-element-image', 'Image'),
+                        'add-element-content': {
+                            'text': Locale.t('editor.contextmenu.add-element-content', 'Content'),
                             'callback': (context) => {
-                                this.addPlayerComponents('element', {'type': 'Image'}, context.el.closest('.metaScore-component.page')._metaScore);
+                                this.addPlayerComponents('element', {'type': 'Content'}, context.el.closest('.metaScore-component.page')._metaScore);
                             }
                         },
-                        'add-element-text': {
-                            'text': Locale.t('editor.contextmenu.add-element-text', 'Text'),
+                        'add-element-animation': {
+                            'text': Locale.t('editor.contextmenu.add-element-animation', 'Animation'),
                             'callback': (context) => {
-                                this.addPlayerComponents('element', {'type': 'Text'}, context.el.closest('.metaScore-component.page')._metaScore);
+                                this.addPlayerComponents('element', {'type': 'Animation'}, context.el.closest('.metaScore-component.page')._metaScore);
                             }
                         }
                     },

@@ -51,8 +51,8 @@ export default class Element extends Panel {
                 'title': Locale.t('editor.panel.Element.title', 'Element'),
                 'menuItems': {
                     'Cursor': Locale.t('editor.panel.Element.menuItems.Cursor', 'Add a new cursor'),
-                    'Image': Locale.t('editor.panel.Element.menuItems.Image', 'Add a new image'),
-                    'Text': Locale.t('editor.panel.Element.menuItems.Text', 'Add a new text element'),
+                    'Content': Locale.t('editor.panel.Element.menuItems.Content', 'Add a new content element'),
+                    'Animation': Locale.t('editor.panel.Element.menuItems.Animation', 'Add a new animation'),
                     'delete': Locale.t('editor.panel.Element.menuItems.delete', 'Delete the selected elements')
                 }
             }
@@ -95,20 +95,20 @@ export default class Element extends Panel {
             const name = evt.detail.field.data('name');
             const value = evt.detail.value;
 
-            if(component.instanceOf('Image')){
-                if(name === 'background-image'){
-                    this.onBeforeImageSet(name, value);
-                    return;
-                }
-            }
-            else if(component.instanceOf('Text')){
-                if(name === 'edit-text'){
-                    if(value === true){
-                        this.unlockText(component);
-                    }
-                    else{
-                        this.lockText(component);
-                    }
+            if(component.instanceOf('Content')){
+                switch(name){
+                    case 'background-image':
+                        this.onBeforeContentImageSet(name, value);
+                        break;
+
+                    case 'edit-text':
+                        if(value === true){
+                            this.unlockText(component);
+                        }
+                        else{
+                            this.lockText(component);
+                        }
+                        break;
                 }
             }
             else if(component.instanceOf('Cursor')){
@@ -126,7 +126,6 @@ export default class Element extends Panel {
                     case 'mode':
                         this.lockCursorAdvancedEditMode(component);
                         break;
-
                 }
             }
 
@@ -184,7 +183,7 @@ export default class Element extends Panel {
      * @param {String} property The updated component property's name
      * @param {String} url The new image url
      */
-    onBeforeImageSet(property, url){
+    onBeforeContentImageSet(property, url){
         const promises = [];
 
         this.components.forEach((component) => {

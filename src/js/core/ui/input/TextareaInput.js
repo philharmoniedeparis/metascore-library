@@ -43,6 +43,7 @@ export default class TextareaInput extends Input {
          * @type {Dom}
          */
         this.native_input = new Dom('<textarea/>', {'id': id})
+            .addListener('input', this.onInput.bind(this))
             .addListener('change', this.onChange.bind(this))
             .appendTo(this);
     }

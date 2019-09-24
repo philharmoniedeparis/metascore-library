@@ -3,7 +3,7 @@ import Dom from '../../../core/Dom';
 import Locale from '../../../core/Locale';
 
 /**
- * A text element
+ * A content element
  *
  * @emits {page} Fired when a page link is clicked
  * @param {Object} element The element instance
@@ -19,7 +19,7 @@ import Locale from '../../../core/Locale';
  * @param {String} block The block's name
  * @param {String} action The action to perform
  */
-export default class Text extends Element {
+export default class Content extends Element {
 
     /**
      *Instantiate

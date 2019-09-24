@@ -84,7 +84,7 @@ export default class RadioButtonsInput extends Input {
             this.value = radiobutton.val();
         }
 
-        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
     }
 
     /**
@@ -110,7 +110,7 @@ export default class RadioButtonsInput extends Input {
         });
 
         if(supressEvent !== true){
-            this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+            this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
         }
 
         return this;

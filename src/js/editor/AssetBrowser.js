@@ -29,8 +29,11 @@ export default class AssetBrowser extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        this.tabs = new Dom('<div/>', {'class': 'tabs'})
+        this.top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
+
+        this.tabs = new Dom('<div/>', {'class': 'tabs'})
+            .appendTo(this.top);
 
         new Button({'label': Locale.t('editor.AssetBrowser.tabs.guide-assets.title', 'Library')})
             .data('for', 'guide-assets')
@@ -49,6 +52,10 @@ export default class AssetBrowser extends Dom {
             .addListener('assetimport', this.onSharedAssetImport.bind(this))
             .appendTo(this);
 
+        this.shared_assets.getToolbar()
+            .addDelegate('button', 'click', this.onSharedAssetToolbarButtonClick.bind(this))
+            .appendTo(this.top);
+
         this.showGuideAssets();
     }
 
@@ -65,6 +72,8 @@ export default class AssetBrowser extends Dom {
     }
 
     showGuideAssets(){
+        this.tabs.css('width', null);
+
         this.tabs.children('button').forEach((el) => {
             const button = new Dom(el);
             button.toggleClass('active', button.data('for') === 'guide-assets');
@@ -72,11 +81,15 @@ export default class AssetBrowser extends Dom {
 
         this.guide_assets.show();
         this.shared_assets.hide();
+        this.shared_assets.getToolbar().hide();
 
         this.triggerEvent('tabchange', {'tab': 'guide-assets'});
     }
 
     showSharedAssets(){
+        const {width} = this.tabs.get(0).getBoundingClientRect();
+        this.tabs.css('width', `${width}px`);
+
         this.tabs.children('button').forEach((el) => {
             const button = new Dom(el);
             button.toggleClass('active', button.data('for') === 'shared-assets');
@@ -84,6 +97,7 @@ export default class AssetBrowser extends Dom {
 
         this.guide_assets.hide();
         this.shared_assets.show();
+        this.shared_assets.getToolbar().show();
 
         this.triggerEvent('tabchange', {'tab': 'shared-assets'});
     }
@@ -93,6 +107,10 @@ export default class AssetBrowser extends Dom {
         this.guide_assets.addAsset(asset);
 
         this.showGuideAssets();
+    }
+
+    onSharedAssetToolbarButtonClick(evt){
+        console.log(evt);
     }
 
 }

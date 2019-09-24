@@ -244,7 +244,7 @@ export default class SelectInput extends Input {
                 }
 
                 if(supressEvent !== true){
-                    this.triggerEvent('valuechange', {'field': this, 'value': this.value, 'added': added, 'removed': removed}, true, false);
+                    this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'added': added, 'removed': removed}, true, false);
                 }
             }
 
@@ -257,7 +257,7 @@ export default class SelectInput extends Input {
                 this.native_input.val(count > 0 ? decodeHTML(options.text()) : '');
 
                 if(supressEvent !== true){
-                    this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+                    this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
                 }
             }
         }

@@ -403,7 +403,7 @@ body{
                 }
             }
 
-            &.Text{
+            &.Content{
                 .contents{
                     overflow: auto;
 
@@ -454,15 +454,15 @@ body{
         .metaScore-component{
             &.element{
                 &.Cursor{
-                    outline-color: $cursor-color;
+                    outline-color: $cursor-element-color;
                 }
 
-                &.Image{
-                    outline-color: $image-color;
+                &.Content{
+                    outline-color: $content-element-color;
                 }
 
-                &.Text{
-                    outline-color: $text-color;
+                &.Animation{
+                    outline-color: $animation-element-color;
                 }
             }
         }
@@ -512,7 +512,7 @@ body{
                         display: block;
 
                         &.Cursor{
-                            box-shadow: $cursor-color 0px 0px 4px 1px;
+                            box-shadow: $cursor-element-color 0px 0px 4px 1px;
 
                             &.resizing{
                                 canvas{
@@ -521,24 +521,24 @@ body{
                             }
                         }
 
-                        &.Image{
-                            box-shadow: $image-color 0px 0px 4px 1px;
-                        }
-
-                        &.Text{
-                            box-shadow: $text-color 0px 0px 4px 1px;
+                        &.Content{
+                            box-shadow: $content-element-color 0px 0px 4px 1px;
 
                             .contents{
                                 &[contenteditable]{
-                                    outline-color: $text-color;
+                                    outline-color: $content-element-color;
                                     outline-width: 2px;
                                     outline-style: solid;
                                 }
                             }
                         }
+
+                        &.Animation{
+                            box-shadow: $animation-element-color 0px 0px 4px 1px;
+                        }
                     }
 
-                    &.Text{
+                    &.Content{
                         .contents{
                             user-select: none;
 

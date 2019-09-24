@@ -20,6 +20,7 @@ export default class Input extends Dom{
      * @param {Object} configs Custom configs to override defaults
      * @property {Mixed} [value=null] The default value
      * @property {String} [name] The input's name
+     * @property {String} [placeholder] The input's placeholder
      * @property {Boolean} [required=false] Whether the input is required
      * @property {Boolean} [disabled=false] Whether the input is disabled by default
      * @property {Boolean} [readonly=false] Whether the input is readonly by default
@@ -46,6 +47,10 @@ export default class Input extends Dom{
                 this.native_input.attr('name', this.configs.name);
             }
 
+            if(this.configs.placeholder){
+                this.native_input.attr('placeholder', this.configs.placeholder);
+            }
+
             if(this.configs.required){
                 this.native_input.attr('required', '');
             }
@@ -67,6 +72,7 @@ export default class Input extends Dom{
         return {
             'value': null,
             'name': null,
+            'placeholder': null,
             'required': false,
             'disabled': false,
             'readonly': false
@@ -84,6 +90,7 @@ export default class Input extends Dom{
          * @type {Dom}
          */
         this.native_input = new Dom('<input/>', {'id': this.getId()})
+            .addListener('input', this.onInput.bind(this))
             .addListener('change', this.onChange.bind(this))
             .addListener('keypress', this.onKeypress.bind(this))
             .appendTo(this);
@@ -111,11 +118,20 @@ export default class Input extends Dom{
      *
      * @private
      */
-    onChange(){
+    onInput(){
         /**
          * The current value
          * @type {String}
          */
+        this.value = this.native_input.val();
+    }
+
+    /**
+     * The change event handler
+     *
+     * @private
+     */
+    onChange(){
         this.value = this.native_input.val();
 
         this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);

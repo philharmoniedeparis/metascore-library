@@ -93,7 +93,7 @@ export default class ColorInput extends Input {
             .css('background-color', rgba);
 
         if(supressEvent !== true){
-            this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+            this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
         }
 
         return this;

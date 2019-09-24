@@ -23,16 +23,20 @@
                 position: relative;
                 background: $mediumgray;
 
+                > * {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+
                 &::before{
+                    position: relative;
                     content: "";
                     display: block;
                     padding-top: 100%;
                 }
 
                 img{
-                    position: absolute;
-                    top: 0;
-                    left: 0;
                     width: 100%;
                     height: 100%;
                     object-fit: contain;
@@ -40,11 +44,9 @@
 
                 .buttons{
                     display: none;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
                     width: 100%;
                     height: 100%;
+                    z-index: 1;
 
                     button{
                         min-width: 50%;

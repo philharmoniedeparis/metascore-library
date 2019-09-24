@@ -177,7 +177,7 @@ export default class FileOrUrlInput extends Input {
 
         this.setActiveSource(source);
 
-        this.triggerEvent('valuechange', {'field': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
     }
 
     /**
