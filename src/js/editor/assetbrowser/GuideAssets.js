@@ -33,6 +33,12 @@ export default class GuideAssets extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        /**
+         * The list of loaded assets
+         * @type {Object}
+         */
+        this.assets = {};
+
         // fix event handlers scope
         this.onAssetDragStart = this.onAssetDragStart.bind(this);
         this.onAssetDragEnd = this.onAssetDragEnd.bind(this);
@@ -43,7 +49,7 @@ export default class GuideAssets extends Dom {
                 'label': Locale.t('editor.assetbrowser.GuideAssets.import-assets-field.label', 'Import files'),
                 'input': {
                     'multiple': true,
-                    'accept': this.configs.allowed_import_types
+                    'accept': this.configs.import.allowed_types
                 }
             })
             .addClass('import-assets')
@@ -91,6 +97,8 @@ export default class GuideAssets extends Dom {
             .addListener('dragover', this.onDragOver.bind(this))
             .addListener('dragleave', this.onDragLeave.bind(this))
             .addListener('drop', this.onDrop.bind(this));
+
+        this.clearAssets();
     }
 
     /**
@@ -100,10 +108,11 @@ export default class GuideAssets extends Dom {
     */
     static getDefaults() {
         return {
-            'list_url': null,
-            'import_url': null,
-            'max_filesize': null,
-            'allowed_import_types': 'image/*,video/*,audio/*',
+            'import': {
+                'url': null,
+                'max_filesize': null,
+                'allowed_types': null,
+            },
             'xhr': {}
         };
     }
@@ -206,10 +215,22 @@ export default class GuideAssets extends Dom {
         for(let i=0; i<files.length; i++){
             const file = files.item(i);
 
-            if(!isValidMimeType(file.type, this.configs.allowed_import_types)){
+            if(this.configs.import.allowed_types && !isValidMimeType(file.type, this.configs.import.allowed_types)){
                 new Alert({
                     'parent': this,
-                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.msg', '<em>@name</em> is not an accepted file type.', {'@name': file.name}),
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_type.msg', '<em>@name</em> is not an accepted file type.', {'@name': file.name}),
+                    'buttons': {
+                        'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
+                    },
+                    'autoShow': true
+                });
+                return;
+            }
+
+            if(this.configs.import.max_filesize && file.size > this.configs.import.max_filesize){
+                new Alert({
+                    'parent': this,
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_size.msg', '<em>@name</em> size (@filesize) exceeds the allowed size (@maxsize).', {'@name': file.name, '@filesize': file.size, '@maxsize': this.configs.import.max_filesize}),
                     'buttons': {
                         'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
                     },
@@ -239,7 +260,7 @@ export default class GuideAssets extends Dom {
         });
 
         const hundred = 100;
-        Ajax.POST(this.configs.import_url, options)
+        Ajax.POST(this.configs.import.url, options)
             .addUploadListener('loadstart', () => {
                 loadmask.setProgress(0);
             })
@@ -258,82 +279,41 @@ export default class GuideAssets extends Dom {
     }
 
     onAssetsImportSuccess(loadmask, evt){
-        const assets = evt.target.getResponse();
-
-        assets.forEach((asset) => {
-            this.addAsset(asset);
-        });
+        this.addAssets(evt.target.getResponse());
 
         loadmask.hide();
     }
 
-    deleteAsset(asset){
-        // add a loading mask
-        const loadmask = new LoadMask({
-            'parent': this.assets_container,
-            'text': Locale.t('editor.assetbrowser.GuideAssets.deleteAsset.loadmask.text', 'Deleting...'),
-            'autoShow': true,
-        });
-
-        // prepare the Ajax options object
-        const options = Object.assign({}, this.configs.xhr, {
-            'responseType': 'json',
-            'onSuccess': this.onAssetDeleteSuccess.bind(this, asset, loadmask),
-            'onError': this.onXHRError.bind(this, loadmask)
-        });
-
-        Ajax.DELETE(asset.links.delete, options);
-    }
-
-    onAssetDeleteSuccess(asset, loadmask){
-        const item = this.assets_container.find(`.asset[data-id="${asset.id}"]`);
-        item.remove();
-
-        delete this.assets[asset.id];
-
-        loadmask.hide();
-    }
-
-    loadAssets(){
-        this.assets_container.empty();
-        delete this._assets_loaded;
-
-        /**
-         * The list of loaded assets
-         * @type {Object}
-         */
+    clearAssets(){
         this.assets = {};
+        this.assets_container.empty();
 
-        // add a loading mask
-        const loadmask = new LoadMask({
-            'parent': this.assets_container,
-            'text': Locale.t('editor.assetbrowser.GuideAssets.loadAssets.loadmask.text', 'Loading...'),
-            'autoShow': true,
-        });
-
-        // prepare the Ajax options object
-        const options = Object.assign({
-            'responseType': 'json',
-            'onSuccess': this.onAssetsLoadSuccess.bind(this, loadmask),
-            'onError': this.onXHRError.bind(this, loadmask)
-        }, this.configs.xhr);
-
-        Ajax.GET(this.configs.list_url, options);
+        return this;
     }
 
-    onAssetsLoadSuccess(loadmask, evt){
-        const response = evt.target.getResponse();
-
-        response.assets.forEach((asset) => {
-            this.addAsset(asset);
+    /**
+     * Add assets
+     *
+     * @param {Array} assets The assets to add
+     * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
+     * @return {this}
+     */
+    addAssets(assets, supressEvent){
+        assets.forEach((asset) => {
+            this.addAsset(asset, supressEvent);
         });
 
-        this._assets_loaded = true;
-
-        loadmask.hide();
+        return this;
     }
 
-    addAsset(asset){
+    /**
+     * Add an asset
+     *
+     * @param {Object} asset The asset to add
+     * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
+     * @return {this}
+     */
+    addAsset(asset, supressEvent){
         const item = new Dom('<div/>', {'class': 'asset'})
             .attr('draggable', 'true')
             .data('id', asset.id)
@@ -362,6 +342,32 @@ export default class GuideAssets extends Dom {
         new Button({'icon': 'delete', 'label': Locale.t('editor.assetbrowser.GuideAssets.AssetDeleteButton.label', 'Delete')})
             .data('action', 'delete')
             .appendTo(buttons);
+
+        if(supressEvent !== true){
+            this.triggerEvent('assetadd', {'asset': asset});
+        }
+
+        return this;
+    }
+
+    /**
+     * Remove an asset
+     *
+     * @param {Object} asset The asset to remove
+     * @param {Boolean} supressEvent Whether to prevent the assetremove event from firing
+     * @return {this}
+     */
+    removeAsset(asset, supressEvent){
+        const item = this.assets_container.find(`.asset[data-id="${asset.id}"]`);
+        item.remove();
+
+        delete this.assets[asset.id];
+
+        if(supressEvent !== true){
+            this.triggerEvent('assetremove', {'asset': asset});
+        }
+
+        return this;
     }
 
     onAssetDragStart(evt){
@@ -405,7 +411,7 @@ export default class GuideAssets extends Dom {
                     'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.msg', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
                     'autoShow': true,
                     'onConfirm': () => {
-                        this.deleteAsset(asset);
+                        this.removeAsset(asset);
                     }
                 });
                 break;
@@ -427,14 +433,6 @@ export default class GuideAssets extends Dom {
             },
             'autoShow': true
         });
-    }
-
-    show(){
-        super.show();
-
-        if(!this._assets_loaded){
-            this.loadAssets();
-        }
     }
 
 }

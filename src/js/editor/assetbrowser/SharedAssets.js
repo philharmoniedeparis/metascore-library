@@ -20,7 +20,7 @@ export default class AssetBrowser extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Object} list_url The shared assets list url
+     * @property {Object} url The shared assets list url
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      */
     constructor(configs) {
@@ -39,16 +39,13 @@ export default class AssetBrowser extends Dom {
         this.toolbar = new Dom('<div/>', {'class': 'toolbar'})
             .appendTo(this);
 
-        const filters = new Dom('<div/>', {'class': 'filters'})
-            .appendTo(this.toolbar);
-
         this.filters = {};
         this.filters.search = new TextInput({
                 'name': 'search',
                 'placeholder': Locale.t('editor.assetbrowser.SharedAssets.filters.search.placeholder', 'Search'),
             })
             .addListener('input', this.onFilterSearchInput.bind(this))
-            .appendTo(filters);
+            .appendTo(this.toolbar);
 
         this.filters.animated = new CheckboxInput({
                 'name': 'animated',
@@ -57,7 +54,7 @@ export default class AssetBrowser extends Dom {
             })
             .addClass('toggle-button')
             .addListener('valuechange', this.onFilterToggleValueChange.bind(this))
-            .appendTo(filters);
+            .appendTo(this.toolbar);
 
         this.filters.static = new CheckboxInput({
                 'name': 'static',
@@ -66,12 +63,13 @@ export default class AssetBrowser extends Dom {
             })
             .addClass('toggle-button')
             .addListener('valuechange', this.onFilterToggleValueChange.bind(this))
-            .appendTo(filters);
+            .appendTo(this.toolbar);
 
         new Button({
                 'icon': 'close',
                 'label': Locale.t('editor.assetbrowser.SharedAssets.toolbar.close.label', 'Close')
             })
+            .data('action', 'close')
             .appendTo(this.toolbar);
 
         this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
@@ -85,7 +83,7 @@ export default class AssetBrowser extends Dom {
     */
     static getDefaults() {
         return {
-            'list_url': null,
+            'url': null,
             'xhr': {}
         };
     }
@@ -106,7 +104,7 @@ export default class AssetBrowser extends Dom {
                 'onError': this.onXHRError.bind(this, loadmask)
             }, this.configs.xhr);
 
-            this.load_xhr = Ajax.GET(this.configs.list_url, options);
+            this.load_xhr = Ajax.GET(this.configs.url, options);
         }
 
         return this;
@@ -238,37 +236,9 @@ export default class AssetBrowser extends Dom {
 
         switch(action){
             case 'import':
-                this.importAsset(asset);
+                this.triggerEvent('assetimport', {'asset': asset});
                 break;
         }
-    }
-
-    importAsset(asset){
-        // add a loading mask
-        const loadmask = new LoadMask({
-            'parent': this.assets_container,
-            'text': Locale.t('editor.assetbrowser.SharedAssets.importAsset.loadmask.text', 'Importing...'),
-            'autoShow': true,
-        });
-
-        // prepare the Ajax options object
-        const options = Object.assign({}, this.configs.xhr, {
-            'responseType': 'json',
-            'onSuccess': this.onAssetImportSuccess.bind(this, loadmask),
-            'onError': this.onXHRError.bind(this, loadmask),
-            'headers': Object.assign({}, this.configs.xhr.headers, {
-                'Content-Type': 'application/json'
-            })
-        });
-
-        Ajax.POST(asset.links.import, options);
-    }
-
-    onAssetImportSuccess(loadmask, evt){
-        loadmask.hide();
-
-        const asset = evt.target.getResponse();
-        this.triggerEvent('assetimport', {'asset': asset});
     }
 
     onXHRError(loadmask, evt){

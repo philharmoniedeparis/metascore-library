@@ -2,10 +2,9 @@
 
 :local(.className){
     display: flex;
+    flex-direction: column;
     position: relative;
     overflow: hidden;
-    flex: 1 1 auto;
-    flex-direction: column;
 
     .import-assets{
         label{

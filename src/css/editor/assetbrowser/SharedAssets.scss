@@ -8,8 +8,7 @@
 
     .assets-container{
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
-        grid-auto-rows: min-content;
+        grid-template-columns: repeat(auto-fill, 15em);
         overflow-y: auto;
         padding: 1em;
 

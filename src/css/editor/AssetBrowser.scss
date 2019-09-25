@@ -42,37 +42,45 @@
             flex-direction: row;
             flex: 1 1 auto;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             background: $lightgray;
             margin-left: 0.25em;
 
-            .filters{
-                display: flex;
-                flex-direction: row;
-                flex: 0 1 50%;
+            .input{
+                margin: 0 0.5em;
 
-                .input{
-                    margin: 0 0.5em;
+                &.text{
+                    flex: 1 1 auto;
+                    max-width: 30em;
+                    min-width: 10em;
 
-                    &.text{
-                        flex: 1 1 auto;
+                    input{
+                        width: 100%;
+                        padding: 0.5em 1em;
+                        box-sizing: border-box;
+                        border: 0;
+                        border-radius: 5em;
+                        background: #282828;
+                        color: #fff;
 
-                        input{
-                            width: 100%;
-                            padding: 0.5em 1em;
-                            box-sizing: border-box;
-                            border: 0;
-                            border-radius: 5em;
-                            background: #282828;
-                            color: #fff;
-
-                            &::placeholder {
-                                color: $lightgray;
-                            }
+                        &::placeholder {
+                            color: $lightgray;
                         }
                     }
                 }
             }
+
+            button{
+                margin-left: auto;
+            }
         }
+    }
+
+    .shared-assets{
+        flex: 1 1 auto;
+    }
+
+    .guide-assets{
+        flex: 1 1 auto;
     }
 }

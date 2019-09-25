@@ -43,7 +43,7 @@ export default class FileInput extends Input {
          */
         this.native_input = new Dom('<input/>', {'id': id, 'type': 'file'})
             .attr('multiple', this.configs.multiple ? 'multiple' : null)
-            .attr('accept', this.configs.accept)
+            .attr('accept', this.configs.accept ? this.configs.accept : null)
             .addListener('change', this.onChange.bind(this))
             .appendTo(this);
     }

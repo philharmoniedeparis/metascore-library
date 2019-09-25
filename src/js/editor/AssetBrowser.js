@@ -71,6 +71,14 @@ export default class AssetBrowser extends Dom {
         };
     }
 
+    getGuideAssets(){
+        return this.guide_assets;
+    }
+
+    getSharedAssets(){
+        return this.shared_assets;
+    }
+
     showGuideAssets(){
         this.tabs.css('width', null);
 
@@ -79,9 +87,9 @@ export default class AssetBrowser extends Dom {
             button.toggleClass('active', button.data('for') === 'guide-assets');
         });
 
-        this.guide_assets.show();
-        this.shared_assets.hide();
-        this.shared_assets.getToolbar().hide();
+        this.getGuideAssets().show();
+        this.getSharedAssets().hide();
+        this.getSharedAssets().getToolbar().hide();
 
         this.triggerEvent('tabchange', {'tab': 'guide-assets'});
     }
@@ -95,22 +103,28 @@ export default class AssetBrowser extends Dom {
             button.toggleClass('active', button.data('for') === 'shared-assets');
         });
 
-        this.guide_assets.hide();
-        this.shared_assets.show();
-        this.shared_assets.getToolbar().show();
+        this.getGuideAssets().hide();
+        this.getSharedAssets().show();
+        this.getSharedAssets().getToolbar().show();
 
         this.triggerEvent('tabchange', {'tab': 'shared-assets'});
     }
 
     onSharedAssetImport(evt){
         const asset = evt.detail.asset;
-        this.guide_assets.addAsset(asset);
+        this.getGuideAssets().addAsset(asset);
 
         this.showGuideAssets();
     }
 
     onSharedAssetToolbarButtonClick(evt){
-        console.log(evt);
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'close':
+                this.showGuideAssets();
+                break;
+        }
     }
 
 }

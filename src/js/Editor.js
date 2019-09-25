@@ -1209,14 +1209,16 @@ export default class Editor extends Dom {
                 .addListener('drop', this.onPlayerDrop.bind(this))
                 .setInEditor(true);
 
-            this.player.setInEditor(true);
-
             this.player.contextmenu.disable();
 
             const player_body = this.player_frame.get(0).contentWindow.document.body;
             this.player_contextmenu
                 .setTarget(player_body)
                 .enable();
+
+            this.asset_browser.getGuideAssets()
+                .addAssets(this.player.getData('assets'), true)
+                .addAssets(this.player.getData('shared_assets'), true);
 
             this
                 .setEditing(true)
@@ -1838,6 +1840,8 @@ export default class Editor extends Dom {
         this.controller.dettachMedia();
 
         this.player_contextmenu.disable();
+
+        this.asset_browser.getGuideAssets().clearAssets();
 
         this.history.clear();
 

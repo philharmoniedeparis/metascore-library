@@ -141,11 +141,11 @@ export function getMimeTypeFromURL(url){
 }
 
 export function isValidMimeType(mimetype, accepted_mimetypes){
-    if(!accepted_mimetypes){
+    if(!accepted_mimetypes || accepted_mimetypes.length === 0){
         return true;
     }
 
-    return accepted_mimetypes.split(',').some((accepted_mimetype) => {
+    return accepted_mimetypes.some((accepted_mimetype) => {
         // Wildcard mime type
         if (/\*$/.test(accepted_mimetype)) {
             const mimetype_group = (/^[^/]+/.exec(mimetype) || []).pop(); // image/png -> image
