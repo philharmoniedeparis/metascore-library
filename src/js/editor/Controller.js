@@ -249,26 +249,6 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Minimize the contoller
-     *
-     * @return {this}
-     */
-    minimize(){
-        this.addClass('minimized');
-        return this;
-    }
-
-    /**
-     * Maximize the contoller
-     *
-     * @return {this}
-     */
-    maximize(){
-        this.removeClass('minimized');
-        return this;
-    }
-
-    /**
      * Play button keydown event callback
      *
      * @private

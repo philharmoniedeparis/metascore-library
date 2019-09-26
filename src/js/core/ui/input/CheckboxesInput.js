@@ -131,6 +131,9 @@ export default class CheckboxesInput extends Input {
             .addListener('change', this.onChange.bind(this))
             .appendTo(checkbox_wrapper);
 
+        new Dom('<label/>', {'class': 'check', 'for': uid})
+            .appendTo(checkbox_wrapper);
+
         new Dom('<label/>', {'text': text, 'for': uid})
             .appendTo(checkbox_wrapper);
 

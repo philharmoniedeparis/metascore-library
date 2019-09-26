@@ -67,7 +67,6 @@ export default class Component extends Dom {
             'resizable': true,
             'properties': {
                 'id': {
-                    'editable': false,
                     'getter': function(){
                         return this.attr('id');
                     },
@@ -75,15 +74,14 @@ export default class Component extends Dom {
                         this.attr('id', value);
                     }
                 },
-                'locked': {
-                    'editable': false,
+                'name': {
                     'getter': function(){
-                        return this.data('locked') === "true";
+                        return this.data('name');
                     },
                     'setter': function(value){
-                        this.data('locked', value ? "true" : null);
+                        this.data('name', value);
                     }
-                },
+                }
             }
         };
     }

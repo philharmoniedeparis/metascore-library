@@ -1,9 +1,9 @@
-import Dom from '../../../core/Dom';
-import TimeField from '../../../editor/field/Time';
-import {isEmpty} from '../../../core/utils/Var';
-import {clamp} from '../../../core/utils/Math';
-import ContextMenu from '../../../core/ui/ContextMenu';
-import Locale from '../../../core/Locale';
+import Dom from '../core/Dom';
+import TimeField from '../editor/field/Time';
+import {isEmpty} from '../core/utils/Var';
+import {clamp} from '../core/utils/Math';
+import ContextMenu from '../core/ui/ContextMenu';
+import Locale from '../core/Locale';
 
 /**
  * A helper class to manage a cursor component's keyframes

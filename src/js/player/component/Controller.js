@@ -1,7 +1,6 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
-import Locale from '../../core/Locale';
 import {formatTime} from '../../core/utils/Media';
 
 /**
@@ -21,16 +20,11 @@ export default class Controller extends Component{
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'editable': false,
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'hidden': {
-                    'field': {
-                        'type': 'checkbox',
-                        'label': Locale.t('player.component.Controller.hidden', 'Hidden?')
-                    },
                     'getter': function(){
                         return this.data('hidden') === "true";
                     },
@@ -39,13 +33,6 @@ export default class Controller extends Component{
                     }
                 },
                 'x': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Controller.x', 'X')
-                    },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -54,13 +41,6 @@ export default class Controller extends Component{
                     }
                 },
                 'y': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Controller.y', 'Y')
-                    },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -69,22 +49,16 @@ export default class Controller extends Component{
                     }
                 },
                 'width': {
-                    'editable': false,
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     }
                 },
                 'height': {
-                    'editable': false,
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     }
                 },
                 'z-index': {
-                    'field': {
-                        'type': 'number',
-                        'label': Locale.t('player.component.Controller.z-index', 'Display index')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -94,10 +68,6 @@ export default class Controller extends Component{
                     }
                 },
                 'border-radius': {
-                    'field': {
-                        'type': 'border-radius',
-                        'label': Locale.t('player.component.Controller.border-radius', 'Border radius')
-                    },
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },

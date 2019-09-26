@@ -59,10 +59,6 @@ export default class Page extends Component {
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Page.background-color', 'Background color')
-                    },
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -71,10 +67,6 @@ export default class Page extends Component {
                     }
                 },
                 'background-image': {
-                    'field': {
-                        'type': 'image',
-                        'label': Locale.t('player.component.Page.background-image', 'Background image')
-                    },
                     'getter': function(skipDefault){
                         let value = this.css('background-image', void 0, skipDefault);
 
@@ -84,7 +76,6 @@ export default class Page extends Component {
 
                         value = value.replace(/^url\(["']?/, '');
                         value = value.replace(/["']?\)$/, '');
-                        value = value.replace(document.baseURI, '');
 
                         return value;
                     },
@@ -94,14 +85,6 @@ export default class Page extends Component {
                     }
                 },
                 'start-time': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'inButton': true,
-                            'outButton': true
-                        },
-                        'label': Locale.t('player.component.Page.start-time', 'Start time')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
                         return isNaN(value) ? null : value;
@@ -111,14 +94,6 @@ export default class Page extends Component {
                     }
                 },
                 'end-time': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'inButton': true,
-                            'outButton': true
-                        },
-                        'label': Locale.t('player.component.Page.end-time', 'End time')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
                         return isNaN(value) ? null : value;
@@ -128,7 +103,6 @@ export default class Page extends Component {
                     }
                 },
                 'elements': {
-                    'editable': false,
                     'getter': function(skipDefault, skipID){
                         const elements = [];
 

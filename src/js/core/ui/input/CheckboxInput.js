@@ -55,6 +55,9 @@ export default class CheckboxInput extends Input{
             .attr('type', 'checkbox')
             .addListener('click', this.onClick.bind(this));
 
+        new Dom('<label/>', {'class': 'check', 'for': this.getId()})
+            .appendTo(this);
+
         new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
             .appendTo(this);
     }

@@ -1,6 +1,5 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import Locale from '../../../core/Locale';
 import {toCSS} from '../../../core/utils/Color';
 import {map, radians} from '../../../core/utils/Math';
 
@@ -25,10 +24,6 @@ export default class Cursor extends Element {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'border-radius': {
-                    'field': {
-                        'type': 'border-radius',
-                        'label': Locale.t('player.component.Element.border-radius', 'Border radius')
-                    },
                     'getter': function(skipDefault){
                         return this.contents.css('border-radius', void 0, skipDefault);
                     },
@@ -40,14 +35,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'start-time': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'inButton': true,
-                            'outButton': true
-                        },
-                        'label': Locale.t('player.component.Element.start-time', 'Start time')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
                         return isNaN(value) ? null : value;
@@ -57,14 +44,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'end-time': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'inButton': true,
-                            'outButton': true
-                        },
-                        'label': Locale.t('player.component.Element.end-time', 'End time')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
                         return isNaN(value) ? null : value;
@@ -74,22 +53,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'form': {
-                    'field': {
-                        'type': 'select',
-                        'input': {
-                            'options': [
-                                {
-                                    'value': 'linear',
-                                    'text': Locale.t('player.component.element.Cursor.form.linear', 'Linear')
-                                },
-                                {
-                                    'value': 'circular',
-                                    'text': Locale.t('player.component.element.Cursor.form.circular', 'Circular')
-                                }
-                            ]
-                        },
-                        'label': Locale.t('player.component.element.Cursor.form', 'Form')
-                    },
                     'getter': function(){
                         const value = this.data('form');
                         return value ? value : 'linear';
@@ -99,22 +62,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'mode': {
-                    'field': {
-                        'type': 'select',
-                        'input': {
-                            'options': [
-                                {
-                                    'value': 'simple',
-                                    'text': Locale.t('player.component.element.Cursor.mode.simple', 'Simple')
-                                },
-                                {
-                                    'value': 'advanced',
-                                    'text': Locale.t('player.component.element.Cursor.mode.advanced', 'Advanced')
-                                }
-                            ]
-                        },
-                        'label': Locale.t('player.component.element.Cursor.mode', 'Mode')
-                    },
                     'getter': function(){
                         const value = this.data('mode');
                         return value ? value : 'simple';
@@ -126,17 +73,7 @@ export default class Cursor extends Element {
                         return this.getPropertyValue('form') === 'linear';
                     }
                 },
-                'keyframes-edit-mode': {
-                    'field': {
-                        'type': 'checkbox',
-                        'label': Locale.t('player.component.element.Cursor.keyframes-edit-mode', 'Keyframes edit mode')
-                    },
-                    'applies': function(){
-                        return this.getPropertyValue('form') === 'linear' && this.getPropertyValue('mode') === 'advanced';
-                    }
-                },
                 'keyframes': {
-                    'editable':false,
                     'getter': function(){
                         return this.data('keyframes');
                     },
@@ -148,56 +85,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'direction': {
-                    'field': {
-                        'type': 'select',
-                        'input': {
-                            'options': [
-                                {
-                                    'value': 'right',
-                                    'text': Locale.t('player.component.element.Cursor.direction.right', 'Left > Right'),
-                                    'applies': function(){
-                                        return this.getPropertyValue('form') !== 'circular';
-                                    }
-                                },
-                                {
-                                    'value': 'left',
-                                    'text': Locale.t('player.component.element.Cursor.direction.left', 'Right > Left'),
-                                    'applies': function(){
-                                        return this.getPropertyValue('form') !== 'circular';
-                                    }
-                                },
-                                {
-                                    'value': 'bottom',
-                                    'text': Locale.t('player.component.element.Cursor.direction.bottom', 'Top > Bottom'),
-                                    'applies': function(){
-                                        return this.getPropertyValue('form') !== 'circular';
-                                    }
-                                },
-                                {
-                                    'value': 'top',
-                                    'text': Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
-                                    'applies': function(){
-                                        return this.getPropertyValue('form') !== 'circular';
-                                    }
-                                },
-                                {
-                                    'value': 'cw',
-                                    'text': Locale.t('player.component.element.Cursor.direction.cw', 'Clockwise'),
-                                    'applies': function(){
-                                        return this.getPropertyValue('form') === 'circular';
-                                    }
-                                },
-                                {
-                                    'value': 'ccw',
-                                    'text': Locale.t('player.component.element.Cursor.direction.ccw', 'Counterclockwise'),
-                                    'applies': function(){
-                                        return this.getPropertyValue('form') === 'circular';
-                                    }
-                                }
-                            ]
-                        },
-                        'label': Locale.t('player.component.element.Cursor.direction', 'Direction')
-                    },
                     'getter': function(){
                         const value = this.data('direction');
                         const form = this.data('form');
@@ -208,14 +95,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'start-angle': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 0,
-                            'max': 360
-                        },
-                        'label': Locale.t('player.component.element.Cursor.start-angle', 'Start angle')
-                    },
                     'getter': function(){
                         const value = parseInt(this.data('start-angle'), 10);
                         return isNaN(value) ? 0 : value;
@@ -228,13 +107,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'loop-duration': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'clearButton': true
-                        },
-                        'label': Locale.t('player.component.element.Cursor.loop-duration', 'Loop duration')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('loop-duration'));
                         return isNaN(value) ? null : value;
@@ -247,14 +119,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'acceleration': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'step': 0.01,
-                            'min': 0.01
-                        },
-                        'label': Locale.t('player.component.element.Cursor.acceleration', 'Acceleration')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('accel'));
                         return isNaN(value) ? 1 : value;
@@ -267,13 +131,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'cursor-width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 1
-                        },
-                        'label': Locale.t('player.component.element.Cursor.cursor-width', 'Cursor width')
-                    },
                     'getter': function(){
                         const value = parseInt(this.data('cursor-width'), 10);
                         return isNaN(value) ? 1 : value;
@@ -283,10 +140,6 @@ export default class Cursor extends Element {
                     }
                 },
                 'cursor-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.element.Cursor.cursor-color', 'Cursor color')
-                    },
                     'getter': function(){
                         const value = this.data('cursor-color');
                         return value ? value : toCSS('#000');

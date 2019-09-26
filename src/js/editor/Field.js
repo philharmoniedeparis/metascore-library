@@ -24,7 +24,7 @@ import {className} from '../../css/editor/Field.scss';
  * @type {Array}
  */
 const INPUTS = {
-    'border-radius': BorderRadiusInput,
+    'borderradius': BorderRadiusInput,
     'buttons': ButtonsInput,
     'checkbox': CheckboxInput,
     'checkboxes': CheckboxesInput,
@@ -34,7 +34,7 @@ const INPUTS = {
     'hidden': HiddenInput,
     'image': ImageInput,
     'number': NumberInput,
-    'radio-buttons': RadioButtonsInput,
+    'radiobuttons': RadioButtonsInput,
     'select': SelectInput,
     'slider': SliderInput,
     'text': TextInput,

@@ -1,6 +1,5 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import Locale from '../../../core/Locale';
 
 /**
  * A content element
@@ -43,14 +42,7 @@ export default class Content extends Element {
 
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
-                'edit-text': {
-                    'field': {
-                        'type': 'checkbox',
-                        'label': Locale.t('player.component.element.Text.edit-text', 'Edit text')
-                    }
-                },
                 'text': {
-                    'editable':false,
                     'getter': function(){
                         return this.contents.text();
                     },

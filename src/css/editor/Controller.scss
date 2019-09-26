@@ -156,24 +156,6 @@
         }
     }
 
-    &.minimized{
-        .top{
-            .time.input{
-                button[data-action="play"]{
-                    display: block;
-                }
-            }
-        }
-
-        .middle{
-            display: none;
-        }
-
-        .bottom{
-            display: none;
-        }
-    }
-
     &.disabled{
         opacity: 0.5;
         pointer-events: none;

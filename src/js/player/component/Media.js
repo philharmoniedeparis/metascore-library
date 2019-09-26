@@ -1,5 +1,4 @@
 import Component from '../Component';
-import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {getRendererForMime} from '../../core/utils/Media';
 
@@ -35,16 +34,11 @@ export default class Media extends Component{
             'type': 'audio',
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'editable': false,
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'hidden': {
-                    'field': {
-                        'type': 'checkbox',
-                        'label': Locale.t('player.component.Media.hidden', 'Hidden?')
-                    },
                     'getter': function(){
                         return this.data('hidden') === "true";
                     },
@@ -53,13 +47,6 @@ export default class Media extends Component{
                     }
                 },
                 'x': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Media.x', 'X')
-                    },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -68,13 +55,6 @@ export default class Media extends Component{
                     }
                 },
                 'y': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Media.y', 'Y')
-                    },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -83,13 +63,6 @@ export default class Media extends Component{
                     },
                 },
                 'width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Media.width', 'Width')
-                    },
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -98,13 +71,6 @@ export default class Media extends Component{
                     }
                 },
                 'height': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Media.height', 'Height')
-                    },
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -113,10 +79,6 @@ export default class Media extends Component{
                     }
                 },
                 'z-index': {
-                    'field': {
-                        'type': 'number',
-                        'label': Locale.t('player.component.Element.z-index', 'Display index')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -126,10 +88,6 @@ export default class Media extends Component{
                     }
                 },
                 'background-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Block.background-color', 'Background color')
-                    },
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -138,13 +96,6 @@ export default class Media extends Component{
                     }
                 },
                 'border-width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 0
-                        },
-                        'label': Locale.t('player.component.Block.border-width', 'Border width')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -154,10 +105,6 @@ export default class Media extends Component{
                     }
                 },
                 'border-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Block.border-color', 'Border color')
-                    },
                     'getter': function(skipDefault){
                         return this.css('border-color', void 0, skipDefault);
                     },
@@ -166,10 +113,6 @@ export default class Media extends Component{
                     }
                 },
                 'border-radius': {
-                    'field': {
-                        'type': 'border-radius',
-                        'label': Locale.t('player.component.Media.border-radius', 'Border radius')
-                    },
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },

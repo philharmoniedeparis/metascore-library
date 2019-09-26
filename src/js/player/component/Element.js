@@ -1,6 +1,5 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
 
@@ -27,16 +26,11 @@ export default class Element extends Component{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'editable': false,
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'name': {
-                    'field': {
-                        'type': 'text',
-                        'label': Locale.t('player.component.Element.name', 'Name')
-                    },
                     'getter': function(){
                         return this.data('name');
                     },
@@ -45,13 +39,6 @@ export default class Element extends Component{
                     }
                 },
                 'x': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Element.x', 'X')
-                    },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -60,13 +47,6 @@ export default class Element extends Component{
                     }
                 },
                 'y': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Element.y', 'Y')
-                    },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -75,13 +55,6 @@ export default class Element extends Component{
                     }
                 },
                 'width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Element.width', 'Width')
-                    },
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -90,13 +63,6 @@ export default class Element extends Component{
                     }
                 },
                 'height': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Element.height', 'Height')
-                    },
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -105,13 +71,6 @@ export default class Element extends Component{
                     }
                 },
                 'r-index': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 0
-                        },
-                        'label': Locale.t('player.component.Element.r-index', 'Reading index')
-                    },
                     'getter': function(){
                         const value = parseInt(this.data('r-index'), 10);
                         return isNaN(value) || value === 0 ? null : value;
@@ -121,10 +80,6 @@ export default class Element extends Component{
                     }
                 },
                 'z-index': {
-                    'field': {
-                        'type': 'number',
-                        'label': Locale.t('player.component.Element.z-index', 'Display index')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -134,10 +89,6 @@ export default class Element extends Component{
                     }
                 },
                 'background-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Element.background-color', 'Background color')
-                    },
                     'getter': function(skipDefault){
                         return this.contents.css('background-color', void 0, skipDefault);
                     },
@@ -146,13 +97,6 @@ export default class Element extends Component{
                     }
                 },
                 'background-image': {
-                    'field': {
-                        'type': 'image',
-                        'input': {
-                            'resizeButton': true
-                        },
-                        'label': Locale.t('player.component.Element.background-image', 'Background image')
-                    },
                     'getter': function(skipDefault){
                         let value = this.contents.css('background-image', void 0, skipDefault);
 
@@ -172,13 +116,6 @@ export default class Element extends Component{
                     }
                 },
                 'border-width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 0
-                        },
-                        'label': Locale.t('player.component.Element.border-width', 'Border width')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.contents.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -188,10 +125,6 @@ export default class Element extends Component{
                     }
                 },
                 'border-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Element.border-color', 'Border color')
-                    },
                     'getter': function(skipDefault){
                         return this.contents.css('border-color', void 0, skipDefault);
                     },
@@ -200,10 +133,6 @@ export default class Element extends Component{
                     }
                 },
                 'border-radius': {
-                    'field': {
-                        'type': 'border-radius',
-                        'label': Locale.t('player.component.Element.border-radius', 'Border radius')
-                    },
                     'getter': function(skipDefault){
                         return this.contents.css('border-radius', void 0, skipDefault);
                     },
@@ -212,15 +141,6 @@ export default class Element extends Component{
                     }
                 },
                 'opacity': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 0,
-                            'max': 1,
-                            'step': 0.1
-                        },
-                        'label': Locale.t('player.component.Element.opacity', 'Opacity')
-                    },
                     'getter': function(skipDefault){
                         return this.contents.css('opacity', void 0, skipDefault);
                     },
@@ -229,15 +149,6 @@ export default class Element extends Component{
                     }
                 },
                 'start-time': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'clearButton': true,
-                            'inButton': true,
-                            'outButton': true
-                        },
-                        'label': Locale.t('player.component.Element.start-time', 'Start time')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
                         return isNaN(value) ? null : value;
@@ -247,15 +158,6 @@ export default class Element extends Component{
                     }
                 },
                 'end-time': {
-                    'field': {
-                        'type': 'time',
-                        'input': {
-                            'clearButton': true,
-                            'inButton': true,
-                            'outButton': true
-                        },
-                        'label': Locale.t('player.component.Element.end-time', 'End time')
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
                         return isNaN(value) ? null : value;

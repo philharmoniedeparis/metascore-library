@@ -930,7 +930,10 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onComponentFormComponentSet(evt){
-        const component = evt.detail.component;
+        /**
+         * @todo
+         */
+        /*const component = evt.detail.component;
 
         if(component.instanceOf('BlockToggler')){
             // Update the 'blocks' field options and value
@@ -981,7 +984,7 @@ export default class Editor extends Dom {
             player.setReadingIndex(element.getPropertyValue('r-index') || 0);
 
             evt.stopPropagation();
-        }
+        }*/
     }
 
     /**
@@ -1249,6 +1252,11 @@ export default class Editor extends Dom {
     }
 
     onPlayerDragOver(evt){
+        /**
+         * @todo: highlight drop zone
+         * @todo: handle page before, page after
+         **/
+
         if(evt.dataTransfer.getData('metascore/component')){
             evt.preventDefault();
         }
@@ -1554,150 +1562,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * GuideDetails show event callback
-     *
-     * @private
-     */
-    onDetailsOverlayShow(){
-        const player = this.getPlayer();
-
-        if(player){
-            player.getMedia().pause();
-        }
-    }
-
-    /**
-     * GuideDetails submit event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onDetailsOverlaySubmit(evt){
-        const overlay = evt.detail.overlay;
-        const data = evt.detail.values;
-        const action = overlay.getField('action').getValue();
-        const player = this.getPlayer();
-
-        if(action === 'new'){
-            this.createGuide(data, overlay);
-        }
-        else{
-            const callback = (new_duration) => {
-                if(new_duration){
-                    player.getComponents('.block').forEach((block) => {
-                        if(block.getPropertyValue('synched')){
-                            const page = block.getChild(block.getChildrenCount()-1);
-                            if(page){
-                                page.setPropertyValue('end-time', new_duration);
-                            }
-                        }
-                    });
-                }
-
-                /**
-                 * The unsaved data
-                 * @type {Object}
-                 */
-                this.dirty_data = Object.assign({}, this.dirty_data, data);
-                player.updateData(data);
-                overlay.hide();
-
-                this.setDirty(true)
-                    .updateMainmenu();
-            };
-
-            if('media' in data){
-                const loadmask = new LoadMask({
-                    'parent': this,
-                    'autoShow': true
-                });
-
-                getMediaFileDuration(data.media, (error, new_duration) => {
-                    if(error){
-                        loadmask.hide();
-
-                        new Alert({
-                            'parent': this,
-                            'text': error.message,
-                            'buttons': {
-                                'ok': Locale.t('editor.onMediaFileDurationError.ok', 'OK'),
-                            },
-                            'autoShow': true
-                        });
-
-                        return;
-                    }
-
-                    const old_duration = player.getMedia().getDuration();
-
-                    if(new_duration !== old_duration){
-                        const formatted_old_duration = TimeInput.getTextualValue(old_duration);
-                        const formatted_new_duration = TimeInput.getTextualValue(new_duration);
-                        const blocks = [];
-
-                        if(new_duration < old_duration){
-                            player.getComponents('.block').forEach((block) => {
-                                if(block.getPropertyValue('synched')){
-                                    block.getChildren().some((page) => {
-                                        if(page.getPropertyValue('start-time') > new_duration){
-                                            blocks.push(block.getPropertyValue('name'));
-                                            return true;
-                                        }
-
-                                        return false;
-                                    });
-                                }
-                            });
-                        }
-
-                        if(blocks.length > 0){
-                            loadmask.hide();
-
-                            new Alert({
-                                'parent': this,
-                                'text': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Please delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
-                                'buttons': {
-                                    'ok': Locale.t('editor.onDetailsOverlaySubmit.update.needs_review.ok', 'OK'),
-                                },
-                                'autoShow': true
-                            });
-                        }
-                        else{
-                            let msg = '';
-                            if(new_duration < old_duration){
-                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                            }
-                            else{
-                                msg = Locale.t('editor.onDetailsOverlaySubmit.update.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                            }
-
-                            new Confirm({
-                                'parent': this,
-                                'text': msg,
-                                'autoShow': true,
-                                'onConfirm': () => {
-                                    loadmask.hide();
-                                    callback(new_duration);
-                                },
-                                'onCancel': () => {
-                                    loadmask.hide();
-                                }
-                            });
-                        }
-                    }
-                    else{
-                        callback();
-                        loadmask.hide();
-                    }
-                });
-            }
-            else{
-                callback();
-            }
-        }
-    }
-
-    /**
      * Window beforeunload event callback
      *
      * @private
@@ -1724,17 +1588,9 @@ export default class Editor extends Dom {
          */
         this.editing = editing !== false;
 
-        if(this.editing){
-            this.component_form.enable();
-        }
-        else{
-            this.component_form.disable();
-        }
-
         this.toggleClass('editing', this.editing);
 
         this.mainmenu.getItem('edit-toggle').setValue(this.editing, true);
-        this.controller[this.editing ? 'maximize' : 'minimize']();
 
         if(player){
             player.toggleClass('editing', this.editing);

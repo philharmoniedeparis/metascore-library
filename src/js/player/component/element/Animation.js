@@ -1,5 +1,4 @@
 import Element from '../Element';
-import Locale from '../../../core/Locale';
 import Lottie from 'lottie-web';
 
 const renderer = 'svg';
@@ -29,10 +28,6 @@ export default class Animation extends Element{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'src': {
-                    'type': 'Text',
-                    'configs': {
-                        'label': Locale.t('player.component.Element.src', 'Source')
-                    },
                     'getter': function(){
                         return this.data('src');
                     },
@@ -41,12 +36,6 @@ export default class Animation extends Element{
                     }
                 },
                 'start-frame': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.element.Animation.start-frame', 'Start frame'),
-                        'min': 0,
-                        'max': 0
-                    },
                     'getter': function(){
                         const value = parseInt(this.data('start-frame'), 10);
                         return isNaN(value) ? 0 : value;
@@ -56,12 +45,6 @@ export default class Animation extends Element{
                     }
                 },
                 'fps': {
-                    'type': 'Number',
-                    'configs': {
-                        'label': Locale.t('player.component.element.Animation.fps', 'FPS'),
-                        'min': 1,
-                        'clearButton': true
-                    },
                     'getter': function(){
                         const value = parseFloat(this.data('fps'));
                         return isNaN(value) ? this.getDefaultFPS() : value;
@@ -71,10 +54,6 @@ export default class Animation extends Element{
                     }
                 },
                 'reversed': {
-                    'type': 'Checkbox',
-                    'configs': {
-                        'label': Locale.t('player.component.element.Animation.reversed', 'Reversed')
-                    },
                     'getter': function(){
                         return this.data('reversed') === "true";
                     },
@@ -83,20 +62,6 @@ export default class Animation extends Element{
                     }
                 },
                 'colors': {
-                    'type': 'Select',
-                    'configs': {
-                        'label': Locale.t('player.component.element.Animation.colors', 'Colors'),
-                        'options': [
-                            {
-                                'value': null,
-                                'text': Locale.t('player.component.element.Animation.colors.default', 'Default')
-                            },
-                            {
-                                'value': '#FF0000,#00FF00',
-                                'text': Locale.t('player.component.element.Animation.colors.1', 'Colors 1')
-                            }
-                        ]
-                    },
                     'getter': function(){
                         const value = this.data('colors');
                         return value ? value : null;

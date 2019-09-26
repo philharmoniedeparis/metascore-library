@@ -2,7 +2,6 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Pager from '../Pager';
 import Page from './Page';
-import Locale from '../../core/Locale';
 import {toCSS} from '../../core/utils/Color';
 import {isString, isNumber} from '../../core/utils/Var';
 
@@ -29,16 +28,11 @@ export default class Block extends Component {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'editable': false,
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'name': {
-                    'field': {
-                        'type': 'text',
-                        'label': Locale.t('player.component.Block.name', 'Name')
-                    },
                     'getter': function(){
                         return this.data('name');
                     },
@@ -47,10 +41,6 @@ export default class Block extends Component {
                     }
                 },
                 'hidden': {
-                    'field': {
-                        'type': 'checkbox',
-                        'label': Locale.t('player.component.Block.hidden', 'Hidden?')
-                    },
                     'getter': function(){
                         return this.data('hidden') === "true";
                     },
@@ -59,13 +49,6 @@ export default class Block extends Component {
                     }
                 },
                 'x': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Block.x', 'X'),
-                    },
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -74,13 +57,6 @@ export default class Block extends Component {
                     }
                 },
                 'y': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Block.y', 'Y')
-                    },
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -89,13 +65,6 @@ export default class Block extends Component {
                     },
                 },
                 'width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'spinDirection': 'vertical'
-                        },
-                        'label': Locale.t('player.component.Block.width', 'Width')
-                    },
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -104,13 +73,6 @@ export default class Block extends Component {
                     }
                 },
                 'height': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'flipSpinButtons': true
-                        },
-                        'label': Locale.t('player.component.Block.height', 'Height')
-                    },
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -119,10 +81,6 @@ export default class Block extends Component {
                     }
                 },
                 'z-index': {
-                    'field': {
-                        'type': 'number',
-                        'label': Locale.t('player.component.Element.z-index', 'Display index')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -132,10 +90,6 @@ export default class Block extends Component {
                     }
                 },
                 'background-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Block.background-color', 'Background color')
-                    },
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -144,13 +98,6 @@ export default class Block extends Component {
                     }
                 },
                 'background-image': {
-                    'field': {
-                        'type':'image',
-                        'input': {
-                            'resizeButton': true
-                        },
-                        'label': Locale.t('player.component.Block.background-image', 'Background image')
-                    },
                     'getter': function(skipDefault){
                         let value = this.css('background-image', void 0, skipDefault);
 
@@ -170,13 +117,6 @@ export default class Block extends Component {
                     }
                 },
                 'border-width': {
-                    'field': {
-                        'type': 'number',
-                        'input': {
-                            'min': 0
-                        },
-                        'label': Locale.t('player.component.Block.border-width', 'Border width')
-                    },
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -186,10 +126,6 @@ export default class Block extends Component {
                     }
                 },
                 'border-color': {
-                    'field': {
-                        'type': 'color',
-                        'label': Locale.t('player.component.Block.border-color', 'Border color')
-                    },
                     'getter': function(skipDefault){
                         return this.css('border-color', void 0, skipDefault);
                     },
@@ -198,10 +134,6 @@ export default class Block extends Component {
                     }
                 },
                 'border-radius': {
-                    'field': {
-                        'type': 'border-radius',
-                        'label': Locale.t('player.component.Block.border-radius', 'Border radius')
-                    },
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },
@@ -210,7 +142,6 @@ export default class Block extends Component {
                     }
                 },
                 'synched': {
-                    'editable': false,
                     'getter': function(){
                         return this.data('synched') === "true";
                     },
@@ -219,7 +150,6 @@ export default class Block extends Component {
                     }
                 },
                 'pages': {
-                    'editable':false,
                     'getter': function(skipDefault, skipID){
                         const pages = [];
 

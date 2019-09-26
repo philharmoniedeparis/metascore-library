@@ -13,6 +13,8 @@ import {className} from '../../css/editor/ComponentForm.scss';
  * @param {Component} component The component instance
  * @emits {componentunset} Fired when a component is unset
  * @param {Component} component The component instance
+ *
+ * @todo: implement old editor.panel.Element methods
  */
 export default class ComponentForm extends Dom {
 
@@ -53,11 +55,19 @@ export default class ComponentForm extends Dom {
          */
         this.contents = new Dom('<div/>', {'class': 'fields'})
             .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
-            .addDelegate('.image.input', 'resize', this.onImageFieldResize.bind(this))
-            .addDelegate('.image.input', 'filebrowser', this.onImageFieldFilebrowser.bind(this))
             .appendTo(this);
 
-        this.updateUI();
+        /**
+         * The list of fields
+         * @type {Object}
+         */
+        this.fields = {};
+
+        Object.entries(this.configs.fields).forEach(([field_name, field_configs]) => {
+            this.fields[field_name] = new Field(field_configs)
+                .data('name', field_name)
+                .appendTo(this.contents);
+        });
     }
 
     /**
@@ -67,7 +77,51 @@ export default class ComponentForm extends Dom {
     */
     static getDefaults() {
         return {
-            'allowMultiple': true
+            'allowMultiple': true,
+            'fields': {
+                'name': {
+                    'type': 'text',
+                    'label': 'Name'
+                },
+                'visible': {
+                    'type': 'radiobuttons',
+                    'label': Locale.t('editor.ComponentForm.fields.visible.label', 'Visible on start'),
+                    'input': {
+                        'options': [
+                            {'value': false, 'text': Locale.t('editor.ComponentForm.fields.visible.options.no.text', 'No')},
+                            {'value': true, 'text': Locale.t('editor.ComponentForm.fields.visible.options.yes.text', 'Yes')},
+                        ]
+                    }
+                },
+                'scenario': {
+                    'type': 'select',
+                    'label': Locale.t('editor.ComponentForm.fields.scenario.label', 'Scenario')
+                },
+                'background-image': {
+                    'type': 'select',
+                    'label': Locale.t('editor.ComponentForm.fields.background-image.label', 'Background image')
+                },
+                'background-color': {
+                    'type': 'color',
+                    'label': Locale.t('editor.ComponentForm.fields.background-color.label', 'Background color')
+                },
+                'border-color': {
+                    'type': 'color',
+                    'label': Locale.t('editor.ComponentForm.fields.border-color.label', 'Border color')
+                },
+                'border-radius': {
+                    'type': 'borderradius',
+                    'label': Locale.t('editor.ComponentForm.fields.border-radius.label', 'Border radius')
+                },
+                'start-time': {
+                    'type': 'time',
+                    'label': Locale.t('editor.ComponentForm.fields.start-time.label', 'Start')
+                },
+                'end-time': {
+                    'type': 'time',
+                    'label': Locale.t('editor.ComponentForm.fields.end-time.label', 'End')
+                }
+            }
         };
     }
 
@@ -183,81 +237,6 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-     * Enable all fields
-     *
-     * @return {this}
-     */
-    enableFields() {
-		Object.entries(this.fields).forEach(([, field]) => {
-            field.enable();
-        });
-
-        return this;
-    }
-
-    /**
-     * Show a field by name
-     *
-     * @param {String} name The name of the field to show
-     * @return {this}
-     */
-    showField(name){
-        const field = this.getField(name);
-
-        if(field.hidden()){
-            field.show();
-            this.refreshFieldValue(name);
-        }
-
-        return this;
-    }
-
-    /**
-     * Hide a field by name
-     *
-     * @param {String} name The name of the field to show
-     * @return {this}
-     */
-    hideField(name){
-        this.getField(name).hide();
-
-        return this;
-    }
-
-    /**
-     * Toggle the panel's collapsed state
-     *
-     * @return {this}
-     */
-    toggleState() {
-        this.toggleClass('collapsed');
-
-        return this;
-    }
-
-    /**
-     * Disable the panel
-     *
-     * @return {this}
-     */
-    disable() {
-        this.addClass('disabled');
-
-        return this;
-    }
-
-    /**
-     * Enable the panel
-     *
-     * @return {this}
-     */
-    enable() {
-        this.removeClass('disabled');
-
-        return this;
-    }
-
-    /**
      * Get all set components
      *
      * @param {Mixed} [type] The type(s) of components to return
@@ -284,15 +263,6 @@ export default class ComponentForm extends Dom {
      */
     getComponent(index) {
         return this.components[index || 0];
-    }
-
-    /**
-     * Get the currently associated component's label
-     *
-     * @return {String} The component's label for use in the selector
-     */
-    getSelectorLabel(component){
-        return component.getName();
     }
 
     /**
@@ -646,17 +616,6 @@ export default class ComponentForm extends Dom {
                 });
             });
         });
-    }
-
-    /**
-     * The imagefields' filebrowser event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onImageFieldFilebrowser(evt){
-        // Add the master component properties to the event.
-        evt.detail.component = this.getComponent().getPropertyValues(false);
     }
 
     /**

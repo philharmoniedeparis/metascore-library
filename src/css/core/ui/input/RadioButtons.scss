@@ -1,13 +1,6 @@
 :local(.className){
-    display: flex;
-
     .radiobutton-wrapper{
-        margin-right: 2em;
-
-        input{
-            margin: 0 0.5em 0 0;
-            vertical-align: middle;
-        }
+        display: inline-block;
 
         label{
             display: inline-block;
